@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  mimic:
+    image: arkhn/mimic:latest
+    container_name: mimic
+    env_file: .env
+    restart: always
+    environment:
+      POSTGRES_USER: mimicuser
+      POSTGRES_PASSWORD: mimicuser
+      POSTGRES_DB: mimic
+    volumes:
+      - mimic-db:/var/lib/postgresql/data
+    ports:
+      - 5431:5432
+    networks:
+      - arkhn
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: fhirstore
+    ports:
+      - m:27017
+    volumes:
+      - fhirstore-db:/data/db
+    networks:
+      - arkhn
+
+volumes:
+  mimic-db:
+    name: mimic-db
+  fhirstore-db:
+
+networks:
+  arkhn:
+    name: arkhn_network
