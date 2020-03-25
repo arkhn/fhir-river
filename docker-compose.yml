@@ -16,23 +16,77 @@ services:
     networks:
       - arkhn
 
-  mongo:
-    image: mongo
-    container_name: mongo
+
+  zookeeper:
+    image: "zookeeper:3.4.10"
     restart: always
-    environment:
-      MONGO_INITDB_DATABASE: fhirstore
     ports:
-      - m:27017
+      - "2181:2181"
+    expose:
+      - "2181"
+
+  kafka:
+    image: "wurstmeister/kafka:0.10.2.1"
+    restart: always
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    expose:
+      - "9092"
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_DELETE_TOPIC_ENABLE=true
     volumes:
-      - fhirstore-db:/data/db
-    networks:
-      - arkhn
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka_connect:
+    image: confluentinc/cp-kafka-connect:latest
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - kafka
+    environment:
+      CONNECT_PLUGIN_PATH: /usr/share/java/
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_GROUP_ID: jdbc-source-test
+      CONNECT_CONFIG_STORAGE_TOPIC: default.config
+      CONNECT_STATUS_STORAGE_TOPIC: default.status
+      CONNECT_OFFSET_STORAGE_TOPIC: default.offset
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: schema-registry:8081
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: schema-registry:8081
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_REST_PORT: 8083
+      CONNECT_REST_ADVERTISED_HOST_NAME: docker
+      CONNECT_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
+#      command: [ "curl", "-X POST", "-F file=@config/s3_sink_config_dev.json;type=application/json", "http://localhost:8083/connectors/"]
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.4.0
+    container_name: schema-registry
+    ports:
+      - 8081:8081
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
 
 volumes:
   mimic-db:
     name: mimic-db
-  fhirstore-db:
 
 networks:
   arkhn:

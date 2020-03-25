@@ -1,0 +1,14 @@
+{
+  "name": "jdbc-source",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "connection.url": "jdbc:postgresql://localhost:5432/customers?user=postgres&password=newpass",
+    "mode": "incrementing",
+    "incrementing.column.name": "id",
+    "topic.prefix": "postgres-jdbc-mimic",
+    "name": "jdbc-source"
+  },
+  "tasks": [],
+  "type": null
+}

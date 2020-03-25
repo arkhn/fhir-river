@@ -21,3 +21,17 @@ POC for Live Streams
 
 - docker exec -it mongo mongo --port 27017
 - docker exec -it mimic psql -U mimicuser -d mimic
+
+## Kafka Connect
+
+This folder is intended to contain the configuration files in `json` format used to start connectors in the 
+[kafka-connect](https://docs.confluent.io/current/connect/) cluster.
+In this POC, the configuration files and the actual kafka connect cluster are stored in the same repo, but we should 
+have 2 different repos in the future, to avoid re-deploying the cluster for each new config.
+
+The config files should be added to the ./kafka-connect folder and depending if they are for a source or a sink they will go in each respective folder.
+A new connector is launched in the cluster by using one of the following two requests:
+- `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d /config.json'`
+    - Only to create a new connector (Not idempotent)
+- `curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/{name}/config -d /config.json'`
+    - To create or update, an existing, connector (idempotent)
