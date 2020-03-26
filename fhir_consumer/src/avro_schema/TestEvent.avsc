@@ -1,0 +1,10 @@
+{
+  "type" : "record",
+  "name" : "TestEvent",
+  "namespace" : "com.arkhn.events.test",
+  "doc" : "* Test",
+  "fields" : [ {
+    "name" : "test_key",
+    "type" : "string"
+  }]
+}
