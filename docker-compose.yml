@@ -85,7 +85,7 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - ZOOKEEPER_HOSTS=zookeeper:2181
-      - AVRO_REGISTRY_URL=avro-registry:9090
+      - AVRO_REGISTRY_URL=http://avro-registry:9090
 
   avro_db:
     image: mysql:5.7.21

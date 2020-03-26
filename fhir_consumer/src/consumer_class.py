@@ -125,7 +125,6 @@ class POETAConsumer:
                 continue
 
             # Process Event or Raise Error
-            logging.info(msg)
             if msg is None:
                 continue
             if msg.error():

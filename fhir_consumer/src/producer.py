@@ -8,7 +8,6 @@ from confluent_kafka.avro.error import ClientError
 from confluent_kafka.avro.serializer import SerializerError, ValueSerializerError
 from fhir_consumer.src.logger import create_logger
 
-TOPIC = 'test'
 logging = create_logger('producer')
 
 
@@ -78,7 +77,7 @@ class Producer:
             self.producer.produce(topic=topic,
                                   value=record,
                                   callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj))
-            self.producer.poll(0)  # Callback function
+            self.producer.poll(1)  # Callback function
         except (SerializerError, ValueSerializerError, ClientError, ValueError) as error:
             logging.error(error)
 
@@ -95,7 +94,7 @@ def produce_test_event():
     Test producer
     :return:
     """
-    producer.produce_event(topic=TOPIC, record={'test_key': str(int(100*random.random()))})
+    producer.produce_event(topic='test', record={'test_key': str(int(100 * random.random()))})
 
 
 if __name__ == '__main__':
