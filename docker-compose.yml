@@ -51,7 +51,7 @@ services:
     depends_on:
       - kafka
     environment:
-      CONNECT_CLASSPATH: /usr/share/java/kafka-connect-jdbc/
+      CLASSPATH: /usr/share/java/
       CONNECT_PLUGIN_PATH: /usr/share/java/
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: jdbc-source-test
@@ -73,6 +73,30 @@ services:
       CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
     #      command: [ "curl", "-X POST", "-F file=@config/s3_sink_config_dev.json;type=application/json", "http://localhost:8083/connectors/"]
 
+
+  fhir-consumer:
+    build:
+      context: fhir_consumer/
+    container_name: fhir-consumer
+    image: arkhn/fhir-consumer:latest
+    restart: always
+    depends_on:
+      - kafka
+      - avro-registry
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - ZOOKEEPER_HOSTS=zookeeper:2181
+      - AVRO_REGISTRY_URL=http://avro-registry:9090
+
+  avro_db:
+    image: mysql:5.7.21
+    ports:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: hortonworks
+      MYSQL_USER: hortonworks
+      MYSQL_PASSWORD: password
 
   avro-registry:
     build: avro_registry/registry
