@@ -77,7 +77,8 @@ class Producer:
             self.producer.produce(topic=topic,
                                   value=record,
                                   callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj))
-            self.producer.poll(1)  # Callback function
+            self.producer.poll(0)  # Callback function
+            self.producer.flush(10)
         except (SerializerError, ValueSerializerError, ClientError, ValueError) as error:
             logging.error(error)
 
