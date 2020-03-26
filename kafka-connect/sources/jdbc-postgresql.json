@@ -1,14 +1,14 @@
 {
   "name": "jdbc-source",
   "config": {
+    "plugin.path": "/usr/share/java",
     "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
     "tasks.max": "1",
-    "connection.url": "jdbc:postgresql://localhost:5432/customers?user=postgres&password=newpass",
+    "connection.url": "jdbc:postgresql:mimicuser:mimicuser//mimic/mimic",
     "mode": "incrementing",
-    "incrementing.column.name": "id",
-    "topic.prefix": "postgres-jdbc-mimic",
+    "incrementing.column.name": "subject_id",
+    "topic.prefix": "",
+    "table.whitelist": "admissions",
     "name": "jdbc-source"
-  },
-  "tasks": [],
-  "type": null
+  }
 }

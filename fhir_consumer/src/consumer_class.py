@@ -86,7 +86,7 @@ class Consumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        self.consumer.subscribe(['test'])
+        self.consumer.subscribe(self.topics)
         try:
             self.consume_event()
         except (KafkaException, KafkaError):

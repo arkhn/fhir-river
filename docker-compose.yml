@@ -42,60 +42,37 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-#  kafka_connect:
-#    image: confluentinc/cp-kafka-connect:latest
-#    restart: always
-#    container_name: kafka_connect
-#    ports:
-#      - "8083:8083"
-#    depends_on:
-#      - kafka
-#    environment:
-#      CONNECT_PLUGIN_PATH: /usr/share/java/
-#      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
-#      CONNECT_GROUP_ID: jdbc-source-test
-#      CONNECT_CONFIG_STORAGE_TOPIC: default.config
-#      CONNECT_STATUS_STORAGE_TOPIC: default.status
-#      CONNECT_OFFSET_STORAGE_TOPIC: default.offset
-#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-#      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-#      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-#      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-#      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-#      CONNECT_REST_PORT: 8083
-#      CONNECT_REST_ADVERTISED_HOST_NAME: docker
-#      CONNECT_SCHEMAS_ENABLE: "false"
-#      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-#      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-#      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
-#    #      command: [ "curl", "-X POST", "-F file=@config/s3_sink_config_dev.json;type=application/json", "http://localhost:8083/connectors/"]
-
-
-  fhir-consumer:
-    build:
-      context: fhir_consumer/
-    container_name: fhir-consumer
-    image: arkhn/fhir-consumer:latest
+  kafka_connect:
+    image: confluentinc/cp-kafka-connect:latest
     restart: always
+    container_name: kafka_connect
+    ports:
+      - "8083:8083"
     depends_on:
       - kafka
-      - avro-registry
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - ZOOKEEPER_HOSTS=zookeeper:2181
-      - AVRO_REGISTRY_URL=http://avro-registry:9090
+      CONNECT_CLASSPATH: /usr/share/java/kafka-connect-jdbc/
+      CONNECT_PLUGIN_PATH: /usr/share/java/
+      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+      CONNECT_GROUP_ID: jdbc-source-test
+      CONNECT_CONFIG_STORAGE_TOPIC: default.config
+      CONNECT_STATUS_STORAGE_TOPIC: default.status
+      CONNECT_OFFSET_STORAGE_TOPIC: default.offset
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_REST_PORT: 8083
+      CONNECT_REST_ADVERTISED_HOST_NAME: docker
+      CONNECT_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
+    #      command: [ "curl", "-X POST", "-F file=@config/s3_sink_config_dev.json;type=application/json", "http://localhost:8083/connectors/"]
 
-  avro_db:
-    image: mysql:5.7.21
-    ports:
-      - "3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: hortonworks
-      MYSQL_USER: hortonworks
-      MYSQL_PASSWORD: password
 
   avro-registry:
     build: avro_registry/registry
@@ -117,8 +94,6 @@ services:
     image: openresty/openresty:1.13.6.2-alpine
     ports:
       - "8082:82"
-#    volumes:
-#      - "./nginx:/etc/nginx/conf.d"
     depends_on:
       - "avro-registry"
 

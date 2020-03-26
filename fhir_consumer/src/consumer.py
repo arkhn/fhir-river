@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     consumer = Consumer(broker=argv[0],
                         registry=argv[1],
-                        topics=['test'],
+                        topics=TOPIC,
                         group_id=GROUP_ID,
                         process_event=process_event,
                         manage_error=manage_kafka_error)
