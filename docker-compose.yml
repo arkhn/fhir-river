@@ -51,7 +51,7 @@ services:
     depends_on:
       - kafka
     environment:
-      CLASSPATH: /usr/share/java/
+      CONNECT_CLASS_PATH: /usr/share/java/kafka-connect-jdbc/
       CONNECT_PLUGIN_PATH: /usr/share/java/
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: jdbc-source-test
