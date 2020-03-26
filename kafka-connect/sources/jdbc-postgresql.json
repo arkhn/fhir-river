@@ -1,0 +1,15 @@
+{
+  "name": "jdbc-source",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "connection.url": "jdbc:postgresql://mimic:5432/mimic",
+    "connection.user": "mimicuser",
+    "connection.password": "mimicuser",
+    "mode": "incrementing",
+    "incrementing.column.name": "subject_id",
+    "topic.prefix": "",
+    "table.whitelist": "admissions",
+    "name": "jdbc-source"
+  }
+}
