@@ -1,0 +1,21 @@
+@namespace("com.stuart.events.poeta")
+
+protocol PoetaEvents {
+
+    record PoetaEvent {
+        timestamp_ms created_at;
+        union {
+            PoetaSent
+        } msg;
+    }
+
+	/**
+	 * When a POETA request is made for a specific location (h3_index)
+	 */
+	record PoetaSent {
+		string zone;
+		int eta;
+		string h3_index;
+		string version = "1.9";
+	}
+}
