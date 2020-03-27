@@ -20,7 +20,7 @@ def process_event(msg):
     """
     logging.info(msg.topic())
     logging.info(msg.value())
-
+    # Do stuff
 
 def manage_kafka_error(msg):
     """

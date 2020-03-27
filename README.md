@@ -8,9 +8,28 @@ This repo is a POC for Live Streams ETL.
 
 A Kafka broker is used as a bus of event.
 The source of data is a Postgresdb. Whenever a new record is created, an event is created by kafka-connect.
-The consumer can then consume the events are transform it. 
+The consumer can then consume the event and transform it. 
 
 WIP
+
+## Getting started
+
+1. Run `docker-compose up --build`: it will create the container for the different services.  
+Note that it can take few minutes at first. The logs are quite verbose, don't be afraid ! 
+
+2. Create the configuration for kafka-connect  (See Kafka Connect section below). 
+
+3. Play with it: run the script to create some records in the MIMIC db: `python test/create_records_db.py` (ugly script, 
+but it works fine just to test that it works)
+You can see in the logs of the `fhir_consumer` container the message and its topic. You can check inside the MIMIC DB
+ that your record has been created (check config in the script - WIP)
+
+4. Play with it: in the script `fhir_consumer/src/main.py`, edit the function `process_event` to do whatever you want!
+
+## Avro Consumer
+
+The `fhir_consumer` container includes a consumer that reads events produced by kafka-connect whenever a new record is 
+created in the PostgresDb.
 
 ## Useful links
 
@@ -24,11 +43,6 @@ WIP
 
 - docker exec -it mongo mongo --port 27017
 - docker exec -it mimic psql -U mimicuser -d mimic
-
-## Avro Consumer
-
-The `fhir_consumer` container includes a consumer that reads events produced by kafka-connect whenever a new record is 
-created in the PostgresDb.
 
 
 ## Kafka Connect
