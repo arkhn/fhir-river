@@ -37,7 +37,7 @@ def convert_epoch_to_datetime(epoch_time):
     :param epoch_time:
     :return:
     """
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(epoch_time / 1000))
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(epoch_time))
 
 
 TABLE = "admissions"
