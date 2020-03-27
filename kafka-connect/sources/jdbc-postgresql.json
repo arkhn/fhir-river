@@ -7,7 +7,7 @@
     "connection.user": "mimicuser",
     "connection.password": "mimicuser",
     "mode": "incrementing",
-    "incrementing.column.name": "subject_id",
+    "incrementing.column.name": "row_id",
     "topic.prefix": "",
     "table.whitelist": "admissions",
     "name": "jdbc-source"

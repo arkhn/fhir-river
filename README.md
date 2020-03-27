@@ -37,7 +37,7 @@ have 2 different repos in the future, to avoid re-deploying the cluster for each
 
 The config files should be added to the ./kafka-connect folder and depending if they are for a source or a sink they will go in each respective folder.
 A new connector is launched in the cluster by using one of the following two requests:
-- `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d /config.json'`
+- `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d <config.json>'`
     - Only to create a new connector (Not idempotent)
-- `curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/{name}/config -d /config.json'`
+- `curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/{name}/config -d <config_without_name.json>'`
     - To create or update, an existing, connector (idempotent)
