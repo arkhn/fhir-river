@@ -69,60 +69,20 @@ services:
       CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
       CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
       CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
-    #      command: [ "curl", "-X POST", "-F file=@config/s3_sink_config_dev.json;type=application/json", "http://localhost:8083/connectors/"]
 
+  fhir_consumer:
+    build:
+      context: fhir_consumer/
+    container_name: fhir_consumer
+    image: arkhn/fhir-consumer:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - ZOOKEEPER_HOSTS=zookeeper:2181
 
-#  fhir-consumer:
-#    build:
-#      context: fhir_consumer/
-#    container_name: fhir-consumer
-#    image: arkhn/fhir-consumer:latest
-#    restart: always
-#    depends_on:
-#      - kafka
-#      - avro-registry
-#    environment:
-#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-#      - ZOOKEEPER_HOSTS=zookeeper:2181
-#      - AVRO_REGISTRY_URL=http://avro-registry:9090
-
-#  avro_db:
-#    image: mysql:5.7.21
-#    ports:
-#      - "3306"
-#    environment:
-#      MYSQL_ROOT_PASSWORD: password
-#      MYSQL_DATABASE: hortonworks
-#      MYSQL_USER: hortonworks
-#      MYSQL_PASSWORD: password
-#
-#  avro-registry:
-#    build: avro_registry/registry
-#    ports:
-#      - "9090:9090"
-#      - "9091:9091"
-#    expose:
-#      - "9090"
-#    environment:
-#      DB_NAME: hortonworks
-#      DB_USER: hortonworks
-#      DB_PASSWORD: password
-#      DB_PORT: 3306
-#      DB_HOST: avro_db
-#    depends_on:
-#      - "avro_db"
-#
-#  avro-registry-auth:
-#    image: openresty/openresty:1.13.6.2-alpine
-#    ports:
-#      - "8082:82"
-#    depends_on:
-#      - "avro-registry"
 
 volumes:
   mimic-db:
     name: mimic-db
-
-networks:
-  arkhn:
-    name: arkhn_network

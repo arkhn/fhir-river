@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import sys
+import os
 from confluent_kafka import KafkaException, KafkaError
-from fhir_consumer.src.consumer_class import Consumer
+from fhir_consumer.src.consumer_class import FhirConsumer
 from fhir_consumer.src.logger import create_logger
 
 MAX_ERROR_COUNT = 3
-TOPIC = 'test'
-GROUP_ID = 'test'
+TOPIC = 'mimic-admissions'
+GROUP_ID = 'arkhn'
 
 logging = create_logger('consumer')
 
@@ -18,12 +18,13 @@ def process_event(msg):
     :param msg:
     :return:
     """
-    logging.info(msg.value())
     logging.info(msg.topic())
+    logging.info(msg.value())
 
 
 def manage_kafka_error(msg):
     """
+    Deal with the error if nany
     :param msg:
     :return:
     """
@@ -32,17 +33,11 @@ def manage_kafka_error(msg):
 
 
 if __name__ == '__main__':
-    logging.info("RUN CONSUMER")
-    argv = sys.argv[1:]
-    if len(argv) < 2:
-        raise IndexError("Missing broker or registry")
-
-    consumer = Consumer(broker=argv[0],
-                        registry=argv[1],
-                        topics=TOPIC,
-                        group_id=GROUP_ID,
-                        process_event=process_event,
-                        manage_error=manage_kafka_error)
+    consumer = FhirConsumer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+                            topics=TOPIC,
+                            group_id=GROUP_ID,
+                            process_event=process_event,
+                            manage_error=manage_kafka_error)
 
     try:
         consumer.run_consumer()
