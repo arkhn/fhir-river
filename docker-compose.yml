@@ -14,6 +14,14 @@ services:
     ports:
       - 5431:5432
 
+  sftp:
+      image: atmoz/sftp
+      volumes:
+          - ./test/sftp/host/upload:/home/arkhn/upload
+      ports:
+          - "2222:22"
+      command: arkhn:arkhnpwd:1001
+
   zookeeper:
     image: "zookeeper:3.4.10"
     container_name: zookeeper

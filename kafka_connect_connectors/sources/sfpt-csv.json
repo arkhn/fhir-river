@@ -1,0 +1,20 @@
+{
+  "name": "CsvSFTP",
+  "config": {
+    "tasks.max": "1",
+    "connector.class": "io.confluent.connect.sftp.SftpCsvSourceConnector",
+    "cleanup.policy":"NONE",
+    "behavior.on.error":"IGNORE",
+    "input.path": "/home/arkhn/upload/data",
+    "error.path": "/home/arkhn/upload/error",
+    "finished.path": "/home/arkhn/upload/finished",
+    "input.file.pattern": "csv-sftp-source.csv",
+    "sftp.username":"arkhn",
+    "sftp.password":"arkhnpwd",
+    "sftp.host":"localhost",
+    "sftp.port":"22",
+    "kafka.topic": "sftp-testing-topic",
+    "csv.first.row.as.header": "true",
+    "schema.generation.enabled": "true"
+  }
+}
