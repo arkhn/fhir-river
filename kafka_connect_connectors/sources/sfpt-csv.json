@@ -1,14 +1,14 @@
 {
   "name": "CsvSFTP",
   "config": {
-    "tasks.max": "10",
+    "tasks.max": "1",
     "connector.class": "io.confluent.connect.sftp.SftpCsvSourceConnector",
     "cleanup.policy":"MOVE",
     "behavior.on.error":"IGNORE",
     "input.path": "/upload/data",
     "error.path": "/upload/error",
-    "empty.poll.wait.ms": 1000,
     "finished.path": "/upload/finished",
+    "empty.poll.wait.ms": 1000,
     "input.file.pattern": "csv-sftp-source.csv",
     "sftp.username":"arkhn",
     "sftp.password":"arkhnpwd",

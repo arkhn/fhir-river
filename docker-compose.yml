@@ -63,7 +63,7 @@ services:
       CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
       CONNECT_PLUGIN_PATH: /usr/share/java/
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
-      CONNECT_GROUP_ID: jdbc-source-test
+      CONNECT_GROUP_ID: source-kafka-connect
       CONNECT_CONFIG_STORAGE_TOPIC: default.config
       CONNECT_STATUS_STORAGE_TOPIC: default.status
       CONNECT_OFFSET_STORAGE_TOPIC: default.offset
