@@ -16,8 +16,9 @@ services:
 
   sftp:
       image: atmoz/sftp
+      container_name: sftp
       volumes:
-          - ./test/sftp/host/upload:/home/arkhn/upload
+          - ./test/sftp/host/upload/:/home/user/upload/
       ports:
           - "2222:22"
       command: arkhn:arkhnpwd:1001
@@ -56,8 +57,10 @@ services:
       - "8083:8083"
     depends_on:
       - kafka
+    volumes:
+      - ./kafka_connect_connectors/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
     environment:
-      CONNECT_CLASS_PATH: /usr/share/java/kafka-connect-jdbc/
+      CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
       CONNECT_PLUGIN_PATH: /usr/share/java/
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: jdbc-source-test

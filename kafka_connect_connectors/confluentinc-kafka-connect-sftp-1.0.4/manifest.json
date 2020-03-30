@@ -1,0 +1,28 @@
+{
+  "name" : "kafka-connect-sftp",
+  "version" : "1.0.4",
+  "title" : "Kafka Connect Sftp",
+  "description" : "A Kafka Connect plugin for SFTP servers",
+  "owner" : {
+    "username" : "confluentinc",
+    "name" : "Confluent, Inc."
+  },
+  "support" : {
+    "summary" : "This connector is <a href=\"https://www.confluent.io/subscription/\">supported by Confluent</a> as part of a\n<a href=\"https://www.confluent.io/product/confluent-platform/\">Confluent Platform</a> subscription."
+  },
+  "tags" : [ "sftp sink connect", "SFTP", "File Transfer", "Secure File Transfer Protocol", "sftp source connect", "Kafka Connect SFTP" ],
+  "features" : {
+    "supported_encodings" : [ "any" ],
+    "single_message_transforms" : true,
+    "confluent_control_center_integration" : true,
+    "kafka_connect_api" : true
+  },
+  "documentation_url" : "https://docs.confluent.io/current/connect/kafka-connect-sftp/",
+  "docker_image" : { },
+  "license" : [ {
+    "name" : "Confluent Software Evaluation License",
+    "url" : "https://www.confluent.io/software-evaluation-license"
+  } ],
+  "component_types" : [ "source", "sink" ],
+  "release_date" : "2020-03-10"
+}
