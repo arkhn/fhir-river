@@ -18,7 +18,7 @@ services:
       image: atmoz/sftp
       container_name: sftp
       volumes:
-          - ./test/sftp/host/upload/:/home/user/upload/
+          - ~/Documents/Arkhn/fhir-river/test/sftp/host/upload/:/home/arkhn/upload/
       ports:
           - "2222:22"
       command: arkhn:arkhnpwd:1001

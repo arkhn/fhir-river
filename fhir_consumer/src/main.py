@@ -6,7 +6,7 @@ from fhir_consumer.src.consumer_class import FhirConsumer
 from fhir_consumer.src.logger import create_logger
 
 MAX_ERROR_COUNT = 3
-TOPIC = 'mimic-admissions'
+TOPIC = ['mimic-admissions', 'sftp-ambroise-pare']
 GROUP_ID = 'arkhn'
 
 logging = create_logger('consumer')
@@ -22,6 +22,7 @@ def process_event(msg):
     logging.info(msg.value())
     # Do stuff
 
+
 def manage_kafka_error(msg):
     """
     Deal with the error if nany
@@ -33,6 +34,7 @@ def manage_kafka_error(msg):
 
 
 if __name__ == '__main__':
+    logging.info("Running Consumer")
     consumer = FhirConsumer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
                             topics=TOPIC,
                             group_id=GROUP_ID,

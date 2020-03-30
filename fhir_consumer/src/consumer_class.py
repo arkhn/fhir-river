@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 
-from confluent_kafka import KafkaException, KafkaError, TopicPartition
+from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 from fhir_consumer.src.logger import create_logger
 
@@ -59,7 +59,7 @@ class FhirConsumer:
         """
         while True:
             # Deserialize Event
-            msg = self.consumer.poll(timeout=1.0)
+            msg = self.consumer.poll(timeout=5.0)
 
             # Process Event or Raise Error
             if msg is None:
@@ -75,6 +75,7 @@ class FhirConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
+        logging.info(self.topics)
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()

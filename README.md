@@ -62,4 +62,9 @@ A new connector is launched in the cluster by using one of the following two req
 with `<config.json>` being the configuration in `kafka_connect_connectors/sources` (copy/paste) and `<config_without_name.json>` 
 being only what the value associated to the key `config`.
 
-Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.io/current/connect/references/restapi.html). 
+Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.io/current/connect/references/restapi.html).
+
+
+## SFTP 
+
+```docker run     -v /Users/a.barakat/Documents/Arkhn/fhir-river/test/sftp/host/upload:/home/arkhn/upload     -p 2222:22 -d atmoz/sftp     arkhn:arkhnpwd:1001``` 

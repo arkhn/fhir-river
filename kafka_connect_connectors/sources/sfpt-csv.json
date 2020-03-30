@@ -1,20 +1,22 @@
 {
   "name": "CsvSFTP",
   "config": {
-    "tasks.max": "1",
+    "tasks.max": "10",
     "connector.class": "io.confluent.connect.sftp.SftpCsvSourceConnector",
     "cleanup.policy":"MOVE",
     "behavior.on.error":"IGNORE",
-    "input.path": "/home/user/upload/data",
-    "error.path": "/home/user/upload/error",
-    "finished.path": "/home/user/upload/finished",
+    "input.path": "/upload/data",
+    "error.path": "/upload/error",
+    "empty.poll.wait.ms": 1000,
+    "finished.path": "/upload/finished",
     "input.file.pattern": "csv-sftp-source.csv",
     "sftp.username":"arkhn",
     "sftp.password":"arkhnpwd",
     "sftp.host":"sftp",
     "sftp.port":"22",
-    "kafka.topic": "sftp-testing-topic",
-    "csv.first.row.as.header": "true",
-    "schema.generation.enabled": "true"
+    "kafka.topic": "sftp-ambroise-pare",
+    "csv.first.row.as.header": "false",
+    "value.schema":"{\"name\":\"defaultvalueschemaname\",\"type\":\"STRUCT\",\"isOptional\":false,\"fieldSchemas\":{\"name\":{\"type\":\"STRING\",\"isOptional\":true},\"disease\":{\"type\":\"STRING\",\"isOptional\":true}}}",
+    "key.schema":"{\"name\":\"csv-test\",\"type\":\"STRUCT\",\"isOptional\":false,\"fieldSchemas\":{}}"
   }
 }
