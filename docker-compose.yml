@@ -15,12 +15,12 @@ services:
       - 5431:5432
 
   sftp:
-    image: atmoz/sftp
-    volumes:
-      - ./test/sftp/host/upload:/home/arkhn/upload
-    ports:
-      - "2222:22"
-    command: arkhn:arkhnpwd:1001
+      image: atmoz/sftp
+      volumes:
+          - ./test/sftp/host/upload:/home/arkhn/upload
+      ports:
+          - "2222:22"
+      command: arkhn:arkhnpwd:1001
 
   zookeeper:
     image: "zookeeper:3.4.10"
@@ -56,10 +56,8 @@ services:
       - "8083:8083"
     depends_on:
       - kafka
-#    volumes:
-#      - ./kafka_connect_connectors/kafka-connect-sftp-1.0.4.jar:/usr/share/java/kafka-connect-sftp/kafka-connect-sftp-1.0.4.jar
     environment:
-      CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
+      CONNECT_CLASS_PATH: /usr/share/java/kafka-connect-jdbc/
       CONNECT_PLUGIN_PATH: /usr/share/java/
       CONNECT_BOOTSTRAP_SERVERS: kafka:9092
       CONNECT_GROUP_ID: jdbc-source-test
