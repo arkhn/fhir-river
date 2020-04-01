@@ -7,10 +7,11 @@ POC for Live Streams usng Kafka and Kafka Connect
 This repo is a POC for Live Streams ETL.
 
 A Kafka broker is used as a bus of event.
-The source of data is a Postgresdb. Whenever a new record is created, an event is created by kafka-connect.
-The consumer can then consume the event and transform it. 
+The different sources are connected to Kafka with Kafka Connect, where config files are pushed to Kafka Connect with the API.
 
-WIP
+
+ 
+
 
 ## Getting started
 
@@ -19,12 +20,23 @@ Note that it can take few minutes at first. The logs are quite verbose, don't be
 
 2. Create the configuration for kafka-connect  (See Kafka Connect section below). 
 
-3. Play with it: run the script to create some records in the MIMIC db: `python test/create_records_db.py` (ugly script, 
+3. Play with it: 
+
+- MIMIC / JDBC Source Connector (postgreSQL):
+
+Run the script to create some records in the MIMIC db: `python test/create_records_db.py` (ugly script, 
 but it works fine just to test that it works)
 You can see in the logs of the `fhir_consumer` container the message and its topic. You can check inside the MIMIC DB
  that your record has been created (check config in the script - WIP)
 
-4. Play with it: in the script `fhir_consumer/src/main.py`, edit the function `process_event` to do whatever you want!
+- SFTPCsvSource Connector
+
+Run the script to create some .csv file in the SFTP server: `python test/create_file_stfp.py` (ugly script, 
+but it works fine just to test that it works)
+
+4. Play with it: in the script `fhir_consumer/src/main.py`, edit the function `process_event` to do whatever you want! 
+(make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_consumer/src/main.py:9` 
+in the variable `TOPICS`.
 
 ## Avro Consumer
 
@@ -63,8 +75,3 @@ with `<config.json>` being the configuration in `kafka_connect_connectors/source
 being only what the value associated to the key `config`.
 
 Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.io/current/connect/references/restapi.html).
-
-
-## SFTP 
-
-```docker run     -v /Users/a.barakat/Documents/Arkhn/fhir-river/test/sftp/host/upload:/home/arkhn/upload     -p 2222:22 -d atmoz/sftp     arkhn:arkhnpwd:1001``` 
