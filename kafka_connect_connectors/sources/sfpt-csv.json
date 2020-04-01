@@ -10,7 +10,7 @@
     "error.path": "/upload/error",
     "finished.path": "/upload/finished",
     "empty.poll.wait.ms": 1000,
-    "input.file.pattern": "csv-sftp-source-*.csv",
+    "input.file.pattern": "csv-sftp-source.csv",
     "sftp.username": "arkhn",
     "sftp.password": "arkhnpwd",
     "sftp.host": "sftp",
