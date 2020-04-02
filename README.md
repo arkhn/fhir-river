@@ -8,10 +8,9 @@ This repo is a POC for Live Streams ETL.
 
 A Kafka broker is used as a bus of event.
 The different sources are connected to Kafka with Kafka Connect, where config files are pushed to Kafka Connect with the API.
-
-
- 
-
+A Transform Service will consume the  events  from the sources and transform them (API calls to FHIR Pipe) and re-published 
+the events transformed  in Kafka. Finally, a Load Service will consume the transformed events and load them into the MongoDB
+using an internal API.
 
 ## Getting started
 
@@ -32,7 +31,7 @@ You can see in the logs of the `fhir_consumer` container the message and its top
 - SFTPCsvSource Connector
 
 Run the script to create some .csv file in the SFTP server: `python test/create_file_stfp.py` (ugly script, 
-but it works fine just to test that it works)
+but it works fine just to test that it works).
 
 4. Play with it: in the script `fhir_consumer/src/main.py`, edit the function `process_event` to do whatever you want! 
 (make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_consumer/src/main.py:9` 
@@ -55,7 +54,6 @@ created in the PostgresDb.
 
 - docker exec -it mongo mongo --port 27017
 - docker exec -it mimic psql -U mimicuser -d mimic
-
 
 ## Kafka Connect
 
