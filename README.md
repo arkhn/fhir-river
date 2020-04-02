@@ -65,6 +65,7 @@ have 2 different repos in the future, to avoid re-deploying the cluster for each
 The config files should be added to the ./kafka_connect_connectors folder and depending if they are for a source or a sink they will go in each respective folder.
 A new connector is launched in the cluster by using one of the following two requests:
 - `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d '<config.json>'`
+or `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @kafka_connect_connectors/sources/<config>.json`
     - Only to create a new connector (Not idempotent)
 - `curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/{name}/config -d '<config_without_name.json>'`
     - To create or update, an existing, connector (idempotent)
@@ -73,3 +74,6 @@ with `<config.json>` being the configuration in `kafka_connect_connectors/source
 being only what the value associated to the key `config`.
 
 Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.io/current/connect/references/restapi.html).
+
+
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @kafka_connect_connectors/sources/jdbc-postgresql.json
