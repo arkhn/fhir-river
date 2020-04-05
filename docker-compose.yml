@@ -15,13 +15,13 @@ services:
       - 5431:5432
 
   sftp:
-      image: atmoz/sftp
-      container_name: sftp
-      volumes:
-          - ~/Documents/Arkhn/fhir-river/test/sftp/host/upload/:/home/arkhn/upload/
-      ports:
-          - "2222:22"
-      command: arkhn:arkhnpwd:1001
+    image: atmoz/sftp
+    container_name: sftp
+    volumes:
+      - ~/Documents/Arkhn/fhir-river/test/sftp/host/upload/:/home/arkhn/upload/
+    ports:
+      - "2222:22"
+    command: arkhn:arkhnpwd:1001
 
   zookeeper:
     image: "zookeeper:3.4.10"
@@ -93,7 +93,18 @@ services:
       - kafka
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - ZOOKEEPER_HOSTS=zookeeper:2181
+
+  extractor_sql:
+    build:
+      context: extractor_sql/
+    container_name: extractor_sql
+    image: arkhn/fhir-extractor-sql:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
 
 
 volumes:
