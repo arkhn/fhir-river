@@ -37,23 +37,35 @@ but it works fine just to test that it works).
 (make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_consumer/src/main.py:9` 
 in the variable `TOPICS`.
 
-## Avro Consumer
+## Consumer
 
-The `fhir_consumer` container includes a consumer that reads events produced by kafka-connect whenever a new record is 
-created in the PostgresDb.
+The `fhir_consumer` container includes a consumer that reads events from Kafka. 
+You can specify the subscribed topics in `fhir_consumer/src/main.py:9` 
 
-## Useful links
+## Extractor App
 
-- [Live Streams ETL](https://qconsf.com/sf2016/system/files/keynotes-slides/etl_is_dead_long-live_streams.pdf)
-- [Getting Started with Kafka Connect](https://docs.confluent.io/current/connect/userguide.html)
-- [JDBC Source Connector](https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/index.html)
-- [MongoDB Sink Connector](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
-- [JBDCSourceConnectors Example](https://www.confluent.io/blog/kafka-connect-deep-dive-jdbc-source-connector/#specifying-tables)
+The `extractor_app` container is a Flask App with an API. This API enables us to query a database, convert the results 
+to records and produce them as event to Kafka.
 
-## Useful commands
+2 endpoints:
 
-- docker exec -it mongo mongo --port 27017
-- docker exec -it mimic psql -U mimicuser -d mimic
+- POST `/extractor_sql/<resource_id>/<primary_key_value>` (equivalent of preview) 
+- POST `/extractor_sql/<resource_id>` 
+
+For now, the SQL query for each resource is contained inside the `extractor_app/src/app.py`. The name of the resource is 
+also the topic when these events are produced. Make sure that you can read them with the consumer. 
+ 
+*Example of request*
+
+- Single event:
+```
+curl -X POST http://localhost:5000/extractor_sql/mimic-admissions/10013
+```
+
+- Batch events:
+```
+curl -X POST http://localhost:5000/extractor_sql/mimic-admissions
+```
 
 ## Kafka Connect
 
@@ -65,8 +77,9 @@ have 2 different repos in the future, to avoid re-deploying the cluster for each
 The config files should be added to the ./kafka_connect_connectors folder and depending if they are for a source or a sink they will go in each respective folder.
 A new connector is launched in the cluster by using one of the following two requests:
 - `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d '<config.json>'`
-or `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @kafka_connect_connectors/sources/<config>.json`
+OR `curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @kafka_connect_connectors/sources/<config>.json`
     - Only to create a new connector (Not idempotent)
+
 - `curl -i -X PUT -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/{name}/config -d '<config_without_name.json>'`
     - To create or update, an existing, connector (idempotent)
 
@@ -75,5 +88,11 @@ being only what the value associated to the key `config`.
 
 Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.io/current/connect/references/restapi.html).
 
+## Useful links
 
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @kafka_connect_connectors/sources/jdbc-postgresql.json
+- [Live Streams ETL](https://qconsf.com/sf2016/system/files/keynotes-slides/etl_is_dead_long-live_streams.pdf)
+- [Getting Started with Kafka Connect](https://docs.confluent.io/current/connect/userguide.html)
+- [JDBC Source Connector](https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/index.html)
+- [MongoDB Sink Connector](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
+- [JBDCSourceConnectors Example](https://www.confluent.io/blog/kafka-connect-deep-dive-jdbc-source-connector/#specifying-tables)
+
