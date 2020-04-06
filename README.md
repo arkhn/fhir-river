@@ -53,7 +53,7 @@ to records and produce them as event to Kafka.
 - POST `/extractor_sql/<resource_id>` 
 
 For now, the SQL query for each resource is contained inside the `extractor_app/src/app.py`. The name of the resource is 
-also the topic when these events are produced. Make sure that you can read them with the consumer. 
+also the topic where these events are produced. Make sure that you can read them with the consumer. 
  
 *Example of request*
 

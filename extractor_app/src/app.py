@@ -6,7 +6,7 @@ import datetime
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
-from extractor_app.src.producer_class import ExtractorProducer, callback_fn
+from extractor_app.src.producer_class import ExtractorProducer
 from extractor_app.src.query_db import ExtractorSQL
 from extractor_app.src.config.logger import create_logger
 from extractor_app.src.config.database_config import DatabaseConfig
@@ -20,8 +20,7 @@ api = Api(app)
 app.config.from_object(DatabaseConfig)
 db = SQLAlchemy(app)
 
-producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-                             callback_function=callback_fn)
+producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 # PYROG PROXY
 

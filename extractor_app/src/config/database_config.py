@@ -1,5 +1,4 @@
 import os
-from sqlalchemy import create_engine
 
 
 def get_db_url():
@@ -25,13 +24,3 @@ class DatabaseConfig(object):
     SQLALCHEMY_DATABASE_URI = get_db_url()
     SQLALCHEMY_POOL_SIZE = 10
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-
-def get_engine_for_conf(config):
-    """
-    Returns an SQLAlchemy Engine for connecting to databases
-    """
-    # verifying if `DSC_COMMON` env var is activated [SEE config_common.py file]
-    conn_str = config.SQLALCHEMY_DATABASE_URI
-    engine = create_engine(conn_str, pool_size=config.SQLALCHEMY_POOL_SIZE)
-    return engine
