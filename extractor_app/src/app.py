@@ -69,7 +69,7 @@ def extractor_sql_batch(resource_id):
         extractor_class = ExtractorSQL(sql=sql, con=db.engine)
         list_records_from_db = extractor_class()
         for record in list_records_from_db:
-            producer.produce_event(topic=resource_id, record=json.dumps(record))
+            producer.produce_event(topic=resource_id, record=json.dumps(record, default=default_json_encoder))
         return 'Success', 200
     except TypeError as error:
         return error.args[0], 500
