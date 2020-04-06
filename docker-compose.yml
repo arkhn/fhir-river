@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: mimicuser
       POSTGRES_PASSWORD: mimicuser
       POSTGRES_DB: mimic
+      POSTGRES_HOST: mimic
+      POSTGRES_PORT: 5432
     volumes:
       - mimic-db:/var/lib/postgresql/data
     ports:
@@ -49,39 +51,39 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  kafka_connect:
-    image: confluentinc/cp-kafka-connect:latest
-    restart: always
-    container_name: kafka_connect
-    ports:
-      - "8083:8083"
-    depends_on:
-      - kafka
-    volumes:
-      - ./kafka_connect_connectors/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
-    environment:
-      CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
-      CONNECT_PLUGIN_PATH: /usr/share/java/
-      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
-      CONNECT_GROUP_ID: source-kafka-connect
-      CONNECT_CONFIG_STORAGE_TOPIC: default.config
-      CONNECT_STATUS_STORAGE_TOPIC: default.status
-      CONNECT_OFFSET_STORAGE_TOPIC: default.offset
-      CONNECT_STATUS_STORAGE_PARTITIONS: 1
-      CONNECT_OFFSET_STORAGE_PARTITIONS: 1
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_REST_PORT: 8083
-      CONNECT_REST_ADVERTISED_HOST_NAME: docker
-      CONNECT_SCHEMAS_ENABLE: "false"
-      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
+#  kafka_connect:
+#    image: confluentinc/cp-kafka-connect:latest
+#    restart: always
+#    container_name: kafka_connect
+#    ports:
+#      - "8083:8083"
+#    depends_on:
+#      - kafka
+#    volumes:
+#      - ./kafka_connect_connectors/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
+#    environment:
+#      CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
+#      CONNECT_PLUGIN_PATH: /usr/share/java/
+#      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
+#      CONNECT_GROUP_ID: source-kafka-connect
+#      CONNECT_CONFIG_STORAGE_TOPIC: default.config
+#      CONNECT_STATUS_STORAGE_TOPIC: default.status
+#      CONNECT_OFFSET_STORAGE_TOPIC: default.offset
+#      CONNECT_STATUS_STORAGE_PARTITIONS: 1
+#      CONNECT_OFFSET_STORAGE_PARTITIONS: 1
+#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+#      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_REST_PORT: 8083
+#      CONNECT_REST_ADVERTISED_HOST_NAME: docker
+#      CONNECT_SCHEMAS_ENABLE: "false"
+#      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+#      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+#      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
 
   fhir_consumer:
     build:
@@ -94,16 +96,25 @@ services:
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 
-  extractor_sql:
+  extractor_app:
     build:
-      context: extractor_sql/
-    container_name: extractor_sql
+      context: extractor_app/
+    container_name: extractor_app
     image: arkhn/fhir-extractor-sql:latest
     restart: always
     depends_on:
       - kafka
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      POSTGRES_USER: mimicuser
+      POSTGRES_PASSWORD: mimicuser
+      POSTGRES_DB: mimic
+      POSTGRES_HOST: mimic
+      POSTGRES_PORT: 5432
+    expose:
+      - "5000"
+    ports:
+      - "5000:5000"
 
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from confluent_kafka import Producer
-from extractor_sql.src.logger import create_logger
+from extractor_app.src.config.logger import create_logger
 
 logger = create_logger('extractor_sql')
 
@@ -55,8 +55,8 @@ class ExtractorProducer:
         """
         try:
             self.producer.produce(topic=topic,
-                                  value=record,
-                                  callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj))
+                                  value=record)
+            # callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj))
             self.producer.poll(1)  # Callback function
         except ValueError as error:
             logger.error(error)

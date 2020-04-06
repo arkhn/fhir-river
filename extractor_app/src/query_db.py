@@ -3,22 +3,23 @@
 import psycopg2
 import pandas as pd
 
+from extractor_app.src.config.logger import create_logger
+
+logger = create_logger('extractor_sql')
+
 
 class ExtractorSQL:
     """
     Extractor SQL class
     """
 
-    def __init__(self, sql):
+    def __init__(self, sql, params=None, con=None):
         """
         Init Class
         """
         self.sql = sql
-        self.connection = psycopg2.connect(user="mimicuser",
-                                           password="mimicuser",
-                                           host="localhost",
-                                           port="5431",
-                                           database="mimic")
+        self.params = params
+        self.con = con
 
     def __call__(self, *args, **kwargs):
         """
@@ -35,11 +36,9 @@ class ExtractorSQL:
         Read SQL query or database table into a DataFrame.
         :return:
         """
-        try:
-            df = pd.read_sql(self.sql, self.connection)
-            return df
-        except (Exception, psycopg2.Error) as err:
-            print("Error while reading from db: {}".format(err))
+
+        df = pd.read_sql(sql=self.sql, con=self.con, params=self.params)
+        return df
 
     @staticmethod
     def convert_df_to_list_records(df):
