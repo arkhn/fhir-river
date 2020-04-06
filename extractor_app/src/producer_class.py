@@ -55,7 +55,7 @@ class ExtractorProducer:
         This allows the original contents to be included for debugging purposes.
         """
         if err is not None:
-            logger.error('Message {} delivery failed with error {} for topic {}'.format(
+            logger.debug('Message {} delivery failed with error {} for topic {}'.format(
                 obj, err, msg.topic()))
         else:
-            logger.error("Event Successfully created")
+            logger.debug("Event Successfully created")

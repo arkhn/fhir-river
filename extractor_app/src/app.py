@@ -25,10 +25,35 @@ producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 # PYROG PROXY
 
 MAPPING_SINGLE = {
-    'mimic-admissions': "SELECT subject_id, admission_type, admittime FROM admissions WHERE subject_id = %(primary_key_value)s;"}
+    'mimic-patients': """SELECT  icustays.hadm_id AS icustays_hadm_id,
+                                    patients.dod AS patients_dod,
+                                    patients.expire_flag AS patients_expire_flag,
+                                    patients.gender AS patients_gender, 
+                                    patients.subject_id AS patients_subject_id,
+                                    admissions.marital_status AS admissions_marital_status, 
+                                    patients.dob AS patients_dob,
+                                    patients.row_id AS patients_row_id
+                            FROM patients 
+                                LEFT OUTER JOIN icustays 
+                                    ON icustays.subject_id = patients.subject_id 
+                                LEFT OUTER JOIN admissions 
+                                    ON admissions.subject_id = patients.subject_id 
+                            WHERE patients.subject_id = %(primary_key_value)s;"""}
 
 MAPPING_BATCH = {
-    'mimic-admissions': "SELECT subject_id, admission_type, admittime FROM admissions LIMIT 100;"}
+    'mimic-patients': """SELECT  icustays.hadm_id AS icustays_hadm_id,
+                                    patients.dod AS patients_dod,
+                                    patients.expire_flag AS patients_expire_flag,
+                                    patients.gender AS patients_gender, 
+                                    patients.subject_id AS patients_subject_id,
+                                    admissions.marital_status AS admissions_marital_status, 
+                                    patients.dob AS patients_dob,
+                                    patients.row_id AS patients_row_id
+                            FROM patients 
+                                LEFT OUTER JOIN icustays 
+                                    ON icustays.subject_id = patients.subject_id 
+                                LEFT OUTER JOIN admissions 
+                                    ON admissions.subject_id = patients.subject_id;"""}
 
 
 def default_json_encoder(o):

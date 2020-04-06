@@ -6,7 +6,9 @@ from fhir_consumer.src.consumer_class import FhirConsumer
 from fhir_consumer.src.logger import create_logger
 
 MAX_ERROR_COUNT = 3
-TOPIC = ['mimic-admissions', 'sftp-ambroise-pare']
+TOPIC = ['mimic-patients',
+         'mimic-admissions',
+         'sftp-ambroise-pare']
 GROUP_ID = 'arkhn'
 
 logging = create_logger('consumer')
