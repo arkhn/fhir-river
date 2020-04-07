@@ -2,7 +2,6 @@
 
 import os
 import json
-import datetime
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
@@ -10,7 +9,7 @@ from fhir_extractor.src.producer_class import ExtractorProducer
 from fhir_extractor.src.query_db import ExtractorSQL
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.config.database_config import DatabaseConfig
-from fhir_extractor.src.helper import default_json_encoder, get_topic_name
+from fhir_extractor.src.helper import get_topic_name
 
 logging = create_logger('fhir_extractor')
 
@@ -73,7 +72,7 @@ def extractor_sql_single(resource_id, primary_key_value):
         for record in list_records_from_db:
             record['resource_id'] = resource_id
             topic = get_topic_name('mimic', resource_id, 'extract')
-            producer.produce_event(topic=topic, record=json.dumps(record, default=default_json_encoder))
+            producer.produce_event(topic=topic, record=record)
         return 'Success', 200
     except TypeError as error:
         return error.args[0], 500
@@ -93,7 +92,7 @@ def extractor_sql_batch(resource_id):
         for record in list_records_from_db:
             record['resource_id'] = resource_id
             topic = get_topic_name('mimic', resource_id, 'extract')
-            producer.produce_event(topic=topic, record=json.dumps(record, default=default_json_encoder))
+            producer.produce_event(topic=topic, record=record)
         return 'Success', 200
     except TypeError as error:
         return error.args[0], 500

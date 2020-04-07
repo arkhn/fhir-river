@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import json
+import datetime
 from confluent_kafka import Producer
 from fhir_extractor.src.config.logger import create_logger
 
@@ -37,15 +39,26 @@ class ExtractorProducer:
     def produce_event(self, topic, record):
         """
         Produce event in the specified topic
+        :param topic: str
+        :param record: dict
         :return:
         """
         try:
             self.producer.produce(topic=topic,
-                                  value=record,
+                                  value=json.dumps(record, default=self.default_json_encoder),
                                   callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj))
             self.producer.poll(1)  # Callback function
         except ValueError as error:
             logger.error(error)
+
+    @staticmethod
+    def default_json_encoder(o):
+        """
+        Json Encoder for datetime
+        :return:
+        """
+        if isinstance(o, (datetime.date, datetime.datetime)):
+            return o.isoformat()
 
     @staticmethod
     def callback_fn(err, msg, obj):
