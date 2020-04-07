@@ -71,18 +71,18 @@ In the `process_events` function, each event is processed individually (transfor
 ## FHIR Loader
 
 The `fhir_loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB. 
-
-
-
-The `fhir_transformer` container includes a consumer that reads events from Kafka. 
-You can specify the subscribed topics in `fhir_transformer/src/main.py:9` 
+ 
 
 ## Topic Naming Convention
 
 `<source>-<resource>-<task_type>` where :
-- <source> is the name of the source, for example `mimic`
-- <resource> is the name of the resource, for example `patients`
-- <task_type> is either `extract` or `transform`
+
+- `source` is the name of the source, for example "mimic"
+- `resource` is the name of the resource, for example "patients"
+- `task_type` is either "extract" or "transform"
+
+*Example*
+- `mimic-patients-extract` and `mimic-patients-transform` 
 
 ## Kafka Connect
 
