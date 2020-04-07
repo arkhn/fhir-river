@@ -25,7 +25,7 @@ Note that it can take few minutes at first. The logs are quite verbose, don't be
 
 Run the script to create some records in the MIMIC db: `python test/create_records_db.py` (ugly script, 
 but it works fine just to test that it works)
-You can see in the logs of the `fhir_consumer` container the message and its topic. You can check inside the MIMIC DB
+You can see in the logs of the `fhir_transformer` container the message and its topic. You can check inside the MIMIC DB
  that your record has been created (check config in the script - WIP)
 
 - SFTPCsvSource Connector
@@ -33,18 +33,13 @@ You can see in the logs of the `fhir_consumer` container the message and its top
 Run the script to create some .csv file in the SFTP server: `python test/create_file_stfp.py` (ugly script, 
 but it works fine just to test that it works).
 
-4. Play with it: in the script `fhir_consumer/src/main.py`, edit the function `process_event` to do whatever you want! 
-(make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_consumer/src/main.py:9` 
+4. Play with it: in the script `fhir_transformer/src/main.py`, edit the function `process_event` to do whatever you want! 
+(make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_transformer/src/main.py:9` 
 in the variable `TOPICS`.
 
-## Consumer
+## FHIR Extractor
 
-The `fhir_consumer` container includes a consumer that reads events from Kafka. 
-You can specify the subscribed topics in `fhir_consumer/src/main.py:9` 
-
-## Extractor App
-
-The `extractor_app` container is a Flask App with an API. This API enables us to query a database, convert the results 
+The `fhir_extractor` container is a Flask App with an API. This API enables us to query a database, convert the results 
 to records and produce them as event to Kafka.
 
 2 endpoints:
@@ -66,6 +61,28 @@ curl -X POST http://localhost:5000/extractor_sql/mimic-admissions/10013
 ```
 curl -X POST http://localhost:5000/extractor_sql/mimic-admissions
 ```
+
+## FHIR Transformer
+
+
+The `fhir_transformer` container includes a consumer that reads events from Kafka. 
+In the `process_events` function, each event is processed individually (transform) and published in a Kafka Topic. 
+
+## FHIR Loader
+
+The `fhir_loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB. 
+
+
+
+The `fhir_transformer` container includes a consumer that reads events from Kafka. 
+You can specify the subscribed topics in `fhir_transformer/src/main.py:9` 
+
+## Topic Naming Convention
+
+`<source>-<resource>-<task_type>` where :
+- <source> is the name of the source, for example `mimic`
+- <resource> is the name of the resource, for example `patients`
+- <task_type> is either `extract` or `transform`
 
 ## Kafka Connect
 

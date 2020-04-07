@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from confluent_kafka import Producer
-from extractor_app.src.config.logger import create_logger
+from fhir_extractor.src.config.logger import create_logger
 
 logger = create_logger('extractor_sql')
 

@@ -85,22 +85,33 @@ services:
       CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
       CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
 
-  fhir_consumer:
+  fhir_transformer:
     build:
-      context: fhir_consumer/
-    container_name: fhir_consumer
-    image: arkhn/fhir-consumer:latest
+      context: fhir_transformer/
+    container_name: fhir_transformer
+    image: arkhn/fhir-transformer:latest
     restart: always
     depends_on:
       - kafka
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
 
-  extractor_app:
+  fhir_loader:
     build:
-      context: extractor_app/
-    container_name: extractor_app
-    image: arkhn/fhir-extractor-sql:latest
+      context: fhir_loader/
+    container_name: fhir_loader
+    image: arkhn/fhir-loader:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+
+  fhir_extractor:
+    build:
+      context: fhir_extractor/
+    container_name: fhir_extractor
+    image: arkhn/fhir-extractor:latest
     restart: always
     depends_on:
       - kafka

@@ -9,7 +9,7 @@ COPY requirements.txt ${CONSUMER_HOME}/requirements.txt
 
 RUN pip install -r ${CONSUMER_HOME}/requirements.txt
 
-COPY /src ${CONSUMER_HOME}/fhir_consumer/src
+COPY /src ${CONSUMER_HOME}/fhir_loader/src
 
 COPY /entrypoint.sh /entrypoint.sh
 

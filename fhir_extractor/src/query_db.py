@@ -3,9 +3,9 @@
 import psycopg2
 import pandas as pd
 
-from extractor_app.src.config.logger import create_logger
+from fhir_extractor.src.config.logger import create_logger
 
-logger = create_logger('extractor_sql')
+logger = create_logger('fhir_extractor')
 
 
 class ExtractorSQL:

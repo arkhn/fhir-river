@@ -3,12 +3,12 @@
 
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
-from fhir_consumer.src.logger import create_logger
+from fhir_loader.src.config.logger import create_logger
 
 logging = create_logger('consumer_class')
 
 
-class FhirConsumer:
+class LoaderConsumer:
 
     def __init__(self,
                  broker=None,
