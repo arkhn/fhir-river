@@ -29,10 +29,9 @@ def process_event(msg):
     logging.info(msg_value)
 
     try:
-        if msg_value['resource_id'] == 'patients':
-            record = {'example': {'patient': 'fhirised', 'patients_subject_id': msg_value['patients_subject_id']}}
-            topic = get_topic_name(source='mimic', resource=msg_value['resource_id'], task_type='transform')
-            producer.produce_event(topic=topic, record=record)
+        record = {'example': {'patient': 'fhirised'}}
+        topic = get_topic_name(source='mimic', resource=msg_value['resource_id'], task_type='transform')
+        producer.produce_event(topic=topic, record=record)
     except KeyError as err:
         logging.error(err)
 

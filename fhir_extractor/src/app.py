@@ -51,7 +51,6 @@ def extractor_sql_single(resource_id, primary_key_value):
         df = extractor.extract(resource_mapping, analysis, [primary_key_value])
         record = extractor.convert_df_to_list_records(df, analysis)[0]
 
-        record["resource_id"] = resource_id
         topic = get_topic_name("mimic", resource_id, "extract")
         producer.produce_event(topic=topic, record=record)
 
@@ -72,23 +71,26 @@ def extractor_sql_batch(resource_id):
         # TODO factorize this somewhere
         # Get the resources we want to process from the pyrog mapping for a given source
         # TODO Hard coded to take only the first resource of the mapping
-        resource_mapping = get_mapping(from_file="mapping_files/patient_mapping.json")[0]
+        resources = get_mapping(from_file="mapping_files/patient_mapping.json")
 
         analyzer = Analyzer()
         extractor = Extractor(engine=db.engine)
 
-        # Analyze
-        analysis = analyzer.analyze(resource_mapping)
+        for resource_mapping in resources:
+            # Analyze
+            analysis = analyzer.analyze(resource_mapping)
 
-        # Extract
-        df = extractor.extract(resource_mapping, analysis)
-        list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
+            # Extract
+            df = extractor.extract(resource_mapping, analysis)
+            list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
 
-        for record in list_records_from_db:
-            record["resource_id"] = resource_id
-            topic = get_topic_name("mimic", resource_id, "extract")
-            producer.produce_event(topic=topic, record=record)
+            for record in list_records_from_db:
+                record["resource_id"] = resource_id
+                topic = get_topic_name("mimic", resource_id, "extract")
+                producer.produce_event(topic=topic, record=record)
+
         return "Success", 200
+
     except TypeError as error:
         return error.args[0], 500
 
