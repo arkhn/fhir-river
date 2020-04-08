@@ -52,7 +52,7 @@ The Extractor works as follows:
 2 endpoints:
 
 - POST `/extractor_sql/<resource_id>/<primary_key_value>` (equivalent of preview) 
-- POST `/extractor_sql/<resource_id>` 
+- POST `/extractor_sql/` 
 
 For now, the SQL query for each resource is contained inside the `extractor_app/src/app.py`. The name of the resource is 
 also the topic where these events are produced. Make sure that you can read them with the consumer. 
@@ -66,7 +66,7 @@ curl -X POST http://localhost:5000/extractor_sql/admissions/10013
 
 - Batch events:
 ```
-curl -X POST http://localhost:5000/extractor_sql/admissions
+curl -X POST http://localhost:5000/extractor_sql
 ```
 
 ## FHIR Transformer
