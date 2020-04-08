@@ -28,7 +28,7 @@ class ConceptMap:
     @staticmethod
     def fetch(concept_map_id: str) -> T:
         # TODO hard coded, put that in env variables
-        api_url = "https://fhir.staging.arkhn.org/api"
+        api_url = "https://pyrog.arkhn.org/api"
         try:
             response = requests.get(f"{api_url}/ConceptMap/{concept_map_id}")
         except requests.exceptions.ConnectionError as e:

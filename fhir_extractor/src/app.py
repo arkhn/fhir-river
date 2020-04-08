@@ -39,7 +39,7 @@ def extractor_sql_single(resource_id, primary_key_value):
         # TODO factorize this somewhere
         # TODO this routes only makes sense with a single resource mapping.
         # This is mocked here by taking only the first resource mapping of the file.
-        # We should have a get_resource_mapping_by_id or something like that using resource_id. 
+        # We should have a get_resource_mapping_by_id or something like that using resource_id.
         resource_mapping = get_mapping(from_file="mapping_files/patient_mapping.json")[0]
 
         resource_type = resource_mapping["definition"]["id"]
@@ -50,12 +50,23 @@ def extractor_sql_single(resource_id, primary_key_value):
         # Analyze
         analysis = analyzer.analyze(resource_mapping)
         # serialize important part of the analysis for the Transformer
-        serialized_analysis = [(attr.path, attr.static_inputs) for attr in analysis.attributes]
+        # TODO it's pretty gross to serialize and deserialize like this by hand
+        serialized_analysis = {}
+        serialized_analysis["attributes"] = [
+            (attr.path, attr.static_inputs) for attr in analysis.attributes
+        ]
+        serialized_analysis["source_id"] = resource_mapping["source"]["id"]
+        serialized_analysis["resource_id"] = resource_mapping["id"]
+        serialized_analysis["definition"] = {
+            "type": resource_mapping["definition"]["type"],
+            "kind": resource_mapping["definition"]["kind"],
+            "derivation": resource_mapping["definition"]["derivation"],
+            "url": resource_mapping["definition"]["url"],
+        }
 
         # Extract
         df = extractor.extract(resource_mapping, analysis, [primary_key_value])
         record = extractor.convert_df_to_list_records(df, analysis)[0]
-
 
         event = {}
         event["resource_type"] = resource_type
@@ -89,7 +100,19 @@ def extractor_sql_batch():
             # Analyze
             analysis = analyzer.analyze(resource_mapping)
             # serialize important part of the analysis for the Transformer
-            serialized_analysis = [(attr.path, attr.static_inputs) for attr in analysis.attributes]
+            # TODO it's pretty gross to serialize and deserialize like this by hand
+            serialized_analysis = {}
+            serialized_analysis["attributes"] = [
+                (attr.path, attr.static_inputs) for attr in analysis.attributes
+            ]
+            serialized_analysis["source_id"] = resource_mapping["source"]["id"]
+            serialized_analysis["resource_id"] = resource_mapping["id"]
+            serialized_analysis["definition"] = {
+                "type": resource_mapping["definition"]["type"],
+                "kind": resource_mapping["definition"]["kind"],
+                "derivation": resource_mapping["definition"]["derivation"],
+                "url": resource_mapping["definition"]["url"],
+            }
 
             # Extract
             df = extractor.extract(resource_mapping, analysis)
