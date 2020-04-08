@@ -9,7 +9,7 @@ from fhir_loader.src.config.logger import create_logger
 from fhir_loader.src.helper import get_topic_name
 
 MAX_ERROR_COUNT = 3
-TOPIC = [get_topic_name(source='mimic', resource='patients', task_type='transform')]
+TOPIC = [get_topic_name(source='mimic', resource='Patient', task_type='transform')]
 GROUP_ID = 'arkhn_loader'
 
 logging = create_logger('loader')

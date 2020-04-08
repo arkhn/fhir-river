@@ -5,13 +5,17 @@ import json
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
-from fhir_extractor.src.producer_class import ExtractorProducer
-from fhir_extractor.src.query_db import ExtractorSQL
+
+from fhir_extractor.src.extract import Extractor
+from fhir_extractor.src.analyze import Analyzer
+
+from fhir_extractor.src.analyze.mapping import get_mapping
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.config.database_config import DatabaseConfig
 from fhir_extractor.src.helper import get_topic_name
+from fhir_extractor.src.producer_class import ExtractorProducer
 
-logging = create_logger('fhir_extractor')
+logger = create_logger("fhir_extractor")
 
 # Create flask app object
 app = Flask(__name__)
@@ -21,39 +25,6 @@ app.config.from_object(DatabaseConfig)
 db = SQLAlchemy(app)
 
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
-
-# PYROG PROXY
-
-MAPPING_SINGLE = {
-    'patients': """SELECT  icustays.hadm_id AS icustays_hadm_id,
-                                    patients.dod AS patients_dod,
-                                    patients.expire_flag AS patients_expire_flag,
-                                    patients.gender AS patients_gender, 
-                                    patients.subject_id AS patients_subject_id,
-                                    admissions.marital_status AS admissions_marital_status, 
-                                    patients.dob AS patients_dob,
-                                    patients.row_id AS patients_row_id
-                            FROM patients 
-                                LEFT OUTER JOIN icustays 
-                                    ON icustays.subject_id = patients.subject_id 
-                                LEFT OUTER JOIN admissions 
-                                    ON admissions.subject_id = patients.subject_id 
-                            WHERE patients.subject_id = %(primary_key_value)s;"""}
-
-MAPPING_BATCH = {
-    'patients': """SELECT  icustays.hadm_id AS icustays_hadm_id,
-                                    patients.dod AS patients_dod,
-                                    patients.expire_flag AS patients_expire_flag,
-                                    patients.gender AS patients_gender, 
-                                    patients.subject_id AS patients_subject_id,
-                                    admissions.marital_status AS admissions_marital_status, 
-                                    patients.dob AS patients_dob,
-                                    patients.row_id AS patients_row_id
-                            FROM patients 
-                                LEFT OUTER JOIN icustays 
-                                    ON icustays.subject_id = patients.subject_id 
-                                LEFT OUTER JOIN admissions 
-                                    ON admissions.subject_id = patients.subject_id;"""}
 
 
 @app.route("/extractor_sql/<resource_id>/<primary_key_value>", methods=["POST"])
@@ -65,38 +36,79 @@ def extractor_sql_single(resource_id, primary_key_value):
     :return:
     """
     try:
-        sql = MAPPING_SINGLE[resource_id]
-        params = {'primary_key_value': int(primary_key_value)}
-        extractor_class = ExtractorSQL(sql=sql, params=params, con=db.engine)
-        list_records_from_db = extractor_class()
-        for record in list_records_from_db:
-            record['resource_id'] = resource_id
-            topic = get_topic_name('mimic', resource_id, 'extract')
-            producer.produce_event(topic=topic, record=record)
-        return 'Success', 200
+        # TODO factorize this somewhere
+        # TODO this routes only makes sense with a single resource mapping.
+        # This is mocked here by taking only the first resource mapping of the file.
+        # We should have a get_resource_mapping_by_id or something like that using resource_id. 
+        resource_mapping = get_mapping(from_file="mapping_files/patient_mapping.json")[0]
+
+        resource_type = resource_mapping["definition"]["id"]
+
+        analyzer = Analyzer()
+        extractor = Extractor(engine=db.engine)
+
+        # Analyze
+        analysis = analyzer.analyze(resource_mapping)
+        # serialize important part of the analysis for the Transformer
+        serialized_analysis = [(attr.path, attr.static_inputs) for attr in analysis.attributes]
+
+        # Extract
+        df = extractor.extract(resource_mapping, analysis, [primary_key_value])
+        record = extractor.convert_df_to_list_records(df, analysis)[0]
+
+
+        event = {}
+        event["resource_type"] = resource_type
+        event["record"] = record
+        event["analysis"] = serialized_analysis
+
+        topic = get_topic_name("mimic", resource_type, "extract")
+        producer.produce_event(topic=topic, event=event)
+
+        return "Success", 200
+
     except TypeError as error:
         return error.args[0], 500
 
 
-@app.route("/extractor_sql/<resource_id>", methods=["POST"])
-def extractor_sql_batch(resource_id):
+@app.route("/extractor_sql", methods=["POST"])
+def extractor_sql_batch():
     """
     Extract all records for the specified resource
-    :param resource_id:
-    :return:
     """
     try:
-        sql = MAPPING_BATCH[resource_id]
-        extractor_class = ExtractorSQL(sql=sql, con=db.engine)
-        list_records_from_db = extractor_class()
-        for record in list_records_from_db:
-            record['resource_id'] = resource_id
-            topic = get_topic_name('mimic', resource_id, 'extract')
-            producer.produce_event(topic=topic, record=record)
-        return 'Success', 200
+        # TODO factorize this somewhere
+        # Get the resources we want to process from the pyrog mapping for a given source
+        resources = get_mapping(from_file="mapping_files/patient_mapping.json")
+
+        analyzer = Analyzer()
+        extractor = Extractor(engine=db.engine)
+
+        for resource_mapping in resources:
+            resource_type = resource_mapping["definition"]["id"]
+            # Analyze
+            analysis = analyzer.analyze(resource_mapping)
+            # serialize important part of the analysis for the Transformer
+            serialized_analysis = [(attr.path, attr.static_inputs) for attr in analysis.attributes]
+
+            # Extract
+            df = extractor.extract(resource_mapping, analysis)
+            list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
+
+            for record in list_records_from_db:
+                event = {}
+                event["resource_type"] = resource_type
+                event["record"] = record
+                event["analysis"] = serialized_analysis
+
+                topic = get_topic_name("mimic", resource_type, "extract")
+                producer.produce_event(topic=topic, event=event)
+
+        return "Success", 200
+
     except TypeError as error:
         return error.args[0], 500
 
 
 if __name__ == "__main__":
-    app.run(host='fhir_extractor', port=5000)
+    app.run(host="fhir_extractor", port=5000)

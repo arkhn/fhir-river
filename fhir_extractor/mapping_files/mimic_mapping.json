@@ -570,7 +570,7 @@
                 },
                 {
                     "id": "ck7ugxjzt01846kz9fi3rchdv",
-                    "path": "generalPractitioner[0]",
+                    "path": "generalPractitioner",
                     "definitionId": "Reference",
                     "mergingScript": null,
                     "comments": null,
@@ -718,7 +718,7 @@
                         {
                             "id": "ck7uds7oo01376kz99fv2bbet",
                             "script": null,
-                            "conceptMapId": "04a8ab8d-9a58-48d3-851f-9c00afbbf1d1",
+                            "conceptMapId": null,
                             "staticValue": null,
                             "updatedAt": "2020-03-16T11:24:54.845Z",
                             "createdAt": "2020-03-16T11:24:54.845Z",

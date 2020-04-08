@@ -36,17 +36,17 @@ class ExtractorProducer:
                   'session.timeout.ms': 6000}
         return config
 
-    def produce_event(self, topic, record):
+    def produce_event(self, topic, event):
         """
         Produce event in the specified topic
         :param topic: str
-        :param record: dict
+        :param event: dict
         :return:
         """
         try:
             self.producer.produce(topic=topic,
-                                  value=json.dumps(record, default=self.default_json_encoder),
-                                  callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj))
+                                  value=json.dumps(event, default=self.default_json_encoder),
+                                  callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj))
             self.producer.poll(1)  # Callback function
         except ValueError as error:
             logger.error(error)
