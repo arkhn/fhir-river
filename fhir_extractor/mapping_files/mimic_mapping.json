@@ -1,0 +1,1778 @@
+{
+    "source": {
+        "name": "mimic",
+        "hasOwner": false
+    },
+    "template": {
+        "name": "mimic"
+    },
+    "resources": [
+        {
+            "id": "ck7udpubp00036kz9ljq2lmsn",
+            "label": "",
+            "primaryKeyOwner": null,
+            "primaryKeyTable": "diagnoses_icd",
+            "primaryKeyColumn": "row_id",
+            "definitionId": "DiagnosticReport",
+            "updatedAt": "2020-03-16T11:23:04.243Z",
+            "createdAt": "2020-03-16T11:23:04.243Z",
+            "source": {
+                "id": "mimicSourceId",
+                "name": "mimic",
+                "version": null,
+                "hasOwner": false,
+                "updatedAt": "2020-03-16T11:23:04.159Z",
+                "createdAt": "2020-03-16T11:23:04.159Z"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ck7udpuc800086kz9imheocb4",
+                    "path": "identifier[0].value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.243Z",
+                    "createdAt": "2020-03-16T11:23:04.243Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpud600166kz9plgktm2v",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.243Z",
+                            "createdAt": "2020-03-16T11:23:04.243Z",
+                            "sqlValue": {
+                                "id": "ck7udpucs00126kz9frnw8533",
+                                "owner": null,
+                                "table": "diagnoses_icd",
+                                "column": "row_id",
+                                "updatedAt": "2020-03-16T11:23:04.243Z",
+                                "createdAt": "2020-03-16T11:23:04.243Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpue500226kz9qr26b20c",
+                    "path": "subject.identifier.value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.243Z",
+                    "createdAt": "2020-03-16T11:23:04.243Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpufu00346kz9qenofiyv",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.243Z",
+                            "createdAt": "2020-03-16T11:23:04.243Z",
+                            "sqlValue": {
+                                "id": "ck7udpuff00306kz9ndwf6sr5",
+                                "owner": null,
+                                "table": "diagnoses_icd",
+                                "column": "subject_id",
+                                "updatedAt": "2020-03-16T11:23:04.243Z",
+                                "createdAt": "2020-03-16T11:23:04.243Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpugb00386kz9zny8w346",
+                    "path": "status",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.243Z",
+                    "createdAt": "2020-03-16T11:23:04.243Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpugr00426kz9e3k3ao0e",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "final",
+                            "updatedAt": "2020-03-16T11:23:04.243Z",
+                            "createdAt": "2020-03-16T11:23:04.243Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuh200446kz9r3d7xlxq",
+                    "path": "subject.identifier.type.coding[0].code",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.243Z",
+                    "createdAt": "2020-03-16T11:23:04.243Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuhc00486kz9tf5475uy",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "/Patient/",
+                            "updatedAt": "2020-03-16T11:23:04.243Z",
+                            "createdAt": "2020-03-16T11:23:04.243Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpui000526kz97elbxgd0",
+                    "path": "code.coding[0].code",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.243Z",
+                    "createdAt": "2020-03-16T11:23:04.243Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpujd00646kz99kn5crdi",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.243Z",
+                            "createdAt": "2020-03-16T11:23:04.243Z",
+                            "sqlValue": {
+                                "id": "ck7udpuin00586kz927ngg7mu",
+                                "owner": null,
+                                "table": "diagnoses_icd",
+                                "column": "icd9_code",
+                                "updatedAt": "2020-03-16T11:23:04.243Z",
+                                "createdAt": "2020-03-16T11:23:04.243Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "description": "The findings and interpretation of diagnostic  tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports.",
+                "id": "DiagnosticReport",
+                "kind": "resource",
+                "name": "DiagnosticReport",
+                "publisher": "Health Level Seven International (Orders and Observations)",
+                "type": "DiagnosticReport",
+                "url": "http://hl7.org/fhir/StructureDefinition/DiagnosticReport",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "expression": "contained.contained.empty()",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "key": "dom-2",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(parent::f:contained and f:contained)"
+                    },
+                    {
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "key": "dom-3",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))"
+                    },
+                    {
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "key": "dom-4",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))"
+                    },
+                    {
+                        "expression": "contained.meta.security.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "key": "dom-5",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))"
+                    },
+                    {
+                        "expression": "text.`div`.exists()",
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "human": "A resource should have narrative for robust management",
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "exists(f:text/h:div)"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ck7udpubr00056kz9nexum1jd",
+            "label": "icu stay",
+            "primaryKeyOwner": null,
+            "primaryKeyTable": "icustays",
+            "primaryKeyColumn": "row_id",
+            "definitionId": "EpisodeOfCare",
+            "updatedAt": "2020-03-16T11:23:04.246Z",
+            "createdAt": "2020-03-16T11:23:04.246Z",
+            "source": {
+                "id": "mimicSourceId",
+                "name": "mimic",
+                "version": null,
+                "hasOwner": false,
+                "updatedAt": "2020-03-16T11:23:04.159Z",
+                "createdAt": "2020-03-16T11:23:04.159Z"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ck7udpucj00106kz9dn1a8uee",
+                    "path": "patient.identifier.type.text",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpud300156kz987j4ownw",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "/Patient/",
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpue200216kz9bt40dpk7",
+                    "path": "identifier[1].value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpufj00326kz9fjw2ey0i",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": {
+                                "id": "ck7udpueh00256kz9jpyrqexj",
+                                "owner": null,
+                                "table": "icustays",
+                                "column": "icustay_id",
+                                "updatedAt": "2020-03-16T11:23:04.246Z",
+                                "createdAt": "2020-03-16T11:23:04.246Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpug600366kz9vjmp1n3s",
+                    "path": "identifier[0].value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpui400536kz9qsb1rhga",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": {
+                                "id": "ck7udpuh800466kz9m8pppgm2",
+                                "owner": null,
+                                "table": "icustays",
+                                "column": "row_id",
+                                "updatedAt": "2020-03-16T11:23:04.246Z",
+                                "createdAt": "2020-03-16T11:23:04.246Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuis00606kz9ayhkuy5d",
+                    "path": "status",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuj600626kz9fuvvcztz",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "finished",
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpujv00686kz9sfp767jc",
+                    "path": "period.start",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpukk00746kz9o5tmztbn",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": {
+                                "id": "ck7udpukc00726kz9lexn3ngf",
+                                "owner": null,
+                                "table": "icustays",
+                                "column": "intime",
+                                "updatedAt": "2020-03-16T11:23:04.246Z",
+                                "createdAt": "2020-03-16T11:23:04.246Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpukv00756kz9l4puedwe",
+                    "path": "period.end",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuli00806kz9edvqjhvh",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": {
+                                "id": "ck7udpul800786kz9ynfj5s65",
+                                "owner": null,
+                                "table": "icustays",
+                                "column": "outtime",
+                                "updatedAt": "2020-03-16T11:23:04.246Z",
+                                "createdAt": "2020-03-16T11:23:04.246Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuly00846kz9btlrqm8q",
+                    "path": "patient.identifier.value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.246Z",
+                    "createdAt": "2020-03-16T11:23:04.246Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpun900956kz9ri7hnmm1",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.246Z",
+                            "createdAt": "2020-03-16T11:23:04.246Z",
+                            "sqlValue": {
+                                "id": "ck7udpumy00936kz9yub3f08h",
+                                "owner": null,
+                                "table": "icustays",
+                                "column": "subject_id",
+                                "updatedAt": "2020-03-16T11:23:04.246Z",
+                                "createdAt": "2020-03-16T11:23:04.246Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "description": "An association between a patient and an organization / healthcare provider(s) during which time encounters may occur. The managing organization assumes a level of responsibility for the patient during this time.",
+                "id": "EpisodeOfCare",
+                "kind": "resource",
+                "name": "EpisodeOfCare",
+                "publisher": "Health Level Seven International (Patient Administration)",
+                "type": "EpisodeOfCare",
+                "url": "http://hl7.org/fhir/StructureDefinition/EpisodeOfCare",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "expression": "contained.contained.empty()",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "key": "dom-2",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(parent::f:contained and f:contained)"
+                    },
+                    {
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "key": "dom-3",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))"
+                    },
+                    {
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "key": "dom-4",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))"
+                    },
+                    {
+                        "expression": "contained.meta.security.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "key": "dom-5",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))"
+                    },
+                    {
+                        "expression": "text.`div`.exists()",
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "human": "A resource should have narrative for robust management",
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "exists(f:text/h:div)"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "Patient_resourceId",
+            "label": "pat_label",
+            "primaryKeyOwner": null,
+            "primaryKeyTable": "patients",
+            "primaryKeyColumn": "subject_id",
+            "definitionId": "Patient",
+            "updatedAt": "2020-03-16T11:23:04.247Z",
+            "createdAt": "2020-03-16T11:23:04.247Z",
+            "source": {
+                "id": "mimicSourceId",
+                "name": "mimic",
+                "version": null,
+                "hasOwner": false,
+                "updatedAt": "2020-03-16T11:23:04.159Z",
+                "createdAt": "2020-03-16T11:23:04.159Z"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ck7udsj7s01386kz9bm0n8xua",
+                    "path": "identifier[0].value",
+                    "definitionId": "string",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:25:09.825Z",
+                    "createdAt": "2020-03-16T11:25:09.825Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udsjcw01406kz9g8hxsow5",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:25:09.974Z",
+                            "createdAt": "2020-03-16T11:25:09.974Z",
+                            "sqlValue": {
+                                "id": "ck7udsjbv01396kz90q5k8bnc",
+                                "owner": "",
+                                "table": "patients",
+                                "column": "row_id",
+                                "updatedAt": "2020-03-16T11:25:09.974Z",
+                                "createdAt": "2020-03-16T11:25:09.974Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7ufgp5f01466kz9rpvqmd8w",
+                    "path": "maritalStatus",
+                    "definitionId": "CodeableConcept",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:11:56.873Z",
+                    "createdAt": "2020-03-16T12:11:56.873Z",
+                    "inputs": []
+                },
+                {
+                    "id": "ck7ufhpkj01526kz96y2rat0j",
+                    "path": "deceasedBoolean",
+                    "definitionId": "boolean",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:12:44.075Z",
+                    "createdAt": "2020-03-16T12:12:44.075Z",
+                    "inputs": [
+                        {
+                            "id": "ck7ufhppi01546kz99b42g5ge",
+                            "script": "binary_to_bool_1",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T12:12:47.661Z",
+                            "createdAt": "2020-03-16T12:12:44.226Z",
+                            "sqlValue": {
+                                "id": "ck7ufhpom01536kz9ybf1l437",
+                                "owner": "",
+                                "table": "patients",
+                                "column": "expire_flag",
+                                "updatedAt": "2020-03-16T12:12:44.226Z",
+                                "createdAt": "2020-03-16T12:12:44.226Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7ugxjzt01846kz9fi3rchdv",
+                    "path": "generalPractitioner",
+                    "definitionId": "Reference",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:53:02.954Z",
+                    "createdAt": "2020-03-16T12:53:02.954Z",
+                    "inputs": []
+                },
+                {
+                    "id": "ck7ugxtms01866kz96taabqvz",
+                    "path": "generalPractitioner[0].identifier.value",
+                    "definitionId": "string",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:53:15.452Z",
+                    "createdAt": "2020-03-16T12:53:15.452Z",
+                    "inputs": [
+                        {
+                            "id": "ck7ugxtxi01896kz9qiyhkm43",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T12:53:15.792Z",
+                            "createdAt": "2020-03-16T12:53:15.792Z",
+                            "sqlValue": {
+                                "id": "ck7ugxtw501886kz96zaw3sbh",
+                                "owner": "",
+                                "table": "icustays",
+                                "column": "hadm_id",
+                                "updatedAt": "2020-03-16T12:53:15.792Z",
+                                "createdAt": "2020-03-16T12:53:15.792Z",
+                                "joins": [
+                                    {
+                                        "id": "ck7ugxush01906kz9z1obggqn",
+                                        "updatedAt": "2020-03-16T12:53:16.959Z",
+                                        "createdAt": "2020-03-16T12:53:16.959Z",
+                                        "tables": [
+                                            {
+                                                "id": "ck7ugxusu01916kz97pte4qko",
+                                                "owner": "",
+                                                "table": "patients",
+                                                "column": "subject_id",
+                                                "updatedAt": "2020-03-16T12:53:28.511Z",
+                                                "createdAt": "2020-03-16T12:53:16.959Z"
+                                            },
+                                            {
+                                                "id": "ck7ugxut301926kz97rlr3sbg",
+                                                "owner": "",
+                                                "table": "icustays",
+                                                "column": "subject_id",
+                                                "updatedAt": "2020-03-16T12:53:28.511Z",
+                                                "createdAt": "2020-03-16T12:53:16.959Z"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udsujh01416kz99tbei5lm",
+                    "path": "birthDate",
+                    "definitionId": "date",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:25:24.499Z",
+                    "createdAt": "2020-03-16T11:25:24.499Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udsuok01436kz9ybriev8i",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T12:11:14.350Z",
+                            "createdAt": "2020-03-16T11:25:24.659Z",
+                            "sqlValue": {
+                                "id": "ck7udsunp01426kz9l9y5jhp4",
+                                "owner": "",
+                                "table": "patients",
+                                "column": "dob",
+                                "updatedAt": "2020-03-16T11:25:24.659Z",
+                                "createdAt": "2020-03-16T11:25:24.659Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7ufi45i01556kz9u3j3uxjc",
+                    "path": "deceasedDateTime",
+                    "definitionId": "dateTime",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:13:02.970Z",
+                    "createdAt": "2020-03-16T12:13:02.970Z",
+                    "inputs": [
+                        {
+                            "id": "ck7ufi4aa01576kz9zhr29mut",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T12:13:05.829Z",
+                            "createdAt": "2020-03-16T12:13:03.129Z",
+                            "sqlValue": {
+                                "id": "ck7ufi49o01566kz9u26medwe",
+                                "owner": "",
+                                "table": "patients",
+                                "column": "dod",
+                                "updatedAt": "2020-03-16T12:13:03.129Z",
+                                "createdAt": "2020-03-16T12:13:03.129Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7ugxts701876kz93302zgwf",
+                    "path": "generalPractitioner[0].identifier",
+                    "definitionId": "Identifier",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:53:15.640Z",
+                    "createdAt": "2020-03-16T12:53:15.640Z",
+                    "inputs": []
+                },
+                {
+                    "id": "ck7udqfss01306kz9up4h2a3h",
+                    "path": "identifier[0]",
+                    "definitionId": "Identifier",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:32.085Z",
+                    "createdAt": "2020-03-16T11:23:32.085Z",
+                    "inputs": []
+                },
+                {
+                    "id": "ck7uds7j401356kz9sj4wdf2a",
+                    "path": "gender",
+                    "definitionId": "code",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:24:54.681Z",
+                    "createdAt": "2020-03-16T11:24:54.681Z",
+                    "inputs": [
+                        {
+                            "id": "ck7uds7oo01376kz99fv2bbet",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:24:54.845Z",
+                            "createdAt": "2020-03-16T11:24:54.845Z",
+                            "sqlValue": {
+                                "id": "ck7uds7nl01366kz9zpx3ngtu",
+                                "owner": "",
+                                "table": "patients",
+                                "column": "gender",
+                                "updatedAt": "2020-03-16T11:24:54.845Z",
+                                "createdAt": "2020-03-16T11:24:54.845Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7ufgosv01446kz9a4favmer",
+                    "path": "maritalStatus.coding[0].code",
+                    "definitionId": "code",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:11:56.418Z",
+                    "createdAt": "2020-03-16T12:11:56.418Z",
+                    "inputs": [
+                        {
+                            "id": "ck7ufgp9u01486kz91i4x84z0",
+                            "script": "map_marital_status",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T12:12:02.648Z",
+                            "createdAt": "2020-03-16T12:11:57.011Z",
+                            "sqlValue": {
+                                "id": "ck7ufgp9301476kz9mbc7hh9c",
+                                "owner": "",
+                                "table": "admissions",
+                                "column": "marital_status",
+                                "updatedAt": "2020-03-16T12:11:57.011Z",
+                                "createdAt": "2020-03-16T12:11:57.011Z",
+                                "joins": [
+                                    {
+                                        "id": "ck7ufguxl01496kz9do1qkjpn",
+                                        "updatedAt": "2020-03-16T12:12:04.373Z",
+                                        "createdAt": "2020-03-16T12:12:04.373Z",
+                                        "tables": [
+                                            {
+                                                "id": "ck7ufguxu01506kz994gp53ja",
+                                                "owner": "",
+                                                "table": "patients",
+                                                "column": "subject_id",
+                                                "updatedAt": "2020-03-16T12:12:15.262Z",
+                                                "createdAt": "2020-03-16T12:12:04.373Z"
+                                            },
+                                            {
+                                                "id": "ck7ufguy601516kz9bp3fo0t7",
+                                                "owner": "",
+                                                "table": "admissions",
+                                                "column": "subject_id",
+                                                "updatedAt": "2020-03-16T12:12:15.262Z",
+                                                "createdAt": "2020-03-16T12:12:04.373Z"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7ufgozn01456kz9atisnijk",
+                    "path": "maritalStatus.coding[0]",
+                    "definitionId": "Coding",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:11:56.656Z",
+                    "createdAt": "2020-03-16T12:11:56.656Z",
+                    "inputs": []
+                },
+                {
+                    "id": "ck7ugxjtm01836kz9fqfi0dn4",
+                    "path": "generalPractitioner[0].type",
+                    "definitionId": "uri",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T12:53:02.739Z",
+                    "createdAt": "2020-03-16T12:53:02.739Z",
+                    "inputs": [
+                        {
+                            "id": "ck7ugxk4i01856kz9jf7zupzn",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "Practitioner",
+                            "updatedAt": "2020-03-16T12:53:03.125Z",
+                            "createdAt": "2020-03-16T12:53:03.125Z",
+                            "sqlValue": null
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "description": "Demographics and other administrative information about an individual or animal receiving care or other health-related services.",
+                "id": "Patient",
+                "kind": "resource",
+                "name": "Patient",
+                "publisher": "Health Level Seven International (Patient Administration)",
+                "type": "Patient",
+                "url": "http://hl7.org/fhir/StructureDefinition/Patient",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "expression": "contained.contained.empty()",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "key": "dom-2",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(parent::f:contained and f:contained)"
+                    },
+                    {
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "key": "dom-3",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))"
+                    },
+                    {
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "key": "dom-4",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))"
+                    },
+                    {
+                        "expression": "contained.meta.security.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "key": "dom-5",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))"
+                    },
+                    {
+                        "expression": "text.`div`.exists()",
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "human": "A resource should have narrative for robust management",
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "exists(f:text/h:div)"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ck7udpuc200076kz9mnxscko2",
+            "label": "admissions",
+            "primaryKeyOwner": null,
+            "primaryKeyTable": "admissions",
+            "primaryKeyColumn": "row_id",
+            "definitionId": "EpisodeOfCare",
+            "updatedAt": "2020-03-16T11:23:04.249Z",
+            "createdAt": "2020-03-16T11:23:04.249Z",
+            "source": {
+                "id": "mimicSourceId",
+                "name": "mimic",
+                "version": null,
+                "hasOwner": false,
+                "updatedAt": "2020-03-16T11:23:04.159Z",
+                "createdAt": "2020-03-16T11:23:04.159Z"
+            },
+            "filters": [
+                {
+                    "id": "ck7udpunj00976kz9dah074px",
+                    "relation": ">=",
+                    "value": "'2150-08-29 18:20:00'",
+                    "sqlColumn": {
+                        "id": "ck7udpumw00926kz936jswnc5",
+                        "owner": null,
+                        "table": "admissions",
+                        "column": "admittime",
+                        "updatedAt": "2020-03-16T11:23:04.250Z",
+                        "createdAt": "2020-03-16T11:23:04.250Z"
+                    }
+                }
+            ],
+            "attributes": [
+                {
+                    "id": "ck7udpud100146kz9w9hmizz5",
+                    "path": "identifier[0].value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.249Z",
+                    "createdAt": "2020-03-16T11:23:04.249Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpueb00246kz9ty0wgwh6",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.249Z",
+                            "createdAt": "2020-03-16T11:23:04.249Z",
+                            "sqlValue": {
+                                "id": "ck7udpuds00206kz91ouzom18",
+                                "owner": null,
+                                "table": "admissions",
+                                "column": "row_id",
+                                "updatedAt": "2020-03-16T11:23:04.249Z",
+                                "createdAt": "2020-03-16T11:23:04.249Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuen00266kz93d685t21",
+                    "path": "patient.identifier.value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.250Z",
+                    "createdAt": "2020-03-16T11:23:04.250Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpufi00316kz9di51rt3y",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.250Z",
+                            "createdAt": "2020-03-16T11:23:04.250Z",
+                            "sqlValue": {
+                                "id": "ck7udpuf600286kz907yogor6",
+                                "owner": null,
+                                "table": "admissions",
+                                "column": "subject_id",
+                                "updatedAt": "2020-03-16T11:23:04.250Z",
+                                "createdAt": "2020-03-16T11:23:04.250Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpugg00406kz9owgfgaya",
+                    "path": "period.start",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.250Z",
+                    "createdAt": "2020-03-16T11:23:04.250Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuhx00506kz9wquhladk",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.250Z",
+                            "createdAt": "2020-03-16T11:23:04.250Z",
+                            "sqlValue": {
+                                "id": "ck7udpuhb00476kz9vv1xnqmp",
+                                "owner": null,
+                                "table": "admissions",
+                                "column": "admittime",
+                                "updatedAt": "2020-03-16T11:23:04.250Z",
+                                "createdAt": "2020-03-16T11:23:04.250Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuie00556kz9fa9j884f",
+                    "path": "period.end",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.250Z",
+                    "createdAt": "2020-03-16T11:23:04.250Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpujd00656kz9gu8q6449",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.250Z",
+                            "createdAt": "2020-03-16T11:23:04.250Z",
+                            "sqlValue": {
+                                "id": "ck7udpuim00576kz9y3lflsj2",
+                                "owner": null,
+                                "table": "admissions",
+                                "column": "dischtime",
+                                "updatedAt": "2020-03-16T11:23:04.250Z",
+                                "createdAt": "2020-03-16T11:23:04.250Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpujv00696kz9cudoxs1i",
+                    "path": "status",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.250Z",
+                    "createdAt": "2020-03-16T11:23:04.250Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuk900706kz9odyxqdi1",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "finished",
+                            "updatedAt": "2020-03-16T11:23:04.250Z",
+                            "createdAt": "2020-03-16T11:23:04.250Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpukx00766kz9wud6y8hh",
+                    "path": "patient.identifier.type.text",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.250Z",
+                    "createdAt": "2020-03-16T11:23:04.250Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpull00816kz9b1bytkno",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "/Patient/",
+                            "updatedAt": "2020-03-16T11:23:04.250Z",
+                            "createdAt": "2020-03-16T11:23:04.250Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpulv00836kz9aw79t5lw",
+                    "path": "patient.type",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.250Z",
+                    "createdAt": "2020-03-16T11:23:04.250Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuml00896kz9ewrdbqks",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "/Patient/",
+                            "updatedAt": "2020-03-16T11:23:04.250Z",
+                            "createdAt": "2020-03-16T11:23:04.250Z",
+                            "sqlValue": null
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "description": "An association between a patient and an organization / healthcare provider(s) during which time encounters may occur. The managing organization assumes a level of responsibility for the patient during this time.",
+                "id": "EpisodeOfCare",
+                "kind": "resource",
+                "name": "EpisodeOfCare",
+                "publisher": "Health Level Seven International (Patient Administration)",
+                "type": "EpisodeOfCare",
+                "url": "http://hl7.org/fhir/StructureDefinition/EpisodeOfCare",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "expression": "contained.contained.empty()",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "key": "dom-2",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(parent::f:contained and f:contained)"
+                    },
+                    {
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "key": "dom-3",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))"
+                    },
+                    {
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "key": "dom-4",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))"
+                    },
+                    {
+                        "expression": "contained.meta.security.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "key": "dom-5",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))"
+                    },
+                    {
+                        "expression": "text.`div`.exists()",
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "human": "A resource should have narrative for robust management",
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "exists(f:text/h:div)"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "MedicationRequest_resourceId",
+            "label": "",
+            "primaryKeyOwner": null,
+            "primaryKeyTable": "prescriptions",
+            "primaryKeyColumn": "row_id",
+            "definitionId": "MedicationRequest",
+            "updatedAt": "2020-03-16T11:23:04.374Z",
+            "createdAt": "2020-03-16T11:23:04.374Z",
+            "source": {
+                "id": "mimicSourceId",
+                "name": "mimic",
+                "version": null,
+                "hasOwner": false,
+                "updatedAt": "2020-03-16T11:23:04.159Z",
+                "createdAt": "2020-03-16T11:23:04.159Z"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ck7udpugb00376kz9qmix5lbu",
+                    "path": "identifier[0].value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuh200456kz9i6168gcv",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpugq00416kz9cieujuqn",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "row_id",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuhz00516kz9ldgi8qud",
+                    "path": "subject.identifier.value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuiu00616kz9lqmtd0z7",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpuie00566kz9y65w094z",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "subject_id",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuj800636kz99p9sqfk0",
+                    "path": "medicationCodeableConcept.coding[0].display",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpul700776kz9cn5t0zqs",
+                            "script": "strip",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpukj00736kz9pczeh40j",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "drug",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpulq00826kz9yxhsdkhw",
+                    "path": "status",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpumc00876kz95y9x1ym4",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "unknown",
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpumn00906kz9xsy24pas",
+                    "path": "intent",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": "Arbitrary choice for this input which is required",
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpun100946kz9jce24k6z",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "order",
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpunb00966kz9fx1tv17z",
+                    "path": "subject.type",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpunn00986kz9waqp2dql",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "/Patient/",
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuo101006kz9blzo5vov",
+                    "path": "medicationCodeableConcept.coding[0].code",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuor01046kz9uctbu6uh",
+                            "script": "strip",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpuo801026kz9x7fvw6iu",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "ndc",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpup701056kz9g7aynnuz",
+                    "path": "medicationCodeableConcept.coding[0].system",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpupf01066kz9xdb02w1l",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "http://hl7.org/fhir/sid/ndc",
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": null
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpupm01076kz9w45me457",
+                    "path": "medicationCodeableConcept.text",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuq101096kz9k6krhluq",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpupu01086kz92z62crcs",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "drug",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuq901106kz9o0sdkulc",
+                    "path": "dosageInstruction[0].route.coding[0].code",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": "Needs a concept map to translate to snomed standard http://hl7.org/fhir/ValueSet/route-codes",
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuqn01126kz9dnnyjguo",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpuqf01116kz90bs5la4y",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "route",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpuqu01136kz9pnzw7u8u",
+                    "path": "dispenseRequest.validityPeriod.start",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpura01156kz9rgx5hthj",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpur401146kz9dezjpdeu",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "startdate",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpurg01166kz9x3u51hsj",
+                    "path": "dispenseRequest.validityPeriod.end",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.374Z",
+                    "createdAt": "2020-03-16T11:23:04.374Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuru01186kz9dcq2zo9l",
+                            "script": "clean_date",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.374Z",
+                            "createdAt": "2020-03-16T11:23:04.374Z",
+                            "sqlValue": {
+                                "id": "ck7udpurn01176kz9m00a5qsy",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "enddate",
+                                "updatedAt": "2020-03-16T11:23:04.374Z",
+                                "createdAt": "2020-03-16T11:23:04.374Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpus101196kz9vtg6egda",
+                    "path": "dispenseRequest.quantity.value",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.375Z",
+                    "createdAt": "2020-03-16T11:23:04.375Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpuse01216kz9tky7ylpw",
+                            "script": "clean_quantity",
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.375Z",
+                            "createdAt": "2020-03-16T11:23:04.375Z",
+                            "sqlValue": {
+                                "id": "ck7udpus801206kz9aofeyuuh",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "dose_val_rx",
+                                "updatedAt": "2020-03-16T11:23:04.375Z",
+                                "createdAt": "2020-03-16T11:23:04.375Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udpusl01226kz91yjxybno",
+                    "path": "dispenseRequest.quantity.unit",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.375Z",
+                    "createdAt": "2020-03-16T11:23:04.375Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udpusy01246kz9r4n1tr0l",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.375Z",
+                            "createdAt": "2020-03-16T11:23:04.375Z",
+                            "sqlValue": {
+                                "id": "ck7udpuss01236kz92coooohl",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "dose_unit_rx",
+                                "updatedAt": "2020-03-16T11:23:04.375Z",
+                                "createdAt": "2020-03-16T11:23:04.375Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udput901256kz95ft7hbhe",
+                    "path": "dispenseRequest.quantity.code",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.375Z",
+                    "createdAt": "2020-03-16T11:23:04.375Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udputm01276kz9p4kb5kd7",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T11:23:04.375Z",
+                            "createdAt": "2020-03-16T11:23:04.375Z",
+                            "sqlValue": {
+                                "id": "ck7udputg01266kz9567yauad",
+                                "owner": null,
+                                "table": "prescriptions",
+                                "column": "dose_unit_rx",
+                                "updatedAt": "2020-03-16T11:23:04.375Z",
+                                "createdAt": "2020-03-16T11:23:04.375Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "ck7udputr01286kz9a8wiufjt",
+                    "path": "dispenseRequest.quantity.system",
+                    "definitionId": "",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T11:23:04.375Z",
+                    "createdAt": "2020-03-16T11:23:04.375Z",
+                    "inputs": [
+                        {
+                            "id": "ck7udputy01296kz9j7i9avgl",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": "https://unitsofmeasure.org/",
+                            "updatedAt": "2020-03-16T11:23:04.375Z",
+                            "createdAt": "2020-03-16T11:23:04.375Z",
+                            "sqlValue": null
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "description": "An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called \"MedicationRequest\" rather than \"MedicationPrescription\" or \"MedicationOrder\" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.",
+                "id": "MedicationRequest",
+                "kind": "resource",
+                "name": "MedicationRequest",
+                "publisher": "Health Level Seven International (Pharmacy)",
+                "type": "MedicationRequest",
+                "url": "http://hl7.org/fhir/StructureDefinition/MedicationRequest",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "expression": "contained.contained.empty()",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "key": "dom-2",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(parent::f:contained and f:contained)"
+                    },
+                    {
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "key": "dom-3",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))"
+                    },
+                    {
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "key": "dom-4",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))"
+                    },
+                    {
+                        "expression": "contained.meta.security.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "key": "dom-5",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))"
+                    },
+                    {
+                        "expression": "text.`div`.exists()",
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "human": "A resource should have narrative for robust management",
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "exists(f:text/h:div)"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ck7uh9kyb02016kz9kut0gnqu",
+            "label": "",
+            "primaryKeyOwner": "",
+            "primaryKeyTable": "admissions",
+            "primaryKeyColumn": "hadm_id",
+            "definitionId": "Practitioner",
+            "updatedAt": "2020-03-16T13:02:32.402Z",
+            "createdAt": "2020-03-16T13:02:24.069Z",
+            "source": {
+                "id": "mimicSourceId",
+                "name": "mimic",
+                "version": null,
+                "hasOwner": false,
+                "updatedAt": "2020-03-16T11:23:04.159Z",
+                "createdAt": "2020-03-16T11:23:04.159Z"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ck7uha4g402036kz9z0gqg5hv",
+                    "path": "identifier[0]",
+                    "definitionId": "Identifier",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T13:02:49.329Z",
+                    "createdAt": "2020-03-16T13:02:49.329Z",
+                    "inputs": []
+                },
+                {
+                    "id": "ck7uha4a602026kz9vb1vj8da",
+                    "path": "identifier[0].value",
+                    "definitionId": "string",
+                    "mergingScript": null,
+                    "comments": null,
+                    "updatedAt": "2020-03-16T13:02:49.126Z",
+                    "createdAt": "2020-03-16T13:02:49.126Z",
+                    "inputs": [
+                        {
+                            "id": "ck7uha4kh02056kz9grpfnnj6",
+                            "script": null,
+                            "conceptMapId": null,
+                            "staticValue": null,
+                            "updatedAt": "2020-03-16T13:02:49.469Z",
+                            "createdAt": "2020-03-16T13:02:49.469Z",
+                            "sqlValue": {
+                                "id": "ck7uha4jk02046kz9lw4yhev6",
+                                "owner": "",
+                                "table": "admissions",
+                                "column": "hadm_id",
+                                "updatedAt": "2020-03-16T13:02:49.469Z",
+                                "createdAt": "2020-03-16T13:02:49.469Z",
+                                "joins": []
+                            }
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "description": "A person who is directly or indirectly involved in the provisioning of healthcare.",
+                "id": "Practitioner",
+                "kind": "resource",
+                "name": "Practitioner",
+                "publisher": "Health Level Seven International (Patient Administration)",
+                "type": "Practitioner",
+                "url": "http://hl7.org/fhir/StructureDefinition/Practitioner",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "expression": "contained.contained.empty()",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "key": "dom-2",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(parent::f:contained and f:contained)"
+                    },
+                    {
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "key": "dom-3",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))"
+                    },
+                    {
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "key": "dom-4",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))"
+                    },
+                    {
+                        "expression": "contained.meta.security.empty()",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "key": "dom-5",
+                        "severity": "error",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))"
+                    },
+                    {
+                        "expression": "text.`div`.exists()",
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "human": "A resource should have narrative for robust management",
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                        "xpath": "exists(f:text/h:div)"
+                    }
+                ]
+            }
+        }
+    ],
+    "version": 5
+}

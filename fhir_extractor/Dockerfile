@@ -1,5 +1,9 @@
 FROM python:3.7-slim
 
+# Dependencies
+RUN apt-get update \
+    && apt-get -y install build-essential
+
 ARG EXTRACTOR_SQL_HOME=/app
 ENV PYTHONPATH=${EXTRACTOR_SQL_HOME}
 
@@ -10,6 +14,7 @@ COPY requirements.txt ${EXTRACTOR_SQL_HOME}/requirements.txt
 RUN pip install -r ${EXTRACTOR_SQL_HOME}/requirements.txt
 
 COPY /src ${EXTRACTOR_SQL_HOME}/fhir_extractor/src
+COPY /mapping_files ${EXTRACTOR_SQL_HOME}/mapping_files
 
 COPY /entrypoint.sh /entrypoint.sh
 
