@@ -37,22 +37,33 @@ def extractor_sql_single(resource_id, primary_key_value):
     """
     try:
         # TODO factorize this somewhere
-        # Get the resources we want to process from the pyrog mapping for a given source
-        # TODO Hard coded to take only the first resource of the mapping
+        # TODO this routes only makes sense with a single resource mapping.
+        # This is mocked here by taking only the first resource mapping of the file.
+        # We should have a get_resource_mapping_by_id or something like that using resource_id. 
         resource_mapping = get_mapping(from_file="mapping_files/patient_mapping.json")[0]
+
+        resource_type = resource_mapping["definition"]["id"]
 
         analyzer = Analyzer()
         extractor = Extractor(engine=db.engine)
 
         # Analyze
         analysis = analyzer.analyze(resource_mapping)
+        # serialize important part of the analysis for the Transformer
+        serialized_analysis = [(attr.path, attr.static_inputs) for attr in analysis.attributes]
 
         # Extract
         df = extractor.extract(resource_mapping, analysis, [primary_key_value])
         record = extractor.convert_df_to_list_records(df, analysis)[0]
 
-        topic = get_topic_name("mimic", resource_id, "extract")
-        producer.produce_event(topic=topic, record=record)
+
+        event = {}
+        event["resource_type"] = resource_type
+        event["record"] = record
+        event["analysis"] = serialized_analysis
+
+        topic = get_topic_name("mimic", resource_type, "extract")
+        producer.produce_event(topic=topic, event=event)
 
         return "Success", 200
 
@@ -60,23 +71,21 @@ def extractor_sql_single(resource_id, primary_key_value):
         return error.args[0], 500
 
 
-@app.route("/extractor_sql/<resource_id>", methods=["POST"])
-def extractor_sql_batch(resource_id):
+@app.route("/extractor_sql", methods=["POST"])
+def extractor_sql_batch():
     """
     Extract all records for the specified resource
-    :param resource_id:
-    :return:
     """
     try:
         # TODO factorize this somewhere
         # Get the resources we want to process from the pyrog mapping for a given source
-        # TODO Hard coded to take only the first resource of the mapping
         resources = get_mapping(from_file="mapping_files/patient_mapping.json")
 
         analyzer = Analyzer()
         extractor = Extractor(engine=db.engine)
 
         for resource_mapping in resources:
+            resource_type = resource_mapping["definition"]["id"]
             # Analyze
             analysis = analyzer.analyze(resource_mapping)
             # serialize important part of the analysis for the Transformer
@@ -88,11 +97,11 @@ def extractor_sql_batch(resource_id):
 
             for record in list_records_from_db:
                 event = {}
-                event["resource_id"] = resource_id
+                event["resource_type"] = resource_type
                 event["record"] = record
                 event["analysis"] = serialized_analysis
 
-                topic = get_topic_name("mimic", resource_id, "extract")
+                topic = get_topic_name("mimic", resource_type, "extract")
                 producer.produce_event(topic=topic, event=event)
 
         return "Success", 200
