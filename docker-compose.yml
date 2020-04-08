@@ -16,6 +16,16 @@ services:
     ports:
       - 5431:5432
 
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: fhirstore
+    ports:
+      - 27017:27017
+    volumes:
+      - fhirstore-db:/data/db
+
   sftp:
     image: atmoz/sftp
     container_name: sftp
@@ -132,3 +142,4 @@ services:
 volumes:
   mimic-db:
     name: mimic-db
+  fhirstore-db:
