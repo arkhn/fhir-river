@@ -79,15 +79,21 @@ def extractor_sql_batch(resource_id):
         for resource_mapping in resources:
             # Analyze
             analysis = analyzer.analyze(resource_mapping)
+            # serialize important part of the analysis for the Transformer
+            serialized_analysis = [(attr.path, attr.static_inputs) for attr in analysis.attributes]
 
             # Extract
             df = extractor.extract(resource_mapping, analysis)
             list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
 
             for record in list_records_from_db:
-                record["resource_id"] = resource_id
+                event = {}
+                event["resource_id"] = resource_id
+                event["record"] = record
+                event["analysis"] = serialized_analysis
+
                 topic = get_topic_name("mimic", resource_id, "extract")
-                producer.produce_event(topic=topic, record=record)
+                producer.produce_event(topic=topic, event=event)
 
         return "Success", 200
 
