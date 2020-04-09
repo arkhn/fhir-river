@@ -12,6 +12,7 @@ from fhir_extractor.src.analyze import Analyzer
 from fhir_extractor.src.analyze.mapping import get_mapping
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.config.database_config import DatabaseConfig
+from fhir_extractor.src.errors import OperationOutcome
 from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
 
@@ -49,8 +50,8 @@ def extractor_sql_single(resource_id, primary_key_value):
 
         return "Success", 200
 
-    except TypeError as error:
-        return error.args[0], 500
+    except Exception as e:
+        raise OperationOutcome(e)
 
 
 @app.route("/extractor_sql", methods=["POST"])
@@ -69,8 +70,13 @@ def extractor_sql_batch():
 
         return "Success", 200
 
-    except TypeError as error:
-        return error.args[0], 500
+    except Exception as e:
+        raise OperationOutcome(e)
+
+
+@app.errorhandler(OperationOutcome)
+def handle_bad_request(e):
+    return str(e), 400
 
 
 def run_resource(resource_mapping, analysis, primary_key_values=None):
@@ -80,6 +86,13 @@ def run_resource(resource_mapping, analysis, primary_key_values=None):
 
     # Extract
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
+    if df.empty:
+        raise ValueError(
+            "The sql query returned nothing. Maybe the primary key values "
+            "you provided are not present in the database or the mapping "
+            "is erroneous."
+        )
+
     list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
 
     # serialize important part of the analysis for the Transformer
