@@ -51,23 +51,26 @@ The Extractor works as follows:
 
 2 endpoints:
 
-- POST `/extractor_sql/<resource_id>/<primary_key_value>` (equivalent of preview) 
+- POST `/batch`
+
+In the body of the query should be a field `resourceIds`containing a list of the ids of the resources to transform.
+
 - POST `/extractor_sql/` 
 
-For now, the SQL query for each resource is contained inside the `extractor_app/src/app.py`. The name of the resource is 
-also the topic where these events are produced. Make sure that you can read them with the consumer. 
- 
-*Example of request*
+In the body of the query should be a field `resourceId`containing the id of the resource to transform and a field `primaryKeyValues`containing a list of the primary key values of the rows to transform.
 
-- Single event:
-```
-curl -X POST http://localhost:5000/extractor_sql/admissions/10013
-```
+*Example of request*
 
 - Batch events:
 ```
-curl -X POST http://localhost:5000/extractor_sql
+curl -X POST http://localhost:5000/batch -d '{"resourceIds": ["<id of the resource 1>, <id of the resource 2>"]}' -H "Content-Type:application/json"
 ```
+
+- Single event:
+```
+curl -X POST http://localhost:5000/sample -d '{"resourceId": "<id of the resource>", "primaryKeyValues": ["<primary key value>"]}' -H "Content-Type:application/json"
+```
+
 
 ## FHIR Transformer
 
