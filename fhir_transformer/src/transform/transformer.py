@@ -1,7 +1,7 @@
 import json
 
 from fhir_transformer.src.config.logger import create_logger
-from fhir_transformer.src.transform.fhir import create_instance
+from fhir_transformer.src.transform.fhir import create_fhir_document
 from fhir_transformer.src.helper import get_topic_name
 
 logger = create_logger("transformer")
@@ -12,7 +12,7 @@ class Transformer:
         self.producer = producer
 
     def transform(self, row, analysis):
-        return create_instance(row, analysis)
+        return create_fhir_document(row, analysis)
 
     def process_event(self, msg):
         """

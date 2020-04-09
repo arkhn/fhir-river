@@ -25,7 +25,7 @@ def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)
 
 
-def create_instance(row, analysis):
+def create_fhir_document(row, analysis):
     """ Function used to create a single FHIR instance.
     """
     # Modify the data structure so that it is easier to use
