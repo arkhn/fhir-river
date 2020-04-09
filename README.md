@@ -71,7 +71,15 @@ curl -X POST http://localhost:5000/batch -d '{"resourceIds": ["<id of the resour
 curl -X POST http://localhost:5000/sample -d '{"resourceId": "<id of the resource>", "primaryKeyValues": ["<primary key value>"]}' -H "Content-Type:application/json"
 ```
 
+### Environment variables
 
+Note that you'll need to have a `.env.pyrog` file containg the following variables:
+
+- FHIR_API_URL: an url to a fhir api containing the used concept maps.
+- PYROG_API_URL: an url to pyrog's graphql API 
+- PYROG_TOKEN: a token for pyrog's API
+
+
 ## FHIR Transformer
 
 
