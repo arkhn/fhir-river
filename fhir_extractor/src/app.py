@@ -10,6 +10,7 @@ from fhir_extractor.src.extract import Extractor
 from fhir_extractor.src.analyze import Analyzer
 
 from fhir_extractor.src.analyze.mapping import get_mapping
+from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.config.database_config import DatabaseConfig
 from fhir_extractor.src.errors import OperationOutcome
@@ -30,6 +31,31 @@ extractor = Extractor(engine=db.engine)
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
+@app.route("/extractor_sql", methods=["POST"])
+def extractor_sql_batch():
+    """
+    Extract all records for the specified resource
+    """
+    body = request.get_json()
+    resource_ids = body.get("resourceIds", None)
+
+    try:
+        # Get the resources we want to process from the pyrog mapping for a given source
+        resources = get_mapping(
+            resource_ids=resource_ids, from_file="mapping_files/patient_mapping.json"
+        )
+
+        for resource_mapping in resources:
+            analysis = analyzer.analyze(resource_mapping)
+
+            run_resource(resource_mapping, analysis)
+
+        return "Success", 200
+
+    except Exception as e:
+        raise OperationOutcome(e)
+
+
 @app.route("/extractor_sql/<resource_id>/<primary_key_value>", methods=["POST"])
 def extractor_sql_single(resource_id, primary_key_value):
     """
@@ -39,34 +65,10 @@ def extractor_sql_single(resource_id, primary_key_value):
     :return:
     """
     try:
-        # TODO this routes only makes sense with a single resource mapping.
-        # This is mocked here by taking only the first resource mapping of the file.
-        # We should have a get_resource_mapping_by_id or something like that using resource_id.
-        resource_mapping = get_mapping(from_file="mapping_files/patient_mapping.json")[0]
-
+        resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
 
         run_resource(resource_mapping, analysis, [primary_key_value])
-
-        return "Success", 200
-
-    except Exception as e:
-        raise OperationOutcome(e)
-
-
-@app.route("/extractor_sql", methods=["POST"])
-def extractor_sql_batch():
-    """
-    Extract all records for the specified resource
-    """
-    try:
-        # Get the resources we want to process from the pyrog mapping for a given source
-        resources = get_mapping(from_file="mapping_files/patient_mapping.json")
-
-        for resource_mapping in resources:
-            analysis = analyzer.analyze(resource_mapping)
-
-            run_resource(resource_mapping, analysis)
 
         return "Success", 200
 
@@ -82,7 +84,7 @@ def handle_bad_request(e):
 def run_resource(resource_mapping, analysis, primary_key_values=None):
     """
     """
-    resource_type = resource_mapping["definition"]["id"]
+    resource_type = resource_mapping["definitionId"]
 
     # Extract
     df = extractor.extract(resource_mapping, analysis, primary_key_values)

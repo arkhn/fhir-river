@@ -2,8 +2,10 @@ import os
 import json
 from collections import defaultdict
 
+from fhir_extractor.src.analyze.graphql import get_resource_from_id
 
-def get_mapping(from_file):
+
+def get_mapping(from_file=None, resource_ids=None):
     """
     Get all available resources from a pyrog mapping.
     The mapping may either come from a static file or from
@@ -14,7 +16,14 @@ def get_mapping(from_file):
         from_file: path to the static file to mock
             the pyrog API response.
     """
-    return get_mapping_from_file(from_file)
+    if resource_ids is None and from_file is None:
+        raise ValueError("You should provide resource_ids or from_file")
+
+    if resource_ids:
+        return get_mapping_from_graphql(resource_ids)
+
+    else:
+        return get_mapping_from_file(from_file)
 
 
 def get_mapping_from_file(path):
@@ -25,6 +34,12 @@ def get_mapping_from_file(path):
         mapping = json.load(json_file)
 
     return mapping["resources"]
+
+
+def get_mapping_from_graphql(resource_ids):
+    for resource_id in resource_ids:
+        resource = get_resource_from_id(resource_id)
+        yield resource
 
 
 def build_squash_rules(columns, joins, main_table):
