@@ -115,7 +115,12 @@ services:
     depends_on:
       - kafka
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      FHIRSTORE_HOST: mongo
+      FHIRSTORE_PORT: 27017
+      FHIRSTORE_DATABASE: fhirstore
+      FHIRSTORE_USER: null
+      FHIRSTORE_PASSWORD: null
 
   fhir_extractor:
     build:
@@ -126,7 +131,7 @@ services:
     depends_on:
       - kafka
     environment:
-      PYROG_API_URL: "https://pyrog.arkhn.org/api"
+      PYROG_API_URL: "https://pyrog.staging.arkhn.com/api"
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       POSTGRES_USER: mimicuser
       POSTGRES_PASSWORD: mimicuser

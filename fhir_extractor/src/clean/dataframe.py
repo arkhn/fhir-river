@@ -6,6 +6,7 @@ import fhir_extractor
 from fhir_extractor.src.analyze.attribute import Attribute
 from fhir_extractor.src.analyze.sql_column import SqlColumn
 
+
 def clean_dataframe(
     df, attributes: List[Attribute], primary_key_column,
 ):
