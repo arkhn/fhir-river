@@ -32,7 +32,7 @@ extractor = Extractor(engine=db.engine)
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
-@app.route("/extractor_sql", methods=["POST"])
+@app.route("/batch", methods=["POST"])
 def extractor_sql_batch():
     """
     Extract all records for the specified resource
@@ -55,19 +55,20 @@ def extractor_sql_batch():
         raise OperationOutcome(e)
 
 
-@app.route("/extractor_sql/<resource_id>/<primary_key_value>", methods=["POST"])
-def extractor_sql_single(resource_id, primary_key_value):
+@app.route("/sample", methods=["POST"])
+def extractor_sql_single():
     """
     Extract record for the specified resource and primary key value
-    :param resource_id:
-    :param primary_key_value:
-    :return:
     """
+    body = request.get_json()
+    resource_id = body.get("resourceId", None)
+    primary_key_values = body.get("primaryKeyValues", None)
+
     try:
         resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
 
-        run_resource(resource_mapping, analysis, [primary_key_value])
+        run_resource(resource_mapping, analysis, primary_key_values)
 
         return "Success", 200
 
