@@ -22,20 +22,15 @@ GROUP_ID = "arkhn_loader"
 logger = create_logger("loader")
 
 
-def override_resource(fhir_instance):
-    # TODO here we delete all the documents for the resource even if we only want
-    # to add a single document. This is not the behavior expected in fhir-river.
+def override_document(fhir_instance):
     try:
-        intance_tags = fhir_instance["meta"]["tag"]
-        resource_id = None
-        for tag in intance_tags:
-            if tag["system"] == "http://terminology.arkhn.org/CodeSystem/resource":
-                resource_id = tag["code"]
-                break
-        if resource_id is not None:
-            fhirstore.delete(fhir_instance["resourceType"], resource_id=resource_id)
+        # TODO add a wrapper method in fhirstore to delete as follows?
+        fhirstore.db[fhir_instance["resourceType"]].delete_one(
+            {"identifier": fhir_instance["identifier"]}
+        )
     except NotFoundError as e:
         logger.warning(f"error while trying to delete previous documents: {e}")
+
 
 def process_event(msg):
     """
@@ -49,14 +44,13 @@ def process_event(msg):
     logger.info(msg_topic)
 
     # TODO how will we handle override in fhir-river?
-    if True:  # should be if override:
-        override_resource(fhir_instance)
+    if True:  # should be "if override:" or something like that
+        override_document(fhir_instance)
 
     try:
         loader.load(fhirstore, fhir_instance)
     except DuplicateKeyError as e:
         logger.error(e)
-
 
 
 def manage_kafka_error(msg):
@@ -74,7 +68,7 @@ if __name__ == "__main__":
     fhirstore = get_fhirstore()
 
     # TODO how will we handle bypass_validation in fhir-river?
-    loader = Loader(fhirstore, bypass_validation=True)
+    loader = Loader(fhirstore, bypass_validation=False)
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=TOPIC,
