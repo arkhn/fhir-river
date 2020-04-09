@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 
-import os
 import json
+import os
 from confluent_kafka import KafkaException, KafkaError
+
 from fhir_transformer.src.consumer_class import TransformerConsumer
 from fhir_transformer.src.producer_class import TransformerProducer
 from fhir_transformer.src.config.logger import create_logger
 from fhir_transformer.src.helper import get_topic_name
+from fhir_transformer.src.transform import Transformer
 
 MAX_ERROR_COUNT = 3
 TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
 GROUP_ID = "arkhn_transformer"
 
-logging = create_logger("consumer")
-
+logger = create_logger("consumer")
 
 def process_event(msg):
     """
@@ -24,19 +25,18 @@ def process_event(msg):
     # Do stuff
     msg_value = json.loads(msg.value())
     msg_topic = msg.topic()
-    logging.info("Transformer")
-    logging.info(msg_topic)
-    logging.info(msg_value)
+    logger.info("Transformer")
+    logger.info(msg_topic)
+    logger.info(msg_value)
 
     try:
-        record = {"example": {"patient": "fhirised"}}
+        fhir_document = transformer.create_fhir_document(msg_value["record"], msg_value["analysis"])
         topic = get_topic_name(
             source="mimic", resource=msg_value["resource_type"], task_type="transform"
         )
-        producer.produce_event(topic=topic, record=record)
+        producer.produce_event(topic=topic, record=fhir_document)
     except KeyError as err:
-        logging.error(err)
-
+        logger.error(err)
 
 def manage_kafka_error(msg):
     """
@@ -44,12 +44,14 @@ def manage_kafka_error(msg):
     :param msg:
     :return:
     """
-    logging.error(msg.error())
-    pass
-
+    logger.error(msg.error())
 
 if __name__ == "__main__":
-    logging.info("Running Consumer")
+    logger.info("Running Consumer")
+
+    transformer = Transformer()
+    
+    producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=TOPIC,
@@ -57,9 +59,8 @@ if __name__ == "__main__":
         process_event=process_event,
         manage_error=manage_kafka_error,
     )
-    producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
     try:
         consumer.run_consumer()
     except (KafkaException, KafkaError) as err:
-        logging.error(err)
+        logger.error(err)

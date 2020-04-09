@@ -1,10 +1,13 @@
 from typing import TypeVar
-import requests
-import numpy as np
 import logging
+import numpy as np
+import os
+import requests
 
 import fhir_extractor.src
 from fhir_extractor.src.errors import OperationOutcome
+
+PYROG_API_URL = os.getenv("PYROG_API_URL")
 
 T = TypeVar("T", bound="ConceptMap")
 
@@ -27,10 +30,8 @@ class ConceptMap:
 
     @staticmethod
     def fetch(concept_map_id: str) -> T:
-        # TODO hard coded, put that in env variables
-        api_url = "https://fhir.staging.arkhn.org/api"
         try:
-            response = requests.get(f"{api_url}/ConceptMap/{concept_map_id}")
+            response = requests.get(f"{PYROG_API_URL}/ConceptMap/{concept_map_id}")
         except requests.exceptions.ConnectionError as e:
             raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
 
