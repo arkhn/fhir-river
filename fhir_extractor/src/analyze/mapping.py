@@ -5,38 +5,14 @@ from collections import defaultdict
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 
 
-def get_mapping(from_file=None, resource_ids=None):
+def get_mapping(resource_ids):
     """
     Get all available resources from a pyrog mapping.
-    The mapping may either come from a static file or from
-    a pyrog graphql API.
+    The mapping come from a pyrog graphql API.
 
     Args:
-        source_name: name of the project (eg: Mimic)
-        from_file: path to the static file to mock
-            the pyrog API response.
+        resource_ids: ids of the resources to process
     """
-    if resource_ids is None and from_file is None:
-        raise ValueError("You should provide resource_ids or from_file")
-
-    if resource_ids:
-        return get_mapping_from_graphql(resource_ids)
-
-    else:
-        return get_mapping_from_file(from_file)
-
-
-def get_mapping_from_file(path):
-    if not os.path.isabs(path):
-        path = os.path.join(os.getcwd(), path)
-
-    with open(path) as json_file:
-        mapping = json.load(json_file)
-
-    return mapping["resources"]
-
-
-def get_mapping_from_graphql(resource_ids):
     for resource_id in resource_ids:
         resource = get_resource_from_id(resource_id)
         yield resource

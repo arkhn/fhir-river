@@ -42,9 +42,7 @@ def extractor_sql_batch():
 
     try:
         # Get the resources we want to process from the pyrog mapping for a given source
-        resources = get_mapping(
-            resource_ids=resource_ids, from_file="mapping_files/patient_mapping.json"
-        )
+        resources = get_mapping(resource_ids=resource_ids)
 
         for resource_mapping in resources:
             analysis = analyzer.analyze(resource_mapping)
