@@ -77,7 +77,18 @@ In the `process_events` function, each event is processed individually (transfor
 
 ## FHIR Loader
 
-The `fhir_loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB. 
+The `fhir_loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB.
+
+## Check the mongo database
+
+After you have used fhir-river (via the Extractor or Kafka Connect), you can check mongo to see if the data was correctly loaded (_make sure the port is correct_):
+
+```
+mongo --port 27017 --host localhost fhirstore
+> db.Patient.find({})
+```
+
+Or you can also use a GUI as MongoDB Compass to do so.
  
 
 ## Topic Naming Convention
