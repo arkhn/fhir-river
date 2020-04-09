@@ -115,7 +115,12 @@ services:
     depends_on:
       - kafka
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      FHIRSTORE_HOST: mongo
+      FHIRSTORE_PORT: 27017
+      FHIRSTORE_DATABASE: fhirstore
+      FHIRSTORE_USER: null
+      FHIRSTORE_PASSWORD: null
 
   fhir_extractor:
     build:
