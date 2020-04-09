@@ -1,5 +1,4 @@
 from jsonschema import ValidationError
-import logging
 import os
 from pymongo import MongoClient
 
@@ -16,11 +15,6 @@ FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 _client = None
 logger = create_logger("fhirstore")
 
-logger.debug(FHIRSTORE_HOST)
-logger.debug(FHIRSTORE_PORT)
-logger.debug(FHIRSTORE_DATABASE)
-logger.debug(FHIRSTORE_USER)
-logger.debug(FHIRSTORE_PASSWORD)
 
 def get_mongo_client():
     global _client
@@ -57,7 +51,7 @@ def save_one(fhir_object, bypass_validation=False):
     try:
         store.create(fhir_object, bypass_document_validation=bypass_validation)
     except ValidationError as e:
-        logging.error(
+        logger.error(
             f"Validation failed for resource {fhir_object} at "
             f"{'.'.join(e.schema_path)}: {e.message}"
         )

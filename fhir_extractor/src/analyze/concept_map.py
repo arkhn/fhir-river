@@ -1,11 +1,12 @@
 from typing import TypeVar
-import logging
 import numpy as np
 import os
 import requests
 
-import fhir_extractor.src
+from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.errors import OperationOutcome
+
+logger = create_logger("concept_map")
 
 PYROG_API_URL = os.getenv("PYROG_API_URL")
 
@@ -58,6 +59,6 @@ class ConceptMap:
             try:
                 return self.translate(val)
             except Exception as e:
-                logging.error(f"{self.title}: Error mapping {col} (at id = {id}): {e}")
+                logger.error(f"{self.title}: Error mapping {col} (at id = {id}): {e}")
 
         return np.vectorize(map_and_log)(df_column, id=pk_column, col=df_column.name[0])
