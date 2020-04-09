@@ -1,7 +1,7 @@
+from collections import defaultdict
 from datetime import datetime
 import logging
 import re
-from collections import defaultdict
 
 
 """
@@ -19,6 +19,7 @@ The analysis is provided as a dict containing:
     - "url": the url of the resource
 """
 
+
 def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)
 
@@ -34,7 +35,10 @@ def build_metadata(analysis):
     # Maybe the loader should tag the items?
     metadata["tag"] = [
         {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis["source_id"]},
-        {"system": "http://terminology.arkhn.org/CodeSystem/resource", "code": analysis["resource_id"]},
+        {
+            "system": "http://terminology.arkhn.org/CodeSystem/resource",
+            "code": analysis["resource_id"],
+        },
     ]
 
     # in case the definition is a profile, add the profile to the resource metadata
@@ -73,11 +77,11 @@ def build_fhir_object(row, path_attributes_map, index=None):
             # If we didn't find an index in the path, then we don't worry about arrays
             val = fetch_values_from_dataframe(row, attr)
 
-            if isinstance(val, tuple) and len(val) == 1:
+            if isinstance(val, (tuple, list)) and len(val) == 1:
                 # If we have a tuple of length 1, we simply extract the value and put it in
                 # the fhir object
                 insert_in_fhir_object(fhir_object, path, val[0])
-            elif isinstance(val, tuple) and index is not None:
+            elif isinstance(val, (tuple, list)) and index is not None:
                 # If index is not None, we met an array before. Here, val will have
                 # several elements but we know which one we need
                 insert_in_fhir_object(fhir_object, path, val[index])
