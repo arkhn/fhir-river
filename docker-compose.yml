@@ -126,7 +126,7 @@ services:
     depends_on:
       - kafka
     environment:
-      API_URL: "https://pyrog.arkhn.org/api"
+      PYROG_API_URL: "https://pyrog.arkhn.org/api"
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       POSTGRES_USER: mimicuser
       POSTGRES_PASSWORD: mimicuser

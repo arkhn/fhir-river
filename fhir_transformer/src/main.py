@@ -30,7 +30,6 @@ def process_event(msg):
     logger.info(msg_value)
 
     try:
-        logger.info(msg_value["analysis"])
         fhir_document = transformer.create_fhir_document(msg_value["record"], msg_value["analysis"])
         topic = get_topic_name(
             source="mimic", resource=msg_value["resource_type"], task_type="transform"
