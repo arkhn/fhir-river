@@ -8,7 +8,7 @@ from fhir_extractor.src.errors import OperationOutcome
 
 logger = create_logger("concept_map")
 
-PYROG_API_URL = os.getenv("PYROG_API_URL")
+FHIR_API_URL = os.getenv("FHIR_API_URL")
 
 T = TypeVar("T", bound="ConceptMap")
 
@@ -32,7 +32,7 @@ class ConceptMap:
     @staticmethod
     def fetch(concept_map_id: str) -> T:
         try:
-            response = requests.get(f"{PYROG_API_URL}/ConceptMap/{concept_map_id}")
+            response = requests.get(f"{FHIR_API_URL}/ConceptMap/{concept_map_id}")
         except requests.exceptions.ConnectionError as e:
             raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
 

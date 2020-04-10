@@ -3,6 +3,7 @@
 import os
 import json
 from flask import Flask
+from flask import request
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 
@@ -10,6 +11,7 @@ from fhir_extractor.src.extract import Extractor
 from fhir_extractor.src.analyze import Analyzer
 
 from fhir_extractor.src.analyze.mapping import get_mapping
+from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.config.database_config import DatabaseConfig
 from fhir_extractor.src.errors import OperationOutcome
@@ -30,23 +32,22 @@ extractor = Extractor(engine=db.engine)
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
-@app.route("/extractor_sql/<resource_id>/<primary_key_value>", methods=["POST"])
-def extractor_sql_single(resource_id, primary_key_value):
+@app.route("/batch", methods=["POST"])
+def extractor_sql_batch():
     """
-    Extract record for the specified resource and primary key value
-    :param resource_id:
-    :param primary_key_value:
-    :return:
+    Extract all records for the specified resource
     """
+    body = request.get_json()
+    resource_ids = body.get("resourceIds", None)
+
     try:
-        # TODO this routes only makes sense with a single resource mapping.
-        # This is mocked here by taking only the first resource mapping of the file.
-        # We should have a get_resource_mapping_by_id or something like that using resource_id.
-        resource_mapping = get_mapping(from_file="mapping_files/patient_mapping.json")[0]
+        # Get the resources we want to process from the pyrog mapping for a given source
+        resources = get_mapping(resource_ids=resource_ids)
 
-        analysis = analyzer.analyze(resource_mapping)
+        for resource_mapping in resources:
+            analysis = analyzer.analyze(resource_mapping)
 
-        run_resource(resource_mapping, analysis, [primary_key_value])
+            run_resource(resource_mapping, analysis)
 
         return "Success", 200
 
@@ -54,19 +55,20 @@ def extractor_sql_single(resource_id, primary_key_value):
         raise OperationOutcome(e)
 
 
-@app.route("/extractor_sql", methods=["POST"])
-def extractor_sql_batch():
+@app.route("/sample", methods=["POST"])
+def extractor_sql_single():
     """
-    Extract all records for the specified resource
+    Extract record for the specified resource and primary key value
     """
+    body = request.get_json()
+    resource_id = body.get("resourceId", None)
+    primary_key_values = body.get("primaryKeyValues", None)
+
     try:
-        # Get the resources we want to process from the pyrog mapping for a given source
-        resources = get_mapping(from_file="mapping_files/patient_mapping.json")
+        resource_mapping = get_resource_from_id(resource_id=resource_id)
+        analysis = analyzer.analyze(resource_mapping)
 
-        for resource_mapping in resources:
-            analysis = analyzer.analyze(resource_mapping)
-
-            run_resource(resource_mapping, analysis)
+        run_resource(resource_mapping, analysis, primary_key_values)
 
         return "Success", 200
 
@@ -82,7 +84,7 @@ def handle_bad_request(e):
 def run_resource(resource_mapping, analysis, primary_key_values=None):
     """
     """
-    resource_type = resource_mapping["definition"]["id"]
+    resource_type = resource_mapping["definitionId"]
 
     # Extract
     df = extractor.extract(resource_mapping, analysis, primary_key_values)

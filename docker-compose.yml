@@ -130,8 +130,9 @@ services:
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - .env.pyrog
     environment:
-      PYROG_API_URL: "https://pyrog.staging.arkhn.com/api"
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       POSTGRES_USER: mimicuser
       POSTGRES_PASSWORD: mimicuser
