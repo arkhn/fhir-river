@@ -1,6 +1,6 @@
-# FHIR River - WIP
+# FHIR River
 
-POC for Live Streams usng Kafka and Kafka Connect
+POC for Live Streams ETL using Kafka and Kafka Connect
 
 ## Architecture
 
@@ -55,9 +55,9 @@ The Extractor works as follows:
 
 In the body of the query should be a field `resourceIds`containing a list of the ids of the resources to transform.
 
-- POST `/extractor_sql/` 
+- POST `/sample` 
 
-In the body of the query should be a field `resourceId`containing the id of the resource to transform and a field `primaryKeyValues`containing a list of the primary key values of the rows to transform.
+In the body of the query should be a field `resourceId`(singular!) containing the id of the resource to transform and a field `primaryKeyValues`containing a list of the primary key values of the rows to transform.
 
 *Example of request*
 
