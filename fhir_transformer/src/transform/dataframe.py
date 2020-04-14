@@ -2,9 +2,9 @@ from typing import List
 
 import pandas as pd
 
-import fhir_extractor
-from fhir_extractor.src.analyze.attribute import Attribute
-from fhir_extractor.src.analyze.sql_column import SqlColumn
+import fhir_transformer
+from fhir_transformer.src.analyze.attribute import Attribute
+from fhir_transformer.src.analyze.sql_column import SqlColumn
 
 
 def clean_dataframe(
@@ -31,7 +31,7 @@ def clean_dataframe(
 
             # The column name in the new intermediary dataframe
             # We put also col.table because it's needed in squash_rows
-            attr_col_name = (df_col_name, col.table)
+            attr_col_name = col.table
 
             # Get the original column
             attr_df[attr_col_name] = df[df_col_name]
@@ -48,7 +48,7 @@ def clean_dataframe(
 
         if not attr_df.empty:
             # Change col names to have hierarchical names in the dataframe with all the attributes
-            attr_df.columns = pd.MultiIndex.from_product(([attribute], attr_df.columns))
+            attr_df.columns = pd.MultiIndex.from_product(([attribute.path], attr_df.columns))
 
             # Build the dataframe containing all the attributes
             cleaned_df = pd.concat([cleaned_df, attr_df], axis=1)
@@ -88,10 +88,10 @@ def squash_rows(df, squash_rules, parent_cols=[]):
     """
     table, child_rules = squash_rules
 
-    new_cols = [col for col in df.columns if col[1][1] == table]
+    new_cols = [col for col in df.columns if col[1] == table]
     pivot_cols = parent_cols + new_cols
 
-    to_squash = [col for col in df.columns if any([col[1][1] == rule[0] for rule in child_rules])]
+    to_squash = [col for col in df.columns if any([col[1] == rule[0] for rule in child_rules])]
 
     if not to_squash:
         return df
@@ -135,20 +135,21 @@ def merge_dataframe(
     merged_df = pd.DataFrame()
     df_pk_col = df[pk_col_name(primary_key_column)]
     for attribute in attributes:
-        if attribute not in df:
+        attr_path = attribute.path
+        if attr_path not in df:
             # If attribute is static or has no input, don't do anything
             continue
 
         if attribute.merging_script:
-            merged_df[attribute] = attribute.merging_script.apply(
-                [df[attribute, col] for col in df[attribute]], attribute.static_inputs, df_pk_col
+            merged_df[attr_path] = attribute.merging_script.apply(
+                [df[attr_path, col] for col in df[attr_path]], attribute.static_inputs, df_pk_col
             )
         else:
-            attr_cols = df[attribute].columns
+            attr_cols = df[attr_path].columns
             assert (
                 len(attr_cols) == 1
             ), f"The mapping contains several unmerged columns for attribute {attribute}"
-            merged_df[attribute] = df[attribute][attr_cols[0]]
+            merged_df[attr_path] = df[attr_path][attr_cols[0]]
 
     return merged_df
 

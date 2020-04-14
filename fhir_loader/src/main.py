@@ -15,7 +15,6 @@ from fhir_loader.src.load import Loader
 from fhir_loader.src.load.fhirstore import get_fhirstore
 
 
-MAX_ERROR_COUNT = 3
 TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="transform")]
 GROUP_ID = "arkhn_loader"
 

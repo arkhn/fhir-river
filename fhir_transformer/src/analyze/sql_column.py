@@ -1,13 +1,22 @@
+from .cleaning_script import CleaningScript
+from .concept_map import ConceptMap
+
+
 class SqlColumn:
     def __init__(
         self,
         table: str,
         column: str,
         owner: str = None,
+        cleaning_script: CleaningScript = None,
+        concept_map: ConceptMap = None,
     ):
         self.table = table.strip()
         self.column = column.strip()
         self.owner = owner.strip() if owner else None
+
+        self.cleaning_script = cleaning_script
+        self.concept_map = concept_map
 
     def __eq__(self, other) -> bool:
         return (

@@ -3,8 +3,8 @@ import numpy as np
 import os
 import requests
 
-from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.errors import OperationOutcome
+from fhir_transformer.src.config.logger import create_logger
+from fhir_transformer.src.errors import OperationOutcome
 
 logger = create_logger("concept_map")
 
