@@ -139,12 +139,24 @@ services:
       POSTGRES_DB: mimic
       POSTGRES_HOST: mimic
       POSTGRES_PORT: 5432
+
+
+  fhir_river_api:
+    build:
+      context: fhir_river_api/
+    container_name: fhir_river_api
+    image: arkhn/fhir-river-api:latest
+    restart: always
+    depends_on:
+      - kafka
+    env_file:
+      - .env.pyrog
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     expose:
       - "5000"
     ports:
       - "5000:5000"
-
-
 
 volumes:
   mimic-db:
