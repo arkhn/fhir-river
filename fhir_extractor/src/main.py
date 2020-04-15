@@ -2,73 +2,48 @@
 
 import os
 import json
-from flask import Flask
-from flask import request
-from flask_restful import Resource, Api, reqparse
-from flask_sqlalchemy import SQLAlchemy
+from confluent_kafka import KafkaException, KafkaError
+from sqlalchemy import create_engine
 
 from fhir_extractor.src.extract import Extractor
 from fhir_extractor.src.analyze import Analyzer
 
-from fhir_extractor.src.analyze.mapping import get_mapping
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.config.database_config import DatabaseConfig
+from fhir_extractor.src.config.database_config import DatabaseConfig, get_db_url
 from fhir_extractor.src.errors import OperationOutcome
 from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
+from fhir_extractor.src.consumer_class import ExtractorConsumer
 
 logger = create_logger("fhir_extractor")
 
-# Create flask app object
-app = Flask(__name__)
-api = Api(app)
-
-app.config.from_object(DatabaseConfig)
-db = SQLAlchemy(app)
-
+db_engine = create_engine(get_db_url())
 analyzer = Analyzer()
-extractor = Extractor(engine=db.engine)
+extractor = Extractor(engine=db_engine)
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
-@app.route("/batch", methods=["POST"])
-def extractor_sql_batch():
+def process_event(msg):
     """
-    Extract all records for the specified resource
+
+    :return:
     """
-    body = request.get_json()
-    resource_ids = body.get("resourceIds", None)
+    msg_value = json.loads(msg.value())
+    resource_id = msg_value.get('resource_id', None)
+    primary_key_values = msg_value.get('primaryKeyValues', None)
+    batch_id = msg_value.get('batch_id', None)
 
-    try:
-        # Get the resources we want to process from the pyrog mapping for a given source
-        resources = get_mapping(resource_ids=resource_ids)
+    msg_topic = msg.topic()
 
-        for resource_mapping in resources:
-            analysis = analyzer.analyze(resource_mapping)
-
-            run_resource(resource_mapping, analysis)
-
-        return "Success", 200
-
-    except Exception as e:
-        raise OperationOutcome(e)
-
-
-@app.route("/sample", methods=["POST"])
-def extractor_sql_single():
-    """
-    Extract record for the specified resource and primary key value
-    """
-    body = request.get_json()
-    resource_id = body.get("resourceId", None)
-    primary_key_values = body.get("primaryKeyValues", None)
+    logger.info('Events Ready to be processed')
+    logger.info(msg_topic)
+    logger.info(msg_value)
 
     try:
         resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
-
-        run_resource(resource_mapping, analysis, primary_key_values)
+        run_resource(resource_mapping, analysis, primary_key_values, batch_id)
 
         return "Success", 200
 
@@ -76,12 +51,7 @@ def extractor_sql_single():
         raise OperationOutcome(e)
 
 
-@app.errorhandler(OperationOutcome)
-def handle_bad_request(e):
-    return str(e), 400
-
-
-def run_resource(resource_mapping, analysis, primary_key_values=None):
+def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=None):
     """
     """
     resource_type = resource_mapping["definitionId"]
@@ -102,6 +72,7 @@ def run_resource(resource_mapping, analysis, primary_key_values=None):
 
     for record in list_records_from_db:
         event = {}
+        event["batch_id"] = batch_id
         event["resource_type"] = resource_type
         event["record"] = record
         event["analysis"] = serialized_analysis
@@ -131,5 +102,32 @@ def serialize_analysis(analysis, resource_mapping):
     return serialized_analysis
 
 
+def manage_kafka_error(msg):
+    """
+    Deal with the error if nany
+    :param msg:
+    :return:
+    """
+    logger.error(msg.error())
+
+
 if __name__ == "__main__":
-    app.run(host="fhir_extractor", port=5000)
+    logger.info("Running Consumer")
+
+    MAX_ERROR_COUNT = 3
+    TOPIC = "extractor_trigger"
+        # [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
+    GROUP_ID = "arkhn_extractor"
+
+    consumer = ExtractorConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=TOPIC,
+        group_id=GROUP_ID,
+        process_event=process_event,
+        manage_error=manage_kafka_error,
+    )
+
+    try:
+        consumer.run_consumer()
+    except (KafkaException, KafkaError) as err:
+        logger.error(err)
