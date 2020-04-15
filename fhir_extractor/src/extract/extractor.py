@@ -1,7 +1,6 @@
 from typing import List
 
 import pandas as pd
-import logging
 
 from sqlalchemy import create_engine, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
@@ -47,7 +46,7 @@ class Extractor:
         Returns:
             a pandas dataframe where there all the columns asked for in the mapping
         """
-        logging.info(f"Extracting resource: {resource_mapping['definitionId']}")
+        logger.info(f"Extracting resource: {resource_mapping['definitionId']}")
 
         # Build sqlalchemy query
         query = self.sqlalchemy_query(
@@ -61,12 +60,12 @@ class Extractor:
         return self.run_sql_query(query)
 
     def sqlalchemy_query(
-        self,
-        columns: List[SqlColumn],
-        joins: List[SqlJoin],
-        pk_column: SqlColumn,
-        resource_mapping,
-        pk_values,
+            self,
+            columns: List[SqlColumn],
+            joins: List[SqlJoin],
+            pk_column: SqlColumn,
+            resource_mapping,
+            pk_values,
     ) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
         """
@@ -90,7 +89,7 @@ class Extractor:
         return query
 
     def apply_filters(
-        self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
+            self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
     ) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.
         """
@@ -123,7 +122,7 @@ class Extractor:
             the result of the sql query
         """
         query = query.statement
-        logging.info(f"sql query: {query}")
+        logger.info(f"sql query: {query}")
 
         pd_query = pd.read_sql_query(query, con=self.engine)
 
@@ -155,6 +154,7 @@ class Extractor:
     @staticmethod
     def split_dataframe(df, analysis):
         # Find primary key column
+        logger.debug("Splitting Dataframe")
         # TODO I don't think it's necessarily present in the df
         pk_col = analysis.primary_key_column.dataframe_column_name()
 

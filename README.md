@@ -63,7 +63,7 @@ In the body of the query should be a field `resourceId`(singular!) containing 
 
 - Batch events:
 ```
-curl -X POST http://localhost:5000/batch -d '{"resourceIds": ["<id of the resource 1>, <id of the resource 2>"]}' -H "Content-Type:application/json"
+curl -X POST http://localhost:5000/batch -d '{"resourceIds": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
 ```
 
 - Single event:

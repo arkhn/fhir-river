@@ -42,9 +42,11 @@ def extractor_sql_batch():
 
     try:
         # Get the resources we want to process from the pyrog mapping for a given source
+        logger.debug("Getting Mapping")
         resources = get_mapping(resource_ids=resource_ids)
 
         for resource_mapping in resources:
+            logger.debug("Analysing Resource")
             analysis = analyzer.analyze(resource_mapping)
 
             run_resource(resource_mapping, analysis)
@@ -63,7 +65,7 @@ def extractor_sql_single():
     body = request.get_json()
     resource_id = body.get("resourceId", None)
     primary_key_values = body.get("primaryKeyValues", None)
-
+    logger.debug("Params obtained")
     try:
         resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
@@ -101,7 +103,8 @@ def run_resource(resource_mapping, analysis, primary_key_values=None):
     # serialize important part of the analysis for the Transformer
     # serialized_analysis = serialize_analysis(analysis, resource_mapping)
     for record in list_records_from_db:
-        event = {}
+        logger.debug("One record from extract")
+        event = dict()
         event["resource_type"] = resource_type
         event["resource_id"] = resource_id
         event["dataframe"] = record.to_dict(orient="list")
