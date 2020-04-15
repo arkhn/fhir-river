@@ -22,10 +22,4 @@ class CleaningScript:
             return [self.script(val) for val in data_column]
         except Exception as e:
             logger.error(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
-
-        # def clean_and_log(val):
-        #     try:
-        #         return self.script(val)
-        #     except Exception as e:
-        #         logger.error(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
-        # return np.vectorize(clean_and_log)(df_column)
+            return data_column

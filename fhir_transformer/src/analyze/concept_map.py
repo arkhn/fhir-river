@@ -58,11 +58,4 @@ class ConceptMap:
             return [self.translate(val) for val in data_column]
         except Exception as e:
             logger.error(f"{self.title}: Error mapping {col_name} (at id = {primary_key}): {e}")
-
-        # def map_and_log(val):
-        #     try:
-        #         return self.translate(val)
-        #     except Exception as e:
-        #         logger.error(f"{self.title}: Error mapping {col_name} (at id = {primary_key}): {e}")
-
-        # return np.vectorize(map_and_log)(df_column)
+            return data_column

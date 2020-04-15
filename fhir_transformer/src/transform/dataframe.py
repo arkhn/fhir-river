@@ -17,7 +17,7 @@ def apply_str(data):
     return data
 
 
-def clean_data(data, attributes: List[Attribute], primary_key_column):
+def clean_data(data, attributes: List[Attribute], primary_key):
     """ Apply cleaning scripts and concept maps.
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
@@ -42,16 +42,14 @@ def clean_data(data, attributes: List[Attribute], primary_key_column):
 
             # Apply cleaning script
             if col.cleaning_script:
-                # TODO add PK in func args
                 cleaned_data[attr_col_name] = col.cleaning_script.apply(
-                    cleaned_data[attr_col_name], dict_col_name, ("PK",)
+                    cleaned_data[attr_col_name], dict_col_name, primary_key
                 )
 
             # Apply concept map
             if col.concept_map:
-                # TODO add PK in func args
                 cleaned_data[attr_col_name] = col.concept_map.apply(
-                    cleaned_data[attr_col_name], dict_col_name, ("PK",)
+                    cleaned_data[attr_col_name], dict_col_name, primary_key
                 )
 
     return cleaned_data
@@ -135,7 +133,7 @@ def squash_rows(data, squash_rules, parent_cols=[]):
 
 
 def merge_attributes(
-    data, attributes: List[Attribute], primary_key_column,
+    data, attributes: List[Attribute], primary_key,
 ):
     """ Apply merging scripts.
     Takes as input a dict of the form
@@ -170,7 +168,7 @@ def merge_attributes(
                 [data[attr_path][col] for col in data[attr_path]],
                 attribute.static_inputs,
                 attr_path,
-                ("PK",),
+                primary_key,
             )
         else:
             attr_cols = list(data[attr_path].keys())

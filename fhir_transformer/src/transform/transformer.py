@@ -15,27 +15,24 @@ logger = create_logger("transformer")
 
 class Transformer:
     def transform_data(self, data, analysis):
+        # Get primary key value for logs
+        primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
+
         # Change values to strings
         logger.debug("Apply Map String")
         data = apply_str(data)
 
         # Apply cleaning scripts and concept map on data
         logger.debug("Apply Cleaning")
-        data = clean_data(data, analysis.attributes, analysis.primary_key_column)
-        logger.debug("1 -------")
-        logger.debug(data)
+        data = clean_data(data, analysis.attributes, primary_key)
 
         # Apply join rule to merge some lines from the same resource
         logger.debug("Apply Squash Rows")
         data = squash_rows(data, analysis.squash_rules)
-        logger.debug("2 -------")
-        logger.debug(data)
 
         # Apply merging scripts on data
         logger.debug("Apply Merging Scripts")
-        data = merge_attributes(data, analysis.attributes, analysis.primary_key_column)
-        logger.debug("3 -------")
-        logger.debug(data)
+        data = merge_attributes(data, analysis.attributes, primary_key)
         
         return data
 
