@@ -101,8 +101,6 @@ def run_resource(resource_mapping, analysis, primary_key_values=None):
 
     list_records_from_db = extractor.split_dataframe(df, analysis)
 
-    # serialize important part of the analysis for the Transformer
-    # serialized_analysis = serialize_analysis(analysis, resource_mapping)
     for record in list_records_from_db:
         logger.debug("One record from extract")
         event = dict()
