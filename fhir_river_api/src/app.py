@@ -5,8 +5,6 @@ from flask import Flask
 from flask import request
 from flask_restful import Api
 
-# from fhir_extractor.src.analyze.mapping import get_mapping
-# from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_river_api.src.config.logger import create_logger
 from fhir_river_api.src.errors import OperationOutcome
 from fhir_river_api.src.producer_class import RiverApiProducer
