@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from fhir_extractor.src.extract import Extractor
 from fhir_extractor.src.analyze import Analyzer
 
+from fhir_extractor.src.analyze.mapping import get_mapping
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.config.database_config import DatabaseConfig, get_db_url
@@ -41,6 +42,7 @@ def process_event(msg):
     logger.info(msg_value)
 
     try:
+        logger.debug("Getting Mapping")
         resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
         run_resource(resource_mapping, analysis, primary_key_values, batch_id)
@@ -55,6 +57,7 @@ def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=N
     """
     """
     resource_type = resource_mapping["definitionId"]
+    resource_id = resource_mapping["id"]
 
     # Extract
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
@@ -65,41 +68,19 @@ def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=N
             "is erroneous."
         )
 
-    list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
-
-    # serialize important part of the analysis for the Transformer
-    serialized_analysis = serialize_analysis(analysis, resource_mapping)
+    list_records_from_db = extractor.split_dataframe(df, analysis)
 
     for record in list_records_from_db:
+        logger.debug("One record from extract")
+        event = dict()
         event = {}
         event["batch_id"] = batch_id
         event["resource_type"] = resource_type
-        event["record"] = record
-        event["analysis"] = serialized_analysis
+        event["resource_id"] = resource_id
+        event["dataframe"] = record.to_dict(orient="list")
 
         topic = get_topic_name("mimic", resource_type, "extract")
         producer.produce_event(topic=topic, event=event)
-
-
-def serialize_analysis(analysis, resource_mapping):
-    """
-    Just a convenient helper function for now.
-    It shouldn't be used after the POC.
-    """
-    # TODO it's pretty gross to serialize and deserialize like this by hand
-    serialized_analysis = {}
-    serialized_analysis["attributes"] = [
-        (attr.path, attr.static_inputs) for attr in analysis.attributes
-    ]
-    serialized_analysis["source_id"] = resource_mapping["source"]["id"]
-    serialized_analysis["resource_id"] = resource_mapping["id"]
-    serialized_analysis["definition"] = {
-        "type": resource_mapping["definition"]["type"],
-        "kind": resource_mapping["definition"]["kind"],
-        "derivation": resource_mapping["definition"]["derivation"],
-        "url": resource_mapping["definition"]["url"],
-    }
-    return serialized_analysis
 
 
 def manage_kafka_error(msg):
@@ -116,7 +97,7 @@ if __name__ == "__main__":
 
     MAX_ERROR_COUNT = 3
     TOPIC = "extractor_trigger"
-        # [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
+    # [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
     GROUP_ID = "arkhn_extractor"
 
     consumer = ExtractorConsumer(
