@@ -1,5 +1,9 @@
 FROM python:3.7-slim
 
+# Dependencies
+RUN apt-get update \
+    && apt-get -y install build-essential
+
 ARG CONSUMER_HOME=/app
 ENV PYTHONPATH=${CONSUMER_HOME}
 

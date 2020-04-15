@@ -39,12 +39,14 @@ def extractor_sql_batch():
     """
     body = request.get_json()
     resource_ids = body.get("resourceIds", None)
-
+    logger.debug("Params obtained")
     try:
         # Get the resources we want to process from the pyrog mapping for a given source
+        logger.debug("Getting Mapping")
         resources = get_mapping(resource_ids=resource_ids)
 
         for resource_mapping in resources:
+            logger.debug("Analysing Resource")
             analysis = analyzer.analyze(resource_mapping)
 
             run_resource(resource_mapping, analysis)
@@ -63,8 +65,9 @@ def extractor_sql_single():
     body = request.get_json()
     resource_id = body.get("resourceId", None)
     primary_key_values = body.get("primaryKeyValues", None)
-
+    logger.debug("Params obtained")
     try:
+        logger.debug("Getting Mapping")
         resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
 
@@ -85,6 +88,7 @@ def run_resource(resource_mapping, analysis, primary_key_values=None):
     """
     """
     resource_type = resource_mapping["definitionId"]
+    resource_id = resource_mapping["id"]
 
     # Extract
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
@@ -95,40 +99,17 @@ def run_resource(resource_mapping, analysis, primary_key_values=None):
             "is erroneous."
         )
 
-    list_records_from_db = extractor.convert_df_to_list_records(df, analysis)
-
-    # serialize important part of the analysis for the Transformer
-    serialized_analysis = serialize_analysis(analysis, resource_mapping)
+    list_records_from_db = extractor.split_dataframe(df, analysis)
 
     for record in list_records_from_db:
-        event = {}
+        logger.debug("One record from extract")
+        event = dict()
         event["resource_type"] = resource_type
-        event["record"] = record
-        event["analysis"] = serialized_analysis
+        event["resource_id"] = resource_id
+        event["dataframe"] = record.to_dict(orient="list")
 
         topic = get_topic_name("mimic", resource_type, "extract")
         producer.produce_event(topic=topic, event=event)
-
-
-def serialize_analysis(analysis, resource_mapping):
-    """
-    Just a convenient helper function for now.
-    It shouldn't be used after the POC.
-    """
-    # TODO it's pretty gross to serialize and deserialize like this by hand
-    serialized_analysis = {}
-    serialized_analysis["attributes"] = [
-        (attr.path, attr.static_inputs) for attr in analysis.attributes
-    ]
-    serialized_analysis["source_id"] = resource_mapping["source"]["id"]
-    serialized_analysis["resource_id"] = resource_mapping["id"]
-    serialized_analysis["definition"] = {
-        "type": resource_mapping["definition"]["type"],
-        "kind": resource_mapping["definition"]["kind"],
-        "derivation": resource_mapping["definition"]["derivation"],
-        "url": resource_mapping["definition"]["url"],
-    }
-    return serialized_analysis
 
 
 if __name__ == "__main__":

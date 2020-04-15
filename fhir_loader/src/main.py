@@ -15,7 +15,6 @@ from fhir_loader.src.load import Loader
 from fhir_loader.src.load.fhirstore import get_fhirstore
 
 
-MAX_ERROR_COUNT = 3
 TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="transform")]
 GROUP_ID = "arkhn_loader"
 
@@ -40,8 +39,8 @@ def process_event(msg):
     """
     fhir_instance = json.loads(msg.value())
     msg_topic = msg.topic()
-    logger.info("Loader")
-    logger.info(msg_topic)
+    logger.debug("Loader")
+    logger.debug(fhir_instance)
 
     # TODO how will we handle override in fhir-river?
     if True:  # should be "if override:" or something like that

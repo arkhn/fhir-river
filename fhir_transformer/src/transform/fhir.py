@@ -1,23 +1,10 @@
 from collections import defaultdict
 from datetime import datetime
-import logging
 import re
 
+from fhir_transformer.src.config.logger import create_logger
 
-"""
-The analysis is provided as a dict containing:
-- "attributes": 
-    list of tuples containing at index:
-    - 0: the path of the attribute
-    - 1: the static inputs for the attribute
-- "source_id": the id of the source
-- "resource_id": the id of the resource
-- "definition": 
-    - "type": the type of the resource
-    - "kind": the kind of the resource
-    - "derivation": the derivation of the resource
-    - "url": the url of the resource
-"""
+logger = create_logger("transform_fhir")
 
 
 def recursive_defaultdict():
@@ -34,15 +21,15 @@ def build_metadata(analysis):
     # TODO systems here are hardcoded from fhirstore.
     # Maybe the loader should tag the items?
     metadata["tag"] = [
-        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis["source_id"]},
+        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis.source_id},
         {
             "system": "http://terminology.arkhn.org/CodeSystem/resource",
-            "code": analysis["resource_id"],
+            "code": analysis.resource_id,
         },
     ]
 
     # in case the definition is a profile, add the profile to the resource metadata
-    definition = analysis["definition"]
+    definition = analysis.definition
     if definition["kind"] == "resource" and definition["derivation"] == "constraint":
         metadata["profile"] = [definition["url"]]
 
@@ -57,7 +44,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
     arrays_done = set()
 
     for path, attr in path_attributes_map.items():
-        if attr[0] not in row and not attr[1]:
+        if attr.path not in row and not attr.static_inputs:
             # If columns and static_inputs are empty, it means that this attribute
             # is not a leaf and we don't need to do anything.
             continue
@@ -114,14 +101,14 @@ def build_fhir_object(row, path_attributes_map, index=None):
 
 
 def fetch_values_from_dataframe(row, attribute):
-    if attribute[0] in row:
-        return row[attribute[0]]
+    if attribute.path in row:
+        return row[attribute.path]
     else:
-        assert len(attribute[1]) == 1, (
+        assert len(attribute.static_inputs) == 1, (
             "The mapping contains an attribute with several static inputs "
             "(and no sql input nor merging script)"
         )
-        return attribute[1][0]
+        return attribute.static_inputs[0]
 
 
 def handle_array_attributes(attributes_in_array, row):

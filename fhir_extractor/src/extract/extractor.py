@@ -1,7 +1,6 @@
 from typing import List
 
 import pandas as pd
-import logging
 
 from sqlalchemy import create_engine, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
@@ -9,7 +8,6 @@ from sqlalchemy.orm import sessionmaker, Query
 from fhir_extractor.src.analyze.sql_column import SqlColumn
 from fhir_extractor.src.analyze.sql_join import SqlJoin
 from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.clean.dataframe import clean_dataframe, squash_rows, merge_dataframe
 
 logger = create_logger('fhir_extractor')
 
@@ -48,7 +46,7 @@ class Extractor:
         Returns:
             a pandas dataframe where there all the columns asked for in the mapping
         """
-        logging.info(f"Extracting resource: {resource_mapping['definitionId']}")
+        logger.info(f"Extracting resource: {resource_mapping['definitionId']}")
 
         # Build sqlalchemy query
         query = self.sqlalchemy_query(
@@ -62,12 +60,12 @@ class Extractor:
         return self.run_sql_query(query)
 
     def sqlalchemy_query(
-        self,
-        columns: List[SqlColumn],
-        joins: List[SqlJoin],
-        pk_column: SqlColumn,
-        resource_mapping,
-        pk_values,
+            self,
+            columns: List[SqlColumn],
+            joins: List[SqlJoin],
+            pk_column: SqlColumn,
+            resource_mapping,
+            pk_values,
     ) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
         """
@@ -91,7 +89,7 @@ class Extractor:
         return query
 
     def apply_filters(
-        self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
+            self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
     ) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.
         """
@@ -124,7 +122,7 @@ class Extractor:
             the result of the sql query
         """
         query = query.statement
-        logging.info(f"sql query: {query}")
+        logger.info(f"sql query: {query}")
 
         pd_query = pd.read_sql_query(query, con=self.engine)
 
@@ -154,27 +152,18 @@ class Extractor:
         )
 
     @staticmethod
-    def convert_df_to_list_records(df, analysis):
-        """
-        Clean dataframe.
-        Mainly here because of the sqaush_rows for the moment.
-        """
-        # TODO This shouldn't be in the extract
-        # Change not string value to strings (to be validated by jsonSchema for resource)
-        df = df.applymap(lambda value: str(value) if value is not None else None)
+    def split_dataframe(df, analysis):
+        # Find primary key column
+        logger.debug("Splitting Dataframe")
+        # TODO I don't think it's necessarily present in the df
+        pk_col = analysis.primary_key_column.dataframe_column_name()
 
-        # Apply cleaning scripts and concept map on df
-        df = clean_dataframe(df, analysis.attributes, analysis.primary_key_column)
-
-        # Apply join rule to merge some lines from the same resource
-        logging.info("Squashing rows...")
-        df = squash_rows(df, analysis.squash_rules)
-
-        # Apply merging scripts on df
-        df = merge_dataframe(df, analysis.attributes, analysis.primary_key_column)
-
-        # TODO we cannot serialize the dataframe with keys being objects
-        # is path sufficient or do we want something to better identify the original 
-        # Attribute and retrieve it in the Transformer?
-        df.columns = [attr.path for attr in df.columns]
-        return df.to_dict(orient='records')
+        prev_pk_val = None
+        acc = []
+        for _, row in df.iterrows():
+            if acc and row[pk_col] != prev_pk_val:
+                yield pd.DataFrame(acc, columns=df.columns)
+                acc = []
+            acc.append(row)
+            prev_pk_val = row[pk_col]
+        yield pd.DataFrame(acc, columns=df.columns)

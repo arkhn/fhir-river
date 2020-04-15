@@ -1,10 +1,9 @@
 from typing import TypeVar
-import numpy as np
 import os
 import requests
 
-from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.errors import OperationOutcome
+from fhir_transformer.src.config.logger import create_logger
+from fhir_transformer.src.errors import OperationOutcome
 
 logger = create_logger("concept_map")
 
@@ -54,11 +53,9 @@ class ConceptMap:
     def translate(self, source_code: str) -> str:
         return self.mapping[source_code]
 
-    def apply(self, df_column, pk_column):
-        def map_and_log(val, id=None, col=None):
-            try:
-                return self.translate(val)
-            except Exception as e:
-                logger.error(f"{self.title}: Error mapping {col} (at id = {id}): {e}")
-
-        return np.vectorize(map_and_log)(df_column, id=pk_column, col=df_column.name[0])
+    def apply(self, data_column, col_name, primary_key):
+        try:
+            return [self.translate(val) for val in data_column]
+        except Exception as e:
+            logger.error(f"{self.title}: Error mapping {col_name} (at id = {primary_key}): {e}")
+            return data_column
