@@ -27,7 +27,6 @@ def process_event(msg):
     """
     # Do stuff
     msg_value = json.loads(msg.value())
-    msg_topic = msg.topic()
     logger.debug("Transformer")
     logger.debug(msg_value)
 
