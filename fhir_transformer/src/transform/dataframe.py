@@ -95,26 +95,31 @@ def squash_rows(data, squash_rules, parent_cols=[]):
 
     cols_to_squash = [col for col in data if col not in pivot_cols]
 
-    len_data = len(list(data.values())[0])
-
     for child_rule in child_rules:
         # Recursion to apply child rules
         data = squash_rows(data, child_rule, pivot_cols)
 
     # Build the groups
-    groups = defaultdict(list)
+    groups = defaultdict(set)
+    len_data = len(list(data.values())[0])
+
     for i in range(len_data):
         pivot_tuple = tuple(data[col][i] for col in pivot_cols)
         to_squash_tuple = tuple(data[col][i] for col in cols_to_squash)
-        groups[pivot_tuple].append(to_squash_tuple)
+        groups[pivot_tuple].add(to_squash_tuple)
 
+    # Rebuild a dict with the different groups
     squashed_data = defaultdict(lambda: defaultdict(list))
     for group_pivot, group_squashed in groups.items():
+        # Compute length of sqaushed groups
+        len_squashed = len(next(iter(group_squashed)))
+
+        # Add pivot data
         for pivot_col, pivot_val in zip(pivot_cols, group_pivot):
             squashed_data[pivot_col[0]][pivot_col[1]].append(pivot_val)
-        squashed_vals = [
-            tuple(tup[i] for tup in group_squashed) for i in range(len(group_squashed[0]))
-        ]
+
+        # Add squashed columns
+        squashed_vals = [tuple(tup[i] for tup in group_squashed) for i in range(len_squashed)]
         for to_squash_col, squashed_val in zip(cols_to_squash, squashed_vals):
             squashed_data[to_squash_col[0]][to_squash_col[1]].append(squashed_val)
 
