@@ -141,4 +141,4 @@ Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.i
 - [JDBC Source Connector](https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/index.html)
 - [MongoDB Sink Connector](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
 - [JBDCSourceConnectors Example](https://www.confluent.io/blog/kafka-connect-deep-dive-jdbc-source-connector/#specifying-tables)
-
+- [Kafka Command Line Tools](https://kafka.apache.org/quickstart)
