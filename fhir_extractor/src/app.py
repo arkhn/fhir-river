@@ -39,7 +39,7 @@ def extractor_sql_batch():
     """
     body = request.get_json()
     resource_ids = body.get("resourceIds", None)
-
+    logger.debug("Params obtained")
     try:
         # Get the resources we want to process from the pyrog mapping for a given source
         logger.debug("Getting Mapping")
@@ -67,6 +67,7 @@ def extractor_sql_single():
     primary_key_values = body.get("primaryKeyValues", None)
     logger.debug("Params obtained")
     try:
+        logger.debug("Getting Mapping")
         resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
 

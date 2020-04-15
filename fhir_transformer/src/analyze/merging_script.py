@@ -1,6 +1,4 @@
 from typing import List
-
-import numpy as np
 import logging
 
 import scripts
@@ -14,16 +12,13 @@ class MergingScript:
     def __eq__(self, operand) -> bool:
         return self.name == operand.name
 
-    def apply(self, df_columns, static_inputs: List[str], pk_column):
-
-        def merge_and_log(*val, id=None, cols=None):
-            try:
-                return self.script(*val)
-            except Exception as e:
-                logging.error(
-                    f"{self.name}: Error merging columns "
-                    f"{''.join([col.name for col in df_columns])} (at id={id}): {e}"
-                )
-
-        args = df_columns + static_inputs
-        return np.vectorize(merge_and_log)(*args, id=pk_column)
+    def apply(self, data_columns, static_inputs: List[str], attr_path, primary_key):
+        try: 
+            args = data_columns + static_inputs
+            return self.script(*args)
+        except Exception as e:
+            logging.error(
+                f"{self.name}: Error merging columns for attribute at path "
+                f"{attr_path} (at id={primary_key}): {e}"
+            )
+            return data_column

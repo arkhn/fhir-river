@@ -2,7 +2,6 @@
 
 import json
 import os
-import pandas as pd
 from confluent_kafka import KafkaException, KafkaError
 
 from fhir_transformer.src.analyze import Analyzer
@@ -28,7 +27,6 @@ def process_event(msg):
     """
     # Do stuff
     msg_value = json.loads(msg.value())
-    msg_topic = msg.topic()
     logger.debug("Transformer")
     logger.debug(msg_value)
 
@@ -36,23 +34,19 @@ def process_event(msg):
         logger.debug("Get Analysis")
         analysis = analyzer.get_analysis(msg_value["resource_id"])
 
-        logger.debug("Convert to Df")
-        df = pd.DataFrame.from_dict(msg_value["dataframe"])
+        data = msg_value["dataframe"]
         logger.debug("Transform Df")
-        df = transformer.transform_dataframe(df, analysis)
+        data = transformer.transform_data(data, analysis)
 
-        # TODO clean here
-        # assert len(df) == 1
-        row = df.iloc[0]
         logger.debug("Create FHIR Doc")
-        fhir_document = transformer.create_fhir_document(row, analysis)
+        fhir_document = transformer.create_fhir_document(data, analysis)
 
         topic = get_topic_name(
             source="mimic", resource=msg_value["resource_type"], task_type="transform"
         )
         producer.produce_event(topic=topic, record=fhir_document)
 
-    except KeyError as err:
+    except Exception as err:
         logger.error(err)
 
 
