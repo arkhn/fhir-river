@@ -10,16 +10,20 @@ logger = create_logger("transformer")
 
 class Transformer:
     def transform_dataframe(self, df, analysis):
+        logger.debug("Apply Map")
         df = df.applymap(lambda value: str(value) if value is not None else None)
 
         # Apply cleaning scripts and concept map on df
+        logger.debug("Apply Cleaning")
         df = clean_dataframe(df, analysis.attributes, analysis.primary_key_column)
 
         # TODO can we simplify/optimize this now that we know that we'll only get one row?
         # Apply join rule to merge some lines from the same resource
+        logger.debug("Apply Squash Rows")
         df = squash_rows(df, analysis.squash_rules)
 
         # Apply merging scripts on df
+        logger.debug("Apply Merging Scripts")
         df = merge_dataframe(df, analysis.attributes, analysis.primary_key_column)
 
         return df

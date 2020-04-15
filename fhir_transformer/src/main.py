@@ -29,20 +29,22 @@ def process_event(msg):
     # Do stuff
     msg_value = json.loads(msg.value())
     msg_topic = msg.topic()
-    logger.info("Transformer")
-    logger.info(msg_topic)
-    logger.info(msg_value)
+    logger.debug("Transformer")
+    logger.debug(msg_value)
 
     try:
+        logger.debug("Get Analysis")
         analysis = analyzer.get_analysis(msg_value["resource_id"])
 
+        logger.debug("Convert to Df")
         df = pd.DataFrame.from_dict(msg_value["dataframe"])
+        logger.debug("Transform Df")
         df = transformer.transform_dataframe(df, analysis)
 
         # TODO clean here
-        assert len(df) == 1
+        # assert len(df) == 1
         row = df.iloc[0]
-
+        logger.debug("Create FHIR Doc")
         fhir_document = transformer.create_fhir_document(row, analysis)
 
         topic = get_topic_name(

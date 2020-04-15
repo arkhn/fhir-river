@@ -39,8 +39,8 @@ def process_event(msg):
     """
     fhir_instance = json.loads(msg.value())
     msg_topic = msg.topic()
-    logger.info("Loader")
-    logger.info(msg_topic)
+    logger.debug("Loader")
+    logger.debug(fhir_instance)
 
     # TODO how will we handle override in fhir-river?
     if True:  # should be "if override:" or something like that
