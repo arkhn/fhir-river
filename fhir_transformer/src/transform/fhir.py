@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import datetime
-import numpy as np
 import re
 
 from fhir_transformer.src.config.logger import create_logger
@@ -154,9 +153,9 @@ def insert_in_fhir_object(fhir_object, path, value):
     elif value is None or value == "" or value == {}:
         # If value is None, we don't want to do anything so we stop here.
         return
-    elif isinstance(value, np.bool_):
-        # I need to do this because numpy bool_ is not serializable
-        val = bool(value)
+    # elif isinstance(value, np.bool_):
+    #     # I need to do this because numpy bool_ is not serializable
+    #     val = bool(value)
     else:
         val = value
 

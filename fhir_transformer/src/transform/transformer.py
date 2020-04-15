@@ -1,7 +1,12 @@
 from uuid import uuid4
 
 from fhir_transformer.src.transform.fhir import build_fhir_object, build_metadata, clean_fhir_object
-from fhir_transformer.src.transform.dataframe import clean_dataframe, squash_rows, merge_dataframe
+from fhir_transformer.src.transform.dataframe import (
+    apply_str,
+    clean_data,
+    squash_rows,
+    merge_attributes,
+)
 
 from fhir_transformer.src.config.logger import create_logger
 
@@ -9,33 +14,40 @@ logger = create_logger("transformer")
 
 
 class Transformer:
-    def transform_dataframe(self, df, analysis):
-        logger.debug("Apply Map")
-        df = df.applymap(lambda value: str(value) if value is not None else None)
+    def transform_data(self, data, analysis):
+        # Change values to strings
+        logger.debug("Apply Map String")
+        data = apply_str(data)
 
-        # Apply cleaning scripts and concept map on df
+        # Apply cleaning scripts and concept map on data
         logger.debug("Apply Cleaning")
-        df = clean_dataframe(df, analysis.attributes, analysis.primary_key_column)
+        data = clean_data(data, analysis.attributes, analysis.primary_key_column)
+        logger.debug("1 -------")
+        logger.debug(data)
 
-        # TODO can we simplify/optimize this now that we know that we'll only get one row?
         # Apply join rule to merge some lines from the same resource
         logger.debug("Apply Squash Rows")
-        df = squash_rows(df, analysis.squash_rules)
+        data = squash_rows(data, analysis.squash_rules)
+        logger.debug("2 -------")
+        logger.debug(data)
 
-        # Apply merging scripts on df
+        # Apply merging scripts on data
         logger.debug("Apply Merging Scripts")
-        df = merge_dataframe(df, analysis.attributes, analysis.primary_key_column)
+        data = merge_attributes(data, analysis.attributes, analysis.primary_key_column)
+        logger.debug("3 -------")
+        logger.debug(data)
+        
+        return data
 
-        return df
 
-    def create_fhir_document(self, row, analysis):
+    def create_fhir_document(self, data, analysis):
         """ Function used to create a single FHIR instance.
         """
         # Modify the data structure so that it is easier to use
         path_attributes_map = {attr.path: attr for attr in analysis.attributes}
 
         # Build path value map
-        fhir_object = build_fhir_object(row, path_attributes_map)
+        fhir_object = build_fhir_object(data, path_attributes_map)
 
         # Identify the fhir object
         fhir_object["id"] = str(uuid4())

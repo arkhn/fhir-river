@@ -1,6 +1,3 @@
-import inspect
-import numpy as np
-
 import scripts
 
 from fhir_transformer.src.config.logger import create_logger
@@ -20,11 +17,15 @@ class CleaningScript:
     def __eq__(self, operand) -> bool:
         return self.name == operand.name
 
-    def apply(self, df_column, pk_column):
-        def clean_and_log(val, id=None, col=None):
-            try:
-                return self.script(val)
-            except Exception as e:
-                logger.error(f"{self.name}: Error cleaning {col} (at id = {id}): {e}")
+    def apply(self, data_column, col_name, primary_key):
+        try:
+            return [self.script(val) for val in data_column]
+        except Exception as e:
+            logger.error(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
 
-        return np.vectorize(clean_and_log)(df_column, id=pk_column, col=df_column.name[0])
+        # def clean_and_log(val):
+        #     try:
+        #         return self.script(val)
+        #     except Exception as e:
+        #         logger.error(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
+        # return np.vectorize(clean_and_log)(df_column)
