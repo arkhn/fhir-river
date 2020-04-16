@@ -42,7 +42,7 @@ def process_event(msg):
 
     try:
         logger.debug("Getting Mapping")
-        resource_mapping = get_resource_from_id(resource_id=resource_id)g
+        resource_mapping = get_resource_from_id(resource_id=resource_id)
         analysis = analyzer.analyze(resource_mapping)
         run_resource(resource_mapping, analysis, primary_key_values, batch_id)
 
