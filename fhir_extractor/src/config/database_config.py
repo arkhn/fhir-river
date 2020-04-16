@@ -15,13 +15,3 @@ def get_db_url():
     )
 
     return db_url
-
-
-class DatabaseConfig(object):
-    """
-    Config object used for poeta database connection
-    """
-
-    SQLALCHEMY_DATABASE_URI = get_db_url()
-    SQLALCHEMY_POOL_SIZE = 10
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
