@@ -25,9 +25,9 @@ def trigger_sample_extractor():
     Extract record for the specified resource and primary key value
     """
     body = request.get_json()
-    resource_id = body.get("resourceId", None)
-    primary_key_values = body.get("primaryKeyValues", None)
-    batch_id = uuid.uuid4()
+    resource_id = body.get("resource_id", None)
+    primary_key_values = body.get("primary_key_values", None)
+    batch_id = uuid.uuid4().hex
 
     try:
         create_extractor_trigger(resource_id, batch_id, primary_key_values)
@@ -43,8 +43,8 @@ def trigger_batch_extractor():
     Extract all records for the specified resources
     """
     body = request.get_json()
-    resource_ids = body.get("resourceIds", None)
-    batch_id = uuid.uuid4()
+    resource_ids = body.get("resource_ids", None)
+    batch_id = uuid.uuid4().hex
 
     try:
         for resource_id in resource_ids:

@@ -50,24 +50,24 @@ The api has 2 endpoints:
 - POST `/run_batch`
 Triggers a batch run.
 Arguments (in body):
-- `resourceIds`: a list of the ids of the resources to transform.
+- `rresource_ids`: a list of the ids of the resources to transform.
 
 
 - POST `/run_sample` 
 Arguments (in body):
-- `resourceId`(singular!) containing the id of the resource to transform
-- `primaryKeyValues`containing a list of the primary key values of the rows to transform.
+- `rresource_id`(singular!) containing the id of the resource to transform
+- `primary_key_values`containing a list of the primary key values of the rows to transform.
 
 *Example of request*
 
 - Batch events:
 ```
-curl -X POST http://localhost:5000/run_batch -d '{"resourceIds": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
+curl -X POST http://localhost:5000/run_batch -d '{"resource_ids": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
 ```
 
 - Single event:
 ```
-curl -X POST http://localhost:5000/run_sample -d '{"resourceId": "<id of the resource>", "primaryKeyValues": ["<primary key value>"]}' -H "Content-Type:application/json"
+curl -X POST http://localhost:5000/run_sample -d '{"resource_id": "<id of the resource>", "primary_key_values": ["<primary key value>"]}' -H "Content-Type:application/json"
 ```
 
 Event produced:
