@@ -9,7 +9,7 @@ from fhir_extractor.src.analyze.sql_column import SqlColumn
 from fhir_extractor.src.analyze.sql_join import SqlJoin
 from fhir_extractor.src.config.logger import create_logger
 
-logger = create_logger('fhir_extractor')
+logger = create_logger("fhir_extractor")
 
 SQL_RELATIONS_TO_METHOD = {
     "<": "__lt__",
@@ -60,19 +60,21 @@ class Extractor:
         return self.run_sql_query(query)
 
     def sqlalchemy_query(
-            self,
-            columns: List[SqlColumn],
-            joins: List[SqlJoin],
-            pk_column: SqlColumn,
-            resource_mapping,
-            pk_values,
+        self,
+        columns: List[SqlColumn],
+        joins: List[SqlJoin],
+        pk_column: SqlColumn,
+        resource_mapping,
+        pk_values,
     ) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
         """
         alchemy_cols = self.get_columns(columns)
         base_query = self.session.query(*alchemy_cols)
         query_w_joins = self.apply_joins(base_query, joins)
-        query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, pk_values)
+        query_w_filters = self.apply_filters(
+            query_w_joins, resource_mapping, pk_column, pk_values
+        )
 
         return query_w_filters
 
@@ -89,7 +91,7 @@ class Extractor:
         return query
 
     def apply_filters(
-            self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
+        self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
     ) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.
         """
@@ -148,7 +150,11 @@ class Extractor:
         from the analysis.
         """
         return Table(
-            column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True
+            column.table,
+            self.metadata,
+            schema=column.owner,
+            keep_existing=True,
+            autoload=True,
         )
 
     @staticmethod

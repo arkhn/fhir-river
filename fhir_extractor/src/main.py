@@ -30,13 +30,13 @@ def process_event(msg):
     :return:
     """
     msg_value = json.loads(msg.value())
-    resource_id = msg_value.get('resource_id', None)
-    primary_key_values = msg_value.get('primary_key_values', None)
-    batch_id = msg_value.get('batch_id', None)
+    resource_id = msg_value.get("resource_id", None)
+    primary_key_values = msg_value.get("primary_key_values", None)
+    batch_id = msg_value.get("batch_id", None)
 
     msg_topic = msg.topic()
 
-    logger.info('Events Ready to be processed')
+    logger.info("Events Ready to be processed")
     logger.info(msg_topic)
     logger.info(msg_value)
 
@@ -72,7 +72,6 @@ def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=N
     for record in list_records_from_db:
         logger.debug("One record from extract")
         event = dict()
-        event = {}
         event["batch_id"] = batch_id
         event["resource_type"] = resource_type
         event["resource_id"] = resource_id

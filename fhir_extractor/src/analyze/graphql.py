@@ -133,15 +133,21 @@ def run_graphql_query(graphql_query, variables=None):
 
 
 def get_credentials(credential_id):
-    resp = run_graphql_query(credential_query, variables={"credentialId": credential_id})
+    resp = run_graphql_query(
+        credential_query, variables={"credentialId": credential_id}
+    )
     credentials = resp["data"]["credential"]
     if not credentials:
-        raise OperationOutcome(f"Database using credentials ID {credential_id} does not exist")
+        raise OperationOutcome(
+            f"Database using credentials ID {credential_id} does not exist"
+        )
     return credentials
 
 
 def get_resource_from_id(resource_id):
-    resp = run_graphql_query(resource_from_id_query, variables={"resourceId": resource_id})
+    resp = run_graphql_query(
+        resource_from_id_query, variables={"resourceId": resource_id}
+    )
     resource = resp["data"]["resource"]
     if not resource:
         raise OperationOutcome(f"Resource with id {resource_id} does not exist")

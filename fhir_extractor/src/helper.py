@@ -9,4 +9,4 @@ def get_topic_name(source, resource, task_type):
     :param task_type: `extract` or `transform`
     :return:
     """
-    return '-'.join([source, resource, task_type])
+    return "-".join([source, resource, task_type])

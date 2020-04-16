@@ -8,7 +8,7 @@ from flask_restful import Api
 from fhir_river_api.src.config.logger import create_logger
 from fhir_river_api.src.errors import OperationOutcome
 from fhir_river_api.src.producer_class import RiverApiProducer
-import time
+import uuid
 
 logger = create_logger("fhir_river_api")
 
@@ -27,7 +27,7 @@ def trigger_sample_extractor():
     body = request.get_json()
     resource_id = body.get("resourceId", None)
     primary_key_values = body.get("primaryKeyValues", None)
-    batch_id = "batch_{time_sec}".format(time_sec=round(time.time()))
+    batch_id = uuid.uuid4()
 
     try:
         create_extractor_trigger(resource_id, batch_id, primary_key_values)
@@ -44,7 +44,7 @@ def trigger_batch_extractor():
     """
     body = request.get_json()
     resource_ids = body.get("resourceIds", None)
-    batch_id = "batch_{time_sec}".format(time_sec=round(time.time()))
+    batch_id = uuid.uuid4()
 
     try:
         for resource_id in resource_ids:
@@ -70,11 +70,11 @@ def create_extractor_trigger(resource_id, batch_id=None, primary_key_values=None
     """
 
     event = dict()
-    event['batch_id'] = batch_id
-    event['resource_id'] = resource_id
-    event['primary_key_values'] = primary_key_values
+    event["batch_id"] = batch_id
+    event["resource_id"] = resource_id
+    event["primary_key_values"] = primary_key_values
 
-    producer.produce_event(topic='extractor_trigger', event=event)
+    producer.produce_event(topic="extractor_trigger", event=event)
 
 
 if __name__ == "__main__":

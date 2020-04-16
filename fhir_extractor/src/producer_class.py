@@ -5,14 +5,11 @@ import datetime
 from confluent_kafka import Producer
 from fhir_extractor.src.config.logger import create_logger
 
-logger = create_logger('extractor_sql')
+logger = create_logger("extractor_sql")
 
 
 class ExtractorProducer:
-
-    def __init__(self,
-                 broker=None,
-                 callback_function=None):
+    def __init__(self, broker=None, callback_function=None):
         """
         Instantiate the class and create the consumer object
         :param broker: host[:port]’ string (or list of ‘host[:port]’ strings) that the consumer should contact to
@@ -22,7 +19,9 @@ class ExtractorProducer:
         """
         self.broker = broker
         self.partition = 0
-        self.callback_function = callback_function if callback_function else self.callback_fn
+        self.callback_function = (
+            callback_function if callback_function else self.callback_fn
+        )
 
         # Create consumer
         self.producer = Producer(self._generate_config())
@@ -32,8 +31,7 @@ class ExtractorProducer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {'bootstrap.servers': self.broker,
-                  'session.timeout.ms': 6000}
+        config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
         return config
 
     def produce_event(self, topic, event):
@@ -44,9 +42,13 @@ class ExtractorProducer:
         :return:
         """
         try:
-            self.producer.produce(topic=topic,
-                                  value=json.dumps(event, default=self.default_json_encoder),
-                                  callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj))
+            self.producer.produce(
+                topic=topic,
+                value=json.dumps(event, default=self.default_json_encoder),
+                callback=lambda err, msg, obj=event: self.callback_function(
+                    err, msg, obj
+                ),
+            )
             self.producer.poll(1)  # Callback function
         except ValueError as error:
             logger.error(error)
@@ -68,7 +70,10 @@ class ExtractorProducer:
         This allows the original contents to be included for debugging purposes.
         """
         if err is not None:
-            logger.debug('Message {} delivery failed with error {} for topic {}'.format(
-                obj, err, msg.topic()))
+            logger.debug(
+                "Message {} delivery failed with error {} for topic {}".format(
+                    obj, err, msg.topic()
+                )
+            )
         else:
             logger.debug("Event Successfully created")

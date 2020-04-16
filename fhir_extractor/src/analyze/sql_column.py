@@ -1,9 +1,6 @@
 class SqlColumn:
     def __init__(
-        self,
-        table: str,
-        column: str,
-        owner: str = None,
+        self, table: str, column: str, owner: str = None,
     ):
         self.table = table.strip()
         self.column = column.strip()
@@ -11,7 +8,9 @@ class SqlColumn:
 
     def __eq__(self, other) -> bool:
         return (
-            self.table == other.table and self.column == other.column and self.owner == other.owner
+            self.table == other.table
+            and self.column == other.column
+            and self.owner == other.owner
         )
 
     def __str__(self) -> str:
