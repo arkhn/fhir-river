@@ -1,9 +1,5 @@
 FROM python:3.7-slim
 
-# Dependencies
-RUN apt-get update \
-    && apt-get -y install build-essential
-
 ARG EXTRACTOR_SQL_HOME=/app
 ENV PYTHONPATH=${EXTRACTOR_SQL_HOME}
 

@@ -22,7 +22,7 @@ producer = RiverApiProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 @app.route("/run_sample", methods=["POST"])
 def trigger_sample_extractor():
     """
-    Extract all records for the specified resource
+    Extract record for the specified resource and primary key value
     """
     body = request.get_json()
     resource_id = body.get("resourceId", None)
@@ -40,7 +40,7 @@ def trigger_sample_extractor():
 @app.route("/run_batch", methods=["POST"])
 def trigger_batch_extractor():
     """
-    Extract all records for the specified resource
+    Extract all records for the specified resources
     """
     body = request.get_json()
     resource_ids = body.get("resourceIds", None)

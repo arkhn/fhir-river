@@ -8,10 +8,9 @@ from sqlalchemy import create_engine
 from fhir_extractor.src.extract import Extractor
 from fhir_extractor.src.analyze import Analyzer
 
-from fhir_extractor.src.analyze.mapping import get_mapping
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.config.database_config import DatabaseConfig, get_db_url
+from fhir_extractor.src.config.database_config import get_db_url
 from fhir_extractor.src.errors import OperationOutcome
 from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
@@ -32,7 +31,7 @@ def process_event(msg):
     """
     msg_value = json.loads(msg.value())
     resource_id = msg_value.get('resource_id', None)
-    primary_key_values = msg_value.get('primaryKeyValues', None)
+    primary_key_values = msg_value.get('primary_key_values', None)
     batch_id = msg_value.get('batch_id', None)
 
     msg_topic = msg.topic()
@@ -43,7 +42,7 @@ def process_event(msg):
 
     try:
         logger.debug("Getting Mapping")
-        resource_mapping = get_resource_from_id(resource_id=resource_id)
+        resource_mapping = get_resource_from_id(resource_id=resource_id)g
         analysis = analyzer.analyze(resource_mapping)
         run_resource(resource_mapping, analysis, primary_key_values, batch_id)
 

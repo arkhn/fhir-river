@@ -1,9 +1,5 @@
 FROM python:3.7-slim
 
-# Dependencies
-RUN apt-get update \
-    && apt-get -y install build-essential
-
 ARG FHIR_RIVER_API_HOME=/test
 ENV PYTHONPATH=${FHIR_RIVER_API_HOME}
 
