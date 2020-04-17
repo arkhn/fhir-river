@@ -46,8 +46,7 @@ class Analyzer:
             logger.debug("Fetching mapping from api.")
             resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
             self.analyze(resource_mapping)
-        else:
-            self.refresh_analyser(resource_mapping_id)
+
         return self.analyses[resource_mapping_id]
 
     # TODO add an update_analysis(self, resource_mapping_id)?
