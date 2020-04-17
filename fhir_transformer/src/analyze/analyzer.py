@@ -23,32 +23,36 @@ class Analyzer:
         # storing here, for instance?
         self.analyses = {}
         self._cur_analysis = Analysis()
-        self.last_updated_at = time.time()
-
-    def refresh_analyser(self, resource_mapping_id, max_seconds_refresh=10):
-        """
-        This method refreshes the analyser if the last update was later than `max_seconds_refresh`
-        :return:
-        """
-
-        if time.time() - self.last_updated_at > max_seconds_refresh:
-            logger.debug("Analyser too old. Fetching mapping from API...")
-            resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
-            self.analyze(resource_mapping)
-            logger.debug("Mapping loaded.")
-
-            self.last_updated_at = time.time()
-        else:
-            logger.debug("Mapping already exists and not too old.")
+        self.last_updated_at = {}  # Store last updated timestamp for each resource_mapping_id
 
     def get_analysis(self, resource_mapping_id):
         if resource_mapping_id not in self.analyses:
-            logger.debug("Fetching mapping from api.")
-            resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
-            self.analyze(resource_mapping)
+            self.update_analysis(resource_mapping_id)
         else:
-            self.refresh_analyser(resource_mapping_id)
+            self.check_refresh_analysis(resource_mapping_id)
         return self.analyses[resource_mapping_id]
+
+    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh=10):
+        """
+        This method refreshes the analyser if the last update was later than `max_seconds_refresh` for each resource
+        :return:
+        """
+        if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
+            logger.debug("Analysis too old for mapping_resource_id.")
+            self.update_analysis(resource_mapping_id)
+        else:
+            logger.debug("Analysis was updated recently. Using cached analysis.")
+
+    def update_analysis(self, resource_mapping_id):
+        """
+        Fetch mapping from API and store last updated timestamp
+        :param resource_mapping_id:
+        :return:
+        """
+        logger.debug("Fetching mapping from api.")
+        resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
+        self.analyze(resource_mapping)
+        self.last_updated_at[resource_mapping_id] = time.time()
 
     # TODO add an update_analysis(self, resource_mapping_id)?
 
