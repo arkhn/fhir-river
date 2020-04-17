@@ -37,39 +37,59 @@ but it works fine just to test that it works).
 (make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_transformer/src/main.py:9` 
 in the variable `TOPICS`.
 
+## FHIR River API
+
+The `fhir_river_api` container is a Flask App with an API.
+This API enables us to trigger a run of the ETL (sample or batch).
+
+To do so, it produces an event in a Kafka topic listened by the extractor with the arguments received via the endpoints
+It also adds a batch_id to be used as unique identifier of a batch of event in the following steps (E,T,L)) 
+
+The api has 2 endpoints:
+
+- POST `/run_batch`
+Triggers a batch run.
+Arguments (in body):
+- `rresource_ids`: a list of the ids of the resources to transform.
+
+
+- POST `/run_sample` 
+Arguments (in body):
+- `rresource_id`(singular!) containing the id of the resource to transform
+- `primary_key_values`containing a list of the primary key values of the rows to transform.
+
+*Example of request*
+
+- Batch events:
+```
+curl -X POST http://localhost:5000/run_batch -d '{"resource_ids": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
+```
+
+- Single event:
+```
+curl -X POST http://localhost:5000/run_sample -d '{"resource_id": "<id of the resource>", "primary_key_values": ["<primary key value>"]}' -H "Content-Type:application/json"
+```
+
+Event produced:
+{
+    string batch_id;
+    string resource_id;
+    string primary_key_values (None if batch )
+}
+
 ## FHIR Extractor
 
-The `fhir_extractor` container is a Flask App with an API. This API enables us to query a database, convert the results 
-to records and produce them as event to Kafka.
+The `fhir_extractor` includes a Kafka consumer and a Kafka producer
 
 The Extractor works as follows:
+- the consumer listends to the topic 'extractor_trigger', when it receives an event it triggers the following steps
 - it fetches the mapping. Currently from a static file but it should eventually be able to query mappings from Pyrog.
 - it analyzes it to store useful information about it.
 - it builds an sql query and run it to get the information necessary from the source DB.
 - it cleans the resulting dataframe (eventually, this shouldn't be done here).
 - it produces an event for each row (thus for each fhir instance we'll create) and sends it.
 
-2 endpoints:
 
-- POST `/batch`
-
-In the body of the query should be a field `resourceIds`containing a list of the ids of the resources to transform.
-
-- POST `/sample` 
-
-In the body of the query should be a field `resourceId`(singular!) containing the id of the resource to transform and a field `primaryKeyValues`containing a list of the primary key values of the rows to transform.
-
-*Example of request*
-
-- Batch events:
-```
-curl -X POST http://localhost:5000/batch -d '{"resourceIds": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
-```
-
-- Single event:
-```
-curl -X POST http://localhost:5000/sample -d '{"resourceId": "<id of the resource>", "primaryKeyValues": ["<primary key value>"]}' -H "Content-Type:application/json"
-```
 
 ### Environment variables
 
@@ -141,4 +161,4 @@ Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.i
 - [JDBC Source Connector](https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/index.html)
 - [MongoDB Sink Connector](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
 - [JBDCSourceConnectors Example](https://www.confluent.io/blog/kafka-connect-deep-dive-jdbc-source-connector/#specifying-tables)
-
+- [Kafka Command Line Tools](https://kafka.apache.org/quickstart)

@@ -3,12 +3,12 @@
 import json
 import datetime
 from confluent_kafka import Producer
-from fhir_extractor.src.config.logger import create_logger
+from fhir_river_api.src.config.logger import create_logger
 
-logger = create_logger("extractor_sql")
+logger = create_logger("fhir_river_api_producer")
 
 
-class ExtractorProducer:
+class RiverApiProducer:
     def __init__(self, broker=None, callback_function=None):
         """
         Instantiate the class and create the consumer object
