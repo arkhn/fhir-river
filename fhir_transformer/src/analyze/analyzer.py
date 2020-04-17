@@ -27,7 +27,7 @@ class Analyzer:
 
     def refresh_analyser(self, resource_mapping_id, max_seconds_refresh=10):
         """
-        This method refreshes the analyser if the last update was later than 4 hours ago.
+        This method refreshes the analyser if the last update was later than `max_seconds_refresh`
         :return:
         """
 
