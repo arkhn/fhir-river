@@ -27,23 +27,23 @@ class Analyzer:
 
     def get_analysis(self, resource_mapping_id):
         if resource_mapping_id not in self.analyses:
-            self.update_analysis(resource_mapping_id)
+            self.fetch_analysis(resource_mapping_id)
         else:
             self.check_refresh_analysis(resource_mapping_id)
         return self.analyses[resource_mapping_id]
 
-    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh=10):
+    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh=3600):
         """
         This method refreshes the analyser if the last update was later than `max_seconds_refresh` for each resource
         :return:
         """
         if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
             logger.debug("Analysis too old for mapping_resource_id.")
-            self.update_analysis(resource_mapping_id)
+            self.fetch_analysis(resource_mapping_id)
         else:
             logger.debug("Analysis was updated recently. Using cached analysis.")
 
-    def update_analysis(self, resource_mapping_id):
+    def fetch_analysis(self, resource_mapping_id):
         """
         Fetch mapping from API and store last updated timestamp
         :param resource_mapping_id:
