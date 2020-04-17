@@ -1,5 +1,4 @@
 import re
-import time
 
 from fhir_transformer.src.analyze.graphql import get_resource_from_id
 from fhir_transformer.src.config.logger import create_logger
@@ -23,31 +22,13 @@ class Analyzer:
         # storing here, for instance?
         self.analyses = {}
         self._cur_analysis = Analysis()
-        self.last_updated_at = time.time()
-
-    def refresh_analyser(self, resource_mapping_id, max_seconds_refresh=10):
-        """
-        This method refreshes the analyser if the last update was later than 4 hours ago.
-        :return:
-        """
-
-        if time.time() - self.last_updated_at > max_seconds_refresh:
-            logger.debug("Analyser too old. Fetching mapping from API...")
-            resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
-            self.analyze(resource_mapping)
-            logger.debug("Mapping loaded.")
-
-            self.last_updated_at = time.time()
-        else:
-            logger.debug("Mapping already exists and not too old.")
 
     def get_analysis(self, resource_mapping_id):
         if resource_mapping_id not in self.analyses:
             logger.debug("Fetching mapping from api.")
             resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
             self.analyze(resource_mapping)
-        else:
-            self.refresh_analyser(resource_mapping_id)
+
         return self.analyses[resource_mapping_id]
 
     # TODO add an update_analysis(self, resource_mapping_id)?
