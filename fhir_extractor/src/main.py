@@ -25,10 +25,6 @@ producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
 def process_event(msg):
-    """
-
-    :return:
-    """
     msg_value = json.loads(msg.value())
     resource_id = msg_value.get("resource_id", None)
     primary_key_values = msg_value.get("primary_key_values", None)

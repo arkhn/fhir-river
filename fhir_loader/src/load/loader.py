@@ -1,5 +1,3 @@
-import logging
-
 from fhir_loader.src.load.fhirstore import save_one
 
 
