@@ -50,11 +50,11 @@ The api has 2 endpoints:
 - POST `/batch`
   Triggers a batch run.
   Arguments (in body):
-- `rresource_ids`: a list of the ids of the resources to transform.
+- `resource_ids`: a list of the ids of the resources to transform.
 
 * POST `/preview`
   Arguments (in body):
-* `rresource_id`(singular!) containing the id of the resource to transform
+* `resource_id`(singular!) containing the id of the resource to transform
 * `primary_key_values`containing a list of the primary key values of the rows to transform.
 
 _Example of request_

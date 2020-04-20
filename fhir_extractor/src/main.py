@@ -133,6 +133,9 @@ def handle_bad_request(e):
     return str(e), 400
 
 
+# these decorators tell uWSGI (the server with which the app is run)
+# to spawn a new thread every time a worker starts. Hence the consumer
+# is started at the same time as the Flask API.
 @postfork
 @thread
 def run_consumer():
