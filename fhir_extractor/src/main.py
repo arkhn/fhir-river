@@ -39,13 +39,21 @@ def process_event(msg):
     try:
         logger.debug("Getting Mapping")
         resource_mapping = get_resource_from_id(resource_id=resource_id)
+
+        # Get credentials
+        if not resource_mapping["source"]["credential"]:
+            raise ValueError("credential is required to run fhir-river by batch.")
+
+        credentials = resource_mapping["source"]["credential"]
+        extractor.update_connection(credentials)
+
         analysis = analyzer.analyze(resource_mapping)
         run_resource(resource_mapping, analysis, primary_key_values, batch_id)
 
-        return "Success", 200
+    except Exception as err:
+        logger.error(err)
 
-    except Exception as e:
-        raise OperationOutcome(e)
+    return "Success", 200
 
 
 def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=None):
@@ -79,7 +87,7 @@ def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=N
 
 def manage_kafka_error(msg):
     """
-    Deal with the error if nany
+    Deal with the error if any
     :param msg:
     :return:
     """
