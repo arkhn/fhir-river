@@ -4,7 +4,6 @@ import os
 import json
 from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
-from sqlalchemy import create_engine
 from flask import Flask, request, jsonify
 
 from fhir_extractor.src.extract import Extractor
@@ -16,6 +15,7 @@ from fhir_extractor.src.errors import MissingInformationError
 from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
 from fhir_extractor.src.consumer_class import ExtractorConsumer
+from fhir_extractor.src.errors import BadRequestError, EmptyResult
 
 logger = create_logger("fhir_extractor")
 
@@ -45,24 +45,7 @@ def process_event(msg):
     logger.info(msg_value)
 
     try:
-        logger.debug("Getting Mapping")
-        resource_mapping = get_resource_from_id(resource_id=resource_id)
-
-        # Get credentials
-        if not resource_mapping["source"]["credential"]:
-            raise MissingInformationError("credential is required to run fhir-river by batch.")
-
-        credentials = resource_mapping["source"]["credential"]
-        extractor.update_connection(credentials)
-
-        analysis = analyzer.analyze(resource_mapping)
-        df = extractor.extract(resource_mapping, analysis, primary_key_values)
-        if df.empty:
-            raise ValueError(
-                "The sql query returned nothing. Maybe the primary key values "
-                "you provided are not present in the database or the mapping "
-                "is erroneous."
-            )
+        resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
         broadcast_events(resource_mapping, df, analysis, batch_id)
 
     except Exception as err:
@@ -97,25 +80,42 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
+def extract_resource(resource_id, primary_key_values):
+    logger.debug("Getting Mapping")
+    resource_mapping = get_resource_from_id(resource_id=resource_id)
+
+    # Get credentials
+    if not resource_mapping["source"]["credential"]:
+        raise MissingInformationError("credential is required to run fhir-river by batch.")
+
+    credentials = resource_mapping["source"]["credential"]
+    extractor.update_connection(credentials)
+
+    logger.debug("Analyzing Mapping")
+    analysis = analyzer.analyze(resource_mapping)
+
+    logger.debug("Extracting rows")
+    df = extractor.extract(resource_mapping, analysis, primary_key_values)
+    if df.empty:
+        raise EmptyResult(
+            "The sql query returned nothing. Maybe the primary key values "
+            "you provided are not present in the database or the mapping "
+            "is erroneous."
+        )
+
+    return resource_mapping, analysis, df
+
+
 @app.route("/extract", methods=["POST"])
 def extract():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    resource_mapping = get_resource_from_id(resource_id)
+    if primary_key_values is None or len(primary_key_values) == 0:
+        raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        logger.debug("Getting Mapping")
-        resource_mapping = get_resource_from_id(resource_id=resource_id)
-        analysis = analyzer.analyze(resource_mapping)
-        df = extractor.extract(resource_mapping, analysis, primary_key_values)
-        if df.empty:
-            raise OperationOutcome(
-                "The sql query returned nothing. Maybe the primary key values "
-                "you provided are not present in the database or the mapping "
-                "is erroneous."
-            )
-
+        _, analysis, df = extract_resource(resource_id, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
             logger.debug("One record from extract")
@@ -125,10 +125,10 @@ def extract():
 
     except Exception as err:
         logger.error(err)
-        raise OperationOutcome(err)
+        raise err
 
 
-@app.errorhandler(OperationOutcome)
+@app.errorhandler(Exception)
 def handle_bad_request(e):
     return str(e), 400
 

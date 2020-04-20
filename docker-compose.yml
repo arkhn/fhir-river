@@ -106,7 +106,12 @@ services:
     env_file:
       - .env.pyrog
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      FHIRSTORE_HOST: mongo
+      FHIRSTORE_PORT: 27017
+      FHIRSTORE_DATABASE: fhirstore
+      FHIRSTORE_USER: null
+      FHIRSTORE_PASSWORD: null
     ports:
       - 5002
 
@@ -138,11 +143,6 @@ services:
       - .env.pyrog
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: mimicuser
-      POSTGRES_DB: mimic
-      POSTGRES_HOST: mimic
-      POSTGRES_PORT: 5432
     ports:
       - 5001
 

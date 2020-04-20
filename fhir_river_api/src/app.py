@@ -41,7 +41,7 @@ def trigger_sample_extractor():
 
         rows = extract_resp.json()["rows"]
         transform_resp = requests.post(
-            f"{TRANSFORMER_URL}/transform", json={"resource_id": resource_id, "dataframe": rows[0]},
+            f"{TRANSFORMER_URL}/transform", json={"resource_id": resource_id, "dataframe": rows},
         )
         if transform_resp.status_code != 200:
             raise Exception(

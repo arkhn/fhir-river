@@ -5,6 +5,7 @@ import os
 from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
+from jsonschema.exceptions import ValidationError
 
 from fhir_transformer.src.analyze import Analyzer
 from fhir_transformer.src.transform import Transformer
@@ -15,6 +16,7 @@ from fhir_transformer.src.producer_class import TransformerProducer
 from fhir_transformer.src.config.logger import create_logger
 from fhir_transformer.src.helper import get_topic_name
 from fhir_transformer.src.errors import OperationOutcome
+from fhir_transformer.src.fhirstore import get_fhirstore
 
 TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
 GROUP_ID = "arkhn_transformer"
@@ -24,6 +26,8 @@ logger = create_logger("consumer")
 
 analyzer = Analyzer()
 transformer = Transformer()
+
+fhirstore = get_fhirstore()
 
 
 def create_app():
@@ -46,7 +50,7 @@ def process_event(msg):
     logger.debug(msg_value)
 
     try:
-        fhir_document = transorm_row(msg_value["resource_id"], msg_value["dataframe"])
+        fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
         topic = get_topic_name(
             source="mimic", resource=msg_value["resource_type"], task_type="transform"
         )
@@ -65,12 +69,12 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
-def transorm_row(resource_id, df):
+def transform_row(resource_id, row):
     logger.debug("Get Analysis")
     analysis = analyzer.get_analysis(resource_id)
 
     logger.debug("Transform Df")
-    data = transformer.transform_data(df, analysis)
+    data = transformer.transform_data(row, analysis)
 
     logger.debug("Create FHIR Doc")
     fhir_document = transformer.create_fhir_document(data, analysis)
@@ -83,9 +87,20 @@ def transform():
     body = request.get_json()
     logger.debug("Transformer")
     logger.debug(body)
+
+    resource_id = body.get("resource_id")
     try:
-        fhir_document = transorm_row(body["resource_id"], body["dataframe"])
-        return jsonify(fhir_document)
+        fhir_instances = []
+        errors = []
+        for row in body.get("dataframe"):
+            fhir_document = transform_row(resource_id, row)
+            fhir_instances.append(fhir_document)
+            try:
+                fhirstore.validate(fhir_document)
+            except ValidationError as e:
+                errors.append(str(e))
+
+        return jsonify({"instances": fhir_instances, "errors": errors})
 
     except Exception as err:
         logger.error(err)
