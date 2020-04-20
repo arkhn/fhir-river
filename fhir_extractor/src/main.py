@@ -48,8 +48,6 @@ def process_event(msg):
         analysis = analyzer.analyze(resource_mapping)
         run_resource(resource_mapping, analysis, primary_key_values, batch_id)
 
-        return "Success", 200
-
     except Exception as err:
         logger.error(err)
 
