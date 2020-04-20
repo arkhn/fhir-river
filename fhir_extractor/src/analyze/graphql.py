@@ -1,7 +1,7 @@
 import os
 import requests
 
-from fhir_extractor.src.errors import OperationOutcome
+from fhir_extractor.src.errors import PyrogQueryError
 
 
 PYROG_TOKEN = os.getenv("PYROG_TOKEN")
@@ -106,28 +106,20 @@ def run_graphql_query(graphql_query, variables=None):
         PYROG_API_URL, headers=get_headers(), json={"query": graphql_query, "variables": variables},
     )
     if response.status_code != 200:
-        raise Exception(
+        raise PyrogQueryError(
             f"Query failed with returning code {response.status_code}\n{response.reason}."
         )
 
     json_response = response.json()
     if "errors" in json_response:
-        raise Exception(f"GraphQL query failed with errors: {json_response['errors']}.")
+        raise PyrogQueryError(f"GraphQL query failed with errors: {json_response['errors']}.")
 
     return json_response
-
-
-def get_credentials(credential_id):
-    resp = run_graphql_query(credential_query, variables={"credentialId": credential_id})
-    credentials = resp["data"]["credential"]
-    if not credentials:
-        raise OperationOutcome(f"Database using credentials ID {credential_id} does not exist")
-    return credentials
 
 
 def get_resource_from_id(resource_id):
     resp = run_graphql_query(resource_from_id_query, variables={"resourceId": resource_id})
     resource = resp["data"]["resource"]
     if not resource:
-        raise OperationOutcome(f"Resource with id {resource_id} does not exist")
+        raise PyrogQueryError(f"Resource with id {resource_id} does not exist")
     return resource
