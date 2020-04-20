@@ -27,7 +27,7 @@ DB_DRIVERS = {"POSTGRES": "postgresql", "ORACLE": "oracle+cx_oracle"}
 
 
 class Extractor:
-    def __init__(self, engine):
+    def __init__(self):
         self.db_string = None
         self.engine = None
         self.metadata = None

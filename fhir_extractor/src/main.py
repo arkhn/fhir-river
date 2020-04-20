@@ -10,7 +10,6 @@ from fhir_extractor.src.analyze import Analyzer
 
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.config.database_config import get_db_url
 from fhir_extractor.src.errors import MissingInformationError
 from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
@@ -18,9 +17,8 @@ from fhir_extractor.src.consumer_class import ExtractorConsumer
 
 logger = create_logger("fhir_extractor")
 
-db_engine = create_engine(get_db_url())
 analyzer = Analyzer()
-extractor = Extractor(engine=db_engine)
+extractor = Extractor()
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
