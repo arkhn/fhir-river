@@ -136,12 +136,6 @@ services:
       - .env.pyrog
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: mimicuser
-      POSTGRES_DB: mimic
-      POSTGRES_HOST: mimic
-      POSTGRES_PORT: 5432
-
 
   fhir_river_api:
     build:

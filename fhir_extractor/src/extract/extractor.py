@@ -27,10 +27,38 @@ DB_DRIVERS = {"POSTGRES": "postgresql", "ORACLE": "oracle+cx_oracle"}
 
 
 class Extractor:
-    def __init__(self, engine):
-        self.engine = engine
-        self.metadata = MetaData(bind=self.engine)
-        self.session = sessionmaker(self.engine)()
+    def __init__(self):
+        self.db_string = None
+        self.engine = None
+        self.metadata = None
+        self.session = None
+
+    @staticmethod
+    def build_db_url(credentials):
+        login = credentials["login"]
+        password = credentials["password"]
+        host = credentials["host"]
+        port = credentials["port"]
+        database = credentials["database"]
+
+        try:
+            db_handler = DB_DRIVERS[credentials["model"]]
+        except KeyError:
+            raise ValueError(
+                "credentials specifies the wrong database model. "
+                "Only 'POSTGRES' and 'ORACLE' are currently supported."
+            )
+
+        return f"{db_handler}://{login}:{password}@{host}:{port}/{database}"
+
+    def update_connection(self, credentials):
+        new_db_string = self.build_db_url(credentials)
+
+        if new_db_string != self.db_string:
+            self.db_string = new_db_string
+            self.engine = create_engine(self.db_string)
+            self.metadata = MetaData(bind=self.engine)
+            self.session = sessionmaker(self.engine)()
 
     def extract(self, resource_mapping, analysis, pk_values=None):
         """ Main method of the Extractor class.
@@ -46,6 +74,11 @@ class Extractor:
         Returns:
             a pandas dataframe where there all the columns asked for in the mapping
         """
+        if self.session is None:
+            raise ValueError(
+                "You need to create a session for the Extractor before using extract()."
+            )
+
         logger.info(f"Extracting resource: {resource_mapping['definitionId']}")
 
         # Build sqlalchemy query
@@ -72,9 +105,7 @@ class Extractor:
         alchemy_cols = self.get_columns(columns)
         base_query = self.session.query(*alchemy_cols)
         query_w_joins = self.apply_joins(base_query, joins)
-        query_w_filters = self.apply_filters(
-            query_w_joins, resource_mapping, pk_column, pk_values
-        )
+        query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, pk_values)
 
         return query_w_filters
 
@@ -150,11 +181,7 @@ class Extractor:
         from the analysis.
         """
         return Table(
-            column.table,
-            self.metadata,
-            schema=column.owner,
-            keep_existing=True,
-            autoload=True,
+            column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
 
     @staticmethod

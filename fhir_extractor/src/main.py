@@ -10,17 +10,15 @@ from fhir_extractor.src.analyze import Analyzer
 
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.config.database_config import get_db_url
-from fhir_extractor.src.errors import OperationOutcome
+from fhir_extractor.src.errors import MissingInformationError
 from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
 from fhir_extractor.src.consumer_class import ExtractorConsumer
 
 logger = create_logger("fhir_extractor")
 
-db_engine = create_engine(get_db_url())
 analyzer = Analyzer()
-extractor = Extractor(engine=db_engine)
+extractor = Extractor()
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
@@ -39,13 +37,19 @@ def process_event(msg):
     try:
         logger.debug("Getting Mapping")
         resource_mapping = get_resource_from_id(resource_id=resource_id)
+
+        # Get credentials
+        if not resource_mapping["source"]["credential"]:
+            raise MissingInformationError("credential is required to run fhir-river by batch.")
+
+        credentials = resource_mapping["source"]["credential"]
+        extractor.update_connection(credentials)
+
         analysis = analyzer.analyze(resource_mapping)
         run_resource(resource_mapping, analysis, primary_key_values, batch_id)
 
-        return "Success", 200
-
-    except Exception as e:
-        raise OperationOutcome(e)
+    except Exception as err:
+        logger.error(err)
 
 
 def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=None):
@@ -79,7 +83,7 @@ def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=N
 
 def manage_kafka_error(msg):
     """
-    Deal with the error if nany
+    Deal with the error if any
     :param msg:
     :return:
     """
