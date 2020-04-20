@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
 import os
-from flask import Flask
-from flask import request
-from flask_restful import Api
+from flask import Flask, request, jsonify
+import requests
 
 from fhir_river_api.src.config.logger import create_logger
 from fhir_river_api.src.errors import OperationOutcome
@@ -14,12 +13,13 @@ logger = create_logger("fhir_river_api")
 
 # Create flask app object
 app = Flask(__name__)
-api = Api(app)
 
 producer = RiverApiProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
+EXTRACTOR_URL = os.getenv("EXTRACTOR_URL")
+TRANSFORMER_URL = os.getenv("TRANSFORMER_URL")
 
 
-@app.route("/run_sample", methods=["POST"])
+@app.route("/preview", methods=["POST"])
 def trigger_sample_extractor():
     """
     Extract record for the specified resource and primary key value
@@ -27,17 +27,33 @@ def trigger_sample_extractor():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    batch_id = uuid.uuid4().hex
+    logger.debug("PREVIEW %s %s", resource_id, primary_key_values)
 
     try:
-        create_extractor_trigger(resource_id, batch_id, primary_key_values)
-        return "Success", 200
+        extract_resp = requests.post(
+            f"{EXTRACTOR_URL}/extract",
+            json={"resource_id": resource_id, "primary_key_values": primary_key_values},
+        )
+        if extract_resp.status_code != 200:
+            raise Exception(
+                f"Failed while extracting data: {extract_resp.content.decode('utf-8')}."
+            )
+
+        rows = extract_resp.json()["rows"]
+        transform_resp = requests.post(
+            f"{TRANSFORMER_URL}/transform", json={"resource_id": resource_id, "dataframe": rows[0]},
+        )
+        if transform_resp.status_code != 200:
+            raise Exception(
+                f"Failed while transforming data: {transform_resp.content.decode('utf-8')}."
+            )
+        return jsonify(transform_resp.json())
 
     except Exception as e:
         raise OperationOutcome(e)
 
 
-@app.route("/run_batch", methods=["POST"])
+@app.route("/batch", methods=["POST"])
 def trigger_batch_extractor():
     """
     Extract all records for the specified resources

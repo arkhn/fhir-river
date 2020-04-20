@@ -2,7 +2,9 @@
 
 import json
 import os
+from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
+from flask import Flask, request, jsonify
 
 from fhir_transformer.src.analyze import Analyzer
 from fhir_transformer.src.transform import Transformer
@@ -12,11 +14,24 @@ from fhir_transformer.src.producer_class import TransformerProducer
 
 from fhir_transformer.src.config.logger import create_logger
 from fhir_transformer.src.helper import get_topic_name
+from fhir_transformer.src.errors import OperationOutcome
 
 TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
 GROUP_ID = "arkhn_transformer"
+producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 logger = create_logger("consumer")
+
+analyzer = Analyzer()
+transformer = Transformer()
+
+
+def create_app():
+    app = Flask(__name__)
+    return app
+
+
+app = create_app()
 
 
 def process_event(msg):
@@ -31,16 +46,7 @@ def process_event(msg):
     logger.debug(msg_value)
 
     try:
-        logger.debug("Get Analysis")
-        analysis = analyzer.get_analysis(msg_value["resource_id"])
-
-        data = msg_value["dataframe"]
-        logger.debug("Transform Df")
-        data = transformer.transform_data(data, analysis)
-
-        logger.debug("Create FHIR Doc")
-        fhir_document = transformer.create_fhir_document(data, analysis)
-
+        fhir_document = transorm_row(msg_value["resource_id"], msg_value["dataframe"])
         topic = get_topic_name(
             source="mimic", resource=msg_value["resource_type"], task_type="transform"
         )
@@ -59,13 +65,43 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
-if __name__ == "__main__":
+def transorm_row(resource_id, df):
+    logger.debug("Get Analysis")
+    analysis = analyzer.get_analysis(resource_id)
+
+    logger.debug("Transform Df")
+    data = transformer.transform_data(df, analysis)
+
+    logger.debug("Create FHIR Doc")
+    fhir_document = transformer.create_fhir_document(data, analysis)
+
+    return fhir_document
+
+
+@app.route("/transform", methods=["POST"])
+def transform():
+    body = request.get_json()
+    logger.debug("Transformer")
+    logger.debug(body)
+    try:
+        fhir_document = transorm_row(body["resource_id"], body["dataframe"])
+        return jsonify(fhir_document)
+
+    except Exception as err:
+        logger.error(err)
+        raise OperationOutcome(err)
+
+
+@app.errorhandler(OperationOutcome)
+def handle_bad_request(e):
+    return str(e), 400
+
+
+@postfork
+@thread
+def run_consumer():
     logger.info("Running Consumer")
 
-    analyzer = Analyzer()
-    transformer = Transformer()
-
-    producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=TOPIC,

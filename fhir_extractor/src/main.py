@@ -2,8 +2,10 @@
 
 import os
 import json
+from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
 from sqlalchemy import create_engine
+from flask import Flask, request, jsonify
 
 from fhir_extractor.src.extract import Extractor
 from fhir_extractor.src.analyze import Analyzer
@@ -20,6 +22,14 @@ logger = create_logger("fhir_extractor")
 analyzer = Analyzer()
 extractor = Extractor()
 producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
+
+
+def create_app():
+    app = Flask(__name__)
+    return app
+
+
+app = create_app()
 
 
 def process_event(msg):
@@ -46,28 +56,25 @@ def process_event(msg):
         extractor.update_connection(credentials)
 
         analysis = analyzer.analyze(resource_mapping)
-        run_resource(resource_mapping, analysis, primary_key_values, batch_id)
+        df = extractor.extract(resource_mapping, analysis, primary_key_values)
+        if df.empty:
+            raise ValueError(
+                "The sql query returned nothing. Maybe the primary key values "
+                "you provided are not present in the database or the mapping "
+                "is erroneous."
+            )
+        broadcast_events(resource_mapping, df, analysis, batch_id)
 
     except Exception as err:
         logger.error(err)
 
 
-def run_resource(resource_mapping, analysis, primary_key_values=None, batch_id=None):
+def broadcast_events(resource_mapping, dataframe, analysis, batch_id=None):
     """
     """
     resource_type = resource_mapping["definitionId"]
     resource_id = resource_mapping["id"]
-
-    # Extract
-    df = extractor.extract(resource_mapping, analysis, primary_key_values)
-    if df.empty:
-        raise ValueError(
-            "The sql query returned nothing. Maybe the primary key values "
-            "you provided are not present in the database or the mapping "
-            "is erroneous."
-        )
-
-    list_records_from_db = extractor.split_dataframe(df, analysis)
+    list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
     for record in list_records_from_db:
         logger.debug("One record from extract")
@@ -90,10 +97,47 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
-if __name__ == "__main__":
+@app.route("/extract", methods=["POST"])
+def extract():
+    body = request.get_json()
+    resource_id = body.get("resource_id", None)
+    primary_key_values = body.get("primary_key_values", None)
+    resource_mapping = get_resource_from_id(resource_id)
+
+    try:
+        logger.debug("Getting Mapping")
+        resource_mapping = get_resource_from_id(resource_id=resource_id)
+        analysis = analyzer.analyze(resource_mapping)
+        df = extractor.extract(resource_mapping, analysis, primary_key_values)
+        if df.empty:
+            raise OperationOutcome(
+                "The sql query returned nothing. Maybe the primary key values "
+                "you provided are not present in the database or the mapping "
+                "is erroneous."
+            )
+
+        rows = []
+        for record in extractor.split_dataframe(df, analysis):
+            logger.debug("One record from extract")
+            rows.append(record.to_dict(orient="list"))
+
+        return jsonify({"rows": rows})
+
+    except Exception as err:
+        logger.error(err)
+        raise OperationOutcome(err)
+
+
+@app.errorhandler(OperationOutcome)
+def handle_bad_request(e):
+    return str(e), 400
+
+
+@postfork
+@thread
+def run_consumer():
     logger.info("Running Consumer")
 
-    MAX_ERROR_COUNT = 3
     TOPIC = "extractor_trigger"
     # [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
     GROUP_ID = "arkhn_extractor"
