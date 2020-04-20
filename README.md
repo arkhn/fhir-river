@@ -82,13 +82,14 @@ Event produced:
 The `fhir_extractor` includes a Kafka consumer and a Kafka producer
 
 The Extractor works as follows:
-- the consumer listends to the topic 'extractor_trigger', when it receives an event it triggers the following steps
-- it fetches the mapping. Currently from a static file but it should eventually be able to query mappings from Pyrog.
+- the consumer listens to the topic 'extractor_trigger', when it receives an event it triggers the following steps
+- it fetches the mapping from Pyrog via a graphql API.
 - it analyzes it to store useful information about it.
 - it builds an sql query and run it to get the information necessary from the source DB.
 - it cleans the resulting dataframe (eventually, this shouldn't be done here).
 - it produces an event for each row (thus for each fhir instance we'll create) and sends it.
 
+Note that the source database credentials are fetched in the graphql query so they need to be provided in Pyrog.
 
 
 ### Environment variables
