@@ -19,11 +19,9 @@ class ExtractorProducer:
         """
         self.broker = broker
         self.partition = 0
-        self.callback_function = (
-            callback_function if callback_function else self.callback_fn
-        )
+        self.callback_function = callback_function if callback_function else self.callback_fn
 
-        # Create consumer
+        # Create producer
         self.producer = Producer(self._generate_config())
 
     def _generate_config(self):
@@ -45,9 +43,7 @@ class ExtractorProducer:
             self.producer.produce(
                 topic=topic,
                 value=json.dumps(event, default=self.default_json_encoder),
-                callback=lambda err, msg, obj=event: self.callback_function(
-                    err, msg, obj
-                ),
+                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
         except ValueError as error:

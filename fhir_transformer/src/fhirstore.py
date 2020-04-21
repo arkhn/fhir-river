@@ -34,4 +34,6 @@ def get_fhirstore():
     if _fhirstore is None:
         _fhirstore = fhirstore.FHIRStore(get_mongo_client(), None, FHIRSTORE_DATABASE)
         _fhirstore.resume()
+        if len(_fhirstore.resources) == 0:
+            _fhirstore.bootstrap(depth=3)
     return _fhirstore

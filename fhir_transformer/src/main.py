@@ -20,7 +20,6 @@ from fhir_transformer.src.fhirstore import get_fhirstore
 
 TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
 GROUP_ID = "arkhn_transformer"
-producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 logger = create_logger("consumer")
 
@@ -38,26 +37,29 @@ def create_app():
 app = create_app()
 
 
-def process_event(msg):
-    """
-    Process the event
-    :param msg:
-    :return:
-    """
-    # Do stuff
-    msg_value = json.loads(msg.value())
-    logger.debug("Transformer")
-    logger.debug(msg_value)
+def process_event_with_producer(producer):
+    def process_event(msg):
+        """
+        Process the event
+        :param msg:
+        :return:
+        """
+        msg_value = json.loads(msg.value())
+        logger.debug("Transformer")
+        logger.debug(msg_value)
 
-    try:
-        fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
-        topic = get_topic_name(
-            source="mimic", resource=msg_value["resource_type"], task_type="transform"
-        )
-        producer.produce_event(topic=topic, record=fhir_document)
+        try:
+            fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
+            fhir_document
+            topic = get_topic_name(
+                source="mimic", resource=msg_value["resource_type"], task_type="transform"
+            )
+            producer.produce_event(topic=topic, record=fhir_document)
 
-    except Exception as err:
-        logger.error(err)
+        except Exception as err:
+            logger.error(err)
+
+    return process_event
 
 
 def manage_kafka_error(msg):
@@ -120,11 +122,12 @@ def handle_bad_request(e):
 def run_consumer():
     logger.info("Running Consumer")
 
+    producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=TOPIC,
         group_id=GROUP_ID,
-        process_event=process_event,
+        process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
     )
 

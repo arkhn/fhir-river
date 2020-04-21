@@ -21,7 +21,6 @@ logger = create_logger("fhir_extractor")
 
 analyzer = Analyzer()
 extractor = Extractor()
-producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 
 
 def create_app():
@@ -32,43 +31,43 @@ def create_app():
 app = create_app()
 
 
-def process_event(msg):
-    msg_value = json.loads(msg.value())
-    resource_id = msg_value.get("resource_id", None)
-    primary_key_values = msg_value.get("primary_key_values", None)
-    batch_id = msg_value.get("batch_id", None)
+def process_event_with_producer(producer):
+    def broadcast_events(resource_mapping, dataframe, analysis, batch_id=None):
+        resource_type = resource_mapping["definitionId"]
+        resource_id = resource_mapping["id"]
+        list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
-    msg_topic = msg.topic()
+        for record in list_records_from_db:
+            logger.debug("One record from extract")
+            event = dict()
+            event["batch_id"] = batch_id
+            event["resource_type"] = resource_type
+            event["resource_id"] = resource_id
+            event["dataframe"] = record.to_dict(orient="list")
 
-    logger.info("Events Ready to be processed")
-    logger.info(msg_topic)
-    logger.info(msg_value)
+            topic = get_topic_name("mimic", resource_type, "extract")
+            producer.produce_event(topic=topic, event=event)
 
-    try:
-        resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
-        broadcast_events(resource_mapping, df, analysis, batch_id)
+    def process_event(msg):
+        msg_value = json.loads(msg.value())
+        resource_id = msg_value.get("resource_id", None)
+        primary_key_values = msg_value.get("primary_key_values", None)
+        batch_id = msg_value.get("batch_id", None)
 
-    except Exception as err:
-        logger.error(err)
+        msg_topic = msg.topic()
 
+        logger.info("Events Ready to be processed")
+        logger.info(msg_topic)
+        logger.info(msg_value)
 
-def broadcast_events(resource_mapping, dataframe, analysis, batch_id=None):
-    """
-    """
-    resource_type = resource_mapping["definitionId"]
-    resource_id = resource_mapping["id"]
-    list_records_from_db = extractor.split_dataframe(dataframe, analysis)
+        try:
+            resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
+            broadcast_events(resource_mapping, df, analysis, batch_id)
 
-    for record in list_records_from_db:
-        logger.debug("One record from extract")
-        event = dict()
-        event["batch_id"] = batch_id
-        event["resource_type"] = resource_type
-        event["resource_id"] = resource_id
-        event["dataframe"] = record.to_dict(orient="list")
+        except Exception as err:
+            logger.error(err)
 
-        topic = get_topic_name("mimic", resource_type, "extract")
-        producer.produce_event(topic=topic, event=event)
+    return process_event
 
 
 def manage_kafka_error(msg):
@@ -145,11 +144,12 @@ def run_consumer():
     # [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
     GROUP_ID = "arkhn_extractor"
 
+    producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=TOPIC,
         group_id=GROUP_ID,
-        process_event=process_event,
+        process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
     )
 
