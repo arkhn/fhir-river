@@ -5,7 +5,7 @@ import datetime
 from confluent_kafka import Producer
 from api.src.config.logger import create_logger
 
-logger = create_logger("fhir_river_api_producer")
+logger = create_logger("api_producer")
 
 
 class RiverApiProducer:

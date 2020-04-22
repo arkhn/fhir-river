@@ -4,18 +4,18 @@ FROM python:3.7-slim
 RUN apt-get update \
     && apt-get -y install build-essential
 
-ARG CONSUMER_HOME=/app
-ENV PYTHONPATH=${CONSUMER_HOME}
+ARG TRANSFORMER_HOME=/app
+ENV PYTHONPATH=${TRANSFORMER_HOME}
 
-WORKDIR ${CONSUMER_HOME}
+WORKDIR ${TRANSFORMER_HOME}
 
-COPY requirements.txt ${CONSUMER_HOME}/requirements.txt
+COPY requirements.txt ${TRANSFORMER_HOME}/requirements.txt
 
-RUN pip install -r ${CONSUMER_HOME}/requirements.txt
+RUN pip install -r ${TRANSFORMER_HOME}/requirements.txt
 
-COPY src ${CONSUMER_HOME}/transformer/src
+COPY src ${TRANSFORMER_HOME}/transformer/src
 
-COPY uwsgi.ini ${CONSUMER_HOME}/transformer/uwsgi.ini
+COPY uwsgi.ini ${TRANSFORMER_HOME}/transformer/uwsgi.ini
 
 COPY entrypoint.sh /entrypoint.sh
 

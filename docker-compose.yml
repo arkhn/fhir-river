@@ -128,7 +128,7 @@ services:
       FHIRSTORE_HOST: mongo
       FHIRSTORE_PORT: 27017
       FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORER_USER: null
+      FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
 
   extractor:

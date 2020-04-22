@@ -1,15 +1,15 @@
 FROM python:3.7-slim
 
-ARG CONSUMER_HOME=/app
-ENV PYTHONPATH=${CONSUMER_HOME}
+ARG LOADER_HOME=/app
+ENV PYTHONPATH=${LOADER_HOME}
 
-WORKDIR ${CONSUMER_HOME}
+WORKDIR ${LOADER_HOME}
 
-COPY requirements.txt ${CONSUMER_HOME}/requirements.txt
+COPY requirements.txt ${LOADER_HOME}/requirements.txt
 
-RUN pip install -r ${CONSUMER_HOME}/requirements.txt
+RUN pip install -r ${LOADER_HOME}/requirements.txt
 
-COPY /src ${CONSUMER_HOME}/loader/src
+COPY /src ${LOADER_HOME}/loader/src
 
 COPY /entrypoint.sh /entrypoint.sh
 
