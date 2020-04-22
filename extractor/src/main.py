@@ -6,17 +6,17 @@ from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 
-from fhir_extractor.src.extract import Extractor
-from fhir_extractor.src.analyze import Analyzer
+from extractor.src.extract import Extractor
+from extractor.src.analyze import Analyzer
 
-from fhir_extractor.src.analyze.graphql import get_resource_from_id
-from fhir_extractor.src.config.logger import create_logger
-from fhir_extractor.src.errors import MissingInformationError
-from fhir_extractor.src.producer_class import ExtractorProducer
-from fhir_extractor.src.consumer_class import ExtractorConsumer
-from fhir_extractor.src.errors import BadRequestError, EmptyResult
+from extractor.src.analyze.graphql import get_resource_from_id
+from extractor.src.config.logger import create_logger
+from extractor.src.errors import MissingInformationError
+from extractor.src.producer_class import ExtractorProducer
+from extractor.src.consumer_class import ExtractorConsumer
+from extractor.src.errors import BadRequestError, EmptyResult
 
-logger = create_logger("fhir_extractor")
+logger = create_logger("extractor")
 
 analyzer = Analyzer()
 extractor = Extractor()

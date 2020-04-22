@@ -5,7 +5,7 @@ from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 from extractor.src.config.logger import create_logger
 
-logger = create_logger("fhir_extractor_consumer")
+logger = create_logger("extractor_consumer")
 
 
 class ExtractorConsumer:

@@ -7,10 +7,10 @@ from pymongo.errors import DuplicateKeyError
 
 from fhirstore import NotFoundError
 
-from fhir_loader.src.config.logger import create_logger
-from fhir_loader.src.consumer_class import LoaderConsumer
-from fhir_loader.src.load import Loader
-from fhir_loader.src.load.fhirstore import get_fhirstore
+from loader.src.config.logger import create_logger
+from loader.src.consumer_class import LoaderConsumer
+from loader.src.load import Loader
+from loader.src.load.fhirstore import get_fhirstore
 
 
 TOPIC = "transform"

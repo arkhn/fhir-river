@@ -150,7 +150,7 @@ services:
     build:
       context: api/
     container_name: api
-    image: arkhn/fhir-river-api:latest
+    image: arkhn/api:latest
     restart: always
     depends_on:
       - kafka

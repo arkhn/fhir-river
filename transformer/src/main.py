@@ -7,15 +7,15 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 from jsonschema.exceptions import ValidationError
 
-from fhir_transformer.src.analyze import Analyzer
-from fhir_transformer.src.transform import Transformer
+from transformer.src.analyze import Analyzer
+from transformer.src.transform import Transformer
 
-from fhir_transformer.src.consumer_class import TransformerConsumer
-from fhir_transformer.src.producer_class import TransformerProducer
+from transformer.src.consumer_class import TransformerConsumer
+from transformer.src.producer_class import TransformerProducer
 
-from fhir_transformer.src.config.logger import create_logger
-from fhir_transformer.src.errors import OperationOutcome
-from fhir_transformer.src.fhirstore import get_fhirstore
+from transformer.src.config.logger import create_logger
+from transformer.src.errors import OperationOutcome
+from transformer.src.fhirstore import get_fhirstore
 
 TOPIC = "extract"
 GROUP_ID = "arkhn_transformer"
