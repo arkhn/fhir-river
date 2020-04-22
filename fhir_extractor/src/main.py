@@ -44,7 +44,7 @@ def process_event_with_producer(producer):
             event["resource_id"] = resource_id
             event["dataframe"] = record.to_dict(orient="list")
 
-            producer.produce_event(topic='extract', event=event)
+            producer.produce_event(topic="extract", event=event)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())

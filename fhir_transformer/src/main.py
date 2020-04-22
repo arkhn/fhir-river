@@ -17,7 +17,7 @@ from fhir_transformer.src.config.logger import create_logger
 from fhir_transformer.src.errors import OperationOutcome
 from fhir_transformer.src.fhirstore import get_fhirstore
 
-TOPIC = 'extract'
+TOPIC = "extract"
 GROUP_ID = "arkhn_transformer"
 
 logger = create_logger("consumer")
@@ -49,7 +49,7 @@ def process_event_with_producer(producer):
 
         try:
             fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
-            producer.produce_event(topic='transform', record=fhir_document)
+            producer.produce_event(topic="transform", record=fhir_document)
 
         except Exception as err:
             logger.error(err)

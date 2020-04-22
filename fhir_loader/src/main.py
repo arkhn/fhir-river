@@ -13,7 +13,7 @@ from fhir_loader.src.load import Loader
 from fhir_loader.src.load.fhirstore import get_fhirstore
 
 
-TOPIC = 'transform'
+TOPIC = "transform"
 GROUP_ID = "arkhn_loader"
 
 logger = create_logger("loader")
