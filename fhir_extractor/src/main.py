@@ -110,7 +110,7 @@ def extract():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    if primary_key_values is None or len(primary_key_values) == 0:
+    if not primary_key_values:
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
@@ -141,7 +141,6 @@ def run_consumer():
     logger.info("Running Consumer")
 
     TOPIC = "extractor_trigger"
-    # [get_topic_name(source="mimic", resource="Patient", task_type="extract")]
     GROUP_ID = "arkhn_extractor"
 
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
