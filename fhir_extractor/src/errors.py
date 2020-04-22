@@ -12,3 +12,19 @@ class MissingInformationError(Exception):
     """
 
     pass
+
+
+class BadRequestError(Exception):
+    """
+    Error used when the HTTP query is not as expected.
+    """
+
+    pass
+
+
+class EmptyResult(Exception):
+    """
+    Error used when the query did not return any row.
+    """
+
+    pass

@@ -5,7 +5,7 @@ from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 from fhir_extractor.src.config.logger import create_logger
 
-logging = create_logger("fhir_extractor_consumer")
+logger = create_logger("fhir_extractor_consumer")
 
 
 class ExtractorConsumer:
@@ -78,7 +78,7 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        logging.info(self.topics)
+        logger.info(self.topics)
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()

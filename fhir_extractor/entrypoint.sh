@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # Run APP
-python fhir_extractor/src/main.py
+uwsgi --ini fhir_extractor/uwsgi.ini --py-autoreload 1

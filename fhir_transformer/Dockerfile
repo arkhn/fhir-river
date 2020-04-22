@@ -13,8 +13,10 @@ COPY requirements.txt ${CONSUMER_HOME}/requirements.txt
 
 RUN pip install -r ${CONSUMER_HOME}/requirements.txt
 
-COPY /src ${CONSUMER_HOME}/fhir_transformer/src
+COPY src ${CONSUMER_HOME}/fhir_transformer/src
 
-COPY /entrypoint.sh /entrypoint.sh
+COPY uwsgi.ini ${CONSUMER_HOME}/fhir_transformer/uwsgi.ini
+
+COPY entrypoint.sh /entrypoint.sh
 
 CMD ["sh", "/entrypoint.sh"]

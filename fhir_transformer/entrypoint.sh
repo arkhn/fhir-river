@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 sleep 10s;
-python fhir_transformer/src/main.py
+# Run APP
+uwsgi --ini fhir_transformer/uwsgi.ini --py-autoreload 1
