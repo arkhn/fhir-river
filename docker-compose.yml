@@ -95,10 +95,10 @@ services:
   #      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
   #      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
 
-  fhir_transformer:
+  transformer:
     build:
-      context: fhir_transformer/
-    container_name: fhir_transformer
+      context: transformer/
+    container_name: transformer
     image: arkhn/fhir-transformer:latest
     restart: always
     depends_on:
@@ -115,10 +115,10 @@ services:
     ports:
       - 5002
 
-  fhir_loader:
+  loader:
     build:
-      context: fhir_loader/
-    container_name: fhir_loader
+      context: loader/
+    container_name: loader
     image: arkhn/fhir-loader:latest
     restart: always
     depends_on:
@@ -131,10 +131,10 @@ services:
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
 
-  fhir_extractor:
+  extractor:
     build:
-      context: fhir_extractor/
-    container_name: fhir_extractor
+      context: extractor/
+    container_name: extractor
     image: arkhn/fhir-extractor:latest
     restart: always
     depends_on:
@@ -146,18 +146,18 @@ services:
     ports:
       - 5001
 
-  fhir_river_api:
+  api:
     build:
-      context: fhir_river_api/
-    container_name: fhir_river_api
-    image: arkhn/fhir-river-api:latest
+      context: api/
+    container_name: api
+    image: arkhn/api:latest
     restart: always
     depends_on:
       - kafka
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      EXTRACTOR_URL: http://fhir_extractor:5001
-      TRANSFORMER_URL: http://fhir_transformer:5002
+      EXTRACTOR_URL: http://extractor:5001
+      TRANSFORMER_URL: http://transformer:5002
     ports:
       - "5000:5000"
 

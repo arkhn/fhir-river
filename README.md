@@ -25,7 +25,7 @@ using an internal API.
 
 Run the script to create some records in the MIMIC db: `python test/create_records_db.py` (ugly script,
 but it works fine just to test that it works)
-You can see in the logs of the `fhir_transformer` container the message and its topic. You can check inside the MIMIC DB
+You can see in the logs of the `transformer` container the message and its topic. You can check inside the MIMIC DB
 that your record has been created (check config in the script - WIP)
 
 - SFTPCsvSource Connector
@@ -33,13 +33,13 @@ that your record has been created (check config in the script - WIP)
 Run the script to create some .csv file in the SFTP server: `python test/create_file_stfp.py` (ugly script,
 but it works fine just to test that it works).
 
-4. Play with it: in the script `fhir_transformer/src/main.py`, edit the function `process_event` to do whatever you want!
-   (make sure that the consumer has suscribed to the right topics defined in the config.json files in `fhir_transformer/src/main.py:9`
+4. Play with it: in the script `transformer/src/main.py`, edit the function `process_event` to do whatever you want!
+   (make sure that the consumer has suscribed to the right topics defined in the config.json files in `transformer/src/main.py:9`
    in the variable `TOPICS`.
 
 ## FHIR River API
 
-The `fhir_river_api` container is a Flask App with an API.
+The `api` container is a Flask App with an API.
 This API enables us to trigger a run of the ETL (sample or batch).
 
 To do so, it produces an event in a Kafka topic listened by the extractor with the arguments received via the endpoints
@@ -80,7 +80,7 @@ string primary_key_values (None if batch )
 
 ## FHIR Extractor
 
-The `fhir_extractor` includes a Kafka consumer and a Kafka producer
+The `extractor` includes a Kafka consumer and a Kafka producer
 
 The Extractor works as follows:
 
@@ -105,12 +105,12 @@ Note that you'll need to have a `.env.pyrog` file containg the following variabl
 
 ## FHIR Transformer
 
-The `fhir_transformer` container includes a consumer that reads events from Kafka.
+The `transformer` container includes a consumer that reads events from Kafka.
 In the `process_events` function, each event is processed individually (transform) and published in a Kafka Topic.
 
 ## FHIR Loader
 
-The `fhir_loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB.
+The `loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB.
 
 ## Check the mongo database
 
