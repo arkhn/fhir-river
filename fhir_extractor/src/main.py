@@ -12,7 +12,6 @@ from fhir_extractor.src.analyze import Analyzer
 from fhir_extractor.src.analyze.graphql import get_resource_from_id
 from fhir_extractor.src.config.logger import create_logger
 from fhir_extractor.src.errors import MissingInformationError
-from fhir_extractor.src.helper import get_topic_name
 from fhir_extractor.src.producer_class import ExtractorProducer
 from fhir_extractor.src.consumer_class import ExtractorConsumer
 from fhir_extractor.src.errors import BadRequestError, EmptyResult
@@ -45,8 +44,7 @@ def process_event_with_producer(producer):
             event["resource_id"] = resource_id
             event["dataframe"] = record.to_dict(orient="list")
 
-            topic = get_topic_name("mimic", resource_type, "extract")
-            producer.produce_event(topic=topic, event=event)
+            producer.produce_event(topic='extract', event=event)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())

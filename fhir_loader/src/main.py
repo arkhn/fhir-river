@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from confluent_kafka import KafkaException, KafkaError
-import datetime
 import json
 import os
 from pymongo.errors import DuplicateKeyError
@@ -10,12 +9,11 @@ from fhirstore import NotFoundError
 
 from fhir_loader.src.config.logger import create_logger
 from fhir_loader.src.consumer_class import LoaderConsumer
-from fhir_loader.src.helper import get_topic_name
 from fhir_loader.src.load import Loader
 from fhir_loader.src.load.fhirstore import get_fhirstore
 
 
-TOPIC = [get_topic_name(source="mimic", resource="Patient", task_type="transform")]
+TOPIC = 'transform'
 GROUP_ID = "arkhn_loader"
 
 logger = create_logger("loader")
