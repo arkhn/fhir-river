@@ -3,7 +3,7 @@ from unittest import mock
 
 from transformer.src.analyze.concept_map import ConceptMap
 
-from .conftest import mock_api_get_maps
+from transformer.test.conftest import mock_api_get_maps
 
 
 @mock.patch("transformer.src.analyze.concept_map.requests.get", mock_api_get_maps)

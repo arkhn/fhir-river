@@ -8,7 +8,7 @@ from transformer.src.analyze.concept_map import ConceptMap
 from transformer.src.analyze.cleaning_script import CleaningScript
 from transformer.src.analyze.merging_script import MergingScript
 
-from .conftest import mock_fetch_maps
+from transformer.test.conftest import mock_api_get_maps, mock_fetch_maps
 
 
 def mock_get_script(*args):

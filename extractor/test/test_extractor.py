@@ -7,7 +7,6 @@ from extractor.src.extract.extractor import Extractor
 from extractor.src.analyze.sql_column import SqlColumn
 from extractor.src.analyze.sql_join import SqlJoin
 
-# from test.unit.conftest import mock_config
 
 meta = MetaData()
 tables = {

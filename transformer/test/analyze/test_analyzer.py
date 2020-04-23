@@ -8,7 +8,7 @@ from transformer.src.analyze.merging_script import MergingScript
 from transformer.src.analyze.sql_column import SqlColumn
 from transformer.src.analyze.sql_join import SqlJoin
 
-from .conftest import mock_api_get_maps
+from transformer.test.conftest import mock_api_get_maps
 
 
 def test_get_primary_key():
