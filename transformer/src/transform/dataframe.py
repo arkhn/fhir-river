@@ -2,9 +2,7 @@ from typing import List
 
 from collections import defaultdict
 
-import transformer
 from transformer.src.analyze.attribute import Attribute
-from transformer.src.analyze.sql_column import SqlColumn
 
 from transformer.src.config.logger import create_logger
 
@@ -61,7 +59,7 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     because joins will create several rows with the same primary key.
 
     args:
-        data (dict): the dict returned by clean_data with possibly several rows for 
+        data (dict): the dict returned by clean_data with possibly several rows for
             the same primary key.
         squash_rules (nested list): squash rules built by the Analyzer
         parent_cols (list): param used for recursive call

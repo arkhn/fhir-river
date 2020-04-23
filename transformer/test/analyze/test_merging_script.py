@@ -1,5 +1,4 @@
 from unittest import mock
-import pandas as pd
 
 from transformer.src.analyze.merging_script import MergingScript
 

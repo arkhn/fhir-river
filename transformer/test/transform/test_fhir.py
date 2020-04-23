@@ -1,5 +1,4 @@
 from unittest import mock
-import pandas as pd
 from pytest import raises
 
 from fhirstore import ARKHN_CODE_SYSTEMS
@@ -25,14 +24,12 @@ def test_create_instance(mock_datetime):
         "generalPractitioner[0].type", static_inputs=["Practitioner"]
     )
 
-    attributes = [attr_identifier, attr_birthDate, attr_maritalStatus, attr_generalPractitioner]
     path_attributes_map = {
         attr_identifier.path: attr_identifier,
         attr_birthDate.path: attr_birthDate,
         attr_maritalStatus.path: attr_maritalStatus,
         attr_generalPractitioner.path: attr_generalPractitioner,
     }
-
 
     row = {
         attr_maritalStatus.path: "D",

@@ -34,8 +34,8 @@ class Analyzer:
 
     def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh=3600):
         """
-        This method refreshes the analyser if the last update was later than `max_seconds_refresh` for each resource
-        :return:
+        This method refreshes the analyser if the last update was later than `max_seconds_refresh`
+        for each resource
         """
         if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
             logger.debug("Analysis too old for mapping_resource_id.")

@@ -1,4 +1,3 @@
-import os
 from unittest import mock, TestCase
 
 import transformer.src.transform.dataframe as transform
@@ -8,7 +7,7 @@ from transformer.src.analyze.concept_map import ConceptMap
 from transformer.src.analyze.cleaning_script import CleaningScript
 from transformer.src.analyze.merging_script import MergingScript
 
-from transformer.test.conftest import mock_api_get_maps, mock_fetch_maps
+from transformer.test.conftest import mock_fetch_maps
 
 
 def mock_get_script(*args):
@@ -82,11 +81,6 @@ def test_clean_data(_):
 
 
 def test_squash_rows():
-    attr_name = Attribute("name", columns=[SqlColumn("PATIENTS", "NAME")])
-    attr_id = Attribute("id", columns=[SqlColumn("PATIENTS", "ID")])
-    attr_language = Attribute("language", columns=[SqlColumn("ADMISSIONS", "LANGUAGE")])
-    attr_admid = Attribute("admid", columns=[SqlColumn("ADMISSIONS", "ID")])
-
     data = {
         ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
         ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
