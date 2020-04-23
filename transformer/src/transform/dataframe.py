@@ -35,7 +35,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
 
             # The column name in the new intermediary dataframe
             # We use col.table because it's needed in squash_rows
-            attr_col_name = (attribute.path, col.table)
+            attr_col_name = (attribute.path, (col.table, col.column))
 
             # Get the original column
             cleaned_data[attr_col_name] = data[dict_col_name]
@@ -85,10 +85,10 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     """
     table, child_rules = squash_rules
 
-    if not [col for col in data if any([col[1] == rule[0] for rule in child_rules])]:
+    if not [col for col in data if any([col[1][0] == rule[0] for rule in child_rules])]:
         return data
 
-    new_pivots = [col for col in data if col[1] == table]
+    new_pivots = [col for col in data if col[1][0] == table]
     pivot_cols = parent_cols + new_pivots
 
     cols_to_squash = [col for col in data if col not in pivot_cols]
@@ -124,9 +124,8 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     if parent_cols == []:
         # In this base case, we should have only one element in each list
         squashed_data = {
-            k1: {k2: v[0]}
+            k1: {k2: v[0] for k2, v in inner_dict.items()}
             for k1, inner_dict in squashed_data.items()
-            for k2, v in inner_dict.items()
         }
 
     return squashed_data
@@ -139,9 +138,9 @@ def merge_attributes(
     Takes as input a dict of the form
 
     {
-        (attribute1.path, table1): val,
-        (attribute1.path, table2): val,
-        (attribute2.path, table2): val,
+        (attribute1.path, (table1, col1)): val,
+        (attribute1.path, (table2, col2)): val,
+        (attribute2.path, (table2, col3)): val,
         ...
     }
 
