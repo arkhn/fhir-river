@@ -27,6 +27,4 @@ jobs:
           flake8 extractor transformer loader api --count --max-complexity=10 --max-line-length=100 --statistics
       - name: Test with pytest
         run: |
-          python -m pytest -svv extractor/test
-          python -m pytest -svv transformer/test
-          python -m pytest -svv loader/test
+          python -m pytest -svv extractor/test transformer/test loader/test
