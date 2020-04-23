@@ -90,6 +90,8 @@ class Analyzer:
         for attribute_mapping in resource_mapping["attributes"]:
             self.analyze_attribute(attribute_mapping)
 
+        return self._cur_analysis
+
     def analyze_attribute(self, attribute_mapping):
         attribute = Attribute(
             path=attribute_mapping["path"], columns=[], static_inputs=[], merging_script=None
@@ -147,3 +149,5 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["primaryKeyOwner"],
         )
+
+        return self._cur_analysis.primary_key_column
