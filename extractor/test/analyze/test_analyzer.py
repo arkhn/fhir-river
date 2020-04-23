@@ -1,5 +1,4 @@
 import pytest
-from unittest import mock
 
 from extractor.src.analyze import Analyzer
 
