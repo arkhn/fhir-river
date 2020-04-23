@@ -97,7 +97,6 @@ def test_squash_rows():
     squash_rules = ["PATIENTS", [["ADMISSIONS", []]]]
 
     actual = transform.squash_rows(data, squash_rules)
-    print(actual)
 
     assert actual["name"] == {("PATIENTS", "NAME"): "bob"}
     assert actual["id"] == {("PATIENTS", "ID"): "id1", ("PATIENTS", "ID2"): "id21"}
