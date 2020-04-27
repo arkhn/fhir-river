@@ -2,6 +2,7 @@ from pytest import raises
 from unittest import mock
 
 from sqlalchemy import Table, Column, MetaData
+from sqlalchemy.orm.query import Query
 
 from extractor.src.extract.extractor import Extractor
 from extractor.src.analyze.sql_column import SqlColumn
@@ -50,9 +51,44 @@ def test_build_db_url():
         Extractor.build_db_url(credentials)
 
 
+@mock.patch("extractor.src.extract.extractor.Extractor.get_column", mock_get_column)
+@mock.patch("extractor.src.extract.extractor.Extractor.get_table", mock_get_table)
 def test_sqlalchemy_query():
-    # TODO
-    pass
+    extractor = Extractor()
+    extractor.session = mock.MagicMock()
+
+    def mock_alchemy_query(*columns):
+        return Query([*columns])
+    extractor.session.query = mock_alchemy_query
+
+    columns = [
+        SqlColumn("patients", "subject_id"),
+        SqlColumn("patients", "row_id"),
+        SqlColumn("admissions", "admittime"),
+    ]
+    joins = [
+        SqlJoin(columns[1], SqlColumn("admissions", "row_id")),
+    ]
+    pk_column = columns[0]
+    resource_mapping = {
+        "filters": [
+            {
+                "relation": "LIKE",
+                "value": "'2150-08-29'",
+                "sqlColumn": {"owner": None, "table": "admissions", "column": "admittime"},
+            }
+        ]
+    }
+    pk_values = None
+
+    query = extractor.sqlalchemy_query(columns, joins, pk_column, resource_mapping, pk_values)
+
+    assert str(query) == (
+        "SELECT patients.subject_id AS patients_subject_id, patients.row_id AS patients_row_id, "
+        "admissions.admittime AS admissions_admittime \n"
+        "FROM patients LEFT OUTER JOIN admissions ON admissions.row_id = patients.row_id \n"
+        "WHERE admissions.admittime LIKE :admittime_1"
+    )
 
 
 @mock.patch("extractor.src.extract.extractor.Extractor.get_column", mock_get_column)
