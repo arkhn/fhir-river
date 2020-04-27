@@ -24,4 +24,8 @@ class Loader:
 
     def delete(self, fhirstore, fhir_instance):
         # Delete resource
+        resource_type = fhir_instance["resourceType"]
+        if resource_type not in self.fhirstore.resources:
+            self.fhirstore.bootstrap(resource=resource_type, depth=3)
+
         delete_one(fhir_instance)

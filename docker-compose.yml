@@ -165,3 +165,4 @@ volumes:
   mimic-db:
     name: mimic-db
   fhirstore-db:
+    name: fhirstore-db

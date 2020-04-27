@@ -41,8 +41,8 @@ def process_event(msg):
         try:
             logger.debug("Delete")
             loader.delete(fhirstore, fhir_instance)
-        except NotFoundError as e:
-            logger.warning(f"Error while trying to delete previous documents: {e}")
+        except NotFoundError:
+            logger.warning("No document found to be deleted")
 
         try:
             logger.debug("Load")
