@@ -16,6 +16,7 @@ TOPIC = "transform"
 GROUP_ID = "arkhn_loader"
 
 logger = create_logger("loader")
+upsert = False
 
 
 def process_event(msg):
@@ -29,24 +30,25 @@ def process_event(msg):
     logger.debug("Loader")
     logger.debug(fhir_instance)
 
-    # try:
-    #     logger.debug("Delete")
-    #     loader.delete(fhirstore, fhir_instance)
-    # except NotFoundError as e:
-    #     logger.warning(f"Error while trying to delete previous documents: {e}")
-    #
-    # try:
-    #     logger.debug("Load")
-    #     loader.load(fhirstore, fhir_instance)
-    # except DuplicateKeyError as e:
-    #     logger.error(e)
+    if upsert:
+        try:
+            logger.debug("Upsert")
+            loader.upsert(fhirstore, fhir_instance)
+        except DuplicateKeyError as e:
+            logger.error(e)
 
-    try:
-        logger.debug("Upsert")
-        loader.upsert(fhirstore, fhir_instance)
-    except DuplicateKeyError as e:
-        logger.error(e)
+    else:
+        try:
+            logger.debug("Delete")
+            loader.delete(fhirstore, fhir_instance)
+        except NotFoundError as e:
+            logger.warning(f"Error while trying to delete previous documents: {e}")
 
+        try:
+            logger.debug("Load")
+            loader.load(fhirstore, fhir_instance)
+        except DuplicateKeyError as e:
+            logger.error(e)
 
 
 def manage_kafka_error(msg):
