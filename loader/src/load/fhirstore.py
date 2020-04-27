@@ -34,6 +34,7 @@ _fhirstore = None
 def get_fhirstore():
     global _fhirstore
     if _fhirstore is None:
+        logger.debug("Create fhirstore")
         _fhirstore = fhirstore.FHIRStore(get_mongo_client(), None, FHIRSTORE_DATABASE)
         _fhirstore.resume()
     return _fhirstore
@@ -50,6 +51,43 @@ def save_one(fhir_object, bypass_validation=False):
 
     try:
         store.create(fhir_object, bypass_document_validation=bypass_validation)
+    except ValidationError as e:
+        logger.error(
+            f"Validation failed for resource {fhir_object} at "
+            f"{'.'.join(e.schema_path)}: {e.message}"
+        )
+
+
+def delete_one(fhir_object):
+    """
+    Save instance of FHIR resource in MongoDB through fhirstore.
+
+    args:
+        fhir_object: fhir object to create
+    """
+    store = get_fhirstore()
+
+    try:
+        resource_type = fhir_object['resourceType']
+        identifier_id = fhir_object['identifier']
+        store.delete(resource_type, identifier_id=identifier_id)
+    except ValidationError as e:
+        logger.error(
+            f"Validation failed for resource {fhir_object} at "
+            f"{'.'.join(e.schema_path)}: {e.message}"
+        )
+
+
+def upsert_one(fhir_object, bypass_validation=False):
+    """
+    Upsert one FHIR instance in MongoDB through fhirstore.
+    :return:
+    """
+    store = get_fhirstore()
+    resource_type = fhir_object['resourceType']
+    identifier_id = fhir_object['identifier']
+    try:
+        store.upsert(resource_type, identifier_id, fhir_object, bypass_document_validation=bypass_validation)
     except ValidationError as e:
         logger.error(
             f"Validation failed for resource {fhir_object} at "

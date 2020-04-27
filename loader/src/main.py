@@ -12,21 +12,10 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
 
-
 TOPIC = "transform"
 GROUP_ID = "arkhn_loader"
 
 logger = create_logger("loader")
-
-
-def override_document(fhir_instance):
-    try:
-        # TODO add a wrapper method in fhirstore to delete as follows?
-        fhirstore.db[fhir_instance["resourceType"]].delete_one(
-            {"identifier": fhir_instance["identifier"]}
-        )
-    except NotFoundError as e:
-        logger.warning(f"error while trying to delete previous documents: {e}")
 
 
 def process_event(msg):
@@ -40,14 +29,24 @@ def process_event(msg):
     logger.debug("Loader")
     logger.debug(fhir_instance)
 
-    # TODO how will we handle override in fhir-river?
-    if True:  # should be "if override:" or something like that
-        override_document(fhir_instance)
+    # try:
+    #     logger.debug("Delete")
+    #     loader.delete(fhirstore, fhir_instance)
+    # except NotFoundError as e:
+    #     logger.warning(f"Error while trying to delete previous documents: {e}")
+    #
+    # try:
+    #     logger.debug("Load")
+    #     loader.load(fhirstore, fhir_instance)
+    # except DuplicateKeyError as e:
+    #     logger.error(e)
 
     try:
-        loader.load(fhirstore, fhir_instance)
+        logger.debug("Upsert")
+        loader.upsert(fhirstore, fhir_instance)
     except DuplicateKeyError as e:
         logger.error(e)
+
 
 
 def manage_kafka_error(msg):

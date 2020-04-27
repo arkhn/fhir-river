@@ -1,4 +1,4 @@
-from loader.src.load.fhirstore import save_one
+from loader.src.load.fhirstore import save_one, delete_one, upsert_one
 
 
 class Loader:
@@ -13,3 +13,15 @@ class Loader:
             self.fhirstore.bootstrap(resource=resource_type, depth=3)
 
         save_one(fhir_instance, self.bypass_validation)
+
+    def upsert(self, fhirstore, fhir_instance):
+        # Bootstrap for resource if needed
+        resource_type = fhir_instance["resourceType"]
+        if resource_type not in self.fhirstore.resources:
+            self.fhirstore.bootstrap(resource=resource_type, depth=3)
+
+        upsert_one(fhir_instance, self.bypass_validation)
+
+    def delete(self, fhirstore, fhir_instance):
+        # Delete resource
+        delete_one(fhir_instance)
