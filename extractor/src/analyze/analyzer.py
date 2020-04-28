@@ -40,6 +40,8 @@ class Analyzer:
         for attribute_mapping in resource_mapping["attributes"]:
             self.analyze_attribute(attribute_mapping)
 
+        return self.analysis
+
     def analyze_attribute(self, attribute_mapping):
         attribute = Attribute(path=attribute_mapping["path"], columns=[])
         if not attribute_mapping["inputs"]:
@@ -56,18 +58,12 @@ class Analyzer:
         for input in attribute_mapping["inputs"]:
             if input["sqlValue"]:
                 sqlValue = input["sqlValue"]
-                cur_col = SqlColumn(
-                    sqlValue["table"], sqlValue["column"], sqlValue["owner"]
-                )
+                cur_col = SqlColumn(sqlValue["table"], sqlValue["column"], sqlValue["owner"])
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
-                    left = SqlColumn(
-                        tables[0]["table"], tables[0]["column"], tables[0]["owner"]
-                    )
-                    right = SqlColumn(
-                        tables[1]["table"], tables[1]["column"], tables[1]["owner"]
-                    )
+                    left = SqlColumn(tables[0]["table"], tables[0]["column"], tables[0]["owner"])
+                    right = SqlColumn(tables[1]["table"], tables[1]["column"], tables[1]["owner"])
                     self.analysis.add_join(SqlJoin(left, right))
 
                 self.analysis.add_column(cur_col)
@@ -78,10 +74,7 @@ class Analyzer:
     def get_primary_key(self, resource_mapping):
         """ Get the primary key table and column of the provided resource.
         """
-        if (
-            not resource_mapping["primaryKeyTable"]
-            or not resource_mapping["primaryKeyColumn"]
-        ):
+        if not resource_mapping["primaryKeyTable"] or not resource_mapping["primaryKeyColumn"]:
             raise ValueError(
                 "You need to provide a primary key table and column in the mapping for "
                 f"resource {resource_mapping['definitionId']}."
@@ -92,3 +85,5 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["primaryKeyOwner"],
         )
+
+        return self.analysis.primary_key_column

@@ -4,12 +4,13 @@ from transformer.src.config.logger import create_logger
 
 logger = create_logger("cleaning_scripts")
 
+
 class CleaningScript:
     def __init__(self, name: str):
         self.name = name
         try:
             self.script = scripts.get_script(name)
-        except:
+        except Exception:
             # TODO better handling here
             logger.error(f"Error while fetching script {name}.")
             self.script = None

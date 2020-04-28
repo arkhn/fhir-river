@@ -34,8 +34,8 @@ class Analyzer:
 
     def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh=3600):
         """
-        This method refreshes the analyser if the last update was later than `max_seconds_refresh` for each resource
-        :return:
+        This method refreshes the analyser if the last update was later than `max_seconds_refresh`
+        for each resource
         """
         if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
             logger.debug("Analysis too old for mapping_resource_id.")
@@ -89,6 +89,8 @@ class Analyzer:
         self._cur_analysis.definition = resource_mapping["definition"]
         for attribute_mapping in resource_mapping["attributes"]:
             self.analyze_attribute(attribute_mapping)
+
+        return self._cur_analysis
 
     def analyze_attribute(self, attribute_mapping):
         attribute = Attribute(
@@ -147,3 +149,5 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["primaryKeyOwner"],
         )
+
+        return self._cur_analysis.primary_key_column

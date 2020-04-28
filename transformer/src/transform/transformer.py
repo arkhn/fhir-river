@@ -33,9 +33,8 @@ class Transformer:
         # Apply merging scripts on data
         logger.debug("Apply Merging Scripts")
         data = merge_attributes(data, analysis.attributes, primary_key)
-        
-        return data
 
+        return data
 
     def create_fhir_document(self, data, analysis):
         """ Function used to create a single FHIR instance.
