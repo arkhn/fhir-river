@@ -189,7 +189,7 @@ def clean_fhir_object(fhir_obj):
                 if fhir_obj[i] == fhir_obj[j]:
                     to_rm.append(i)
                     break
-        return [el for el in fhir_obj if el not in to_rm]
+        return [el for ind, el in enumerate(fhir_obj) if ind not in to_rm]
 
     else:
         return fhir_obj

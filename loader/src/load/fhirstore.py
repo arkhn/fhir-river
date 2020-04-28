@@ -7,7 +7,7 @@ import fhirstore
 from loader.src.config.logger import create_logger
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
-FHIRSTORE_PORT = int(os.getenv("FHIRSTORE_PORT"))
+FHIRSTORE_PORT = os.getenv("FHIRSTORE_PORT")
 FHIRSTORE_DATABASE = os.getenv("FHIRSTORE_DATABASE")
 FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
@@ -21,7 +21,7 @@ def get_mongo_client():
     if _client is None:
         _client = MongoClient(
             host=FHIRSTORE_HOST,
-            port=FHIRSTORE_PORT,
+            port=int(FHIRSTORE_PORT),
             username=FHIRSTORE_USER,
             password=FHIRSTORE_PASSWORD,
         )

@@ -24,4 +24,4 @@ class MergingScript:
                 f"{self.name}: Error merging columns for attribute at path "
                 f"{attr_path} (at id={primary_key}): {e}"
             )
-            return data_column
+            return data_columns

@@ -1,5 +1,3 @@
-import os
-import json
 from collections import defaultdict
 
 from transformer.src.analyze.graphql import get_resource_from_id

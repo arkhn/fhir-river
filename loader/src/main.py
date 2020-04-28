@@ -36,7 +36,6 @@ def process_event(msg):
     :return:
     """
     fhir_instance = json.loads(msg.value())
-    msg_topic = msg.topic()
     logger.debug("Loader")
     logger.debug(fhir_instance)
 

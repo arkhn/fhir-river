@@ -12,10 +12,11 @@ class ExtractorProducer:
     def __init__(self, broker=None, callback_function=None):
         """
         Instantiate the class and create the consumer object
-        :param broker: host[:port]’ string (or list of ‘host[:port]’ strings) that the consumer should contact to
-        bootstrap initial cluster metadata
-        :param callback_function: fn taking 3 args: err, msg, obj, that is called after the event is produced
-        and an error increment (int). Default logs the error or success
+        :param broker: host[:port]’ string (or list of ‘host[:port]’ strings) that
+            the consumer should contact to bootstrap initial cluster metadata
+        :param callback_function: fn taking 3 args: err, msg, obj, that is called
+            after the event is produced and an error increment (int).
+            Default logs the error or success
         """
         self.broker = broker
         self.partition = 0
