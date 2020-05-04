@@ -1,10 +1,10 @@
 from unittest import mock
 from pytest import raises
 
-import transformer.src.analyze.graphql as gql
+import analyzer.src.analyze.graphql as gql
 
 
-@mock.patch("transformer.src.analyze.graphql.requests.post")
+@mock.patch("analyzer.src.analyze.graphql.requests.post")
 def test_run_graphql_query(mock_post):
     mock_post.return_value = mock.MagicMock()
 
@@ -30,7 +30,7 @@ def test_run_graphql_query(mock_post):
         gql.run_graphql_query("query")
 
 
-@mock.patch("transformer.src.analyze.graphql.run_graphql_query")
+@mock.patch("analyzer.src.analyze.graphql.run_graphql_query")
 def test_get_resource_from_id(mock_run_graphql_query):
     # Mock run_graphql_query
     mock_run_graphql_query.return_value = {"data": {"resource": {"id": 1, "content": "content1"}}}

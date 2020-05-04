@@ -1,6 +1,6 @@
-import transformer.src.analyze.mapping as mapping
-from transformer.src.analyze.sql_column import SqlColumn
-from transformer.src.analyze.sql_join import SqlJoin
+import analyzer.src.analyze.mapping as mapping
+from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_join import SqlJoin
 
 
 def test_build_squash_rules():

@@ -1,12 +1,12 @@
 import pytest
 from unittest import mock
 
-from transformer.src.analyze.concept_map import ConceptMap
+from analyzer.src.analyze.concept_map import ConceptMap
 
-from transformer.test.conftest import mock_api_get_maps
+from analyzer.test.conftest import mock_api_get_maps
 
 
-@mock.patch("transformer.src.analyze.concept_map.requests.get", mock_api_get_maps)
+@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
 def test_fetch_concept_map(fhir_concept_map_gender):
     concept_map = ConceptMap.fetch(fhir_concept_map_gender["id"])
 
@@ -55,7 +55,7 @@ def test_convert_to_dict():
     }
 
 
-@mock.patch("transformer.src.analyze.concept_map.requests.get", mock_api_get_maps)
+@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
 def test_concept_map_apply(fhir_concept_map_gender):
     concept_map = ConceptMap(fhir_concept_map_gender["id"])
 

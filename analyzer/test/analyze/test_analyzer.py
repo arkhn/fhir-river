@@ -1,14 +1,14 @@
 import pytest
 from unittest import mock
 
-from transformer.src.analyze import Analyzer
+from analyzer.src.analyze import Analyzer
 
-from transformer.src.analyze.attribute import Attribute
-from transformer.src.analyze.merging_script import MergingScript
-from transformer.src.analyze.sql_column import SqlColumn
-from transformer.src.analyze.sql_join import SqlJoin
+from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.merging_script import MergingScript
+from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_join import SqlJoin
 
-from transformer.test.conftest import mock_api_get_maps
+from analyzer.test.conftest import mock_api_get_maps
 
 
 def test_get_primary_key():
@@ -47,7 +47,7 @@ def test_get_primary_key():
         analyzer.get_primary_key(resource_mapping)
 
 
-@mock.patch("transformer.src.analyze.concept_map.requests.get", mock_api_get_maps)
+@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
 def test_analyze_mapping(patient_mapping):
     analyzer = Analyzer()
 
@@ -119,10 +119,10 @@ def test_analyze_mapping(patient_mapping):
     }
 
 
-@mock.patch("transformer.src.analyze.concept_map.requests.get", mock_api_get_maps)
+@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
 def test_reference_paths(patient_mapping):
     analyzer = Analyzer()
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 
-    assert analysis.reference_paths == {'generalPractitioner'}
+    assert analysis.reference_paths == {"generalPractitioner"}

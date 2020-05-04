@@ -1,7 +1,7 @@
 from unittest import mock
 import pandas as pd
 
-from transformer.src.analyze.cleaning_script import CleaningScript
+from analyzer.src.analyze.cleaning_script import CleaningScript
 
 
 def test_cleaning_script_init():
@@ -15,7 +15,7 @@ def capitalize(text):
     return text.upper()
 
 
-@mock.patch("transformer.src.analyze.cleaning_script.scripts.get_script", return_value=capitalize)
+@mock.patch("analyzer.src.analyze.cleaning_script.scripts.get_script", return_value=capitalize)
 def test_cleaning_script_apply(_):
     cleaning_script = CleaningScript("capitalize")
 

@@ -24,6 +24,13 @@ jobs:
           # stop the build if there are Python syntax errors or undefined names
           flake8 extractor transformer loader api --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 extractor transformer loader api --count --max-complexity=10 --max-line-length=100 --statistics
-      - name: Test with pytest
+      - name: Unit tests with pytest
         run: |
-          python -m pytest -svv extractor/test transformer/test loader/test
+          python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
+      - name: Unit integration tests with pytest
+        run: |
+          docker-compose -f test/docker-compose.yml up -d --build
+          sleep 20
+          env $(cat test/.env) ./test/initiate_rep_set.sh
+          sleep 60
+          env $(cat test/.env) python -m pytest -svv test/test_batch.py
