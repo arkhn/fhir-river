@@ -1,4 +1,3 @@
-import logging
 from dotty_dict import dotty
 
 from loader.src.config.logger import create_logger
@@ -12,8 +11,8 @@ class ReferenceBinder:
 
         # cache is a dict of form
         # {
-        #   (value, system): [fhir_id1, fhir_id2...],
-        #   (value, system): [fhir_id],
+        #   (fhir_type_source, value, system): {fhir_type_target: [fhir_id1, fhir_id2...]},
+        #   (fhir_type_source, value, system): {fhir_type_target: [fhir_id]},
         #   ...
         # }
         self.cache = {}
@@ -77,12 +76,15 @@ class ReferenceBinder:
                     f"{identifier['value']} at {reference_path}"
                 )
                 # otherwise, cache the reference to resolve it later
-                cache_key = (identifier["system"], identifier["value"])
-                pending_refs = self.cache.get(cache_key, [])
-                self.cache[cache_key] = [
-                    *pending_refs,
-                    {"id": fhir_object["id"], "type": reference_type, "path": reference_path},
-                ]
+                cache_key = (reference_type, identifier["system"], identifier["value"])
+                pending_refs = self.cache.get(cache_key, {})
+                self.cache[cache_key] = {
+                    **pending_refs,
+                    (fhir_object["resourceType"], reference_path): [
+                        *pending_refs.get(fhir_object["resourceType"], []),
+                        fhir_object["id"],
+                    ],
+                }
 
         return reference_attribute
 
@@ -94,14 +96,20 @@ class ReferenceBinder:
                     "identifier.value and identifier.system are required"
                 )
                 continue
-            cache_key = (identifier["system"], identifier["value"])
-            pending_refs = self.cache.get(cache_key)
-            if pending_refs:
-                for ref in pending_refs:
-                    logger.info(
-                        "Resolving pending reference for resource "
-                        f"{ref['type']} {ref['id']} {ref['path']}"
-                    )
+            cache_key = (fhir_object["resourceType"], identifier["system"], identifier["value"])
+            pending_refs = self.cache.get(cache_key, {})
+            for (source_type, reference_path), refs in pending_refs.items():
+                find_predicate = {
+                    "id": {"$in": refs},
+                    f"{reference_path}.identifier.value": identifier["value"],
+                }
+                update_predicate = {"$set": {f"{reference_path}.$.reference": fhir_object["id"]}}
+                logger.info(
+                    "Updating resource %s: %s %s", source_type, find_predicate, update_predicate
+                )
+                self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
+            if len(pending_refs) > 0:
+                del self.cache[cache_key]
 
     # @staticmethod
     # def find_sub_fhir_object(instance, path):

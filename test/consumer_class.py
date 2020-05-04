@@ -66,7 +66,7 @@ class EventConsumer:
         :return:
         """
         # Deserialize Event
-        msg = self.consumer.poll(timeout=1.0)
+        msg = self.consumer.poll()
 
         # Process Event or Raise Error
         if msg is None:
@@ -81,8 +81,8 @@ class EventConsumer:
     def consume_events(self, event_count=None):
         if event_count:
             for i in range(event_count):
-                logger.info(f"consumed {i} events")
                 self.consume_event()
+                logger.info(f"consumed {i+1} events")
         else:
             while True:
                 self.consume_event()

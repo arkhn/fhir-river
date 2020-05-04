@@ -154,5 +154,5 @@ def test_apply_filters():
     ]
 
     for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
-        args, kwargs = call
+        args, _ = call
         assert args[0].compare(binary_expression)

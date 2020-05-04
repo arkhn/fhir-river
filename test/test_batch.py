@@ -3,6 +3,8 @@ import requests
 
 from .consumer_class import EventConsumer
 
+LOAD_TOPIC = "load"
+
 MIMIC_PATIENT_RESOURCE_ID = os.getenv("MIMIC_PATIENT_RESOURCE_ID")
 MIMIC_PRACTITIONER_RESOURCE_ID = os.getenv("MIMIC_PRACTITIONER_RESOURCE_ID")
 MIMIC_PATIENT_COUNT = 100
@@ -19,7 +21,7 @@ def test_batch_single_row():
     # declare kafka consumer of "transform" events
     consumer = EventConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics="transform",
+        topics=LOAD_TOPIC,
         group_id="test_batch_single_row",
         manage_error=handle_kafka_error,
     )
@@ -46,14 +48,13 @@ def test_batch_single_row():
 
     assert response.status_code == 200, "api POST /batch returned an error"
 
-    consumer.run_consumer(event_count=MIMIC_PATIENT_COUNT)
-
     # RUN A PRACTITIONER BATCH BATCH #
     response = requests.post(
         "http://localhost:5000/batch", json={"resource_ids": [MIMIC_PRACTITIONER_RESOURCE_ID]},
     )
     assert response.status_code == 200, "api POST /batch returned an error"
 
+    consumer.run_consumer(event_count=MIMIC_PATIENT_COUNT)
     consumer.run_consumer(event_count=MIMIC_PRACTITIONER_COUNT)
 
 

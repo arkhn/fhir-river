@@ -11,12 +11,14 @@ from analyzer.src.analyze import Analyzer
 
 from loader.src.config.logger import create_logger
 from loader.src.consumer_class import LoaderConsumer
+from loader.src.producer_class import LoaderProducer
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
 from loader.src.references import ReferenceBinder
 
 
-TOPIC = "transform"
+CONSUMED_TOPIC = "transform"
+PRODUCED_TOPIC = "load"
 GROUP_ID = "arkhn_loader"
 
 logger = create_logger("loader")
@@ -37,34 +39,39 @@ def override_document(fhir_instance):
         logger.warning(f"error while trying to delete previous documents: {e}")
 
 
-def process_event(msg):
-    """
-    Process the event
-    :param msg:
-    :return:
-    """
-    fhir_instance = json.loads(msg.value())
-    logger.debug("Loader")
-    logger.debug(fhir_instance)
+def process_event_with_producer(producer):
+    def process_event(msg):
+        """
+        Process the event
+        :param msg:
+        :return:
+        """
+        fhir_instance = json.loads(msg.value())
+        logger.debug("Loader")
+        logger.debug(fhir_instance)
 
-    logger.debug("Get Analysis")
-    # FIXME: filter meta.tags by system to get the right resource_id (ARKHN_CODE_SYSTEMS.resource)
-    analysis = analyzer.get_analysis(fhir_instance["meta"]["tag"][1]["code"])
+        logger.debug("Get Analysis")
+        # FIXME: filter meta.tags by system to get the right
+        # resource_id (ARKHN_CODE_SYSTEMS.resource)
+        analysis = analyzer.get_analysis(fhir_instance["meta"]["tag"][1]["code"])
 
-    # Resolve existing and pending references (if the fhir_instance
-    # references OR is referenced by other documents)
-    logger.debug(f"Resolving references {analysis.reference_paths}")
-    resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
+        # Resolve existing and pending references (if the fhir_instance
+        # references OR is referenced by other documents)
+        logger.debug(f"Resolving references {analysis.reference_paths}")
+        resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
 
-    # TODO how will we handle override in fhir-river?
-    if True:  # should be "if override:" or something like that
-        override_document(resolved_fhir_instance)
+        # TODO how will we handle override in fhir-river?
+        if True:  # should be "if override:" or something like that
+            override_document(resolved_fhir_instance)
 
-    try:
-        logger.debug("Writing document to mongo")
-        loader.load(fhirstore, resolved_fhir_instance)
-    except DuplicateKeyError as e:
-        logger.error(e)
+        try:
+            logger.debug("Writing document to mongo")
+            loader.load(fhirstore, resolved_fhir_instance)
+            producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
+        except DuplicateKeyError as e:
+            logger.error(e)
+
+    return process_event
 
 
 def manage_kafka_error(msg):
@@ -81,11 +88,12 @@ if __name__ == "__main__":
 
     # TODO how will we handle bypass_validation in fhir-river?
     loader = Loader(fhirstore, bypass_validation=False)
+    producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=TOPIC,
+        topics=CONSUMED_TOPIC,
         group_id=GROUP_ID,
-        process_event=process_event,
+        process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
     )
 

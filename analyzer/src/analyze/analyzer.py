@@ -57,7 +57,7 @@ class Analyzer:
     # TODO add an update_analysis(self, resource_mapping_id)?
 
     def analyze(self, resource_mapping):
-        self._cur_analysis.reset()
+        self._cur_analysis = Analysis()
 
         # Analyze the mapping
         self.analyze_mapping(resource_mapping)
@@ -93,6 +93,9 @@ class Analyzer:
         return self._cur_analysis
 
     def analyze_attribute(self, attribute_mapping):
+        logger.debug(
+            f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}"
+        )
         attribute = Attribute(
             path=attribute_mapping["path"], columns=[], static_inputs=[], merging_script=None
         )
@@ -100,9 +103,6 @@ class Analyzer:
             # If there are no inputs for this attribute, it means that it is an intermediary
             # attribute (ie not a leaf). It is here to give us some context information.
             # For instance, we can use it if its children attributes represent a Reference.
-            logger.debug(
-                f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}"
-            )
             if attribute_mapping["definitionId"] == "Reference":
                 logger.debug(f"Analyze attribute reference !")
                 # Remove index
