@@ -1,0 +1,14 @@
+# connect to MongoDB using the following URL
+mongo-url = "mongodb://arkhn:SuperSecurePassword2019@mongo:27017"
+
+# connect to the Elasticsearch REST API at the following node URLs
+elasticsearch-urls = ["http://elasticsearch:9200"]
+# use the following user name for Elasticsearch basic auth
+elasticsearch-user = "elastic"
+# use the following password for Elasticsearch basic auth
+elasticsearch-password = "SuperSecurePassword2019"
+
+direct-read-namespaces = ["fhirstore.Patient"]
+change-stream-namespaces = ["fhirstore"]
+
+verbose = true

@@ -97,7 +97,8 @@ services:
 
   transformer:
     build:
-      context: transformer/
+      dockerfile: transformer/Dockerfile
+      context: ./
     container_name: transformer
     image: arkhn/fhir-transformer:latest
     restart: always
@@ -117,12 +118,14 @@ services:
 
   loader:
     build:
-      context: loader/
+      dockerfile: loader/Dockerfile
+      context: ./
     container_name: loader
     image: arkhn/fhir-loader:latest
     restart: always
     depends_on:
       - kafka
+      - mongo
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       FHIRSTORE_HOST: mongo
@@ -133,7 +136,8 @@ services:
 
   extractor:
     build:
-      context: extractor/
+      dockerfile: extractor/Dockerfile
+      context: ./
     container_name: extractor
     image: arkhn/fhir-extractor:latest
     restart: always

@@ -1,9 +1,9 @@
-from typing import TypeVar
+from typing import TypeVar, Mapping
 import os
 import requests
 
-from transformer.src.config.logger import create_logger
-from transformer.src.errors import OperationOutcome
+from analyzer.src.config.logger import create_logger
+from analyzer.src.errors import OperationOutcome
 
 logger = create_logger("concept_map")
 
@@ -19,13 +19,13 @@ class ConceptMap:
         """
         Converts a FHIR concept map to an object which is easier to use.
         """
-        fhir_concept_map = ConceptMap.fetch(concept_map_id)
+        fhir_concept_map: Mapping = ConceptMap.fetch(concept_map_id)
 
         self.mapping = ConceptMap.convert_to_dict(fhir_concept_map)
         self.id = fhir_concept_map["id"]
         self.title = fhir_concept_map["title"]
 
-    def __eq__(self, operand: T) -> bool:
+    def __eq__(self, operand) -> bool:
         return self.title == operand.title and self.mapping == operand.mapping
 
     @staticmethod

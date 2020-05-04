@@ -1,8 +1,8 @@
 import re
 import time
 
-from transformer.src.analyze.graphql import get_resource_from_id
-from transformer.src.config.logger import create_logger
+from analyzer.src.analyze.graphql import get_resource_from_id
+from analyzer.src.config.logger import create_logger
 
 from .mapping import build_squash_rules
 from .analysis import Analysis
@@ -25,7 +25,7 @@ class Analyzer:
         self._cur_analysis = Analysis()
         self.last_updated_at = {}  # Store last updated timestamp for each resource_mapping_id
 
-    def get_analysis(self, resource_mapping_id):
+    def get_analysis(self, resource_mapping_id) -> Analysis:
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
         else:
@@ -100,7 +100,11 @@ class Analyzer:
             # If there are no inputs for this attribute, it means that it is an intermediary
             # attribute (ie not a leaf). It is here to give us some context information.
             # For instance, we can use it if its children attributes represent a Reference.
+            logger.debug(
+                f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}"
+            )
             if attribute_mapping["definitionId"] == "Reference":
+                logger.debug(f"Analyze attribute reference !")
                 # Remove index
                 path = re.sub(r"\[\d+\]$", "", attribute.path)
                 self._cur_analysis.reference_paths.add(path)

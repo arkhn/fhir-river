@@ -16,7 +16,10 @@ logger = create_logger("transformer")
 class Transformer:
     def transform_data(self, data, analysis):
         # Get primary key value for logs
-        primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
+        try:
+            primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
+        except KeyError as e:
+            logger.error(f"Trying to access column not provided in dataframe: {e}")
 
         # Change values to strings
         logger.debug("Apply Map String")

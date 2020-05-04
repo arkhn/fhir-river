@@ -7,7 +7,7 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 from jsonschema.exceptions import ValidationError
 
-from transformer.src.analyze import Analyzer
+from analyzer.src.analyze import Analyzer
 from transformer.src.transform import Transformer
 
 from transformer.src.consumer_class import TransformerConsumer

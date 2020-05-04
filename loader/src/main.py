@@ -7,16 +7,24 @@ from pymongo.errors import DuplicateKeyError
 
 from fhirstore import NotFoundError
 
+from analyzer.src.analyze import Analyzer
+
 from loader.src.config.logger import create_logger
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
+from loader.src.references import ReferenceBinder
 
 
 TOPIC = "transform"
 GROUP_ID = "arkhn_loader"
 
 logger = create_logger("loader")
+
+fhirstore = get_fhirstore()
+
+analyzer = Analyzer()
+binder = ReferenceBinder(fhirstore)
 
 
 def override_document(fhir_instance):
@@ -39,12 +47,22 @@ def process_event(msg):
     logger.debug("Loader")
     logger.debug(fhir_instance)
 
+    logger.debug("Get Analysis")
+    # FIXME: filter meta.tags by system to get the right resource_id (ARKHN_CODE_SYSTEMS.resource)
+    analysis = analyzer.get_analysis(fhir_instance["meta"]["tag"][1]["code"])
+
+    # Resolve existing and pending references (if the fhir_instance
+    # references OR is referenced by other documents)
+    logger.debug(f"Resolving references {analysis.reference_paths}")
+    resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
+
     # TODO how will we handle override in fhir-river?
     if True:  # should be "if override:" or something like that
-        override_document(fhir_instance)
+        override_document(resolved_fhir_instance)
 
     try:
-        loader.load(fhirstore, fhir_instance)
+        logger.debug("Writing document to mongo")
+        loader.load(fhirstore, resolved_fhir_instance)
     except DuplicateKeyError as e:
         logger.error(e)
 
@@ -60,8 +78,6 @@ def manage_kafka_error(msg):
 
 if __name__ == "__main__":
     logger.info("Running Consumer")
-
-    fhirstore = get_fhirstore()
 
     # TODO how will we handle bypass_validation in fhir-river?
     loader = Loader(fhirstore, bypass_validation=False)

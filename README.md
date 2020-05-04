@@ -23,14 +23,14 @@ using an internal API.
 
 - MIMIC / JDBC Source Connector (postgreSQL):
 
-Run the script to create some records in the MIMIC db: `python test/create_records_db.py` (ugly script,
+Run the script to create some records in the MIMIC db: `python test/utils/create_records_db.py` (ugly script,
 but it works fine just to test that it works)
 You can see in the logs of the `transformer` container the message and its topic. You can check inside the MIMIC DB
 that your record has been created (check config in the script - WIP)
 
 - SFTPCsvSource Connector
 
-Run the script to create some .csv file in the SFTP server: `python test/create_file_stfp.py` (ugly script,
+Run the script to create some .csv file in the SFTP server: `python test/utils/create_file_stfp.py` (ugly script,
 but it works fine just to test that it works).
 
 4. Play with it: in the script `transformer/src/main.py`, edit the function `process_event` to do whatever you want!

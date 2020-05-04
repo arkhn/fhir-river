@@ -1,6 +1,6 @@
 import scripts
 
-from transformer.src.config.logger import create_logger
+from analyzer.src.config.logger import create_logger
 
 logger = create_logger("cleaning_scripts")
 

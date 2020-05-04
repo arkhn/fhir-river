@@ -1,13 +1,25 @@
 import os
 import requests
 
-from transformer.src.errors import OperationOutcome
+from analyzer.src.errors import OperationOutcome
 
 
 PYROG_TOKEN = os.getenv("PYROG_TOKEN")
 PYROG_API_URL = os.getenv("PYROG_API_URL")
 
 attr_fragment = """
+fragment entireFilter on Filter {
+  id
+  sqlColumn {
+    id
+    owner
+    table
+    column
+  }
+  relation
+  value
+}
+
 fragment entireColumn on Column {
     owner
     table
@@ -39,7 +51,20 @@ fragment a on Attribute {
     }
 }"""
 
+cred_fragment = """
+fragment cred on Credential {
+    model
+    host
+    port
+    database
+    login
+    password
+}
+"""
+
 resource_from_id_query = """
+%s
+
 %s
 
 query resource($resourceId: ID!) {
@@ -55,16 +80,23 @@ query resource($resourceId: ID!) {
             derivation
             url
         }
+        filters {
+            ...entireFilter
+        }
         attributes {
             ...a
         }
         source {
             id
+            credential {
+                ...cred
+            }
         }
     }
 }
 """ % (
-    attr_fragment
+    attr_fragment,
+    cred_fragment,
 )
 
 

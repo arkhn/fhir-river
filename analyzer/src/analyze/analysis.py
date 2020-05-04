@@ -1,8 +1,8 @@
 from typing import Dict, List, Set
 
-from transformer.src.analyze.sql_column import SqlColumn
-from transformer.src.analyze.sql_join import SqlJoin
-from transformer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_join import SqlJoin
+from analyzer.src.analyze.attribute import Attribute
 
 
 class Analysis:

@@ -1,8 +1,7 @@
 from typing import List
-
 from collections import defaultdict
 
-from transformer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.attribute import Attribute
 
 from transformer.src.config.logger import create_logger
 

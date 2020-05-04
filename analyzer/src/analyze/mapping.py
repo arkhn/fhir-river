@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from transformer.src.analyze.graphql import get_resource_from_id
+from analyzer.src.analyze.graphql import get_resource_from_id
 
 
 def get_mapping(resource_ids):
