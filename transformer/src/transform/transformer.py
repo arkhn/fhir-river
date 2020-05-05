@@ -19,7 +19,7 @@ class Transformer:
         try:
             primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
         except KeyError as e:
-            logger.error(f"Trying to access column not provided in dataframe: {e}")
+            logger.error(f"Trying to access column not present in dataframe: {e}")
 
         # Change values to strings
         logger.debug("Apply Map String")

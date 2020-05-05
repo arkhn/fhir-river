@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dotty_dict import dotty
 
 from loader.src.config.logger import create_logger
@@ -11,11 +12,17 @@ class ReferenceBinder:
 
         # cache is a dict of form
         # {
-        #   (fhir_type_source, value, system): {fhir_type_target: [fhir_id1, fhir_id2...]},
-        #   (fhir_type_source, value, system): {fhir_type_target: [fhir_id]},
+        #   (fhir_type_target, value, system): {(fhir_type_source, path): [fhir_id1, ...]},
+        #   (fhir_type_target, value, system): {(fhir_type_source, path): [fhir_id]},
         #   ...
         # }
-        self.cache = {}
+        # eg:
+        # {
+        #   (Practitioner, 1234, system): {(Patient, generalPractitioner): [fhir-pract-id]},
+        #   ...
+        # }
+
+        self.cache = defaultdict(lambda: defaultdict(list))
 
     def resolve_references(self, unresolved_fhir_object, reference_paths):
         fhir_object = dotty(unresolved_fhir_object)
@@ -54,7 +61,7 @@ class ReferenceBinder:
             # extract the type and itentifier of the reference
             reference_type = ref["type"]
             identifier = ref["identifier"]
-            if not identifier.get("value") or not identifier.get("system"):
+            if "value" not in identifier or "system" not in identifier:
                 logger.error(
                     f"invalid reference: {ref}. identifier.value and identifier.system are required"
                 )
@@ -75,63 +82,49 @@ class ReferenceBinder:
                     f"caching reference to {reference_type} "
                     f"{identifier['value']} at {reference_path}"
                 )
+
                 # otherwise, cache the reference to resolve it later
-                cache_key = (reference_type, identifier["system"], identifier["value"])
-                pending_refs = self.cache.get(cache_key, {})
-                self.cache[cache_key] = {
-                    **pending_refs,
-                    (fhir_object["resourceType"], reference_path): [
-                        *pending_refs.get(fhir_object["resourceType"], []),
-                        fhir_object["id"],
-                    ],
-                }
+                target_ref = (reference_type, self.extract_key_tuple(identifier))
+                source_ref = (fhir_object["resourceType"], reference_path)
+                self.cache[target_ref][source_ref].append(fhir_object["id"])
 
         return reference_attribute
 
     def resolve_pending_references(self, fhir_object):
         for identifier in fhir_object["identifier"]:
-            if not identifier.get("value") or not identifier.get("system"):
+            if "value" not in identifier or "system" not in identifier:
                 logger.error(
                     f"invalid identifier: {identifier}. "
                     "identifier.value and identifier.system are required"
                 )
                 continue
-            cache_key = (fhir_object["resourceType"], identifier["system"], identifier["value"])
-            pending_refs = self.cache.get(cache_key, {})
+            target_ref = (fhir_object["resourceType"], self.extract_key_tuple(identifier))
+            pending_refs = self.cache.get(target_ref, {})
             for (source_type, reference_path), refs in pending_refs.items():
                 find_predicate = {
                     "id": {"$in": refs},
                     f"{reference_path}.identifier.value": identifier["value"],
+                    f"{reference_path}.identifier.system": identifier["system"],
                 }
+                # FIXME: test if that work when the attribute is not an array of references
+                # maybe refs array and refs as single items need to be updated differently
                 update_predicate = {"$set": {f"{reference_path}.$.reference": fhir_object["id"]}}
                 logger.info(
                     "Updating resource %s: %s %s", source_type, find_predicate, update_predicate
                 )
                 self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
             if len(pending_refs) > 0:
-                del self.cache[cache_key]
+                del self.cache[target_ref]
 
-    # @staticmethod
-    # def find_sub_fhir_object(instance, path):
-    #     cur_sub_object = instance
-    #     for step in path.split("."):
-    #         index = re.search(r"\[(\d+)\]$", step)
-    #         step = re.sub(r"\[\d+\]$", "", step)
-    #         cur_sub_object = cur_sub_object[step]
-    #         if index:
-    #             cur_sub_object = cur_sub_object[int(index.group(1))]
-
-    #     return cur_sub_object
-
-    # @staticmethod
-    # def extract_key_tuple(identifier):
-    #     """ Build a tuple that contains the essential information from an Identifier.
-    #     This tuple serves as a map key.
-    #     """
-    #     value = identifier["value"]
-    #     # TODO system should have been automatically filled if needed
-    #     system = identifier.get("system")
-    #     identifier_type_coding = identifier["type"]["coding"][0] if "type" in identifier else {}
-    #     identifier_type_system = identifier_type_coding.get("system")
-    #     identifier_type_code = identifier_type_coding.get("code")
-    #     return (value, system, identifier_type_system, identifier_type_code)
+    @staticmethod
+    def extract_key_tuple(identifier):
+        """ Build a tuple that contains the essential information from an Identifier.
+        This tuple serves as a map key.
+        """
+        value = identifier["value"]
+        # TODO system should have been automatically filled if needed
+        system = identifier.get("system")
+        identifier_type_coding = identifier["type"]["coding"][0] if "type" in identifier else {}
+        identifier_type_system = identifier_type_coding.get("system")
+        identifier_type_code = identifier_type_coding.get("code")
+        return (value, system, identifier_type_system, identifier_type_code)

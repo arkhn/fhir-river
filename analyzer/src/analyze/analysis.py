@@ -18,18 +18,6 @@ class Analysis:
         self.reference_paths: Set[str] = set()
         self.is_static = False
 
-    def reset(self):
-        self.source_id = None
-        self.resource_id = None
-        self.definition = None
-        self.attributes = []
-        self.columns = set()
-        self.joins = set()
-        self.primary_key_column = None
-        self.squash_rules = None
-        self.reference_paths = set()
-        self.is_static = False
-
     def add_column(self, column):
         self.columns.add(column)
 

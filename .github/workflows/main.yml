@@ -27,7 +27,7 @@ jobs:
       - name: Unit tests with pytest
         run: |
           python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
-      - name: Unit integration tests with pytest
+      - name: Integration tests with pytest
         run: |
           docker-compose -f test/docker-compose.yml up -d --build
           sleep 20

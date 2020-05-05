@@ -3,7 +3,6 @@ services:
   mimic:
     image: arkhn/mimic:latest
     container_name: mimic
-    env_file: .env.mimic
     restart: always
     environment:
       POSTGRES_USER: mimicuser
