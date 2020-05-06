@@ -105,7 +105,7 @@ class Analyzer:
             # For instance, we can use it if its children attributes represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
                 logger.debug(f"Analyze attribute reference !")
-                # Remove index
+                # Remove trailing index
                 path = re.sub(r"\[\d+\]$", "", attribute.path)
                 self._cur_analysis.reference_paths.add(path)
 

@@ -10,11 +10,11 @@ from fhirstore import NotFoundError
 from analyzer.src.analyze import Analyzer
 
 from loader.src.config.logger import create_logger
-from loader.src.consumer_class import LoaderConsumer
-from loader.src.producer_class import LoaderProducer
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
-from loader.src.references import ReferenceBinder
+from loader.src.reference_binder import ReferenceBinder
+from loader.src.consumer_class import LoaderConsumer
+from loader.src.producer_class import LoaderProducer
 
 
 CONSUMED_TOPIC = "transform"

@@ -29,8 +29,11 @@ jobs:
           python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
       - name: Integration tests with pytest
         run: |
-          docker-compose -f test/docker-compose.yml up -d --build
-          sleep 20
+          docker-compose -f test/docker-compose.yml up -d mongo
+          sleep 10
           env $(cat test/.env) ./test/initiate_rep_set.sh
-          sleep 60
+          docker-compose -f test/docker-compose.yml up -d --build transformer
+          sleep 30
+          docker-compose -f test/docker-compose.yml up -d --build
+          sleep 10
           env $(cat test/.env) python -m pytest -svv test/test_batch.py
