@@ -84,7 +84,7 @@ def squash_rows(data, squash_rules, parent_cols=[]):
 
     if not [col for col in data if any([col[1] == rule[0] for rule in child_rules])]:
         if parent_cols == []:
-            return {col[0]: {col[1]: value} for col, value in data.items()}
+            return {col[0]: {col[1]: value[0]} for col, value in data.items()}
         else:
             return data
 

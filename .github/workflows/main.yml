@@ -28,12 +28,19 @@ jobs:
         run: |
           python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
       - name: Integration tests with pytest
+        env:
+          FHIR_API_URL: ${{ secrets.FHIR_API_URL }}
+          PYROG_API_URL: ${{ secrets.PYROG_API_URL }}
+          PYROG_TOKEN: ${{ secrets.PYROG_TOKEN }}
+          MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
+          MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
+          KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo
           sleep 10
-          env $(cat test/.env) ./test/initiate_rep_set.sh
+          MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker-compose -f test/docker-compose.yml up -d --build transformer
           sleep 30
           docker-compose -f test/docker-compose.yml up -d --build
           sleep 10
-          env $(cat test/.env) python -m pytest -svv test/test_batch.py
+          python -m pytest -svv test/test_batch.py

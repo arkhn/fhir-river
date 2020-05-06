@@ -133,8 +133,6 @@ services:
     restart: always
     depends_on:
       - kafka
-    env_file:
-      - .env.pyrog
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       FHIRSTORE_HOST: mongo
@@ -142,6 +140,9 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: arkhn
       FHIRSTORE_PASSWORD: SuperSecurePassword2019
+      FHIR_API_URL: ${FHIR_API_URL}
+      PYROG_API_URL: ${PYROG_API_URL}
+      PYROG_TOKEN: ${PYROG_TOKEN}
     ports:
       - 5002
 
@@ -152,8 +153,6 @@ services:
     container_name: loader
     image: arkhn/fhir-loader:latest
     restart: always
-    env_file:
-      - .env.pyrog
     depends_on:
       - kafka
       - mongo
@@ -164,6 +163,9 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: arkhn
       FHIRSTORE_PASSWORD: SuperSecurePassword2019
+      FHIR_API_URL: ${FHIR_API_URL}
+      PYROG_API_URL: ${PYROG_API_URL}
+      PYROG_TOKEN: ${PYROG_TOKEN}
 
   extractor:
     build:
@@ -174,10 +176,11 @@ services:
     restart: always
     depends_on:
       - kafka
-    env_file:
-      - .env.pyrog
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      FHIR_API_URL: ${FHIR_API_URL}
+      PYROG_API_URL: ${PYROG_API_URL}
+      PYROG_TOKEN: ${PYROG_TOKEN}
     ports:
       - 5001
 
