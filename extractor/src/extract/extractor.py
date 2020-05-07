@@ -5,8 +5,9 @@ import pandas as pd
 from sqlalchemy import create_engine, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
 
-from extractor.src.analyze.sql_column import SqlColumn
-from extractor.src.analyze.sql_join import SqlJoin
+from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_join import SqlJoin
+
 from extractor.src.config.logger import create_logger
 
 logger = create_logger("extractor")

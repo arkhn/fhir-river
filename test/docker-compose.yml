@@ -1,0 +1,207 @@
+version: "3.7"
+services:
+  mimic:
+    image: arkhn/mimic:latest
+    container_name: mimic
+    restart: always
+    environment:
+      POSTGRES_USER: mimicuser
+      POSTGRES_PASSWORD: mimicuser
+      POSTGRES_DB: mimic
+      POSTGRES_HOST: mimic
+      POSTGRES_PORT: 5432
+    volumes:
+      - test-mimic-db:/var/lib/postgresql/data
+    ports:
+      - 5431:5432
+
+  mongo:
+    image: mongo
+    hostname: mongo
+    container_name: mongo
+    restart: always
+    command: --replSet rs0
+    environment:
+      MONGO_INITDB_DATABASE: fhirstore
+      MONGO_INITDB_ROOT_USERNAME: arkhn
+      MONGO_INITDB_ROOT_PASSWORD: SuperSecurePassword2019
+    ports:
+      - 27017:27017
+    volumes:
+      - test-fhirstore-db:/data/db
+      - test-fhirstore-config-db:/data/configdb
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
+    container_name: elasticsearch
+    environment:
+      ELASTIC_PASSWORD: SuperSecurePassword2019
+    ports:
+      - 9200:9200
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - test-elastic-db:/usr/share/elasticsearch/data
+
+  monstache:
+    image: rwynn/monstache:6.5.4
+    container_name: monstache
+    command: -f /opt/monstache.toml
+    restart: always
+    volumes:
+      - ./monstache.toml:/opt/monstache.toml
+    depends_on:
+      - mongo
+      - elasticsearch
+
+  # sftp:
+  #   image: atmoz/sftp
+  #   container_name: sftp
+  #   volumes:
+  #     - ./sftp/host/upload/:/home/arkhn/upload/
+  #   ports:
+  #     - "2222:22"
+  #   command: arkhn:arkhnpwd:1001
+
+  zookeeper:
+    image: "zookeeper:3.4.10"
+    container_name: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    expose:
+      - "2181"
+
+  kafka:
+    image: "wurstmeister/kafka:0.10.2.1"
+    restart: always
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    expose:
+      - "9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # kafka_connect:
+  #   image: confluentinc/cp-kafka-connect:latest
+  #   restart: always
+  #   container_name: kafka_connect
+  #   ports:
+  #     - "8083:8083"
+  #   depends_on:
+  #     - kafka
+  #   volumes:
+  #     - ../kafka_connect_connectors/plugins/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
+  #   environment:
+  #     CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
+  #     CONNECT_PLUGIN_PATH: /usr/share/java/
+  #     CONNECT_BOOTSTRAP_SERVERS: kafka:9093
+  #     CONNECT_GROUP_ID: source-kafka-connect
+  #     CONNECT_CONFIG_STORAGE_TOPIC: default.config
+  #     CONNECT_STATUS_STORAGE_TOPIC: default.status
+  #     CONNECT_OFFSET_STORAGE_TOPIC: default.offset
+  #     CONNECT_STATUS_STORAGE_PARTITIONS: 1
+  #     CONNECT_OFFSET_STORAGE_PARTITIONS: 1
+  #     CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+  #     CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+  #     CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+  #     CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     CONNECT_REST_PORT: 8083
+  #     CONNECT_REST_ADVERTISED_HOST_NAME: docker
+  #     CONNECT_SCHEMAS_ENABLE: "false"
+  #     CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+  #     CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+  #     CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
+
+  transformer:
+    build:
+      dockerfile: transformer/Dockerfile
+      context: ../
+    container_name: transformer
+    image: arkhn/fhir-transformer:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      FHIRSTORE_HOST: mongo
+      FHIRSTORE_PORT: 27017
+      FHIRSTORE_DATABASE: fhirstore
+      FHIRSTORE_USER: arkhn
+      FHIRSTORE_PASSWORD: SuperSecurePassword2019
+      FHIR_API_URL: ${FHIR_API_URL}
+      PYROG_API_URL: ${PYROG_API_URL}
+      PYROG_TOKEN: ${PYROG_TOKEN}
+    ports:
+      - 5002
+
+  loader:
+    build:
+      dockerfile: loader/Dockerfile
+      context: ../
+    container_name: loader
+    image: arkhn/fhir-loader:latest
+    restart: always
+    depends_on:
+      - kafka
+      - mongo
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      FHIRSTORE_HOST: mongo
+      FHIRSTORE_PORT: 27017
+      FHIRSTORE_DATABASE: fhirstore
+      FHIRSTORE_USER: arkhn
+      FHIRSTORE_PASSWORD: SuperSecurePassword2019
+      FHIR_API_URL: ${FHIR_API_URL}
+      PYROG_API_URL: ${PYROG_API_URL}
+      PYROG_TOKEN: ${PYROG_TOKEN}
+
+  extractor:
+    build:
+      dockerfile: extractor/Dockerfile
+      context: ../
+    container_name: extractor
+    image: arkhn/fhir-extractor:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      FHIR_API_URL: ${FHIR_API_URL}
+      PYROG_API_URL: ${PYROG_API_URL}
+      PYROG_TOKEN: ${PYROG_TOKEN}
+    ports:
+      - 5001
+
+  api:
+    build:
+      dockerfile: api/Dockerfile
+      context: ../
+    container_name: api
+    image: arkhn/api:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      EXTRACTOR_URL: http://extractor:5001
+      TRANSFORMER_URL: http://transformer:5002
+    ports:
+      - "5000:5000"
+
+volumes:
+  test-mimic-db:
+  test-fhirstore-db:
+  test-fhirstore-config-db:
+  test-elastic-db:

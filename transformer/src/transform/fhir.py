@@ -105,8 +105,8 @@ def fetch_values_from_dataframe(row, attribute):
         return row[attribute.path]
     else:
         assert len(attribute.static_inputs) == 1, (
-            "The mapping contains an attribute with several static inputs "
-            "(and no sql input nor merging script)"
+            f"The mapping contains an attribute ({attribute.path}) with several "
+            "static inputs (and no sql input nor merging script)"
         )
         return attribute.static_inputs[0]
 

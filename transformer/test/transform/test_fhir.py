@@ -4,8 +4,8 @@ from pytest import raises
 from fhirstore import ARKHN_CODE_SYSTEMS
 
 import transformer.src.transform.fhir as transform
-from transformer.src.analyze.attribute import Attribute
-from transformer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.sql_column import SqlColumn
 
 
 class mockdatetime:
