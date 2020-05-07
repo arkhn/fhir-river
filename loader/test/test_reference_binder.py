@@ -23,34 +23,22 @@ def test_resolve_existing_reference(_, patient):
         [
             mock.call(
                 {
-                    "identifier": {
-                        "$elemMatch": {
-                            "value": "123",
-                            "system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                        }
-                    }
+                    "identifier.value": "123",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
                 },
                 ["id"],
             ),
             mock.call(
                 {
-                    "identifier": {
-                        "$elemMatch": {
-                            "value": "789",
-                            "system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                        }
-                    }
+                    "identifier.value": "789",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
                 },
                 ["id"],
             ),
             mock.call(
                 {
-                    "identifier": {
-                        "$elemMatch": {
-                            "value": "456",
-                            "system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                        }
-                    }
+                    "identifier.value": "456",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
                 },
                 ["id"],
             ),
@@ -83,19 +71,19 @@ def test_resolve_existing_reference_not_found(_, patient):
     assert ref_binder.cache[
         (
             "Practitioner",
-            ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None),
+            ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
         )
     ][("Patient", "generalPractitioner", True)] == [patient["id"]]
     assert ref_binder.cache[
         (
             "Organization",
-            ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None),
+            ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
         )
     ][("Patient", "managingOrganization", False)] == [patient["id"]]
     assert ref_binder.cache[
         (
             "Organization",
-            ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None),
+            ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
         )
     ][("Patient", "identifier.0.assigner", False)] == [patient["id"]]
 
@@ -114,34 +102,22 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
         [
             mock.call(
                 {
-                    "identifier": {
-                        "$elemMatch": {
-                            "value": "123",
-                            "system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                        }
-                    }
+                    "identifier.value": "123",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
                 },
                 ["id"],
             ),
             mock.call(
                 {
-                    "identifier": {
-                        "$elemMatch": {
-                            "value": "789",
-                            "system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                        }
-                    }
+                    "identifier.value": "789",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
                 },
                 ["id"],
             ),
             mock.call(
                 {
-                    "identifier": {
-                        "$elemMatch": {
-                            "value": "456",
-                            "system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                        }
-                    }
+                    "identifier.value": "456",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
                 },
                 ["id"],
             ),
@@ -166,7 +142,8 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
                     "id": {"$in": ["pat1"]},
                     "generalPractitioner": {
                         "$elemMatch": {
-                            "identifier": patient["generalPractitioner"][0]["identifier"]
+                            "identifier.value": "123",
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
                         }
                     },
                 },
@@ -185,7 +162,8 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner": {
-                        "identifier": patient["identifier"][0]["assigner"]["identifier"]
+                        "identifier.value": "456",
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
                     },
                 },
                 {"$set": {"identifier.0.assigner.reference": "organization1"}},
@@ -195,7 +173,8 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization": {
-                        "identifier": patient["managingOrganization"]["identifier"]
+                        "identifier.value": "789",
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
                     },
                 },
                 {"$set": {"managingOrganization.reference": "organization1"}},
@@ -242,9 +221,8 @@ def test_resolve_pending_references_code_identifier(
                     "id": {"$in": ["pat1"]},
                     "generalPractitioner": {
                         "$elemMatch": {
-                            "identifier": patient_code_identifier["generalPractitioner"][0][
-                                "identifier"
-                            ]
+                            "identifier.type.coding.0.code": "code_123",
+                            "identifier.type.coding.0.system": "fhir_code_system_practitioner",
                         }
                     },
                 },
@@ -263,9 +241,8 @@ def test_resolve_pending_references_code_identifier(
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner": {
-                        "identifier": patient_code_identifier["identifier"][0]["assigner"][
-                            "identifier"
-                        ]
+                        "identifier.type.coding.0.code": "code_456",
+                        "identifier.type.coding.0.system": "fhir_code_system_organization",
                     },
                 },
                 {"$set": {"identifier.0.assigner.reference": "organization1"}},
@@ -275,7 +252,8 @@ def test_resolve_pending_references_code_identifier(
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization": {
-                        "identifier": patient_code_identifier["managingOrganization"]["identifier"]
+                        "identifier.type.coding.0.code": "code_789",
+                        "identifier.type.coding.0.system": "fhir_code_system_organization",
                     },
                 },
                 {"$set": {"managingOrganization.reference": "organization1"}},
@@ -311,7 +289,7 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
             ref_binder.cache[
                 (
                     "Practitioner",
-                    ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None),
+                    ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
                 )
             ]
         )
@@ -328,7 +306,8 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
                     "id": {"$in": ["pat1", "pat2"]},
                     "generalPractitioner": {
                         "$elemMatch": {
-                            "identifier": patient_2["generalPractitioner"][0]["identifier"]
+                            "identifier.value": "123",
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
                         }
                     },
                 },
@@ -338,7 +317,12 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
             mock.call(
                 {
                     "id": {"$in": ["pat2"]},
-                    "link": {"$elemMatch": {"identifier": patient_2["link"][0]["identifier"]}},
+                    "link": {
+                        "$elemMatch": {
+                            "identifier.value": "123",
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                        }
+                    },
                 },
                 {"$set": {"link.$.reference": "practitioner1"}},
             ),

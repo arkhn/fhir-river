@@ -14,6 +14,22 @@ def dotty_paths(paths):
         yield re.sub(r"\[(\d+)\]", r".\1", path)
 
 
+def partial_identifier(identifier):
+    (
+        value,
+        system,
+        identifier_type_code,
+        identifier_type_system,
+    ) = ReferenceBinder.extract_key_tuple(identifier)
+    if value:
+        return {"identifier.value": value, "identifier.system": system}
+    else:
+        return {
+            "identifier.type.coding.0.code": identifier_type_code,
+            "identifier.type.coding.0.system": identifier_type_system,
+        }
+
+
 class ReferenceBinder:
     def __init__(self, fhirstore):
         self.fhirstore = fhirstore
@@ -70,7 +86,7 @@ class ReferenceBinder:
 
             # search the referenced resource in the database
             referenced_resource = self.fhirstore.db[reference_type].find_one(
-                {"identifier": {"$elemMatch": identifier}}, ["id"],
+                partial_identifier(identifier), ["id"],
             )
             if referenced_resource:
                 # if found, add the ID as the "literal reference"
@@ -109,9 +125,9 @@ class ReferenceBinder:
                 find_predicate = {
                     "id": {"$in": refs},
                     #
-                    reference_path: {"$elemMatch": {"identifier": identifier}}
+                    reference_path: {"$elemMatch": partial_identifier(identifier)}
                     if isArray
-                    else {"identifier": identifier},
+                    else partial_identifier(identifier),
                 }
                 # handle updating reference arrays:
                 # we keep the indices in the path (eg: "identifier.0.assigner.reference")
