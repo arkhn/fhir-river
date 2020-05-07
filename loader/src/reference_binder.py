@@ -135,8 +135,8 @@ class ReferenceBinder:
                 # but if fhir_object[reference_path] is an array, we use the '$' feature of mongo
                 # in order to update the right element of the array.
                 # https://docs.mongodb.com/manual/reference/operator/update/positional/#update-documents-in-an-array
-                # FIXME: won't work if multiple elements of the array need to be updated
-                # (see https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
+                # FIXME: won't work if multiple elements of the array need to be updated (see
+                # https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
                 update_predicate = {
                     "$set": {
                         f"{reference_path}{'.$' if isArray else ''}.reference": fhir_object["id"]
