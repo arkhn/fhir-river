@@ -4,9 +4,10 @@ from unittest import mock
 from sqlalchemy import Table, Column, MetaData
 from sqlalchemy.orm.query import Query
 
+from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_join import SqlJoin
+
 from extractor.src.extract.extractor import Extractor
-from extractor.src.analyze.sql_column import SqlColumn
-from extractor.src.analyze.sql_join import SqlJoin
 
 meta = MetaData()
 tables = {
@@ -59,6 +60,7 @@ def test_sqlalchemy_query():
 
     def mock_alchemy_query(*columns):
         return Query([*columns])
+
     extractor.session.query = mock_alchemy_query
 
     columns = [
@@ -152,5 +154,5 @@ def test_apply_filters():
     ]
 
     for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
-        args, kwargs = call
+        args, _ = call
         assert args[0].compare(binary_expression)

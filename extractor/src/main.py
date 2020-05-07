@@ -6,10 +6,10 @@ from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 
-from extractor.src.extract import Extractor
-from extractor.src.analyze import Analyzer
+from analyzer.src.analyze import Analyzer
+from analyzer.src.analyze.graphql import get_resource_from_id
 
-from extractor.src.analyze.graphql import get_resource_from_id
+from extractor.src.extract import Extractor
 from extractor.src.config.logger import create_logger
 from extractor.src.errors import MissingInformationError
 from extractor.src.producer_class import ExtractorProducer

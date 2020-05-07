@@ -1,8 +1,7 @@
 from typing import List
-
 from collections import defaultdict
 
-from transformer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.attribute import Attribute
 
 from transformer.src.config.logger import create_logger
 
@@ -83,8 +82,11 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     """
     table, child_rules = squash_rules
 
-    if not [col for col in data if any([col[1][0] == rule[0] for rule in child_rules])]:
-        return data
+    if not [col for col in data if any([col[1] == rule[0] for rule in child_rules])]:
+        if parent_cols == []:
+            return {col[0]: {col[1]: value[0]} for col, value in data.items()}
+        else:
+            return data
 
     new_pivots = [col for col in data if col[1][0] == table]
     pivot_cols = parent_cols + new_pivots
@@ -136,9 +138,9 @@ def merge_attributes(
     Takes as input a dict of the form
 
     {
-        (attribute1.path, (table1, col1)): val,
-        (attribute1.path, (table2, col2)): val,
-        (attribute2.path, (table2, col3)): val,
+        attribute1.path: {attribute1.columns[0].table: val, attribute1.columns[1].table: val},
+        attribute2.path: {attribute2.columns[0].table: val},
+        attribute3.path: {attribute3.columns[0].table: val},
         ...
     }
 
@@ -154,24 +156,23 @@ def merge_attributes(
     """
     merged_data = {}
     for attribute in attributes:
-        attr_path = attribute.path
-        if attr_path not in data:
+        if attribute.path not in data:
             # If attribute is static or has no input, don't do anything
             continue
 
         if attribute.merging_script:
             # TODO add PK in func args
-            merged_data[attr_path] = attribute.merging_script.apply(
-                [data[attr_path][col] for col in data[attr_path]],
+            merged_data[attribute.path] = attribute.merging_script.apply(
+                [data[attribute.path][col] for col in data[attribute.path]],
                 attribute.static_inputs,
-                attr_path,
+                attribute.path,
                 primary_key,
             )
         else:
-            attr_cols = list(data[attr_path].keys())
+            attr_cols = list(data[attribute.path].keys())
             assert (
                 len(attr_cols) == 1
             ), f"The mapping contains several unmerged columns for attribute {attribute}"
-            merged_data[attr_path] = data[attr_path][attr_cols[0]]
+            merged_data[attribute.path] = data[attribute.path][attr_cols[0]]
 
     return merged_data

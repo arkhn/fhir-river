@@ -8,14 +8,15 @@ ENV PYTHONPATH=${EXTRACTOR_SQL_HOME}
 
 WORKDIR ${EXTRACTOR_SQL_HOME}
 
-COPY requirements.txt ${EXTRACTOR_SQL_HOME}/requirements.txt
+COPY extractor/requirements.txt ${EXTRACTOR_SQL_HOME}/requirements.txt
 
 RUN pip install -r ${EXTRACTOR_SQL_HOME}/requirements.txt
 
-COPY src ${EXTRACTOR_SQL_HOME}/extractor/src
+COPY extractor/src ${EXTRACTOR_SQL_HOME}/extractor/src
+COPY analyzer/src ${EXTRACTOR_SQL_HOME}/analyzer/src
 
-COPY uwsgi.ini ${EXTRACTOR_SQL_HOME}/extractor/uwsgi.ini
+COPY extractor/uwsgi.ini ${EXTRACTOR_SQL_HOME}/extractor/uwsgi.ini
 
-COPY entrypoint.sh /entrypoint.sh
+COPY extractor/entrypoint.sh /entrypoint.sh
 
 CMD ["sh", "/entrypoint.sh"]

@@ -9,14 +9,15 @@ ENV PYTHONPATH=${TRANSFORMER_HOME}
 
 WORKDIR ${TRANSFORMER_HOME}
 
-COPY requirements.txt ${TRANSFORMER_HOME}/requirements.txt
+COPY transformer/requirements.txt ${TRANSFORMER_HOME}/requirements.txt
 
 RUN pip install -r ${TRANSFORMER_HOME}/requirements.txt
 
-COPY src ${TRANSFORMER_HOME}/transformer/src
+COPY transformer/src ${TRANSFORMER_HOME}/transformer/src
+COPY analyzer/src ${TRANSFORMER_HOME}/analyzer/src
 
-COPY uwsgi.ini ${TRANSFORMER_HOME}/transformer/uwsgi.ini
+COPY transformer/uwsgi.ini ${TRANSFORMER_HOME}/transformer/uwsgi.ini
 
-COPY entrypoint.sh /entrypoint.sh
+COPY transformer/entrypoint.sh /entrypoint.sh
 
 CMD ["sh", "/entrypoint.sh"]

@@ -7,7 +7,7 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 from jsonschema.exceptions import ValidationError
 
-from transformer.src.analyze import Analyzer
+from analyzer.src.analyze import Analyzer
 from transformer.src.transform import Transformer
 
 from transformer.src.consumer_class import TransformerConsumer
@@ -17,7 +17,8 @@ from transformer.src.config.logger import create_logger
 from transformer.src.errors import OperationOutcome
 from transformer.src.fhirstore import get_fhirstore
 
-TOPIC = "extract"
+CONSUMED_TOPIC = "extract"
+PRODUCED_TOPIC = "transform"
 GROUP_ID = "arkhn_transformer"
 
 logger = create_logger("consumer")
@@ -49,7 +50,7 @@ def process_event_with_producer(producer):
 
         try:
             fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
-            producer.produce_event(topic="transform", record=fhir_document)
+            producer.produce_event(topic=PRODUCED_TOPIC, record=fhir_document)
 
         except Exception as err:
             logger.error(err)
@@ -120,7 +121,7 @@ def run_consumer():
     producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=TOPIC,
+        topics=CONSUMED_TOPIC,
         group_id=GROUP_ID,
         process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
