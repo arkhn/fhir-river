@@ -36,8 +36,10 @@ class ReferenceBinder:
 
         # cache is a dict of form
         # {
-        #   (fhir_type_target, value, system): {(fhir_type_source, path, isArray): [fhir_id1, ...]},
-        #   (fhir_type_target, value, system): {(fhir_type_source, path, isArray): [fhir_id]},
+        #   (fhir_type_target, (value, system, code, code_system)):
+        #           {(fhir_type_source, path, isArray): [fhir_id1, ...]},
+        #   (fhir_type_target, (value, system, code, code_system)):
+        #           {(fhir_type_source, path, isArray): [fhir_id]},
         #   ...
         # }
         # eg:
@@ -66,7 +68,7 @@ class ReferenceBinder:
                     f"{fhir_object} at path {reference_path}: {e}"
                 )
 
-        if fhir_object.get("identifier") and len(fhir_object["identifier"]) > 0:
+        if "identifier" in fhir_object:
             self.resolve_pending_references(fhir_object)
 
         return fhir_object.to_dict()
@@ -124,7 +126,6 @@ class ReferenceBinder:
             for (source_type, reference_path, isArray), refs in pending_refs.items():
                 find_predicate = {
                     "id": {"$in": refs},
-                    #
                     reference_path: {"$elemMatch": partial_identifier(identifier)}
                     if isArray
                     else partial_identifier(identifier),
@@ -132,8 +133,10 @@ class ReferenceBinder:
                 # handle updating reference arrays:
                 # we keep the indices in the path (eg: "identifier.0.assigner.reference")
                 # but if fhir_object[reference_path] is an array, we use the '$' feature of mongo
-                # in order to update the write element of the array.
+                # in order to update the right element of the array.
                 # https://docs.mongodb.com/manual/reference/operator/update/positional/#update-documents-in-an-array
+                # FIXME: won't work if multiple elements of the array need to be updated
+                # (see https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
                 update_predicate = {
                     "$set": {
                         f"{reference_path}{'.$' if isArray else ''}.reference": fhir_object["id"]
@@ -157,10 +160,11 @@ class ReferenceBinder:
         identifier_type_system = identifier_type_coding.get("system")
         identifier_type_code = identifier_type_coding.get("code")
 
-        if not ((value and system) or (identifier_type_system and identifier_type_code)):
+        logger.debug("%s %s", (value and system), (identifier_type_system and identifier_type_code))
+        if not (bool(value and system) ^ bool(identifier_type_system and identifier_type_code)):
             raise Exception(
-                f"invalid identifier: {identifier} "
-                "identifier.value and identifier.system or identifier.type are required"
+                f"invalid identifier: {identifier} identifier.value and identifier.system "
+                "or identifier.type are required and mutually exclusive"
             )
 
         return (value, system, identifier_type_code, identifier_type_system)

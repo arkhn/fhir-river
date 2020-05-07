@@ -1,7 +1,41 @@
 from unittest import mock
+from pytest import raises
 
 import loader.src.load.fhirstore as fhirstore
 from loader.src.reference_binder import ReferenceBinder
+
+
+def test_extract_key_tuple():
+    identifier1 = {
+        "value": "v",
+        "system": "s",
+    }
+    assert ReferenceBinder.extract_key_tuple(identifier1) == ("v", "s", None, None)
+
+    identifier2 = {"type": {"coding": [{"code": "c", "system": "s"}]}}
+    assert ReferenceBinder.extract_key_tuple(identifier2) == (None, None, "c", "s")
+
+    with raises(
+        Exception,
+        match="identifier.value and identifier.system or identifier.type "
+        "are required and mutually exclusive",
+    ):
+        identifier3 = {
+            "value": "v",
+            "system": "s",
+            "type": {"coding": [{"code": "c", "system": "s"}]},
+        }
+        ReferenceBinder.extract_key_tuple(identifier3)
+
+    with raises(
+        Exception,
+        match="identifier.value and identifier.system or identifier.type "
+        "are required and mutually exclusive",
+    ):
+        identifier3 = {
+            "value": "v",
+        }
+        ReferenceBinder.extract_key_tuple(identifier3)
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
