@@ -105,7 +105,7 @@ services:
     depends_on:
       - kafka
     env_file:
-      - .env.pyrog
+      - .env
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       FHIRSTORE_HOST: mongo
@@ -126,6 +126,8 @@ services:
     depends_on:
       - kafka
       - mongo
+    env_file:
+      - .env
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       FHIRSTORE_HOST: mongo
@@ -144,7 +146,7 @@ services:
     depends_on:
       - kafka
     env_file:
-      - .env.pyrog
+      - .env
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:

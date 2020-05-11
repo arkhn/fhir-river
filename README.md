@@ -95,11 +95,12 @@ Note that the source database credentials are fetched in the graphql query so th
 
 ### Environment variables
 
-Note that you'll need to have a `.env.pyrog` file containg the following variables:
+Note that you'll need to have a `.env` file containg the following variables:
 
 - FHIR_API_URL: an url to a fhir api containing the used concept maps.
 - PYROG_API_URL: an url to pyrog's graphql API
-- PYROG_TOKEN: a token for pyrog's API
+- PYROG_LOGIN: the email used by fhir-river to authenticate to Pyrog's API.
+- PYROG_PASSWORD: the password used by fhir-river to authenticate to Pyrog's API.
 
 
 
@@ -123,17 +124,14 @@ mongo --port 27017 --host localhost fhirstore
 
 Or you can also use a GUI as MongoDB Compass to do so.
 
-## Topic Naming Convention
+## Kafka events
 
-`<source>-<resource>-<task_type>` where :
+There are 4 types of events
 
-- `source` is the name of the source, for example "mimic"
-- `resource` is the name of the resource, for example "patients"
-- `task_type` is either "extract" or "transform"
-
-_Example_
-
-- `mimic-patients-extract` and `mimic-patients-transform`
+- `batch` is produced by the `api` service when a batch is triggered (`POST /batch`)
+- `extract` is produced by the `extractor` service and contains the data for a single row (as a panda dataframe)
+- `transform` is produced by the `transformer` service and contains the fhir object that has been transformed according to the mapping rules
+- `load` is produced by the `loader` service once a fhir object has been inserted or updated in the target database (fhirstore)
 
 ## Kafka Connect
 

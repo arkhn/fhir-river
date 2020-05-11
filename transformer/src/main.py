@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify
 from jsonschema.exceptions import ValidationError
 
 from analyzer.src.analyze import Analyzer
+from analyzer.src.analyze.graphql import PyrogClient
 from transformer.src.transform import Transformer
 
 from transformer.src.consumer_class import TransformerConsumer
@@ -19,11 +20,11 @@ from transformer.src.fhirstore import get_fhirstore
 
 CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
-GROUP_ID = "arkhn_transformer"
+CONSUMER_GROUP_ID = "transformer"
 
 logger = create_logger("consumer")
 
-analyzer = Analyzer()
+analyzer = Analyzer(PyrogClient())
 transformer = Transformer()
 
 fhirstore = get_fhirstore()
@@ -122,7 +123,7 @@ def run_consumer():
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=CONSUMED_TOPIC,
-        group_id=GROUP_ID,
+        group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
     )
