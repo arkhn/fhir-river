@@ -54,6 +54,7 @@ class Extractor:
 
     def update_connection(self, credentials):
         new_db_string = self.build_db_url(credentials)
+        logger.debug("Updating connection to %s", new_db_string)
 
         if new_db_string != self.db_string:
             self.db_string = new_db_string
