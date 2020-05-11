@@ -60,17 +60,17 @@ class EventConsumer:
         }
         return config
 
-    def consume_event(self):
+    def consume_event(self, poll_timeout=None):
         """
         Consume event in an infinite loop
         :return:
         """
         # Deserialize Event
-        msg = self.consumer.poll()
+        msg = self.consumer.poll(timeout=poll_timeout)
 
         # Process Event or Raise Error
         if msg is None:
-            return
+            raise Exception(f"consumer timed out after {poll_timeout} seconds")
 
         if msg.error():
             self.manage_error(msg)
@@ -78,22 +78,22 @@ class EventConsumer:
             # Proper message
             self.process_event(msg)
 
-    def consume_events(self, event_count=None):
+    def consume_events(self, event_count=None, poll_timeout=None):
         if event_count:
             for i in range(event_count):
-                self.consume_event()
+                self.consume_event(poll_timeout=poll_timeout)
                 logger.info(f"consumed {i+1} events")
         else:
             while True:
                 self.consume_event()
 
-    def run_consumer(self, event_count=None):
+    def run_consumer(self, event_count=None, poll_timeout=None):
         """
         Create consumer, assign topics, consume and process events
         :return:
         """
         try:
-            self.consume_events(event_count)
+            self.consume_events(event_count, poll_timeout=poll_timeout)
         except (KafkaException, KafkaError):
             raise
         # finally:

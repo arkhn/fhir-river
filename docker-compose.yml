@@ -107,7 +107,7 @@ services:
     env_file:
       - .env
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      kaf: kafka:9092
       FHIRSTORE_HOST: mongo
       FHIRSTORE_PORT: 27017
       FHIRSTORE_DATABASE: fhirstore

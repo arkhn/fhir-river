@@ -83,7 +83,7 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.debug("Getting Mapping")
+    logger.debug("Getting Mapping for resource %s", resource_id)
     resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
 
     # Get credentials
