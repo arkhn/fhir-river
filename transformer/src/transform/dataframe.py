@@ -82,6 +82,7 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     """
     table, child_rules = squash_rules
 
+    # If there are no more child rules to process, we return the original data
     if not [col for col in data if any([col[1][0] == rule[0] for rule in child_rules])]:
         return data
 
