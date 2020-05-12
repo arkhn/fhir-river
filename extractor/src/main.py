@@ -7,7 +7,7 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 
 from analyzer.src.analyze import Analyzer
-from analyzer.src.analyze.graphql import get_resource_from_id
+from analyzer.src.analyze.graphql import PyrogClient
 
 from extractor.src.extract import Extractor
 from extractor.src.config.logger import create_logger
@@ -18,7 +18,12 @@ from extractor.src.errors import BadRequestError, EmptyResult
 
 logger = create_logger("extractor")
 
-analyzer = Analyzer()
+CONSUMER_GROUP_ID = "extractor"
+PRODUCED_TOPIC = "extract"
+CONSUMED_TOPIC = "batch"
+
+pyrog_client = PyrogClient()
+analyzer = Analyzer(pyrog_client)
 extractor = Extractor()
 
 
@@ -44,7 +49,7 @@ def process_event_with_producer(producer):
             event["resource_id"] = resource_id
             event["dataframe"] = record.to_dict(orient="list")
 
-            producer.produce_event(topic="extract", event=event)
+            producer.produce_event(topic=PRODUCED_TOPIC, event=event)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
@@ -78,8 +83,8 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.debug("Getting Mapping")
-    resource_mapping = get_resource_from_id(resource_id=resource_id)
+    logger.debug("Getting Mapping for resource %s", resource_id)
+    resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
 
     # Get credentials
     if not resource_mapping["source"]["credential"]:
@@ -138,14 +143,11 @@ def handle_bad_request(e):
 def run_consumer():
     logger.info("Running Consumer")
 
-    TOPIC = "extractor_trigger"
-    GROUP_ID = "arkhn_extractor"
-
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=TOPIC,
-        group_id=GROUP_ID,
+        topics=CONSUMED_TOPIC,
+        group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
     )

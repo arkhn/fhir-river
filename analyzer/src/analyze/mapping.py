@@ -1,20 +1,5 @@
 from collections import defaultdict
 
-from analyzer.src.analyze.graphql import get_resource_from_id
-
-
-def get_mapping(resource_ids):
-    """
-    Get all available resources from a pyrog mapping.
-    The mapping come from a pyrog graphql API.
-
-    Args:
-        resource_ids: ids of the resources to process
-    """
-    for resource_id in resource_ids:
-        resource = get_resource_from_id(resource_id)
-        yield resource
-
 
 def build_squash_rules(columns, joins, main_table):
     """

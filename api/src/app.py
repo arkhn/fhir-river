@@ -11,6 +11,8 @@ import uuid
 
 logger = create_logger("api")
 
+PRODUCED_TOPIC = "batch"
+
 # Create flask app object
 app = Flask(__name__)
 
@@ -90,7 +92,7 @@ def create_extractor_trigger(resource_id, batch_id=None, primary_key_values=None
     event["resource_id"] = resource_id
     event["primary_key_values"] = primary_key_values
 
-    producer.produce_event(topic="extractor_trigger", event=event)
+    producer.produce_event(topic=PRODUCED_TOPIC, event=event)
 
 
 if __name__ == "__main__":

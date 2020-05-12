@@ -1,6 +1,7 @@
 import pytest
 from unittest import mock
 
+from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.analyze import Analyzer
 
 from analyzer.src.analyze.attribute import Attribute
@@ -11,8 +12,9 @@ from analyzer.src.analyze.sql_join import SqlJoin
 from analyzer.test.conftest import mock_api_get_maps
 
 
-def test_get_primary_key():
-    analyzer = Analyzer()
+@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
+def test_get_primary_key(mock_login):
+    analyzer = Analyzer(PyrogClient())
 
     # With owner
     resource_mapping = {
@@ -48,8 +50,9 @@ def test_get_primary_key():
 
 
 @mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
-def test_analyze_mapping(patient_mapping):
-    analyzer = Analyzer()
+@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
+def test_analyze_mapping(mock_login, patient_mapping):
+    analyzer = Analyzer(PyrogClient())
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 
@@ -120,8 +123,9 @@ def test_analyze_mapping(patient_mapping):
 
 
 @mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
-def test_reference_paths(patient_mapping):
-    analyzer = Analyzer()
+@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
+def test_reference_paths(mock_login, patient_mapping):
+    analyzer = Analyzer(PyrogClient())
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 

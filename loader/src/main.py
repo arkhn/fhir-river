@@ -8,6 +8,7 @@ from pymongo.errors import DuplicateKeyError
 from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
+from analyzer.src.analyze.graphql import PyrogClient
 
 from loader.src.config.logger import create_logger
 from loader.src.load import Loader
@@ -19,13 +20,15 @@ from loader.src.producer_class import LoaderProducer
 
 CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
-GROUP_ID = "arkhn_loader"
+CONSUMER_GROUP_ID = "loader"
 
 logger = create_logger("loader")
 
 fhirstore = get_fhirstore()
 
-analyzer = Analyzer()
+# TODO how will we handle bypass_validation in fhir-river?
+loader = Loader(fhirstore, bypass_validation=False)
+analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 
 
@@ -86,13 +89,11 @@ def manage_kafka_error(msg):
 if __name__ == "__main__":
     logger.info("Running Consumer")
 
-    # TODO how will we handle bypass_validation in fhir-river?
-    loader = Loader(fhirstore, bypass_validation=False)
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=CONSUMED_TOPIC,
-        group_id=GROUP_ID,
+        group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
     )

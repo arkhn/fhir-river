@@ -18,6 +18,13 @@ def handle_kafka_error(err):
 def test_batch_single_row():
     print("START")
 
+    assert (
+        MIMIC_PATIENT_RESOURCE_ID is not None
+    ), "MIMIC_PATIENT_RESOURCE_ID missing from environment"
+    assert (
+        MIMIC_PRACTITIONER_RESOURCE_ID is not None
+    ), "MIMIC_PRACTITIONER_RESOURCE_ID missing from environment"
+
     # declare kafka consumer of "transform" events
     consumer = EventConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
@@ -54,8 +61,10 @@ def test_batch_single_row():
     )
     assert response.status_code == 200, "api POST /batch returned an error"
 
-    consumer.run_consumer(event_count=MIMIC_PATIENT_COUNT)
-    consumer.run_consumer(event_count=MIMIC_PRACTITIONER_COUNT)
+    print(f"Waiting for {MIMIC_PATIENT_COUNT} events")
+    consumer.run_consumer(event_count=MIMIC_PATIENT_COUNT, poll_timeout=30)
+    print(f"Waiting for {MIMIC_PRACTITIONER_COUNT} events")
+    consumer.run_consumer(event_count=MIMIC_PRACTITIONER_COUNT, poll_timeout=10)
 
 
 # check in elastic that references have been set
