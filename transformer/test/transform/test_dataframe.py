@@ -86,7 +86,7 @@ def test_squash_rows():
         ("language", ("ADMISSIONS", "LANGUAGE")): ["lang1", "lang2", "lang3", "lang4"],
         ("code", ("ADMISSIONS", "ID")): ["id1", "id2", "id3", "id4"],
     }
-    squash_rules = ["PATIENTS", [["ADMISSIONS", []]]]
+    squash_rules = ["PATIENTS", [["ADMISSIONS", [["dummy", []]]]]]
 
     actual = transform.squash_rows(data, squash_rules)
 
