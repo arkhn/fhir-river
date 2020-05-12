@@ -142,7 +142,8 @@ services:
       FHIRSTORE_PASSWORD: SuperSecurePassword2019
       FHIR_API_URL: ${FHIR_API_URL}
       PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_TOKEN: ${PYROG_TOKEN}
+      PYROG_LOGIN: ${PYROG_LOGIN}
+      PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
       - 5002
 
@@ -165,7 +166,8 @@ services:
       FHIRSTORE_PASSWORD: SuperSecurePassword2019
       FHIR_API_URL: ${FHIR_API_URL}
       PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_TOKEN: ${PYROG_TOKEN}
+      PYROG_LOGIN: ${PYROG_LOGIN}
+      PYROG_PASSWORD: ${PYROG_PASSWORD}
 
   extractor:
     build:
@@ -180,7 +182,8 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       FHIR_API_URL: ${FHIR_API_URL}
       PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_TOKEN: ${PYROG_TOKEN}
+      PYROG_LOGIN: ${PYROG_LOGIN}
+      PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
       - 5001
 

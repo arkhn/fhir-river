@@ -1,7 +1,8 @@
 import re
 import time
+from collections.abc import Mapping
 
-from analyzer.src.analyze.graphql import get_resource_from_id
+from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.logger import create_logger
 
 from .mapping import build_squash_rules
@@ -17,13 +18,14 @@ logger = create_logger("analyzer")
 
 
 class Analyzer:
-    def __init__(self):
+    def __init__(self, pyrog_client: PyrogClient):
+        self.pyrog = pyrog_client
         # Store analyses
         # TODO think about the design here. Use http caching instead of
         # storing here, for instance?
-        self.analyses = {}
+        self.analyses: Mapping = {}
         self._cur_analysis = Analysis()
-        self.last_updated_at = {}  # Store last updated timestamp for each resource_mapping_id
+        self.last_updated_at: Mapping = {}  # store last updated timestamp for each resource_id
 
     def get_analysis(self, resource_mapping_id) -> Analysis:
         if resource_mapping_id not in self.analyses:
@@ -50,7 +52,7 @@ class Analyzer:
         :return:
         """
         logger.debug("Fetching mapping from api.")
-        resource_mapping = get_resource_from_id(resource_id=resource_mapping_id)
+        resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
         self.analyze(resource_mapping)
         self.last_updated_at[resource_mapping_id] = time.time()
 
