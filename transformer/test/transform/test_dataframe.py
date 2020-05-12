@@ -1,4 +1,4 @@
-from unittest import mock
+from unittest import mock, TestCase
 
 import transformer.src.transform.dataframe as transform
 from analyzer.src.analyze.attribute import Attribute
@@ -78,27 +78,27 @@ def test_clean_data(_):
     assert cleaned_data == expected
 
 
-# TODO: FIXME
-# def test_squash_rows():
-#     data = {
-#         ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
-#         ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
-#         ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
-#         ("language", ("ADMISSIONS", "LANGUAGE")): ["lang1", "lang2", "lang3", "lang4"],
-#         ("code", ("ADMISSIONS", "ID")): ["id1", "id2", "id3", "id4"],
-#     }
-#     squash_rules = ["PATIENTS", [["ADMISSIONS", []]]]
+def test_squash_rows():
+    data = {
+        ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
+        ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
+        ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
+        ("language", ("ADMISSIONS", "LANGUAGE")): ["lang1", "lang2", "lang3", "lang4"],
+        ("code", ("ADMISSIONS", "ID")): ["id1", "id2", "id3", "id4"],
+    }
+    squash_rules = ["PATIENTS", [["ADMISSIONS", []]]]
 
-#     actual = transform.squash_rows(data, squash_rules)
+    actual = transform.squash_rows(data, squash_rules)
 
-#     assert actual["name"] == {("PATIENTS", "NAME"): "bob"}
-#     assert actual["id"] == {("PATIENTS", "ID"): "id1", ("PATIENTS", "ID2"): "id21"}
-#     assert list(actual["language"].keys()) == [("ADMISSIONS", "LANGUAGE")]
-#     assert list(actual["code"].keys()) == [("ADMISSIONS", "ID")]
-#     TestCase().assertCountEqual(
-#         zip(actual["language"][("ADMISSIONS", "LANGUAGE")], actual["code"][("ADMISSIONS", "ID")]),
-#         (("lang1", "id1"), ("lang2", "id2"), ("lang3", "id3"), ("lang4", "id4")),
-#     )
+    assert actual[("name", ("PATIENTS", "NAME"))] == "bob"
+    assert actual[("id", ("PATIENTS", "ID"))] == "id1"
+    assert actual[("id", ("PATIENTS", "ID2"))] == "id21"
+    TestCase().assertCountEqual(
+        zip(
+            actual[("language", ("ADMISSIONS", "LANGUAGE"))], actual[("code", ("ADMISSIONS", "ID"))]
+        ),
+        (("lang1", "id1"), ("lang2", "id2"), ("lang3", "id3"), ("lang4", "id4")),
+    )
 
 
 @mock.patch("analyzer.src.analyze.merging_script.scripts.get_script", return_value=mock_get_script)
@@ -114,16 +114,16 @@ def test_merge_attributes(_):
     attr_admid = Attribute("admid", columns=[SqlColumn("ADMISSIONS", "ID")])
 
     data = {
-        "name": {("PATIENTS", "NAME"): "bob"},
-        "id": {("PATIENTS", "ID"): "id1", ("PATIENTS", "ID2"): "id21"},
-        "language": {("ADMISSIONS", "LANGUAGE"): ("lang1", "lang2", "lang3", "lang4")},
-        "admid": {("ADMISSIONS", "ID"): ("hadmid1", "hadmid2", "hadmid3", "hadmid4")},
+        ("name", ("PATIENTS", "NAME")): "bob",
+        ("id", ("PATIENTS", "ID")): "id1",
+        ("id", ("PATIENTS", "ID2")): "id21",
+        ("language", ("ADMISSIONS", "LANGUAGE")): ("lang1", "lang2", "lang3", "lang4"),
+        ("admid", ("ADMISSIONS", "ID")): ("hadmid1", "hadmid2", "hadmid3", "hadmid4"),
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid]
 
     actual = transform.merge_attributes(data, attributes, "pk")
-
     expected = {
         "name": "bob",
         "id": "id1id21merge",

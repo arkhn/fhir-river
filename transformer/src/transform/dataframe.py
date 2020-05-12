@@ -19,8 +19,8 @@ def clean_data(data, attributes: List[Attribute], primary_key):
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
     {
-        (attribute.path, table): [val, val, ...],
-        (attribute.path, table): [val, val, ...],
+        (attribute.path, (table, column)): [val, val, ...],
+        (attribute.path, (table, column)): [val, val, ...],
         ...
     }
     and where all values are cleaned (with cleaning scripts and concept maps).
@@ -82,11 +82,8 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     """
     table, child_rules = squash_rules
 
-    if not [col for col in data if any([col[1] == rule[0] for rule in child_rules])]:
-        if parent_cols == []:
-            return {col[0]: {col[1]: value[0]} for col, value in data.items()}
-        else:
-            return data
+    if not [col for col in data if any([col[1][0] == rule[0] for rule in child_rules])]:
+        return data
 
     new_pivots = [col for col in data if col[1][0] == table]
     pivot_cols = parent_cols + new_pivots
@@ -107,26 +104,23 @@ def squash_rows(data, squash_rules, parent_cols=[]):
         groups[pivot_tuple].add(to_squash_tuple)
 
     # Rebuild a dict with the different groups
-    squashed_data = defaultdict(lambda: defaultdict(list))
+    squashed_data = defaultdict(list)
     for group_pivot, group_squashed in groups.items():
-        # Compute length of sqaushed groups
+        # Compute length of squashed groups
         len_squashed = len(next(iter(group_squashed)))
 
         # Add pivot data
         for pivot_col, pivot_val in zip(pivot_cols, group_pivot):
-            squashed_data[pivot_col[0]][pivot_col[1]].append(pivot_val)
+            squashed_data[pivot_col].append(pivot_val)
 
         # Add squashed columns
         squashed_vals = [tuple(tup[i] for tup in group_squashed) for i in range(len_squashed)]
         for to_squash_col, squashed_val in zip(cols_to_squash, squashed_vals):
-            squashed_data[to_squash_col[0]][to_squash_col[1]].append(squashed_val)
+            squashed_data[to_squash_col].append(squashed_val)
 
     if parent_cols == []:
         # In this base case, we should have only one element in each list
-        squashed_data = {
-            k1: {k2: v[0] for k2, v in inner_dict.items()}
-            for k1, inner_dict in squashed_data.items()
-        }
+        squashed_data = {k: v[0] for k, v in squashed_data.items()}
 
     return squashed_data
 
@@ -137,10 +131,10 @@ def merge_attributes(
     """ Apply merging scripts.
     Takes as input a dict of the form
 
-    {
-        attribute1.path: {attribute1.columns[0].table: val, attribute1.columns[1].table: val},
-        attribute2.path: {attribute2.columns[0].table: val},
-        attribute3.path: {attribute3.columns[0].table: val},
+   {
+        (attribute1.path, (table1, column1)): val,
+        (attribute1.path, (table2, column2)): val,
+        (attribute2.path, (table3, column3)): val,
         ...
     }
 
@@ -154,25 +148,24 @@ def merge_attributes(
 
     where values are merge thanks to the mergig scripts.
     """
+    # TODO I don't think the order of pyrog inputs is preserved here
     merged_data = {}
     for attribute in attributes:
-        if attribute.path not in data:
+        cur_attr_columns = [value for key, value in data.items() if key[0] == attribute.path]
+
+        if not cur_attr_columns:
             # If attribute is static or has no input, don't do anything
             continue
 
         if attribute.merging_script:
-            # TODO add PK in func args
             merged_data[attribute.path] = attribute.merging_script.apply(
-                [data[attribute.path][col] for col in data[attribute.path]],
-                attribute.static_inputs,
-                attribute.path,
-                primary_key,
+                cur_attr_columns, attribute.static_inputs, attribute.path, primary_key,
             )
         else:
-            attr_cols = list(data[attribute.path].keys())
-            assert (
-                len(attr_cols) == 1
-            ), f"The mapping contains several unmerged columns for attribute {attribute}"
-            merged_data[attribute.path] = data[attribute.path][attr_cols[0]]
+            if len(cur_attr_columns) != 1:
+                raise ValueError(
+                    f"The mapping contains several unmerged columns for attribute {attribute}"
+                )
+            merged_data[attribute.path] = cur_attr_columns[0]
 
     return merged_data
