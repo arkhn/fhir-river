@@ -132,7 +132,7 @@ jobs:
     needs:
       - integration-tests
       - docker-build
-    # if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
 
     steps:
       - uses: actions/checkout@v1
