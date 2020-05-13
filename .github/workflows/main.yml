@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images-${{ env.GITHUB_SHA }}
+          key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
           restore-keys: |
             ${{ runner.OS }}-river-docker-images
 
@@ -53,12 +53,11 @@ jobs:
         run: mkdir .docker_cache || echo ".docker_cache exists, skipping..."
 
       - name: Load cached docker images
-        if: steps.cache-docker-images.outputs.cache-hit == 'true'
         run: |
-          docker load -i .docker_cache/river-api.tar.gz
-          docker load -i .docker_cache/river-extractor.tar.gz
-          docker load -i .docker_cache/river-transformer.tar.gz
-          docker load -i .docker_cache/river-loader.tar.gz
+          docker load -i .docker_cache/river-api.tar.gz || echo "Cached image not found, skipping"
+          docker load -i .docker_cache/river-extractor.tar.gz || echo "Cached image not found, skipping"
+          docker load -i .docker_cache/river-transformer.tar.gz || echo "Cached image not found, skipping"
+          docker load -i .docker_cache/river-loader.tar.gz || echo "Cached image not found, skipping"
 
       - name: Build images
         run: |
@@ -91,7 +90,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images-${{ env.GITHUB_SHA }}
+          key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
 
       - name: Load cached docker images
         run: |
@@ -120,9 +119,9 @@ jobs:
           docker-compose -f test/docker-compose.yml up -d mongo mimic
           sleep 10
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker-compose -f test/docker-compose.yml up -d --build transformer
+          docker-compose -f test/docker-compose.yml up -d transformer
           sleep 30
-          docker-compose -f test/docker-compose.yml up -d --build
+          docker-compose -f test/docker-compose.yml up -d
           sleep 10
           python -m pytest -svv test/test_batch.py
 
@@ -143,7 +142,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images-${{ env.GITHUB_SHA }}
+          key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
 
       - name: Load cached docker images
         run: |
