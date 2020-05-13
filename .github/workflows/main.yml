@@ -96,7 +96,7 @@ jobs:
           docker tag arkhn/river-transformer arkhn/river-transformer:$GITHUB_SHA
           docker tag arkhn/river-loader arkhn/river-loader:$GITHUB_SHA
 
-      - name: Savee docker images for caching
+      - name: Save docker images for caching
         run: |
           docker save arkhn/river-api:latest -o .docker_cache/river-api.tar.gz
           docker save arkhn/river-extractor:latest -o .docker_cache/river-extractor.tar.gz
@@ -106,5 +106,11 @@ jobs:
       - name: Publish to the docker hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-          docker push $IMAGE:latest
-          docker push $IMAGE:$GITHUB_SHA
+          docker push arkhn/river-api:latest
+          docker push arkhn/river-api:$GITHUB_SHA
+          docker push arkhn/river-extractor:latest
+          docker push arkhn/river-extractor:$GITHUB_SHA
+          docker push arkhn/river-transformer:latest
+          docker push arkhn/river-transformer:$GITHUB_SHA
+          docker push arkhn/river-loader:latest
+          docker push arkhn/river-loader:$GITHUB_SHA
