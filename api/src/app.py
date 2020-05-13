@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 import requests
 
 from api.src.config.logger import create_logger
@@ -9,16 +9,27 @@ from api.src.errors import OperationOutcome
 from api.src.producer_class import RiverApiProducer
 import uuid
 
-logger = create_logger("api")
-
 PRODUCED_TOPIC = "batch"
-
-# Create flask app object
-app = Flask(__name__)
-
-producer = RiverApiProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
 EXTRACTOR_URL = os.getenv("EXTRACTOR_URL")
 TRANSFORMER_URL = os.getenv("TRANSFORMER_URL")
+KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
+
+logger = create_logger("api")
+
+
+def get_producer():
+    if "producer" not in g:
+        g.producer = RiverApiProducer(broker=KAFKA_BOOTSTRAP_SERVERS)
+    return g.producer
+
+
+def create_app():
+    app = Flask(__name__)
+    return app
+
+
+# Create flask app object
+app = create_app()
 
 
 @app.route("/preview", methods=["POST"])
@@ -92,8 +103,4 @@ def create_extractor_trigger(resource_id, batch_id=None, primary_key_values=None
     event["resource_id"] = resource_id
     event["primary_key_values"] = primary_key_values
 
-    producer.produce_event(topic=PRODUCED_TOPIC, event=event)
-
-
-if __name__ == "__main__":
-    app.run(host="api", port=5000)
+    get_producer().produce_event(topic=PRODUCED_TOPIC, event=event)

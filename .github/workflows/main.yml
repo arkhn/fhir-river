@@ -47,7 +47,7 @@ jobs:
           path: .docker_cache/
           key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
           restore-keys: |
-            ${{ runner.OS }}-river-docker-images
+            ${{ runner.OS }}-river-docker-images-
 
       - name: Create .docker_cache directory
         run: mkdir .docker_cache || echo ".docker_cache exists, skipping..."

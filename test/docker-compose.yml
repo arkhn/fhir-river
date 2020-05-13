@@ -145,7 +145,7 @@ services:
       PYROG_LOGIN: ${PYROG_LOGIN}
       PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
-      - 5002
+      - 3002
 
   loader:
     build:
@@ -185,7 +185,7 @@ services:
       PYROG_LOGIN: ${PYROG_LOGIN}
       PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
-      - 5001
+      - 3001
 
   api:
     build:
@@ -198,10 +198,10 @@ services:
       - kafka
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      EXTRACTOR_URL: http://extractor:5001
-      TRANSFORMER_URL: http://transformer:5002
+      EXTRACTOR_URL: http://extractor:3001
+      TRANSFORMER_URL: http://transformer:3002
     ports:
-      - "5000:5000"
+      - "3001:3000"
 
 volumes:
   test-mimic-db:

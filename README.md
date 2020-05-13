@@ -62,13 +62,13 @@ _Example of request_
 - Batch events:
 
 ```
-curl -X POST http://localhost:5000/batch -d '{"resource_ids": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
+curl -X POST http://localhost:3000/batch -d '{"resource_ids": ["ck8oojkdt27064kp4iomh5yez"]}' -H "Content-Type:application/json"
 ```
 
 - Single event:
 
 ```
-curl -X POST http://localhost:5000/preview -d '{"resource_id": "<id of the resource>", "primary_key_values": ["<primary key value>"]}' -H "Content-Type:application/json"
+curl -X POST http://localhost:3000/preview -d '{"resource_id": "<id of the resource>", "primary_key_values": ["<primary key value>"]}' -H "Content-Type:application/json"
 ```
 
 Event produced:
