@@ -78,8 +78,8 @@ jobs:
           docker load -i .docker_cache/river-transformer.tar.gz
           docker load -i .docker_cache/river-loader.tar.gz
 
-      - name: create .docker_cache directory
-        if: steps.cache-docker-images.outputs.cache-hit == 'false'
+      - name: Create .docker_cache directory
+        if: steps.cache-docker-images.outputs.cache-hit != 'true'
         run: mkdir .docker_cache
 
       - name: Build images
