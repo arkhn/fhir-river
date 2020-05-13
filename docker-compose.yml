@@ -30,7 +30,7 @@ services:
     image: atmoz/sftp
     container_name: sftp
     volumes:
-      - ~/Documents/Arkhn/fhir-river/test/sftp/host/upload/:/home/arkhn/upload/
+      - ~/Documents/Arkhn/river-river/test/sftp/host/upload/:/home/arkhn/upload/
     ports:
       - "2222:22"
     command: arkhn:arkhnpwd:1001
@@ -100,7 +100,7 @@ services:
       dockerfile: transformer/Dockerfile
       context: ./
     container_name: transformer
-    image: arkhn/fhir-transformer:latest
+    image: arkhn/river-transformer:latest
     restart: always
     depends_on:
       - kafka
@@ -121,7 +121,7 @@ services:
       dockerfile: loader/Dockerfile
       context: ./
     container_name: loader
-    image: arkhn/fhir-loader:latest
+    image: arkhn/river-loader:latest
     restart: always
     depends_on:
       - kafka
@@ -141,7 +141,7 @@ services:
       dockerfile: extractor/Dockerfile
       context: ./
     container_name: extractor
-    image: arkhn/fhir-extractor:latest
+    image: arkhn/river-extractor:latest
     restart: always
     depends_on:
       - kafka

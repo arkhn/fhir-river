@@ -3,7 +3,7 @@ name: fhir-river
 on: [push]
 
 jobs:
-  tests:
+  unit-tests:
     name: Lint and test
     runs-on: ubuntu-18.04
 
@@ -34,6 +34,12 @@ jobs:
         run: |
           python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
 
+  docker-build:
+    name: Build docker images
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+
       - name: Cache docker images
         id: cache-docker-images
         uses: actions/cache@v1
@@ -41,13 +47,54 @@ jobs:
           path: .docker_cache/
           key: ${{ runner.OS }}-river-docker-images
 
+      - name: Build images
+        run: |
+          docker build -f api/Dockerfile -t arkhn/river-api .
+          docker build -f extractor/Dockerfile -t arkhn/river-extractor .
+          docker build -f transformer/Dockerfile -t arkhn/river-transformer .
+          docker build -f loader/Dockerfile -t arkhn/river-loader .
+
+      - name: Tag images
+        run: |
+          docker tag arkhn/river-api arkhn/river-api:$GITHUB_SHA
+          docker tag arkhn/river-extractor arkhn/river-extractor:$GITHUB_SHA
+          docker tag arkhn/river-transformer arkhn/river-transformer:$GITHUB_SHA
+          docker tag arkhn/river-loader arkhn/river-loader:$GITHUB_SHA
+
+      - name: Save docker images for caching
+        run: |
+          docker save arkhn/river-api:latest $(docker history -q arkhn/river-api:latest | grep -v missing) -o .docker_cache/river-api.tar.gz
+          docker save arkhn/river-extractor:latest $(docker history -q arkhn/river-extractor:latest | grep -v missing) -o .docker_cache/river-extractor.tar.gz
+          docker save arkhn/river-transformer:latest $(docker history -q arkhn/river-transformer:latest | grep -v missing) -o .docker_cache/river-transformer.tar.gz
+          docker save arkhn/river-loader:latest $(docker history -q arkhn/river-loader:latest | grep -v missing) -o .docker_cache/river-loader.tar.gz
+
+  integration-tests:
+    name: Run integration tests
+    runs-on: ubuntu-18.04
+    needs: docker-build
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Retrieved cached docker images
+        id: cache-docker-images
+        uses: actions/cache@v1
+        with:
+          path: .docker_cache/
+          key: ${{ runner.OS }}-river-docker-images
+
       - name: Load cached docker images
-        if: steps.cache-docker-images.outputs.cache-hit == 'true'
         run: |
           docker load -i .docker_cache/river-api.tar.gz
           docker load -i .docker_cache/river-extractor.tar.gz
           docker load -i .docker_cache/river-transformer.tar.gz
           docker load -i .docker_cache/river-loader.tar.gz
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install postgresql libpq-dev
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
 
       - name: Integration tests with pytest
         env:
@@ -69,16 +116,18 @@ jobs:
           python -m pytest -svv test/test_batch.py
 
   publish:
-    name: Build and publish
+    name: Publish docker images
     runs-on: ubuntu-18.04
 
-    needs: tests
-    if: github.ref == 'refs/heads/master'
+    needs:
+      - integration-tests
+      - docker-build
+    # if: github.ref == 'refs/heads/master'
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Cache docker images
+      - name: Retrieved cached docker images
         id: cache-docker-images
         uses: actions/cache@v1
         with:
@@ -86,23 +135,11 @@ jobs:
           key: ${{ runner.OS }}-river-docker-images
 
       - name: Load cached docker images
-        if: steps.cache-docker-images.outputs.cache-hit == 'true'
         run: |
           docker load -i .docker_cache/river-api.tar.gz
           docker load -i .docker_cache/river-extractor.tar.gz
           docker load -i .docker_cache/river-transformer.tar.gz
           docker load -i .docker_cache/river-loader.tar.gz
-
-      - name: Create .docker_cache directory
-        if: steps.cache-docker-images.outputs.cache-hit != 'true'
-        run: mkdir .docker_cache
-
-      - name: Build images
-        run: |
-          docker build -f api/Dockerfile -t arkhn/river-api .
-          docker build -f extractor/Dockerfile -t arkhn/river-extractor .
-          docker build -f transformer/Dockerfile -t arkhn/river-transformer .
-          docker build -f loader/Dockerfile -t arkhn/river-loader .
 
       - name: Tag images
         run: |
@@ -110,13 +147,6 @@ jobs:
           docker tag arkhn/river-extractor arkhn/river-extractor:$GITHUB_SHA
           docker tag arkhn/river-transformer arkhn/river-transformer:$GITHUB_SHA
           docker tag arkhn/river-loader arkhn/river-loader:$GITHUB_SHA
-
-      - name: Save docker images for caching
-        run: |
-          docker save arkhn/river-api:latest -o .docker_cache/river-api.tar.gz
-          docker save arkhn/river-extractor:latest -o .docker_cache/river-extractor.tar.gz
-          docker save arkhn/river-transformer:latest -o .docker_cache/river-transformer.tar.gz
-          docker save arkhn/river-loader:latest -o .docker_cache/river-loader.tar.gz
 
       - name: Publish to the docker hub
         run: |
