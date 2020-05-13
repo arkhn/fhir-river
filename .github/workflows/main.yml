@@ -45,7 +45,20 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images
+          key: ${{ runner.OS }}-river-docker-images-${{ env.GITHUB_SHA }}
+          restore-keys: |
+            ${{ runner.OS }}-river-docker-images
+
+      - name: Create .docker_cache directory
+        run: mkdir .docker_cache || echo ".docker_cache exists, skipping..."
+
+      - name: Load cached docker images
+        if: steps.cache-docker-images.outputs.cache-hit == 'true'
+        run: |
+          docker load -i .docker_cache/river-api.tar.gz
+          docker load -i .docker_cache/river-extractor.tar.gz
+          docker load -i .docker_cache/river-transformer.tar.gz
+          docker load -i .docker_cache/river-loader.tar.gz
 
       - name: Build images
         run: |
@@ -53,13 +66,6 @@ jobs:
           docker build -f extractor/Dockerfile -t arkhn/river-extractor .
           docker build -f transformer/Dockerfile -t arkhn/river-transformer .
           docker build -f loader/Dockerfile -t arkhn/river-loader .
-
-      - name: Tag images
-        run: |
-          docker tag arkhn/river-api arkhn/river-api:$GITHUB_SHA
-          docker tag arkhn/river-extractor arkhn/river-extractor:$GITHUB_SHA
-          docker tag arkhn/river-transformer arkhn/river-transformer:$GITHUB_SHA
-          docker tag arkhn/river-loader arkhn/river-loader:$GITHUB_SHA
 
       - name: Save docker images for caching
         run: |
@@ -75,12 +81,17 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.7"
+
       - name: Retrieved cached docker images
         id: cache-docker-images
         uses: actions/cache@v1
         with:
           path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images
+          key: ${{ runner.OS }}-river-docker-images-${{ env.GITHUB_SHA }}
 
       - name: Load cached docker images
         run: |
@@ -132,7 +143,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images
+          key: ${{ runner.OS }}-river-docker-images-${{ env.GITHUB_SHA }}
 
       - name: Load cached docker images
         run: |
