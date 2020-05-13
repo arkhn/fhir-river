@@ -129,7 +129,7 @@ services:
       dockerfile: transformer/Dockerfile
       context: ../
     container_name: transformer
-    image: arkhn/fhir-transformer:latest
+    image: arkhn/river-transformer:latest
     restart: always
     depends_on:
       - kafka
@@ -145,14 +145,14 @@ services:
       PYROG_LOGIN: ${PYROG_LOGIN}
       PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
-      - 5002
+      - 3002
 
   loader:
     build:
       dockerfile: loader/Dockerfile
       context: ../
     container_name: loader
-    image: arkhn/fhir-loader:latest
+    image: arkhn/river-loader:latest
     restart: always
     depends_on:
       - kafka
@@ -174,7 +174,7 @@ services:
       dockerfile: extractor/Dockerfile
       context: ../
     container_name: extractor
-    image: arkhn/fhir-extractor:latest
+    image: arkhn/river-extractor:latest
     restart: always
     depends_on:
       - kafka
@@ -185,23 +185,23 @@ services:
       PYROG_LOGIN: ${PYROG_LOGIN}
       PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
-      - 5001
+      - 3001
 
   api:
     build:
       dockerfile: api/Dockerfile
       context: ../
     container_name: api
-    image: arkhn/api:latest
+    image: arkhn/river-api:latest
     restart: always
     depends_on:
       - kafka
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      EXTRACTOR_URL: http://extractor:5001
-      TRANSFORMER_URL: http://transformer:5002
+      EXTRACTOR_URL: http://extractor:3001
+      TRANSFORMER_URL: http://transformer:3002
     ports:
-      - "5000:5000"
+      - "3001:3000"
 
 volumes:
   test-mimic-db:

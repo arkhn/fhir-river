@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # Run APP
-python api/src/app.py
+uwsgi --ini api/uwsgi.ini --py-autoreload 1

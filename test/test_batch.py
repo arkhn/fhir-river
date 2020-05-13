@@ -48,7 +48,7 @@ def test_batch_single_row():
     try:
         # send a batch request
         response = requests.post(
-            "http://localhost:5000/batch", json={"resource_ids": [MIMIC_PATIENT_RESOURCE_ID]},
+            "http://localhost:3001/batch", json={"resource_ids": [MIMIC_PATIENT_RESOURCE_ID]},
         )
     except requests.exceptions.ConnectionError:
         raise Exception("Could not connect to the api service")
@@ -57,7 +57,7 @@ def test_batch_single_row():
 
     # RUN A PRACTITIONER BATCH BATCH #
     response = requests.post(
-        "http://localhost:5000/batch", json={"resource_ids": [MIMIC_PRACTITIONER_RESOURCE_ID]},
+        "http://localhost:3001/batch", json={"resource_ids": [MIMIC_PRACTITIONER_RESOURCE_ID]},
     )
     assert response.status_code == 200, "api POST /batch returned an error"
 
