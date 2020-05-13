@@ -40,38 +40,27 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Cache docker images
-        id: cache-docker-images
-        uses: actions/cache@v1
-        with:
-          path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.OS }}-river-docker-images-
-
-      - name: Create .docker_cache directory
-        run: mkdir .docker_cache || echo ".docker_cache exists, skipping..."
-
-      - name: Load cached docker images
+      - name: Pull most recent docker images
         run: |
-          docker load -i .docker_cache/river-api.tar.gz || echo "Cached image not found, skipping"
-          docker load -i .docker_cache/river-extractor.tar.gz || echo "Cached image not found, skipping"
-          docker load -i .docker_cache/river-transformer.tar.gz || echo "Cached image not found, skipping"
-          docker load -i .docker_cache/river-loader.tar.gz || echo "Cached image not found, skipping"
+          docker pull arkhn/river-api:latest
+          docker pull arkhn/river-extractor:latest
+          docker pull arkhn/river-transformer:latest
+          docker pull arkhn/river-loader:latest
 
       - name: Build images
         run: |
-          docker build -f api/Dockerfile -t arkhn/river-api .
-          docker build -f extractor/Dockerfile -t arkhn/river-extractor .
-          docker build -f transformer/Dockerfile -t arkhn/river-transformer .
-          docker build -f loader/Dockerfile -t arkhn/river-loader .
+          docker build -f api/Dockerfile -t arkhn/river-api:$GITHUB_SHA .
+          docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA .
+          docker build -f transformer/Dockerfile -t arkhn/river-transformer:$GITHUB_SHA .
+          docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA .
 
-      - name: Save docker images for caching
+      - name: Push docker images for caching
         run: |
-          docker save arkhn/river-api:latest $(docker history -q arkhn/river-api:latest | grep -v missing) -o .docker_cache/river-api.tar.gz
-          docker save arkhn/river-extractor:latest $(docker history -q arkhn/river-extractor:latest | grep -v missing) -o .docker_cache/river-extractor.tar.gz
-          docker save arkhn/river-transformer:latest $(docker history -q arkhn/river-transformer:latest | grep -v missing) -o .docker_cache/river-transformer.tar.gz
-          docker save arkhn/river-loader:latest $(docker history -q arkhn/river-loader:latest | grep -v missing) -o .docker_cache/river-loader.tar.gz
+          echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+          docker push arkhn/river-api:$GITHUB_SHA
+          docker push arkhn/river-extractor:$GITHUB_SHA
+          docker push arkhn/river-transformer:$GITHUB_SHA
+          docker push arkhn/river-loader:$GITHUB_SHA
 
   integration-tests:
     name: Run integration tests
@@ -85,26 +74,26 @@ jobs:
         with:
           python-version: "3.7"
 
-      - name: Retrieved cached docker images
-        id: cache-docker-images
-        uses: actions/cache@v1
-        with:
-          path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
-
-      - name: Load cached docker images
-        run: |
-          docker load -i .docker_cache/river-api.tar.gz
-          docker load -i .docker_cache/river-extractor.tar.gz
-          docker load -i .docker_cache/river-transformer.tar.gz
-          docker load -i .docker_cache/river-loader.tar.gz
-
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install postgresql libpq-dev
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
+
+      - name: Pull docker images
+        run: |
+          docker pull arkhn/river-api:$GITHUB_SHA
+          docker pull arkhn/river-extractor:$GITHUB_SHA
+          docker pull arkhn/river-transformer:$GITHUB_SHA
+          docker pull arkhn/river-loader:$GITHUB_SHA
+
+      - name: Tag images
+        run: |
+          docker tag arkhn/river-api:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
+          docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
+          docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
 
       - name: Integration tests with pytest
         env:
@@ -137,35 +126,24 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Retrieved cached docker images
-        id: cache-docker-images
-        uses: actions/cache@v1
-        with:
-          path: .docker_cache/
-          key: ${{ runner.OS }}-river-docker-images-${{ github.sha }}
-
-      - name: Load cached docker images
+      - name: Pull docker images
         run: |
-          docker load -i .docker_cache/river-api.tar.gz
-          docker load -i .docker_cache/river-extractor.tar.gz
-          docker load -i .docker_cache/river-transformer.tar.gz
-          docker load -i .docker_cache/river-loader.tar.gz
+          docker pull arkhn/river-api:$GITHUB_SHA
+          docker pull arkhn/river-extractor:$GITHUB_SHA
+          docker pull arkhn/river-transformer:$GITHUB_SHA
+          docker pull arkhn/river-loader:$GITHUB_SHA
 
       - name: Tag images
         run: |
-          docker tag arkhn/river-api arkhn/river-api:$GITHUB_SHA
-          docker tag arkhn/river-extractor arkhn/river-extractor:$GITHUB_SHA
-          docker tag arkhn/river-transformer arkhn/river-transformer:$GITHUB_SHA
-          docker tag arkhn/river-loader arkhn/river-loader:$GITHUB_SHA
+          docker tag arkhn/river-api:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
+          docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
+          docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
 
-      - name: Publish to the docker hub
+      - name: Publish the latest tag to the docker hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
           docker push arkhn/river-api:latest
-          docker push arkhn/river-api:$GITHUB_SHA
           docker push arkhn/river-extractor:latest
-          docker push arkhn/river-extractor:$GITHUB_SHA
           docker push arkhn/river-transformer:latest
-          docker push arkhn/river-transformer:$GITHUB_SHA
           docker push arkhn/river-loader:latest
-          docker push arkhn/river-loader:$GITHUB_SHA
