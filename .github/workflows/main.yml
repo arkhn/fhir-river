@@ -40,13 +40,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Pull most recent docker images
-        run: |
-          docker pull arkhn/river-api:latest
-          docker pull arkhn/river-extractor:latest
-          docker pull arkhn/river-transformer:latest
-          docker pull arkhn/river-loader:latest
-
       - name: Build images
         run: |
           docker build -f api/Dockerfile -t arkhn/river-api:$GITHUB_SHA .
@@ -87,6 +80,7 @@ jobs:
           docker pull arkhn/river-extractor:$GITHUB_SHA
           docker pull arkhn/river-transformer:$GITHUB_SHA
           docker pull arkhn/river-loader:$GITHUB_SHA
+          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka
 
       - name: Tag images
         run: |
