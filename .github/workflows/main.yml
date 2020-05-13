@@ -3,52 +3,108 @@ name: fhir-river
 on: [push]
 
 jobs:
-  tests:
-    name: Lint and test
+  # tests:
+  #   name: Lint and test
+  #   runs-on: ubuntu-18.04
+
+  #   steps:
+  #     - uses: actions/checkout@v1
+
+  #     - name: Set up Python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v1
+  #       with:
+  #         python-version: "3.7"
+
+  #     - name: Install dependencies
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install postgresql libpq-dev
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements-dev.txt
+
+  #     - name: Lint with flake8
+  #       run: |
+  #         # stop the build if there are Python syntax errors or undefined names
+  #         flake8 analyzer extractor transformer loader api --count --select=E9,F63,F7,F82 --show-source --statistics
+  #         flake8 analyzer extractor transformer loader api --count --max-complexity=10 --max-line-length=100 --statistics
+
+  #     - name: Test with pytest
+  #       env:
+  #         PYROG_API_URL: http://test.com
+  #       run: |
+  #         python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
+
+  #     - name: Integration tests with pytest
+  #       env:
+  #         FHIR_API_URL: ${{ secrets.FHIR_API_URL }}
+  #         PYROG_API_URL: ${{ secrets.PYROG_API_URL }}
+  #         PYROG_LOGIN: ${{ secrets.PYROG_LOGIN }}
+  #         PYROG_PASSWORD: ${{ secrets.PYROG_PASSWORD }}
+  #         MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
+  #         MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
+  #         KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
+  #       run: |
+  #         docker-compose -f test/docker-compose.yml up -d mongo mimic
+  #         sleep 10
+  #         MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
+  #         docker-compose -f test/docker-compose.yml up -d --build transformer
+  #         sleep 30
+  #         docker-compose -f test/docker-compose.yml up -d --build
+  #         sleep 10
+  #         python -m pytest -svv test/test_batch.py
+
+  publish:
+    name: Build and publish
     runs-on: ubuntu-18.04
+
+    # needs: tests
+    # if: github.ref == 'refs/heads/master'
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+      - name: Cache docker images
+        id: cache-docker-images
+        uses: actions/cache@v1
         with:
-          python-version: "3.7"
+          path: .docker_cache/
+          key: ${{ runner.OS }}-river-docker-images
 
-      - name: Install dependencies
+      - name: Load cached docker images
+        if: steps.cache-docker-images.outputs.cache-hit == 'true'
         run: |
-          sudo apt update
-          sudo apt install postgresql libpq-dev
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+          docker load -i .docker_cache/river-api.tar.gz
+          docker load -i .docker_cache/river-extractor.tar.gz
+          docker load -i .docker_cache/river-transformer.tar.gz
+          docker load -i .docker_cache/river-loader.tar.gz
 
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 analyzer extractor transformer loader api --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 analyzer extractor transformer loader api --count --max-complexity=10 --max-line-length=100 --statistics
+      - name: create .docker_cache directory
+        if: steps.cache-docker-images.outputs.cache-hit == 'false'
+        run: mkdir .docker_cache
 
-      - name: Test with pytest
-        env:
-          PYROG_API_URL: http://test.com
+      - name: Build images
         run: |
-          python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
+          docker build -f api/Dockerfile -t arkhn/river-api .
+          docker build -f extractor/Dockerfile -t arkhn/river-extractor .
+          docker build -f transformer/Dockerfile -t arkhn/river-transformer .
+          docker build -f loader/Dockerfile -t arkhn/river-loader .
 
-      - name: Integration tests with pytest
-        env:
-          FHIR_API_URL: ${{ secrets.FHIR_API_URL }}
-          PYROG_API_URL: ${{ secrets.PYROG_API_URL }}
-          PYROG_LOGIN: ${{ secrets.PYROG_LOGIN }}
-          PYROG_PASSWORD: ${{ secrets.PYROG_PASSWORD }}
-          MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
-          MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
-          KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
+      - name: Tag images
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic
-          sleep 10
-          MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker-compose -f test/docker-compose.yml up -d --build transformer
-          sleep 30
-          docker-compose -f test/docker-compose.yml up -d --build
-          sleep 10
-          python -m pytest -svv test/test_batch.py
+          docker tag arkhn/river-api arkhn/river-api:$GITHUB_SHA
+          docker tag arkhn/river-extractor arkhn/river-extractor:$GITHUB_SHA
+          docker tag arkhn/river-transformer arkhn/river-transformer:$GITHUB_SHA
+          docker tag arkhn/river-loader arkhn/river-loader:$GITHUB_SHA
+
+      - name: Savee docker images for caching
+        run: |
+          docker save arkhn/river-api:latest -o .docker_cache/river-api.tar.gz
+          docker save arkhn/river-extractor:latest -o .docker_cache/river-extractor.tar.gz
+          docker save arkhn/river-transformer:latest -o .docker_cache/river-transformer.tar.gz
+          docker save arkhn/river-loader:latest -o .docker_cache/river-loader.tar.gz
+
+      - name: Publish to the docker hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+          docker push $IMAGE:latest
+          docker push $IMAGE:$GITHUB_SHA
