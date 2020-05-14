@@ -6,6 +6,11 @@ from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 
+from opentelemetry import metrics
+from opentelemetry.ext.otcollector.metrics_exporter import CollectorMetricsExporter
+from opentelemetry.sdk.metrics import Counter, MeterProvider
+from opentelemetry.sdk.metrics.export.controller import PushController
+
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
 
@@ -27,6 +32,22 @@ pyrog_client = PyrogClient()
 analyzer = Analyzer(pyrog_client)
 extractor = Extractor()
 
+# Monitoring
+metrics.set_meter_provider(MeterProvider())
+meter = metrics.get_meter(__name__, True)
+exporter = CollectorMetricsExporter(endpoint="otel-collector:55678")
+
+counter = meter.create_metric(
+    name="fhir_obj_extracted",
+    description="Number of fhir objects",
+    unit="1",
+    value_type=int,
+    metric_type=Counter,
+    label_keys=("service",),
+)
+
+labels = {"service": "extractor"}
+
 
 def create_app():
     app = Flask(__name__)
@@ -43,6 +64,7 @@ def process_event_with_producer(producer):
         list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
         for record in list_records_from_db:
+            counter.add(1, labels)
             logger.debug("One record from extract")
             event = dict()
             event["batch_id"] = batch_id
@@ -156,3 +178,10 @@ def run_consumer():
         consumer.run_consumer()
     except (KafkaException, KafkaError) as err:
         logger.error(err)
+
+
+# Start the thread to push metrics to the collector
+@postfork
+@thread
+def test_prom():
+    PushController(meter, exporter, 5)

@@ -1,0 +1,20 @@
+  
+receivers:
+  opencensus:
+    endpoint: "0.0.0.0:55678"
+  
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+  logging:
+    loglevel: debug
+
+processors:
+  batch:
+  queued_retry:
+
+service:
+  pipelines:
+    metrics:
+      receivers: [opencensus]
+      exporters: [logging, prometheus]
