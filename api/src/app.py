@@ -2,6 +2,7 @@
 
 import os
 from flask import Flask, request, jsonify, g
+from flask_cors import CORS
 import requests
 
 from api.src.config.logger import create_logger
@@ -25,6 +26,13 @@ def get_producer():
 
 def create_app():
     app = Flask(__name__)
+
+    with app.app_context():
+        get_producer()
+
+    # enable Cross-Origin Resource Sharing
+    # "Allow-Control-Allow-Origin" HTTP header
+    CORS(app)
     return app
 
 
@@ -103,4 +111,5 @@ def create_extractor_trigger(resource_id, batch_id=None, primary_key_values=None
     event["resource_id"] = resource_id
     event["primary_key_values"] = primary_key_values
 
+    logger.info("Producing event %s %s", PRODUCED_TOPIC, event)
     get_producer().produce_event(topic=PRODUCED_TOPIC, event=event)
