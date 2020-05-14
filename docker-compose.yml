@@ -154,7 +154,8 @@ services:
 
   api:
     build:
-      context: api/
+      dockerfile: api/Dockerfile
+      context: ./
     container_name: api
     image: arkhn/api:latest
     restart: always
