@@ -99,7 +99,11 @@ class Analyzer:
             f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}"
         )
         attribute = Attribute(
-            path=attribute_mapping["path"], columns=[], static_inputs=[], merging_script=None
+            definition_id=attribute_mapping["definitionId"],
+            path=attribute_mapping["path"],
+            columns=[],
+            static_inputs=[],
+            merging_script=None,
         )
         if not attribute_mapping["inputs"]:
             # If there are no inputs for this attribute, it means that it is an intermediary

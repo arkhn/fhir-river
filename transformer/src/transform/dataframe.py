@@ -8,9 +8,11 @@ from transformer.src.config.logger import create_logger
 logger = create_logger("dataframe")
 
 
-def apply_str(data):
-    for key, rows in data.items():
-        data[key] = [str(row) if row is not None else None for row in rows]
+def cast_types(data, attributes):
+    for attribute in attributes:
+        for column in attribute.columns:
+            col_name = column.dataframe_column_name()
+            data[col_name] = [attribute.cast_type(row) for row in data[col_name]]
     return data
 
 
