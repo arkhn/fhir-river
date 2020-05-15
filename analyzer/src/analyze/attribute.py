@@ -61,7 +61,7 @@ class Attribute:
 
         try:
             return self.type(value)
-        except:
+        except Exception as e:
             logger.error(
                 f"Could not cast value {value} to type {self.type} "
                 f"on attribute at path = {self.path}): {e}"
