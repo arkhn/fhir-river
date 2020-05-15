@@ -1,5 +1,4 @@
 from unittest import mock
-import pandas as pd
 
 from analyzer.src.analyze.cleaning_script import CleaningScript
 
