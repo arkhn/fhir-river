@@ -90,15 +90,28 @@ def test_squash_rows():
 
     actual = transform.squash_rows(data, squash_rules)
 
-    assert actual[("name", ("PATIENTS", "NAME"))] == "bob"
-    assert actual[("id", ("PATIENTS", "ID"))] == "id1"
-    assert actual[("id", ("PATIENTS", "ID2"))] == "id21"
+    assert actual[("name", ("PATIENTS", "NAME"))] == ["bob"]
+    assert actual[("id", ("PATIENTS", "ID"))] == ["id1"]
+    assert actual[("id", ("PATIENTS", "ID2"))] == ["id21"]
     TestCase().assertCountEqual(
         zip(
-            actual[("language", ("ADMISSIONS", "LANGUAGE"))], actual[("code", ("ADMISSIONS", "ID"))]
+            actual[("language", ("ADMISSIONS", "LANGUAGE"))][0],
+            actual[("code", ("ADMISSIONS", "ID"))][0],
         ),
         (("lang1", "id1"), ("lang2", "id2"), ("lang3", "id3"), ("lang4", "id4")),
     )
+
+    # Test without squash rules
+    data = {
+        ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
+        ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
+        ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
+    }
+    squash_rules = ["PATIENTS", []]
+
+    actual = transform.squash_rows(data, squash_rules)
+
+    assert actual == data
 
 
 @mock.patch("analyzer.src.analyze.merging_script.scripts.get_script", return_value=mock_get_script)
@@ -114,11 +127,11 @@ def test_merge_attributes(_):
     attr_admid = Attribute("admid", columns=[SqlColumn("ADMISSIONS", "ID")])
 
     data = {
-        ("name", ("PATIENTS", "NAME")): "bob",
-        ("id", ("PATIENTS", "ID")): "id1",
-        ("id", ("PATIENTS", "ID2")): "id21",
-        ("language", ("ADMISSIONS", "LANGUAGE")): ("lang1", "lang2", "lang3", "lang4"),
-        ("admid", ("ADMISSIONS", "ID")): ("hadmid1", "hadmid2", "hadmid3", "hadmid4"),
+        ("name", ("PATIENTS", "NAME")): ["bob"],
+        ("id", ("PATIENTS", "ID")): ["id1"],
+        ("id", ("PATIENTS", "ID2")): ["id21"],
+        ("language", ("ADMISSIONS", "LANGUAGE")): [("lang1", "lang2", "lang3", "lang4")],
+        ("admid", ("ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid]
