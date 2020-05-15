@@ -119,10 +119,6 @@ def squash_rows(data, squash_rules, parent_cols=[]):
         for to_squash_col, squashed_val in zip(cols_to_squash, squashed_vals):
             squashed_data[to_squash_col].append(squashed_val)
 
-    if parent_cols == []:
-        # In this base case, we should have only one element in each list
-        squashed_data = {k: v[0] for k, v in squashed_data.items()}
-
     return squashed_data
 
 
@@ -149,7 +145,9 @@ def merge_attributes(
 
     where values are merge thanks to the mergig scripts.
     """
-    # TODO I don't think the order of pyrog inputs is preserved here
+    # Un-list values in dict
+    data = {k: v[0] for k, v in data.items()}
+
     merged_data = {}
     for attribute in attributes:
         cur_attr_columns = [value for key, value in data.items() if key[0] == attribute.path]
@@ -159,6 +157,7 @@ def merge_attributes(
             continue
 
         if attribute.merging_script:
+            # TODO I don't think the order of pyrog inputs is preserved here
             merged_data[attribute.path] = attribute.merging_script.apply(
                 cur_attr_columns, attribute.static_inputs, attribute.path, primary_key,
             )
