@@ -1,5 +1,4 @@
 from unittest import mock
-import pandas as pd
 
 from analyzer.src.analyze.cleaning_script import CleaningScript
 
@@ -19,7 +18,7 @@ def capitalize(text):
 def test_cleaning_script_apply(_):
     cleaning_script = CleaningScript("capitalize")
 
-    dataframe = pd.DataFrame({"pk_col": [1, 2, 3, 4], "df_col": ["alice", "bob", "carol", "denis"]})
+    dataframe = {"pk_col": [1, 2, 3, 4], "df_col": ["alice", "bob", "carol", "denis"]}
 
     cleaned_col = cleaning_script.apply(dataframe["df_col"], dataframe["pk_col"], "primary_key")
 

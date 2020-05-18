@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from transformer.src.transform.fhir import build_fhir_object, build_metadata, clean_fhir_object
 from transformer.src.transform.dataframe import (
-    apply_str,
+    cast_types,
     clean_data,
     squash_rows,
     merge_attributes,
@@ -23,7 +23,7 @@ class Transformer:
 
         # Change values to strings
         logger.debug("Apply Map String")
-        data = apply_str(data)
+        data = cast_types(data, analysis.attributes)
 
         # Apply cleaning scripts and concept map on data
         logger.debug("Apply Cleaning")
