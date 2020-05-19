@@ -1,14 +1,14 @@
 import os
+import json
 import requests
 
 from .consumer_class import EventConsumer
 
+BATCH_SIZE_TOPIC = "batch_size"
 LOAD_TOPIC = "load"
 
 MIMIC_PATIENT_RESOURCE_ID = os.getenv("MIMIC_PATIENT_RESOURCE_ID")
 MIMIC_PRACTITIONER_RESOURCE_ID = os.getenv("MIMIC_PRACTITIONER_RESOURCE_ID")
-MIMIC_PATIENT_COUNT = 100
-MIMIC_PRACTITIONER_COUNT = 129
 
 
 def handle_kafka_error(err):
@@ -25,7 +25,7 @@ def test_batch_single_row():
         MIMIC_PRACTITIONER_RESOURCE_ID is not None
     ), "MIMIC_PRACTITIONER_RESOURCE_ID missing from environment"
 
-    # declare kafka consumer of "transform" events
+    # declare kafka consumer of "load" events
     consumer = EventConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=LOAD_TOPIC,
@@ -33,16 +33,18 @@ def test_batch_single_row():
         manage_error=handle_kafka_error,
     )
 
-    event_count = 0
+    def wait_batch(msg):
+        msg_value = json.loads(msg.value())
+        print(f"Waiting for {msg_value['size']} events")
+        consumer.run_consumer(event_count=msg_value["size"], poll_timeout=30)
 
-    def assert_fhir_object(msg):
-        # assert inserted object
-        # fhir_instance = json.loads(msg.value())
-        # assert fhir_instance == {}
-        nonlocal event_count
-        event_count += 1
-
-    consumer.process_event = assert_fhir_object
+    batch_size_consumer = EventConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=BATCH_SIZE_TOPIC,
+        group_id="test_batch_size",
+        manage_error=handle_kafka_error,
+        process_event=wait_batch,
+    )
 
     # RUN A PATIENT BATCH #
     try:
@@ -61,10 +63,11 @@ def test_batch_single_row():
     )
     assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
 
-    print(f"Waiting for {MIMIC_PATIENT_COUNT} events")
-    consumer.run_consumer(event_count=MIMIC_PATIENT_COUNT, poll_timeout=30)
-    print(f"Waiting for {MIMIC_PRACTITIONER_COUNT} events")
-    consumer.run_consumer(event_count=MIMIC_PRACTITIONER_COUNT, poll_timeout=10)
+    print("Waiting for a batch_size event...")
+    batch_size_consumer.run_consumer(event_count=1, poll_timeout=30)
+
+    print("Waiting for a batch_size event...")
+    batch_size_consumer.run_consumer(event_count=1, poll_timeout=30)
 
 
 # check in elastic that references have been set

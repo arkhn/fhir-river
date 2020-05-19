@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: mimicuser
+      POSTGRES_PASSWORD: ${MIMIC_DB_PASSWORD}
       POSTGRES_DB: mimic
       POSTGRES_HOST: mimic
       POSTGRES_PORT: 5432

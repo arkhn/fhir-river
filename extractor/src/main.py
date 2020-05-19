@@ -19,7 +19,8 @@ from extractor.src.errors import BadRequestError, EmptyResult
 logger = create_logger("extractor")
 
 CONSUMER_GROUP_ID = "extractor"
-PRODUCED_TOPIC = "extract"
+EXTRACT_TOPIC = "extract"
+BATCH_SIZE_TOPIC = "batch_size"
 CONSUMED_TOPIC = "batch"
 
 pyrog_client = PyrogClient()
@@ -49,7 +50,7 @@ def process_event_with_producer(producer):
             event["resource_id"] = resource_id
             event["dataframe"] = record.to_dict(orient="list")
 
-            producer.produce_event(topic=PRODUCED_TOPIC, event=event)
+            producer.produce_event(topic=EXTRACT_TOPIC, event=event)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
@@ -65,6 +66,11 @@ def process_event_with_producer(producer):
 
         try:
             resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
+            batch_size = extractor.batch_size(analysis, resource_mapping)
+            logger.info(f"Batch size is {batch_size}")
+            producer.produce_event(
+                topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
+            )
             broadcast_events(resource_mapping, df, analysis, batch_id)
 
         except Exception as err:
