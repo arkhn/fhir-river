@@ -53,13 +53,13 @@ def test_batch_single_row():
     except requests.exceptions.ConnectionError:
         raise Exception("Could not connect to the api service")
 
-    assert response.status_code == 200, "api POST /batch returned an error"
+    assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
 
     # RUN A PRACTITIONER BATCH BATCH #
     response = requests.post(
         "http://localhost:3001/batch", json={"resource_ids": [MIMIC_PRACTITIONER_RESOURCE_ID]},
     )
-    assert response.status_code == 200, "api POST /batch returned an error"
+    assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
 
     print(f"Waiting for {MIMIC_PATIENT_COUNT} events")
     consumer.run_consumer(event_count=MIMIC_PATIENT_COUNT, poll_timeout=30)
