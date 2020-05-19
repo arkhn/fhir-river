@@ -38,6 +38,8 @@ def override_document(fhir_instance):
         fhirstore.db[fhir_instance["resourceType"]].delete_one(
             {"identifier": fhir_instance["identifier"]}
         )
+    except KeyError:
+        logger.warning(f"instance {fhir_instance['id']} has no identifier")
     except NotFoundError as e:
         logger.warning(f"error while trying to delete previous documents: {e}")
 
