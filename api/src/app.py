@@ -48,7 +48,9 @@ def trigger_sample_extractor():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    logger.debug("PREVIEW %s %s", resource_id, primary_key_values)
+    logger.debug(
+        f"PREVIEW {resource_id} {primary_key_values}", extra={"resource_id": resource_id}
+    )
 
     try:
         extract_resp = requests.post(

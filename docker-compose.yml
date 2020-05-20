@@ -116,11 +116,6 @@ services:
       FHIRSTORE_PASSWORD: null
     ports:
       - 3002
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: httpd.access
 
   loader:
     build:
@@ -142,11 +137,6 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: httpd.access
 
   extractor:
     build:
@@ -164,11 +154,6 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - 3001
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: httpd.access
 
   api:
     build:
@@ -186,11 +171,6 @@ services:
       TRANSFORMER_URL: http://transformer:3002
     ports:
       - "3001:3000"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: httpd.access
 
   fluentd:
     build: ./fluentd

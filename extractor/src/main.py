@@ -42,7 +42,9 @@ def process_event_with_producer(producer):
         list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
         for record in list_records_from_db:
-            logger.debug("One record from extract")
+            logger.debug(
+                "One record from extract", extra={"resource_id": resource_id},
+            )
             event = dict()
             event["batch_id"] = batch_id
             event["resource_type"] = resource_type
@@ -83,7 +85,7 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.debug("Getting Mapping for resource %s", resource_id)
+    logger.debug("Getting Mapping for resource %s", resource_id, extra={"resource_id": resource_id})
     resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
 
     # Get credentials
@@ -93,10 +95,10 @@ def extract_resource(resource_id, primary_key_values):
     credentials = resource_mapping["source"]["credential"]
     extractor.update_connection(credentials)
 
-    logger.debug("Analyzing Mapping")
+    logger.debug("Analyzing Mapping", extra={"resource_id": resource_id})
     analysis = analyzer.analyze(resource_mapping)
 
-    logger.debug("Extracting rows")
+    logger.debug("Extracting rows", extra={"resource_id": resource_id})
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
     if df.empty:
         raise EmptyResult(
@@ -120,7 +122,7 @@ def extract():
         _, analysis, df = extract_resource(resource_id, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
-            logger.debug("One record from extract")
+            logger.debug("One record from extract", extra={"resource_id": resource_id})
             rows.append(record.to_dict(orient="list"))
 
         return jsonify({"rows": rows})

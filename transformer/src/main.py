@@ -69,13 +69,13 @@ def manage_kafka_error(msg):
 
 
 def transform_row(resource_id, row):
-    logger.debug("Get Analysis")
+    logger.debug("Get Analysis", extra={"resource_id": resource_id})
     analysis = analyzer.get_analysis(resource_id)
 
-    logger.debug("Transform Df")
+    logger.debug("Transform dataframe", extra={"resource_id": resource_id})
     data = transformer.transform_data(row, analysis)
 
-    logger.debug("Create FHIR Doc")
+    logger.debug("Create FHIR Doc", extra={"resource_id": resource_id})
     fhir_document = transformer.create_fhir_document(data, analysis)
 
     return fhir_document

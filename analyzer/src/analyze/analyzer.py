@@ -40,10 +40,16 @@ class Analyzer:
         for each resource
         """
         if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
-            logger.debug("Analysis too old for mapping_resource_id.")
+            logger.debug(
+                f"Analysis too old for resource {resource_mapping_id}.",
+                extra={"resource_id": resource_mapping_id},
+            )
             self.fetch_analysis(resource_mapping_id)
         else:
-            logger.debug("Analysis was updated recently. Using cached analysis.")
+            logger.debug(
+                "Analysis was updated recently. Using cached analysis.",
+                extra={"resource_id": resource_mapping_id},
+            )
 
     def fetch_analysis(self, resource_mapping_id):
         """
@@ -51,7 +57,7 @@ class Analyzer:
         :param resource_mapping_id:
         :return:
         """
-        logger.debug("Fetching mapping from api.")
+        logger.debug("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
         resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
         self.analyze(resource_mapping)
         self.last_updated_at[resource_mapping_id] = time.time()

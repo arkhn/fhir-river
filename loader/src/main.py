@@ -50,17 +50,20 @@ def process_event_with_producer(producer):
         :return:
         """
         fhir_instance = json.loads(msg.value())
-        logger.debug("Loader")
-        logger.debug(fhir_instance)
+        resource_id = fhir_instance["meta"]["tag"][1]["code"]
+        logger.debug("Loader", extra={"resource_id": resource_id})
+        logger.debug(fhir_instance, extra={"resource_id": resource_id})
 
-        logger.debug("Get Analysis")
+        logger.debug("Get Analysis", extra={"resource_id": resource_id})
         # FIXME: filter meta.tags by system to get the right
         # resource_id (ARKHN_CODE_SYSTEMS.resource)
-        analysis = analyzer.get_analysis(fhir_instance["meta"]["tag"][1]["code"])
+        analysis = analyzer.get_analysis(resource_id)
 
         # Resolve existing and pending references (if the fhir_instance
         # references OR is referenced by other documents)
-        logger.debug(f"Resolving references {analysis.reference_paths}")
+        logger.debug(
+            f"Resolving references {analysis.reference_paths}", extra={"resource_id": resource_id}
+        )
         resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
 
         # TODO how will we handle override in fhir-river?
@@ -68,7 +71,7 @@ def process_event_with_producer(producer):
             override_document(resolved_fhir_instance)
 
         try:
-            logger.debug("Writing document to mongo")
+            logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
             loader.load(fhirstore, resolved_fhir_instance)
             producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
         except DuplicateKeyError as e:
