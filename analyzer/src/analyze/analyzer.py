@@ -27,14 +27,14 @@ class Analyzer:
         self._cur_analysis = Analysis()
         self.last_updated_at: Mapping = {}  # store last updated timestamp for each resource_id
 
-    def get_analysis(self, resource_mapping_id) -> Analysis:
+    def get_analysis(self, resource_mapping_id, max_seconds_refresh=3600) -> Analysis:
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
         else:
-            self.check_refresh_analysis(resource_mapping_id)
+            self.check_refresh_analysis(resource_mapping_id, max_seconds_refresh)
         return self.analyses[resource_mapping_id]
 
-    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh=3600):
+    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh):
         """
         This method refreshes the analyser if the last update was later than `max_seconds_refresh`
         for each resource
