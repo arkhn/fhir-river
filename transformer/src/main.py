@@ -68,9 +68,9 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
-def transform_row(resource_id, row):
+def transform_row(resource_id, row, time_refresh_analysis=3600):
     logger.debug("Get Analysis")
-    analysis = analyzer.get_analysis(resource_id)
+    analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 
     logger.debug("Transform Df")
     data = transformer.transform_data(row, analysis)
@@ -92,7 +92,7 @@ def transform():
         fhir_instances = []
         errors = []
         for row in body.get("dataframe"):
-            fhir_document = transform_row(resource_id, row)
+            fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
             try:
                 fhirstore.validate(fhir_document)
