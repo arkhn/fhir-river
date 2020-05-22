@@ -14,7 +14,7 @@ from extractor.src.config.logger import create_logger
 from extractor.src.errors import MissingInformationError
 from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
-from extractor.src.errors import BadRequestError, EmptyResult
+from extractor.src.errors import BadRequestError
 
 logger = create_logger("extractor")
 
@@ -47,7 +47,7 @@ def process_event_with_producer(producer):
             event["batch_id"] = batch_id
             event["resource_type"] = resource_type
             event["resource_id"] = resource_id
-            event["dataframe"] = record.to_dict(orient="list")
+            event["dataframe"] = record
 
             producer.produce_event(topic=PRODUCED_TOPIC, event=event)
 
@@ -98,12 +98,6 @@ def extract_resource(resource_id, primary_key_values):
 
     logger.debug("Extracting rows")
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
-    if df.empty:
-        raise EmptyResult(
-            "The sql query returned nothing. Maybe the primary key values "
-            "you provided are not present in the database or the mapping "
-            "is erroneous."
-        )
 
     return resource_mapping, analysis, df
 
@@ -121,7 +115,7 @@ def extract():
         rows = []
         for record in extractor.split_dataframe(df, analysis):
             logger.debug("One record from extract")
-            rows.append(record.to_dict(orient="list"))
+            rows.append(record)
 
         return jsonify({"rows": rows})
 

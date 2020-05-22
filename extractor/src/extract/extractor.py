@@ -1,6 +1,5 @@
+from collections import defaultdict
 from typing import List
-
-import pandas as pd
 
 from sqlalchemy import create_engine, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
@@ -9,6 +8,7 @@ from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from extractor.src.config.logger import create_logger
+from extractor.src.errors import EmptyResult
 
 logger = create_logger("extractor")
 
@@ -65,7 +65,7 @@ class Extractor:
     def extract(self, resource_mapping, analysis, pk_values=None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
-        source DB, run it and return the result as a pandas dataframe.
+        source DB, run it and returns the result as an sqlalchemy RestulProxy.
 
         Args:
             resource_mapping: the mapping.
@@ -74,7 +74,7 @@ class Extractor:
                 the primary key values are in pk_values.
 
         Returns:
-            a pandas dataframe where there all the columns asked for in the mapping
+            a an sqlalchemy RestulProxy containing all the columns asked for in the mapping
         """
         if self.session is None:
             raise ValueError(
@@ -159,9 +159,7 @@ class Extractor:
         query = query.statement
         logger.info(f"sql query: {query}")
 
-        pd_query = pd.read_sql_query(query, con=self.engine)
-
-        return pd.DataFrame(pd_query)
+        return self.session.execute(query)
 
     def get_columns(self, columns: List[SqlColumn]) -> List[AlchemyColumn]:
         """ Get the sql alchemy columns corresponding to the SqlColumns (custom type)
@@ -194,11 +192,19 @@ class Extractor:
         pk_col = analysis.primary_key_column.dataframe_column_name()
 
         prev_pk_val = None
-        acc = []
-        for _, row in df.iterrows():
+        acc = defaultdict(list)
+        for row in df:
             if acc and row[pk_col] != prev_pk_val:
-                yield pd.DataFrame(acc, columns=df.columns)
-                acc = []
-            acc.append(row)
+                yield acc
+                acc = defaultdict(list)
+            for key, value in row.items():
+                acc[key].append(value)
             prev_pk_val = row[pk_col]
-        yield pd.DataFrame(acc, columns=df.columns)
+
+        if not acc:
+            raise EmptyResult(
+                "The sql query returned nothing. Maybe the primary key values "
+                "you provided are not present in the database or the mapping "
+                "is erroneous."
+            )
+        yield acc
