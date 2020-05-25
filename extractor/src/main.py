@@ -47,7 +47,7 @@ def process_event_with_producer(producer):
             event["batch_id"] = batch_id
             event["resource_type"] = resource_type
             event["resource_id"] = resource_id
-            event["dataframe"] = record
+            event["record"] = record
 
             producer.produce_event(topic=PRODUCED_TOPIC, event=event)
 

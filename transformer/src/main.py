@@ -50,7 +50,7 @@ def process_event_with_producer(producer):
         logger.debug(msg_value)
 
         try:
-            fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
+            fhir_document = transform_row(msg_value["resource_id"], msg_value["record"])
             producer.produce_event(topic=PRODUCED_TOPIC, record=fhir_document)
 
         except Exception as err:
