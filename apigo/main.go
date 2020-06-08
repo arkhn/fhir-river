@@ -5,17 +5,20 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/julienschmidt/httprouter"
-	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/arkhn/fhir-river/api/api"
 )
 
+const (
+	consumerGroupID = "api"
+)
+
 var (
 	port, isPortDefined         = os.LookupEnv("PORT")
 	kafkaURL, isKafkaURLDefined = os.LookupEnv("KAFKA_BOOTSTRAP_SERVERS")
-	topic                       = "batch"
 )
 
 // ensure that the required environment variables are defined
@@ -40,18 +43,28 @@ func init() {
 
 func main() {
 	// create a new kafka producer
-	producer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{kafkaURL},
-		Topic:    topic,
-		Balancer: &kafka.LeastBytes{},
-	})
+	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": kafkaURL})
+	if err != nil {
+		panic(err)
+	}
 	defer producer.Close()
+
+	// create a kafka consumer
+	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
+		"bootstrap.servers":        kafkaURL,
+		"group.id":                 consumerGroupID,
+		"go.events.channel.enable": true,
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer consumer.Close()
 
 	// define the HTTP routes and handlers
 	router := httprouter.New()
 	router.POST("/preview", api.Preview)
 	router.POST("/batch", api.Batch(producer))
-	router.GET("/ws", api.Subscribe)
+	router.GET("/ws", api.Subscribe(consumer))
 
 	// this is a temporary route to test websocket functionality
 	router.HandlerFunc("GET", "/", func(w http.ResponseWriter, r *http.Request) {

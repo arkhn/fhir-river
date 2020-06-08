@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
-	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
+)
+
+var (
+	topic = "batch"
 )
 
 // BatchRequest is the body of the POST /batch request.
@@ -24,7 +28,7 @@ type BatchEvent struct {
 
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Batch(producer *kafka.Writer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		// decode the request body
 		body := BatchRequest{}
@@ -48,14 +52,13 @@ func Batch(producer *kafka.Writer) func(http.ResponseWriter, *http.Request, http
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			err = producer.WriteMessages(r.Context(), kafka.Message{
-				Key:   nil,
-				Value: event,
-			})
+			err = producer.Produce(&kafka.Message{
+				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				Value:          event,
+			}, nil)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 			}
-
 		}
 
 		// return the batch ID to the client immediately.

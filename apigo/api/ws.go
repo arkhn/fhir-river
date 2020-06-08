@@ -1,38 +1,193 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
+	"strings"
+	"time"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/websocket"
 	"github.com/julienschmidt/httprouter"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
+var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+	subscribedTopics, _ = NewTopicsFromSlice([]string{"batch", "batch_size", "extract", "transform", "load"})
+)
 
-func Subscribe(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	conn, err := upgrader.Upgrade(w, r, nil) // error ignored for sake of simplicity
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+type Topics map[string]struct{}
+
+func NewTopicsFromString(in string) (Topics, error) {
+	topics := Topics{}
+	for _, t := range strings.Split(in, ",") {
+		topics[t] = struct{}{}
 	}
 
+	return topics, nil
+}
+
+func NewTopicsFromSlice(in []string) (Topics, error) {
+	topics := Topics{}
+	for _, t := range in {
+		topics[t] = struct{}{}
+	}
+	return topics, nil
+}
+
+func (t Topics) Slice() []string {
+	topics := make([]string, len(t))
+	for topic := range t {
+		topics = append(topics, topic)
+	}
+	return topics
+}
+
+func (t Topics) Validate() error {
+	for topic := range t {
+		if _, ok := subscribedTopics[topic]; !ok {
+			errors.Errorf("cannot subscribe to topic '%s', only [%s] are handled", topic, subscribedTopics)
+		}
+	}
+	return nil
+}
+
+type Subscriber struct {
+	conn   *websocket.Conn
+	topics Topics
+	send   chan []byte
+}
+
+type Hub struct {
+	// Kafka consumer
+	consumer *kafka.Consumer
+
+	// Registered subscribers.
+	subscribers map[*Subscriber]bool
+
+	// Register requests from the subscribers.
+	register chan *Subscriber
+
+	// Unregister requests from subscribers.
+	unregister chan *Subscriber
+}
+
+func (h *Hub) notifySubscribers() error {
 	for {
-		// Read message from browser
-		msgType, msg, err := conn.ReadMessage()
+		select {
+		case subscriber := <-h.register:
+			log.Infof("Registered subscriber %+v\n", subscriber)
+			h.subscribers[subscriber] = true
+		case subscriber := <-h.unregister:
+			if _, ok := h.subscribers[subscriber]; ok {
+				delete(h.subscribers, subscriber)
+				close(subscriber.send)
+			}
+		case event := <-h.consumer.Events():
+			if err := h.handleEvent(event); err != nil {
+				log.Errorf("Error while handling kafka event: %s", err)
+			}
+		}
+	}
+}
+
+func (h *Hub) handleEvent(event kafka.Event) error {
+	switch ev := event.(type) {
+	case *kafka.Message:
+		for subscriber := range h.subscribers {
+			select {
+			case subscriber.send <- ev.Value:
+				log.WithFields(log.Fields{"key": ev.Key, "topic": ev.TopicPartition}).
+					Infof("Delivered message to %v\n", subscriber.conn.RemoteAddr())
+			default:
+				close(subscriber.send)
+				delete(h.subscribers, subscriber)
+			}
+		}
+	case kafka.Error:
+		if ev.Code() == kafka.ErrAllBrokersDown {
+			panic(ev)
+		}
+		return ev
+	}
+	return nil
+}
+
+func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+
+	if err := consumer.SubscribeTopics(subscribedTopics.Slice(), nil); err != nil {
+		panic(err)
+	}
+
+	hub := Hub{
+		consumer:    consumer,
+		subscribers: make(map[*Subscriber]bool),
+		register:    make(chan *Subscriber),
+		unregister:  make(chan *Subscriber),
+	}
+	go hub.notifySubscribers()
+
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
-		// Print the message to the console
-		fmt.Printf("%s sent: %s\n", conn.RemoteAddr(), string(msg))
-
-		// Write message back to browser
-		if err = conn.WriteMessage(msgType, msg); err != nil {
+		// register the new subscriber in the hub
+		topics, err := NewTopicsFromString(r.URL.Query().Get("topics"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+		} else if len(topics) == 0 {
+			http.Error(w, "at least one topic should be provided as query paramaeter", http.StatusBadRequest)
+			return
+		} else if err := topics.Validate(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		subscriber := &Subscriber{conn: conn, topics: topics, send: make(chan []byte, 256)}
+		hub.register <- subscriber
+		defer func() {
+			hub.unregister <- subscriber
+			subscriber.conn.Close()
+		}()
+
+		incomingMessages := make(chan bool)
+		go func() {
+			for {
+				// Read message from browser
+				_, _, err := conn.ReadMessage()
+				if err != nil {
+					close(incomingMessages)
+					return
+				}
+				incomingMessages <- true
+			}
+		}()
+
+		for {
+			select {
+			case message, ok := <-subscriber.send:
+				subscriber.conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+				if !ok {
+					// The hub closed the channel.
+					subscriber.conn.WriteMessage(websocket.CloseMessage, []byte{})
+					return
+				}
+
+				if err := subscriber.conn.WriteMessage(websocket.TextMessage, message); err != nil {
+					log.WithError(err).Error("error sending message to client")
+				}
+			case _, ok := <-incomingMessages:
+				if !ok {
+					log.Infof("Client %s disconnected", conn.RemoteAddr())
+					return
+				}
+			}
 		}
 	}
 }
