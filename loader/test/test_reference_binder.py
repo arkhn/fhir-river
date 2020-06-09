@@ -182,7 +182,7 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
                     },
                 },
                 # generalPractitioner is an array, therefore we use .$. to update the right item
-                {"$set": {"generalPractitioner.$.reference": "practitioner1"}},
+                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
             )
         ]
     )
@@ -195,23 +195,19 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
             mock.call(
                 {
                     "id": {"$in": ["pat1"]},
-                    "identifier.0.assigner": {
-                        "identifier.value": "456",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
-                    },
+                    "identifier.0.assigner.identifier.value": "456",
+                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
                 },
-                {"$set": {"identifier.0.assigner.reference": "organization1"}},
+                {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
             # the Patient.managingOrganization must have been updated
             mock.call(
                 {
                     "id": {"$in": ["pat1"]},
-                    "managingOrganization": {
-                        "identifier.value": "789",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
-                    },
+                    "managingOrganization.identifier.value": "789",
+                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
                 },
-                {"$set": {"managingOrganization.reference": "organization1"}},
+                {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
         ]
     )
@@ -261,7 +257,7 @@ def test_resolve_pending_references_code_identifier(
                     },
                 },
                 # generalPractitioner is an array, therefore we use .$. to update the right item
-                {"$set": {"generalPractitioner.$.reference": "practitioner1"}},
+                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
             )
         ]
     )
@@ -271,26 +267,23 @@ def test_resolve_pending_references_code_identifier(
     store.db["Patient"].update_many.assert_has_calls(
         [
             # the Patient.identifier[0].assigner.reference must have been updated
+            # the Patient.identifier[0].assigner.reference must have been updated
             mock.call(
                 {
                     "id": {"$in": ["pat1"]},
-                    "identifier.0.assigner": {
-                        "identifier.type.coding.0.code": "code_456",
-                        "identifier.type.coding.0.system": "fhir_code_system_organization",
-                    },
+                    "identifier.0.assigner.identifier.type.coding.0.code": "code_456",
+                    "identifier.0.assigner.identifier.type.coding.0.system": "fhir_code_system_organization",
                 },
-                {"$set": {"identifier.0.assigner.reference": "organization1"}},
+                {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
             # the Patient.managingOrganization must have been updated
             mock.call(
                 {
                     "id": {"$in": ["pat1"]},
-                    "managingOrganization": {
-                        "identifier.type.coding.0.code": "code_789",
-                        "identifier.type.coding.0.system": "fhir_code_system_organization",
-                    },
+                    "managingOrganization.identifier.type.coding.0.code": "code_789",
+                    "managingOrganization.identifier.type.coding.0.system": "fhir_code_system_organization",
                 },
-                {"$set": {"managingOrganization.reference": "organization1"}},
+                {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
         ]
     )
@@ -346,7 +339,7 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
                     },
                 },
                 # generalPractitioner is an array, therefore we use .$. to update the right item
-                {"$set": {"generalPractitioner.$.reference": "practitioner1"}},
+                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
             ),
             mock.call(
                 {
@@ -358,7 +351,7 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
                         }
                     },
                 },
-                {"$set": {"link.$.reference": "practitioner1"}},
+                {"$set": {"link.$.reference": "Practitioner/practitioner1"}},
             ),
         ]
     )
