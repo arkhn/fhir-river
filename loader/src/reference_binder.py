@@ -30,6 +30,32 @@ def partial_identifier(identifier):
         }
 
 
+def build_find_predicate(refs, reference_path, identifier, isArray):
+    res = {"id": {"$in": refs}}
+    if isArray:
+        res[reference_path] = {"$elemMatch": partial_identifier(identifier)}
+    else:
+        for identifier_path, identifier_value in partial_identifier(identifier).items():
+            res[f"{reference_path}.{identifier_path}"] = identifier_value
+    return res
+
+
+# handle updating reference arrays:
+# we keep the indices in the path (eg: "identifier.0.assigner.reference")
+# but if fhir_object[reference_path] is an array, we use the '$' feature of mongo
+# in order to update the right element of the array.
+# https://docs.mongodb.com/manual/reference/operator/update/positional/#update-documents-in-an-array
+# FIXME: won't work if multiple elements of the array need to be updated (see
+# https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
+def build_update_predicate(reference_path, fhir_object, isArray):
+    if isArray:
+        target_path = f"{reference_path}.$.reference"
+    else:
+        target_path = f"{reference_path}.reference"
+
+    return {"$set": {target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"}}
+
+
 class ReferenceBinder:
     def __init__(self, fhirstore):
         self.fhirstore = fhirstore
@@ -124,24 +150,8 @@ class ReferenceBinder:
             target_ref = (fhir_object["resourceType"], identifier_tuple)
             pending_refs = self.cache.get(target_ref, {})
             for (source_type, reference_path, isArray), refs in pending_refs.items():
-                find_predicate = {
-                    "id": {"$in": refs},
-                    reference_path: {"$elemMatch": partial_identifier(identifier)}
-                    if isArray
-                    else partial_identifier(identifier),
-                }
-                # handle updating reference arrays:
-                # we keep the indices in the path (eg: "identifier.0.assigner.reference")
-                # but if fhir_object[reference_path] is an array, we use the '$' feature of mongo
-                # in order to update the right element of the array.
-                # https://docs.mongodb.com/manual/reference/operator/update/positional/#update-documents-in-an-array
-                # FIXME: won't work if multiple elements of the array need to be updated (see
-                # https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
-                update_predicate = {
-                    "$set": {
-                        f"{reference_path}{'.$' if isArray else ''}.reference": fhir_object["id"]
-                    }
-                }
+                find_predicate = build_find_predicate(refs, reference_path, identifier, isArray)
+                update_predicate = build_update_predicate(reference_path, fhir_object, isArray)
                 logger.info(
                     "Updating resource %s: %s %s", source_type, find_predicate, update_predicate
                 )
@@ -160,7 +170,6 @@ class ReferenceBinder:
         identifier_type_system = identifier_type_coding.get("system")
         identifier_type_code = identifier_type_coding.get("code")
 
-        logger.debug("%s %s", (value and system), (identifier_type_system and identifier_type_code))
         if not (bool(value and system) ^ bool(identifier_type_system and identifier_type_code)):
             raise Exception(
                 f"invalid identifier: {identifier} identifier.value and identifier.system "
