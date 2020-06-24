@@ -105,12 +105,10 @@ jobs:
           sleep 10
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker-compose -f test/docker-compose.yml up -d transformer
-          sleep 120
-          docker-compose -f test/docker-compose.yml up -d
           sleep 60
-          docker-compose -f test/docker-compose.yml logs api
-          sleep 15
-          python -m pytest -svv test/test_batch.py || docker-compose -f test/docker-compose.yml logs
+          docker-compose -f test/docker-compose.yml up -d
+          sleep 30
+          python -m pytest -svv test/test_batch.py
 
   publish:
     name: Publish docker images
