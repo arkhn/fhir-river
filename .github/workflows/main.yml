@@ -42,7 +42,7 @@ jobs:
 
       - name: Build images
         run: |
-          docker build -f api/Dockerfile -t arkhn/river-api:$GITHUB_SHA .
+          docker build -f api/Dockerfile -t arkhn/river-api-go:$GITHUB_SHA .
           docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA .
           docker build -f transformer/Dockerfile -t arkhn/river-transformer:$GITHUB_SHA .
           docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA .
@@ -50,7 +50,7 @@ jobs:
       - name: Push docker images for caching
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-          docker push arkhn/river-api:$GITHUB_SHA
+          docker push arkhn/river-api-go:$GITHUB_SHA
           docker push arkhn/river-extractor:$GITHUB_SHA
           docker push arkhn/river-transformer:$GITHUB_SHA
           docker push arkhn/river-loader:$GITHUB_SHA
@@ -76,7 +76,7 @@ jobs:
 
       - name: Pull docker images
         run: |
-          docker pull arkhn/river-api:$GITHUB_SHA
+          docker pull arkhn/river-api-go:$GITHUB_SHA
           docker pull arkhn/river-extractor:$GITHUB_SHA
           docker pull arkhn/river-transformer:$GITHUB_SHA
           docker pull arkhn/river-loader:$GITHUB_SHA
@@ -84,7 +84,7 @@ jobs:
 
       - name: Tag images
         run: |
-          docker tag arkhn/river-api:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api:latest
           docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
           docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
           docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
@@ -99,14 +99,15 @@ jobs:
           MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
           MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
           KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
+          MIMIC_DB_PASSWORD: ${{ secrets.MIMIC_DB_PASSWORD }}
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo mimic
           sleep 10
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker-compose -f test/docker-compose.yml up -d transformer
-          sleep 30
+          sleep 60
           docker-compose -f test/docker-compose.yml up -d
-          sleep 10
+          sleep 30
           python -m pytest -svv test/test_batch.py
 
   publish:
@@ -123,14 +124,14 @@ jobs:
 
       - name: Pull docker images
         run: |
-          docker pull arkhn/river-api:$GITHUB_SHA
+          docker pull arkhn/river-api-go:$GITHUB_SHA
           docker pull arkhn/river-extractor:$GITHUB_SHA
           docker pull arkhn/river-transformer:$GITHUB_SHA
           docker pull arkhn/river-loader:$GITHUB_SHA
 
       - name: Tag images
         run: |
-          docker tag arkhn/river-api:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api:latest
           docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
           docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
           docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
@@ -138,7 +139,7 @@ jobs:
       - name: Publish the latest tag to the docker hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-          docker push arkhn/river-api:latest
+          docker push arkhn/river-api-go:latest
           docker push arkhn/river-extractor:latest
           docker push arkhn/river-transformer:latest
           docker push arkhn/river-loader:latest

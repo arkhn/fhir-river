@@ -74,8 +74,7 @@ class EventConsumer:
 
         if msg.error():
             self.manage_error(msg)
-        else:
-            # Proper message
+        elif self.process_event:
             self.process_event(msg)
 
     def consume_events(self, event_count=None, poll_timeout=None):

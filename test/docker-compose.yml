@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: mimicuser
+      POSTGRES_PASSWORD: ${MIMIC_DB_PASSWORD}
       POSTGRES_DB: mimic
       POSTGRES_HOST: mimic
       POSTGRES_PORT: 5432
@@ -192,14 +192,14 @@ services:
 
   api:
     build:
-      dockerfile: api/Dockerfile
-      context: ../
+      context: ../apigo
     container_name: api
-    image: arkhn/river-api:latest
+    image: arkhn/river-api-go:latest
     restart: always
     depends_on:
       - kafka
     environment:
+      PORT: 3000
       KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       EXTRACTOR_URL: http://extractor:3001
       TRANSFORMER_URL: http://transformer:3002
