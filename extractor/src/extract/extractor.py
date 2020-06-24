@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List
 
-from sqlalchemy import create_engine, MetaData, Table, Column as AlchemyColumn
+from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
 
 from analyzer.src.analyze.sql_column import SqlColumn
@@ -160,6 +160,16 @@ class Extractor:
         logger.info(f"sql query: {query}")
 
         return self.session.execute(query)
+
+    def batch_size(self, analysis, resource_mapping) -> int:
+        pk_column = self.get_column(analysis.primary_key_column)
+        base_query = self.session.query(func.count(distinct(pk_column)))
+        query_w_joins = self.apply_joins(base_query, analysis.joins)
+        query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, None)
+        logger.info(f"sql query: {query_w_filters.statement}")
+        res = query_w_filters.session.execute(query_w_filters)
+
+        return res.scalar()
 
     def get_columns(self, columns: List[SqlColumn]) -> List[AlchemyColumn]:
         """ Get the sql alchemy columns corresponding to the SqlColumns (custom type)

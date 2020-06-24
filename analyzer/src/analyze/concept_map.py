@@ -8,6 +8,7 @@ from analyzer.src.errors import OperationOutcome
 logger = create_logger("concept_map")
 
 FHIR_API_URL = os.getenv("FHIR_API_URL")
+FHIR_API_TOKEN = os.getenv("FHIR_API_TOKEN")
 
 T = TypeVar("T", bound="ConceptMap")
 
@@ -31,7 +32,10 @@ class ConceptMap:
     @staticmethod
     def fetch(concept_map_id: str) -> T:
         try:
-            response = requests.get(f"{FHIR_API_URL}/ConceptMap/{concept_map_id}")
+            response = requests.get(
+                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}",
+                headers={"Authorization": f"Bearer {FHIR_API_TOKEN}"},
+            )
         except requests.exceptions.ConnectionError as e:
             raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
 
