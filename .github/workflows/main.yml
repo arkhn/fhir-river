@@ -131,7 +131,7 @@ jobs:
 
       - name: Tag images
         run: |
-          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api-go:latest
           docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
           docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
           docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
