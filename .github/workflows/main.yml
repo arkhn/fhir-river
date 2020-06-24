@@ -99,14 +99,16 @@ jobs:
           MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
           MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
           KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
+          MIMIC_DB_PASSWORD: ${{ secrets.MIMIC_DB_PASSWORD }}
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo mimic
           sleep 10
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker-compose -f test/docker-compose.yml up -d transformer
-          sleep 30
+          sleep 60
           docker-compose -f test/docker-compose.yml up -d
-          sleep 10
+          sleep 30
+          docker-compose -f test/docker-compose.yml logs api
           python -m pytest -svv test/test_batch.py
 
   publish:
