@@ -40,7 +40,7 @@ func NewTopicsFromSlice(in []string) (Topics, error) {
 }
 
 func (t Topics) Slice() []string {
-	topics := make([]string, len(t))
+	topics := make([]string, 0, len(t))
 	for topic := range t {
 		topics = append(topics, topic)
 	}
