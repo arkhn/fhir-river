@@ -137,7 +137,7 @@ class Extractor:
                     SqlColumn(
                         filter["sqlColumn"]["table"],
                         filter["sqlColumn"]["column"],
-                        filter["sqlColumn"]["owner"],
+                        resource_mapping["source"]["credential"]["owner"],
                     )
                 )
                 rel_method = SQL_RELATIONS_TO_METHOD[filter["relation"]]

@@ -23,7 +23,6 @@ fragment entireFilter on Filter {
   id
   sqlColumn {
     id
-    owner
     table
     column
   }
@@ -32,12 +31,10 @@ fragment entireFilter on Filter {
 }
 
 fragment entireColumn on Column {
-    owner
     table
     column
     joins {
         tables {
-            owner
             table
             column
         }
@@ -68,8 +65,9 @@ fragment cred on Credential {
     host
     port
     database
+    owner
     login
-    password
+    decryptedPassword: password
 }
 """
 
@@ -81,7 +79,6 @@ resource_from_id_query = """
 query resource($resourceId: ID!) {
     resource(resourceId: $resourceId) {
         id
-        primaryKeyOwner
         primaryKeyTable
         primaryKeyColumn
         definitionId

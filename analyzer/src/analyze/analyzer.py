@@ -67,9 +67,6 @@ class Analyzer:
         if not self._cur_analysis.columns:
             self._cur_analysis.is_static = True
         else:
-            # Get primary key table
-            self.get_primary_key(resource_mapping)
-
             # Add primary key to columns to fetch if needed
             self._cur_analysis.add_column(self._cur_analysis.primary_key_column)
 
@@ -86,6 +83,7 @@ class Analyzer:
         return self._cur_analysis
 
     def analyze_mapping(self, resource_mapping):
+        self._cur_analysis.primary_key_column = self.get_primary_key(resource_mapping)
         self._cur_analysis.source_id = resource_mapping["source"]["id"]
         self._cur_analysis.resource_id = resource_mapping["id"]
         self._cur_analysis.definition = resource_mapping["definition"]
@@ -120,7 +118,11 @@ class Analyzer:
         for input in attribute_mapping["inputs"]:
             if input["sqlValue"]:
                 sqlValue = input["sqlValue"]
-                cur_col = SqlColumn(sqlValue["table"], sqlValue["column"], sqlValue["owner"])
+                cur_col = SqlColumn(
+                    sqlValue["table"],
+                    sqlValue["column"],
+                    self._cur_analysis.primary_key_column.owner,
+                )
 
                 if input["script"]:
                     cur_col.cleaning_script = CleaningScript(input["script"])
@@ -130,8 +132,16 @@ class Analyzer:
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
-                    left = SqlColumn(tables[0]["table"], tables[0]["column"], tables[0]["owner"])
-                    right = SqlColumn(tables[1]["table"], tables[1]["column"], tables[1]["owner"])
+                    left = SqlColumn(
+                        tables[0]["table"],
+                        tables[0]["column"],
+                        self._cur_analysis.primary_key_column.owner,
+                    )
+                    right = SqlColumn(
+                        tables[1]["table"],
+                        tables[1]["column"],
+                        self._cur_analysis.primary_key_column.owner,
+                    )
                     self._cur_analysis.add_join(SqlJoin(left, right))
 
                 self._cur_analysis.add_column(cur_col)
@@ -154,10 +164,8 @@ class Analyzer:
                 f"resource {resource_mapping['definitionId']}."
             )
 
-        self._cur_analysis.primary_key_column = SqlColumn(
+        return SqlColumn(
             resource_mapping["primaryKeyTable"],
             resource_mapping["primaryKeyColumn"],
-            resource_mapping["primaryKeyOwner"],
+            resource_mapping["source"]["credential"]["owner"],
         )
-
-        return self._cur_analysis.primary_key_column
