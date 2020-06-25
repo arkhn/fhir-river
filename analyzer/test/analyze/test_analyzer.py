@@ -54,7 +54,6 @@ def test_get_primary_key(mock_login):
 def test_analyze_mapping(mock_login, patient_mapping):
     analyzer = Analyzer(PyrogClient())
 
-    print(patient_mapping)
     analysis = analyzer.analyze_mapping(patient_mapping)
 
     assert analysis.attributes == [
