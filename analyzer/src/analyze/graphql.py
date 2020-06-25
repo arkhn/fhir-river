@@ -67,7 +67,7 @@ fragment cred on Credential {
     database
     owner
     login
-    decryptedPassword: password
+    password: decryptedPassword
 }
 """
 
