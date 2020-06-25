@@ -42,7 +42,7 @@ jobs:
 
       - name: Build images
         run: |
-          docker build -f api/Dockerfile -t arkhn/river-api-go:$GITHUB_SHA .
+          docker build -f apigo/Dockerfile -t arkhn/river-api-go:$GITHUB_SHA apigo
           docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA .
           docker build -f transformer/Dockerfile -t arkhn/river-transformer:$GITHUB_SHA .
           docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA .

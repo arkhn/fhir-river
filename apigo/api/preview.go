@@ -43,7 +43,7 @@ func transform(resourceID string, rows []interface{}) (res []byte, err error) {
 		"dataframe":   rows,
 	})
 
-	url := fmt.Sprintf("http://%s/transform", transformerURL)
+	url := fmt.Sprintf("%s/transform", transformerURL)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jBody))
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func transform(resourceID string, rows []interface{}) (res []byte, err error) {
 // using the PreviewRequest as JSON body. It returns the extrcted rows.
 func extract(req *PreviewRequest) (rows []interface{}, err error) {
 	jBody, _ := json.Marshal(req)
-	url := fmt.Sprintf("http://%s/extract", extractorURL)
+	url := fmt.Sprintf("%s/extract", extractorURL)
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jBody))
 	if err != nil {
 		return nil, err
