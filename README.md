@@ -1,10 +1,10 @@
 # FHIR River
 
-POC for Live Streams ETL using Kafka and Kafka Connect
+Live Streams ETL using Kafka and Kafka Connect
 
 ## Architecture
 
-This repo is a POC for Live Streams ETL.
+This repo is a the repositery for Live Streams ETL.
 
 A Kafka broker is used as a bus of event.
 The different sources are connected to Kafka with Kafka Connect, where config files are pushed to Kafka Connect with the API.
