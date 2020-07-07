@@ -177,14 +177,17 @@ class Extractor:
         """
         return [self.get_column(col, index) for index, col in enumerate(columns)]
 
-    def get_column(self, column: SqlColumn, index: int) -> AlchemyColumn:
+    def get_column(self, column: SqlColumn, index: int = None) -> AlchemyColumn:
         """ Get the sql alchemy column corresponding to the SqlColumn (custom type)
         from the analysis.
         """
         table = self.get_table(column)
         # Note that we label the column manually to avoid collisions and
         # sqlAlchemy automatic labelling
-        return table.c[column.column].label(column.dataframe_column_name(index))
+        col = table.c[column.column]
+        if index is not None:
+            col.label(column.dataframe_column_name(index))
+        return col
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
