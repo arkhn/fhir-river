@@ -38,8 +38,16 @@ class SqlColumn:
         else:
             return f"{self.table}"
 
-    def dataframe_column_name(self):
+    def dataframe_column_name(self, index):
         """ sqlalchemy builds column names as {table}_{column}.
         This method helps retrieving the needed columns from the dataframe.
         """
-        return f"{self.table}_{self.column}"
+        name = f"{self.table}_{self.column}"
+        if len(name) <= 30:
+            return name
+
+        # Otherwise, we may have problems with sql not accepting aliases of length > 30
+        # so we truncate and replace the end by the hex encoded index
+        truncated = name[:-5]
+        hex_index = format(index, "5x")
+        return f"{truncated}{hex_index}"
