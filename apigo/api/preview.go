@@ -31,8 +31,8 @@ func init() {
 
 // PreviewRequest is the body of the POST /preview request.
 type PreviewRequest struct {
-	ResourceID       string        `json:"resource_id"`
-	PrimaryKeyValues []json.Number `json:"primary_key_values"`
+	ResourceID       string            `json:"resource_id"`
+	PrimaryKeyValues []json.RawMessage `json:"primary_key_values"`
 }
 
 // transform sends an HTTP request to the transformer service

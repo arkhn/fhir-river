@@ -63,4 +63,21 @@ func TestPreview(t *testing.T) {
 
 		assert.Equal(t, `{}`, rr.Body.String(), "bad response body")
 	})
+
+	t.Run("accepts arbitrary primary keys", func(t *testing.T) {
+		// use a list of integers in primary_key_values
+		b := bytes.NewReader([]byte(`{"resource_id": "1", "primary_key_values": ["E98"]}`))
+		req, err := http.NewRequest("POST", "/preview", b)
+		assert.NoError(t, err)
+
+		rr := httptest.NewRecorder()
+		router := httprouter.New()
+		router.POST("/preview", Preview)
+
+		router.ServeHTTP(rr, req)
+
+		assert.Equal(t, http.StatusOK, rr.Code, "bad response status")
+
+		assert.Equal(t, `{}`, rr.Body.String(), "bad response body")
+	})
 }
