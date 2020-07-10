@@ -22,11 +22,11 @@ services:
     restart: always
     command: --replSet rs0
     environment:
-      MONGO_INITDB_DATABASE: fhirstore
-      MONGO_INITDB_ROOT_USERNAME: arkhn
-      MONGO_INITDB_ROOT_PASSWORD: SuperSecurePassword2019
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
     ports:
-      - 27017:27017
+      - ${MONGO_DB_PORT}:${MONGO_DB_PORT}
     volumes:
       - test-fhirstore-db:/data/db
       - test-fhirstore-config-db:/data/configdb
@@ -35,7 +35,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
     container_name: elasticsearch
     environment:
-      ELASTIC_PASSWORD: SuperSecurePassword2019
+      ELASTIC_PASSWORD: ${ES_PASSWORD}
     ports:
       - 9200:9200
     volumes:
@@ -53,15 +53,6 @@ services:
       - mongo
       - elasticsearch
 
-  # sftp:
-  #   image: atmoz/sftp
-  #   container_name: sftp
-  #   volumes:
-  #     - ./sftp/host/upload/:/home/arkhn/upload/
-  #   ports:
-  #     - "2222:22"
-  #   command: arkhn:arkhnpwd:1001
-
   zookeeper:
     image: "zookeeper:3.4.10"
     container_name: zookeeper
@@ -72,6 +63,7 @@ services:
       - "2181"
 
   kafka:
+    hostname: kafka
     image: "wurstmeister/kafka:0.10.2.1"
     restart: always
     container_name: kafka
@@ -89,40 +81,6 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-  # kafka_connect:
-  #   image: confluentinc/cp-kafka-connect:latest
-  #   restart: always
-  #   container_name: kafka_connect
-  #   ports:
-  #     - "8083:8083"
-  #   depends_on:
-  #     - kafka
-  #   volumes:
-  #     - ../kafka_connect_connectors/plugins/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
-  #   environment:
-  #     CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
-  #     CONNECT_PLUGIN_PATH: /usr/share/java/
-  #     CONNECT_BOOTSTRAP_SERVERS: kafka:9093
-  #     CONNECT_GROUP_ID: source-kafka-connect
-  #     CONNECT_CONFIG_STORAGE_TOPIC: default.config
-  #     CONNECT_STATUS_STORAGE_TOPIC: default.status
-  #     CONNECT_OFFSET_STORAGE_TOPIC: default.offset
-  #     CONNECT_STATUS_STORAGE_PARTITIONS: 1
-  #     CONNECT_OFFSET_STORAGE_PARTITIONS: 1
-  #     CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-  #     CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-  #     CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-  #     CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_REST_PORT: 8083
-  #     CONNECT_REST_ADVERTISED_HOST_NAME: docker
-  #     CONNECT_SCHEMAS_ENABLE: "false"
-  #     CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-  #     CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-  #     CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
 
   transformer:
     build:
@@ -206,8 +164,74 @@ services:
     ports:
       - "3001:3000"
 
+  pyrog-server:
+    image: arkhn/pyrog-server:latest
+    container_name: pyrog-server
+    expose:
+      - 1000
+    environment:
+      APP_SECRET: ${PYROG_APP_SECRET}
+      SUPERUSER_PASSWORD: ${PYROG_PASSWORD}
+      FHIR_API_URL: http://fhir-api:2000
+      JWT_PRIVATE_KEY: ${AUTH_SIGNING_PRIVATE_KEY}
+      JWT_TOKEN: ${FHIR_API_TOKEN}
+      PORT: 1000
+      POSTGRES_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=${POSTGRES_SCHEMA}
+      REDIS_URL: redis://redis:${REDIS_PORT}
+    volumes:
+      - ./volumes/mapping.json:/app/mapping.json
+      - ./volumes/credentials.json:/app/credentials.json
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    command: -p ${POSTGRES_PORT}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - test-postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:5.0.7-alpine
+    container_name: redis
+    expose:
+      - ${REDIS_PORT}
+    volumes:
+      - redis-data:/data
+
+  fhir-api:
+    image: arkhn/fhir-api:latest
+    container_name: fhir-api
+    expose:
+      - 2000
+    environment:
+      DB_NAME: ${MONGO_DB_NAME}
+      DB_HOST: mongo
+      DB_PORT: ${MONGO_DB_PORT}
+      DB_USER: ${MONGO_DB_USERNAME}
+      DB_PASSWORD: ${MONGO_DB_PASSWORD}
+      ES_HOST: http://${ES_HOST}:${ES_PORT}
+      ES_USER: ${ES_USER}
+      ES_PASSWORD: ${ES_PASSWORD}
+      JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
+    depends_on:
+      - mongo
+      - elasticsearch
+    volumes:
+      - ./volumes/conceptMaps.json:/app/conceptMaps.json
+
 volumes:
   test-mimic-db:
   test-fhirstore-db:
   test-fhirstore-config-db:
   test-elastic-db:
+  test-postgres-data:
+  kafka-config:
+  redis-data:

@@ -91,23 +91,38 @@ jobs:
 
       - name: Integration tests with pytest
         env:
-          FHIR_API_URL: ${{ secrets.FHIR_API_URL }}
+          PYROG_API_URL: http://pyrog:1000
+          FHIR_API_URL: http://fhir-api:2000
           FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
-          PYROG_API_URL: ${{ secrets.PYROG_API_URL }}
-          PYROG_LOGIN: ${{ secrets.PYROG_LOGIN }}
-          PYROG_PASSWORD: ${{ secrets.PYROG_PASSWORD }}
-          MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
-          MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
-          KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
-          MIMIC_DB_PASSWORD: ${{ secrets.MIMIC_DB_PASSWORD }}
+          PYROG_LOGIN: admin@arkhn.com
+          PYROG_PASSWORD: password
+          MONGO_DB_USERNAME: arkhn
+          MONGO_DB_NAME: fhirstore
+          MONGO_DB_PORT: 27017
+          MONGO_DB_PASSWORD: SuperSecurePassword2019
+          ES_HOST: elasticsearch
+          ES_PORT: 9200
+          ES_USER: elastic
+          ES_PASSWORD: SuperSecurePassword2019
+          MIMIC_DB_PASSWORD: mimicpass
+          MIMIC_PRACTITIONER_RESOURCE_ID: ckbjjts9k008758pwuo4uupux
+          MIMIC_PATIENT_RESOURCE_ID: ck8oo3on226974kp4ns32n7xs
+          KAFKA_BOOTSTRAP_SERVERS: "localhost:9092"
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic
-          sleep 10
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
+          docker-compose -f test/docker-compose.yml up -d kafka zookeeper
+          docker-compose -f test/docker-compose.yml up -d fhir-api
+          sleep 5
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker-compose -f test/docker-compose.yml up -d transformer
-          sleep 60
-          docker-compose -f test/docker-compose.yml up -d
+          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json /app/conceptMaps.json
+          docker restart fhir-api
+          docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
+          docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
+          docker exec pyrog-server yarn seed:mapping /app/mapping.json
+          docker exec pyrog-server yarn seed:credentials /app/credentials.json
+          docker-compose -f test/docker-compose.yml up -d api extractor transformer loader
+          sleep 5
           python -m pytest -svv test/test_batch.py
 
   publish:
