@@ -75,6 +75,10 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Pull docker images
+        env:
+          FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
+          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
+          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
         run: |
           docker pull arkhn/river-api-go:$GITHUB_SHA
           docker pull arkhn/river-extractor:$GITHUB_SHA
@@ -93,8 +97,10 @@ jobs:
         env:
           FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
           AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
-          MIMIC_PRACTITIONER_RESOURCE_ID: ckbjjts9k008758pwuo4uupux
-          MIMIC_PATIENT_RESOURCE_ID: ck8oo3on226974kp4ns32n7xs
+          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
+          PYROG_API_URL: http://locahost:1000
+          PYROG_LOGIN: admin@arkhn.com
+          PYROG_PASSWORD: password
           KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "localhost:9092"
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
@@ -102,7 +108,7 @@ jobs:
           docker-compose -f test/docker-compose.yml up -d fhir-api
           sleep 5
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json /app/conceptMaps.json
+          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
           docker restart fhir-api
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30

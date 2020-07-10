@@ -147,8 +147,8 @@ services:
   pyrog-server:
     image: arkhn/pyrog-server:latest
     container_name: pyrog-server
-    expose:
-      - 1000
+    ports:
+      - 1000:1000
     env_file:
       - ./.env.test
     environment:
@@ -186,8 +186,6 @@ services:
     container_name: fhir-api
     expose:
       - 2000
-    ports:
-      - 2000:2000
     env_file:
       - ./.env.test
     environment:
@@ -197,7 +195,7 @@ services:
       - mongo
       - elasticsearch
     volumes:
-      - ./volumes/conceptMaps.json:/app/conceptMaps.json
+      - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
 volumes:
   test-mimic-db:
