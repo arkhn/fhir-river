@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: ${MIMIC_DB_PASSWORD}
+      POSTGRES_PASSWORD: mimicpass
       POSTGRES_DB: mimic
       POSTGRES_HOST: mimic
       POSTGRES_PORT: 5432
@@ -21,12 +21,10 @@ services:
     container_name: mongo
     restart: always
     command: --replSet rs0
-    environment:
-      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME}
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+    env_file:
+      - ./.env.test
     ports:
-      - ${MONGO_DB_PORT}:${MONGO_DB_PORT}
+      - 27017:27017
     volumes:
       - test-fhirstore-db:/data/db
       - test-fhirstore-config-db:/data/configdb
@@ -34,8 +32,8 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
     container_name: elasticsearch
-    environment:
-      ELASTIC_PASSWORD: ${ES_PASSWORD}
+    env_file:
+      - ./.env.test
     ports:
       - 9200:9200
     volumes:
@@ -91,18 +89,10 @@ services:
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      FHIRSTORE_HOST: mongo
-      FHIRSTORE_PORT: 27017
-      FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORE_USER: arkhn
-      FHIRSTORE_PASSWORD: SuperSecurePassword2019
-      FHIR_API_URL: ${FHIR_API_URL}
       FHIR_API_TOKEN: ${FHIR_API_TOKEN}
-      PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_LOGIN: ${PYROG_LOGIN}
-      PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
       - 3002
 
@@ -116,18 +106,10 @@ services:
     depends_on:
       - kafka
       - mongo
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      FHIRSTORE_HOST: mongo
-      FHIRSTORE_PORT: 27017
-      FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORE_USER: arkhn
-      FHIRSTORE_PASSWORD: SuperSecurePassword2019
-      FHIR_API_URL: ${FHIR_API_URL}
       FHIR_API_TOKEN: ${FHIR_API_TOKEN}
-      PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_LOGIN: ${PYROG_LOGIN}
-      PYROG_PASSWORD: ${PYROG_PASSWORD}
 
   extractor:
     build:
@@ -138,13 +120,10 @@ services:
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      FHIR_API_URL: ${FHIR_API_URL}
       FHIR_API_TOKEN: ${FHIR_API_TOKEN}
-      PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_LOGIN: ${PYROG_LOGIN}
-      PYROG_PASSWORD: ${PYROG_PASSWORD}
     ports:
       - 3001
 
@@ -156,9 +135,10 @@ services:
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - ./.env.test
     environment:
       PORT: 3000
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
       EXTRACTOR_URL: http://extractor:3001
       TRANSFORMER_URL: http://transformer:3002
     ports:
@@ -169,15 +149,12 @@ services:
     container_name: pyrog-server
     expose:
       - 1000
+    env_file:
+      - ./.env.test
     environment:
-      APP_SECRET: ${PYROG_APP_SECRET}
-      SUPERUSER_PASSWORD: ${PYROG_PASSWORD}
-      FHIR_API_URL: http://fhir-api:2000
       JWT_PRIVATE_KEY: ${AUTH_SIGNING_PRIVATE_KEY}
       JWT_TOKEN: ${FHIR_API_TOKEN}
       PORT: 1000
-      POSTGRES_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}?schema=${POSTGRES_SCHEMA}
-      REDIS_URL: redis://redis:${REDIS_PORT}
     volumes:
       - ./volumes/mapping.json:/app/mapping.json
       - ./volumes/credentials.json:/app/credentials.json
@@ -188,13 +165,11 @@ services:
   postgres:
     image: postgres
     container_name: postgres
-    command: -p ${POSTGRES_PORT}
+    command: -p 55432
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - 55432:55432
+    env_file:
+      - ./.env.test
     volumes:
       - test-postgres-data:/var/lib/postgresql/data
 
@@ -202,7 +177,7 @@ services:
     image: redis:5.0.7-alpine
     container_name: redis
     expose:
-      - ${REDIS_PORT}
+      - 6379
     volumes:
       - redis-data:/data
 
@@ -211,15 +186,12 @@ services:
     container_name: fhir-api
     expose:
       - 2000
+    ports:
+      - 2000:2000
+    env_file:
+      - ./.env.test
     environment:
-      DB_NAME: ${MONGO_DB_NAME}
-      DB_HOST: mongo
-      DB_PORT: ${MONGO_DB_PORT}
-      DB_USER: ${MONGO_DB_USERNAME}
-      DB_PASSWORD: ${MONGO_DB_PASSWORD}
-      ES_HOST: http://${ES_HOST}:${ES_PORT}
-      ES_USER: ${ES_USER}
-      ES_PASSWORD: ${ES_PASSWORD}
+      ES_HOST: http://elasticsearch:9200
       JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
     depends_on:
       - mongo

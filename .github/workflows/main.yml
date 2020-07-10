@@ -91,23 +91,11 @@ jobs:
 
       - name: Integration tests with pytest
         env:
-          PYROG_API_URL: http://pyrog:1000
-          FHIR_API_URL: http://fhir-api:2000
           FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
-          PYROG_LOGIN: admin@arkhn.com
-          PYROG_PASSWORD: password
-          MONGO_DB_USERNAME: arkhn
-          MONGO_DB_NAME: fhirstore
-          MONGO_DB_PORT: 27017
-          MONGO_DB_PASSWORD: SuperSecurePassword2019
-          ES_HOST: elasticsearch
-          ES_PORT: 9200
-          ES_USER: elastic
-          ES_PASSWORD: SuperSecurePassword2019
-          MIMIC_DB_PASSWORD: mimicpass
+          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
           MIMIC_PRACTITIONER_RESOURCE_ID: ckbjjts9k008758pwuo4uupux
           MIMIC_PATIENT_RESOURCE_ID: ck8oo3on226974kp4ns32n7xs
-          KAFKA_BOOTSTRAP_SERVERS: "localhost:9092"
+          KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "localhost:9092"
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
           docker-compose -f test/docker-compose.yml up -d kafka zookeeper

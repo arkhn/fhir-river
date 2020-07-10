@@ -27,7 +27,7 @@ def test_batch_single_row():
 
     # declare kafka consumer of "load" events
     consumer = EventConsumer(
-        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS_EXTERNAL"),
         topics=LOAD_TOPIC,
         group_id="test_batch_single_row",
         manage_error=handle_kafka_error,
@@ -39,7 +39,7 @@ def test_batch_single_row():
         consumer.run_consumer(event_count=msg_value["size"], poll_timeout=30)
 
     batch_size_consumer = EventConsumer(
-        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS_EXTERNAL"),
         topics=BATCH_SIZE_TOPIC,
         group_id="test_batch_size",
         manage_error=handle_kafka_error,
