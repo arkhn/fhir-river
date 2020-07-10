@@ -84,7 +84,7 @@ jobs:
           docker pull arkhn/river-extractor:$GITHUB_SHA
           docker pull arkhn/river-transformer:$GITHUB_SHA
           docker pull arkhn/river-loader:$GITHUB_SHA
-          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka
+          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka fhir-api postgres redis pyrog-server
 
       - name: Tag images
         run: |
