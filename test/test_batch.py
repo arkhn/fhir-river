@@ -9,8 +9,6 @@ from analyzer.src.analyze.graphql import PyrogClient
 BATCH_SIZE_TOPIC = "batch_size"
 LOAD_TOPIC = "load"
 
-PYROG_API_URL = os.getenv("PYROG_API_URL")
-
 
 def handle_kafka_error(err):
     raise err
@@ -63,7 +61,7 @@ def test_batch_single_row():
         try:
             # send a batch request
             response = requests.post(
-                "http://localhost:3001/batch", json={"resource_ids": [resource_id]},
+                "http://0.0.0.0:3001/batch", json={"resource_ids": [resource_id]},
             )
         except requests.exceptions.ConnectionError:
             raise Exception("Could not connect to the api service")
@@ -72,29 +70,6 @@ def test_batch_single_row():
 
         print("Waiting for a batch_size event...")
         batch_size_consumer.run_consumer(event_count=1, poll_timeout=30)
-
-    # # RUN A PATIENT BATCH #
-    # try:
-    #     # send a batch request
-    #     response = requests.post(
-    #         "http://localhost:3001/batch", json={"resource_ids": [MIMIC_PATIENT_RESOURCE_ID]},
-    #     )
-    # except requests.exceptions.ConnectionError:
-    #     raise Exception("Could not connect to the api service")
-
-    # assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
-
-    # # RUN A PRACTITIONER BATCH BATCH #
-    # response = requests.post(
-    #     "http://localhost:3001/batch", json={"resource_ids": [MIMIC_PRACTITIONER_RESOURCE_ID]},
-    # )
-    # assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
-
-    # print("Waiting for a batch_size event...")
-    # batch_size_consumer.run_consumer(event_count=1, poll_timeout=30)
-
-    # print("Waiting for a batch_size event...")
-    # batch_size_consumer.run_consumer(event_count=1, poll_timeout=30)
 
 
 # check in elastic that references have been set

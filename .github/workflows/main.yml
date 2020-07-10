@@ -3,36 +3,36 @@ name: fhir-river
 on: [push]
 
 jobs:
-  unit-tests:
-    name: Lint and test
-    runs-on: ubuntu-18.04
+  # unit-tests:
+  #   name: Lint and test
+  #   runs-on: ubuntu-18.04
 
-    steps:
-      - uses: actions/checkout@v1
+  #   steps:
+  #     - uses: actions/checkout@v1
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7.7
+  #     - name: Set up Python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.7.7
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install postgresql libpq-dev
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
+  #     - name: Install dependencies
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install postgresql libpq-dev
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements-dev.txt
 
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 analyzer extractor transformer loader api --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 analyzer extractor transformer loader api --count --max-complexity=10 --max-line-length=100 --statistics
+  #     - name: Lint with flake8
+  #       run: |
+  #         # stop the build if there are Python syntax errors or undefined names
+  #         flake8 analyzer extractor transformer loader api --count --select=E9,F63,F7,F82 --show-source --statistics
+  #         flake8 analyzer extractor transformer loader api --count --max-complexity=10 --max-line-length=100 --statistics
 
-      - name: Test with pytest
-        env:
-          PYROG_API_URL: http://test.com
-        run: |
-          python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
+  #     - name: Test with pytest
+  #       env:
+  #         PYROG_API_URL: http://test.com
+  #       run: |
+  #         python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
 
   docker-build:
     name: Build docker images
@@ -88,7 +88,7 @@ jobs:
 
       - name: Tag images
         run: |
-          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api-go:latest
           docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
           docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
           docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
@@ -98,20 +98,20 @@ jobs:
           FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
           AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
           AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
-          PYROG_API_URL: http://locahost:1000
+          PYROG_API_URL: http://0.0.0.0:1000
           PYROG_LOGIN: admin@arkhn.com
           PYROG_PASSWORD: password
-          KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "localhost:9092"
+          KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
           docker-compose -f test/docker-compose.yml up -d kafka zookeeper
           docker-compose -f test/docker-compose.yml up -d fhir-api
-          sleep 5
+          sleep 60
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
           docker restart fhir-api
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
-          sleep 30
+          sleep 15
           docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
           docker exec pyrog-server yarn seed:mapping /app/mapping.json
           docker exec pyrog-server yarn seed:credentials /app/credentials.json

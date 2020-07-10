@@ -130,7 +130,7 @@ class PyrogClient:
         and returns a json parsed response.
         """
         if not PYROG_API_URL:
-            raise OperationOutcome("PYROG_URL is missing from environment")
+            raise OperationOutcome("PYROG_API_URL is missing from environment")
 
         try:
             response = requests.post(
