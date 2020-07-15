@@ -11,9 +11,9 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: 3.7.7
 
       - name: Install dependencies
         run: |
@@ -63,9 +63,9 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: 3.7.7
 
       - name: Install dependencies
         run: |
@@ -75,39 +75,48 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Pull docker images
+        env:
+          FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
+          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
+          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
         run: |
           docker pull arkhn/river-api-go:$GITHUB_SHA
           docker pull arkhn/river-extractor:$GITHUB_SHA
           docker pull arkhn/river-transformer:$GITHUB_SHA
           docker pull arkhn/river-loader:$GITHUB_SHA
-          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka
+          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka fhir-api postgres redis pyrog-server
 
       - name: Tag images
         run: |
-          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api:latest
+          docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api-go:latest
           docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
           docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
           docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
 
       - name: Integration tests with pytest
         env:
-          FHIR_API_URL: ${{ secrets.FHIR_API_URL }}
           FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
-          PYROG_API_URL: ${{ secrets.PYROG_API_URL }}
-          PYROG_LOGIN: ${{ secrets.PYROG_LOGIN }}
-          PYROG_PASSWORD: ${{ secrets.PYROG_PASSWORD }}
-          MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
-          MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
-          KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
-          MIMIC_DB_PASSWORD: ${{ secrets.MIMIC_DB_PASSWORD }}
+          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
+          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
+          PYROG_API_URL: http://0.0.0.0:1000
+          PYROG_LOGIN: admin@arkhn.com
+          PYROG_PASSWORD: password
+          KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic
-          sleep 10
-          MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker-compose -f test/docker-compose.yml up -d transformer
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
+          docker-compose -f test/docker-compose.yml up -d kafka zookeeper
+          docker-compose -f test/docker-compose.yml up -d fhir-api
           sleep 60
-          docker-compose -f test/docker-compose.yml up -d
-          sleep 30
+          MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
+          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
+          docker restart fhir-api
+          docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
+          sleep 15
+          docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
+          docker exec pyrog-server yarn seed:mapping /app/mapping.json
+          docker exec pyrog-server yarn seed:credentials /app/credentials.json
+          docker-compose -f test/docker-compose.yml up -d api extractor transformer loader
+          sleep 5
           python -m pytest -svv test/test_batch.py
 
   publish:
