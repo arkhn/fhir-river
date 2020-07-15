@@ -116,7 +116,7 @@ jobs:
           docker exec pyrog-server yarn seed:mapping /app/mapping.json
           docker exec pyrog-server yarn seed:credentials /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d api extractor transformer loader
-          sleep 5
+          sleep 15
           python -m pytest -svv test/test_batch.py
 
   publish:
