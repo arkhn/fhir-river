@@ -117,6 +117,8 @@ jobs:
           docker exec pyrog-server yarn seed:credentials /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d api extractor transformer loader
           sleep 30
+          docker logs fhir-api
+          docker logs pyrog-server
           python -m pytest -svv test/test_batch.py
 
   publish:
