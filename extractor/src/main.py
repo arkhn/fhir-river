@@ -7,8 +7,10 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify
 
 from opentelemetry import metrics
-from opentelemetry.ext.otcollector.metrics_exporter import CollectorMetricsExporter
-from opentelemetry.sdk.metrics import Counter, MeterProvider
+
+from opentelemetry.ext.opencensusexporter.metrics_exporter import OpenCensusMetricsExporter
+from opentelemetry.sdk.metrics import Counter, ValueRecorder, MeterProvider
+# from opentelemetry.sdk.metrics.export import ConsoleMetricsExporter
 from opentelemetry.sdk.metrics.export.controller import PushController
 
 from analyzer.src.analyze import Analyzer
@@ -35,18 +37,25 @@ extractor = Extractor()
 # Monitoring
 metrics.set_meter_provider(MeterProvider())
 meter = metrics.get_meter(__name__, True)
-exporter = CollectorMetricsExporter(endpoint="otel-collector:55678")
 
 counter = meter.create_metric(
-    name="fhir_obj_extracted",
-    description="Number of fhir objects",
+    name="requests2",
+    description="number of requests",
     unit="1",
     value_type=int,
     metric_type=Counter,
-    label_keys=("service",),
+    label_keys=("environment",),
+)
+timer = meter.create_metric(
+    name="time",
+    description="time of requests",
+    unit="1",
+    value_type=int,
+    metric_type=ValueRecorder,
+    label_keys=("environment",),
 )
 
-labels = {"service": "extractor"}
+labels = {"environment": "staging"}
 
 
 def create_app():
@@ -130,6 +139,12 @@ def extract_resource(resource_id, primary_key_values):
     return resource_mapping, analysis, df
 
 
+@app.route("/test-timer", methods=["GET"])
+def test_timer():
+    timer.record(12345, labels)
+    return jsonify({"success": 1})
+
+
 @app.route("/extract", methods=["POST"])
 def extract():
     body = request.get_json()
@@ -184,4 +199,13 @@ def run_consumer():
 @postfork
 @thread
 def test_prom():
+    # exporter = ConsoleMetricsExporter()
+    exporter = OpenCensusMetricsExporter(service_name="extractor", endpoint="otel-collector:55678")
+
     PushController(meter, exporter, 5)
+    # metrics.get_meter_provider().start_pipeline(meter, exporter, 5)
+
+    timer.record(12345, labels)
+    counter.add(25, labels)
+
+    # logger.debug("prom thread")
