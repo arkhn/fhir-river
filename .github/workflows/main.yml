@@ -119,6 +119,9 @@ jobs:
           sleep 30
           docker logs fhir-api
           docker logs pyrog-server
+          docker logs extractor
+          docker logs transformer
+          docker logs loader
           python -m pytest -svv test/test_batch.py
 
   publish:
