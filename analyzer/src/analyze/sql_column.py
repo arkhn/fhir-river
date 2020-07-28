@@ -61,4 +61,5 @@ class SqlColumn:
 
         truncated = name[:-5]
         hex_index = format(index, "5x")
-        return f"{truncated}{hex_index}"
+        self.truncated_name = f"{truncated}{hex_index}"
+        return self.truncated_name

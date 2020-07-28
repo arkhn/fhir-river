@@ -184,10 +184,7 @@ class Extractor:
         table = self.get_table(column)
         # Note that we label the column manually to avoid collisions and
         # sqlAlchemy automatic labelling
-        col = table.c[column.column]
-        if index is not None:
-            col.label(column.dataframe_column_name(index))
-        return col
+        return table.c[column.column].label(column.dataframe_column_name(index))
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
