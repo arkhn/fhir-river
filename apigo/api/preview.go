@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -49,8 +50,15 @@ func transform(resourceID string, rows []interface{}) (res []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != 200 {
+		return nil, errors.New(string(body))
+	}
 
-	return ioutil.ReadAll(resp.Body)
+	return body, nil
 }
 
 // transform sends an HTTP request to the transformer service
@@ -61,6 +69,14 @@ func extract(req *PreviewRequest) (rows []interface{}, err error) {
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jBody))
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New(string(body))
 	}
 
 	body := struct {
