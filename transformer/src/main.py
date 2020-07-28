@@ -2,10 +2,13 @@
 
 import json
 import os
-from uwsgidecorators import thread, postfork
+
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from jsonschema.exceptions import ValidationError
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from uwsgidecorators import thread, postfork
+
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
@@ -104,6 +107,14 @@ def transform():
     except Exception as err:
         logger.error(err)
         raise OperationOutcome(err)
+
+
+@app.route("/metrics")
+def metrics():
+    """
+    Flask endpoint to gather the metrics, will be called by Prometheus.
+    """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.errorhandler(OperationOutcome)

@@ -10,6 +10,9 @@ from analyzer.src.analyze.sql_join import SqlJoin
 from extractor.src.config.logger import create_logger
 from extractor.src.errors import EmptyResult
 
+from monitoring.metrics import Timer
+
+
 logger = create_logger("extractor")
 
 SQL_RELATIONS_TO_METHOD = {
@@ -58,14 +61,17 @@ class Extractor:
 
         if new_db_string != self.db_string:
             self.db_string = new_db_string
-            self.engine = create_engine(self.db_string)
+            # Setting pool_pre_ping to True avoids random connection closing
+            self.engine = create_engine(self.db_string, pool_pre_ping=True)
             self.metadata = MetaData(bind=self.engine)
             self.session = sessionmaker(self.engine)()
 
+    # TODO refine buckets if needed
+    @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, resource_mapping, analysis, pk_values=None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
-        source DB, run it and returns the result as an sqlalchemy RestulProxy.
+        source DB, run it and returns the result as an sqlalchemy ResultProxy.
 
         Args:
             resource_mapping: the mapping.

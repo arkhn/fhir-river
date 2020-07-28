@@ -21,7 +21,8 @@ from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError
 
-from monitoring.metrics import Timer
+from monitoring.metrics import Counter, Timer
+
 
 logger = create_logger("extractor")
 
@@ -116,6 +117,7 @@ def extract_resource(resource_id, primary_key_values):
 
 
 @Timer("test_long", "test timing sleepy function")
+@Counter("count_long", "test count sleepy function")
 def long_func():
     # FOR TESTING PURPOSE
     sleep(randint(50, 1000) / 1000)
@@ -127,12 +129,6 @@ def test_timer():
     for _ in range(100):
         long_func()
     return jsonify({"success": 1})
-
-
-@app.route("/metrics")
-def metrics():
-    """Flask endpoint to gather the metrics, will be called by Prometheus."""
-    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.route("/extract", methods=["POST"])
@@ -155,6 +151,14 @@ def extract():
     except Exception as err:
         logger.error(err)
         raise err
+
+
+@app.route("/metrics")
+def metrics():
+    """
+    Flask endpoint to gather the metrics, will be called by Prometheus.
+    """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.errorhandler(Exception)

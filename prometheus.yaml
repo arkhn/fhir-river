@@ -1,9 +1,13 @@
 scrape_configs:
-  - job_name: "otel-collector"
-    scrape_interval: 5s
-    static_configs:
-      - targets: ["otel-collector:8889"]
   - job_name: "collect-extractor"
     scrape_interval: 5s
     static_configs:
       - targets: ["extractor:3001"]
+  - job_name: "collect-transformer"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["transformer:3002"]
+  - job_name: "collect-loader"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["loader:3003"]
