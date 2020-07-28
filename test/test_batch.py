@@ -7,7 +7,7 @@ from analyzer.src.analyze.graphql import PyrogClient
 
 
 BATCH_SIZE_TOPIC = "batch_size"
-LOAD_TOPIC = "extract"
+LOAD_TOPIC = "load"
 
 
 def handle_kafka_error(err):
@@ -47,7 +47,7 @@ def test_batch_single_row():
     def wait_batch(msg):
         msg_value = json.loads(msg.value())
         print(f"Go batch of size {msg_value['size']}, consuming events...")
-        consumer.run_consumer(event_count=msg_value["size"], poll_timeout=30)
+        consumer.run_consumer(event_count=msg_value["size"], poll_timeout=45)
 
     batch_size_consumer = EventConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS_EXTERNAL"),
