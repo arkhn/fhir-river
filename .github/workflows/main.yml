@@ -52,18 +52,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Pull docker images
-        env:
-          FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
-          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
-          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
-        run: |
-          docker pull arkhn/river-api-go:$GITHUB_SHA
-          docker pull arkhn/river-extractor:$GITHUB_SHA
-          docker pull arkhn/river-transformer:$GITHUB_SHA
-          docker pull arkhn/river-loader:$GITHUB_SHA
-          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka fhir-api postgres redis pyrog-server
-
       - name: Tag images
         run: |
           docker tag arkhn/river-api-go:$GITHUB_SHA arkhn/river-api-go:latest
