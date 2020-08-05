@@ -23,6 +23,8 @@ CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
 
+METRICS_PORT = int(os.getenv("METRICS_PORT", 3003))
+
 logger = create_logger("loader")
 
 fhirstore = get_fhirstore()
@@ -92,7 +94,7 @@ def manage_kafka_error(msg):
 if __name__ == "__main__":
     logger.info("Running Consumer")
 
-    start_http_server(3003)
+    start_http_server(METRICS_PORT)
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(

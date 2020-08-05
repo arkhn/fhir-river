@@ -181,6 +181,7 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
+      METRICS_PORT: 3003
     ports:
       - 3003:3003
     networks:
@@ -202,7 +203,9 @@ services:
     ports:
       - 3010:3000
     volumes:
-      - ./grafana-storage:/var/lib/grafana
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - river-network
 
