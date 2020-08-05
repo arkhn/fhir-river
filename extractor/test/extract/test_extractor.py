@@ -19,7 +19,7 @@ tables = {
 }
 
 
-def mock_get_column(_, sql_column, index=None):
+def mock_get_column(_, sql_column):
     table = tables[sql_column.table]
     return table.c[sql_column.column]
 
