@@ -202,8 +202,8 @@ class Extractor:
             column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
 
-    @Timer("time_extractor_split", "time to split dataframe")
     @staticmethod
+    @Timer("time_extractor_split", "time to split dataframe")
     def split_dataframe(df, analysis):
         # Find primary key column
         logger.debug("Splitting Dataframe")
