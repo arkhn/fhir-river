@@ -10,6 +10,9 @@ from analyzer.src.analyze.sql_join import SqlJoin
 from extractor.src.config.logger import create_logger
 from extractor.src.errors import EmptyResult
 
+from monitoring.metrics import Timer
+
+
 logger = create_logger("extractor")
 
 SQL_RELATIONS_TO_METHOD = {
@@ -58,14 +61,17 @@ class Extractor:
 
         if new_db_string != self.db_string:
             self.db_string = new_db_string
-            self.engine = create_engine(self.db_string)
+            # Setting pool_pre_ping to True avoids random connection closing
+            self.engine = create_engine(self.db_string, pool_pre_ping=True)
             self.metadata = MetaData(bind=self.engine)
             self.session = sessionmaker(self.engine)()
 
+    # TODO refine buckets if needed
+    @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, resource_mapping, analysis, pk_values=None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
-        source DB, run it and returns the result as an sqlalchemy RestulProxy.
+        source DB, run it and returns the result as an sqlalchemy ResultProxy.
 
         Args:
             resource_mapping: the mapping.
@@ -94,6 +100,7 @@ class Extractor:
 
         return self.run_sql_query(query)
 
+    @Timer("time_extractor_build_query", "time to build sql query")
     def sqlalchemy_query(
         self,
         columns: List[SqlColumn],
@@ -145,6 +152,7 @@ class Extractor:
 
         return query
 
+    @Timer("time_extractor_run_query", "time to run sql query")
     def run_sql_query(self, query):
         """
         Run a sql query after opening a sql connection
@@ -195,6 +203,7 @@ class Extractor:
         )
 
     @staticmethod
+    @Timer("time_extractor_split", "time to split dataframe")
     def split_dataframe(df, analysis):
         # Find primary key column
         logger.debug("Splitting Dataframe")

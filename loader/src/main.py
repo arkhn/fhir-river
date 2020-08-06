@@ -3,6 +3,7 @@
 from confluent_kafka import KafkaException, KafkaError
 import json
 import os
+from prometheus_client import start_http_server
 from pymongo.errors import DuplicateKeyError
 
 from fhirstore import NotFoundError
@@ -21,6 +22,8 @@ from loader.src.producer_class import LoaderProducer
 CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
+
+METRICS_PORT = int(os.getenv("METRICS_PORT", 3003))
 
 logger = create_logger("loader")
 
@@ -90,6 +93,8 @@ def manage_kafka_error(msg):
 
 if __name__ == "__main__":
     logger.info("Running Consumer")
+
+    start_http_server(METRICS_PORT)
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(

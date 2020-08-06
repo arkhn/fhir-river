@@ -15,6 +15,8 @@ services:
       - mimic-db:/var/lib/postgresql/data
     ports:
       - 5431:5432
+    networks:
+      - river-network
 
   mongo:
     image: mongo
@@ -25,15 +27,17 @@ services:
       - 27017:27017
     volumes:
       - fhirstore-db:/data/db
+    networks:
+      - river-network
 
-  sftp:
-    image: atmoz/sftp
-    container_name: sftp
-    volumes:
-      - ~/Documents/Arkhn/river-river/test/sftp/host/upload/:/home/arkhn/upload/
-    ports:
-      - "2222:22"
-    command: arkhn:arkhnpwd:1001
+  # sftp:
+  #   image: atmoz/sftp
+  #   container_name: sftp
+  #   volumes:
+  #     - ~/Documents/Arkhn/river-river/test/sftp/host/upload/:/home/arkhn/upload/
+  #   ports:
+  #     - "2222:22"
+  #   command: arkhn:arkhnpwd:1001
 
   zookeeper:
     image: "zookeeper:3.4.10"
@@ -43,6 +47,8 @@ services:
       - "2181:2181"
     expose:
       - "2181"
+    networks:
+      - river-network
 
   kafka:
     image: "wurstmeister/kafka:0.10.2.1"
@@ -60,6 +66,8 @@ services:
       - KAFKA_DELETE_TOPIC_ENABLE=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - river-network
 
   #  kafka_connect:
   #    image: confluentinc/cp-kafka-connect:latest
@@ -95,6 +103,42 @@ services:
   #      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
   #      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
 
+  api:
+    build:
+      dockerfile: api/Dockerfile
+      context: ./
+    container_name: api
+    image: arkhn/api:latest
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      EXTRACTOR_URL: http://extractor:3001
+      TRANSFORMER_URL: http://transformer:3002
+    ports:
+      - "3000:3000"
+    networks:
+      - river-network
+
+  extractor:
+    build:
+      dockerfile: extractor/Dockerfile
+      context: ./
+    container_name: extractor
+    image: arkhn/river-extractor:latest
+    restart: always
+    depends_on:
+      - kafka
+    env_file:
+      - .env
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - 3001:3001
+    networks:
+      - river-network
+
   transformer:
     build:
       dockerfile: transformer/Dockerfile
@@ -114,7 +158,9 @@ services:
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
     ports:
-      - 3002
+      - 3002:3002
+    networks:
+      - river-network
 
   loader:
     build:
@@ -135,40 +181,39 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
-
-  extractor:
-    build:
-      dockerfile: extractor/Dockerfile
-      context: ./
-    container_name: extractor
-    image: arkhn/river-extractor:latest
-    restart: always
-    depends_on:
-      - kafka
-    env_file:
-      - .env
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      METRICS_PORT: 3003
     ports:
-      - 3001
+      - 3003:3003
+    networks:
+      - river-network
 
-  api:
-    build:
-      dockerfile: api/Dockerfile
-      context: ./
-    container_name: api
-    image: arkhn/api:latest
-    restart: always
-    depends_on:
-      - kafka
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      EXTRACTOR_URL: http://extractor:3001
-      TRANSFORMER_URL: http://transformer:3002
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     ports:
-      - "3001:3000"
+      - "9090:9090"
+    networks:
+      - river-network
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    ports:
+      - 3010:3000
+    volumes:
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - river-network
 
 volumes:
   mimic-db:
     name: mimic-db
   fhirstore-db:
+
+networks:
+  river-network:
+    name: river-network

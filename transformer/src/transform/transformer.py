@@ -1,19 +1,28 @@
 from uuid import uuid4
 
-from transformer.src.transform.fhir import build_fhir_object, build_metadata, clean_fhir_object
-from transformer.src.transform.dataframe import (
-    cast_types,
-    clean_data,
-    squash_rows,
-    merge_attributes,
-)
+from transformer.src.transform.fhir import build_fhir_object
+from transformer.src.transform.fhir import build_metadata
+from transformer.src.transform.fhir import clean_fhir_object
+from transformer.src.transform.dataframe import cast_types
+from transformer.src.transform.dataframe import clean_data
+from transformer.src.transform.dataframe import squash_rows
+from transformer.src.transform.dataframe import merge_attributes
 
 from transformer.src.config.logger import create_logger
+
+from monitoring.metrics import Timer, FAST_FN_BUCKETS
 
 logger = create_logger("transformer")
 
 
 class Transformer:
+
+    # TODO refine buckets if needed
+    @Timer(
+        "time_transformer_transform",
+        "time to perform transform_data method of Transformer",
+        buckets=FAST_FN_BUCKETS,
+    )
     def transform_data(self, data, analysis):
         # Get primary key value for logs
         try:
@@ -39,6 +48,11 @@ class Transformer:
 
         return data
 
+    @Timer(
+        "time_create_fhir_document",
+        "time to perform create_fhir_document method of Transformer",
+        buckets=FAST_FN_BUCKETS,
+    )
     def create_fhir_document(self, data, analysis):
         """ Function used to create a single FHIR instance.
         """
