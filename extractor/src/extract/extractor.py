@@ -100,6 +100,7 @@ class Extractor:
 
         return self.run_sql_query(query)
 
+    @Timer("time_extractor_build_query", "time to build sql query")
     def sqlalchemy_query(
         self,
         columns: List[SqlColumn],
@@ -151,6 +152,7 @@ class Extractor:
 
         return query
 
+    @Timer("time_extractor_run_query", "time to run sql query")
     def run_sql_query(self, query):
         """
         Run a sql query after opening a sql connection
@@ -200,6 +202,7 @@ class Extractor:
             column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
 
+    @Timer("time_extractor_split", "time to split dataframe")
     @staticmethod
     def split_dataframe(df, analysis):
         # Find primary key column

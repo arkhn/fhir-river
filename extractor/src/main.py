@@ -2,8 +2,6 @@
 
 import os
 import json
-from random import randint
-from time import sleep
 
 from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
@@ -20,8 +18,6 @@ from extractor.src.errors import MissingInformationError
 from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError
-
-from monitoring.metrics import Counter, Timer
 
 
 logger = create_logger("extractor")
@@ -114,21 +110,6 @@ def extract_resource(resource_id, primary_key_values):
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
 
     return resource_mapping, analysis, df
-
-
-@Timer("test_long", "test timing sleepy function")
-@Counter("count_long", "test count sleepy function")
-def long_func():
-    # FOR TESTING PURPOSE
-    sleep(randint(50, 1000) / 1000)
-
-
-@app.route("/test-timer", methods=["GET"])
-def test_timer():
-    # FOR TESTING PURPOSE
-    for _ in range(100):
-        long_func()
-    return jsonify({"success": 1})
 
 
 @app.route("/extract", methods=["POST"])
