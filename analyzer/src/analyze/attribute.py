@@ -25,21 +25,13 @@ class Attribute:
     def __eq__(self, other):
         if not isinstance(other, Attribute):
             return False
-        return (
-            self.path == other.path
-            and self.columns == other.columns
-            and self.static_inputs == other.static_inputs
-            and self.merging_script == other.merging_script
-        )
+        return self.path == other.path and self.input_groups == other.input_groups
 
     def __str__(self):
-        return (
-            f"path: {self.path}, columns: {self.columns}, "
-            f"static_inputs: {self.static_inputs}, merging_script: {self.merging_script}"
-        )
+        return f"path: {self.path}, groups: {self.input_groups}"
 
     def __hash__(self):
-        return hash("{self.path}{self.columns}{self.static_inputs}{self.merging_script}")
+        return hash("{self.path}{self.input_groups}")
 
     def add_input_group(self, new_group):
         self.input_groups.append(new_group)

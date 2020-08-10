@@ -13,4 +13,4 @@ class Condition:
 
     def check(self, data):
         data_value = data[(CONDITION_FLAG, (self.sql_column.table, self.sql_column.column))]
-        return self.action == "EXLUDE" ^ self.value == data_value
+        return (self.action == "EXCLUDE") ^ (self.value == data_value)

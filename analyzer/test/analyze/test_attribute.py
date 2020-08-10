@@ -1,15 +1,18 @@
 from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.input_group import InputGroup
 
 
 def test_cast_type():
     # To string
     attr_str = Attribute("name", definition_id="code")
-    attr_str.add_static_input("string")
+    group = InputGroup(id_="id", attribute=attr_str)
+    group.add_static_input("string")
 
-    assert attr_str.static_inputs == ["string"]
+    assert group.static_inputs == ["string"]
 
     # To number
     attr_int = Attribute("name", definition_id="integer")
-    attr_int.add_static_input("123")
+    group = InputGroup(id_="id", attribute=attr_int)
+    group.add_static_input("123")
 
-    assert attr_int.static_inputs == [123]
+    assert group.static_inputs == [123]

@@ -34,3 +34,19 @@ class InputGroup:
 
     def check_conditions(self, data):
         return all(condition.check(data) for condition in self.conditions)
+
+    def __str__(self):
+        return (
+            f"columns: {self.columns}, static_inputs: {self.static_inputs}, "
+            f"merging_script: {self.merging_script}"
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, InputGroup):
+            return False
+
+        return (
+            self.columns == other.columns
+            and self.static_inputs == other.static_inputs
+            and self.merging_script == other.merging_script
+        )

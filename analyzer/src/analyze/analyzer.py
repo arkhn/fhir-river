@@ -172,6 +172,8 @@ class Analyzer:
 
         self._cur_analysis.attributes.append(attribute)
 
+        return attribute
+
     def get_primary_key(self, resource_mapping):
         """ Get the primary key table and column of the provided resource.
         """
