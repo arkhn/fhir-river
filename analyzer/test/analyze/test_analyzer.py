@@ -6,7 +6,6 @@ from analyzer.src.analyze import Analyzer
 
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.input_group import InputGroup
-from analyzer.src.analyze.merging_script import MergingScript
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
