@@ -3,6 +3,7 @@ from unittest import mock, TestCase
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.cleaning_script import CleaningScript
 from analyzer.src.analyze.concept_map import ConceptMap
+from analyzer.src.analyze.condition import Condition, CONDITION_FLAG
 from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.merging_script import MergingScript
 from analyzer.src.analyze.sql_column import SqlColumn
@@ -182,14 +183,33 @@ def test_merge_by_attributes(_):
     attr_id.add_input_group(group)
 
     attr_language = Attribute("language")
-    group = InputGroup(
-        id_="id_language", attribute=attr_name, columns=[SqlColumn("ADMISSIONS", "LANGUAGE")],
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_1",
+            attribute=attr_language,
+            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_1")],
+            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "true")],
+        )
     )
-    attr_language.add_input_group(group)
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_2",
+            attribute=attr_language,
+            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_2")],
+            conditions=[Condition("EXCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "true")],
+        )
+    )
+    attr_language.add_input_group(
+        InputGroup(
+            id_="not_reached",
+            attribute=attr_language,
+            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")],
+        )
+    )
 
     attr_admid = Attribute("admid")
     group = InputGroup(
-        id_="id_admid", attribute=attr_name, columns=[SqlColumn("ADMISSIONS", "ID",)],
+        id_="id_admid", attribute=attr_admid, columns=[SqlColumn("ADMISSIONS", "ID")],
     )
     attr_admid.add_input_group(group)
 
@@ -197,8 +217,11 @@ def test_merge_by_attributes(_):
         ("id_name", ("PATIENTS", "NAME")): ["bob"],
         ("id_id", ("PATIENTS", "ID")): ["id1"],
         ("id_id", ("PATIENTS", "ID2")): ["id21"],
-        ("id_language", ("ADMISSIONS", "LANGUAGE")): [("lang1", "lang2", "lang3", "lang4")],
+        ("id_language_1", ("ADMISSIONS", "LANGUAGE_1")): [("lang1", "lang2", "lang3", "lang4")],
+        ("id_language_2", ("ADMISSIONS", "LANGUAGE_2")): [("lang21", "lang22", "lang23", "lang24")],
+        ("id_language_3", ("ADMISSIONS", "LANGUAGE_3")): [("lang31", "lang32", "lang33", "lang34")],
         ("id_admid", ("ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        (CONDITION_FLAG, ("ADMISSIONS", "COND_LANG")): ["false"],
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid]
@@ -207,7 +230,7 @@ def test_merge_by_attributes(_):
     expected = {
         "name": "bob",
         "id": "id1id21merge",
-        "language": ("lang1", "lang2", "lang3", "lang4"),
+        "language": ("lang21", "lang22", "lang23", "lang24"),
         "admid": ("hadmid1", "hadmid2", "hadmid3", "hadmid4"),
     }
 

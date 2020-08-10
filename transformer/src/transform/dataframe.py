@@ -158,7 +158,7 @@ def merge_by_attributes(
         ...
     }
 
-    where values are merge thanks to the mergig scripts.
+    where values are merged with the mergig scripts.
     """
     # Un-list values in dict
     data = {k: v[0] for k, v in data.items()}
