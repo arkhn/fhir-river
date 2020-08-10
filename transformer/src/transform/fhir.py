@@ -44,72 +44,64 @@ def build_fhir_object(row, path_attributes_map, index=None):
     arrays_done = set()
 
     for path, attr in path_attributes_map.items():
-        for input_group in attr.input_groups:
-            if input_group.id not in row and not input_group.static_inputs:
-                # If columns and static_inputs are empty, it means that this attribute
-                # is not a leaf and we don't need to do anything.
-                continue
+        if attr.path not in row:
+            # If we can't find the attribute in the row, it means that it
+            # is not a leaf and we don't need to do anything.
+            continue
 
-            # Handle the list of literals case.
-            # If we had a list of literals in the mapping, then handle_array_attributes
-            # will try to create fhir objects with an empty path (remove_root_path removes
-            # what's before the [...] included).
-            if path == "":
-                return fetch_values_from_dataframe(row, input_group)
+        # Handle the list of literals case.
+        # If we had a list of literals in the mapping, then handle_array_attributes
+        # will try to create fhir objects with an empty path (remove_root_path removes
+        # what's before the [...] included).
+        if path == "":
+            return fetch_values_from_dataframe(row, attr)
 
-            # Find if there is an index in the path
-            split_path = path.split(".")
-            position_ind = get_position_first_index(split_path)
+        # Find if there is an index in the path
+        split_path = path.split(".")
+        position_ind = get_position_first_index(split_path)
 
-            if position_ind is None:
-                # If we didn't find an index in the path, then we don't worry about arrays
-                val = fetch_values_from_dataframe(row, input_group)
+        if position_ind is None:
+            # If we didn't find an index in the path, then we don't worry about arrays
+            val = fetch_values_from_dataframe(row, attr)
 
-                if isinstance(val, (tuple, list)) and len(val) == 1:
-                    # If we have a tuple of length 1, we simply extract the value and put it in
-                    # the fhir object
-                    insert_in_fhir_object(fhir_object, path, val[0])
-                elif isinstance(val, (tuple, list)) and index is not None:
-                    # If index is not None, we met an array before. Here, val will have
-                    # several elements but we know which one we need
-                    insert_in_fhir_object(fhir_object, path, val[index])
-                else:
-                    # Otherwise, we try to send it all to insert_in_fhir_object.
-                    # We could have a literal value or a tuple but in this case, this function
-                    # will check that all the values in the tuple are equal.
-                    insert_in_fhir_object(fhir_object, path, val)
-
+            if isinstance(val, (tuple, list)) and len(val) == 1:
+                # If we have a tuple of length 1, we simply extract the value and put it in
+                # the fhir object
+                insert_in_fhir_object(fhir_object, path, val[0])
+            elif isinstance(val, (tuple, list)) and index is not None:
+                # If index is not None, we met an array before. Here, val will have
+                # several elements but we know which one we need
+                insert_in_fhir_object(fhir_object, path, val[index])
             else:
-                # Handle array case
-                array_path = ".".join(split_path[: position_ind + 1])
-                # If this path was already processed before, skip it
-                if array_path in arrays_done:
-                    continue
-                # We retrieve all the attributes that start with the array path (with index)
-                attributes_in_array = {
-                    remove_root_path(path, position_ind + 1): attr
-                    for path, attr in path_attributes_map.items()
-                    if path.startswith(array_path)
-                }
-                # Build the array of sub fhir object
-                array = handle_array_attributes(attributes_in_array, row)
-                # Insert them a the right position
-                if array:
-                    insert_in_fhir_object(fhir_object, remove_index(array_path), array)
-                arrays_done.add(array_path)
+                # Otherwise, we try to send it all to insert_in_fhir_object.
+                # We could have a literal value or a tuple but in this case, this function
+                # will check that all the values in the tuple are equal.
+                insert_in_fhir_object(fhir_object, path, val)
+
+        else:
+            # Handle array case
+            array_path = ".".join(split_path[: position_ind + 1])
+            # If this path was already processed before, skip it
+            if array_path in arrays_done:
+                continue
+            # We retrieve all the attributes that start with the array path (with index)
+            attributes_in_array = {
+                remove_root_path(path, position_ind + 1): attr
+                for path, attr in path_attributes_map.items()
+                if path.startswith(array_path)
+            }
+            # Build the array of sub fhir object
+            array = handle_array_attributes(attributes_in_array, row)
+            # Insert them a the right position
+            if array:
+                insert_in_fhir_object(fhir_object, remove_index(array_path), array)
+            arrays_done.add(array_path)
 
     return fhir_object
 
 
-def fetch_values_from_dataframe(row, input_group):
-    if input_group.id in row:
-        return row[input_group.id]
-    else:
-        assert len(input_group.static_inputs) == 1, (
-            f"The mapping contains an attribute ({input_group.attribute.path}) with several "
-            "static inputs (and no sql input nor merging script)"
-        )
-        return input_group.static_inputs[0]
+def fetch_values_from_dataframe(row, attribute):
+    return row[attribute.path]
 
 
 def handle_array_attributes(attributes_in_array, row):
@@ -122,12 +114,11 @@ def handle_array_attributes(attributes_in_array, row):
     # {"adress": [{"city": "Paris", "country": "France"}, {"city": "Lyon", "country": "France"}]}
     length = 1
     for attr in attributes_in_array.values():
-        for input_group in attr.input_groups:
-            val = fetch_values_from_dataframe(row, input_group)
-            if not isinstance(val, tuple) or len(val) == 1:
-                continue
-            assert length == 1 or len(val) == length, "mismatch in array lengths"
-            length = len(val)
+        val = fetch_values_from_dataframe(row, attr)
+        if not isinstance(val, tuple) or len(val) == 1:
+            continue
+        assert length == 1 or len(val) == length, "mismatch in array lengths"
+        length = len(val)
 
     # Now we can build the array
     array = []

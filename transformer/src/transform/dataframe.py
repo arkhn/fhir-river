@@ -7,6 +7,8 @@ from transformer.src.config.logger import create_logger
 
 logger = create_logger("dataframe")
 
+CONDITION_FLAG = "__condition__"
+
 
 def cast_types(data, attributes):
     for attribute in attributes:
@@ -35,7 +37,6 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 dict_col_name = col.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                # We use col.table because it's needed in squash_rows
                 attr_col_name = (input_group.id, (col.table, col.column))
 
                 # Get the original column
@@ -53,7 +54,14 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                         cleaned_data[attr_col_name], dict_col_name, primary_key
                     )
 
-            # TODO add conditions in df
+            for condition in input_group.conditions:
+                dict_col_name = condition.sql_column.dataframe_column_name()
+
+                # The column name in the new intermediary dataframe
+                cond_col_name = (CONDITION_FLAG, (col.table, col.column))
+
+                # Get the original column
+                cleaned_data[cond_col_name] = data[dict_col_name]
 
     return cleaned_data
 
@@ -128,7 +136,7 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     return squashed_data
 
 
-def merge_by_groups(
+def merge_by_attributes(
     data, attributes: List[Attribute], primary_key,
 ):
     """ Apply merging scripts.
@@ -138,14 +146,15 @@ def merge_by_groups(
         (input_group1.id, (table1, column1)): val,
         (input_group1.id, (table2, column2)): val,
         (input_group2.id, (table3, column3)): val,
+        (CONDITION_FLAG, (table4, column4)): val,
         ...
     }
 
     and outputs
 
     {
-        input_group1.id: val,
-        input_group2.id: val,
+        attribute1.path: val,
+        attribute2.path: val,
         ...
     }
 
@@ -157,22 +166,36 @@ def merge_by_groups(
     merged_data = {}
     for attribute in attributes:
         for input_group in attribute.input_groups:
-            cur_attr_columns = [value for key, value in data.items() if key[0] == input_group.id]
+            # Check conditions
+            if input_group.check_conditions(data):
+                cur_attr_columns = [
+                    value for key, value in data.items() if key[0] == input_group.id
+                ]
 
-            if not cur_attr_columns:
-                # If attribute is static or has no input, don't do anything
-                continue
-
-            if input_group.merging_script:
-                # TODO I don't think the order of pyrog inputs is preserved here
-                merged_data[input_group.id] = input_group.merging_script.apply(
-                    cur_attr_columns, input_group.static_inputs, attribute.path, primary_key,
-                )
-            else:
-                if len(cur_attr_columns) != 1:
-                    raise ValueError(
-                        f"The mapping contains several unmerged columns for attribute {attribute}"
+                if not cur_attr_columns:
+                    if input_group.static_inputs:
+                        # If attribute is static, use static input
+                        # Otherwise, attribute is not a leaf or has no inputs
+                        # TODO change assert to if... raise
+                        if len(input_group.static_inputs) != 1:
+                            raise ValueError(
+                                f"The mapping contains an attribute ({attribute.path}) "
+                                "with several static inputs (and no sql input)"
+                            )
+                        merged_data[attribute.path] = input_group.static_inputs[0]
+                elif input_group.merging_script:
+                    # TODO I don't think the order of pyrog inputs is preserved here
+                    merged_data[attribute.path] = input_group.merging_script.apply(
+                        cur_attr_columns, input_group.static_inputs, attribute.path, primary_key,
                     )
-                merged_data[input_group.id] = cur_attr_columns[0]
+                else:
+                    if len(cur_attr_columns) != 1:
+                        raise ValueError(
+                            "The mapping contains several unmerged columns "
+                            f"for attribute {attribute}"
+                        )
+                    merged_data[attribute.path] = cur_attr_columns[0]
+
+                break
 
     return merged_data

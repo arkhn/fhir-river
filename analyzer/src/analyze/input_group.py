@@ -31,3 +31,6 @@ class InputGroup:
 
     def add_static_input(self, value):
         self.static_inputs.append(self.attribute.cast_type(value))
+
+    def check_conditions(self, data):
+        return all(condition.check(data) for condition in self.conditions)
