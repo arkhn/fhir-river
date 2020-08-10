@@ -2,8 +2,7 @@ from typing import List
 
 from analyzer.src.config.logger import create_logger
 
-from .sql_column import SqlColumn
-from .merging_script import MergingScript
+from .input_group import InputGroup
 
 logger = create_logger("attribute")
 
@@ -17,18 +16,11 @@ numerical_types_map = {
 
 class Attribute:
     def __init__(
-        self,
-        path,
-        definition_id: str = None,
-        columns: List[SqlColumn] = None,
-        static_inputs: List[str] = None,
-        merging_script: MergingScript = None,
+        self, path, definition_id: str = None, input_groups: List[InputGroup] = None,
     ):
         self.path = path
+        self.input_groups = input_groups or []
         self.type = numerical_types_map.get(definition_id, str)
-        self.columns = columns or []
-        self.static_inputs = static_inputs or []
-        self.merging_script = merging_script
 
     def __eq__(self, other):
         if not isinstance(other, Attribute):
@@ -49,11 +41,8 @@ class Attribute:
     def __hash__(self):
         return hash("{self.path}{self.columns}{self.static_inputs}{self.merging_script}")
 
-    def add_column(self, col):
-        self.columns.append(col)
-
-    def add_static_input(self, value):
-        self.static_inputs.append(self.cast_type(value))
+    def add_input_group(self, new_group):
+        self.input_groups.append(new_group)
 
     def cast_type(self, value):
         if value is None:

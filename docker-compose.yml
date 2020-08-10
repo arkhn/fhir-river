@@ -105,14 +105,14 @@ services:
 
   api:
     build:
-      dockerfile: api/Dockerfile
-      context: ./
+      context: ./apigo
     container_name: api
-    image: arkhn/api:latest
+    image: arkhn/river-api-go:latest
     restart: always
     depends_on:
       - kafka
     environment:
+      PORT: 3000
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EXTRACTOR_URL: http://extractor:3001
       TRANSFORMER_URL: http://transformer:3002
@@ -187,27 +187,27 @@ services:
     networks:
       - river-network
 
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - river-network
+  # prometheus:
+  #   container_name: prometheus
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - river-network
 
-  grafana:
-    container_name: grafana
-    image: grafana/grafana:latest
-    ports:
-      - 3010:3000
-    volumes:
-      - ./grafana/config.ini:/etc/grafana/config.ini
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-    networks:
-      - river-network
+  # grafana:
+  #   container_name: grafana
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - 3010:3000
+  #   volumes:
+  #     - ./grafana/config.ini:/etc/grafana/config.ini
+  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #     - ./grafana/dashboards:/var/lib/grafana/dashboards
+  #   networks:
+  #     - river-network
 
 volumes:
   mimic-db:

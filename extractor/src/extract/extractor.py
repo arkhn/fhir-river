@@ -91,7 +91,7 @@ class Extractor:
 
         # Build sqlalchemy query
         query = self.sqlalchemy_query(
-            analysis.columns,
+            analysis.columns,  # TODO query only once columns for conditions
             analysis.joins,
             analysis.primary_key_column,
             resource_mapping,
