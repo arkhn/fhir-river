@@ -114,65 +114,70 @@ class Analyzer:
             return
 
         for mapping_group in attribute_mapping["inputGroups"]:
-            input_group = InputGroup(id_=mapping_group["id"], attribute=attribute)
-            attribute.add_input_group(input_group)
-            for input_ in mapping_group["inputs"]:
-                if input_["sqlValue"]:
-
-                    sqlValue = input_["sqlValue"]
-                    cur_col = SqlColumn(
-                        sqlValue["table"],
-                        sqlValue["column"],
-                        self._cur_analysis.primary_key_column.owner,
-                    )
-
-                    if input_["script"]:
-                        cur_col.cleaning_script = CleaningScript(input_["script"])
-
-                    if input_["conceptMapId"]:
-                        cur_col.concept_map = ConceptMap(input_["conceptMapId"])
-
-                    for join in sqlValue["joins"]:
-                        tables = join["tables"]
-                        left = SqlColumn(
-                            tables[0]["table"],
-                            tables[0]["column"],
-                            self._cur_analysis.primary_key_column.owner,
-                        )
-                        right = SqlColumn(
-                            tables[1]["table"],
-                            tables[1]["column"],
-                            self._cur_analysis.primary_key_column.owner,
-                        )
-                        self._cur_analysis.add_join(SqlJoin(left, right))
-
-                    self._cur_analysis.add_column(cur_col)
-                    input_group.add_column(cur_col)
-
-                elif input_["staticValue"]:
-                    input_group.add_static_input(input_["staticValue"])
-
-            for mapping_condition in mapping_group["conditions"]:
-                condition_column = SqlColumn(
-                    mapping_condition["sqlValue"]["table"],
-                    mapping_condition["sqlValue"]["column"],
-                    self._cur_analysis.primary_key_column.owner,
-                )
-                self._cur_analysis.add_column(condition_column)
-
-                condition = Condition(
-                    action=mapping_condition["action"],
-                    sql_column=condition_column,
-                    value=mapping_condition["value"],
-                )
-                input_group.add_condition(condition)
-
-            if mapping_group["mergingScript"]:
-                input_group.merging_script = MergingScript(mapping_group["mergingScript"])
+            self.analyze_input_group(mapping_group, attribute)
 
         self._cur_analysis.attributes.append(attribute)
 
         return attribute
+
+    def analyze_input_group(self, mapping_group, parent_attribute):
+        input_group = InputGroup(id_=mapping_group["id"], attribute=parent_attribute)
+        parent_attribute.add_input_group(input_group)
+        for input_ in mapping_group["inputs"]:
+            if input_["sqlValue"]:
+
+                sqlValue = input_["sqlValue"]
+                cur_col = SqlColumn(
+                    sqlValue["table"],
+                    sqlValue["column"],
+                    self._cur_analysis.primary_key_column.owner,
+                )
+
+                if input_["script"]:
+                    cur_col.cleaning_script = CleaningScript(input_["script"])
+
+                if input_["conceptMapId"]:
+                    cur_col.concept_map = ConceptMap(input_["conceptMapId"])
+
+                for join in sqlValue["joins"]:
+                    tables = join["tables"]
+                    left = SqlColumn(
+                        tables[0]["table"],
+                        tables[0]["column"],
+                        self._cur_analysis.primary_key_column.owner,
+                    )
+                    right = SqlColumn(
+                        tables[1]["table"],
+                        tables[1]["column"],
+                        self._cur_analysis.primary_key_column.owner,
+                    )
+                    self._cur_analysis.add_join(SqlJoin(left, right))
+
+                self._cur_analysis.add_column(cur_col)
+                input_group.add_column(cur_col)
+
+            elif input_["staticValue"]:
+                input_group.add_static_input(input_["staticValue"])
+
+        for mapping_condition in mapping_group["conditions"]:
+            condition_column = SqlColumn(
+                mapping_condition["sqlValue"]["table"],
+                mapping_condition["sqlValue"]["column"],
+                self._cur_analysis.primary_key_column.owner,
+            )
+            self._cur_analysis.add_column(condition_column)
+
+            condition = Condition(
+                action=mapping_condition["action"],
+                sql_column=condition_column,
+                value=mapping_condition["value"],
+            )
+            input_group.add_condition(condition)
+
+        if mapping_group["mergingScript"]:
+            input_group.merging_script = MergingScript(mapping_group["mergingScript"])
+
+        return input_group
 
     def get_primary_key(self, resource_mapping):
         """ Get the primary key table and column of the provided resource.
