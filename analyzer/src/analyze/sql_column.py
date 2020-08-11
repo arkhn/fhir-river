@@ -50,6 +50,6 @@ class SqlColumn:
 
         # Otherwise, we may have problems with sql not accepting aliases of length > 30
         # so we truncate and add a hash
-        hashed_name = hashlib.sha1(name.encode()).hexdigest()
+        hashed_name = hashlib.sha1(name).hexdigest()
 
         return f"{name[:10]}_{name[-10:]}_{hashed_name[:8]}"
