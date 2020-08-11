@@ -65,7 +65,7 @@ jobs:
           docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
           docker-compose -f test/docker-compose.yml up -d kafka zookeeper
           docker-compose -f test/docker-compose.yml up -d fhir-api
-          sleep 30
+          sleep 15
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
           docker restart fhir-api

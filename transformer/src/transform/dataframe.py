@@ -58,7 +58,10 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 dict_col_name = condition.sql_column.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                cond_col_name = (CONDITION_FLAG, (col.table, col.column))
+                cond_col_name = (
+                    CONDITION_FLAG,
+                    (condition.sql_column.table, condition.sql_column.column),
+                )
 
                 # Get the original column
                 cleaned_data[cond_col_name] = data[dict_col_name]
