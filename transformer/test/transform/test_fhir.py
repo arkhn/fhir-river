@@ -77,22 +77,6 @@ def test_build_metadata(mock_datetime):
     }
 
 
-def test_fetch_values_from_dataframe():
-    attr_identifier = Attribute("identifier[0].value")
-    attr_birthDate = Attribute("birthDate")
-    attr_maritalStatus = Attribute("maritalStatus.coding[0].code")
-
-    attribute = attr_birthDate
-
-    row = {
-        attr_maritalStatus.path: "D",
-        attr_birthDate.path: "2000-10-10",
-        attr_identifier.path: "A",
-    }
-
-    assert transform.fetch_values_from_dataframe(row, attribute) == "2000-10-10"
-
-
 def test_handle_array_attributes():
     attr1 = Attribute("attr1")
     attr2 = Attribute("attr2")
