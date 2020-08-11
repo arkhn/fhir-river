@@ -2,12 +2,11 @@ from typing import List
 from collections import defaultdict
 
 from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.condition import CONDITION_FLAG
 
 from transformer.src.config.logger import create_logger
 
 logger = create_logger("dataframe")
-
-CONDITION_FLAG = "__condition__"
 
 
 def cast_types(data, attributes):
@@ -26,6 +25,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
     {
         (input_group.id, (table, column)): [val, val, ...],
         (input_group.id, (table, column)): [val, val, ...],
+        (CONDITION_FLAG, (table, column)): [val, val, ...],
         ...
     }
     and where all values are cleaned (with cleaning scripts and concept maps).
@@ -179,7 +179,6 @@ def merge_by_attributes(
                     if input_group.static_inputs:
                         # If attribute is static, use static input
                         # Otherwise, attribute is not a leaf or has no inputs
-                        # TODO change assert to if... raise
                         if len(input_group.static_inputs) != 1:
                             raise ValueError(
                                 f"The mapping contains an attribute ({attribute.path}) "
@@ -191,12 +190,12 @@ def merge_by_attributes(
                     merged_data[attribute.path] = input_group.merging_script.apply(
                         cur_attr_columns, input_group.static_inputs, attribute.path, primary_key,
                     )
+                elif len(cur_attr_columns) != 1:
+                    raise ValueError(
+                        "The mapping contains several unmerged columns "
+                        f"for attribute {attribute}"
+                    )
                 else:
-                    if len(cur_attr_columns) != 1:
-                        raise ValueError(
-                            "The mapping contains several unmerged columns "
-                            f"for attribute {attribute}"
-                        )
                     merged_data[attribute.path] = cur_attr_columns[0]
 
                 break

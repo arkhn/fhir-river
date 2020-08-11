@@ -102,7 +102,7 @@ class Analyzer:
             path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"]
         )
         if not attribute_mapping["inputGroups"]:
-            # If there are no inputs for this attribute, it means that it is an intermediary
+            # If there are no input groups for this attribute, it means that it is an intermediary
             # attribute (ie not a leaf). It is here to give us some context information.
             # For instance, we can use it if its children attributes represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":

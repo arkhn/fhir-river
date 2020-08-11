@@ -54,7 +54,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
         # will try to create fhir objects with an empty path (remove_root_path removes
         # what's before the [...] included).
         if path == "":
-            return fetch_values_from_dataframe(row, attr)
+            return row[attr.path]
 
         # Find if there is an index in the path
         split_path = path.split(".")
@@ -62,7 +62,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
 
         if position_ind is None:
             # If we didn't find an index in the path, then we don't worry about arrays
-            val = fetch_values_from_dataframe(row, attr)
+            val = row[attr.path]
 
             if isinstance(val, (tuple, list)) and len(val) == 1:
                 # If we have a tuple of length 1, we simply extract the value and put it in
@@ -100,10 +100,6 @@ def build_fhir_object(row, path_attributes_map, index=None):
     return fhir_object
 
 
-def fetch_values_from_dataframe(row, attribute):
-    return row[attribute.path]
-
-
 def handle_array_attributes(attributes_in_array, row):
     # Check lengths
     # We check that all the values with more than one element that we will put in the array
@@ -114,7 +110,7 @@ def handle_array_attributes(attributes_in_array, row):
     # {"adress": [{"city": "Paris", "country": "France"}, {"city": "Lyon", "country": "France"}]}
     length = 1
     for attr in attributes_in_array.values():
-        val = fetch_values_from_dataframe(row, attr)
+        val = row[attr.path]
         if not isinstance(val, tuple) or len(val) == 1:
             continue
         assert length == 1 or len(val) == length, "mismatch in array lengths"

@@ -58,8 +58,6 @@ def test_analyze_mapping(mock_login, patient_mapping):
 
     assert len(analysis.attributes) == 17
 
-    for c in analysis.columns:
-        print(c)
     assert analysis.columns == {
         SqlColumn("patients", "row_id"),
         SqlColumn("patients", "subject_id"),

@@ -187,6 +187,7 @@ services:
     networks:
       - river-network
 
+  # Uncomment if you want monitoring
   # prometheus:
   #   container_name: prometheus
   #   image: prom/prometheus:latest
@@ -196,7 +197,7 @@ services:
   #     - "9090:9090"
   #   networks:
   #     - river-network
-
+  #
   # grafana:
   #   container_name: grafana
   #   image: grafana/grafana:latest
