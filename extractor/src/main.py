@@ -2,9 +2,12 @@
 
 import os
 import json
+
 from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
+
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
@@ -14,12 +17,14 @@ from extractor.src.config.logger import create_logger
 from extractor.src.errors import MissingInformationError
 from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
-from extractor.src.errors import BadRequestError, EmptyResult
+from extractor.src.errors import BadRequestError
+
 
 logger = create_logger("extractor")
 
 CONSUMER_GROUP_ID = "extractor"
-PRODUCED_TOPIC = "extract"
+EXTRACT_TOPIC = "extract"
+BATCH_SIZE_TOPIC = "batch_size"
 CONSUMED_TOPIC = "batch"
 
 pyrog_client = PyrogClient()
@@ -49,9 +54,9 @@ def process_event_with_producer(producer):
             event["batch_id"] = batch_id
             event["resource_type"] = resource_type
             event["resource_id"] = resource_id
-            event["dataframe"] = record.to_dict(orient="list")
+            event["record"] = record
 
-            producer.produce_event(topic=PRODUCED_TOPIC, event=event)
+            producer.produce_event(topic=EXTRACT_TOPIC, event=event)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
@@ -67,6 +72,11 @@ def process_event_with_producer(producer):
 
         try:
             resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
+            batch_size = extractor.batch_size(analysis, resource_mapping)
+            logger.info(f"Batch size is {batch_size}")
+            producer.produce_event(
+                topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
+            )
             broadcast_events(resource_mapping, df, analysis, batch_id)
 
         except Exception as err:
@@ -100,12 +110,6 @@ def extract_resource(resource_id, primary_key_values):
 
     logger.debug("Extracting rows", extra={"resource_id": resource_id})
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
-    if df.empty:
-        raise EmptyResult(
-            "The sql query returned nothing. Maybe the primary key values "
-            "you provided are not present in the database or the mapping "
-            "is erroneous."
-        )
 
     return resource_mapping, analysis, df
 
@@ -123,13 +127,21 @@ def extract():
         rows = []
         for record in extractor.split_dataframe(df, analysis):
             logger.debug("One record from extract", extra={"resource_id": resource_id})
-            rows.append(record.to_dict(orient="list"))
+            rows.append(record)
 
         return jsonify({"rows": rows})
 
     except Exception as err:
         logger.error(err)
         raise err
+
+
+@app.route("/metrics")
+def metrics():
+    """
+    Flask endpoint to gather the metrics, will be called by Prometheus.
+    """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.errorhandler(Exception)

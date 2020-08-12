@@ -2,10 +2,13 @@
 
 import json
 import os
-from uwsgidecorators import thread, postfork
+
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from jsonschema.exceptions import ValidationError
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from uwsgidecorators import thread, postfork
+
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
@@ -50,7 +53,7 @@ def process_event_with_producer(producer):
         logger.debug(msg_value)
 
         try:
-            fhir_document = transform_row(msg_value["resource_id"], msg_value["dataframe"])
+            fhir_document = transform_row(msg_value["resource_id"], msg_value["record"])
             producer.produce_event(topic=PRODUCED_TOPIC, record=fhir_document)
 
         except Exception as err:
@@ -68,9 +71,9 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
-def transform_row(resource_id, row):
+def transform_row(resource_id, row, time_refresh_analysis=3600):
     logger.debug("Get Analysis", extra={"resource_id": resource_id})
-    analysis = analyzer.get_analysis(resource_id)
+    analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 
     logger.debug("Transform dataframe", extra={"resource_id": resource_id})
     data = transformer.transform_data(row, analysis)
@@ -92,7 +95,7 @@ def transform():
         fhir_instances = []
         errors = []
         for row in body.get("dataframe"):
-            fhir_document = transform_row(resource_id, row)
+            fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
             try:
                 fhirstore.validate(fhir_document)
@@ -104,6 +107,14 @@ def transform():
     except Exception as err:
         logger.error(err)
         raise OperationOutcome(err)
+
+
+@app.route("/metrics")
+def metrics():
+    """
+    Flask endpoint to gather the metrics, will be called by Prometheus.
+    """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 @app.errorhandler(OperationOutcome)

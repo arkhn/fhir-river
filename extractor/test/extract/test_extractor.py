@@ -77,9 +77,10 @@ def test_sqlalchemy_query():
             {
                 "relation": "LIKE",
                 "value": "'2150-08-29'",
-                "sqlColumn": {"owner": None, "table": "admissions", "column": "admittime"},
+                "sqlColumn": {"table": "admissions", "column": "admittime"},
             }
-        ]
+        ],
+        "source": {"credential": {"owner": None}},
     }
     pk_values = None
 
@@ -131,14 +132,15 @@ def test_apply_filters():
             {
                 "relation": "LIKE",
                 "value": "'2150-08-29'",
-                "sqlColumn": {"owner": None, "table": "admissions", "column": "admittime"},
+                "sqlColumn": {"table": "admissions", "column": "admittime"},
             },
             {
                 "relation": "<=",
                 "value": "1000",
-                "sqlColumn": {"owner": None, "table": "patients", "column": "row_id"},
+                "sqlColumn": {"table": "patients", "column": "row_id"},
             },
-        ]
+        ],
+        "source": {"credential": {"owner": None}},
     }
     pk_column = SqlColumn("patients", "subject_id")
     pk_values = [123, 456]

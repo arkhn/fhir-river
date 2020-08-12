@@ -11,9 +11,9 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: 3.7.7
 
       - name: Install dependencies
         run: |
@@ -34,38 +34,16 @@ jobs:
         run: |
           python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
 
-  docker-build:
-    name: Build docker images
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Build images
-        run: |
-          docker build -f api/Dockerfile -t arkhn/river-api:$GITHUB_SHA .
-          docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA .
-          docker build -f transformer/Dockerfile -t arkhn/river-transformer:$GITHUB_SHA .
-          docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA .
-
-      - name: Push docker images for caching
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-          docker push arkhn/river-api:$GITHUB_SHA
-          docker push arkhn/river-extractor:$GITHUB_SHA
-          docker push arkhn/river-transformer:$GITHUB_SHA
-          docker push arkhn/river-loader:$GITHUB_SHA
-
   integration-tests:
     name: Run integration tests
     runs-on: ubuntu-18.04
-    needs: docker-build
     steps:
       - uses: actions/checkout@v1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: 3.7.7
 
       - name: Install dependencies
         run: |
@@ -74,38 +52,30 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Pull docker images
-        run: |
-          docker pull arkhn/river-api:$GITHUB_SHA
-          docker pull arkhn/river-extractor:$GITHUB_SHA
-          docker pull arkhn/river-transformer:$GITHUB_SHA
-          docker pull arkhn/river-loader:$GITHUB_SHA
-          docker-compose -f test/docker-compose.yml pull mimic mongo elasticsearch monstache zookeeper kafka
-
-      - name: Tag images
-        run: |
-          docker tag arkhn/river-api:$GITHUB_SHA arkhn/river-api:latest
-          docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
-          docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
-          docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
-
       - name: Integration tests with pytest
         env:
-          FHIR_API_URL: ${{ secrets.FHIR_API_URL }}
-          PYROG_API_URL: ${{ secrets.PYROG_API_URL }}
-          PYROG_LOGIN: ${{ secrets.PYROG_LOGIN }}
-          PYROG_PASSWORD: ${{ secrets.PYROG_PASSWORD }}
-          MIMIC_PRACTITIONER_RESOURCE_ID: ${{ secrets.MIMIC_PRACTITIONER_RESOURCE_ID }}
-          MIMIC_PATIENT_RESOURCE_ID: ${{ secrets.MIMIC_PATIENT_RESOURCE_ID }}
-          KAFKA_BOOTSTRAP_SERVERS: ${{ secrets.KAFKA_BOOTSTRAP_SERVERS }}
+          FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
+          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
+          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
+          PYROG_API_URL: http://0.0.0.0:1000
+          PYROG_LOGIN: admin@arkhn.com
+          PYROG_PASSWORD: password
+          KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic
-          sleep 10
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
+          docker-compose -f test/docker-compose.yml up -d kafka zookeeper
+          docker-compose -f test/docker-compose.yml up -d fhir-api
+          sleep 60
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker-compose -f test/docker-compose.yml up -d transformer
+          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
+          docker restart fhir-api
+          docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
-          docker-compose -f test/docker-compose.yml up -d
-          sleep 10
+          docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
+          docker exec pyrog-server yarn seed:mapping /app/mapping.json
+          docker exec pyrog-server yarn seed:credentials /app/credentials.json
+          docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
+          sleep 15
           python -m pytest -svv test/test_batch.py
 
   publish:
@@ -114,30 +84,22 @@ jobs:
 
     needs:
       - integration-tests
-      - docker-build
     if: github.ref == 'refs/heads/master'
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Pull docker images
+      - name: Build images
         run: |
-          docker pull arkhn/river-api:$GITHUB_SHA
-          docker pull arkhn/river-extractor:$GITHUB_SHA
-          docker pull arkhn/river-transformer:$GITHUB_SHA
-          docker pull arkhn/river-loader:$GITHUB_SHA
-
-      - name: Tag images
-        run: |
-          docker tag arkhn/river-api:$GITHUB_SHA arkhn/river-api:latest
-          docker tag arkhn/river-extractor:$GITHUB_SHA arkhn/river-extractor:latest
-          docker tag arkhn/river-transformer:$GITHUB_SHA arkhn/river-transformer:latest
-          docker tag arkhn/river-loader:$GITHUB_SHA arkhn/river-loader:latest
+          docker build -f apigo/Dockerfile -t arkhn/river-api-go:$GITHUB_SHA -t arkhn/river-api-go:latest apigo
+          docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA -t arkhn/river-extractor:latest .
+          docker build -f transformer/Dockerfile -t arkhn/river-transformer:$GITHUB_SHA -t arkhn/river-transformer:latest .
+          docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA -t arkhn/river-loader:latest .
 
       - name: Publish the latest tag to the docker hub
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-          docker push arkhn/river-api:latest
-          docker push arkhn/river-extractor:latest
-          docker push arkhn/river-transformer:latest
-          docker push arkhn/river-loader:latest
+          docker push arkhn/river-api-go
+          docker push arkhn/river-extractor
+          docker push arkhn/river-transformer
+          docker push arkhn/river-loader

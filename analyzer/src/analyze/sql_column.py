@@ -1,3 +1,5 @@
+import hashlib
+
 from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
 
@@ -42,4 +44,12 @@ class SqlColumn:
         """ sqlalchemy builds column names as {table}_{column}.
         This method helps retrieving the needed columns from the dataframe.
         """
-        return f"{self.table}_{self.column}"
+        name = f"{self.table}_{self.column}"
+        if len(name) <= 30:
+            return name
+
+        # Otherwise, we may have problems with sql not accepting aliases of length > 30
+        # so we truncate and add a hash
+        hashed_name = hashlib.sha1(name).hexdigest()
+
+        return f"{name[:10]}_{name[-10:]}_{hashed_name[:8]}"

@@ -3,6 +3,7 @@
 from confluent_kafka import KafkaException, KafkaError
 import json
 import os
+from prometheus_client import start_http_server
 from pymongo.errors import DuplicateKeyError
 
 from fhirstore import NotFoundError
@@ -22,6 +23,8 @@ CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
 
+METRICS_PORT = int(os.getenv("METRICS_PORT", 3003))
+
 logger = create_logger("loader")
 
 fhirstore = get_fhirstore()
@@ -38,6 +41,8 @@ def override_document(fhir_instance):
         fhirstore.db[fhir_instance["resourceType"]].delete_one(
             {"identifier": fhir_instance["identifier"]}
         )
+    except KeyError:
+        logger.warning(f"instance {fhir_instance['id']} has no identifier")
     except NotFoundError as e:
         logger.warning(f"error while trying to delete previous documents: {e}")
 
@@ -91,6 +96,8 @@ def manage_kafka_error(msg):
 
 if __name__ == "__main__":
     logger.info("Running Consumer")
+
+    start_http_server(METRICS_PORT)
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(

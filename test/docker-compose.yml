@@ -6,7 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: mimicuser
+      POSTGRES_PASSWORD: mimicpass
       POSTGRES_DB: mimic
       POSTGRES_HOST: mimic
       POSTGRES_PORT: 5432
@@ -21,10 +21,8 @@ services:
     container_name: mongo
     restart: always
     command: --replSet rs0
-    environment:
-      MONGO_INITDB_DATABASE: fhirstore
-      MONGO_INITDB_ROOT_USERNAME: arkhn
-      MONGO_INITDB_ROOT_PASSWORD: SuperSecurePassword2019
+    env_file:
+      - ./.env.test
     ports:
       - 27017:27017
     volumes:
@@ -34,8 +32,8 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.1
     container_name: elasticsearch
-    environment:
-      ELASTIC_PASSWORD: SuperSecurePassword2019
+    env_file:
+      - ./.env.test
     ports:
       - 9200:9200
     volumes:
@@ -53,15 +51,6 @@ services:
       - mongo
       - elasticsearch
 
-  # sftp:
-  #   image: atmoz/sftp
-  #   container_name: sftp
-  #   volumes:
-  #     - ./sftp/host/upload/:/home/arkhn/upload/
-  #   ports:
-  #     - "2222:22"
-  #   command: arkhn:arkhnpwd:1001
-
   zookeeper:
     image: "zookeeper:3.4.10"
     container_name: zookeeper
@@ -72,6 +61,7 @@ services:
       - "2181"
 
   kafka:
+    hostname: kafka
     image: "wurstmeister/kafka:0.10.2.1"
     restart: always
     container_name: kafka
@@ -90,40 +80,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  # kafka_connect:
-  #   image: confluentinc/cp-kafka-connect:latest
-  #   restart: always
-  #   container_name: kafka_connect
-  #   ports:
-  #     - "8083:8083"
-  #   depends_on:
-  #     - kafka
-  #   volumes:
-  #     - ../kafka_connect_connectors/plugins/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
-  #   environment:
-  #     CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
-  #     CONNECT_PLUGIN_PATH: /usr/share/java/
-  #     CONNECT_BOOTSTRAP_SERVERS: kafka:9093
-  #     CONNECT_GROUP_ID: source-kafka-connect
-  #     CONNECT_CONFIG_STORAGE_TOPIC: default.config
-  #     CONNECT_STATUS_STORAGE_TOPIC: default.status
-  #     CONNECT_OFFSET_STORAGE_TOPIC: default.offset
-  #     CONNECT_STATUS_STORAGE_PARTITIONS: 1
-  #     CONNECT_OFFSET_STORAGE_PARTITIONS: 1
-  #     CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-  #     CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-  #     CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-  #     CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     CONNECT_REST_PORT: 8083
-  #     CONNECT_REST_ADVERTISED_HOST_NAME: docker
-  #     CONNECT_SCHEMAS_ENABLE: "false"
-  #     CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-  #     CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-  #     CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
-
   transformer:
     build:
       dockerfile: transformer/Dockerfile
@@ -133,17 +89,10 @@ services:
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      FHIRSTORE_HOST: mongo
-      FHIRSTORE_PORT: 27017
-      FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORE_USER: arkhn
-      FHIRSTORE_PASSWORD: SuperSecurePassword2019
-      FHIR_API_URL: ${FHIR_API_URL}
-      PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_LOGIN: ${PYROG_LOGIN}
-      PYROG_PASSWORD: ${PYROG_PASSWORD}
+      FHIR_API_TOKEN: ${FHIR_API_TOKEN}
     ports:
       - 3002
 
@@ -157,17 +106,10 @@ services:
     depends_on:
       - kafka
       - mongo
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      FHIRSTORE_HOST: mongo
-      FHIRSTORE_PORT: 27017
-      FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORE_USER: arkhn
-      FHIRSTORE_PASSWORD: SuperSecurePassword2019
-      FHIR_API_URL: ${FHIR_API_URL}
-      PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_LOGIN: ${PYROG_LOGIN}
-      PYROG_PASSWORD: ${PYROG_PASSWORD}
+      FHIR_API_TOKEN: ${FHIR_API_TOKEN}
 
   extractor:
     build:
@@ -178,33 +120,88 @@ services:
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
-      FHIR_API_URL: ${FHIR_API_URL}
-      PYROG_API_URL: ${PYROG_API_URL}
-      PYROG_LOGIN: ${PYROG_LOGIN}
-      PYROG_PASSWORD: ${PYROG_PASSWORD}
+      FHIR_API_TOKEN: ${FHIR_API_TOKEN}
     ports:
       - 3001
 
   api:
     build:
-      dockerfile: api/Dockerfile
-      context: ../
+      context: ../apigo
     container_name: api
-    image: arkhn/river-api:latest
+    image: arkhn/river-api-go:latest
     restart: always
     depends_on:
       - kafka
+    env_file:
+      - ./.env.test
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+      PORT: 3000
       EXTRACTOR_URL: http://extractor:3001
       TRANSFORMER_URL: http://transformer:3002
     ports:
       - "3001:3000"
+
+  pyrog-server:
+    image: arkhn/pyrog-server:latest
+    container_name: pyrog-server
+    ports:
+      - 1000:1000
+    env_file:
+      - ./.env.test
+    environment:
+      JWT_PRIVATE_KEY: ${AUTH_SIGNING_PRIVATE_KEY}
+      JWT_TOKEN: ${FHIR_API_TOKEN}
+      PORT: 1000
+    volumes:
+      - ./volumes/mapping.json:/app/mapping.json
+      - ./volumes/credentials.json:/app/credentials.json
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    command: -p 55432
+    ports:
+      - 55432:55432
+    env_file:
+      - ./.env.test
+    volumes:
+      - test-postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:5.0.7-alpine
+    container_name: redis
+    expose:
+      - 6379
+    volumes:
+      - redis-data:/data
+
+  fhir-api:
+    image: arkhn/fhir-api:latest
+    container_name: fhir-api
+    expose:
+      - 2000
+    env_file:
+      - ./.env.test
+    environment:
+      ES_HOST: http://elasticsearch:9200
+      JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
+    depends_on:
+      - mongo
+      - elasticsearch
+    volumes:
+      - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
 volumes:
   test-mimic-db:
   test-fhirstore-db:
   test-fhirstore-config-db:
   test-elastic-db:
+  test-postgres-data:
+  kafka-config:
+  redis-data:

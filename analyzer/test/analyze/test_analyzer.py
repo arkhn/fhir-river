@@ -18,9 +18,9 @@ def test_get_primary_key(mock_login):
 
     # With owner
     resource_mapping = {
-        "primaryKeyOwner": "owner",
         "primaryKeyTable": "table",
         "primaryKeyColumn": "col",
+        "source": {"credential": {"owner": "owner"}},
     }
     primary_key = analyzer.get_primary_key(resource_mapping)
 
@@ -28,9 +28,9 @@ def test_get_primary_key(mock_login):
 
     # Without owner
     resource_mapping = {
-        "primaryKeyOwner": "",
         "primaryKeyTable": "table",
         "primaryKeyColumn": "col",
+        "source": {"credential": {"owner": ""}},
     }
     primary_key = analyzer.get_primary_key(resource_mapping)
 
@@ -38,9 +38,9 @@ def test_get_primary_key(mock_login):
 
     # Raising error
     resource_mapping = {
-        "primaryKeyOwner": "",
         "primaryKeyTable": "",
         "primaryKeyColumn": "col",
+        "source": {"credential": {"owner": ""}},
         "definitionId": "fhirtype",
     }
     with pytest.raises(

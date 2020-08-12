@@ -23,7 +23,6 @@ fragment entireFilter on Filter {
   id
   sqlColumn {
     id
-    owner
     table
     column
   }
@@ -32,12 +31,10 @@ fragment entireFilter on Filter {
 }
 
 fragment entireColumn on Column {
-    owner
     table
     column
     joins {
         tables {
-            owner
             table
             column
         }
@@ -68,8 +65,9 @@ fragment cred on Credential {
     host
     port
     database
+    owner
     login
-    password
+    password: decryptedPassword
 }
 """
 
@@ -81,7 +79,6 @@ resource_from_id_query = """
 query resource($resourceId: ID!) {
     resource(resourceId: $resourceId) {
         id
-        primaryKeyOwner
         primaryKeyTable
         primaryKeyColumn
         definitionId
@@ -133,7 +130,7 @@ class PyrogClient:
         and returns a json parsed response.
         """
         if not PYROG_API_URL:
-            raise OperationOutcome("PYROG_URL is missing from environment")
+            raise OperationOutcome("PYROG_API_URL is missing from environment")
 
         try:
             response = requests.post(

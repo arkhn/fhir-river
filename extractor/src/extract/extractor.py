@@ -1,14 +1,17 @@
+from collections import defaultdict
 from typing import List
 
-import pandas as pd
-
-from sqlalchemy import create_engine, MetaData, Table, Column as AlchemyColumn
+from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
 
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from extractor.src.config.logger import create_logger
+from extractor.src.errors import EmptyResult
+
+from monitoring.metrics import Timer
+
 
 logger = create_logger("extractor")
 
@@ -58,14 +61,17 @@ class Extractor:
 
         if new_db_string != self.db_string:
             self.db_string = new_db_string
-            self.engine = create_engine(self.db_string)
+            # Setting pool_pre_ping to True avoids random connection closing
+            self.engine = create_engine(self.db_string, pool_pre_ping=True)
             self.metadata = MetaData(bind=self.engine)
             self.session = sessionmaker(self.engine)()
 
+    # TODO refine buckets if needed
+    @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, resource_mapping, analysis, pk_values=None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
-        source DB, run it and return the result as a pandas dataframe.
+        source DB, run it and returns the result as an sqlalchemy ResultProxy.
 
         Args:
             resource_mapping: the mapping.
@@ -74,7 +80,7 @@ class Extractor:
                 the primary key values are in pk_values.
 
         Returns:
-            a pandas dataframe where there all the columns asked for in the mapping
+            a an sqlalchemy RestulProxy containing all the columns asked for in the mapping
         """
         if self.session is None:
             raise ValueError(
@@ -94,6 +100,7 @@ class Extractor:
 
         return self.run_sql_query(query)
 
+    @Timer("time_extractor_build_query", "time to build sql query")
     def sqlalchemy_query(
         self,
         columns: List[SqlColumn],
@@ -137,7 +144,7 @@ class Extractor:
                     SqlColumn(
                         filter["sqlColumn"]["table"],
                         filter["sqlColumn"]["column"],
-                        filter["sqlColumn"]["owner"],
+                        resource_mapping["source"]["credential"]["owner"],
                     )
                 )
                 rel_method = SQL_RELATIONS_TO_METHOD[filter["relation"]]
@@ -145,6 +152,7 @@ class Extractor:
 
         return query
 
+    @Timer("time_extractor_run_query", "time to run sql query")
     def run_sql_query(self, query):
         """
         Run a sql query after opening a sql connection
@@ -159,9 +167,17 @@ class Extractor:
         query = query.statement
         logger.info(f"sql query: {query}")
 
-        pd_query = pd.read_sql_query(query, con=self.engine)
+        return self.session.execute(query)
 
-        return pd.DataFrame(pd_query)
+    def batch_size(self, analysis, resource_mapping) -> int:
+        pk_column = self.get_column(analysis.primary_key_column)
+        base_query = self.session.query(func.count(distinct(pk_column)))
+        query_w_joins = self.apply_joins(base_query, analysis.joins)
+        query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, None)
+        logger.info(f"sql query: {query_w_filters.statement}")
+        res = query_w_filters.session.execute(query_w_filters)
+
+        return res.scalar()
 
     def get_columns(self, columns: List[SqlColumn]) -> List[AlchemyColumn]:
         """ Get the sql alchemy columns corresponding to the SqlColumns (custom type)
@@ -187,6 +203,7 @@ class Extractor:
         )
 
     @staticmethod
+    @Timer("time_extractor_split", "time to split dataframe")
     def split_dataframe(df, analysis):
         # Find primary key column
         logger.debug("Splitting Dataframe")
@@ -194,11 +211,19 @@ class Extractor:
         pk_col = analysis.primary_key_column.dataframe_column_name()
 
         prev_pk_val = None
-        acc = []
-        for _, row in df.iterrows():
+        acc = defaultdict(list)
+        for row in df:
             if acc and row[pk_col] != prev_pk_val:
-                yield pd.DataFrame(acc, columns=df.columns)
-                acc = []
-            acc.append(row)
+                yield acc
+                acc = defaultdict(list)
+            for key, value in row.items():
+                acc[key].append(value)
             prev_pk_val = row[pk_col]
-        yield pd.DataFrame(acc, columns=df.columns)
+
+        if not acc:
+            raise EmptyResult(
+                "The sql query returned nothing. Maybe the primary key values "
+                "you provided are not present in the database or the mapping "
+                "is erroneous."
+            )
+        yield acc
