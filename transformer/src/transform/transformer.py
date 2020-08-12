@@ -6,7 +6,7 @@ from transformer.src.transform.fhir import clean_fhir_object
 from transformer.src.transform.dataframe import cast_types
 from transformer.src.transform.dataframe import clean_data
 from transformer.src.transform.dataframe import squash_rows
-from transformer.src.transform.dataframe import merge_attributes
+from transformer.src.transform.dataframe import merge_by_attributes
 
 from transformer.src.config.logger import create_logger
 
@@ -44,7 +44,7 @@ class Transformer:
 
         # Apply merging scripts on data
         logger.debug("Apply Merging Scripts")
-        data = merge_attributes(data, analysis.attributes, primary_key)
+        data = merge_by_attributes(data, analysis.attributes, primary_key)
 
         return data
 

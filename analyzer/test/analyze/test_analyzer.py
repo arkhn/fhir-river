@@ -5,7 +5,7 @@ from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.analyze import Analyzer
 
 from analyzer.src.analyze.attribute import Attribute
-from analyzer.src.analyze.merging_script import MergingScript
+from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
@@ -56,77 +56,86 @@ def test_analyze_mapping(mock_login, patient_mapping):
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 
-    assert analysis.attributes == [
-        Attribute(
-            "identifier[0].value",
-            columns=[SqlColumn("patients", "row_id")],
-            static_inputs=[],
-            merging_script=None,
-        ),
-        Attribute(
-            "deceasedBoolean",
-            columns=[SqlColumn("patients", "expire_flag")],
-            static_inputs=[],
-            merging_script=None,
-        ),
-        Attribute(
-            "generalPractitioner[0].identifier.value",
-            columns=[SqlColumn("icustays", "hadm_id")],
-            static_inputs=[],
-            merging_script=None,
-        ),
-        Attribute(
-            "birthDate",
-            columns=[SqlColumn("patients", "dob")],
-            static_inputs=[],
-            merging_script=None,
-        ),
-        Attribute(
-            "deceasedDateTime",
-            columns=[SqlColumn("patients", "dod")],
-            static_inputs=[],
-            merging_script=None,
-        ),
-        Attribute(
-            "gender",
-            columns=[SqlColumn("patients", "gender")],
-            static_inputs=["unknown"],
-            merging_script=MergingScript("select_first_not_empty"),
-        ),
-        Attribute(
-            "maritalStatus.coding[0].code",
-            columns=[SqlColumn("admissions", "marital_status")],
-            static_inputs=[],
-            merging_script=None,
-        ),
-        Attribute(
-            "generalPractitioner[0].type",
-            columns=[],
-            static_inputs=["Practitioner"],
-            merging_script=None,
-        ),
-    ]
+    assert len(analysis.attributes) == 17
 
     assert analysis.columns == {
         SqlColumn("patients", "row_id"),
-        SqlColumn("patients", "gender"),
+        SqlColumn("patients", "subject_id"),
         SqlColumn("patients", "dob"),
         SqlColumn("patients", "dod"),
         SqlColumn("patients", "expire_flag"),
+        SqlColumn("patients", "gender"),
+        SqlColumn("admissions", "admittime"),
         SqlColumn("admissions", "marital_status"),
-        SqlColumn("icustays", "hadm_id"),
+        SqlColumn("admissions", "language"),
     }
+
     assert analysis.joins == {
         SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
-        SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("icustays", "subject_id")),
     }
+    assert analysis.reference_paths == {"generalPractitioner"}
 
 
 @mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
 @mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_reference_paths(mock_login, patient_mapping):
+def test_analyze_attribute(mock_login, patient_mapping):
     analyzer = Analyzer(PyrogClient())
+    analyzer._cur_analysis.primary_key_column = SqlColumn("patients", "subject_id")
 
-    analysis = analyzer.analyze_mapping(patient_mapping)
+    attribute_mapping = {
+        "id": "ck8ooenpu26984kp4wyiz4yc2",
+        "path": "gender",
+        "sliceName": None,
+        "definitionId": "code",
+        "resourceId": "ck8oo3on226974kp4ns32n7xs",
+        "updatedAt": "2020-08-10T14:33:13.135Z",
+        "createdAt": "2020-08-10T14:33:13.130Z",
+        "comments": [],
+        "inputGroups": [
+            {
+                "id": "ckdom8lgq0045m29ksz6vudvc",
+                "mergingScript": None,
+                "attributeId": "ck8ooenpu26984kp4wyiz4yc2",
+                "updatedAt": "2020-08-10T14:33:13.135Z",
+                "createdAt": "2020-08-10T14:33:13.130Z",
+                "inputs": [
+                    {
+                        "id": "ck8ooenw826994kp4whpirhdo",
+                        "script": None,
+                        "conceptMapId": "id_cm_gender",
+                        "staticValue": None,
+                        "sqlValueId": "ck8ooenw827004kp41nv3kcmq",
+                        "inputGroupId": "ckdom8lgq0045m29ksz6vudvc",
+                        "updatedAt": "2020-08-10T14:33:13.135Z",
+                        "createdAt": "2020-08-10T14:33:13.130Z",
+                        "sqlValue": {
+                            "id": "ck8ooenw827004kp41nv3kcmq",
+                            "table": "patients",
+                            "column": "gender",
+                            "joinId": None,
+                            "updatedAt": "2020-08-10T14:33:13.135Z",
+                            "createdAt": "2020-08-10T14:33:13.130Z",
+                            "joins": [],
+                        },
+                    }
+                ],
+                "conditions": [],
+            }
+        ],
+    }
 
-    assert analysis.reference_paths == {"generalPractitioner"}
+    actual = analyzer.analyze_attribute(attribute_mapping)
+
+    expected = Attribute("gender")
+
+    group = InputGroup(
+        id_="ckdom8lgq0045m29ksz6vudvc",
+        attribute=expected,
+        conditions=[],
+        columns=[SqlColumn("patients", "gender")],
+        static_inputs=[],
+        merging_script=None,
+    )
+    expected.add_input_group(group)
+
+    assert actual == expected

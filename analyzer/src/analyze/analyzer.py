@@ -5,11 +5,13 @@ from collections.abc import Mapping
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.logger import create_logger
 
-from .mapping import build_squash_rules
 from .analysis import Analysis
 from .attribute import Attribute
-from .concept_map import ConceptMap
 from .cleaning_script import CleaningScript
+from .concept_map import ConceptMap
+from .condition import Condition
+from .input_group import InputGroup
+from .mapping import build_squash_rules
 from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_join import SqlJoin
@@ -103,14 +105,10 @@ class Analyzer:
             f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}"
         )
         attribute = Attribute(
-            definition_id=attribute_mapping["definitionId"],
-            path=attribute_mapping["path"],
-            columns=[],
-            static_inputs=[],
-            merging_script=None,
+            path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"]
         )
-        if not attribute_mapping["inputs"]:
-            # If there are no inputs for this attribute, it means that it is an intermediary
+        if not attribute_mapping["inputGroups"]:
+            # If there are no input groups for this attribute, it means that it is an intermediary
             # attribute (ie not a leaf). It is here to give us some context information.
             # For instance, we can use it if its children attributes represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
@@ -121,20 +119,31 @@ class Analyzer:
 
             return
 
-        for input in attribute_mapping["inputs"]:
-            if input["sqlValue"]:
-                sqlValue = input["sqlValue"]
+        for mapping_group in attribute_mapping["inputGroups"]:
+            self.analyze_input_group(mapping_group, attribute)
+
+        self._cur_analysis.attributes.append(attribute)
+
+        return attribute
+
+    def analyze_input_group(self, mapping_group, parent_attribute):
+        input_group = InputGroup(id_=mapping_group["id"], attribute=parent_attribute)
+        parent_attribute.add_input_group(input_group)
+        for input_ in mapping_group["inputs"]:
+            if input_["sqlValue"]:
+
+                sqlValue = input_["sqlValue"]
                 cur_col = SqlColumn(
                     sqlValue["table"],
                     sqlValue["column"],
                     self._cur_analysis.primary_key_column.owner,
                 )
 
-                if input["script"]:
-                    cur_col.cleaning_script = CleaningScript(input["script"])
+                if input_["script"]:
+                    cur_col.cleaning_script = CleaningScript(input_["script"])
 
-                if input["conceptMapId"]:
-                    cur_col.concept_map = ConceptMap(input["conceptMapId"])
+                if input_["conceptMapId"]:
+                    cur_col.concept_map = ConceptMap(input_["conceptMapId"])
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
@@ -151,15 +160,30 @@ class Analyzer:
                     self._cur_analysis.add_join(SqlJoin(left, right))
 
                 self._cur_analysis.add_column(cur_col)
-                attribute.add_column(cur_col)
+                input_group.add_column(cur_col)
 
-            elif input["staticValue"]:
-                attribute.add_static_input(input["staticValue"])
+            elif input_["staticValue"]:
+                input_group.add_static_input(input_["staticValue"])
 
-        if attribute_mapping["mergingScript"]:
-            attribute.merging_script = MergingScript(attribute_mapping["mergingScript"])
+        for mapping_condition in mapping_group["conditions"]:
+            condition_column = SqlColumn(
+                mapping_condition["sqlValue"]["table"],
+                mapping_condition["sqlValue"]["column"],
+                self._cur_analysis.primary_key_column.owner,
+            )
+            self._cur_analysis.add_column(condition_column)
 
-        self._cur_analysis.attributes.append(attribute)
+            condition = Condition(
+                action=mapping_condition["action"],
+                sql_column=condition_column,
+                value=mapping_condition["value"],
+            )
+            input_group.add_condition(condition)
+
+        if mapping_group["mergingScript"]:
+            input_group.merging_script = MergingScript(mapping_group["mergingScript"])
+
+        return input_group
 
     def get_primary_key(self, resource_mapping):
         """ Get the primary key table and column of the provided resource.

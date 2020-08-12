@@ -2,6 +2,7 @@ from typing import List
 from collections import defaultdict
 
 from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.condition import CONDITION_FLAG
 
 from transformer.src.config.logger import create_logger
 
@@ -10,9 +11,10 @@ logger = create_logger("dataframe")
 
 def cast_types(data, attributes):
     for attribute in attributes:
-        for column in attribute.columns:
-            col_name = column.dataframe_column_name()
-            data[col_name] = [attribute.cast_type(row) for row in data[col_name]]
+        for input_group in attribute.input_groups:
+            for column in input_group.columns:
+                col_name = column.dataframe_column_name()
+                data[col_name] = [attribute.cast_type(row) for row in data[col_name]]
     return data
 
 
@@ -21,35 +23,48 @@ def clean_data(data, attributes: List[Attribute], primary_key):
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
     {
-        (attribute.path, (table, column)): [val, val, ...],
-        (attribute.path, (table, column)): [val, val, ...],
+        (input_group.id, (table, column)): [val, val, ...],
+        (input_group.id, (table, column)): [val, val, ...],
+        (CONDITION_FLAG, (table, column)): [val, val, ...],
         ...
     }
     and where all values are cleaned (with cleaning scripts and concept maps).
     """
     cleaned_data = {}
     for attribute in attributes:
-        for col in attribute.columns:
-            dict_col_name = col.dataframe_column_name()
+        for input_group in attribute.input_groups:
+            for col in input_group.columns:
+                dict_col_name = col.dataframe_column_name()
 
-            # The column name in the new intermediary dataframe
-            # We use col.table because it's needed in squash_rows
-            attr_col_name = (attribute.path, (col.table, col.column))
+                # The column name in the new intermediary dataframe
+                attr_col_name = (input_group.id, (col.table, col.column))
 
-            # Get the original column
-            cleaned_data[attr_col_name] = data[dict_col_name]
+                # Get the original column
+                cleaned_data[attr_col_name] = data[dict_col_name]
 
-            # Apply cleaning script
-            if col.cleaning_script:
-                cleaned_data[attr_col_name] = col.cleaning_script.apply(
-                    cleaned_data[attr_col_name], dict_col_name, primary_key
+                # Apply cleaning script
+                if col.cleaning_script:
+                    cleaned_data[attr_col_name] = col.cleaning_script.apply(
+                        cleaned_data[attr_col_name], dict_col_name, primary_key
+                    )
+
+                # Apply concept map
+                if col.concept_map:
+                    cleaned_data[attr_col_name] = col.concept_map.apply(
+                        cleaned_data[attr_col_name], dict_col_name, primary_key
+                    )
+
+            for condition in input_group.conditions:
+                dict_col_name = condition.sql_column.dataframe_column_name()
+
+                # The column name in the new intermediary dataframe
+                cond_col_name = (
+                    CONDITION_FLAG,
+                    (condition.sql_column.table, condition.sql_column.column),
                 )
 
-            # Apply concept map
-            if col.concept_map:
-                cleaned_data[attr_col_name] = col.concept_map.apply(
-                    cleaned_data[attr_col_name], dict_col_name, primary_key
-                )
+                # Get the original column
+                cleaned_data[cond_col_name] = data[dict_col_name]
 
     return cleaned_data
 
@@ -124,16 +139,17 @@ def squash_rows(data, squash_rules, parent_cols=[]):
     return squashed_data
 
 
-def merge_attributes(
+def merge_by_attributes(
     data, attributes: List[Attribute], primary_key,
 ):
     """ Apply merging scripts.
     Takes as input a dict of the form
 
    {
-        (attribute1.path, (table1, column1)): val,
-        (attribute1.path, (table2, column2)): val,
-        (attribute2.path, (table3, column3)): val,
+        (input_group1.id, (table1, column1)): val,
+        (input_group1.id, (table2, column2)): val,
+        (input_group2.id, (table3, column3)): val,
+        (CONDITION_FLAG, (table4, column4)): val,
         ...
     }
 
@@ -145,29 +161,43 @@ def merge_attributes(
         ...
     }
 
-    where values are merge thanks to the mergig scripts.
+    where values are merged with the mergig scripts.
     """
     # Un-list values in dict
     data = {k: v[0] for k, v in data.items()}
 
     merged_data = {}
     for attribute in attributes:
-        cur_attr_columns = [value for key, value in data.items() if key[0] == attribute.path]
+        for input_group in attribute.input_groups:
+            # Check conditions
+            if input_group.check_conditions(data):
+                cur_attr_columns = [
+                    value for key, value in data.items() if key[0] == input_group.id
+                ]
 
-        if not cur_attr_columns:
-            # If attribute is static or has no input, don't do anything
-            continue
+                if not cur_attr_columns:
+                    if input_group.static_inputs:
+                        # If attribute is static, use static input
+                        # Otherwise, attribute is not a leaf or has no inputs
+                        if len(input_group.static_inputs) != 1:
+                            raise ValueError(
+                                f"The mapping contains an attribute ({attribute.path}) "
+                                "with several static inputs (and no sql input)"
+                            )
+                        merged_data[attribute.path] = input_group.static_inputs[0]
+                elif input_group.merging_script:
+                    # TODO I don't think the order of pyrog inputs is preserved here
+                    merged_data[attribute.path] = input_group.merging_script.apply(
+                        cur_attr_columns, input_group.static_inputs, attribute.path, primary_key,
+                    )
+                elif len(cur_attr_columns) != 1:
+                    raise ValueError(
+                        "The mapping contains several unmerged columns "
+                        f"for attribute {attribute}"
+                    )
+                else:
+                    merged_data[attribute.path] = cur_attr_columns[0]
 
-        if attribute.merging_script:
-            # TODO I don't think the order of pyrog inputs is preserved here
-            merged_data[attribute.path] = attribute.merging_script.apply(
-                cur_attr_columns, attribute.static_inputs, attribute.path, primary_key,
-            )
-        else:
-            if len(cur_attr_columns) != 1:
-                raise ValueError(
-                    f"The mapping contains several unmerged columns for attribute {attribute}"
-                )
-            merged_data[attribute.path] = cur_attr_columns[0]
+                break
 
     return merged_data
