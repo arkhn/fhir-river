@@ -50,12 +50,31 @@ fragment entireInput on Input {
     staticValue
 }
 
-fragment a on Attribute {
-    path
-    definitionId
+fragment entireCondition on Condition {
+    action
+    sqlValue {
+        table
+        column
+    }
+    value
+}
+
+fragment entireInputGroup on InputGroup {
+    id
     mergingScript
     inputs {
         ...entireInput
+    }
+    conditions {
+        ...entireCondition
+    }
+}
+
+fragment a on Attribute {
+    path
+    definitionId
+    inputGroups {
+        ...entireInputGroup
     }
 }"""
 

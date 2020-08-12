@@ -1,11 +1,14 @@
 from unittest import mock, TestCase
 
-import transformer.src.transform.dataframe as transform
 from analyzer.src.analyze.attribute import Attribute
-from analyzer.src.analyze.sql_column import SqlColumn
-from analyzer.src.analyze.concept_map import ConceptMap
 from analyzer.src.analyze.cleaning_script import CleaningScript
+from analyzer.src.analyze.concept_map import ConceptMap
+from analyzer.src.analyze.condition import Condition, CONDITION_FLAG
+from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.merging_script import MergingScript
+from analyzer.src.analyze.sql_column import SqlColumn
+
+import transformer.src.transform.dataframe as transform
 
 from transformer.test.conftest import mock_fetch_maps
 
@@ -26,20 +29,23 @@ def test_cast_types():
         "PATIENTS_ID2": ["11", "22", "33"],
     }
 
-    attr_str = Attribute(
-        "str",
-        definition_id="code",
+    attr_str = Attribute("str", definition_id="code")
+    group = InputGroup(
+        id_="id",
+        attribute=attr_str,
         columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
     )
-    attr_number = Attribute(
-        "number",
-        definition_id="integer",
+    attr_str.add_input_group(group)
+
+    attr_number = Attribute("number", definition_id="integer")
+    group = InputGroup(
+        id_="id",
+        attribute=attr_str,
         columns=[SqlColumn("PATIENTS", "ID"), SqlColumn("PATIENTS", "ID2")],
     )
+    attr_number.add_input_group(group)
 
-    attributes = [attr_str, attr_number]
-
-    cast_data = transform.cast_types(data, attributes)
+    cast_data = transform.cast_types(data, [attr_str, attr_number])
 
     assert cast_data == {
         "PATIENTS_NAME": ["alice", "bob", "charlie"],
@@ -59,21 +65,36 @@ def test_clean_data(_):
         "ADMISSIONS_ID": ["ABC", "DEF", "GHI"],
     }
 
-    attr_name = Attribute(
-        "name", columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"),)]
+    attr_name = Attribute("name")
+    group = InputGroup(
+        id_="id_name",
+        attribute=attr_name,
+        columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
     )
-    attr_id = Attribute(
-        "id",
+    attr_name.add_input_group(group)
+
+    attr_id = Attribute("id")
+    group = InputGroup(
+        id_="id_id",
+        attribute=attr_id,
         columns=[SqlColumn("PATIENTS", "ID"), SqlColumn("PATIENTS", "ID2")],
         static_inputs=["null"],
     )
-    attr_language = Attribute(
-        "language",
+    attr_id.add_input_group(group)
+
+    attr_language = Attribute("language")
+    group = InputGroup(
+        id_="id_language",
+        attribute=attr_name,
         columns=[SqlColumn("ADMISSIONS", "LANGUAGE", concept_map=ConceptMap("id_cm_gender"))],
         static_inputs=["val"],
     )
-    attr_admid = Attribute(
-        "code",
+    attr_language.add_input_group(group)
+
+    attr_admid = Attribute("code")
+    group = InputGroup(
+        id_="id_code",
+        attribute=attr_name,
         columns=[
             SqlColumn(
                 "ADMISSIONS",
@@ -83,17 +104,19 @@ def test_clean_data(_):
             )
         ],
     )
+    attr_admid.add_input_group(group)
+
     attributes = [attr_name, attr_id, attr_language, attr_admid]
     primary_key_column = SqlColumn("PATIENTS", "ID")
 
     cleaned_data = transform.clean_data(data, attributes, primary_key_column)
 
     columns = [
-        ("name", ("PATIENTS", "NAME")),
-        ("id", ("PATIENTS", "ID")),
-        ("id", ("PATIENTS", "ID2")),
-        ("language", ("ADMISSIONS", "LANGUAGE")),
-        ("code", ("ADMISSIONS", "ID")),
+        ("id_name", ("PATIENTS", "NAME")),
+        ("id_id", ("PATIENTS", "ID")),
+        ("id_id", ("PATIENTS", "ID2")),
+        ("id_language", ("ADMISSIONS", "LANGUAGE")),
+        ("id_code", ("ADMISSIONS", "ID")),
     ]
 
     expected = {
@@ -144,32 +167,70 @@ def test_squash_rows():
 
 
 @mock.patch("analyzer.src.analyze.merging_script.scripts.get_script", return_value=mock_get_script)
-def test_merge_attributes(_):
-    attr_name = Attribute("name", columns=[SqlColumn("PATIENTS", "NAME")])
-    attr_id = Attribute(
-        "id",
+def test_merge_by_attributes(_):
+    attr_name = Attribute("name")
+    group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PATIENTS", "NAME")])
+    attr_name.add_input_group(group)
+
+    attr_id = Attribute("id")
+    group = InputGroup(
+        id_="id_id",
+        attribute=attr_id,
         columns=[SqlColumn("PATIENTS", "ID"), SqlColumn("PATIENTS", "ID2")],
         static_inputs=["unknown"],
         merging_script=MergingScript("merge"),
     )
-    attr_language = Attribute("language", columns=[SqlColumn("ADMISSIONS", "LANGUAGE")])
-    attr_admid = Attribute("admid", columns=[SqlColumn("ADMISSIONS", "ID")])
+    attr_id.add_input_group(group)
+
+    attr_language = Attribute("language")
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_1",
+            attribute=attr_language,
+            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_1")],
+            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "true")],
+        )
+    )
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_2",
+            attribute=attr_language,
+            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_2")],
+            conditions=[Condition("EXCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "true")],
+        )
+    )
+    attr_language.add_input_group(
+        InputGroup(
+            id_="not_reached",
+            attribute=attr_language,
+            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")],
+        )
+    )
+
+    attr_admid = Attribute("admid")
+    group = InputGroup(
+        id_="id_admid", attribute=attr_admid, columns=[SqlColumn("ADMISSIONS", "ID")],
+    )
+    attr_admid.add_input_group(group)
 
     data = {
-        ("name", ("PATIENTS", "NAME")): ["bob"],
-        ("id", ("PATIENTS", "ID")): ["id1"],
-        ("id", ("PATIENTS", "ID2")): ["id21"],
-        ("language", ("ADMISSIONS", "LANGUAGE")): [("lang1", "lang2", "lang3", "lang4")],
-        ("admid", ("ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        ("id_name", ("PATIENTS", "NAME")): ["bob"],
+        ("id_id", ("PATIENTS", "ID")): ["id1"],
+        ("id_id", ("PATIENTS", "ID2")): ["id21"],
+        ("id_language_1", ("ADMISSIONS", "LANGUAGE_1")): [("lang1", "lang2", "lang3", "lang4")],
+        ("id_language_2", ("ADMISSIONS", "LANGUAGE_2")): [("lang21", "lang22", "lang23", "lang24")],
+        ("id_language_3", ("ADMISSIONS", "LANGUAGE_3")): [("lang31", "lang32", "lang33", "lang34")],
+        ("id_admid", ("ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        (CONDITION_FLAG, ("ADMISSIONS", "COND_LANG")): ["false"],
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid]
 
-    actual = transform.merge_attributes(data, attributes, "pk")
+    actual = transform.merge_by_attributes(data, attributes, "pk")
     expected = {
         "name": "bob",
         "id": "id1id21merge",
-        "language": ("lang1", "lang2", "lang3", "lang4"),
+        "language": ("lang21", "lang22", "lang23", "lang24"),
         "admid": ("hadmid1", "hadmid2", "hadmid3", "hadmid4"),
     }
 

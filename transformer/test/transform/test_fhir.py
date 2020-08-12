@@ -5,7 +5,6 @@ from fhirstore import ARKHN_CODE_SYSTEMS
 
 import transformer.src.transform.fhir as transform
 from analyzer.src.analyze.attribute import Attribute
-from analyzer.src.analyze.sql_column import SqlColumn
 
 
 class mockdatetime:
@@ -17,12 +16,10 @@ class mockdatetime:
 def test_create_instance(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
-    attr_identifier = Attribute("identifier[0].value", columns=[SqlColumn("a", "b")])
-    attr_birthDate = Attribute("birthDate", columns=[SqlColumn("a", "c")])
-    attr_maritalStatus = Attribute("maritalStatus.coding[0].code", columns=[SqlColumn("a", "d")])
-    attr_generalPractitioner = Attribute(
-        "generalPractitioner[0].type", static_inputs=["Practitioner"]
-    )
+    attr_identifier = Attribute("identifier[0].value")
+    attr_birthDate = Attribute("birthDate")
+    attr_maritalStatus = Attribute("maritalStatus.coding[0].code")
+    attr_generalPractitioner = Attribute("generalPractitioner[0].type")
 
     path_attributes_map = {
         attr_identifier.path: attr_identifier,
@@ -35,6 +32,7 @@ def test_create_instance(mock_datetime):
         attr_maritalStatus.path: "D",
         attr_birthDate.path: "2000-10-10",
         attr_identifier.path: "A",
+        attr_generalPractitioner.path: "Practitioner",
     }
 
     actual = transform.build_fhir_object(row, path_attributes_map)
@@ -79,27 +77,9 @@ def test_build_metadata(mock_datetime):
     }
 
 
-def test_fetch_values_from_dataframe():
-    attr_identifier = Attribute("identifier[0].value", columns=[SqlColumn("a", "b")])
-    attr_birthDate = Attribute("birthDate", columns=[SqlColumn("a", "c")])
-    attr_maritalStatus = Attribute("maritalStatus.coding[0].code", columns=[SqlColumn("a", "d")])
-
-    attribute = attr_birthDate
-
-    row = {
-        attr_maritalStatus.path: "D",
-        attr_birthDate.path: "2000-10-10",
-        attr_identifier.path: "A",
-    }
-
-    value = transform.fetch_values_from_dataframe(row, attribute)
-
-    assert value == "2000-10-10"
-
-
 def test_handle_array_attributes():
-    attr1 = Attribute("attr1", columns=[SqlColumn("a", "b")])
-    attr2 = Attribute("attr2", columns=[SqlColumn("a", "c")])
+    attr1 = Attribute("attr1")
+    attr2 = Attribute("attr2")
     row = {
         attr1.path: ("A1", "A2", "A3"),
         attr2.path: "B",
