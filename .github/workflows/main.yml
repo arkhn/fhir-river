@@ -93,9 +93,11 @@ jobs:
         run: |
           docker build -f apigo/Dockerfile -t arkhn/river-api-go:$GITHUB_SHA -t arkhn/river-api-go:latest apigo
           docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA -t arkhn/river-extractor:latest .
-          docker build -f extractor/Dockerfile.oracle11 -t $ARKHN_REGISTRY/arkhn/river-extractor:oracle11 .
           docker build -f transformer/Dockerfile -t arkhn/river-transformer:$GITHUB_SHA -t arkhn/river-transformer:latest .
           docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA -t arkhn/river-loader:latest .
+
+          echo "${{ secrets.ARKHN_DOCKER_PASSWORD }}" | docker login $ARKHN_REGISTRY -u ${{ secrets.ARKHN_DOCKER_LOGIN }} --password-stdin
+          docker build -f extractor/Dockerfile.oracle11 -t $ARKHN_REGISTRY/arkhn/river-extractor:oracle11 .
 
       - name: Publish the latest tag to the docker hub
         run: |
