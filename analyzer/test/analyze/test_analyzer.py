@@ -68,7 +68,6 @@ def test_analyze_mapping(mock_login, patient_mapping):
         SqlColumn("admissions", "admittime"),
         SqlColumn("admissions", "marital_status"),
         SqlColumn("admissions", "language"),
-        SqlColumn("admissions", "hospital_expire_flag"),
     }
 
     assert analysis.joins == {

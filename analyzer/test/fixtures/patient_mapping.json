@@ -417,8 +417,8 @@
               "createdAt": "2020-08-11T14:02:21.816Z",
               "sqlValue": {
                 "id": "ckdq0krnc0352159kwj8hmvk6",
-                "table": "admissions",
-                "column": "hospital_expire_flag",
+                "table": "patients",
+                "column": "expire_flag",
                 "joinId": null,
                 "updatedAt": "2020-08-11T14:02:21.816Z",
                 "createdAt": "2020-08-11T14:02:21.816Z",
@@ -435,8 +435,8 @@
               "inputGroupId": "ckdq0krl80334159kmuj3maez",
               "sqlValue": {
                 "id": "ckdq0l3g60406159k0xgv801e",
-                "table": "admissions",
-                "column": "hospital_expire_flag",
+                "table": "patients",
+                "column": "expire_flag",
                 "joinId": null,
                 "updatedAt": "2020-08-11T14:03:11.455Z",
                 "createdAt": "2020-08-11T14:02:37.110Z"
@@ -453,14 +453,22 @@
           "inputs": [
             {
               "id": "ckdq0m6xp0581159k9w50n3ih",
-              "script": null,
+              "script": "binary_to_bool_2",
               "conceptMapId": null,
-              "staticValue": "True",
+              "staticValue": null,
               "sqlValueId": null,
               "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
               "updatedAt": "2020-08-11T14:03:28.286Z",
               "createdAt": "2020-08-11T14:03:28.285Z",
-              "sqlValue": null
+              "sqlValue": {
+                "id": "ckdq0krnc0352159kwj8hmvk6",
+                "table": "patients",
+                "column": "expire_flag",
+                "joinId": null,
+                "updatedAt": "2020-08-11T14:02:21.816Z",
+                "createdAt": "2020-08-11T14:02:21.816Z",
+                "joins": []
+              }
             }
           ],
           "conditions": [
@@ -472,8 +480,8 @@
               "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
               "sqlValue": {
                 "id": "ckdq0m7sx0625159kx0q7tp3n",
-                "table": "admissions",
-                "column": "hospital_expire_flag",
+                "table": "patients",
+                "column": "expire_flag",
                 "joinId": null,
                 "updatedAt": "2020-08-11T14:03:36.171Z",
                 "createdAt": "2020-08-11T14:03:29.409Z"

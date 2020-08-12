@@ -62,9 +62,7 @@ jobs:
           PYROG_PASSWORD: password
           KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache
-          docker-compose -f test/docker-compose.yml up -d kafka zookeeper
-          docker-compose -f test/docker-compose.yml up -d fhir-api
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper fhir-api
           sleep 15
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json

@@ -24,7 +24,8 @@ class Condition:
         if isinstance(data_value, tuple):
             if not all(el == data_value[0] for el in data_value[1:]):
                 raise ValueError(
-                    "Conditions can only be checked against arrays with identical values."
+                    "Conditions can only be checked against arrays with identical values, "
+                    f"got {data_value}."
                 )
             data_value = data_value[0]
 
