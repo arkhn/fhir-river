@@ -10,7 +10,7 @@ from analyzer.src.analyze.sql_join import SqlJoin
 from extractor.src.config.logger import get_logger
 from extractor.src.errors import EmptyResult
 
-from monitoring.metrics import Timer
+from arkhn_monitoring import Timer
 
 
 logger = get_logger()

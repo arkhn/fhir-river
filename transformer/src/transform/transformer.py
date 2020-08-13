@@ -10,7 +10,7 @@ from transformer.src.transform.dataframe import merge_by_attributes
 
 from transformer.src.config.logger import get_logger
 
-from monitoring.metrics import Timer, FAST_FN_BUCKETS
+from arkhn_monitoring import Timer, FAST_FN_BUCKETS
 
 logger = get_logger()
 

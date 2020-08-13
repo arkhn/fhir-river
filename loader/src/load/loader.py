@@ -1,6 +1,6 @@
 from loader.src.load.fhirstore import save_one
 
-from monitoring.metrics import Counter, Timer, FAST_FN_BUCKETS
+from arkhn_monitoring import Counter, Timer, FAST_FN_BUCKETS
 
 
 class Loader:
