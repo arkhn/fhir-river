@@ -66,21 +66,22 @@ def process_event_with_producer(producer):
 
         msg_topic = msg.topic()
 
-        logger.info("Events Ready to be processed")
-        logger.info(msg_topic)
-        logger.info(msg_value)
+        logger.info(
+            f"Event ready to be processed (topic: {msg_topic}, message: {msg_value})",
+            extra={"resource_id": resource_id},
+        )
 
         try:
             resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
             batch_size = extractor.batch_size(analysis, resource_mapping)
-            logger.info(f"Batch size is {batch_size}")
+            logger.info(f"Batch size is {batch_size}", extra={"resource_id": resource_id})
             producer.produce_event(
                 topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
             )
             broadcast_events(resource_mapping, df, analysis, batch_id)
 
         except Exception as err:
-            logger.error(err)
+            logger.error(err, extra={"resource_id": resource_id})
 
     return process_event
 
@@ -95,7 +96,7 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.debug("Getting Mapping for resource %s", resource_id, extra={"resource_id": resource_id})
+    logger.info(f"Getting Mapping for resource {resource_id}", extra={"resource_id": resource_id})
     resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
 
     # Get credentials
@@ -105,10 +106,10 @@ def extract_resource(resource_id, primary_key_values):
     credentials = resource_mapping["source"]["credential"]
     extractor.update_connection(credentials)
 
-    logger.debug("Analyzing Mapping", extra={"resource_id": resource_id})
+    logger.info("Analyzing Mapping", extra={"resource_id": resource_id})
     analysis = analyzer.analyze(resource_mapping)
 
-    logger.debug("Extracting rows", extra={"resource_id": resource_id})
+    logger.info("Extracting rows", extra={"resource_id": resource_id})
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
 
     return resource_mapping, analysis, df

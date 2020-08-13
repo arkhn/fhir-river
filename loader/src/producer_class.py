@@ -66,10 +66,6 @@ class LoaderProducer:
         This allows the original contents to be included for debugging purposes.
         """
         if err is not None:
-            logger.debug(
-                "Message {} delivery failed with error {} for topic {}".format(
-                    obj, err, msg.topic()
-                )
-            )
+            logger.debug(f"Message {obj} delivery failed with error {err} for topic {msg.topic()}")
         else:
             logger.debug("Event Successfully created")

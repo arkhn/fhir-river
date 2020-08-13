@@ -48,7 +48,7 @@ def trigger_sample_extractor():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    logger.debug(
+    logger.info(
         f"PREVIEW {resource_id} {primary_key_values}", extra={"resource_id": resource_id}
     )
 
@@ -113,5 +113,5 @@ def create_extractor_trigger(resource_id, batch_id=None, primary_key_values=None
     event["resource_id"] = resource_id
     event["primary_key_values"] = primary_key_values
 
-    logger.info("Producing event %s %s", PRODUCED_TOPIC, event)
+    logger.debug("Producing event %s %s", PRODUCED_TOPIC, event)
     get_producer().produce_event(topic=PRODUCED_TOPIC, event=event)

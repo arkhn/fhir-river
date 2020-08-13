@@ -13,7 +13,7 @@ FLUENTD_PORT = os.getenv("FLUENTD_PORT", 24224)
 logger = None
 
 
-def get_logger(level="DEBUG"):
+def get_logger(level="INFO"):
     global logger
 
     if logger is not None:

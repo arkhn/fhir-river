@@ -217,7 +217,7 @@ services:
   #     - river-network
 
   fluentd:
-    build: ./fluentd
+    image: arkhn/fluentd:latest
     container_name: fluentd
     volumes:
       - ./fluentd/conf:/fluentd/etc

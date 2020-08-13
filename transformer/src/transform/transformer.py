@@ -28,22 +28,25 @@ class Transformer:
         try:
             primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
         except KeyError as e:
-            logger.error(f"Trying to access column not present in dataframe: {e}")
+            logger.error(
+                f"Trying to access column not present in dataframe: {e}",
+                extra={"resource_id": analysis.resource_id},
+            )
 
         # Change values to strings
-        logger.debug("Apply Map String")
+        logger.debug("Apply Map String", extra={"resource_id": analysis.resource_id})
         data = cast_types(data, analysis.attributes)
 
         # Apply cleaning scripts and concept map on data
-        logger.debug("Apply Cleaning")
+        logger.debug("Apply Cleaning", extra={"resource_id": analysis.resource_id})
         data = clean_data(data, analysis.attributes, primary_key)
 
         # Apply join rule to merge some lines from the same resource
-        logger.debug("Apply Squash Rows")
+        logger.debug("Apply Squash Rows", extra={"resource_id": analysis.resource_id})
         data = squash_rows(data, analysis.squash_rules)
 
         # Apply merging scripts on data
-        logger.debug("Apply Merging Scripts")
+        logger.debug("Apply Merging Scripts", extra={"resource_id": analysis.resource_id})
         data = merge_by_attributes(data, analysis.attributes, primary_key)
 
         return data

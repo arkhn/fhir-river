@@ -80,7 +80,6 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        logger.info(self.topics)
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()

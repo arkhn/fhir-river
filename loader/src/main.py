@@ -35,6 +35,16 @@ analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 
 
+def get_resource_id(fhir_instance):
+    """
+    Get the resource id stored in the meta field of a fhir document
+    """
+    try:
+        return fhir_instance["meta"]["tag"][1]["code"]
+    except (KeyError, IndexError):
+        return None
+
+
 def override_document(fhir_instance):
     try:
         # TODO add a wrapper method in fhirstore to delete as follows?
@@ -42,7 +52,10 @@ def override_document(fhir_instance):
             {"identifier": fhir_instance["identifier"]}
         )
     except KeyError:
-        logger.warning(f"instance {fhir_instance['id']} has no identifier")
+        logger.warning(
+            f"instance {fhir_instance['id']} has no identifier",
+            extra={"resource_id": get_resource_id(fhir_instance)},
+        )
     except NotFoundError as e:
         logger.warning(f"error while trying to delete previous documents: {e}")
 
@@ -55,8 +68,7 @@ def process_event_with_producer(producer):
         :return:
         """
         fhir_instance = json.loads(msg.value())
-        resource_id = fhir_instance["meta"]["tag"][1]["code"]
-        logger.debug("Loader", extra={"resource_id": resource_id})
+        resource_id = get_resource_id(fhir_instance)
         logger.debug(fhir_instance, extra={"resource_id": resource_id})
 
         logger.debug("Get Analysis", extra={"resource_id": resource_id})

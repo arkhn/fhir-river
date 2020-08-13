@@ -14,7 +14,7 @@ SERVICE_NAME = os.getenv("SERVICE_NAME", "analyzer")
 logger = None
 
 
-def get_logger(level="DEBUG"):
+def get_logger(level="INFO"):
     global logger
 
     if logger is not None:
