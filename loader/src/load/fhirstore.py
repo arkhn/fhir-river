@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import fhirstore
 
 from loader.src.config.logger import get_logger
-from loader.src.main import get_resource_id
+from loader.src.load.utils import get_resource_id
 
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")

@@ -14,6 +14,7 @@ from analyzer.src.analyze.graphql import PyrogClient
 from loader.src.config.logger import get_logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
+from loader.src.load.utils import get_resource_id
 from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
@@ -33,16 +34,6 @@ fhirstore = get_fhirstore()
 loader = Loader(fhirstore, bypass_validation=False)
 analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
-
-
-def get_resource_id(fhir_instance):
-    """
-    Get the resource id stored in the meta field of a fhir document
-    """
-    try:
-        return fhir_instance["meta"]["tag"][1]["code"]
-    except (KeyError, IndexError):
-        return None
 
 
 def override_document(fhir_instance):

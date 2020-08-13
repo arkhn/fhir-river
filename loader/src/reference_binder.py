@@ -3,7 +3,7 @@ from collections import defaultdict
 from dotty_dict import dotty
 
 from loader.src.config.logger import get_logger
-from loader.src.main import get_resource_id
+from loader.src.load.utils import get_resource_id
 
 
 logger = get_logger()
