@@ -14,7 +14,6 @@ RUN pip install -r ${LOADER_HOME}/requirements.txt
 
 COPY loader/src ${LOADER_HOME}/loader/src
 COPY analyzer/src ${LOADER_HOME}/analyzer/src
-COPY monitoring ${LOADER_HOME}/monitoring
 
 COPY loader/entrypoint.sh /entrypoint.sh
 
