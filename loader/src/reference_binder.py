@@ -2,9 +2,11 @@ import re
 from collections import defaultdict
 from dotty_dict import dotty
 
-from loader.src.config.logger import create_logger
+from loader.src.config.logger import get_logger
+from loader.src.load.utils import get_resource_id
 
-logger = create_logger("reference_binder")
+
+logger = get_logger()
 
 
 # dotty-dict does not handle brackets indices,
@@ -78,12 +80,14 @@ class ReferenceBinder:
 
     def resolve_references(self, unresolved_fhir_object, reference_paths):
         fhir_object = dotty(unresolved_fhir_object)
+        resource_id = get_resource_id(unresolved_fhir_object)
 
         # iterate over the instance's references and try to resolve them
         for reference_path in dotty_paths(reference_paths):
             logger.debug(
                 f"Trying to resolve reference for resource {fhir_object['id']} "
-                f"at {reference_path}"
+                f"at {reference_path}",
+                extra={"resource_id": resource_id},
             )
             try:
                 bound_ref = self.bind_existing_reference(fhir_object, reference_path)
@@ -91,7 +95,8 @@ class ReferenceBinder:
             except Exception as e:
                 logger.warning(
                     "Error while binding reference for instance "
-                    f"{fhir_object} at path {reference_path}: {e}"
+                    f"{fhir_object} at path {reference_path}: {e}",
+                    extra={"resource_id": resource_id},
                 )
 
         if "identifier" in fhir_object:
@@ -101,6 +106,7 @@ class ReferenceBinder:
 
     def bind_existing_reference(self, fhir_object, reference_path):
         reference_attribute = fhir_object[reference_path]
+        resource_id = get_resource_id(fhir_object)
 
         def bind(ref, isArray=False):
             # extract the type and itentifier of the reference
@@ -119,11 +125,15 @@ class ReferenceBinder:
             if referenced_resource:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
-                logger.info(f"reference to {reference_type} {identifier} resolved")
+                logger.debug(
+                    f"reference to {reference_type} {identifier} resolved",
+                    extra={"resource_id": resource_id},
+                )
                 ref["reference"] = f"{reference_type}/{referenced_resource['id']}"
             else:
-                logger.info(
-                    f"caching reference to {reference_type} {identifier} at {reference_path}"
+                logger.debug(
+                    f"caching reference to {reference_type} {identifier} at {reference_path}",
+                    extra={"resource_id": resource_id},
                 )
 
                 # otherwise, cache the reference to resolve it later
@@ -152,8 +162,9 @@ class ReferenceBinder:
             for (source_type, reference_path, isArray), refs in pending_refs.items():
                 find_predicate = build_find_predicate(refs, reference_path, identifier, isArray)
                 update_predicate = build_update_predicate(reference_path, fhir_object, isArray)
-                logger.info(
-                    "Updating resource %s: %s %s", source_type, find_predicate, update_predicate
+                logger.debug(
+                    f"Updating resource {source_type}: {find_predicate} {update_predicate}",
+                    extra={"resource_id": get_resource_id(fhir_object)},
                 )
                 self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
             if len(pending_refs) > 0:

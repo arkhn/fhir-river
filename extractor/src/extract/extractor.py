@@ -7,13 +7,13 @@ from sqlalchemy.orm import sessionmaker, Query
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
-from extractor.src.config.logger import create_logger
+from extractor.src.config.logger import get_logger
 from extractor.src.errors import EmptyResult
 
 from monitoring.metrics import Timer
 
 
-logger = create_logger("extractor")
+logger = get_logger()
 
 SQL_RELATIONS_TO_METHOD = {
     "<": "__lt__",
@@ -57,7 +57,7 @@ class Extractor:
 
     def update_connection(self, credentials):
         new_db_string = self.build_db_url(credentials)
-        logger.debug("Updating connection to %s", new_db_string)
+        logger.info(f"Updating connection to {new_db_string}")
 
         if new_db_string != self.db_string:
             self.db_string = new_db_string
@@ -87,7 +87,10 @@ class Extractor:
                 "You need to create a session for the Extractor before using extract()."
             )
 
-        logger.info(f"Extracting resource: {resource_mapping['definitionId']}")
+        logger.info(
+            f"Extracting resource: {resource_mapping['definitionId']}",
+            extra={"resource_id": analysis.resource_id},
+        )
 
         # Build sqlalchemy query
         query = self.sqlalchemy_query(
@@ -153,19 +156,19 @@ class Extractor:
         return query
 
     @Timer("time_extractor_run_query", "time to run sql query")
-    def run_sql_query(self, query):
+    def run_sql_query(self, query, resource_id=None):
         """
         Run a sql query after opening a sql connection
 
         args:
             query (str): a sql query to run
-            connection_type (str): the connection type / database to use
+            resource_id (str, optional): the id of the resource being processed, for logging
 
         return:
             the result of the sql query
         """
         query = query.statement
-        logger.info(f"sql query: {query}")
+        logger.info(f"sql query: {query}", extra={"resource_id": resource_id})
 
         return self.session.execute(query)
 
@@ -174,7 +177,9 @@ class Extractor:
         base_query = self.session.query(func.count(distinct(pk_column)))
         query_w_joins = self.apply_joins(base_query, analysis.joins)
         query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, None)
-        logger.info(f"sql query: {query_w_filters.statement}")
+        logger.info(
+            f"sql query: {query_w_filters.statement}", extra={"resource_id": analysis.resource_id}
+        )
         res = query_w_filters.session.execute(query_w_filters)
 
         return res.scalar()
@@ -206,7 +211,7 @@ class Extractor:
     @Timer("time_extractor_split", "time to split dataframe")
     def split_dataframe(df, analysis):
         # Find primary key column
-        logger.debug("Splitting Dataframe")
+        logger.debug("Splitting Dataframe", extra={"resource_id": analysis.resource_id})
         # TODO I don't think it's necessarily present in the df
         pk_col = analysis.primary_key_column.dataframe_column_name()
 

@@ -1,6 +1,8 @@
+arkhn-monitoring==0.0.3
 cleaning-scripts==0.2.23
 confluent_kafka==1.3.0
 fhirstore==0.3.9
+fluent-logger==0.9.6
 jsonschema==3.0.2
 prometheus-client==0.8.0
 pymongo==3.9.0

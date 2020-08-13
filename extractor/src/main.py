@@ -13,14 +13,14 @@ from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
 
 from extractor.src.extract import Extractor
-from extractor.src.config.logger import create_logger
+from extractor.src.config.logger import get_logger
 from extractor.src.errors import MissingInformationError
 from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError
 
 
-logger = create_logger("extractor")
+logger = get_logger()
 
 CONSUMER_GROUP_ID = "extractor"
 EXTRACT_TOPIC = "extract"
@@ -47,7 +47,9 @@ def process_event_with_producer(producer):
         list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
         for record in list_records_from_db:
-            logger.debug("One record from extract")
+            logger.debug(
+                "One record from extract", extra={"resource_id": resource_id},
+            )
             event = dict()
             event["batch_id"] = batch_id
             event["resource_type"] = resource_type
@@ -64,21 +66,22 @@ def process_event_with_producer(producer):
 
         msg_topic = msg.topic()
 
-        logger.info("Events Ready to be processed")
-        logger.info(msg_topic)
-        logger.info(msg_value)
+        logger.info(
+            f"Event ready to be processed (topic: {msg_topic}, message: {msg_value})",
+            extra={"resource_id": resource_id},
+        )
 
         try:
             resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
             batch_size = extractor.batch_size(analysis, resource_mapping)
-            logger.info(f"Batch size is {batch_size}")
+            logger.info(f"Batch size is {batch_size}", extra={"resource_id": resource_id})
             producer.produce_event(
                 topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
             )
             broadcast_events(resource_mapping, df, analysis, batch_id)
 
         except Exception as err:
-            logger.error(err)
+            logger.error(err, extra={"resource_id": resource_id})
 
     return process_event
 
@@ -93,7 +96,7 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.debug("Getting Mapping for resource %s", resource_id)
+    logger.info(f"Getting Mapping for resource {resource_id}", extra={"resource_id": resource_id})
     resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
 
     # Get credentials
@@ -103,10 +106,10 @@ def extract_resource(resource_id, primary_key_values):
     credentials = resource_mapping["source"]["credential"]
     extractor.update_connection(credentials)
 
-    logger.debug("Analyzing Mapping")
+    logger.info("Analyzing Mapping", extra={"resource_id": resource_id})
     analysis = analyzer.analyze(resource_mapping)
 
-    logger.debug("Extracting rows")
+    logger.info("Extracting rows", extra={"resource_id": resource_id})
     df = extractor.extract(resource_mapping, analysis, primary_key_values)
 
     return resource_mapping, analysis, df
@@ -124,7 +127,7 @@ def extract():
         _, analysis, df = extract_resource(resource_id, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
-            logger.debug("One record from extract")
+            logger.debug("One record from extract", extra={"resource_id": resource_id})
             rows.append(record)
 
         return jsonify({"rows": rows})

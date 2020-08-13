@@ -2,9 +2,9 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from transformer.src.config.logger import create_logger
+from transformer.src.config.logger import get_logger
 
-logger = create_logger("transform_fhir")
+logger = get_logger()
 
 
 def recursive_defaultdict():

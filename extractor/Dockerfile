@@ -1,7 +1,7 @@
 FROM python:3.7-slim
 
 RUN apt-get update \
-    && apt-get -y install build-essential
+    && apt-get -y install build-essential git
 
 RUN apt-get -y install libaio1 wget unzip
 

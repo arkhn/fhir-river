@@ -4,7 +4,9 @@ from pymongo import MongoClient
 
 import fhirstore
 
-from loader.src.config.logger import create_logger
+from loader.src.config.logger import get_logger
+from loader.src.load.utils import get_resource_id
+
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
 FHIRSTORE_PORT = os.getenv("FHIRSTORE_PORT")
@@ -13,7 +15,7 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
-logger = create_logger("fhirstore")
+logger = get_logger()
 
 
 def get_mongo_client():
@@ -53,7 +55,8 @@ def save_one(fhir_object, bypass_validation=False):
     except ValidationError as e:
         logger.error(
             f"Validation failed for resource {fhir_object} at "
-            f"{'.'.join(e.schema_path)}: {e.message}"
+            f"{'.'.join(e.schema_path)}: {e.message}",
+            extra={"resource_id": get_resource_id(fhir_object)},
         )
 
 

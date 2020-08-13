@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import requests
 
-from api.src.config.logger import create_logger
+from api.src.config.logger import get_logger
 from api.src.errors import OperationOutcome
 from api.src.producer_class import RiverApiProducer
 import uuid
@@ -15,7 +15,7 @@ EXTRACTOR_URL = os.getenv("EXTRACTOR_URL")
 TRANSFORMER_URL = os.getenv("TRANSFORMER_URL")
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 
-logger = create_logger("api")
+logger = get_logger()
 
 
 def get_producer():
@@ -48,7 +48,9 @@ def trigger_sample_extractor():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    logger.debug("PREVIEW %s %s", resource_id, primary_key_values)
+    logger.info(
+        f"PREVIEW {resource_id} {primary_key_values}", extra={"resource_id": resource_id}
+    )
 
     try:
         extract_resp = requests.post(
@@ -111,5 +113,5 @@ def create_extractor_trigger(resource_id, batch_id=None, primary_key_values=None
     event["resource_id"] = resource_id
     event["primary_key_values"] = primary_key_values
 
-    logger.info("Producing event %s %s", PRODUCED_TOPIC, event)
+    logger.debug("Producing event %s %s", PRODUCED_TOPIC, event)
     get_producer().produce_event(topic=PRODUCED_TOPIC, event=event)

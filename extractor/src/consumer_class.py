@@ -3,9 +3,9 @@
 
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
-from extractor.src.config.logger import create_logger
+from extractor.src.config.logger import get_logger
 
-logger = create_logger("extractor_consumer")
+logger = get_logger()
 
 
 class ExtractorConsumer:
@@ -80,7 +80,6 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        logger.info(self.topics)
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()

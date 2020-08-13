@@ -17,7 +17,7 @@ from transformer.src.transform import Transformer
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
 
-from transformer.src.config.logger import create_logger
+from transformer.src.config.logger import get_logger
 from transformer.src.errors import OperationOutcome
 from transformer.src.fhirstore import get_fhirstore
 
@@ -25,7 +25,7 @@ CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
 
-logger = create_logger("consumer")
+logger = get_logger()
 
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()
@@ -49,7 +49,6 @@ def process_event_with_producer(producer):
         :return:
         """
         msg_value = json.loads(msg.value())
-        logger.debug("Transformer")
         logger.debug(msg_value)
 
         try:
@@ -72,14 +71,18 @@ def manage_kafka_error(msg):
 
 
 def transform_row(resource_id, row, time_refresh_analysis=3600):
-    logger.debug("Get Analysis")
+    logger.debug(f"Row from extractor: {row}", extra={"resource_id": resource_id})
+
+    logger.debug("Get Analysis", extra={"resource_id": resource_id})
     analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 
-    logger.debug("Transform Df")
+    logger.debug("Transform dataframe", extra={"resource_id": resource_id})
     data = transformer.transform_data(row, analysis)
 
-    logger.debug("Create FHIR Doc")
+    logger.debug("Create FHIR Doc", extra={"resource_id": resource_id})
     fhir_document = transformer.create_fhir_document(data, analysis)
+
+    logger.debug(f"Fhir document: {fhir_document}", extra={"resource_id": resource_id})
 
     return fhir_document
 
@@ -87,8 +90,7 @@ def transform_row(resource_id, row, time_refresh_analysis=3600):
 @app.route("/transform", methods=["POST"])
 def transform():
     body = request.get_json()
-    logger.debug("Transformer")
-    logger.debug(body)
+    logger.info(f"Transform from API: {body}")
 
     resource_id = body.get("resource_id")
     try:

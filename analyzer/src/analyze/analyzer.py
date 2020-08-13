@@ -3,7 +3,7 @@ import time
 from collections.abc import Mapping
 
 from analyzer.src.analyze.graphql import PyrogClient
-from analyzer.src.config.logger import create_logger
+from analyzer.src.config.logger import get_logger
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -16,7 +16,7 @@ from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_join import SqlJoin
 
-logger = create_logger("analyzer")
+logger = get_logger()
 
 
 class Analyzer:
@@ -26,8 +26,9 @@ class Analyzer:
         # TODO think about the design here. Use http caching instead of
         # storing here, for instance?
         self.analyses: Mapping = {}
-        self._cur_analysis = Analysis()
         self.last_updated_at: Mapping = {}  # store last updated timestamp for each resource_id
+
+        self._cur_analysis = Analysis()
 
     def get_analysis(self, resource_mapping_id, max_seconds_refresh=3600) -> Analysis:
         if resource_mapping_id not in self.analyses:
@@ -42,10 +43,16 @@ class Analyzer:
         for each resource
         """
         if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
-            logger.debug("Analysis too old for mapping_resource_id.")
+            logger.info(
+                f"Analysis too old for resource {resource_mapping_id}.",
+                extra={"resource_id": resource_mapping_id},
+            )
             self.fetch_analysis(resource_mapping_id)
         else:
-            logger.debug("Analysis was updated recently. Using cached analysis.")
+            logger.info(
+                "Analysis was updated recently. Using cached analysis.",
+                extra={"resource_id": resource_mapping_id},
+            )
 
     def fetch_analysis(self, resource_mapping_id):
         """
@@ -53,7 +60,7 @@ class Analyzer:
         :param resource_mapping_id:
         :return:
         """
-        logger.debug("Fetching mapping from api.")
+        logger.info("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
         resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
         self.analyze(resource_mapping)
         self.last_updated_at[resource_mapping_id] = time.time()
@@ -95,8 +102,9 @@ class Analyzer:
         return self._cur_analysis
 
     def analyze_attribute(self, attribute_mapping):
-        logger.debug(
-            f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}"
+        logger.info(
+            f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}",
+            extra={"resource_id": self._cur_analysis.resource_id},
         )
         attribute = Attribute(
             path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"]
@@ -106,7 +114,10 @@ class Analyzer:
             # attribute (ie not a leaf). It is here to give us some context information.
             # For instance, we can use it if its children attributes represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
-                logger.debug(f"Analyze attribute reference !")
+                logger.info(
+                    f"Analyze attribute reference",
+                    extra={"resource_id": self._cur_analysis.resource_id},
+                )
                 # Remove trailing index
                 path = re.sub(r"\[\d+\]$", "", attribute.path)
                 self._cur_analysis.reference_paths.add(path)
