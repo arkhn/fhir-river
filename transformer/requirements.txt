@@ -1,3 +1,4 @@
+arkhn-monitoring==0.0.2
 cleaning-scripts==0.2.23
 confluent_kafka==1.3.0
 fhirstore==0.4.0
@@ -6,4 +7,3 @@ jsonschema==3.0.2
 prometheus-client==0.8.0
 requests==2.21.0
 uWSGI==2.0.18
--e git+https://github.com/arkhn/monitoring.git@jason/logging#egg=arkhn-monitoring\&subdirectory=python
