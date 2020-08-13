@@ -1,8 +1,8 @@
 import scripts
 
-from analyzer.src.config.logger import create_logger
+from analyzer.src.config.logger import get_logger
 
-logger = create_logger("cleaning_scripts")
+logger = get_logger()
 
 
 class CleaningScript:

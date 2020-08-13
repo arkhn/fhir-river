@@ -2,7 +2,7 @@ FROM python:3.7-slim
 
 # Dependencies
 RUN apt-get update \
-    && apt-get -y install build-essential
+    && apt-get -y install build-essential git
 
 ARG TRANSFORMER_HOME=/app
 ENV PYTHONPATH=${TRANSFORMER_HOME}

@@ -2,33 +2,27 @@
 Create the logger to be used in the service
 """
 
-from fluent import handler
-import logging
+import os
+
+from arkhn_monitoring import create_logger
 
 
-class CustomFilter(logging.Filter):
-    def filter(self, record):
-        if not hasattr(record, "resource_id"):
-            record.resource_id = None
-        return True
+FLUENTD_HOST = os.getenv("FLUENTD_HOST", "fluentd")
+FLUENTD_PORT = os.getenv("FLUENTD_PORT", 24224)
+
+logger = None
 
 
-def create_logger(name, level="DEBUG"):
-    custom_format = {
-        "where": "%(module)s.%(funcName)s",
-        "type": "%(levelname)s",
-        "service": "loader",
-        "resource_id": "%(resource_id)s",
-    }
+def get_logger(level="DEBUG"):
+    global logger
 
-    logger = logging.getLogger(name)
-    logger.propagate = False
+    if logger is not None:
+        return logger
 
-    h = handler.FluentHandler("river.extractor", host="fluentd", port=24224)
-    formatter = handler.FluentRecordFormatter(custom_format)
-    h.setFormatter(formatter)
-    logger.addHandler(h)
-    logger.addFilter(CustomFilter())
-    logger.setLevel(getattr(logging, level))
+    extra_fields = ["resource_id"]
+
+    logger = create_logger(
+        "loader", FLUENTD_HOST, FLUENTD_PORT, level=level, extra_fields=extra_fields
+    )
 
     return logger

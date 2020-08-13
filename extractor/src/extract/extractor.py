@@ -7,13 +7,13 @@ from sqlalchemy.orm import sessionmaker, Query
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
-from extractor.src.config.logger import create_logger
+from extractor.src.config.logger import get_logger
 from extractor.src.errors import EmptyResult
 
 from monitoring.metrics import Timer
 
 
-logger = create_logger("extractor")
+logger = get_logger()
 
 SQL_RELATIONS_TO_METHOD = {
     "<": "__lt__",

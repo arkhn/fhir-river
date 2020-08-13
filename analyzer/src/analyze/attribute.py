@@ -1,10 +1,10 @@
 from typing import List
 
-from analyzer.src.config.logger import create_logger
+from analyzer.src.config.logger import get_logger
 
 from .input_group import InputGroup
 
-logger = create_logger("attribute")
+logger = get_logger()
 
 numerical_types_map = {
     "integer": int,

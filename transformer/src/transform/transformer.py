@@ -8,11 +8,11 @@ from transformer.src.transform.dataframe import clean_data
 from transformer.src.transform.dataframe import squash_rows
 from transformer.src.transform.dataframe import merge_by_attributes
 
-from transformer.src.config.logger import create_logger
+from transformer.src.config.logger import get_logger
 
 from monitoring.metrics import Timer, FAST_FN_BUCKETS
 
-logger = create_logger("transformer")
+logger = get_logger()
 
 
 class Transformer:

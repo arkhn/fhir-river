@@ -1,7 +1,7 @@
 FROM python:3.7-slim
 
 RUN apt-get update \
-    && apt-get -y install build-essential
+    && apt-get -y install build-essential git
 
 ARG LOADER_HOME=/app
 ENV PYTHONPATH=${LOADER_HOME}

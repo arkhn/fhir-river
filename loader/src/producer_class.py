@@ -3,9 +3,9 @@
 import json
 import datetime
 from confluent_kafka import Producer
-from loader.src.config.logger import create_logger
+from loader.src.config.logger import get_logger
 
-logger = create_logger("tranformer")
+logger = get_logger()
 
 
 class LoaderProducer:

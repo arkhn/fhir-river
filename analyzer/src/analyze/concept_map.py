@@ -2,10 +2,10 @@ from typing import TypeVar, Mapping
 import os
 import requests
 
-from analyzer.src.config.logger import create_logger
+from analyzer.src.config.logger import get_logger
 from analyzer.src.errors import OperationOutcome
 
-logger = create_logger("concept_map")
+logger = get_logger()
 
 FHIR_API_URL = os.getenv("FHIR_API_URL")
 FHIR_API_TOKEN = os.getenv("FHIR_API_TOKEN")

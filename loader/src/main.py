@@ -11,7 +11,7 @@ from fhirstore import NotFoundError
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
 
-from loader.src.config.logger import create_logger
+from loader.src.config.logger import get_logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
 from loader.src.reference_binder import ReferenceBinder
@@ -25,7 +25,7 @@ CONSUMER_GROUP_ID = "loader"
 
 METRICS_PORT = int(os.getenv("METRICS_PORT", 3003))
 
-logger = create_logger("loader")
+logger = get_logger()
 
 fhirstore = get_fhirstore()
 

@@ -7,3 +7,4 @@ prometheus-client==0.8.0
 pymongo==3.9.0
 requests==2.21.0
 dotty-dict==1.2.1
+-e git+https://github.com/arkhn/monitoring.git@jason/logging#egg=arkhn-monitoring\&subdirectory=python

@@ -4,9 +4,9 @@ from collections import defaultdict
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.condition import CONDITION_FLAG
 
-from transformer.src.config.logger import create_logger
+from transformer.src.config.logger import get_logger
 
-logger = create_logger("dataframe")
+logger = get_logger()
 
 
 def cast_types(data, attributes):

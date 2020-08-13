@@ -3,9 +3,9 @@
 import json
 import datetime
 from confluent_kafka import Producer
-from extractor.src.config.logger import create_logger
+from extractor.src.config.logger import get_logger
 
-logger = create_logger("extractor_sql")
+logger = get_logger()
 
 
 class ExtractorProducer:

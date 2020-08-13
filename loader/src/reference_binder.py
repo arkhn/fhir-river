@@ -2,9 +2,9 @@ import re
 from collections import defaultdict
 from dotty_dict import dotty
 
-from loader.src.config.logger import create_logger
+from loader.src.config.logger import get_logger
 
-logger = create_logger("reference_binder")
+logger = get_logger()
 
 
 # dotty-dict does not handle brackets indices,

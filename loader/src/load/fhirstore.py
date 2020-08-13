@@ -4,7 +4,7 @@ from pymongo import MongoClient
 
 import fhirstore
 
-from loader.src.config.logger import create_logger
+from loader.src.config.logger import get_logger
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
 FHIRSTORE_PORT = os.getenv("FHIRSTORE_PORT")
@@ -13,7 +13,7 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
-logger = create_logger("fhirstore")
+logger = get_logger()
 
 
 def get_mongo_client():

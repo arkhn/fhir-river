@@ -13,14 +13,14 @@ from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
 
 from extractor.src.extract import Extractor
-from extractor.src.config.logger import create_logger
+from extractor.src.config.logger import get_logger
 from extractor.src.errors import MissingInformationError
 from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError
 
 
-logger = create_logger("extractor")
+logger = get_logger()
 
 CONSUMER_GROUP_ID = "extractor"
 EXTRACT_TOPIC = "extract"

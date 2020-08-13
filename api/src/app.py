@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import requests
 
-from api.src.config.logger import create_logger
+from api.src.config.logger import get_logger
 from api.src.errors import OperationOutcome
 from api.src.producer_class import RiverApiProducer
 import uuid
@@ -15,7 +15,7 @@ EXTRACTOR_URL = os.getenv("EXTRACTOR_URL")
 TRANSFORMER_URL = os.getenv("TRANSFORMER_URL")
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
 
-logger = create_logger("api")
+logger = get_logger()
 
 
 def get_producer():

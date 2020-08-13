@@ -17,7 +17,7 @@ from transformer.src.transform import Transformer
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
 
-from transformer.src.config.logger import create_logger
+from transformer.src.config.logger import get_logger
 from transformer.src.errors import OperationOutcome
 from transformer.src.fhirstore import get_fhirstore
 
@@ -25,7 +25,7 @@ CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
 
-logger = create_logger("consumer")
+logger = get_logger()
 
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()

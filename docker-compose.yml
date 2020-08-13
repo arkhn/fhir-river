@@ -136,6 +136,7 @@ services:
       - .env
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVICE_NAME: extractor
     ports:
       - 3001:3001
     networks:
@@ -160,6 +161,7 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
+      SERVICE_NAME: transformer
     ports:
       - 3002:3002
     networks:
@@ -186,6 +188,7 @@ services:
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
       METRICS_PORT: 3003
+      SERVICE_NAME: loader
     ports:
       - 3003:3003
     networks:
@@ -201,7 +204,6 @@ services:
   #     - "9090:9090"
   #   networks:
   #     - river-network
-  #
   # grafana:
   #   container_name: grafana
   #   image: grafana/grafana:latest
@@ -224,6 +226,8 @@ services:
     ports:
       - 127.0.0.1:24224:24224
       - "24224:24224/udp"
+    networks:
+      - river-network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
@@ -234,6 +238,8 @@ services:
       - 9200
     ports:
       - "9200:9200"
+    networks:
+      - river-network
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.7.0
@@ -244,6 +250,8 @@ services:
       - "elasticsearch"
     ports:
       - "5601:5601"
+    networks:
+      - river-network
 
 volumes:
   mimic-db:
