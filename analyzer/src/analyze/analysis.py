@@ -2,8 +2,8 @@ from typing import Dict, List, Set
 
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.sql_column import SqlColumn
-from analyzer.src.analyze.sql_join import SqlJoin
 from analyzer.src.analyze.sql_filter import SqlFilter
+from analyzer.src.analyze.sql_join import SqlJoin
 
 
 class Analysis:
@@ -16,7 +16,7 @@ class Analysis:
         self.attributes: List[Attribute] = []
         self.columns: Set[SqlColumn] = set()
         self.joins: Set[SqlJoin] = set()
-        self.filters: Set[SqlFilter] = set()
+        self.filters: List[SqlFilter] = []
         self.primary_key_column: SqlColumn = None
         self.squash_rules = None
         self.reference_paths: Set[str] = set()
@@ -29,4 +29,4 @@ class Analysis:
         self.joins.add(join)
 
     def add_filter(self, filter_):
-        self.filters.add(filter_)
+        self.filters.append(filter_)

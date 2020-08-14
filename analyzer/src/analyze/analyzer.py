@@ -14,8 +14,8 @@ from .input_group import InputGroup
 from .mapping import build_squash_rules
 from .merging_script import MergingScript
 from .sql_column import SqlColumn
-from .sql_join import SqlJoin
 from .sql_filter import SqlFilter
+from .sql_join import SqlJoin
 
 logger = get_logger()
 
