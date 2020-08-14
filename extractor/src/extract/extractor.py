@@ -88,7 +88,7 @@ class Extractor:
             )
 
         logger.info(
-            f"Extracting resource: {analysis.definitionId}",
+            f"Extracting resource: {analysis.definition_id}",
             extra={"resource_id": analysis.resource_id},
         )
 
