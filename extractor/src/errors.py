@@ -6,6 +6,14 @@ class PyrogQueryError(Exception):
     pass
 
 
+class ImproperMappingError(Exception):
+    """
+    Error used when some required information is missing in a mapping.
+    """
+
+    pass
+
+
 class MissingInformationError(Exception):
     """
     Error used when some required information is missing in a mapping.
