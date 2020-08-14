@@ -188,7 +188,7 @@ def test_merge_by_attributes(_):
             id_="id_language_1",
             attribute=attr_language,
             columns=[SqlColumn("ADMISSIONS", "LANGUAGE_1")],
-            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "true")],
+            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "EQ", "true")],
         )
     )
     attr_language.add_input_group(
@@ -196,7 +196,7 @@ def test_merge_by_attributes(_):
             id_="id_language_2",
             attribute=attr_language,
             columns=[SqlColumn("ADMISSIONS", "LANGUAGE_2")],
-            conditions=[Condition("EXCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "true")],
+            conditions=[Condition("EXCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "EQ", "true")],
         )
     )
     attr_language.add_input_group(

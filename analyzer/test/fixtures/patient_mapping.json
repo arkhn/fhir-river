@@ -431,6 +431,7 @@
               "id": "ckdq0l3g60405159kdmv9c6kl",
               "action": "INCLUDE",
               "columnId": "ckdq0l3g60406159k0xgv801e",
+              "relation": "EQ",
               "value": "1",
               "inputGroupId": "ckdq0krl80334159kmuj3maez",
               "sqlValue": {
@@ -477,6 +478,7 @@
               "action": "INCLUDE",
               "columnId": "ckdq0m7sx0625159kx0q7tp3n",
               "value": "0",
+              "relation": "EQ",
               "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
               "sqlValue": {
                 "id": "ckdq0m7sx0625159kx0q7tp3n",
@@ -492,6 +494,7 @@
               "action": "EXCLUDE",
               "columnId": "ckdq0osz10754159kqnybk7r0",
               "value": "555555",
+              "relation": "EQ",
               "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
               "sqlValue": {
                 "id": "ckdq0osz10754159kqnybk7r0",
@@ -994,6 +997,7 @@
               "action": "EXCLUDE",
               "columnId": "ckdq0hb3i0217159k6q7arro7",
               "value": "1",
+              "relation": "EQ",
               "inputGroupId": "ckdpsz4fr0322cp9kw3tq4d7v",
               "sqlValue": {
                 "id": "ckdq0hb3i0217159k6q7arro7",

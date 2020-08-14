@@ -56,6 +56,7 @@ fragment entireCondition on Condition {
         table
         column
     }
+    relation
     value
 }
 
