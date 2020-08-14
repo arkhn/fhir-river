@@ -27,8 +27,7 @@ EXTRACT_TOPIC = "extract"
 BATCH_SIZE_TOPIC = "batch_size"
 CONSUMED_TOPIC = "batch"
 
-pyrog_client = PyrogClient()
-analyzer = Analyzer(pyrog_client)
+analyzer = Analyzer(PyrogClient())
 extractor = Extractor()
 
 
@@ -96,18 +95,14 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.info(f"Getting Mapping for resource {resource_id}", extra={"resource_id": resource_id})
-    resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
+    logger.debug("Get Analysis", extra={"resource_id": resource_id})
+    analysis = analyzer.get_analysis(resource_id)
 
-    # Get credentials
-    if not resource_mapping["source"]["credential"]:
+    if not analysis.source_credentials:
         raise MissingInformationError("credential is required to run fhir-river.")
 
-    credentials = resource_mapping["source"]["credential"]
+    credentials = analysis.source_credentials
     extractor.update_connection(credentials)
-
-    logger.info("Analyzing Mapping", extra={"resource_id": resource_id})
-    analysis = analyzer.analyze(resource_mapping)
 
     logger.info("Extracting rows", extra={"resource_id": resource_id})
     df = extractor.extract(analysis, primary_key_values)
