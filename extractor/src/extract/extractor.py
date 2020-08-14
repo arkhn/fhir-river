@@ -104,9 +104,7 @@ class Extractor:
         alchemy_cols = self.get_columns(analysis.columns)
         base_query = self.session.query(*alchemy_cols)
         query_w_joins = self.apply_joins(base_query, analysis.joins)
-        query_w_filters = self.apply_filters(
-            query_w_joins, analysis, analysis.primary_key_column, pk_values
-        )
+        query_w_filters = self.apply_filters(query_w_joins, analysis, pk_values)
 
         return query_w_filters
 
@@ -122,16 +120,14 @@ class Extractor:
             )
         return query
 
-    def apply_filters(
-        self, query: Query, analysis: Analysis, pk_column: SqlColumn, pk_values
-    ) -> Query:
+    def apply_filters(self, query: Query, analysis: Analysis, pk_values) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.
         """
         if pk_values is not None:
-            query = query.filter(self.get_column(pk_column).in_(pk_values))
+            query = query.filter(self.get_column(analysis.primary_key_column).in_(pk_values))
 
         for sql_filter in analysis.filters:
-            col = self.get_column(sql_filter.column)
+            col = self.get_column(sql_filter.sql_column)
             rel_method = SQL_RELATIONS_TO_METHOD[sql_filter.relation]
             query = query.filter(getattr(col, rel_method)(sql_filter.value))
 
@@ -158,7 +154,7 @@ class Extractor:
         pk_column = self.get_column(analysis.primary_key_column)
         base_query = self.session.query(func.count(distinct(pk_column)))
         query_w_joins = self.apply_joins(base_query, analysis.joins)
-        query_w_filters = self.apply_filters(query_w_joins, analysis, pk_column, None)
+        query_w_filters = self.apply_filters(query_w_joins, analysis, None)
         logger.info(
             f"sql query: {query_w_filters.statement}", extra={"resource_id": analysis.resource_id}
         )
