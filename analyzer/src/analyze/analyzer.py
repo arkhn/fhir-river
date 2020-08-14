@@ -15,6 +15,7 @@ from .mapping import build_squash_rules
 from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_join import SqlJoin
+from .sql_filter import SqlFilter
 
 logger = get_logger()
 
@@ -94,12 +95,25 @@ class Analyzer:
     def analyze_mapping(self, resource_mapping):
         self._cur_analysis.primary_key_column = self.get_primary_key(resource_mapping)
         self._cur_analysis.source_id = resource_mapping["source"]["id"]
+        self._cur_analysis.source_credentials = resource_mapping["source"]["credential"]
         self._cur_analysis.resource_id = resource_mapping["id"]
+        self._cur_analysis.definition_id = resource_mapping["definitionId"]
         self._cur_analysis.definition = resource_mapping["definition"]
+        for filter_ in resource_mapping["filters"]:
+            self.analyze_filter(filter_)
         for attribute_mapping in resource_mapping["attributes"]:
             self.analyze_attribute(attribute_mapping)
 
         return self._cur_analysis
+
+    def analyze_filter(self, filter_):
+        col = SqlColumn(
+            filter_["sqlColumn"]["table"],
+            filter_["sqlColumn"]["column"],
+            self._cur_analysis.source_credentials["owner"],
+        )
+        sql_filter = SqlFilter(col, filter_["relation"], filter_["value"])
+        self._cur_analysis.add_filter(sql_filter)
 
     def analyze_attribute(self, attribute_mapping):
         logger.info(

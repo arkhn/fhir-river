@@ -41,9 +41,9 @@ app = create_app()
 
 
 def process_event_with_producer(producer):
-    def broadcast_events(resource_mapping, dataframe, analysis, batch_id=None):
-        resource_type = resource_mapping["definitionId"]
-        resource_id = resource_mapping["id"]
+    def broadcast_events(dataframe, analysis, batch_id=None):
+        resource_type = analysis.definition_id
+        resource_id = analysis.resource_id
         list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
         for record in list_records_from_db:
@@ -72,13 +72,13 @@ def process_event_with_producer(producer):
         )
 
         try:
-            resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
-            batch_size = extractor.batch_size(analysis, resource_mapping)
+            analysis, df = extract_resource(resource_id, primary_key_values)
+            batch_size = extractor.batch_size(analysis)
             logger.info(f"Batch size is {batch_size}", extra={"resource_id": resource_id})
             producer.produce_event(
                 topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
             )
-            broadcast_events(resource_mapping, df, analysis, batch_id)
+            broadcast_events(df, analysis, batch_id)
 
         except Exception as err:
             logger.error(err, extra={"resource_id": resource_id})
@@ -101,7 +101,7 @@ def extract_resource(resource_id, primary_key_values):
 
     # Get credentials
     if not resource_mapping["source"]["credential"]:
-        raise MissingInformationError("credential is required to run fhir-river by batch.")
+        raise MissingInformationError("credential is required to run fhir-river.")
 
     credentials = resource_mapping["source"]["credential"]
     extractor.update_connection(credentials)
@@ -110,9 +110,9 @@ def extract_resource(resource_id, primary_key_values):
     analysis = analyzer.analyze(resource_mapping)
 
     logger.info("Extracting rows", extra={"resource_id": resource_id})
-    df = extractor.extract(resource_mapping, analysis, primary_key_values)
+    df = extractor.extract(analysis, primary_key_values)
 
-    return resource_mapping, analysis, df
+    return analysis, df
 
 
 @app.route("/extract", methods=["POST"])
@@ -124,7 +124,7 @@ def extract():
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        _, analysis, df = extract_resource(resource_id, primary_key_values)
+        analysis, df = extract_resource(resource_id, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
             logger.debug("One record from extract", extra={"resource_id": resource_id})
