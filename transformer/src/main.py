@@ -71,8 +71,6 @@ def manage_kafka_error(msg):
 
 
 def transform_row(resource_id, row, time_refresh_analysis=3600):
-    logger.debug(f"Row from extractor: {row}", extra={"resource_id": resource_id})
-
     logger.debug("Get Analysis", extra={"resource_id": resource_id})
     analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 
@@ -82,15 +80,13 @@ def transform_row(resource_id, row, time_refresh_analysis=3600):
     logger.debug("Create FHIR Doc", extra={"resource_id": resource_id})
     fhir_document = transformer.create_fhir_document(data, analysis)
 
-    logger.debug(f"Fhir document: {fhir_document}", extra={"resource_id": resource_id})
-
     return fhir_document
 
 
 @app.route("/transform", methods=["POST"])
 def transform():
     body = request.get_json()
-    logger.info(f"Transform from API: {body}")
+    logger.info(f"Transform from API")
 
     resource_id = body.get("resource_id")
     try:

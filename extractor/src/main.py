@@ -66,7 +66,7 @@ def process_event_with_producer(producer):
         msg_topic = msg.topic()
 
         logger.info(
-            f"Event ready to be processed (topic: {msg_topic}, message: {msg_value})",
+            f"Event ready to be processed (topic: {msg_topic})",
             extra={"resource_id": resource_id},
         )
 

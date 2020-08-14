@@ -197,6 +197,14 @@ services:
     volumes:
       - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
+  fluentd:
+    image: arkhn/fluentd:latest
+    container_name: fluentd
+    volumes:
+      - ./fluent.conf:/fluentd/etc/fluent.conf
+    ports:
+      - 24224:24224
+
 volumes:
   test-mimic-db:
   test-fhirstore-db:
