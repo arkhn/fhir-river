@@ -66,8 +66,7 @@ def process_event_with_producer(producer):
         msg_topic = msg.topic()
 
         logger.info(
-            f"Event ready to be processed (topic: {msg_topic})",
-            extra={"resource_id": resource_id},
+            f"Event ready to be processed (topic: {msg_topic})", extra={"resource_id": resource_id},
         )
 
         try:
@@ -115,6 +114,11 @@ def extract():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
+    logger.info(
+        f"Extract from API with primary key value {primary_key_values}",
+        extra={"resource_id": resource_id},
+    )
+
     if not primary_key_values:
         raise BadRequestError("primary_key_values is required in request body")
 

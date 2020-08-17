@@ -197,6 +197,7 @@ services:
     volumes:
       - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
+  # TODO logs could be exported to an external kibana instance during integration tests
   fluentd:
     image: arkhn/fluentd:latest
     container_name: fluentd

@@ -86,9 +86,8 @@ def transform_row(resource_id, row, time_refresh_analysis=3600):
 @app.route("/transform", methods=["POST"])
 def transform():
     body = request.get_json()
-    logger.info(f"Transform from API")
-
     resource_id = body.get("resource_id")
+    logger.info("Transform from API", extra={"resource_id": resource_id})
     try:
         fhir_instances = []
         errors = []
