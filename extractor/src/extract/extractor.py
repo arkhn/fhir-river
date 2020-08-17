@@ -9,7 +9,7 @@ from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from extractor.src.config.logger import get_logger
-from extractor.src.errors import EmptyResult
+from extractor.src.errors import EmptyResult, ImproperMappingError
 
 from arkhn_monitoring import Timer
 
@@ -175,7 +175,12 @@ class Extractor:
         table = self.get_table(column)
         # Note that we label the column manually to avoid collisions and
         # sqlAlchemy automatic labelling
-        return table.c[column.column].label(column.dataframe_column_name())
+        try:
+            return table.c[column.column].label(column.dataframe_column_name())
+        except KeyError:
+            raise ImproperMappingError(
+                f"Column '{column.column}' not found in table '{column.table}'."
+            )
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
