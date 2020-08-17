@@ -1,4 +1,3 @@
-from sqlalchemy.types import DateTime
 from datetime import datetime
 
 from analyzer.src.analyze.condition import Condition, CONDITION_FLAG
