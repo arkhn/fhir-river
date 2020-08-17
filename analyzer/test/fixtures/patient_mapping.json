@@ -1,20 +1,20 @@
 {
-  "id": "ckdpsz4fn0128cp9kaa3trm6w",
+  "id": "ckdyl65kh0125gu9kpvjbja6j",
   "logicalReference": "",
   "label": "",
   "primaryKeyTable": "patients",
   "primaryKeyColumn": "row_id",
   "definitionId": "Patient",
-  "sourceId": "ck8oo01zm26944kp4ta60mfea",
-  "updatedAt": "2020-08-11T10:29:34.648Z",
-  "createdAt": "2020-08-11T10:29:34.643Z",
+  "sourceId": "ckdyl65ip0010gu9k22w8kvc1",
+  "updatedAt": "2020-08-17T14:01:01.366Z",
+  "createdAt": "2020-08-17T14:01:01.361Z",
   "source": {
-    "id": "ck8oo01zm26944kp4ta60mfea",
+    "id": "ckdyl65ip0010gu9k22w8kvc1",
     "name": "logilan",
     "version": null,
-    "templateId": "ckdpsz4cs0002cp9kmiphzu93",
-    "updatedAt": "2020-08-11T10:29:34.571Z",
-    "createdAt": "2020-08-11T10:29:34.570Z",
+    "templateId": "ckdyl65ia0001gu9kk3jf82e6",
+    "updatedAt": "2020-08-17T14:01:01.297Z",
+    "createdAt": "2020-08-17T14:01:01.297Z",
     "credential": {
       "owner": null
     }
@@ -22,487 +22,504 @@
   "filters": [],
   "attributes": [
     {
-      "id": "ckdpsz4fo0129cp9ky80ode49",
+      "id": "ckdyl65kh0126gu9ka6svbibh",
       "path": "birthDate",
       "sliceName": null,
       "definitionId": "date",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.361Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fo0130cp9k75ea8tct",
+          "id": "ckdyl65kh0127gu9kqdxatrkr",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fo0129cp9ky80ode49",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
+          "attributeId": "ckdyl65kh0126gu9ka6svbibh",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.361Z",
           "inputs": [
             {
-              "id": "ckdpsz4fo0131cp9k2rf32rav",
+              "id": "ckdyl65kh0128gu9k4ooybxa7",
               "script": "clean_date",
               "conceptMapId": null,
               "staticValue": null,
-              "sqlValueId": "ckdpsz4fo0132cp9kr1lgddew",
-              "inputGroupId": "ckdpsz4fo0130cp9k75ea8tct",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
+              "sqlValueId": "ckdyl65kh0129gu9kdqxrzzr3",
+              "inputGroupId": "ckdyl65kh0127gu9kqdxatrkr",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.361Z",
               "sqlValue": {
-                "id": "ckdpsz4fo0132cp9kr1lgddew",
+                "id": "ckdyl65kh0129gu9kdqxrzzr3",
                 "table": "patients",
                 "column": "dob",
                 "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.648Z",
-                "createdAt": "2020-08-11T10:29:34.644Z",
-                "joins": []
-              }
-            }
-          ],
-          "conditions": []
-        }
-      ]
-    },
-    {
-      "id": "ckdpsz4fo0133cp9kx6odh9gd",
-      "path": "deceasedBoolean",
-      "sliceName": null,
-      "definitionId": "boolean",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": [
-        {
-          "id": "ckdpsz4fo0134cp9kknn44yl9",
-          "mergingScript": null,
-          "attributeId": "ckdpsz4fo0133cp9kx6odh9gd",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
-          "inputs": [
-            {
-              "id": "ckdpsz4fo0135cp9kqdo63p2t",
-              "script": "binary_to_bool_1",
-              "conceptMapId": null,
-              "staticValue": null,
-              "sqlValueId": "ckdpsz4fo0136cp9ku8tnzpms",
-              "inputGroupId": "ckdpsz4fo0134cp9kknn44yl9",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
-              "sqlValue": {
-                "id": "ckdpsz4fo0136cp9ku8tnzpms",
-                "table": "patients",
-                "column": "expire_flag",
-                "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.648Z",
-                "createdAt": "2020-08-11T10:29:34.644Z",
-                "joins": []
-              }
-            }
-          ],
-          "conditions": []
-        }
-      ]
-    },
-    {
-      "id": "ckdpsz4fo0137cp9kth2tccmx",
-      "path": "maritalStatus.coding[0]",
-      "sliceName": null,
-      "definitionId": "Coding",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0138cp9kexv0i7b4",
-      "path": "maritalStatus.text",
-      "sliceName": null,
-      "definitionId": "string",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": [
-        {
-          "id": "ckdpsz4fo0139cp9kepjswjx2",
-          "mergingScript": null,
-          "attributeId": "ckdpsz4fo0138cp9kexv0i7b4",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
-          "inputs": [
-            {
-              "id": "ckdpsz4fo0140cp9kgy3e5vy4",
-              "script": null,
-              "conceptMapId": null,
-              "staticValue": null,
-              "sqlValueId": "ckdpsz4fo0141cp9ki8tef8eu",
-              "inputGroupId": "ckdpsz4fo0139cp9kepjswjx2",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
-              "sqlValue": {
-                "id": "ckdpsz4fo0141cp9ki8tef8eu",
-                "table": "admissions",
-                "column": "marital_status",
-                "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.648Z",
-                "createdAt": "2020-08-11T10:29:34.644Z",
-                "joins": [
-                  {
-                    "id": "ckdpsz4fo0142cp9kbbkz7csl",
-                    "columnId": "ckdpsz4fo0141cp9ki8tef8eu",
-                    "updatedAt": "2020-08-11T10:29:34.648Z",
-                    "createdAt": "2020-08-11T10:29:34.644Z",
-                    "tables": [
-                      {
-                        "id": "ckdpsz4fo0143cp9k1h8vl8mi",
-                        "table": "patients",
-                        "column": "subject_id",
-                        "joinId": "ckdpsz4fo0142cp9kbbkz7csl",
-                        "updatedAt": "2020-08-11T10:29:34.648Z",
-                        "createdAt": "2020-08-11T10:29:34.644Z"
-                      },
-                      {
-                        "id": "ckdpsz4fo0144cp9ke1iui0i5",
-                        "table": "admissions",
-                        "column": "subject_id",
-                        "joinId": "ckdpsz4fo0142cp9kbbkz7csl",
-                        "updatedAt": "2020-08-11T10:29:34.648Z",
-                        "createdAt": "2020-08-11T10:29:34.644Z"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ],
-          "conditions": []
-        }
-      ]
-    },
-    {
-      "id": "ckdpsz4fo0145cp9ktmdlh73m",
-      "path": "identifier[0].period",
-      "sliceName": null,
-      "definitionId": "Period",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0162cp9kwsak582u",
-      "path": "identifier[0].period.start",
-      "sliceName": null,
-      "definitionId": "dateTime",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": [
-        {
-          "id": "ckdpsz4fo0163cp9kzsi3rb3r",
-          "mergingScript": null,
-          "attributeId": "ckdpsz4fo0162cp9kwsak582u",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
-          "inputs": [
-            {
-              "id": "ckdpsz4fo0164cp9k79lb7v1q",
-              "script": "clean_date",
-              "conceptMapId": null,
-              "staticValue": null,
-              "sqlValueId": "ckdpsz4fo0165cp9keq95kpzc",
-              "inputGroupId": "ckdpsz4fo0163cp9kzsi3rb3r",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
-              "sqlValue": {
-                "id": "ckdpsz4fo0165cp9keq95kpzc",
-                "table": "admissions",
-                "column": "admittime",
-                "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.648Z",
-                "createdAt": "2020-08-11T10:29:34.644Z",
-                "joins": [
-                  {
-                    "id": "ckdpsz4fo0166cp9kc6zhhufl",
-                    "columnId": "ckdpsz4fo0165cp9keq95kpzc",
-                    "updatedAt": "2020-08-11T10:29:34.648Z",
-                    "createdAt": "2020-08-11T10:29:34.644Z",
-                    "tables": [
-                      {
-                        "id": "ckdpsz4fo0167cp9kedo0qjf2",
-                        "table": "patients",
-                        "column": "subject_id",
-                        "joinId": "ckdpsz4fo0166cp9kc6zhhufl",
-                        "updatedAt": "2020-08-11T10:29:34.648Z",
-                        "createdAt": "2020-08-11T10:29:34.644Z"
-                      },
-                      {
-                        "id": "ckdpsz4fo0168cp9krvuozogz",
-                        "table": "admissions",
-                        "column": "subject_id",
-                        "joinId": "ckdpsz4fo0166cp9kc6zhhufl",
-                        "updatedAt": "2020-08-11T10:29:34.648Z",
-                        "createdAt": "2020-08-11T10:29:34.644Z"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          ],
-          "conditions": []
-        }
-      ]
-    },
-    {
-      "id": "ckdpsz4fo0169cp9k2stuu5lm",
-      "path": "generalPractitioner[0].identifier",
-      "sliceName": null,
-      "definitionId": "Identifier",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0170cp9kxyuv1sqb",
-      "path": "generalPractitioner[0]",
-      "sliceName": null,
-      "definitionId": "Reference",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0171cp9k7dhvzq1k",
-      "path": "communication[0].language.text",
-      "sliceName": null,
-      "definitionId": "string",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0172cp9kjl00jyzx",
-      "path": "communication[0].language",
-      "sliceName": null,
-      "definitionId": "CodeableConcept",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0173cp9k85hv987g",
-      "path": "communication[0]",
-      "sliceName": null,
-      "definitionId": "BackboneElement",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0174cp9k4k09rn06",
-      "path": "communication[0].language.coding[0].version",
-      "sliceName": null,
-      "definitionId": "string",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": [
-        {
-          "id": "ckdpsz4fo0175cp9kq85lz0m2",
-          "mergingScript": null,
-          "attributeId": "ckdpsz4fo0174cp9k4k09rn06",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
-          "inputs": [
-            {
-              "id": "ckdpsz4fo0176cp9kscm0ercv",
-              "script": null,
-              "conceptMapId": null,
-              "staticValue": "\t4.0.1",
-              "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fo0175cp9kq85lz0m2",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
-              "sqlValue": null
-            }
-          ],
-          "conditions": []
-        }
-      ]
-    },
-    {
-      "id": "ckdpsz4fo0177cp9khqjmjmc4",
-      "path": "communication[0].language.coding[0]",
-      "sliceName": null,
-      "definitionId": "Coding",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": []
-    },
-    {
-      "id": "ckdpsz4fo0178cp9kwojljtsz",
-      "path": "maritalStatus.coding[0].system",
-      "sliceName": null,
-      "definitionId": "uri",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": [
-        {
-          "id": "ckdpsz4fo0179cp9kdj8mul01",
-          "mergingScript": null,
-          "attributeId": "ckdpsz4fo0178cp9kwojljtsz",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
-          "inputs": [
-            {
-              "id": "ckdpsz4fo0180cp9k0ma4w2vd",
-              "script": null,
-              "conceptMapId": null,
-              "staticValue": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
-              "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fo0179cp9kdj8mul01",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
-              "sqlValue": null
-            }
-          ],
-          "conditions": []
-        }
-      ]
-    },
-    {
-      "id": "ckdpsz4fo0181cp9kt6vmz3on",
-      "path": "active",
-      "sliceName": null,
-      "definitionId": "boolean",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
-      "comments": [],
-      "inputGroups": [
-        {
-          "id": "ckdq0krl80334159kmuj3maez",
-          "mergingScript": null,
-          "attributeId": "ckdpsz4fo0181cp9kt6vmz3on",
-          "updatedAt": "2020-08-11T14:02:21.741Z",
-          "createdAt": "2020-08-11T14:02:21.740Z",
-          "inputs": [
-            {
-              "id": "ckdq0krnc0351159k110fzmri",
-              "script": "binary_to_bool_2",
-              "conceptMapId": null,
-              "staticValue": null,
-              "sqlValueId": "ckdq0krnc0352159kwj8hmvk6",
-              "inputGroupId": "ckdq0krl80334159kmuj3maez",
-              "updatedAt": "2020-08-11T14:02:32.338Z",
-              "createdAt": "2020-08-11T14:02:21.816Z",
-              "sqlValue": {
-                "id": "ckdq0krnc0352159kwj8hmvk6",
-                "table": "patients",
-                "column": "expire_flag",
-                "joinId": null,
-                "updatedAt": "2020-08-11T14:02:21.816Z",
-                "createdAt": "2020-08-11T14:02:21.816Z",
+                "updatedAt": "2020-08-17T14:01:01.366Z",
+                "createdAt": "2020-08-17T14:01:01.361Z",
                 "joins": []
               }
             }
           ],
           "conditions": [
             {
-              "id": "ckdq0l3g60405159kdmv9c6kl",
+              "id": "ckdyl6i2f0114gz9k66jmib2j",
               "action": "INCLUDE",
-              "columnId": "ckdq0l3g60406159k0xgv801e",
-              "relation": "EQ",
-              "value": "1",
-              "inputGroupId": "ckdq0krl80334159kmuj3maez",
+              "columnId": "ckdyl6i2f0115gz9k4z7aecfc",
+              "relation": "GE",
+              "value": "1000-01-01",
+              "inputGroupId": "ckdyl65kh0127gu9kqdxatrkr",
               "sqlValue": {
-                "id": "ckdq0l3g60406159k0xgv801e",
+                "id": "ckdyl6i2f0115gz9k4z7aecfc",
+                "table": "patients",
+                "column": "dob",
+                "joinId": null,
+                "updatedAt": "2020-08-17T14:01:17.559Z",
+                "createdAt": "2020-08-17T14:01:17.559Z"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ckdyl65kh0130gu9kmkk8c0p0",
+      "path": "deceasedBoolean",
+      "sliceName": null,
+      "definitionId": "boolean",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.361Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65kh0131gu9ktf0n3454",
+          "mergingScript": null,
+          "attributeId": "ckdyl65kh0130gu9kmkk8c0p0",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.361Z",
+          "inputs": [
+            {
+              "id": "ckdyl65kh0132gu9kbih91upu",
+              "script": "binary_to_bool_1",
+              "conceptMapId": null,
+              "staticValue": null,
+              "sqlValueId": "ckdyl65kh0133gu9kp4umizkr",
+              "inputGroupId": "ckdyl65kh0131gu9ktf0n3454",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.361Z",
+              "sqlValue": {
+                "id": "ckdyl65kh0133gu9kp4umizkr",
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
-                "updatedAt": "2020-08-11T14:03:11.455Z",
-                "createdAt": "2020-08-11T14:02:37.110Z"
+                "updatedAt": "2020-08-17T14:01:01.366Z",
+                "createdAt": "2020-08-17T14:01:01.361Z",
+                "joins": []
+              }
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ckdyl65kh0134gu9kkyyxl0p6",
+      "path": "maritalStatus.coding[0]",
+      "sliceName": null,
+      "definitionId": "Coding",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.361Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65kh0135gu9kl9zbygli",
+      "path": "maritalStatus.text",
+      "sliceName": null,
+      "definitionId": "string",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.361Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65ki0136gu9knbiso6wf",
+          "mergingScript": null,
+          "attributeId": "ckdyl65kh0135gu9kl9zbygli",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.362Z",
+          "inputs": [
+            {
+              "id": "ckdyl65ki0137gu9kjfjdbf23",
+              "script": null,
+              "conceptMapId": null,
+              "staticValue": null,
+              "sqlValueId": "ckdyl65ki0138gu9kb1g4xfat",
+              "inputGroupId": "ckdyl65ki0136gu9knbiso6wf",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.362Z",
+              "sqlValue": {
+                "id": "ckdyl65ki0138gu9kb1g4xfat",
+                "table": "admissions",
+                "column": "marital_status",
+                "joinId": null,
+                "updatedAt": "2020-08-17T14:01:01.366Z",
+                "createdAt": "2020-08-17T14:01:01.362Z",
+                "joins": [
+                  {
+                    "id": "ckdyl65ki0139gu9km494twhn",
+                    "columnId": "ckdyl65ki0138gu9kb1g4xfat",
+                    "updatedAt": "2020-08-17T14:01:01.366Z",
+                    "createdAt": "2020-08-17T14:01:01.362Z",
+                    "tables": [
+                      {
+                        "id": "ckdyl65ki0140gu9kno8jumsr",
+                        "table": "patients",
+                        "column": "subject_id",
+                        "joinId": "ckdyl65ki0139gu9km494twhn",
+                        "updatedAt": "2020-08-17T14:01:01.366Z",
+                        "createdAt": "2020-08-17T14:01:01.362Z"
+                      },
+                      {
+                        "id": "ckdyl65ki0141gu9klt9e790b",
+                        "table": "admissions",
+                        "column": "subject_id",
+                        "joinId": "ckdyl65ki0139gu9km494twhn",
+                        "updatedAt": "2020-08-17T14:01:01.366Z",
+                        "createdAt": "2020-08-17T14:01:01.362Z"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ckdyl65ki0142gu9kwhxhohfm",
+      "path": "identifier[0].period",
+      "sliceName": null,
+      "definitionId": "Period",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0159gu9k5crn7gb8",
+      "path": "identifier[0].period.start",
+      "sliceName": null,
+      "definitionId": "dateTime",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65ki0160gu9k7uknj1rm",
+          "mergingScript": null,
+          "attributeId": "ckdyl65ki0159gu9k5crn7gb8",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.362Z",
+          "inputs": [
+            {
+              "id": "ckdyl65ki0161gu9kz5ppa445",
+              "script": "clean_date",
+              "conceptMapId": null,
+              "staticValue": null,
+              "sqlValueId": "ckdyl65ki0162gu9kd4duet1w",
+              "inputGroupId": "ckdyl65ki0160gu9k7uknj1rm",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.362Z",
+              "sqlValue": {
+                "id": "ckdyl65ki0162gu9kd4duet1w",
+                "table": "admissions",
+                "column": "admittime",
+                "joinId": null,
+                "updatedAt": "2020-08-17T14:01:01.366Z",
+                "createdAt": "2020-08-17T14:01:01.362Z",
+                "joins": [
+                  {
+                    "id": "ckdyl65ki0163gu9kxozsk9f5",
+                    "columnId": "ckdyl65ki0162gu9kd4duet1w",
+                    "updatedAt": "2020-08-17T14:01:01.366Z",
+                    "createdAt": "2020-08-17T14:01:01.362Z",
+                    "tables": [
+                      {
+                        "id": "ckdyl65ki0164gu9kwv9nzan4",
+                        "table": "patients",
+                        "column": "subject_id",
+                        "joinId": "ckdyl65ki0163gu9kxozsk9f5",
+                        "updatedAt": "2020-08-17T14:01:01.366Z",
+                        "createdAt": "2020-08-17T14:01:01.362Z"
+                      },
+                      {
+                        "id": "ckdyl65ki0165gu9kq6n7amie",
+                        "table": "admissions",
+                        "column": "subject_id",
+                        "joinId": "ckdyl65ki0163gu9kxozsk9f5",
+                        "updatedAt": "2020-08-17T14:01:01.366Z",
+                        "createdAt": "2020-08-17T14:01:01.362Z"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ckdyl65ki0166gu9kc38lftnl",
+      "path": "generalPractitioner[0].identifier",
+      "sliceName": null,
+      "definitionId": "Identifier",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0167gu9k6vnf9zi8",
+      "path": "generalPractitioner[0]",
+      "sliceName": null,
+      "definitionId": "Reference",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0168gu9k7wspteq8",
+      "path": "communication[0].language.text",
+      "sliceName": null,
+      "definitionId": "string",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0169gu9k64usikyw",
+      "path": "communication[0].language",
+      "sliceName": null,
+      "definitionId": "CodeableConcept",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0170gu9ksbmld4cq",
+      "path": "communication[0]",
+      "sliceName": null,
+      "definitionId": "BackboneElement",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0171gu9ki5id0xeo",
+      "path": "communication[0].language.coding[0].version",
+      "sliceName": null,
+      "definitionId": "string",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65ki0172gu9k8c38147a",
+          "mergingScript": null,
+          "attributeId": "ckdyl65ki0171gu9ki5id0xeo",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.362Z",
+          "inputs": [
+            {
+              "id": "ckdyl65ki0173gu9kpac1r0k9",
+              "script": null,
+              "conceptMapId": null,
+              "staticValue": "\t4.0.1",
+              "sqlValueId": null,
+              "inputGroupId": "ckdyl65ki0172gu9k8c38147a",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.362Z",
+              "sqlValue": null
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ckdyl65ki0174gu9k3idenodi",
+      "path": "communication[0].language.coding[0]",
+      "sliceName": null,
+      "definitionId": "Coding",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0175gu9k7boy2cmp",
+      "path": "maritalStatus.coding[0].system",
+      "sliceName": null,
+      "definitionId": "uri",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65ki0176gu9ka160z08m",
+          "mergingScript": null,
+          "attributeId": "ckdyl65ki0175gu9k7boy2cmp",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.362Z",
+          "inputs": [
+            {
+              "id": "ckdyl65ki0177gu9k867o5p1b",
+              "script": null,
+              "conceptMapId": null,
+              "staticValue": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+              "sqlValueId": null,
+              "inputGroupId": "ckdyl65ki0176gu9ka160z08m",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.362Z",
+              "sqlValue": null
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "id": "ckdyl65ki0178gu9kuoxst904",
+      "path": "active",
+      "sliceName": null,
+      "definitionId": "boolean",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65ki0179gu9kuxeejnhv",
+          "mergingScript": null,
+          "attributeId": "ckdyl65ki0178gu9kuoxst904",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.362Z",
+          "inputs": [
+            {
+              "id": "ckdyl65ki0180gu9kw18c3gvv",
+              "script": "binary_to_bool_2",
+              "conceptMapId": null,
+              "staticValue": null,
+              "sqlValueId": "ckdyl65ki0181gu9k67d69xpq",
+              "inputGroupId": "ckdyl65ki0179gu9kuxeejnhv",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.362Z",
+              "sqlValue": {
+                "id": "ckdyl65ki0181gu9k67d69xpq",
+                "table": "patients",
+                "column": "expire_flag",
+                "joinId": null,
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.362Z",
+                "joins": []
+              }
+            }
+          ],
+          "conditions": [
+            {
+              "id": "ckdyl65ki0182gu9ko0t52yaf",
+              "action": "INCLUDE",
+              "columnId": "ckdyl65ki0183gu9ktqia3dvk",
+              "relation": "EQ",
+              "value": "1",
+              "inputGroupId": "ckdyl65ki0179gu9kuxeejnhv",
+              "sqlValue": {
+                "id": "ckdyl65ki0183gu9ktqia3dvk",
+                "table": "patients",
+                "column": "expire_flag",
+                "joinId": null,
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.362Z"
               }
             }
           ]
         },
         {
-          "id": "ckdq0m6wc0564159k7im9egzn",
+          "id": "ckdyl65ki0184gu9k5w21kpyl",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fo0181cp9kt6vmz3on",
-          "updatedAt": "2020-08-11T14:03:28.236Z",
-          "createdAt": "2020-08-11T14:03:28.236Z",
+          "attributeId": "ckdyl65ki0178gu9kuoxst904",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.362Z",
           "inputs": [
             {
-              "id": "ckdq0m6xp0581159k9w50n3ih",
+              "id": "ckdyl65ki0185gu9kzeztscb6",
               "script": "binary_to_bool_2",
               "conceptMapId": null,
               "staticValue": null,
-              "sqlValueId": null,
-              "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
-              "updatedAt": "2020-08-11T14:03:28.286Z",
-              "createdAt": "2020-08-11T14:03:28.285Z",
+              "sqlValueId": "ckdyl65ki0186gu9kqd8gyj0l",
+              "inputGroupId": "ckdyl65ki0184gu9k5w21kpyl",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.362Z",
               "sqlValue": {
-                "id": "ckdq0krnc0352159kwj8hmvk6",
+                "id": "ckdyl65ki0186gu9kqd8gyj0l",
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
-                "updatedAt": "2020-08-11T14:02:21.816Z",
-                "createdAt": "2020-08-11T14:02:21.816Z",
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.362Z",
                 "joins": []
               }
             }
           ],
           "conditions": [
             {
-              "id": "ckdq0m7sx0624159k243uqb8m",
+              "id": "ckdyl65ki0187gu9kraptuchn",
               "action": "INCLUDE",
-              "columnId": "ckdq0m7sx0625159kx0q7tp3n",
-              "value": "0",
+              "columnId": "ckdyl65kj0188gu9k87u9vwv6",
               "relation": "EQ",
-              "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
+              "value": "0",
+              "inputGroupId": "ckdyl65ki0184gu9k5w21kpyl",
               "sqlValue": {
-                "id": "ckdq0m7sx0625159kx0q7tp3n",
+                "id": "ckdyl65kj0188gu9k87u9vwv6",
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
-                "updatedAt": "2020-08-11T14:03:36.171Z",
-                "createdAt": "2020-08-11T14:03:29.409Z"
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.363Z"
               }
             },
             {
-              "id": "ckdq0osz10753159kwk6h4plf",
+              "id": "ckdyl65kj0189gu9kgdeq6j2o",
               "action": "EXCLUDE",
-              "columnId": "ckdq0osz10754159kqnybk7r0",
-              "value": "555555",
+              "columnId": "ckdyl65kj0190gu9kwv4kj0mj",
               "relation": "EQ",
-              "inputGroupId": "ckdq0m6wc0564159k7im9egzn",
+              "value": "555555",
+              "inputGroupId": "ckdyl65ki0184gu9k5w21kpyl",
               "sqlValue": {
-                "id": "ckdq0osz10754159kqnybk7r0",
+                "id": "ckdyl65kj0190gu9kwv4kj0mj",
                 "table": "patients",
                 "column": "row_id",
                 "joinId": null,
-                "updatedAt": "2020-08-11T14:05:38.243Z",
-                "createdAt": "2020-08-11T14:05:30.157Z"
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.363Z"
               }
             }
           ]
@@ -510,60 +527,60 @@
       ]
     },
     {
-      "id": "ckdpsz4fo0182cp9knig4cr2w",
+      "id": "ckdyl65kj0191gu9k4wxwc7vt",
       "path": "maritalStatus.coding[0].code",
       "sliceName": null,
       "definitionId": "code",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.644Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fo0183cp9kuraqti0y",
+          "id": "ckdyl65kj0192gu9kqc7349sl",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fo0182cp9knig4cr2w",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.644Z",
+          "attributeId": "ckdyl65kj0191gu9k4wxwc7vt",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fo0184cp9kce6en5rh",
+              "id": "ckdyl65kj0193gu9kdkqes6ej",
               "script": "map_marital_status",
               "conceptMapId": null,
               "staticValue": null,
-              "sqlValueId": "ckdpsz4fo0185cp9ks0tor72n",
-              "inputGroupId": "ckdpsz4fo0183cp9kuraqti0y",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.644Z",
+              "sqlValueId": "ckdyl65kj0194gu9k6ez7yirb",
+              "inputGroupId": "ckdyl65kj0192gu9kqc7349sl",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": {
-                "id": "ckdpsz4fo0185cp9ks0tor72n",
+                "id": "ckdyl65kj0194gu9k6ez7yirb",
                 "table": "admissions",
                 "column": "marital_status",
                 "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.648Z",
-                "createdAt": "2020-08-11T10:29:34.644Z",
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.363Z",
                 "joins": [
                   {
-                    "id": "ckdpsz4fo0186cp9kwc44m7gx",
-                    "columnId": "ckdpsz4fo0185cp9ks0tor72n",
-                    "updatedAt": "2020-08-11T10:29:34.648Z",
-                    "createdAt": "2020-08-11T10:29:34.644Z",
+                    "id": "ckdyl65kj0195gu9k43qei6xp",
+                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
+                    "updatedAt": "2020-08-17T14:01:01.367Z",
+                    "createdAt": "2020-08-17T14:01:01.363Z",
                     "tables": [
                       {
-                        "id": "ckdpsz4fo0187cp9k1ua9lq4m",
+                        "id": "ckdyl65kj0196gu9ku2dy0ygg",
                         "table": "patients",
                         "column": "subject_id",
-                        "joinId": "ckdpsz4fo0186cp9kwc44m7gx",
-                        "updatedAt": "2020-08-11T10:29:34.648Z",
-                        "createdAt": "2020-08-11T10:29:34.644Z"
+                        "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                        "updatedAt": "2020-08-17T14:01:01.367Z",
+                        "createdAt": "2020-08-17T14:01:01.363Z"
                       },
                       {
-                        "id": "ckdpsz4fo0188cp9klke8vhds",
+                        "id": "ckdyl65kj0197gu9k1lrvx3bl",
                         "table": "admissions",
                         "column": "subject_id",
-                        "joinId": "ckdpsz4fo0186cp9kwc44m7gx",
-                        "updatedAt": "2020-08-11T10:29:34.648Z",
-                        "createdAt": "2020-08-11T10:29:34.644Z"
+                        "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                        "updatedAt": "2020-08-17T14:01:01.367Z",
+                        "createdAt": "2020-08-17T14:01:01.363Z"
                       }
                     ]
                   }
@@ -576,38 +593,38 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0189cp9kdg9dc9lh",
+      "id": "ckdyl65kj0198gu9kwlqhg8qn",
       "path": "identifier[0].value",
       "sliceName": null,
       "definitionId": "string",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0190cp9k52murns3",
+          "id": "ckdyl65kj0199gu9kwzvczmwc",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0189cp9kdg9dc9lh",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0198gu9kwlqhg8qn",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0191cp9kef4n1sun",
+              "id": "ckdyl65kj0200gu9ktzxzdgrx",
               "script": null,
               "conceptMapId": null,
               "staticValue": null,
-              "sqlValueId": "ckdpsz4fp0192cp9kyjdrzmi4",
-              "inputGroupId": "ckdpsz4fp0190cp9k52murns3",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "sqlValueId": "ckdyl65kj0201gu9k991p2071",
+              "inputGroupId": "ckdyl65kj0199gu9kwzvczmwc",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": {
-                "id": "ckdpsz4fp0192cp9kyjdrzmi4",
+                "id": "ckdyl65kj0201gu9k991p2071",
                 "table": "patients",
                 "column": "subject_id",
                 "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.648Z",
-                "createdAt": "2020-08-11T10:29:34.645Z",
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.363Z",
                 "joins": []
               }
             }
@@ -617,42 +634,42 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0193cp9k46hriiiu",
+      "id": "ckdyl65kj0202gu9kuvproxtq",
       "path": "maritalStatus.coding[0].userSelected",
       "sliceName": null,
       "definitionId": "boolean",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": []
     },
     {
-      "id": "ckdpsz4fp0194cp9k1rx993i9",
+      "id": "ckdyl65kj0203gu9k592x4h1t",
       "path": "identifier[0].type.coding[0].code",
       "sliceName": null,
       "definitionId": "code",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0195cp9kk5wm2xdx",
+          "id": "ckdyl65kj0204gu9k7bkjz02w",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0194cp9k1rx993i9",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0203gu9k592x4h1t",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0196cp9kaxkv4b0s",
+              "id": "ckdyl65kj0205gu9k31y6y6ut",
               "script": null,
               "conceptMapId": null,
               "staticValue": "PPN",
               "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fp0195cp9kk5wm2xdx",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "inputGroupId": "ckdyl65kj0204gu9k7bkjz02w",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": null
             }
           ],
@@ -661,42 +678,42 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0197cp9kxegr5y6b",
+      "id": "ckdyl65kj0206gu9kdz7jgi4t",
       "path": "identifier[0].type",
       "sliceName": null,
       "definitionId": "CodeableConcept",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": []
     },
     {
-      "id": "ckdpsz4fp0198cp9kddhrbh9q",
+      "id": "ckdyl65kj0207gu9kplr9zmjl",
       "path": "identifier[0].type.coding[0].system",
       "sliceName": null,
       "definitionId": "uri",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0199cp9k8rn8ajmj",
+          "id": "ckdyl65kj0208gu9kot49ezne",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0198cp9kddhrbh9q",
-          "updatedAt": "2020-08-11T10:29:34.648Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0207gu9kplr9zmjl",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0200cp9k3nzp7gxr",
+              "id": "ckdyl65kj0209gu9kgl3m5z12",
               "script": null,
               "conceptMapId": null,
               "staticValue": "http://terminology.interopsante.org/CodeSystem/v2-0203",
               "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fp0199cp9k8rn8ajmj",
-              "updatedAt": "2020-08-11T10:29:34.648Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "inputGroupId": "ckdyl65kj0208gu9kot49ezne",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": null
             }
           ],
@@ -705,64 +722,64 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0201cp9kr3d3tb0r",
+      "id": "ckdyl65kj0210gu9kyhzb2ot3",
       "path": "identifier[0].type.coding[0]",
       "sliceName": null,
       "definitionId": "Coding",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": []
     },
     {
-      "id": "ckdpsz4fp0202cp9klxsf7x38",
+      "id": "ckdyl65kj0211gu9k44jlg51b",
       "path": "generalPractitioner[0].identifier.type.coding[0]",
       "sliceName": null,
       "definitionId": "Coding",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.648Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": []
     },
     {
-      "id": "ckdpsz4fp0203cp9khofth09b",
+      "id": "ckdyl65kj0212gu9kl9fmssfp",
       "path": "generalPractitioner[0].identifier.type",
       "sliceName": null,
       "definitionId": "CodeableConcept",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": []
     },
     {
-      "id": "ckdpsz4fp0204cp9kf2uqldmp",
+      "id": "ckdyl65kj0213gu9k85n9yxb2",
       "path": "communication[0].language.coding[0].system",
       "sliceName": null,
       "definitionId": "uri",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0205cp9kuaxmk7u4",
+          "id": "ckdyl65kj0214gu9k8uss6298",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0204cp9kf2uqldmp",
-          "updatedAt": "2020-08-11T10:29:34.649Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0213gu9k85n9yxb2",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0206cp9kmjhj6rb4",
+              "id": "ckdyl65kj0215gu9k4ifjbpjk",
               "script": null,
               "conceptMapId": null,
               "staticValue": "http://hl7.org/fhir/ValueSet/languages",
               "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fp0205cp9kuaxmk7u4",
-              "updatedAt": "2020-08-11T10:29:34.649Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "inputGroupId": "ckdyl65kj0214gu9k8uss6298",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": null
             }
           ],
@@ -771,60 +788,60 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0207cp9kzhx5a90r",
+      "id": "ckdyl65kj0216gu9kpn4juqbd",
       "path": "communication[0].language.coding[0].code",
       "sliceName": null,
       "definitionId": "code",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0208cp9k2susbbm3",
+          "id": "ckdyl65kj0217gu9kehdknh0v",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0207cp9kzhx5a90r",
-          "updatedAt": "2020-08-11T10:29:34.649Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0216gu9kpn4juqbd",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0209cp9k4nak635k",
+              "id": "ckdyl65kj0218gu9knepcj1xx",
               "script": null,
               "conceptMapId": null,
               "staticValue": null,
-              "sqlValueId": "ckdpsz4fp0210cp9kzk50hjng",
-              "inputGroupId": "ckdpsz4fp0208cp9k2susbbm3",
-              "updatedAt": "2020-08-11T10:29:34.649Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "sqlValueId": "ckdyl65kj0219gu9k250llw77",
+              "inputGroupId": "ckdyl65kj0217gu9kehdknh0v",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": {
-                "id": "ckdpsz4fp0210cp9kzk50hjng",
+                "id": "ckdyl65kj0219gu9k250llw77",
                 "table": "admissions",
                 "column": "language",
                 "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.649Z",
-                "createdAt": "2020-08-11T10:29:34.645Z",
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.363Z",
                 "joins": [
                   {
-                    "id": "ckdpsz4fp0211cp9krf4c7vt8",
-                    "columnId": "ckdpsz4fp0210cp9kzk50hjng",
-                    "updatedAt": "2020-08-11T10:29:34.649Z",
-                    "createdAt": "2020-08-11T10:29:34.645Z",
+                    "id": "ckdyl65kj0220gu9k3o1rdpx7",
+                    "columnId": "ckdyl65kj0219gu9k250llw77",
+                    "updatedAt": "2020-08-17T14:01:01.367Z",
+                    "createdAt": "2020-08-17T14:01:01.363Z",
                     "tables": [
                       {
-                        "id": "ckdpsz4fp0212cp9kz2rvthq1",
+                        "id": "ckdyl65kj0221gu9ko0mokuf2",
                         "table": "patients",
                         "column": "subject_id",
-                        "joinId": "ckdpsz4fp0211cp9krf4c7vt8",
-                        "updatedAt": "2020-08-11T10:29:34.649Z",
-                        "createdAt": "2020-08-11T10:29:34.645Z"
+                        "joinId": "ckdyl65kj0220gu9k3o1rdpx7",
+                        "updatedAt": "2020-08-17T14:01:01.367Z",
+                        "createdAt": "2020-08-17T14:01:01.363Z"
                       },
                       {
-                        "id": "ckdpsz4fp0213cp9kav4fzwpu",
+                        "id": "ckdyl65kj0222gu9kghzy2876",
                         "table": "admissions",
                         "column": "subject_id",
-                        "joinId": "ckdpsz4fp0211cp9krf4c7vt8",
-                        "updatedAt": "2020-08-11T10:29:34.649Z",
-                        "createdAt": "2020-08-11T10:29:34.645Z"
+                        "joinId": "ckdyl65kj0220gu9k3o1rdpx7",
+                        "updatedAt": "2020-08-17T14:01:01.367Z",
+                        "createdAt": "2020-08-17T14:01:01.363Z"
                       }
                     ]
                   }
@@ -837,31 +854,31 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0214cp9k9byaz6er",
+      "id": "ckdyl65kj0223gu9kxul5zak6",
       "path": "identifier[0].type.coding[0].display",
       "sliceName": null,
       "definitionId": "string",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0215cp9kwgka6u7l",
+          "id": "ckdyl65kj0224gu9kom4lmqsq",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0214cp9k9byaz6er",
-          "updatedAt": "2020-08-11T10:29:34.649Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0223gu9kxul5zak6",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0216cp9ky650y38l",
+              "id": "ckdyl65kj0225gu9k46kb688f",
               "script": null,
               "conceptMapId": null,
               "staticValue": "Passport number",
               "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fp0215cp9kwgka6u7l",
-              "updatedAt": "2020-08-11T10:29:34.649Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "inputGroupId": "ckdyl65kj0224gu9kom4lmqsq",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": null
             }
           ],
@@ -870,38 +887,38 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0217cp9k4kc29t9k",
+      "id": "ckdyl65kj0226gu9k3iea8hv1",
       "path": "gender",
       "sliceName": null,
       "definitionId": "code",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.363Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0218cp9k0oho8uvk",
+          "id": "ckdyl65kj0227gu9kpnmchyvk",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0217cp9k4kc29t9k",
-          "updatedAt": "2020-08-11T10:29:34.649Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kj0226gu9k3iea8hv1",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.363Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0219cp9k2s48fibu",
+              "id": "ckdyl65kj0228gu9kwwr85x4e",
               "script": null,
               "conceptMapId": "id_cm_gender",
               "staticValue": null,
-              "sqlValueId": "ckdpsz4fp0220cp9ks06w1xmr",
-              "inputGroupId": "ckdpsz4fp0218cp9k0oho8uvk",
-              "updatedAt": "2020-08-11T10:29:34.649Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "sqlValueId": "ckdyl65kj0229gu9krs3zwuph",
+              "inputGroupId": "ckdyl65kj0227gu9kpnmchyvk",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.363Z",
               "sqlValue": {
-                "id": "ckdpsz4fp0220cp9ks06w1xmr",
+                "id": "ckdyl65kj0229gu9krs3zwuph",
                 "table": "patients",
                 "column": "gender",
                 "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.649Z",
-                "createdAt": "2020-08-11T10:29:34.645Z",
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.363Z",
                 "joins": []
               }
             }
@@ -911,31 +928,31 @@
       ]
     },
     {
-      "id": "ckdpsz4fp0238cp9k1hnu98q2",
+      "id": "ckdyl65kk0247gu9ki0zqiqpy",
       "path": "identifier[0].system",
       "sliceName": null,
       "definitionId": "uri",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.645Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.364Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fp0239cp9k298pjndh",
+          "id": "ckdyl65kk0248gu9kkn4umbx1",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fp0238cp9k1hnu98q2",
-          "updatedAt": "2020-08-11T10:29:34.649Z",
-          "createdAt": "2020-08-11T10:29:34.645Z",
+          "attributeId": "ckdyl65kk0247gu9ki0zqiqpy",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.364Z",
           "inputs": [
             {
-              "id": "ckdpsz4fp0240cp9kd4csmxck",
+              "id": "ckdyl65kk0249gu9kk2tlubfc",
               "script": null,
               "conceptMapId": null,
               "staticValue": "http://terminology.arkhn.org/ck8oo01zm26944kp4ta60mfea/ck8oo3on226974kp4ns32n7xs/Mimic_identifier",
               "sqlValueId": null,
-              "inputGroupId": "ckdpsz4fp0239cp9k298pjndh",
-              "updatedAt": "2020-08-11T10:29:34.649Z",
-              "createdAt": "2020-08-11T10:29:34.645Z",
+              "inputGroupId": "ckdyl65kk0248gu9kkn4umbx1",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.364Z",
               "sqlValue": null
             }
           ],
@@ -944,68 +961,68 @@
       ]
     },
     {
-      "id": "ckdpsz4fr0320cp9kq4ti4one",
+      "id": "ckdyl65kl0329gu9k3t8fwf7j",
       "path": "identifier[0]",
       "sliceName": null,
       "definitionId": "Identifier",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.647Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.365Z",
       "comments": [],
       "inputGroups": []
     },
     {
-      "id": "ckdpsz4fr0321cp9klnfm0n1y",
+      "id": "ckdyl65kl0330gu9kg0g9kl08",
       "path": "deceasedDateTime",
       "sliceName": null,
       "definitionId": "dateTime",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.647Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.365Z",
       "comments": [],
       "inputGroups": [
         {
-          "id": "ckdpsz4fr0322cp9kw3tq4d7v",
+          "id": "ckdyl65kl0331gu9kjada4vf4",
           "mergingScript": null,
-          "attributeId": "ckdpsz4fr0321cp9klnfm0n1y",
-          "updatedAt": "2020-08-11T10:29:34.649Z",
-          "createdAt": "2020-08-11T10:29:34.647Z",
+          "attributeId": "ckdyl65kl0330gu9kg0g9kl08",
+          "updatedAt": "2020-08-17T14:01:01.367Z",
+          "createdAt": "2020-08-17T14:01:01.365Z",
           "inputs": [
             {
-              "id": "ckdpsz4fr0323cp9kb546sw3y",
+              "id": "ckdyl65kl0332gu9ktbm5l90s",
               "script": "clean_date",
               "conceptMapId": null,
               "staticValue": null,
-              "sqlValueId": "ckdpsz4fr0324cp9ky5flgf42",
-              "inputGroupId": "ckdpsz4fr0322cp9kw3tq4d7v",
-              "updatedAt": "2020-08-11T10:29:34.649Z",
-              "createdAt": "2020-08-11T10:29:34.647Z",
+              "sqlValueId": "ckdyl65kl0333gu9kf9udz7lz",
+              "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
+              "updatedAt": "2020-08-17T14:01:01.367Z",
+              "createdAt": "2020-08-17T14:01:01.365Z",
               "sqlValue": {
-                "id": "ckdpsz4fr0324cp9ky5flgf42",
+                "id": "ckdyl65kl0333gu9kf9udz7lz",
                 "table": "patients",
                 "column": "dod",
                 "joinId": null,
-                "updatedAt": "2020-08-11T10:29:34.649Z",
-                "createdAt": "2020-08-11T10:29:34.647Z",
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.365Z",
                 "joins": []
               }
             }
           ],
           "conditions": [
             {
-              "id": "ckdq0hb3i0216159kfldvh2ou",
+              "id": "ckdyl65kl0334gu9ky8x57zvb",
               "action": "EXCLUDE",
-              "columnId": "ckdq0hb3i0217159k6q7arro7",
-              "value": "1",
+              "columnId": "ckdyl65kl0335gu9kup0hwhe0",
               "relation": "EQ",
-              "inputGroupId": "ckdpsz4fr0322cp9kw3tq4d7v",
+              "value": "1",
+              "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
               "sqlValue": {
-                "id": "ckdq0hb3i0217159k6q7arro7",
+                "id": "ckdyl65kl0335gu9kup0hwhe0",
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
-                "updatedAt": "2020-08-11T13:59:54.215Z",
-                "createdAt": "2020-08-11T13:59:40.398Z"
+                "updatedAt": "2020-08-17T14:01:01.367Z",
+                "createdAt": "2020-08-17T14:01:01.365Z"
               }
             }
           ]
@@ -1013,13 +1030,13 @@
       ]
     },
     {
-      "id": "ckdpsz4fr0325cp9kc9exiwbe",
+      "id": "ckdyl65kl0336gu9ko7kvv67a",
       "path": "maritalStatus",
       "sliceName": null,
       "definitionId": "CodeableConcept",
-      "resourceId": "ckdpsz4fn0128cp9kaa3trm6w",
-      "updatedAt": "2020-08-11T10:29:34.649Z",
-      "createdAt": "2020-08-11T10:29:34.647Z",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.365Z",
       "comments": [],
       "inputGroups": []
     }

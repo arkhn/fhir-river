@@ -1,12 +1,15 @@
 from typing import Dict, List, NewType, Tuple, Union
 
+from datetime import datetime, date
+from sqlalchemy.types import DateTime
+
+from analyzer.src.config.logger import get_logger
+from analyzer.src.errors import OperationOutcome
+
 from .sql_column import SqlColumn
 
+
 CONDITION_FLAG = "__condition__"
-
-
-DataDictKey = NewType("DataDictKey", Tuple[str, Tuple[str, str]])
-DataDictValue = NewType("DataDictValue", Union[str, List[str]])
 
 CONDITION_RELATION_TO_FUNCTION = {
     "EQ": lambda x, y: x == y,
@@ -18,6 +21,13 @@ CONDITION_RELATION_TO_FUNCTION = {
     "NULL": lambda x, _: x is None,
     "NOTNULL": lambda x, _: x is not None,
 }
+
+UNARY_RELATIONS = ["NULL", "NOTNULL"]
+
+DataDictKey = NewType("DataDictKey", Tuple[str, Tuple[str, str]])
+DataDictValue = NewType("DataDictValue", Union[str, List[str]])
+
+logger = get_logger()
 
 
 class Condition:
@@ -32,8 +42,7 @@ class Condition:
         self.sql_column = sql_column
         self.relation = relation
         # We turn the value into a number if it looks like one
-        # TODO better type handling?
-        self.value = float(value) if value.isnumeric() else value
+        self.value = value
 
     def check(self, data: Dict[DataDictKey, DataDictValue]):
         data_value = data[(CONDITION_FLAG, (self.sql_column.table, self.sql_column.column))]
@@ -47,6 +56,35 @@ class Condition:
                 )
             data_value = data_value[0]
 
-        is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](data_value, self.value)
+        try:
+            cast_value = self.cast_value_type(data_value)
+        except Exception as e:
+            raise OperationOutcome(
+                f"Could not cast condition value ({self.value}) to type {type(data_value)}: {e}"
+            )
 
+        # We first check if the relation between the condition's value and
+        # the value fetched from the DB holds.
+        is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](data_value, cast_value)
+
+        # Then, to know if we need to include the input group or not, we need to XOR
+        # is_relation_true with self.action == "EXCLUDE".
+        # For instance, if the relation holds but the action is "EXCLUDE", we want to return
+        # False (and to exclude the input group from the attribute).
         return (self.action == "EXCLUDE") ^ is_relation_true
+
+    def cast_value_type(self, data_value):
+        if self.relation in UNARY_RELATIONS:
+            # For unary relations, we don't need a reference value
+            cast_value = None
+        elif isinstance(data_value, bool):
+            # For booleans, we cast to False if the value is "0", "false" or "False"
+            cast_value = self.value not in ["0", "false", "False"]
+        elif isinstance(data_value, (DateTime, date)):
+            # For dates, we parse the string
+            # NOTE the date format is fixed here
+            cast_value = datetime.strptime(self.value, "%Y-%m-%d")
+        else:
+            cast_value = type(data_value)(self.value)
+
+        return cast_value
