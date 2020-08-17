@@ -22,38 +22,6 @@ def mock_get_script(*args):
         return args[0] + args[1] + "merge"
 
 
-def test_cast_types():
-    data = {
-        "PATIENTS_NAME": ["alice", "bob", "charlie"],
-        "PATIENTS_ID": ["1", "2", "3"],
-        "PATIENTS_ID2": ["11", "22", "33"],
-    }
-
-    attr_str = Attribute("str", definition_id="code")
-    group = InputGroup(
-        id_="id",
-        attribute=attr_str,
-        columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
-    )
-    attr_str.add_input_group(group)
-
-    attr_number = Attribute("number", definition_id="integer")
-    group = InputGroup(
-        id_="id",
-        attribute=attr_str,
-        columns=[SqlColumn("PATIENTS", "ID"), SqlColumn("PATIENTS", "ID2")],
-    )
-    attr_number.add_input_group(group)
-
-    cast_data = transform.cast_types(data, [attr_str, attr_number])
-
-    assert cast_data == {
-        "PATIENTS_NAME": ["alice", "bob", "charlie"],
-        "PATIENTS_ID": [1, 2, 3],
-        "PATIENTS_ID2": [11, 22, 33],
-    }
-
-
 @mock.patch("analyzer.src.analyze.cleaning_script.scripts.get_script", return_value=mock_get_script)
 @mock.patch("analyzer.src.analyze.ConceptMap.fetch", mock_fetch_maps)
 def test_clean_data(_):

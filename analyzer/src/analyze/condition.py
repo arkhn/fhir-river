@@ -1,7 +1,6 @@
 from typing import Dict, List, NewType, Tuple, Union
 
-from datetime import datetime, date
-from sqlalchemy.types import DateTime
+from datetime import datetime
 
 from analyzer.src.config.logger import get_logger
 from analyzer.src.errors import OperationOutcome
@@ -79,12 +78,21 @@ class Condition:
             cast_value = None
         elif isinstance(data_value, bool):
             # For booleans, we cast to False if the value is "0", "false" or "False"
-            cast_value = self.value not in ["0", "false", "False"]
-        elif isinstance(data_value, (DateTime, date)):
+            cast_value = self.value.lower() not in ["0", "false"]
+        elif isinstance(data_value, str) and self.is_date(data_value):
             # For dates, we parse the string
-            # NOTE the date format is fixed here
-            cast_value = datetime.strptime(self.value, "%Y-%m-%d")
+            # NOTE the input date format is fixed here
+            cast_value = datetime.strptime(self.value, "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%S")
         else:
             cast_value = type(data_value)(self.value)
 
         return cast_value
+
+    @staticmethod
+    def is_date(raw_input):
+        try:
+            # flask jsonifies dates to this format
+            datetime.strptime(raw_input, "%Y-%m-%dT%H:%M:%S")
+            return True
+        except ValueError:
+            return False

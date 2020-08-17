@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from analyzer.src.analyze.condition import Condition, CONDITION_FLAG
 from analyzer.src.analyze.sql_column import SqlColumn
 
@@ -86,10 +84,10 @@ def test_types():
     # Date
     cond = Condition("INCLUDE", SqlColumn("patients", "birthDate"), "EQ", "2012-01-01")
 
-    row = {(CONDITION_FLAG, ("patients", "birthDate")): datetime(2012, 1, 1)}
+    row = {(CONDITION_FLAG, ("patients", "birthDate")): "2012-01-01T00:00:00"}
     assert cond.check(row)
 
     cond = Condition("INCLUDE", SqlColumn("patients", "birthDate"), "LT", "2012-02-01")
 
-    row = {(CONDITION_FLAG, ("patients", "birthDate")): datetime(2012, 1, 1)}
+    row = {(CONDITION_FLAG, ("patients", "birthDate")): "2012-01-01T00:00:00"}
     assert cond.check(row)

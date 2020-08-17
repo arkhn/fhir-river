@@ -3,7 +3,6 @@ from uuid import uuid4
 from transformer.src.transform.fhir import build_fhir_object
 from transformer.src.transform.fhir import build_metadata
 from transformer.src.transform.fhir import clean_fhir_object
-from transformer.src.transform.dataframe import cast_types
 from transformer.src.transform.dataframe import clean_data
 from transformer.src.transform.dataframe import squash_rows
 from transformer.src.transform.dataframe import merge_by_attributes
@@ -35,10 +34,6 @@ class Transformer:
             )
 
         logging_extras = {"resource_id": analysis.resource_id, "primary_key_value": primary_key}
-
-        # Change values to strings
-        logger.info("Apply Map String", extra=logging_extras)
-        data = cast_types(data, analysis.attributes)
 
         # Apply cleaning scripts and concept map on data
         logger.info("Apply Cleaning", extra=logging_extras)
