@@ -7,6 +7,7 @@ from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_filter import SqlFilter
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from analyzer.test.conftest import mock_api_get_maps
@@ -69,7 +70,9 @@ def test_analyze_mapping(mock_login, patient_mapping):
         SqlColumn("admissions", "marital_status"),
         SqlColumn("admissions", "language"),
     }
-
+    assert analysis.filters == [
+        SqlFilter(SqlColumn("patients", "row_id"), ">=", 0),
+    ]
     assert analysis.joins == {
         SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
     }

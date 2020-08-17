@@ -71,32 +71,37 @@ def manage_kafka_error(msg):
 
 
 def transform_row(resource_id, row, time_refresh_analysis=3600):
-    logger.debug(f"Row from extractor: {row}", extra={"resource_id": resource_id})
-
-    logger.debug("Get Analysis", extra={"resource_id": resource_id})
+    logger.info("Get Analysis", extra={"resource_id": resource_id})
     analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 
-    logger.debug("Transform dataframe", extra={"resource_id": resource_id})
-    data = transformer.transform_data(row, analysis)
+    primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
+    logging_extras = {"resource_id": resource_id, "primary_key_value": primary_key_value}
 
-    logger.debug("Create FHIR Doc", extra={"resource_id": resource_id})
-    fhir_document = transformer.create_fhir_document(data, analysis)
+    try:
+        logger.info("Transform dataframe", extra=logging_extras)
+        data = transformer.transform_data(row, analysis)
 
-    logger.debug(f"Fhir document: {fhir_document}", extra={"resource_id": resource_id})
+        logger.info("Create FHIR Doc", extra=logging_extras)
+        fhir_document = transformer.create_fhir_document(data, analysis)
 
-    return fhir_document
+        return fhir_document
+
+    except Exception as e:
+        logger.error(f"Failed to transform {row}:\n{e}", logging_extras)
 
 
 @app.route("/transform", methods=["POST"])
 def transform():
     body = request.get_json()
-    logger.info(f"Transform from API: {body}")
-
     resource_id = body.get("resource_id")
+    rows = body.get("dataframe")
+    logger.info(
+        f"POST /transform. Transforming {len(rows)} row(s).", extra={"resource_id": resource_id}
+    )
     try:
         fhir_instances = []
         errors = []
-        for row in body.get("dataframe"):
+        for row in rows:
             fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
             try:

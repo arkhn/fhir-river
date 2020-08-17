@@ -4,11 +4,12 @@ from typing import List
 from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
 
+from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from extractor.src.config.logger import get_logger
-from extractor.src.errors import EmptyResult
+from extractor.src.errors import EmptyResult, ImproperMappingError
 
 from arkhn_monitoring import Timer
 
@@ -68,13 +69,12 @@ class Extractor:
 
     # TODO refine buckets if needed
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
-    def extract(self, resource_mapping, analysis, pk_values=None):
+    def extract(self, analysis, pk_values=None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
         source DB, run it and returns the result as an sqlalchemy ResultProxy.
 
         Args:
-            resource_mapping: the mapping.
             analysis: an Analyis instance built by the Analyzer.
             pk_values: it not None, the Extractor will fetch only the rows for which
                 the primary key values are in pk_values.
@@ -88,36 +88,23 @@ class Extractor:
             )
 
         logger.info(
-            f"Extracting resource: {resource_mapping['definitionId']}",
+            f"Extracting resource: {analysis.definition_id}",
             extra={"resource_id": analysis.resource_id},
         )
 
         # Build sqlalchemy query
-        query = self.sqlalchemy_query(
-            analysis.columns,
-            analysis.joins,
-            analysis.primary_key_column,
-            resource_mapping,
-            pk_values,
-        )
+        query = self.sqlalchemy_query(analysis, pk_values)
 
         return self.run_sql_query(query)
 
     @Timer("time_extractor_build_query", "time to build sql query")
-    def sqlalchemy_query(
-        self,
-        columns: List[SqlColumn],
-        joins: List[SqlJoin],
-        pk_column: SqlColumn,
-        resource_mapping,
-        pk_values,
-    ) -> Query:
+    def sqlalchemy_query(self, analysis: Analysis, pk_values) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
         """
-        alchemy_cols = self.get_columns(columns)
+        alchemy_cols = self.get_columns(analysis.columns)
         base_query = self.session.query(*alchemy_cols)
-        query_w_joins = self.apply_joins(base_query, joins)
-        query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, pk_values)
+        query_w_joins = self.apply_joins(base_query, analysis.joins)
+        query_w_filters = self.apply_filters(query_w_joins, analysis, pk_values)
 
         return query_w_filters
 
@@ -133,25 +120,16 @@ class Extractor:
             )
         return query
 
-    def apply_filters(
-        self, query: Query, resource_mapping, pk_column: SqlColumn, pk_values
-    ) -> Query:
+    def apply_filters(self, query: Query, analysis: Analysis, pk_values) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.
         """
         if pk_values is not None:
-            query = query.filter(self.get_column(pk_column).in_(pk_values))
+            query = query.filter(self.get_column(analysis.primary_key_column).in_(pk_values))
 
-        if resource_mapping["filters"]:
-            for filter in resource_mapping["filters"]:
-                col = self.get_column(
-                    SqlColumn(
-                        filter["sqlColumn"]["table"],
-                        filter["sqlColumn"]["column"],
-                        resource_mapping["source"]["credential"]["owner"],
-                    )
-                )
-                rel_method = SQL_RELATIONS_TO_METHOD[filter["relation"]]
-                query = query.filter(getattr(col, rel_method)(filter["value"]))
+        for sql_filter in analysis.filters:
+            col = self.get_column(sql_filter.sql_column)
+            rel_method = SQL_RELATIONS_TO_METHOD[sql_filter.relation]
+            query = query.filter(getattr(col, rel_method)(sql_filter.value))
 
         return query
 
@@ -172,11 +150,11 @@ class Extractor:
 
         return self.session.execute(query)
 
-    def batch_size(self, analysis, resource_mapping) -> int:
+    def batch_size(self, analysis) -> int:
         pk_column = self.get_column(analysis.primary_key_column)
         base_query = self.session.query(func.count(distinct(pk_column)))
         query_w_joins = self.apply_joins(base_query, analysis.joins)
-        query_w_filters = self.apply_filters(query_w_joins, resource_mapping, pk_column, None)
+        query_w_filters = self.apply_filters(query_w_joins, analysis, None)
         logger.info(
             f"sql query: {query_w_filters.statement}", extra={"resource_id": analysis.resource_id}
         )
@@ -197,7 +175,12 @@ class Extractor:
         table = self.get_table(column)
         # Note that we label the column manually to avoid collisions and
         # sqlAlchemy automatic labelling
-        return table.c[column.column].label(column.dataframe_column_name())
+        try:
+            return table.c[column.column].label(column.dataframe_column_name())
+        except KeyError:
+            raise ImproperMappingError(
+                f"Column '{column.column}' not found in table '{column.table}'."
+            )
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)

@@ -27,8 +27,7 @@ EXTRACT_TOPIC = "extract"
 BATCH_SIZE_TOPIC = "batch_size"
 CONSUMED_TOPIC = "batch"
 
-pyrog_client = PyrogClient()
-analyzer = Analyzer(pyrog_client)
+analyzer = Analyzer(PyrogClient())
 extractor = Extractor()
 
 
@@ -41,9 +40,9 @@ app = create_app()
 
 
 def process_event_with_producer(producer):
-    def broadcast_events(resource_mapping, dataframe, analysis, batch_id=None):
-        resource_type = resource_mapping["definitionId"]
-        resource_id = resource_mapping["id"]
+    def broadcast_events(dataframe, analysis, batch_id=None):
+        resource_type = analysis.definition_id
+        resource_id = analysis.resource_id
         list_records_from_db = extractor.split_dataframe(dataframe, analysis)
 
         for record in list_records_from_db:
@@ -67,18 +66,17 @@ def process_event_with_producer(producer):
         msg_topic = msg.topic()
 
         logger.info(
-            f"Event ready to be processed (topic: {msg_topic}, message: {msg_value})",
-            extra={"resource_id": resource_id},
+            f"Event ready to be processed (topic: {msg_topic})", extra={"resource_id": resource_id},
         )
 
         try:
-            resource_mapping, analysis, df = extract_resource(resource_id, primary_key_values)
-            batch_size = extractor.batch_size(analysis, resource_mapping)
+            analysis, df = extract_resource(resource_id, primary_key_values)
+            batch_size = extractor.batch_size(analysis)
             logger.info(f"Batch size is {batch_size}", extra={"resource_id": resource_id})
             producer.produce_event(
                 topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
             )
-            broadcast_events(resource_mapping, df, analysis, batch_id)
+            broadcast_events(df, analysis, batch_id)
 
         except Exception as err:
             logger.error(err, extra={"resource_id": resource_id})
@@ -96,23 +94,19 @@ def manage_kafka_error(msg):
 
 
 def extract_resource(resource_id, primary_key_values):
-    logger.info(f"Getting Mapping for resource {resource_id}", extra={"resource_id": resource_id})
-    resource_mapping = pyrog_client.get_resource_from_id(resource_id=resource_id)
+    logger.debug("Get Analysis", extra={"resource_id": resource_id})
+    analysis = analyzer.get_analysis(resource_id)
 
-    # Get credentials
-    if not resource_mapping["source"]["credential"]:
-        raise MissingInformationError("credential is required to run fhir-river by batch.")
+    if not analysis.source_credentials:
+        raise MissingInformationError("credential is required to run fhir-river.")
 
-    credentials = resource_mapping["source"]["credential"]
+    credentials = analysis.source_credentials
     extractor.update_connection(credentials)
 
-    logger.info("Analyzing Mapping", extra={"resource_id": resource_id})
-    analysis = analyzer.analyze(resource_mapping)
-
     logger.info("Extracting rows", extra={"resource_id": resource_id})
-    df = extractor.extract(resource_mapping, analysis, primary_key_values)
+    df = extractor.extract(analysis, primary_key_values)
 
-    return resource_mapping, analysis, df
+    return analysis, df
 
 
 @app.route("/extract", methods=["POST"])
@@ -120,11 +114,16 @@ def extract():
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
+    logger.info(
+        f"Extract from API with primary key value {primary_key_values}",
+        extra={"resource_id": resource_id},
+    )
+
     if not primary_key_values:
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        _, analysis, df = extract_resource(resource_id, primary_key_values)
+        analysis, df = extract_resource(resource_id, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
             logger.debug("One record from extract", extra={"resource_id": resource_id})
