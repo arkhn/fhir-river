@@ -197,6 +197,15 @@ services:
     volumes:
       - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
+  # TODO logs could be exported to an external kibana instance during integration tests
+  fluentd:
+    image: arkhn/fluentd:latest
+    container_name: fluentd
+    volumes:
+      - ./fluent.conf:/fluentd/etc/fluent.conf
+    ports:
+      - 24224:24224
+
 volumes:
   test-mimic-db:
   test-fhirstore-db:

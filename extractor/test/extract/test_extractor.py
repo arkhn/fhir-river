@@ -4,7 +4,9 @@ from unittest import mock
 from sqlalchemy import Table, Column, MetaData
 from sqlalchemy.orm.query import Query
 
+from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
+from analyzer.src.analyze.sql_filter import SqlFilter
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from extractor.src.extract.extractor import Extractor
@@ -63,28 +65,21 @@ def test_sqlalchemy_query():
 
     extractor.session.query = mock_alchemy_query
 
-    columns = [
+    analysis = Analysis()
+    analysis.columns = [
         SqlColumn("patients", "subject_id"),
         SqlColumn("patients", "row_id"),
         SqlColumn("admissions", "admittime"),
     ]
-    joins = [
-        SqlJoin(columns[1], SqlColumn("admissions", "row_id")),
+    analysis.joins = [
+        SqlJoin(analysis.columns[1], SqlColumn("admissions", "row_id")),
     ]
-    pk_column = columns[0]
-    resource_mapping = {
-        "filters": [
-            {
-                "relation": "LIKE",
-                "value": "'2150-08-29'",
-                "sqlColumn": {"table": "admissions", "column": "admittime"},
-            }
-        ],
-        "source": {"credential": {"owner": None}},
-    }
+    analysis.primary_key_column = analysis.columns[0]
+    analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
+
     pk_values = None
 
-    query = extractor.sqlalchemy_query(columns, joins, pk_column, resource_mapping, pk_values)
+    query = extractor.sqlalchemy_query(analysis, pk_values)
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id, patients.row_id AS patients_row_id, "
@@ -127,27 +122,18 @@ def test_apply_joins():
 @mock.patch("extractor.src.extract.extractor.Extractor.get_table", mock_get_table)
 def test_apply_filters():
     extractor = Extractor()
-    resource_mapping = {
-        "filters": [
-            {
-                "relation": "LIKE",
-                "value": "'2150-08-29'",
-                "sqlColumn": {"table": "admissions", "column": "admittime"},
-            },
-            {
-                "relation": "<=",
-                "value": "1000",
-                "sqlColumn": {"table": "patients", "column": "row_id"},
-            },
-        ],
-        "source": {"credential": {"owner": None}},
-    }
-    pk_column = SqlColumn("patients", "subject_id")
+    analysis = Analysis()
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
+    analysis.add_filter(SqlFilter(SqlColumn("patients", "row_id"), "<=", "1000"))
+
     pk_values = [123, 456]
 
     base_query = mock.MagicMock()
+    base_query.filter.return_value = base_query
 
-    extractor.apply_filters(base_query, resource_mapping, pk_column, pk_values)
+    extractor.apply_filters(base_query, analysis, pk_values)
 
     binary_expressions = [
         extractor.get_column(SqlColumn("patients", "subject_id")).in_(pk_values),

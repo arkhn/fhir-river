@@ -17,6 +17,9 @@ class SqlColumn:
         self.column = column.strip()
         self.owner = owner.strip() if owner else None
 
+        if not self.table or not self.column:
+            raise ValueError("Cannot create an SqlColumn with empty table or column.")
+
         self.cleaning_script = cleaning_script
         self.concept_map = concept_map
 

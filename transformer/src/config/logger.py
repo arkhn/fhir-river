@@ -19,7 +19,7 @@ def get_logger(level="INFO"):
     if logger is not None:
         return logger
 
-    extra_fields = ["resource_id"]
+    extra_fields = ["resource_id", "primary_key_value"]
 
     logger = create_logger(
         "transformer", FLUENTD_HOST, FLUENTD_PORT, level=level, extra_fields=extra_fields

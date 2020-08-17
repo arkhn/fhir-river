@@ -221,8 +221,6 @@ services:
     container_name: fluentd
     volumes:
       - ./fluentd/conf:/fluentd/etc
-    links:
-      - "elasticsearch"
     ports:
       - 127.0.0.1:24224:24224
       - "24224:24224/udp"
@@ -246,8 +244,6 @@ services:
     container_name: kibana
     depends_on:
       - elasticsearch
-    links:
-      - "elasticsearch"
     ports:
       - "5601:5601"
     networks:

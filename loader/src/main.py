@@ -60,7 +60,6 @@ def process_event_with_producer(producer):
         """
         fhir_instance = json.loads(msg.value())
         resource_id = get_resource_id(fhir_instance)
-        logger.debug(fhir_instance, extra={"resource_id": resource_id})
 
         logger.debug("Get Analysis", extra={"resource_id": resource_id})
         # FIXME: filter meta.tags by system to get the right

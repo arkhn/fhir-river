@@ -19,7 +19,23 @@
       "owner": null
     }
   },
-  "filters": [],
+  "filters": [
+    {
+      "id": "ckdu1t41o1171iepjprcl7qji",
+      "relation": ">=",
+      "value": 0,
+      "resourceId": "ckd62orz2052659mpwse7w8ms",
+      "sqlColumnId": "ckdu1t41o1172iepju4j8od0x",
+      "sqlColumn": {
+        "id": "ckdu1t41o1172iepju4j8od0x",
+        "table": "patients",
+        "column": "row_id",
+        "joinId": null,
+        "updatedAt": "2020-08-14T09:47:55.452Z",
+        "createdAt": "2020-08-14T09:47:55.452Z"
+      }
+    }
+  ],
   "attributes": [
     {
       "id": "ckdpsz4fo0129cp9ky80ode49",
