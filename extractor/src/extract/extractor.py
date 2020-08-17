@@ -201,7 +201,7 @@ class Extractor:
             return table.c[column.column].label(column.dataframe_column_name())
         except KeyError:
             raise ImproperMappingError(
-                f"Column {column.column} not found in table {column.table}."
+                f"Column '{column.column}' not found in table '{column.table}'."
             )
 
     def get_table(self, column: SqlColumn) -> Table:
