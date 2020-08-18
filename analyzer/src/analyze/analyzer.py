@@ -195,6 +195,7 @@ class Analyzer:
             condition = Condition(
                 action=mapping_condition["action"],
                 sql_column=condition_column,
+                relation=mapping_condition["relation"],
                 value=mapping_condition["value"],
             )
             input_group.add_condition(condition)

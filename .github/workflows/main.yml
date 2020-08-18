@@ -72,6 +72,7 @@ jobs:
           docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
           docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
+          docker-compose -f test/docker-compose.yml up -d fluentd
           sleep 15
           python -m pytest -svv test/test_batch.py
 

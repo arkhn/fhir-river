@@ -9,15 +9,6 @@ from transformer.src.config.logger import get_logger
 logger = get_logger()
 
 
-def cast_types(data, attributes):
-    for attribute in attributes:
-        for input_group in attribute.input_groups:
-            for column in input_group.columns:
-                col_name = column.dataframe_column_name()
-                data[col_name] = [attribute.cast_type(row) for row in data[col_name]]
-    return data
-
-
 def clean_data(data, attributes: List[Attribute], primary_key):
     """ Apply cleaning scripts and concept maps.
     This function takes the dictionary produced by the Extractor and returns another
@@ -40,7 +31,9 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 attr_col_name = (input_group.id, (col.table, col.column))
 
                 # Get the original column
-                cleaned_data[attr_col_name] = data[dict_col_name]
+                cleaned_data[attr_col_name] = [
+                    attribute.cast_type(row) for row in data[dict_col_name]
+                ]
 
                 # Apply cleaning script
                 if col.cleaning_script:
