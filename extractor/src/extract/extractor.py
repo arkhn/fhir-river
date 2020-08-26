@@ -33,6 +33,7 @@ MSSQL = "MSSQL"
 ORACLE = "ORACLE"
 POSTGRES = "POSTGRES"
 DB_DRIVERS = {POSTGRES: "postgresql", ORACLE: "oracle+cx_oracle", MSSQL: "mssql+pyodbc"}
+URL_SUFFIXES = {POSTGRES: "", ORACLE: "", MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server"}
 
 
 class Extractor:
@@ -53,16 +54,14 @@ class Extractor:
 
         try:
             db_handler = DB_DRIVERS[model]
+            url_suffix = URL_SUFFIXES[model]
         except KeyError:
             raise ValueError(
                 "credentials specifies the wrong database model. "
                 "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
             )
 
-        return (
-            f"{db_handler}://{login}:{password}@{host}:{port}/{database}"
-            f"{'?driver=ODBC+Driver+17+for+SQL+Server' if model == MSSQL else ''}"
-        )
+        return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
     def update_connection(self, credentials):
         new_db_string = self.build_db_url(credentials)
