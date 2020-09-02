@@ -71,23 +71,26 @@ def manage_kafka_error(msg):
 
 
 def transform_row(resource_id, row, time_refresh_analysis=3600):
-    logger.info("Get Analysis", extra={"resource_id": resource_id})
+    logger.debug("Get Analysis", extra={"resource_id": resource_id})
     analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 
     primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
     logging_extras = {"resource_id": resource_id, "primary_key_value": primary_key_value}
 
     try:
-        logger.info("Transform dataframe", extra=logging_extras)
+        logger.debug("Transform dataframe", extra=logging_extras)
         data = transformer.transform_data(row, analysis)
 
-        logger.info("Create FHIR Doc", extra=logging_extras)
+        logger.debug("Create FHIR Doc", extra=logging_extras)
         fhir_document = transformer.create_fhir_document(data, analysis)
 
         return fhir_document
 
     except Exception as e:
-        logger.error(f"Failed to transform {row}:\n{e}", logging_extras)
+        logger.error(
+            f"Failed to transform {row}:\n{e}",
+            extra={"resource_id": resource_id, "primary_key_value": primary_key_value},
+        )
 
 
 @app.route("/transform", methods=["POST"])
