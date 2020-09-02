@@ -50,7 +50,7 @@ class Analyzer:
             )
             self.fetch_analysis(resource_mapping_id)
         else:
-            logger.info(
+            logger.debug(
                 "Analysis was updated recently. Using cached analysis.",
                 extra={"resource_id": resource_mapping_id},
             )
