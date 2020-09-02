@@ -1,0 +1,2 @@
+-r requirements-base.txt
+pyodbc==4.0.30
