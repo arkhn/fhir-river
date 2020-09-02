@@ -5,7 +5,8 @@ ENV PYTHONPATH=${EXTRACTOR_SQL_HOME}
 
 WORKDIR ${EXTRACTOR_SQL_HOME}
 
-COPY extractor/requirements.txt ${EXTRACTOR_SQL_HOME}/requirements.txt
+COPY extractor/requirements/requirements-base.txt ${EXTRACTOR_SQL_HOME}/requirements-base.txt
+COPY extractor/requirements/requirements-all.txt ${EXTRACTOR_SQL_HOME}/requirements.txt
 
 RUN pip install -r ${EXTRACTOR_SQL_HOME}/requirements.txt
 
