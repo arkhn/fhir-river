@@ -74,7 +74,10 @@ def process_event_with_producer(producer):
         try:
             analysis, df = extract_resource(resource_id, primary_key_values)
             batch_size = extractor.batch_size(analysis)
-            logger.info(f"Batch size is {batch_size}", extra={"resource_id": resource_id})
+            logger.info(
+                f"Batch size is {batch_size} for resource type {analysis.definition_id}",
+                extra={"resource_id": resource_id},
+            )
             producer.produce_event(
                 topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
             )

@@ -131,7 +131,7 @@ query resource($resourceId: ID!) {
 class PyrogClient:
     def __init__(self):
         self.token = self.login()
-        logger.info("Login to pyrog was successful, token is %s", self.token)
+        logger.info("Login to pyrog successful")
 
     def get_headers(self, auth_required=True):
         if auth_required and not self.token:

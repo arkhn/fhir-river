@@ -2,19 +2,20 @@
 Create the logger to be used in the service
 """
 
-import os
+from os import getenv
 
 from arkhn_monitoring import create_logger
 
 
-FLUENTD_HOST = os.getenv("FLUENTD_HOST", "fluentd")
-FLUENTD_PORT = os.getenv("FLUENTD_PORT", 24224)
-SERVICE_NAME = os.getenv("SERVICE_NAME", "analyzer")
+FLUENTD_HOST = getenv("FLUENTD_HOST", "fluentd")
+FLUENTD_PORT = getenv("FLUENTD_PORT", 24224)
+LOGGING_LEVEL = getenv("LOGGING_LEVEL", "INFO")
+SERVICE_NAME = getenv("SERVICE_NAME", "analyzer")
 
 logger = None
 
 
-def get_logger(level="INFO"):
+def get_logger():
     global logger
 
     if logger is not None:
@@ -23,7 +24,7 @@ def get_logger(level="INFO"):
     extra_fields = ["resource_id"]
 
     logger = create_logger(
-        SERVICE_NAME, FLUENTD_HOST, FLUENTD_PORT, level=level, extra_fields=extra_fields
+        SERVICE_NAME, FLUENTD_HOST, FLUENTD_PORT, level=LOGGING_LEVEL, extra_fields=extra_fields
     )
 
     return logger

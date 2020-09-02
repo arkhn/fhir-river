@@ -65,7 +65,7 @@ class Extractor:
 
     def update_connection(self, credentials):
         new_db_string = self.build_db_url(credentials)
-        logger.info(f"Updating connection to {new_db_string}")
+        logger.info(f"Updating connection to database {credentials['database']}")
 
         if new_db_string != self.db_string:
             self.db_string = new_db_string

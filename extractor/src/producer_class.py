@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import json
 import datetime
+import json
 from confluent_kafka import Producer
 from extractor.src.config.logger import get_logger
 
