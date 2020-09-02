@@ -6,6 +6,7 @@ import os
 from prometheus_client import start_http_server
 from pymongo.errors import DuplicateKeyError
 
+from arkhn_monitoring import Timer
 from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
@@ -36,6 +37,7 @@ analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 
 
+@Timer("time_override", "time to delete a potential document with the same identifier")
 def override_document(fhir_instance):
     try:
         # TODO add a wrapper method in fhirstore to delete as follows?
@@ -48,7 +50,11 @@ def override_document(fhir_instance):
             extra={"resource_id": get_resource_id(fhir_instance)},
         )
     except NotFoundError as e:
-        logger.warning(f"error while trying to delete previous documents: {e}")
+        # With the current policy of trying to delete a document with the same
+        # identifier before each insertion, we may catch this Exception most of the time.
+        # That's why the logging level is set to DEBUG.
+        # TODO: better override strategy
+        logger.debug(f"error while trying to delete previous documents: {e}")
 
 
 def process_event_with_producer(producer):
@@ -79,7 +85,10 @@ def process_event_with_producer(producer):
 
         try:
             logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
-            loader.load(fhirstore, resolved_fhir_instance)
+            loader.load(
+                resolved_fhir_instance,
+                resource_type=resolved_fhir_instance["resourceType"],
+            )
             producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
         except DuplicateKeyError as e:
             logger.error(e)

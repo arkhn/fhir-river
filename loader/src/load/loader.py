@@ -10,10 +10,15 @@ class Loader:
         self.bypass_validation = bypass_validation
 
     @Timer("time_load", "time to perform load method of Loader", buckets=FAST_FN_BUCKETS)
-    @Counter("count_load", "count calls to load method of Loader")
-    def load(self, fhirstore, fhir_instance):
+    @Counter("count_load", "count calls to load method of Loader", labelnames=("resource_type",))
+    def load(self, fhir_instance, resource_type):
+        """
+        Uses self.fhirstore to save a fhir object into a fhir DB.
+        Args:
+            fhir_instance: the fhir document to store in the DB
+            resource_type: will be used as label for the Counter
+        """
         # Bootstrap for resource if needed
-        resource_type = fhir_instance["resourceType"]
         if resource_type not in self.fhirstore.resources:
             self.fhirstore.bootstrap(resource=resource_type, depth=3)
 
