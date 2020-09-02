@@ -12,12 +12,12 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
 
-from extractor.src.extract import Extractor
 from extractor.src.config.logger import get_logger
-from extractor.src.errors import MissingInformationError
-from extractor.src.producer_class import ExtractorProducer
 from extractor.src.consumer_class import ExtractorConsumer
-from extractor.src.errors import BadRequestError
+from extractor.src.errors import BadRequestError, MissingInformationError
+from extractor.src.extract import Extractor
+from extractor.src.json_encoder import MyJSONEncoder
+from extractor.src.producer_class import ExtractorProducer
 
 
 logger = get_logger()
@@ -37,6 +37,8 @@ def create_app():
 
 
 app = create_app()
+# Override default JSONEncoder
+app.json_encoder = MyJSONEncoder
 
 
 def process_event_with_producer(producer):
