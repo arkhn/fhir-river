@@ -19,7 +19,7 @@ class Transformer:
 
     # TODO refine buckets if needed
     @Timer(
-        "time_transformer_transform",
+        "time_transformer_transform_data",
         "time to perform transform_data method of Transformer",
         buckets=FAST_FN_BUCKETS,
     )
