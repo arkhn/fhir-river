@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-python loader/src/main.py
+# Run APP
+uwsgi --ini loader/uwsgi.ini --py-autoreload 1

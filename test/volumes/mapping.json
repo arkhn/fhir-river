@@ -199,7 +199,7 @@
                   "sqlValue": {
                     "id": "ckdyl65ke0033gu9kkaca8rcd",
                     "table": "transfers",
-                    "column": "hadm_id",
+                    "column": "row_id",
                     "joinId": null,
                     "updatedAt": "2020-08-17T14:01:01.360Z",
                     "createdAt": "2020-08-17T14:01:01.358Z",

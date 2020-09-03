@@ -117,6 +117,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       EXTRACTOR_URL: http://extractor:3001
       TRANSFORMER_URL: http://transformer:3002
+      LOADER_URL: http://loader:3003
     ports:
       - "3000:3000"
     networks:
