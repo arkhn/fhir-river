@@ -8,7 +8,6 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
 from uwsgidecorators import thread, postfork
 
-from arkhn_monitoring import Timer
 from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer

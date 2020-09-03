@@ -2,6 +2,8 @@ import re
 from collections import defaultdict
 from dotty_dict import dotty
 
+from arkhn_monitoring import Timer
+
 from loader.src.config.logger import get_logger
 from loader.src.load.utils import get_resource_id
 
@@ -78,6 +80,7 @@ class ReferenceBinder:
 
         self.cache = defaultdict(lambda: defaultdict(list))
 
+    @Timer("time_resolve_references", "time spent resolving references")
     def resolve_references(self, unresolved_fhir_object, reference_paths):
         fhir_object = dotty(unresolved_fhir_object)
         resource_id = get_resource_id(unresolved_fhir_object)
