@@ -15,6 +15,8 @@ RUN pip install -r ${LOADER_HOME}/requirements.txt
 COPY loader/src ${LOADER_HOME}/loader/src
 COPY analyzer/src ${LOADER_HOME}/analyzer/src
 
+COPY loader/uwsgi.ini ${LOADER_HOME}/loader/uwsgi.ini
+
 COPY loader/entrypoint.sh /entrypoint.sh
 
 CMD ["sh", "/entrypoint.sh"]

@@ -1,9 +1,12 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
@@ -12,11 +15,17 @@ import (
 )
 
 var (
-	topic = "batch"
+	topic                         = "batch"
+	loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
 )
 
 // BatchRequest is the body of the POST /batch request.
 type BatchRequest struct {
+	ResourceIDs []string `json:"resource_ids"`
+}
+
+// DeleteResourceRequest is the body of the POST /delete-resource request.
+type DeleteResourceRequest struct {
 	ResourceIDs []string `json:"resource_ids"`
 }
 
@@ -42,6 +51,25 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		batchID, err := uuid.NewRandom()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// delete all the documents correspondng to the batch resources
+		deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
+		jBody, _ := json.Marshal(DeleteResourceRequest{ResourceIDs: body.ResourceIDs})
+		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if resp.StatusCode != 200 {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			http.Error(w, string(body), http.StatusBadRequest)
 			return
 		}
 
