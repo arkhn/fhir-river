@@ -112,7 +112,7 @@ def manage_kafka_error(msg):
 
 
 @app.route("/delete-resources", methods=["POST"])
-def extract():
+def delete_resources():
     body = request.get_json()
     resource_ids = body.get("resource_ids", None)
 
