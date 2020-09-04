@@ -107,6 +107,7 @@ class ReferenceBinder:
 
         return fhir_object.to_dict()
 
+    @Timer("time_bind_existing_reference", "time spent resolving the documents's references")
     def bind_existing_reference(self, fhir_object, reference_path):
         reference_attribute = fhir_object[reference_path]
         resource_id = get_resource_id(fhir_object)
@@ -152,6 +153,7 @@ class ReferenceBinder:
         else:
             return bind(reference_attribute)
 
+    @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
         for identifier in fhir_object["identifier"]:
             try:

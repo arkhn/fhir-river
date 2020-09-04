@@ -5,7 +5,7 @@ from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 from loader.src.config.logger import get_logger
 
-logging = get_logger()
+logger = get_logger()
 
 
 class LoaderConsumer:
@@ -77,7 +77,7 @@ class LoaderConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        logging.info(self.topics)
+        logger.info(self.topics)
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()
