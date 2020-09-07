@@ -107,10 +107,11 @@ def transform():
         for row in rows:
             fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
-            try:
-                fhirstore.validate(fhir_document)
-            except ValidationError as e:
-                errors.append(str(e))
+            # TODO use fhir.resources to perform validation?
+            # try:
+            #     fhirstore.validate(fhir_document)
+            # except ValidationError as e:
+            #     errors.append(str(e))
 
         return jsonify({"instances": fhir_instances, "errors": errors})
 
