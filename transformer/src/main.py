@@ -2,10 +2,10 @@
 
 import json
 import os
+import pydantic
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
-from jsonschema.exceptions import ValidationError
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from uwsgidecorators import thread, postfork
 
@@ -43,11 +43,7 @@ app = create_app()
 
 def process_event_with_producer(producer):
     def process_event(msg):
-        """
-        Process the event
-        :param msg:
-        :return:
-        """
+        """ Process the event """
         msg_value = json.loads(msg.value())
         logger.debug(msg_value)
 
@@ -62,11 +58,7 @@ def process_event_with_producer(producer):
 
 
 def manage_kafka_error(msg):
-    """
-    Deal with the error if nany
-    :param msg:
-    :return:
-    """
+    """ Deal with the error if nany """
     logger.error(msg.error())
 
 
@@ -107,11 +99,16 @@ def transform():
         for row in rows:
             fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
-            # TODO use fhir.resources to perform validation?
-            # try:
-            #     fhirstore.validate(fhir_document)
-            # except ValidationError as e:
-            #     errors.append(str(e))
+            try:
+                fhirstore.normalize_resource(fhir_document)
+            except pydantic.ValidationError as e:
+                errors.extend(
+                    [
+                        f"{err['msg'] or 'Validation error'}: "
+                        f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
+                        for err in e.errors()
+                    ]
+                )
 
         return jsonify({"instances": fhir_instances, "errors": errors})
 
