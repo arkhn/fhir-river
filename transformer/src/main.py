@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from uwsgidecorators import thread, postfork
 
+from fhir.resources import construct_fhir_element
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
@@ -19,7 +20,7 @@ from transformer.src.producer_class import TransformerProducer
 
 from transformer.src.config.logger import get_logger
 from transformer.src.errors import OperationOutcome
-from transformer.src.fhirstore import get_fhirstore
+
 
 CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
@@ -29,8 +30,6 @@ logger = get_logger()
 
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()
-
-fhirstore = get_fhirstore()
 
 
 def create_app():
@@ -100,7 +99,8 @@ def transform():
             fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
             try:
-                fhirstore.normalize_resource(fhir_document)
+                resource_type = fhir_document.get("resourceType")
+                construct_fhir_element(resource_type, fhir_document)
             except pydantic.ValidationError as e:
                 errors.extend(
                     [

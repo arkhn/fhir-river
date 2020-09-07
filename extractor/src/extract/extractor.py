@@ -185,9 +185,12 @@ class Extractor:
         try:
             return table.c[column.column].label(column.dataframe_column_name())
         except KeyError:
-            raise ImproperMappingError(
-                f"Column '{column.column}' not found in table '{column.table}'."
-            )
+            try:
+                return table.c[column.column.lower()].label(column.dataframe_column_name())
+            except KeyError:
+                raise ImproperMappingError(
+                    f"Column '{column.column}' not found in table '{column.table}'."
+                )
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)

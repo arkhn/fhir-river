@@ -71,6 +71,8 @@ def process_event_with_producer(producer):
         :param msg:
         :return:
         """
+        logger.debug(msg.value())
+
         fhir_instance = json.loads(msg.value())
         resource_id = get_resource_id(fhir_instance)
 

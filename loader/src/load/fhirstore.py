@@ -1,9 +1,9 @@
 import os
-from jsonschema import ValidationError
 from prometheus_client import Counter
 from pymongo import MongoClient
 
 import fhirstore
+from fhir.resources.operationoutcome import OperationOutcome
 
 from loader.src.config.logger import get_logger
 from loader.src.load.utils import get_resource_id
@@ -58,16 +58,14 @@ def save_one(fhir_object, bypass_validation=False):
     """
     store = get_fhirstore()
 
-    try:
-        store.create(fhir_object, bypass_document_validation=bypass_validation)
-    except ValidationError as e:
+    resource = store.create(fhir_object, bypass_document_validation=bypass_validation)
+    if isinstance(resource, OperationOutcome):
         resource_id = get_resource_id(fhir_object)
         # Increment counter for failed validations
         counter_failed_validations.labels(resource_id=resource_id).inc()
         # Log
         logger.error(
-            f"Validation failed for resource {fhir_object} at "
-            f"{'.'.join(e.schema_path)}: {e.message}",
+            f"Validation failed for resource {fhir_object}: {resource['issue']}",
             extra={"resource_id": resource_id},
         )
 
