@@ -3,6 +3,8 @@ Create the logger to be used in the service
 """
 
 from os import getenv
+from sys import stdout
+import logging
 
 from arkhn_monitoring import create_logger
 
@@ -10,6 +12,7 @@ from arkhn_monitoring import create_logger
 FLUENTD_HOST = getenv("FLUENTD_HOST", "fluentd")
 FLUENTD_PORT = getenv("FLUENTD_PORT", 24224)
 LOGGING_LEVEL = getenv("LOGGING_LEVEL", "INFO")
+TEST = getenv("TEST", False)
 
 logger = None
 
@@ -18,6 +21,12 @@ def get_logger():
     global logger
 
     if logger is not None:
+        return logger
+
+    # When we are doing tests
+    if TEST:
+        logging.basicConfig(stream=stdout, level=logging.DEBUG)
+        logger = logging.getLogger()
         return logger
 
     extra_fields = ["resource_id", "primary_key_value"]
