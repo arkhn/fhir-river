@@ -185,6 +185,10 @@ class Extractor:
         try:
             return table.c[column.column].label(column.dataframe_column_name())
         except KeyError:
+            # If column.column is not in table.c it may be because the column names are case
+            # insensitive. If so, the schema can be in upper case (what oracle considers as
+            # case insensitive) but the keys in table.c are in lower case (what sqlalchemy
+            # considers as case insensitive).
             try:
                 return table.c[column.column.lower()].label(column.dataframe_column_name())
             except KeyError:
