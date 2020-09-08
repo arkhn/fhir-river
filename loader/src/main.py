@@ -105,12 +105,8 @@ def process_event_with_producer(producer):
 
 
 def manage_kafka_error(msg):
-    """
-    Deal with the error if nany
-    :param msg:
-    :return:
-    """
-    logger.error(msg.error())
+    """Deal with the error if any """
+    logger.error(msg.error().str())
 
 
 @app.route("/delete-resources", methods=["POST"])

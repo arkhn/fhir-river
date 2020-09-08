@@ -69,7 +69,6 @@ jobs:
           docker restart fhir-api
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
-          echo pulled
           docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
           docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader

@@ -57,8 +57,8 @@ def process_event_with_producer(producer):
 
 
 def manage_kafka_error(msg):
-    """ Deal with the error if nany """
-    logger.error(msg.error())
+    """ Deal with the error if any """
+    logger.error(msg.error().str())
 
 
 def transform_row(resource_id, row, time_refresh_analysis=3600):
