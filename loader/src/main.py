@@ -22,46 +22,91 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
 
-CONSUMED_TOPIC = "transform"
-PRODUCED_TOPIC = "load"
-CONSUMER_GROUP_ID = "loader"
-
 logger = get_logger()
-
 fhirstore = get_fhirstore()
-
 # TODO how will we handle bypass_validation in fhir-river?
 loader = Loader(fhirstore, bypass_validation=False)
 analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 
 
-def create_app():
-    app = Flask(__name__)
-    return app
+##
+# LOADER FLASK API
+##
+
+app = Flask(__name__)
 
 
-app = create_app()
+@app.route("/delete-resources", methods=["POST"])
+def delete_resources():
+    body = request.get_json()
+    resource_ids = body.get("resource_ids", None)
+
+    for resource_id in resource_ids:
+        logger.info(
+            f"Deleting all documents for resource {resource_id}",
+            extra={"resource_id": resource_id},
+        )
+        # Fetch analysis to get resource type
+        analysis = analyzer.get_analysis(resource_id)
+        resource_type = analysis.definition_id
+
+        # Call fhirstore.delete
+        try:
+            fhirstore.delete(resource_type, resource_id=resource_id)
+        except NotFoundError:
+            logger.info(
+                f"No documents for resource {resource_id} were found",
+                extra={"resource_id": resource_id},
+            )
+            pass
+
+    return jsonify(success=True)
 
 
-# @Timer("time_override", "time to delete a potential document with the same identifier")
-# def override_document(fhir_instance):
-#     try:
-#         # TODO add a wrapper method in fhirstore to delete as follows?
-#         fhirstore.db[fhir_instance["resourceType"]].delete_one(
-#             {"identifier": fhir_instance["identifier"]}
-#         )
-#     except KeyError:
-#         logger.warning(
-#             f"instance {fhir_instance['id']} has no identifier",
-#             extra={"resource_id": get_resource_id(fhir_instance)},
-#         )
-#     except NotFoundError as e:
-#         # With the current policy of trying to delete a document with the same
-#         # identifier before each insertion, we may catch this Exception most of the time.
-#         # That's why the logging level is set to DEBUG.
-#         # TODO: better override strategy
-#         logger.debug(f"error while trying to delete previous documents: {e}")
+@app.route("/metrics")
+def metrics():
+    """
+    Flask endpoint to gather the metrics, will be called by Prometheus.
+    """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+
+@app.errorhandler(Exception)
+def handle_bad_request(e):
+    return str(e), 400
+
+
+##
+# LOADER KAFKA CONSUMER
+##
+
+CONSUMED_TOPIC = "transform"
+PRODUCED_TOPIC = "load"
+CONSUMER_GROUP_ID = "loader"
+
+
+# these decorators tell uWSGI (the server with which the app is run)
+# to spawn a new thread every time a worker starts. Hence the consumer
+# is started at the same time as the Flask API.
+@postfork
+@thread
+def run_consumer():
+    logger.info("Running Consumer")
+
+    producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
+    consumer = LoaderConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=CONSUMED_TOPIC,
+        group_id=CONSUMER_GROUP_ID,
+        process_event=process_event_with_producer(producer),
+        manage_error=manage_kafka_error,
+    )
+
+    try:
+        consumer.run_consumer()
+    except (KafkaException, KafkaError) as err:
+        logger.error(err)
 
 
 def process_event_with_producer(producer):
@@ -111,64 +156,21 @@ def manage_kafka_error(msg):
     logger.error(msg.error())
 
 
-@app.route("/delete-resources", methods=["POST"])
-def delete_resources():
-    body = request.get_json()
-    resource_ids = body.get("resource_ids", None)
-
-    for resource_id in resource_ids:
-        logger.info(
-            f"Deleting all documents for resource {resource_id}",
-            extra={"resource_id": resource_id},
-        )
-        # Fetch analysis to get resource type
-        analysis = analyzer.get_analysis(resource_id)
-        resource_type = analysis.definition_id
-
-        # Call fhirstore.delete
-        try:
-            fhirstore.delete(resource_type, resource_id=resource_id)
-        except NotFoundError:
-            logger.info(
-                f"No documents for resource {resource_id} were found",
-                extra={"resource_id": resource_id},
-            )
-            pass
-
-    return jsonify(success=True)
-
-
-@app.route("/metrics")
-def metrics():
-    """
-    Flask endpoint to gather the metrics, will be called by Prometheus.
-    """
-    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
-
-
-@app.errorhandler(Exception)
-def handle_bad_request(e):
-    return str(e), 400
-
-
-# these decorators tell uWSGI (the server with which the app is run)
-# to spawn a new thread every time a worker starts. Hence the consumer
-# is started at the same time as the Flask API.
-@postfork
-@thread
-def run_consumer():
-    logger.info("Running Consumer")
-
-    producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
-    consumer = LoaderConsumer(
-        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
-        group_id=CONSUMER_GROUP_ID,
-        process_event=process_event_with_producer(producer),
-        manage_error=manage_kafka_error,
-    )
-
-    try:
-        consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)
+# @Timer("time_override", "time to delete a potential document with the same identifier")
+# def override_document(fhir_instance):
+#     try:
+#         # TODO add a wrapper method in fhirstore to delete as follows?
+#         fhirstore.db[fhir_instance["resourceType"]].delete_one(
+#             {"identifier": fhir_instance["identifier"]}
+#         )
+#     except KeyError:
+#         logger.warning(
+#             f"instance {fhir_instance['id']} has no identifier",
+#             extra={"resource_id": get_resource_id(fhir_instance)},
+#         )
+#     except NotFoundError as e:
+#         # With the current policy of trying to delete a document with the same
+#         # identifier before each insertion, we may catch this Exception most of the time.
+#         # That's why the logging level is set to DEBUG.
+#         # TODO: better override strategy
+#         logger.debug(f"error while trying to delete previous documents: {e}")
