@@ -81,7 +81,7 @@ class ReferenceBinder:
         # }
 
         # self.cache = defaultdict(lambda: defaultdict(list))
-        self.r = redis.conn()
+        self.cache = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
     def resolve_references(self, unresolved_fhir_object, reference_paths):
@@ -148,7 +148,7 @@ class ReferenceBinder:
                 target_ref = json.dumps((reference_type, identifier_tuple))
                 source_ref = json.dumps((fhir_object["resourceType"], reference_path, isArray))
                 # self.cache[target_ref][source_ref].append(fhir_object["id"])
-                self.r.hset(target_ref, source_ref, fhir_object["id"])
+                self.cache.hset(target_ref, source_ref, fhir_object["id"])
             return ref
 
         # If we have a list of references, we want to bind all of them.
@@ -168,17 +168,21 @@ class ReferenceBinder:
                 logger.error(e)
                 continue
 
-            target_ref = (fhir_object["resourceType"], identifier_tuple)
-            pending_refs = self.cache.get(target_ref, {})
-            for (source_type, reference_path, isArray), refs in pending_refs.items():
-                find_predicate = build_find_predicate(refs, reference_path, identifier, isArray)
-                update_predicate = build_update_predicate(reference_path, fhir_object, isArray)
+            target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
+            # pending_refs = self.cache.get(target_ref, {})
+            pending_refs = self.cache.hgetall(target_ref)
+            for key, value in pending_refs.items():
+                source_type, reference_path, is_array = tuple(json.loads(key))
+                refs = json.loads(value)
+                find_predicate = build_find_predicate(refs, reference_path, identifier, is_array)
+                update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
                 logger.debug(
                     f"Updating resource {source_type}: {find_predicate} {update_predicate}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
                 self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
             if len(pending_refs) > 0:
+
                 del self.cache[target_ref]
 
     @staticmethod
