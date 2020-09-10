@@ -1,6 +1,5 @@
 import re
 import json
-from collections import defaultdict
 from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
