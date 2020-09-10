@@ -141,8 +141,7 @@ class ReferenceBinder:
                     extra={"resource_id": resource_id},
                 )
 
-                # TODO: cache in Redis
-                # otherwise, cache the reference to resolve it later
+                # otherwise, cache in Redis the reference to resolve it later
                 target_ref = json.dumps((reference_type, identifier_tuple))
                 source_ref = json.dumps((fhir_object["resourceType"], reference_path, isArray))
                 self.cache.hset(target_ref, source_ref, fhir_object["id"])
@@ -155,7 +154,6 @@ class ReferenceBinder:
         else:
             return bind(reference_attribute)
 
-    # TODO: Retrieve target_ref from Redis
     @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
         for identifier in fhir_object["identifier"]:
