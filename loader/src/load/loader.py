@@ -38,7 +38,14 @@ class Loader:
         logger.error(
             f"After create got: {resource}", extra={"resource_id": resource_id},
         )
-        if isinstance(resource, OperationOutcome):
+        logger.error(
+            f"Check type: {isinstance(resource, OperationOutcome)}, {type(resource)}, "
+            f"{OperationOutcome}",
+            extra={"resource_id": resource_id},
+        )
+        # if isinstance(resource, OperationOutcome):
+        # FIXME ugly way to check isinstance
+        if type(resource).__name__ == "OperationOutcome":
             resource_id = get_resource_id(fhir_instance)
             # Increment counter for failed validations
             counter_failed_validations.labels(resource_id=resource_id).inc()
