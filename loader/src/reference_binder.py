@@ -80,7 +80,6 @@ class ReferenceBinder:
         #   ...
         # }
 
-        # self.cache = defaultdict(lambda: defaultdict(list))
         self.cache = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
@@ -147,7 +146,6 @@ class ReferenceBinder:
                 # otherwise, cache the reference to resolve it later
                 target_ref = json.dumps((reference_type, identifier_tuple))
                 source_ref = json.dumps((fhir_object["resourceType"], reference_path, isArray))
-                # self.cache[target_ref][source_ref].append(fhir_object["id"])
                 self.cache.hset(target_ref, source_ref, fhir_object["id"])
             return ref
 
@@ -169,7 +167,6 @@ class ReferenceBinder:
                 continue
 
             target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
-            # pending_refs = self.cache.get(target_ref, {})
             pending_refs = self.cache.hgetall(target_ref)
             for key, value in pending_refs.items():
                 source_type, reference_path, is_array = tuple(json.loads(key))
@@ -181,9 +178,8 @@ class ReferenceBinder:
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
                 self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
-            if len(pending_refs) > 0:
-
-                del self.cache[target_ref]
+            if pending_refs:
+                self.cache.hdel(target_ref, *pending_refs.keys())
 
     @staticmethod
     def extract_key_tuple(identifier):
