@@ -16,6 +16,7 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
+_fhirstore = None
 logger = get_logger()
 
 counter_failed_validations = Counter(
@@ -37,13 +38,11 @@ def get_mongo_client():
     return _client
 
 
-_fhirstore = None
-
-
 def get_fhirstore():
     global _fhirstore
     if _fhirstore is None:
         _fhirstore = fhirstore.FHIRStore(get_mongo_client(), None, FHIRSTORE_DATABASE)
+        # FIXME do we really want to bootstrap here?
         if not _fhirstore.initialized:
             _fhirstore.bootstrap()
     return _fhirstore

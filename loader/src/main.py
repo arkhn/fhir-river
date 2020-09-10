@@ -73,24 +73,31 @@ def process_event_with_producer(producer):
         """
         logger.debug(msg.value())
 
-        fhir_instance = json.loads(msg.value())
-        resource_id = get_resource_id(fhir_instance)
+        # TODO clean this big try/except
+        try:
+            fhir_instance = json.loads(msg.value())
+            resource_id = get_resource_id(fhir_instance)
 
-        logger.debug("Get Analysis", extra={"resource_id": resource_id})
-        # FIXME: filter meta.tags by system to get the right
-        # resource_id (ARKHN_CODE_SYSTEMS.resource)
-        analysis = analyzer.get_analysis(resource_id)
+            logger.debug("Get Analysis", extra={"resource_id": resource_id})
+            # FIXME: filter meta.tags by system to get the right
+            # resource_id (ARKHN_CODE_SYSTEMS.resource)
+            analysis = analyzer.get_analysis(resource_id)
 
-        # Resolve existing and pending references (if the fhir_instance
-        # references OR is referenced by other documents)
-        logger.debug(
-            f"Resolving references {analysis.reference_paths}", extra={"resource_id": resource_id}
-        )
-        resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
+            # Resolve existing and pending references (if the fhir_instance
+            # references OR is referenced by other documents)
+            logger.debug(
+                f"Resolving references {analysis.reference_paths}",
+                extra={"resource_id": resource_id},
+            )
+            resolved_fhir_instance = binder.resolve_references(
+                fhir_instance, analysis.reference_paths
+            )
 
-        # TODO how will we handle override in fhir-river?
-        # if True:  # should be "if override:" or something like that
-        #     override_document(resolved_fhir_instance)
+            # TODO how will we handle override in fhir-river?
+            # if True:  # should be "if override:" or something like that
+            #     override_document(resolved_fhir_instance)
+        except Exception as err:
+            logger.error(err)
 
         try:
             logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
