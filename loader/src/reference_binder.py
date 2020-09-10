@@ -6,6 +6,7 @@ from arkhn_monitoring import Timer
 
 from loader.src.config.logger import get_logger
 from loader.src.load.utils import get_resource_id
+from loader.src.cache import redis
 
 
 logger = get_logger()
@@ -68,8 +69,6 @@ class ReferenceBinder:
         # {
         #   (fhir_type_target, (value, system, code, code_system)):
         #           {(fhir_type_source, path, isArray): [fhir_id1, ...]},
-        #   (fhir_type_target, (value, system, code, code_system)):
-        #           {(fhir_type_source, path, isArray): [fhir_id]},
         #   ...
         # }
         # eg:
@@ -78,7 +77,8 @@ class ReferenceBinder:
         #   ...
         # }
 
-        self.cache = defaultdict(lambda: defaultdict(list))
+        # self.cache = defaultdict(lambda: defaultdict(list))
+        self.cache = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
     def resolve_references(self, unresolved_fhir_object, reference_paths):
@@ -140,6 +140,7 @@ class ReferenceBinder:
                     extra={"resource_id": resource_id},
                 )
 
+                # TODO: cache in Redis
                 # otherwise, cache the reference to resolve it later
                 target_ref = (reference_type, identifier_tuple)
                 source_ref = (fhir_object["resourceType"], reference_path, isArray)
@@ -153,6 +154,7 @@ class ReferenceBinder:
         else:
             return bind(reference_attribute)
 
+    # TODO: Retrieve target_ref from Redis
     @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
         for identifier in fhir_object["identifier"]:

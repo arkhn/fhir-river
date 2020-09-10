@@ -29,10 +29,9 @@ loader = Loader(fhirstore, bypass_validation=False)
 analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 
-
-##
-# LOADER FLASK API
-##
+####################
+# LOADER FLASK API #
+####################
 
 app = Flask(__name__)
 
@@ -77,9 +76,9 @@ def handle_bad_request(e):
     return str(e), 400
 
 
-##
-# LOADER KAFKA CONSUMER
-##
+#######################
+# LOADER KAFKA CLIENT #
+#######################
 
 CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
