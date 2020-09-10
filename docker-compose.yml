@@ -30,6 +30,12 @@ services:
     networks:
       - river-network
 
+  redis:
+    image: redis:6.0.7
+    restart: always
+    networks:
+      - river-network
+
   # sftp:
   #   image: atmoz/sftp
   #   container_name: sftp
@@ -190,6 +196,9 @@ services:
       FHIRSTORE_PASSWORD: null
       METRICS_PORT: 3003
       SERVICE_NAME: loader
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: loader
     ports:
       - 3003:3003
     networks:
