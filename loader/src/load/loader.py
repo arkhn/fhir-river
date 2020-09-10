@@ -29,22 +29,8 @@ class Loader:
             fhir_instance: the fhir document to store in the DB
             resource_type: will be used as label for the Counter
         """
-        # Bootstrap for resource if needed
-        if resource_type not in self.fhirstore.resources:
-            self.fhirstore.bootstrap(resource=resource_type, depth=3)
-
         resource = self.fhirstore.create(fhir_instance)
-        resource_id = get_resource_id(fhir_instance)
-        logger.error(
-            f"After create got: {resource}", extra={"resource_id": resource_id},
-        )
-        logger.error(
-            f"Check type: {isinstance(resource, OperationOutcome)}, {type(resource)}, "
-            f"{OperationOutcome}",
-            extra={"resource_id": resource_id},
-        )
-        # FIXME ugly way to check isinstance
-        # if type(resource).__name__ == "OperationOutcome":
+
         if isinstance(resource, OperationOutcome):
             resource_id = get_resource_id(fhir_instance)
             # Increment counter for failed validations
