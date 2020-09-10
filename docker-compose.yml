@@ -35,6 +35,8 @@ services:
     restart: always
     networks:
       - river-network
+    volumes:
+      - redis-data:/data
 
   # sftp:
   #   image: atmoz/sftp
@@ -185,6 +187,7 @@ services:
       - kafka
       - mongo
       - fluentd
+      - redis
     env_file:
       - .env
     environment:
@@ -198,7 +201,7 @@ services:
       SERVICE_NAME: loader
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_DB: loader
+      REDIS_DB: 0
     ports:
       - 3003:3003
     networks:
@@ -263,6 +266,7 @@ volumes:
   mimic-db:
     name: mimic-db
   fhirstore-db:
+  redis-data:
 
 networks:
   river-network:
