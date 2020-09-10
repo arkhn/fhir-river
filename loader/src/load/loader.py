@@ -5,7 +5,7 @@ from arkhn_monitoring.metrics import FAST_FN_BUCKETS
 
 
 class Loader:
-    def __init__(self, fhirstore, bypass_validation):
+    def __init__(self, fhirstore):
         self.fhirstore = fhirstore
 
     @Timer("time_load", "time to perform load method of Loader", buckets=FAST_FN_BUCKETS)
