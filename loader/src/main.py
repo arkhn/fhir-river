@@ -30,8 +30,7 @@ logger = get_logger()
 
 fhirstore = get_fhirstore()
 
-# TODO how will we handle bypass_validation in fhir-river?
-loader = Loader(fhirstore, bypass_validation=False)
+loader = Loader(fhirstore)
 analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 

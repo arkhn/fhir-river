@@ -7,7 +7,6 @@ from arkhn_monitoring.metrics import FAST_FN_BUCKETS
 class Loader:
     def __init__(self, fhirstore, bypass_validation):
         self.fhirstore = fhirstore
-        self.bypass_validation = bypass_validation
 
     @Timer("time_load", "time to perform load method of Loader", buckets=FAST_FN_BUCKETS)
     @Counter("count_load", "count calls to load method of Loader", labelnames=("resource_type",))
@@ -22,4 +21,4 @@ class Loader:
         if resource_type not in self.fhirstore.resources:
             self.fhirstore.bootstrap(resource=resource_type, depth=3)
 
-        save_one(fhir_instance, self.bypass_validation)
+        save_one(fhir_instance)

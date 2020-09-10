@@ -48,7 +48,7 @@ def get_fhirstore():
     return _fhirstore
 
 
-def save_one(fhir_object, bypass_validation=False):
+def save_one(fhir_object):
     """
     Save instance of FHIR resource in MongoDB through fhirstore.
 
@@ -57,7 +57,7 @@ def save_one(fhir_object, bypass_validation=False):
     """
     store = get_fhirstore()
 
-    resource = store.create(fhir_object, bypass_document_validation=bypass_validation)
+    resource = store.create(fhir_object)
     if isinstance(resource, OperationOutcome):
         resource_id = get_resource_id(fhir_object)
         # Increment counter for failed validations
