@@ -1,4 +1,5 @@
 import re
+import json
 from collections import defaultdict
 from dotty_dict import dotty
 
@@ -68,7 +69,9 @@ class ReferenceBinder:
         # cache is a dict of form
         # {
         #   (fhir_type_target, (value, system, code, code_system)):
-        #           {(fhir_type_source, path, isArray): [fhir_id1, ...]},
+        #           {
+        #               (fhir_type_source, path, isArray): [fhir_id1, ...]
+        #           },
         #   ...
         # }
         # eg:
@@ -78,7 +81,7 @@ class ReferenceBinder:
         # }
 
         # self.cache = defaultdict(lambda: defaultdict(list))
-        self.cache = redis.conn()
+        self.r = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
     def resolve_references(self, unresolved_fhir_object, reference_paths):
@@ -142,9 +145,10 @@ class ReferenceBinder:
 
                 # TODO: cache in Redis
                 # otherwise, cache the reference to resolve it later
-                target_ref = (reference_type, identifier_tuple)
-                source_ref = (fhir_object["resourceType"], reference_path, isArray)
-                self.cache[target_ref][source_ref].append(fhir_object["id"])
+                target_ref = json.dumps((reference_type, identifier_tuple))
+                source_ref = json.dumps((fhir_object["resourceType"], reference_path, isArray))
+                # self.cache[target_ref][source_ref].append(fhir_object["id"])
+                self.r.hset(target_ref, source_ref, fhir_object["id"])
             return ref
 
         # If we have a list of references, we want to bind all of them.
@@ -194,4 +198,4 @@ class ReferenceBinder:
                 "or identifier.type are required and mutually exclusive"
             )
 
-        return (value, system, identifier_type_code, identifier_type_system)
+        return value, system, identifier_type_code, identifier_type_system
