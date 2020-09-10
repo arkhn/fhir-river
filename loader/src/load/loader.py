@@ -43,14 +43,15 @@ class Loader:
             f"{OperationOutcome}",
             extra={"resource_id": resource_id},
         )
-        # if isinstance(resource, OperationOutcome):
         # FIXME ugly way to check isinstance
-        if type(resource).__name__ == "OperationOutcome":
+        # if type(resource).__name__ == "OperationOutcome":
+        if isinstance(resource, OperationOutcome):
             resource_id = get_resource_id(fhir_instance)
             # Increment counter for failed validations
             counter_failed_validations.labels(resource_id=resource_id).inc()
             # Log
             logger.error(
-                f"Validation failed for resource {fhir_instance}: {resource['issue']}",
+                f"Validation failed for resource {fhir_instance}: "
+                f"{[issue.diagnostics for issue in resource.issue]}",
                 extra={"resource_id": resource_id},
             )
