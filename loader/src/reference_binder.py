@@ -166,8 +166,8 @@ class ReferenceBinder:
 
             target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
             pending_refs = self.cache.hgetall(target_ref)
-            for key, value in pending_refs.items():
-                (source_type, reference_path, is_array), refs = json.loads(key), json.loads(value)
+            for key, refs in pending_refs.items():
+                source_type, reference_path, is_array = json.loads(key)
                 find_predicate = build_find_predicate(refs, reference_path, identifier, is_array)
                 update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
                 logger.debug(
