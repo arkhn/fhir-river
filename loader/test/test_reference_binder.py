@@ -39,9 +39,12 @@ def test_extract_key_tuple():
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
-def test_resolve_existing_reference(_, patient):
-    store = fhirstore.get_fhirstore()
+@mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    assert mock_redis.called
+
     store.db["any"].find_one.side_effect = [
         {"id": "practitioner1"},
         {"id": "organization1"},
@@ -86,9 +89,12 @@ def test_resolve_existing_reference(_, patient):
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
-def test_resolve_existing_reference_not_found(_, patient):
-    store = fhirstore.get_fhirstore()
+@mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patient):
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    assert mock_redis.called
+
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -101,37 +107,54 @@ def test_resolve_existing_reference_not_found(_, patient):
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert len(ref_binder.cache.keys()) == 3
-    assert ref_binder.cache.hget(json.dumps(
-        (
-            "Practitioner",
-            ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
+    calls = [
+        mock.call(
+            json.dumps(
+                (
+                    "Practitioner",
+                    ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
+                )
+            ),
+            json.dumps(
+                ("Patient", "generalPractitioner", True)
+            ),
+            patient["id"]
+        ),
+        mock.call(
+            json.dumps(
+                (
+                    "Organization",
+                    ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
+                )
+            ),
+            json.dumps(
+                ("Patient", "managingOrganization", False)
+            ),
+            patient["id"]
+        ),
+        mock.call(
+            json.dumps(
+                (
+                    "Organization",
+                    ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
+                )
+            ),
+            json.dumps(
+                ("Patient", "identifier.0.assigner", False)
+            ),
+            patient["id"]
         )
-    ), json.dumps(
-        ("Patient", "generalPractitioner", True)
-    )) == json.dumps([patient["id"]])
-    assert ref_binder.cache.hget(json.dumps(
-        (
-            "Organization",
-            ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
-        )
-    ), json.dumps(
-        ("Patient", "managingOrganization", False)
-    )) == json.dumps([patient["id"]])
-    assert ref_binder.cache.hget(json.dumps(
-        (
-            "Organization",
-            ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
-        )
-    ), json.dumps(
-        ("Patient", "identifier.0.assigner", False)
-    )) == json.dumps([patient["id"]])
+    ]
+    ref_binder.cache.hset.assert_has_calls(calls, any_order=True)
+    assert ref_binder.cache.hset.call_count == 3
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
-def test_resolve_pending_references(_, patient, test_organization, test_practitioner):
-    store = fhirstore.get_fhirstore()
+@mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_organization, test_practitioner):
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    assert mock_redis.called
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -170,7 +193,7 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert len(ref_binder.cache.keys()) == 3
+    assert ref_binder.cache.hset.call_count == 3
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -219,15 +242,19 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
     )
 
     # cache must have been emptied
-    assert len(ref_binder.cache.keys()) == 0
+    identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
+    target_ref = json.dumps((patient["resourceType"], identifier_tuple))
+    ref_binder.cache.delete.assert_called_with(target_ref)
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
+@mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 def test_resolve_pending_references_code_identifier(
-    _, patient_code_identifier, test_organization, test_practitioner
+    mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
 ):
-    store = fhirstore.get_fhirstore()
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    assert mock_redis.called
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -241,7 +268,7 @@ def test_resolve_pending_references_code_identifier(
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert len(ref_binder.cache.keys()) == 3
+    assert ref_binder.cache.hset.call_count == 3
 
     assert (
         "Practitioner",
@@ -296,10 +323,13 @@ def test_resolve_pending_references_code_identifier(
     )
 
     # cache must have been emptied
-    assert len(ref_binder.cache.keys()) == 0
+    identifier_tuple = ref_binder.extract_key_tuple(patient_code_identifier["identifier"][0])
+    target_ref = json.dumps((patient_code_identifier["resourceType"], identifier_tuple))
+    ref_binder.cache.delete.assert_called_with(target_ref)
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
+@mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 def test_resolve_batch_references(_, patient, test_organization, test_practitioner):
     store = fhirstore.get_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -317,18 +347,34 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
     assert res["generalPractitioner"][0].get("reference") is None
 
     # both references must have been cached using the same key
-    assert len(ref_binder.cache.keys()) == 1
-
-    assert (
-        len(
-            ref_binder.cache.hkeys(json.dumps(
+    calls = [
+        mock.call(
+            json.dumps(
                 (
                     "Practitioner",
                     ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
                 )
-            ))
-        ) == 2
-    )
+            ),
+            json.dumps(
+                ("Patient", "generalPractitioner", True)
+            ),
+            patient["id"]
+        ),
+        mock.call(
+            json.dumps(
+                (
+                    "Practitioner",
+                    ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
+                )
+            ),
+            json.dumps(
+                ("Patient", "generalPractitioner", True)
+            ),
+            patient_2["id"]
+        )
+    ]
+    ref_binder.cache.hset.assert_has_call(calls, any_order=True)
+    assert ref_binder.cache.hset.call_count == 2
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -363,4 +409,6 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
         ]
     )
     # cache must have been emptied
-    assert len(ref_binder.cache.keys()) == 0
+    identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
+    target_ref = json.dumps((patient["resourceType"], identifier_tuple))
+    ref_binder.cache.delete.assert_called_with(target_ref)
