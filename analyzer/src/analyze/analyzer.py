@@ -34,7 +34,7 @@ class Analyzer:
 
     def get_analysis(self, resource_mapping_id, max_seconds_refresh=None) -> Analysis:
         if max_seconds_refresh is None:
-            max_seconds_refresh = os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600)
+            max_seconds_refresh = int(os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600))
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
         else:
