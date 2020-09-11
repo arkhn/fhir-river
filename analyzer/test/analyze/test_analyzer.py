@@ -70,6 +70,8 @@ def test_get_analysis_refresh_old(mock_login):
 
     analyzer.fetch_analysis.assert_called_with(resource_id)
 
+    os.unsetenv("MAX_SECONDS_REFRESH_ANALYSIS")
+
 
 @mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
 def test_get_primary_key(mock_login):
