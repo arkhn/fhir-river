@@ -1,7 +1,6 @@
 from unittest import mock
 from pytest import raises
 import json
-import loader.src.load.fhirstore as fhirstore
 from loader.src.reference_binder import ReferenceBinder
 
 
@@ -41,7 +40,7 @@ def test_extract_key_tuple():
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
-    store = fhirstore.get_fhirstore()
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
 
     store.db["any"].find_one.side_effect = [
@@ -90,7 +89,7 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patient):
-    store = fhirstore.get_fhirstore()
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
 
     store.db["any"].find_one.side_effect = [None, None, None]
@@ -156,7 +155,7 @@ def test_resolve_pending_references(
         test_organization,
         test_practitioner
 ):
-    store = fhirstore.get_fhirstore()
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     store.db["any"].find_one.side_effect = [None, None, None]
 
@@ -198,6 +197,12 @@ def test_resolve_pending_references(
     # all references must have been cached
     assert ref_binder.cache.hset.call_count == 3
 
+    ref_binder.cache.hgetall.side_effect = {
+        json.dumps(
+            ("Patient", "generalPractitioner", True)
+        ): patient["id"]
+    }
+
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
     assert store.db["Patient"].update_many.call_count == 1
@@ -220,6 +225,7 @@ def test_resolve_pending_references(
     )
 
     ref_binder.resolve_references(test_organization, [])
+
     assert store.db["Patient"].update_many.call_count == 3
     store.db["Patient"].update_many.assert_has_calls(
         [
@@ -255,7 +261,7 @@ def test_resolve_pending_references(
 def test_resolve_pending_references_code_identifier(
     mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
 ):
-    store = fhirstore.get_fhirstore()
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     store.db["any"].find_one.side_effect = [None, None, None]
 
@@ -283,6 +289,11 @@ def test_resolve_pending_references_code_identifier(
         ),
         patient_code_identifier["id"]
     )
+    ref_binder.cache.hgetall.side_effect = {
+        json.dumps(
+            ("Patient", "generalPractitioner", True)
+        ): patient_code_identifier["id"]
+    }
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -346,7 +357,7 @@ def test_resolve_batch_references(
         test_organization,
         test_practitioner
 ):
-    store = fhirstore.get_fhirstore()
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     patient_2 = {
         "id": "pat2",
@@ -389,6 +400,14 @@ def test_resolve_batch_references(
     ]
     ref_binder.cache.hset.assert_has_calls(calls, any_order=True)
     assert ref_binder.cache.hset.call_count == 2
+    ref_binder.cache.hgetall.side_effect = {
+        json.dumps(
+            ("Patient", "generalPractitioner", True)
+        ): patient["id"],
+        json.dumps(
+            ("Patient", "generalPractitioner", True)
+        ): patient_2["id"],
+    }
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
