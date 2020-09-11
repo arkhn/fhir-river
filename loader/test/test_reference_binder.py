@@ -413,10 +413,7 @@ def test_resolve_batch_references(
         ): patient["id"],
         json.dumps(
             ("Patient", "generalPractitioner", True)
-        ): patient_2["id"],
-        json.dumps(
-            ("Patient", "link", True)
-        ): patient_2["id"],
+        ): patient_2["id"]
     }
 
     ref_binder.resolve_references(test_practitioner, [])
