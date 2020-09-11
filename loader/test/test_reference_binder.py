@@ -151,7 +151,13 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
-def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_organization, test_practitioner):
+def test_resolve_pending_references(
+        mock_fhirstore,
+        mock_redis,
+        patient,
+        test_organization,
+        test_practitioner
+):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     assert mock_redis.called
