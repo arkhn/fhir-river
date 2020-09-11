@@ -224,6 +224,12 @@ def test_resolve_pending_references(
         ]
     )
 
+    ref_binder.cache.hgetall.return_value = {
+        json.dumps(
+            ("Patient", "identifier[0].assigner", False)
+        ): patient["id"]
+    }
+
     ref_binder.resolve_references(test_organization, [])
 
     assert store.db["Patient"].update_many.call_count == 3
@@ -439,7 +445,8 @@ def test_resolve_batch_references(
                 },
                 {"$set": {"link.$.reference": "Practitioner/practitioner1"}},
             ),
-        ]
+        ],
+        any_order=True
     )
     # cache must have been emptied
     identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
