@@ -43,7 +43,6 @@ def test_extract_key_tuple():
 def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
-    assert mock_redis.called
 
     store.db["any"].find_one.side_effect = [
         {"id": "practitioner1"},
@@ -93,7 +92,6 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
 def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patient):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
-    assert mock_redis.called
 
     store.db["any"].find_one.side_effect = [None, None, None]
 
@@ -160,7 +158,6 @@ def test_resolve_pending_references(
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
-    assert mock_redis.called
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -260,7 +257,6 @@ def test_resolve_pending_references_code_identifier(
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
-    assert mock_redis.called
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -336,20 +332,25 @@ def test_resolve_pending_references_code_identifier(
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
-def test_resolve_batch_references(_, patient, test_organization, test_practitioner):
-    store = fhirstore.get_fhirstore()
+def test_resolve_batch_references(
+        mock_fhirstore,
+        mock_redis,
+        patient,
+        test_organization,
+        test_practitioner
+):
+    store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     patient_2 = {
         "id": "pat2",
         "resourceType": "Patient",
         "generalPractitioner": patient["generalPractitioner"],
-        "link": patient["generalPractitioner"],
     }
     store.db["any"].find_one.side_effect = [None, None, None]
 
-    res = ref_binder.resolve_references(patient, ["generalPractitioner", "link"],)
+    res = ref_binder.resolve_references(patient, ["generalPractitioner", "link"])
     assert res["generalPractitioner"][0].get("reference") is None
-    res = ref_binder.resolve_references(patient_2, ["generalPractitioner", "link"],)
+    res = ref_binder.resolve_references(patient_2, ["generalPractitioner", "link"])
     assert res["generalPractitioner"][0].get("reference") is None
 
     # both references must have been cached using the same key
