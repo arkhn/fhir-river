@@ -197,7 +197,7 @@ def test_resolve_pending_references(
     # all references must have been cached
     assert ref_binder.cache.hset.call_count == 3
 
-    ref_binder.cache.hgetall.side_effect = {
+    ref_binder.cache.hgetall.return_value = {
         json.dumps(
             ("Patient", "generalPractitioner", True)
         ): patient["id"]
@@ -289,7 +289,7 @@ def test_resolve_pending_references_code_identifier(
         ),
         patient_code_identifier["id"]
     )
-    ref_binder.cache.hgetall.side_effect = {
+    ref_binder.cache.hgetall.return_value = {
         json.dumps(
             ("Patient", "generalPractitioner", True)
         ): patient_code_identifier["id"]
@@ -400,7 +400,7 @@ def test_resolve_batch_references(
     ]
     ref_binder.cache.hset.assert_has_calls(calls, any_order=True)
     assert ref_binder.cache.hset.call_count == 2
-    ref_binder.cache.hgetall.side_effect = {
+    ref_binder.cache.hgetall.return_value = {
         json.dumps(
             ("Patient", "generalPractitioner", True)
         ): patient["id"],
