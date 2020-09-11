@@ -1,6 +1,7 @@
 from unittest import mock
 from pytest import raises
 import json
+import loader.src.load.fhirstore as fhirstore
 from loader.src.reference_binder import ReferenceBinder
 
 
@@ -40,7 +41,7 @@ def test_extract_key_tuple():
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
-    store = mock_fhirstore()
+    store = fhirstore.get_fhirstore()
     ref_binder = ReferenceBinder(store)
 
     store.db["any"].find_one.side_effect = [
@@ -89,7 +90,7 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patient):
-    store = mock_fhirstore()
+    store = fhirstore.get_fhirstore()
     ref_binder = ReferenceBinder(store)
 
     store.db["any"].find_one.side_effect = [None, None, None]
@@ -155,7 +156,7 @@ def test_resolve_pending_references(
         test_organization,
         test_practitioner
 ):
-    store = mock_fhirstore()
+    store = fhirstore.get_fhirstore()
     ref_binder = ReferenceBinder(store)
     store.db["any"].find_one.side_effect = [None, None, None]
 
@@ -254,7 +255,7 @@ def test_resolve_pending_references(
 def test_resolve_pending_references_code_identifier(
     mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
 ):
-    store = mock_fhirstore()
+    store = fhirstore.get_fhirstore()
     ref_binder = ReferenceBinder(store)
     store.db["any"].find_one.side_effect = [None, None, None]
 
@@ -345,7 +346,7 @@ def test_resolve_batch_references(
         test_organization,
         test_practitioner
 ):
-    store = mock_fhirstore()
+    store = fhirstore.get_fhirstore()
     ref_binder = ReferenceBinder(store)
     patient_2 = {
         "id": "pat2",
