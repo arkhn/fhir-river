@@ -166,8 +166,7 @@ class ReferenceBinder:
             target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
             pending_refs = self.cache.hgetall(target_ref)
             for key, value in pending_refs.items():
-                source_type, reference_path, is_array = tuple(json.loads(key))
-                refs = json.loads(value)
+                (source_type, reference_path, is_array), refs = json.loads(key), json.loads(value)
                 find_predicate = build_find_predicate(refs, reference_path, identifier, is_array)
                 update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
                 logger.debug(
@@ -176,7 +175,7 @@ class ReferenceBinder:
                 )
                 self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
             if pending_refs:
-                self.cache.hdel(target_ref, *pending_refs.keys())
+                self.cache.delete(target_ref)
 
     @staticmethod
     def extract_key_tuple(identifier):
