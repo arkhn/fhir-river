@@ -1,3 +1,4 @@
+import os
 import re
 import time
 from collections.abc import Mapping
@@ -31,7 +32,9 @@ class Analyzer:
 
         self._cur_analysis = Analysis()
 
-    def get_analysis(self, resource_mapping_id, max_seconds_refresh=3600) -> Analysis:
+    def get_analysis(self, resource_mapping_id, max_seconds_refresh=None) -> Analysis:
+        if max_seconds_refresh is None:
+            max_seconds_refresh = os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600)
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
         else:
