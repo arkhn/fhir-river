@@ -1,7 +1,6 @@
 from unittest import mock
 from pytest import raises
 import json
-import loader.src.load.fhirstore as fhirstore
 from loader.src.reference_binder import ReferenceBinder
 
 
