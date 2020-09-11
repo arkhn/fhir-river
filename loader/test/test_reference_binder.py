@@ -37,8 +37,8 @@ def test_extract_key_tuple():
         ReferenceBinder.extract_key_tuple(identifier3)
 
 
-@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -86,8 +86,8 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
     assert res["identifier"][0]["assigner"]["reference"] == "Organization/organization2"
 
 
-@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patient):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -146,8 +146,8 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
     assert ref_binder.cache.hset.call_count == 3
 
 
-@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references(
         mock_fhirstore,
         mock_redis,
@@ -262,8 +262,8 @@ def test_resolve_pending_references(
     ref_binder.cache.delete.assert_called_with(target_ref)
 
 
-@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references_code_identifier(
     mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
 ):
@@ -354,8 +354,8 @@ def test_resolve_pending_references_code_identifier(
     ref_binder.cache.delete.assert_called_with(target_ref)
 
 
-@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
+@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_batch_references(
         mock_fhirstore,
         mock_redis,
