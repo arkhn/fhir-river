@@ -197,11 +197,13 @@ def test_resolve_pending_references(
     # all references must have been cached
     assert ref_binder.cache.hset.call_count == 3
 
-    ref_binder.cache.hgetall.return_value = {
+    identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
+    target_ref = json.dumps((patient["resourceType"], identifier_tuple))
+    ref_binder.cache.hgetall.side_effect = lambda a: {
         json.dumps(
             ("Patient", "generalPractitioner", True)
         ): patient["id"]
-    }
+    } if a == target_ref else {}
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -257,8 +259,6 @@ def test_resolve_pending_references(
     )
 
     # cache must have been emptied
-    identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
-    target_ref = json.dumps((patient["resourceType"], identifier_tuple))
     ref_binder.cache.delete.assert_called_with(target_ref)
 
 
