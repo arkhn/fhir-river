@@ -1,6 +1,6 @@
 from unittest import mock
 from pytest import raises
-
+import json
 import loader.src.load.fhirstore as fhirstore
 from loader.src.reference_binder import ReferenceBinder
 
@@ -101,25 +101,31 @@ def test_resolve_existing_reference_not_found(_, patient):
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert len(ref_binder.cache) == 3
-    assert ref_binder.cache[
+    assert len(ref_binder.cache.keys()) == 3
+    assert ref_binder.cache.hget(json.dumps(
         (
             "Practitioner",
             ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
         )
-    ][("Patient", "generalPractitioner", True)] == [patient["id"]]
-    assert ref_binder.cache[
+    ), json.dumps(
+        ("Patient", "generalPractitioner", True)
+    )) == json.dumps([patient["id"]])
+    assert ref_binder.cache.hget(json.dumps(
         (
             "Organization",
             ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
         )
-    ][("Patient", "managingOrganization", False)] == [patient["id"]]
-    assert ref_binder.cache[
+    ), json.dumps(
+        ("Patient", "managingOrganization", False)
+    )) == json.dumps([patient["id"]])
+    assert ref_binder.cache.hget(json.dumps(
         (
             "Organization",
             ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
         )
-    ][("Patient", "identifier.0.assigner", False)] == [patient["id"]]
+    ), json.dumps(
+        ("Patient", "identifier.0.assigner", False)
+    )) == json.dumps([patient["id"]])
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
@@ -164,7 +170,7 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert len(ref_binder.cache) == 3
+    assert len(ref_binder.cache.keys()) == 3
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -213,7 +219,7 @@ def test_resolve_pending_references(_, patient, test_organization, test_practiti
     )
 
     # cache must have been emptied
-    assert len(ref_binder.cache) == 0
+    assert len(ref_binder.cache.keys()) == 0
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
@@ -235,7 +241,8 @@ def test_resolve_pending_references_code_identifier(
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert len(ref_binder.cache) == 3
+    assert len(ref_binder.cache.keys()) == 3
+
     assert (
         "Practitioner",
         (None, None, "code_123", "fhir_code_system_practitioner"),
@@ -289,7 +296,7 @@ def test_resolve_pending_references_code_identifier(
     )
 
     # cache must have been emptied
-    assert len(ref_binder.cache) == 0
+    assert len(ref_binder.cache.keys()) == 0
 
 
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
@@ -310,17 +317,17 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
     assert res["generalPractitioner"][0].get("reference") is None
 
     # both references must have been cached using the same key
-    assert len(ref_binder.cache) == 1
+    assert len(ref_binder.cache.keys()) == 1
+
     assert (
         len(
-            ref_binder.cache[
+            ref_binder.cache.hkeys(json.dumps(
                 (
                     "Practitioner",
                     ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
                 )
-            ]
-        )
-        == 2
+            ))
+        ) == 2
     )
 
     ref_binder.resolve_references(test_practitioner, [])
@@ -356,4 +363,4 @@ def test_resolve_batch_references(_, patient, test_organization, test_practition
         ]
     )
     # cache must have been emptied
-    assert len(ref_binder.cache) == 0
+    assert len(ref_binder.cache.keys()) == 0

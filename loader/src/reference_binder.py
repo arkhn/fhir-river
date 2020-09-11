@@ -8,7 +8,6 @@ from loader.src.config.logger import get_logger
 from loader.src.load.utils import get_resource_id
 from loader.src.cache import redis
 
-
 logger = get_logger()
 
 
@@ -142,9 +141,11 @@ class ReferenceBinder:
                 )
 
                 # otherwise, cache in Redis the reference to resolve it later
-                target_ref = json.dumps((reference_type, identifier_tuple))
-                source_ref = json.dumps((fhir_object["resourceType"], reference_path, isArray))
-                self.cache.hset(target_ref, source_ref, fhir_object["id"])
+                self.cache.hset(
+                    json.dumps((reference_type, identifier_tuple)),
+                    json.dumps((fhir_object["resourceType"], reference_path, isArray)),
+                    fhir_object["id"]
+                )
             return ref
 
         # If we have a list of references, we want to bind all of them.
