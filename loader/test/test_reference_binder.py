@@ -369,6 +369,7 @@ def test_resolve_batch_references(
         "id": "pat2",
         "resourceType": "Patient",
         "generalPractitioner": patient["generalPractitioner"],
+        "link": patient["generalPractitioner"],
     }
     store.db["any"].find_one.side_effect = [None, None, None]
 
