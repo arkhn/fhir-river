@@ -270,11 +270,18 @@ def test_resolve_pending_references_code_identifier(
 
     # all references must have been cached
     assert ref_binder.cache.hset.call_count == 3
-
-    assert (
-        "Practitioner",
-        (None, None, "code_123", "fhir_code_system_practitioner"),
-    ) in ref_binder.cache
+    ref_binder.cache.hset.assert_any_call(
+        json.dumps(
+            (
+                "Practitioner",
+                (None, None, "code_123", "fhir_code_system_practitioner"),
+            )
+        ),
+        json.dumps(
+            ("Patient", "generalPractitioner", True)
+        ),
+        patient_code_identifier["id"]
+    )
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -379,7 +386,7 @@ def test_resolve_batch_references(
             patient_2["id"]
         )
     ]
-    ref_binder.cache.hset.assert_has_call(calls, any_order=True)
+    ref_binder.cache.hset.assert_has_calls(calls, any_order=True)
     assert ref_binder.cache.hset.call_count == 2
 
     ref_binder.resolve_references(test_practitioner, [])
