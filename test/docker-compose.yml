@@ -106,6 +106,7 @@ services:
     depends_on:
       - kafka
       - mongo
+      - redis
     env_file:
       - ./.env.test
     environment:
