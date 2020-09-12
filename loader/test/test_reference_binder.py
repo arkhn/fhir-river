@@ -2,6 +2,7 @@ from unittest import mock
 from pytest import raises
 import json
 from loader.src.reference_binder import ReferenceBinder
+import fakeredis
 
 
 def test_extract_key_tuple():
@@ -113,9 +114,8 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
                 )
             ),
             json.dumps(
-                ("Patient", "generalPractitioner", True)
-            ),
-            patient["id"]
+                (("Patient", "generalPractitioner", True), patient["id"])
+            )
         ),
         mock.call(
             json.dumps(
@@ -125,9 +125,8 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
                 )
             ),
             json.dumps(
-                ("Patient", "managingOrganization", False)
-            ),
-            patient["id"]
+                (("Patient", "managingOrganization", False), patient["id"])
+            )
         ),
         mock.call(
             json.dumps(
@@ -137,13 +136,12 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
                 )
             ),
             json.dumps(
-                ("Patient", "identifier.0.assigner", False)
-            ),
-            patient["id"]
+                (("Patient", "identifier.0.assigner", False), patient["id"])
+            )
         )
     ]
-    ref_binder.cache.hset.assert_has_calls(calls, any_order=True)
-    assert ref_binder.cache.hset.call_count == 3
+    ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
+    assert ref_binder.cache.sadd.call_count == 3
 
 
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
@@ -157,6 +155,11 @@ def test_resolve_pending_references(
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    r = fakeredis.FakeStrictRedis()
+    ref_binder.cache.sadd.side_effect = r.sadd
+    ref_binder.cache.smembers.side_effect = r.smembers
+    ref_binder.cache.delete.side_effect = r.delete
+
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -195,15 +198,7 @@ def test_resolve_pending_references(
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert ref_binder.cache.hset.call_count == 3
-
-    identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
-    target_ref = json.dumps((patient["resourceType"], identifier_tuple))
-    ref_binder.cache.hgetall.side_effect = lambda a: {
-        json.dumps(
-            ("Patient", "generalPractitioner", True)
-        ): patient["id"]
-    } if a == target_ref else {}
+    assert ref_binder.cache.sadd.call_count == 3
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -225,12 +220,6 @@ def test_resolve_pending_references(
             )
         ]
     )
-
-    ref_binder.cache.hgetall.return_value = {
-        json.dumps(
-            ("Patient", "identifier[0].assigner", False)
-        ): patient["id"]
-    }
 
     ref_binder.resolve_references(test_organization, [])
 
@@ -259,7 +248,8 @@ def test_resolve_pending_references(
     )
 
     # cache must have been emptied
-    ref_binder.cache.delete.assert_called_with(target_ref)
+    assert ref_binder.cache.delete.called
+    assert r.dbsize() == 0
 
 
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
@@ -269,6 +259,11 @@ def test_resolve_pending_references_code_identifier(
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    r = fakeredis.FakeStrictRedis()
+    ref_binder.cache.sadd.side_effect = r.sadd
+    ref_binder.cache.smembers.side_effect = r.smembers
+    ref_binder.cache.delete.side_effect = r.delete
+
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
@@ -282,24 +277,18 @@ def test_resolve_pending_references_code_identifier(
     assert res["identifier"][0]["assigner"].get("reference") is None
 
     # all references must have been cached
-    assert ref_binder.cache.hset.call_count == 3
-    ref_binder.cache.hset.assert_any_call(
+    assert ref_binder.cache.sadd.call_count == 3
+    ref_binder.cache.sadd.assert_any_call(
         json.dumps(
             (
                 "Practitioner",
-                (None, None, "code_123", "fhir_code_system_practitioner"),
+                (None, None, "code_123", "fhir_code_system_practitioner")
             )
         ),
         json.dumps(
-            ("Patient", "generalPractitioner", True)
-        ),
-        patient_code_identifier["id"]
+            (("Patient", "generalPractitioner", True), patient_code_identifier["id"])
+        )
     )
-    ref_binder.cache.hgetall.return_value = {
-        json.dumps(
-            ("Patient", "generalPractitioner", True)
-        ): patient_code_identifier["id"]
-    }
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
@@ -349,9 +338,8 @@ def test_resolve_pending_references_code_identifier(
     )
 
     # cache must have been emptied
-    identifier_tuple = ref_binder.extract_key_tuple(patient_code_identifier["identifier"][0])
-    target_ref = json.dumps((patient_code_identifier["resourceType"], identifier_tuple))
-    ref_binder.cache.delete.assert_called_with(target_ref)
+    assert ref_binder.cache.delete.called
+    assert r.dbsize() == 0
 
 
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
@@ -365,6 +353,11 @@ def test_resolve_batch_references(
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
+    r = fakeredis.FakeStrictRedis()
+    ref_binder.cache.sadd.side_effect = r.sadd
+    ref_binder.cache.smembers.side_effect = r.smembers
+    ref_binder.cache.delete.side_effect = r.delete
+
     patient_2 = {
         "id": "pat2",
         "resourceType": "Patient",
@@ -378,7 +371,6 @@ def test_resolve_batch_references(
     res = ref_binder.resolve_references(patient_2, ["generalPractitioner", "link"])
     assert res["generalPractitioner"][0].get("reference") is None
 
-    # both references must have been cached using the same key
     calls = [
         mock.call(
             json.dumps(
@@ -388,9 +380,8 @@ def test_resolve_batch_references(
                 )
             ),
             json.dumps(
-                ("Patient", "generalPractitioner", True)
-            ),
-            patient["id"]
+                (("Patient", "generalPractitioner", True), patient["id"])
+            )
         ),
         mock.call(
             json.dumps(
@@ -400,56 +391,73 @@ def test_resolve_batch_references(
                 )
             ),
             json.dumps(
-                ("Patient", "generalPractitioner", True)
-            ),
-            patient_2["id"]
+                (("Patient", "generalPractitioner", True),  patient_2["id"])
+            )
         )
     ]
-    ref_binder.cache.hset.assert_has_calls(calls, any_order=True)
-    assert ref_binder.cache.hset.call_count == 2
-    ref_binder.cache.hgetall.return_value = {
+    ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
+    # both references must have been cached using the same key.
+    # Accordingly, in Redis, there is only one set.
+    assert r.dbsize() == 1
+    # In the set, we have three items (2 related to pat_2 and 1 related to pat_1)
+    assert len(r.smembers(
         json.dumps(
-            ("Patient", "generalPractitioner", True)
-        ): patient["id"],
-        json.dumps(
-            ("Patient", "generalPractitioner", True)
-        ): patient_2["id"]
-    }
-
+            (
+                "Practitioner",
+                ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
+            )
+        )
+    )) == 3
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
     assert store.db["Patient"].update_many.call_count == 2
-    store.db["Patient"].update_many.assert_has_calls(
-        [
-            mock.call(
-                {
-                    "id": {"$in": ["pat1", "pat2"]},
-                    "generalPractitioner": {
-                        "$elemMatch": {
-                            "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                        }
-                    },
+    calls = [
+        (
+            {
+                "id": {"$in": ["pat2"]},
+                "link": {
+                    "$elemMatch": {
+                        "identifier.value": "123",
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                    }
                 },
-                # generalPractitioner is an array, therefore we use .$. to update the right item
-                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
-            ),
-            mock.call(
-                {
-                    "id": {"$in": ["pat2"]},
-                    "link": {
-                        "$elemMatch": {
-                            "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                        }
-                    },
+            },
+            {"$set": {"link.$.reference": "Practitioner/practitioner1"}}
+        ),
+        # Any of the two following calls
+        (
+            {
+                "id": {"$in": ["pat1", "pat2"]},
+                "generalPractitioner": {
+                    "$elemMatch": {
+                        "identifier.value": "123",
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                    }
                 },
-                {"$set": {"link.$.reference": "Practitioner/practitioner1"}},
-            ),
-        ],
-        any_order=True
-    )
+            },
+            # generalPractitioner is an array, therefore we use .$. to update the right item
+            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}}
+        ),
+        (
+            {
+                "id": {"$in": ["pat2", "pat1"]},
+                "generalPractitioner": {
+                    "$elemMatch": {
+                        "identifier.value": "123",
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                    }
+                },
+            },
+            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}}
+        )
+    ]
+    store.db["Patient"].update_many.assert_any_call(*calls[0])
+    try:
+        store.db["Patient"].update_many.assert_any_call(*calls[1])
+    except AssertionError:
+        store.db["Patient"].update_many.assert_any_call(*calls[2])
+    assert store.db["Patient"].update_many.call_count == 2
+
     # cache must have been emptied
-    identifier_tuple = ref_binder.extract_key_tuple(patient["identifier"][0])
-    target_ref = json.dumps((patient["resourceType"], identifier_tuple))
-    ref_binder.cache.delete.assert_called_with(target_ref)
+    ref_binder.cache.delete.assert_called_once()
+    assert r.dbsize() == 0

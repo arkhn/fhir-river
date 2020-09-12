@@ -1,5 +1,6 @@
 import re
 import json
+from collections import defaultdict
 from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
@@ -141,10 +142,11 @@ class ReferenceBinder:
                 )
 
                 # otherwise, cache in Redis the reference to resolve it later
-                self.cache.hset(
-                    json.dumps((reference_type, identifier_tuple)),
-                    json.dumps((fhir_object["resourceType"], reference_path, isArray)),
-                    fhir_object["id"]
+                target_ref = (reference_type, identifier_tuple)
+                source_ref = (fhir_object["resourceType"], reference_path, isArray)
+                self.cache.sadd(
+                    json.dumps(target_ref),
+                    json.dumps((source_ref, fhir_object["id"]))
                 )
             return ref
 
@@ -163,11 +165,9 @@ class ReferenceBinder:
             except Exception as e:
                 logger.error(e)
                 continue
-
             target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
-            pending_refs = self.cache.hgetall(target_ref)
-            for key, refs in pending_refs.items():
-                source_type, reference_path, is_array = json.loads(key)
+            pending_refs = self.load_cached_references(target_ref)
+            for (source_type, reference_path, is_array), refs in pending_refs.items():
                 find_predicate = build_find_predicate(refs, reference_path, identifier, is_array)
                 update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
                 logger.debug(
@@ -196,3 +196,11 @@ class ReferenceBinder:
             )
 
         return value, system, identifier_type_code, identifier_type_system
+
+    def load_cached_references(self, target_ref):
+        references_set = self.cache.smembers(target_ref)
+        pending_refs = defaultdict(list)
+        for element in references_set:
+            (source_ref, ref) = json.loads(element)
+            pending_refs[tuple(source_ref)].append(ref)
+        return pending_refs
