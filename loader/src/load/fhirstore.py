@@ -30,7 +30,4 @@ def get_fhirstore():
     global _fhirstore
     if _fhirstore is None:
         _fhirstore = fhirstore.FHIRStore(get_mongo_client(), None, FHIRSTORE_DATABASE)
-        # FIXME do we really want to bootstrap here?
-        if not _fhirstore.initialized:
-            _fhirstore.bootstrap()
     return _fhirstore
