@@ -3,9 +3,7 @@ import os
 import requests
 
 from analyzer.src.errors import OperationOutcome
-from logger import get_logger
-
-logger = get_logger(["resource_id"])
+from analyzer.src.config.service_logger import logger
 
 FHIR_API_URL = os.getenv("FHIR_API_URL")
 FHIR_API_TOKEN = os.getenv("FHIR_API_TOKEN")

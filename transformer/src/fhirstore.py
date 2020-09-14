@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 import fhirstore
 
-from logger import get_logger
+from transformer.src.config.service_logger import logger
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
 FHIRSTORE_PORT = int(os.getenv("FHIRSTORE_PORT", ""))
@@ -11,8 +11,6 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
-logger = get_logger(["resource_id", "primary_key_value"])
-
 
 def get_mongo_client():
     global _client
@@ -33,7 +31,4 @@ def get_fhirstore():
     global _fhirstore
     if _fhirstore is None:
         _fhirstore = fhirstore.FHIRStore(get_mongo_client(), None, FHIRSTORE_DATABASE)
-        _fhirstore.resume()
-        if len(_fhirstore.resources) == 0:
-            _fhirstore.bootstrap(depth=3)
     return _fhirstore

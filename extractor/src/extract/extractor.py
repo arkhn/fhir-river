@@ -7,13 +7,11 @@ from sqlalchemy.orm import sessionmaker, Query
 from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
+from extractor.src.config.service_logger import logger
 from extractor.src.errors import EmptyResult, ImproperMappingError
-from logger import get_logger
 
 from arkhn_monitoring import Timer
 
-
-logger = get_logger(["resource_id"])
 
 SQL_RELATIONS_TO_METHOD = {
     "<": "__lt__",

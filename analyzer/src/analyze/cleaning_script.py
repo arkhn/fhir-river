@@ -1,8 +1,6 @@
 import scripts
 
-from logger import get_logger
-
-logger = get_logger(["resource_id"])
+from analyzer.src.config.service_logger import logger
 
 
 class CleaningScript:

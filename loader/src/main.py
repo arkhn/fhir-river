@@ -12,25 +12,22 @@ from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from loader.src.config.service_logger import logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
 from loader.src.load.utils import get_resource_id
 from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
-from logger import get_logger
 
 
 CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
 
-logger = get_logger(["resource_id"])
-
 fhirstore = get_fhirstore()
 
-# TODO how will we handle bypass_validation in fhir-river?
-loader = Loader(fhirstore, bypass_validation=False)
+loader = Loader(fhirstore)
 analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 

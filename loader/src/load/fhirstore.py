@@ -6,7 +6,7 @@ from pymongo import MongoClient
 import fhirstore
 
 from loader.src.load.utils import get_resource_id
-from logger import get_logger
+from loader.src.config.service_logger import logger
 
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
@@ -16,7 +16,6 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
-logger = get_logger(["resource_id"])
 
 counter_failed_validations = Counter(
     "count_failed_validations",
@@ -44,11 +43,10 @@ def get_fhirstore():
     global _fhirstore
     if _fhirstore is None:
         _fhirstore = fhirstore.FHIRStore(get_mongo_client(), None, FHIRSTORE_DATABASE)
-        _fhirstore.resume()
     return _fhirstore
 
 
-def save_one(fhir_object, bypass_validation=False):
+def save_one(fhir_object):
     """
     Save instance of FHIR resource in MongoDB through fhirstore.
 
@@ -58,7 +56,7 @@ def save_one(fhir_object, bypass_validation=False):
     store = get_fhirstore()
 
     try:
-        store.create(fhir_object, bypass_document_validation=bypass_validation)
+        store.create(fhir_object)
     except ValidationError as e:
         resource_id = get_resource_id(fhir_object)
         # Increment counter for failed validations

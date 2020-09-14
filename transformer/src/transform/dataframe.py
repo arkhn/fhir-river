@@ -3,9 +3,7 @@ from collections import defaultdict
 
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.condition import CONDITION_FLAG
-from logger import get_logger
-
-logger = get_logger(["resource_id", "primary_key_value"])
+from transformer.src.config.service_logger import logger
 
 
 def clean_data(data, attributes: List[Attribute], primary_key):

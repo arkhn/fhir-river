@@ -11,7 +11,7 @@ from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
-from logger import get_logger
+from transformer.src.config.service_logger import logger
 from transformer.src.transform import Transformer
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
@@ -21,8 +21,6 @@ from transformer.src.fhirstore import get_fhirstore
 CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
-
-logger = get_logger(["resource_id", "primary_key_value"])
 
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()

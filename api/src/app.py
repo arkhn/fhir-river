@@ -6,16 +6,14 @@ from flask_cors import CORS
 import requests
 import uuid
 
+from api.src.config.service_logger import logger
 from api.src.errors import OperationOutcome
 from api.src.producer_class import RiverApiProducer
-from logger import get_logger
 
 PRODUCED_TOPIC = "batch"
 EXTRACTOR_URL = os.getenv("EXTRACTOR_URL")
 TRANSFORMER_URL = os.getenv("TRANSFORMER_URL")
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS")
-
-logger = get_logger(["resource_id"])
 
 
 def get_producer():

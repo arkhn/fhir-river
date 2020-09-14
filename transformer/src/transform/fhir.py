@@ -2,9 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from logger import get_logger
-
-logger = get_logger(["resource_id", "primary_key_value"])
+from transformer.src.config.service_logger import logger
 
 
 def recursive_defaultdict():
