@@ -3,9 +3,9 @@
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 
-from transformer.src.config.logger import get_logger
+from logging.logger import get_logger
 
-logger = get_logger()
+logger = get_logger(["resource_id", "primary_key_value"])
 
 
 class TransformerConsumer:

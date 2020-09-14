@@ -4,11 +4,11 @@ from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
 
-from loader.src.config.logger import get_logger
 from loader.src.load.utils import get_resource_id
+from logging.logger import get_logger
 
 
-logger = get_logger()
+logger = get_logger(["resource_id"])
 
 
 # dotty-dict does not handle brackets indices,

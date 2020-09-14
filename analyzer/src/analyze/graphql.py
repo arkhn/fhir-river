@@ -1,10 +1,10 @@
 import os
 import requests
 
-from analyzer.src.config.logger import get_logger
 from analyzer.src.errors import OperationOutcome
+from logging.logger import get_logger
 
-logger = get_logger()
+logger = get_logger(["resource_id"])
 
 PYROG_API_URL = os.getenv("PYROG_API_URL")
 PYROG_LOGIN = os.getenv("PYROG_LOGIN")

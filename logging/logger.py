@@ -12,12 +12,13 @@ from arkhn_monitoring import create_logger
 FLUENTD_HOST = getenv("FLUENTD_HOST", "fluentd")
 FLUENTD_PORT = getenv("FLUENTD_PORT", 24224)
 LOGGING_LEVEL = getenv("LOGGING_LEVEL", "INFO")
+SERVICE_NAME = getenv("SERVICE_NAME", "analyzer")
 TEST = getenv("TEST", False)
 
 logger = None
 
 
-def get_logger():
+def get_logger(extra_fields=[]):
     global logger
 
     if logger is not None:
@@ -29,10 +30,8 @@ def get_logger():
         logger = logging.getLogger()
         return logger
 
-    extra_fields = ["resource_id", "primary_key_value"]
-
     logger = create_logger(
-        "transformer", FLUENTD_HOST, FLUENTD_PORT, level=LOGGING_LEVEL, extra_fields=extra_fields
+        SERVICE_NAME, FLUENTD_HOST, FLUENTD_PORT, level=LOGGING_LEVEL, extra_fields=extra_fields
     )
 
     return logger

@@ -5,8 +5,8 @@ from pymongo import MongoClient
 
 import fhirstore
 
-from loader.src.config.logger import get_logger
 from loader.src.load.utils import get_resource_id
+from logging.logger import get_logger
 
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
@@ -16,7 +16,7 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
-logger = get_logger()
+logger = get_logger(["resource_id"])
 
 counter_failed_validations = Counter(
     "count_failed_validations",

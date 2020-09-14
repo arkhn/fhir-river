@@ -3,9 +3,10 @@
 import json
 import datetime
 from confluent_kafka import Producer
-from transformer.src.config.logger import get_logger
 
-logger = get_logger()
+from logging.logger import get_logger
+
+logger = get_logger(["resource_id", "primary_key_value"])
 
 
 class TransformerProducer:

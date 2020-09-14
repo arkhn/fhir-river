@@ -3,7 +3,7 @@ import time
 from collections.abc import Mapping
 
 from analyzer.src.analyze.graphql import PyrogClient
-from analyzer.src.config.logger import get_logger
+from logging.logger import get_logger
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -17,7 +17,7 @@ from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
 
-logger = get_logger()
+logger = get_logger(["resource_id"])
 
 
 class Analyzer:

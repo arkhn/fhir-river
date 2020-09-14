@@ -2,9 +2,9 @@ from typing import List
 
 import scripts
 
-from analyzer.src.config.logger import get_logger
+from logging.logger import get_logger
 
-logger = get_logger()
+logger = get_logger(["resource_id"])
 
 
 class MergingScript:

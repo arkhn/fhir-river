@@ -9,15 +9,12 @@ from jsonschema.exceptions import ValidationError
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from uwsgidecorators import thread, postfork
 
-
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from logging.logger import get_logger
 from transformer.src.transform import Transformer
-
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
-
-from transformer.src.config.logger import get_logger
 from transformer.src.errors import OperationOutcome
 from transformer.src.fhirstore import get_fhirstore
 
@@ -25,7 +22,7 @@ CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
 
-logger = get_logger()
+logger = get_logger(["resource_id", "primary_key_value"])
 
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()
