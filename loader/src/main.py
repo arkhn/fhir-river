@@ -18,7 +18,7 @@ from loader.src.load.utils import get_resource_id
 from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
-from logging.logger import get_logger
+from logger import get_logger
 
 
 CONSUMED_TOPIC = "transform"

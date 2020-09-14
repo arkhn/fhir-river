@@ -3,7 +3,7 @@ from typing import Dict, List, NewType, Tuple, Union
 from datetime import datetime
 
 from analyzer.src.errors import OperationOutcome
-from logging.logger import get_logger
+from logger import get_logger
 
 from .sql_column import SqlColumn
 

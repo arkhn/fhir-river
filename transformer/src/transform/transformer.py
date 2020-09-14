@@ -3,7 +3,7 @@ from uuid import uuid4
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
 
-from logging.logger import get_logger
+from logger import get_logger
 from transformer.src.transform.dataframe import clean_data
 from transformer.src.transform.dataframe import squash_rows
 from transformer.src.transform.dataframe import merge_by_attributes

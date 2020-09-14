@@ -3,7 +3,7 @@ import os
 import requests
 
 from analyzer.src.errors import OperationOutcome
-from logging.logger import get_logger
+from logger import get_logger
 
 logger = get_logger(["resource_id"])
 

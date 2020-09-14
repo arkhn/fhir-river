@@ -3,7 +3,7 @@ import time
 from collections.abc import Mapping
 
 from analyzer.src.analyze.graphql import PyrogClient
-from logging.logger import get_logger
+from logger import get_logger
 
 from .analysis import Analysis
 from .attribute import Attribute

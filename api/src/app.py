@@ -8,7 +8,7 @@ import uuid
 
 from api.src.errors import OperationOutcome
 from api.src.producer_class import RiverApiProducer
-from logging.logger import get_logger
+from logger import get_logger
 
 PRODUCED_TOPIC = "batch"
 EXTRACTOR_URL = os.getenv("EXTRACTOR_URL")

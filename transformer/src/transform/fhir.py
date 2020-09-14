@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from logging.logger import get_logger
+from logger import get_logger
 
 logger = get_logger(["resource_id", "primary_key_value"])
 

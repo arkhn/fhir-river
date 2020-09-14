@@ -8,7 +8,7 @@ from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
 from extractor.src.errors import EmptyResult, ImproperMappingError
-from logging.logger import get_logger
+from logger import get_logger
 
 from arkhn_monitoring import Timer
 

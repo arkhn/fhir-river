@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 import fhirstore
 
-from logging.logger import get_logger
+from logger import get_logger
 
 FHIRSTORE_HOST = os.getenv("FHIRSTORE_HOST")
 FHIRSTORE_PORT = int(os.getenv("FHIRSTORE_PORT", ""))

@@ -4,7 +4,7 @@ from confluent_kafka import Producer
 import json
 import datetime
 
-from logging.logger import get_logger
+from logger import get_logger
 
 logger = get_logger(["resource_id"])
 

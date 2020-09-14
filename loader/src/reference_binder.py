@@ -5,7 +5,7 @@ from dotty_dict import dotty
 from arkhn_monitoring import Timer
 
 from loader.src.load.utils import get_resource_id
-from logging.logger import get_logger
+from logger import get_logger
 
 
 logger = get_logger(["resource_id"])

@@ -11,7 +11,7 @@ from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
-from logging.logger import get_logger
+from logger import get_logger
 from transformer.src.transform import Transformer
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer

@@ -1,6 +1,6 @@
 from typing import List
 
-from logging.logger import get_logger
+from logger import get_logger
 
 from .input_group import InputGroup
 
