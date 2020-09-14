@@ -12,7 +12,7 @@ RUN pip install -r ${EXTRACTOR_SQL_HOME}/requirements.txt
 
 COPY extractor/src ${EXTRACTOR_SQL_HOME}/extractor/src
 COPY analyzer/src ${EXTRACTOR_SQL_HOME}/analyzer/src
-COPY logging ${EXTRACTOR_SQL_HOME}/logging
+COPY logger ${EXTRACTOR_SQL_HOME}/logging
 
 COPY extractor/uwsgi.ini ${EXTRACTOR_SQL_HOME}/extractor/uwsgi.ini
 
