@@ -191,7 +191,7 @@ services:
     env_file:
       - ./.env.test
     environment:
-      ES_HOST: http://elasticsearch:9200
+      ES_HOST: http://test:9200
       JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
     depends_on:
       - mongo
