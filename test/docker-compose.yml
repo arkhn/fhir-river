@@ -190,7 +190,6 @@ services:
     env_file:
       - ./.env.test
     environment:
-      ES_HOST: http://elasticsearch:9200
       JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
     depends_on:
       - mongo
@@ -199,13 +198,13 @@ services:
       - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
   # TODO logs could be exported to an external kibana instance during integration tests
-  fluentd:
-    image: arkhn/fluentd:latest
-    container_name: fluentd
-    volumes:
-      - ./fluent.conf:/fluentd/etc/fluent.conf
-    ports:
-      - 24224:24224
+  # fluentd:
+  #   image: arkhn/fluentd:latest
+  #   container_name: fluentd
+  #   volumes:
+  #     - ./fluent.conf:/fluentd/etc/fluent.conf
+  #   ports:
+  #     - 24224:24224
 
 volumes:
   test-mimic-db:
