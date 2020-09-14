@@ -13,7 +13,7 @@ COPY api/requirements.txt ${API_HOME}/requirements.txt
 RUN pip install -r ${API_HOME}/requirements.txt
 
 COPY api/src ${API_HOME}/api/src
-COPY logger ${API_HOME}/logging
+COPY logger ${API_HOME}/logger
 
 COPY api/uwsgi.ini ${API_HOME}/api/uwsgi.ini
 
