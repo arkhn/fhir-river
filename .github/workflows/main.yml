@@ -75,7 +75,7 @@ jobs:
           docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
           docker-compose -f test/docker-compose.yml up -d fluentd
           sleep 15
-          env $(cat test/.env.test | grep -v '^#' | xargs) python -m pytest -svv test/test_batch.py
+          python -m pytest -svv test/test_batch.py
 
   publish:
     name: Publish docker images
