@@ -14,8 +14,8 @@ def test_save_one(_):
     assert store.create.call_count == 3
     store.create.assert_has_calls(
         [
-            mock.call({"name": "instance1", "value": 1}, bypass_document_validation=False),
-            mock.call({"name": "instance2", "value": 2}, bypass_document_validation=False),
-            mock.call({"name": "instance3", "value": 3}, bypass_document_validation=False),
+            mock.call({"name": "instance1", "value": 1}),
+            mock.call({"name": "instance2", "value": 2}),
+            mock.call({"name": "instance3", "value": 3}),
         ]
     )

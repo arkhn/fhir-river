@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 
+from confluent_kafka import Producer
 import datetime
 import json
-from confluent_kafka import Producer
-from extractor.src.config.logger import get_logger
 
-logger = get_logger()
+from extractor.src.config.service_logger import logger
 
 
 class ExtractorProducer:
