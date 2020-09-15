@@ -10,6 +10,7 @@ from loader.src.config.service_logger import logger
 from loader.src.load.utils import get_resource_id
 from loader.src.cache import redis
 
+
 # dotty-dict does not handle brackets indices,
 # it uses dots instead (a.0.b instead of a[0].b)
 def dotty_paths(paths):
