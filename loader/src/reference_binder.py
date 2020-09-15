@@ -198,23 +198,24 @@ class ReferenceBinder:
         return value, system, identifier_type_code, identifier_type_system
 
     def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
-        """
-            load_cached_references requests cached references from Redis. The SMEMBERS
-            command gets the set target_ref
-            "[fhir_type_target, [value, system, code, code_system]]"
-            and returns a list
-            [
-                "[ [fhir_type_source, path, isArray], fhir_id1 ]",
-                "[ [fhir_type_source, path, isArray], fhir_id2 ]",
-                ...
-            ]
+        """Requests cached references from Redis
 
-            This list is formatted as a dict which is then returned
-            {
-                (fhir_type_source, path, isArray): [fhir_id1, fhir_id2],
-                ...
-            }
+        :param target_ref: "[fhir_type_target, [value, system, code, code_system]]"
+        :type target_ref: str
+        The SMEMBERS command gets the set target_ref and returns a list
+        [
+            "[ [fhir_type_source, path, isArray], fhir_id1 ]",
+            "[ [fhir_type_source, path, isArray], fhir_id2 ]",
+            ...
+        ]
+        This list is formatted as a defaultdict which is then returned
+        :return pending_refs: {
+            (fhir_type_source, path, isArray): [fhir_id1, fhir_id2],
+            ...
+        }
+        :rtype: DefaultDict[tuple, list]
         """
+
         references_set = self.cache.smembers(target_ref)
         pending_refs = defaultdict(list)
         for element in references_set:
