@@ -12,8 +12,7 @@ from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
-
-from loader.src.config.logger import get_logger
+from loader.src.config.service_logger import logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
 from loader.src.load.utils import get_resource_id
@@ -22,16 +21,15 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
 
-logger = get_logger()
 fhirstore = get_fhirstore()
-# TODO how will we handle bypass_validation in fhir-river?
-loader = Loader(fhirstore, bypass_validation=False)
+loader = Loader(fhirstore)
 analyzer = Analyzer(PyrogClient())
 binder = ReferenceBinder(fhirstore)
 
 ####################
 # LOADER FLASK API #
 ####################
+
 
 app = Flask(__name__)
 

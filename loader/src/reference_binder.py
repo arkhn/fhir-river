@@ -6,12 +6,9 @@ from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
 
-from loader.src.config.logger import get_logger
+from loader.src.config.service_logger import logger
 from loader.src.load.utils import get_resource_id
 from loader.src.cache import redis
-
-logger = get_logger()
-
 
 # dotty-dict does not handle brackets indices,
 # it uses dots instead (a.0.b instead of a[0].b)

@@ -7,14 +7,11 @@ from sqlalchemy.orm import sessionmaker, Query
 from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_join import SqlJoin
-
-from extractor.src.config.logger import get_logger
+from extractor.src.config.service_logger import logger
 from extractor.src.errors import EmptyResult, ImproperMappingError
 
 from arkhn_monitoring import Timer
 
-
-logger = get_logger()
 
 SQL_RELATIONS_TO_METHOD = {
     "<": "__lt__",
@@ -185,9 +182,16 @@ class Extractor:
         try:
             return table.c[column.column].label(column.dataframe_column_name())
         except KeyError:
-            raise ImproperMappingError(
-                f"Column '{column.column}' not found in table '{column.table}'."
-            )
+            # If column.column is not in table.c it may be because the column names are case
+            # insensitive. If so, the schema can be in upper case (what oracle considers as
+            # case insensitive) but the keys in table.c are in lower case (what sqlalchemy
+            # considers as case insensitive).
+            try:
+                return table.c[column.column.lower()].label(column.dataframe_column_name())
+            except KeyError:
+                raise ImproperMappingError(
+                    f"Column '{column.column}' not found in table '{column.table}'."
+                )
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)

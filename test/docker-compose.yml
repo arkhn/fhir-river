@@ -41,9 +41,9 @@ services:
       - test-elastic-db:/usr/share/elasticsearch/data
 
   monstache:
-    image: rwynn/monstache:6.5.4
+    image: arkhn/monstache:6.6.0
     container_name: monstache
-    command: -f /opt/monstache.toml
+    command: -f /opt/monstache.toml -mapper-plugin-path /lib/fhirstore_map_documents.so
     restart: always
     volumes:
       - ./monstache.toml:/opt/monstache.toml
@@ -186,12 +186,13 @@ services:
   fhir-api:
     image: arkhn/fhir-api:latest
     container_name: fhir-api
-    expose:
-      - 2000
+    ports:
+      - 2000:2000
     env_file:
       - ./.env.test
     environment:
       JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
+      AUTH_DISABLED: 1
     depends_on:
       - mongo
       - elasticsearch
@@ -199,13 +200,13 @@ services:
       - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
 
   # TODO logs could be exported to an external kibana instance during integration tests
-  fluentd:
-    image: arkhn/fluentd:latest
-    container_name: fluentd
-    volumes:
-      - ./fluent.conf:/fluentd/etc/fluent.conf
-    ports:
-      - 24224:24224
+  # fluentd:
+  #   image: arkhn/fluentd:latest
+  #   container_name: fluentd
+  #   volumes:
+  #     - ./fluent.conf:/fluentd/etc/fluent.conf
+  #   ports:
+  #     - 24224:24224
 
 volumes:
   test-mimic-db:

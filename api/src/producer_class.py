@@ -3,9 +3,8 @@
 import json
 import datetime
 from confluent_kafka import Producer
-from api.src.config.logger import get_logger
 
-logger = get_logger()
+from api.src.config.service_logger import logger
 
 
 class RiverApiProducer:
