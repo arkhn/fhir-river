@@ -1,3 +1,4 @@
+import os
 import re
 import time
 from collections.abc import Mapping
@@ -17,6 +18,8 @@ from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
 
+MAX_SECONDS_REFRESH_ANALYSIS = int(os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600))
+
 
 class Analyzer:
     def __init__(self, pyrog_client: PyrogClient):
@@ -29,7 +32,11 @@ class Analyzer:
 
         self._cur_analysis = Analysis()
 
-    def get_analysis(self, resource_mapping_id, max_seconds_refresh=3600) -> Analysis:
+    def get_analysis(
+        self, resource_mapping_id, max_seconds_refresh=None
+    ) -> Analysis:
+        if max_seconds_refresh is None:
+            max_seconds_refresh = MAX_SECONDS_REFRESH_ANALYSIS
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
         else:
