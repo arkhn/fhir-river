@@ -4,7 +4,7 @@ import requests
 
 from .consumer_class import EventConsumer
 from analyzer.src.analyze.graphql import PyrogClient
-from loader.src.cache import redis
+import redis
 
 BATCH_SIZE_TOPIC = "batch_size"
 LOAD_TOPIC = "load"
@@ -35,7 +35,7 @@ def test_batch_single_row():
     print("START")
 
     resource_ids = get_resource_ids()
-    r = redis.conn()
+    r = redis.Redis()
 
     # declare kafka consumer of "load" events
     consumer = EventConsumer(
@@ -74,5 +74,3 @@ def test_batch_single_row():
 
     # Check if references cache is empty
     assert r.dbsize() == 0
-
-# check in elastic that references have been set

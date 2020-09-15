@@ -179,7 +179,7 @@ services:
     image: redis:5.0.7-alpine
     container_name: redis
     expose:
-      - 6379
+      - 6379:6379
     volumes:
       - redis-data:/data
 
