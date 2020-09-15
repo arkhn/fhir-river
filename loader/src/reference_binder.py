@@ -214,7 +214,7 @@ class ReferenceBinder:
     #     (fhir_type_source, path, isArray): [fhir_id1, fhir_id2],
     #     ...
     # }
-    def load_cached_references(self, target_ref: str) -> DefaultDict[list]:
+    def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
         references_set = self.cache.smembers(target_ref)
         pending_refs = defaultdict(list)
         for element in references_set:
