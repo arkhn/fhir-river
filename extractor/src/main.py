@@ -3,24 +3,19 @@
 import os
 import json
 
-from uwsgidecorators import thread, postfork
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
-
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
-
-from extractor.src.config.logger import get_logger
+from extractor.src.config.service_logger import logger
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError, MissingInformationError
 from extractor.src.extract import Extractor
 from extractor.src.json_encoder import MyJSONEncoder
 from extractor.src.producer_class import ExtractorProducer
-
-
-logger = get_logger()
 
 CONSUMER_GROUP_ID = "extractor"
 EXTRACT_TOPIC = "extract"
@@ -95,7 +90,7 @@ def manage_kafka_error(msg):
     :param msg:
     :return:
     """
-    logger.error(msg.error())
+    logger.error(msg.error().str())
 
 
 def extract_resource(resource_id, primary_key_values):

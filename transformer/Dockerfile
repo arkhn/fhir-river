@@ -15,6 +15,7 @@ RUN pip install -r ${TRANSFORMER_HOME}/requirements.txt
 
 COPY transformer/src ${TRANSFORMER_HOME}/transformer/src
 COPY analyzer/src ${TRANSFORMER_HOME}/analyzer/src
+COPY logger ${TRANSFORMER_HOME}/logger
 
 COPY transformer/uwsgi.ini ${TRANSFORMER_HOME}/transformer/uwsgi.ini
 

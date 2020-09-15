@@ -2,35 +2,29 @@
 
 import json
 import os
+import pydantic
 
 from confluent_kafka import KafkaException, KafkaError
+from fhir.resources import construct_fhir_element
 from flask import Flask, request, jsonify, Response
-from jsonschema.exceptions import ValidationError
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from uwsgidecorators import thread, postfork
 
-
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from transformer.src.config.service_logger import logger
 from transformer.src.transform import Transformer
-
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
-
-from transformer.src.config.logger import get_logger
 from transformer.src.errors import OperationOutcome
-from transformer.src.fhirstore import get_fhirstore
+
 
 CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
 
-logger = get_logger()
-
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()
-
-fhirstore = get_fhirstore()
 
 
 def create_app():
@@ -43,11 +37,7 @@ app = create_app()
 
 def process_event_with_producer(producer):
     def process_event(msg):
-        """
-        Process the event
-        :param msg:
-        :return:
-        """
+        """ Process the event """
         msg_value = json.loads(msg.value())
         logger.debug(msg_value)
 
@@ -62,12 +52,8 @@ def process_event_with_producer(producer):
 
 
 def manage_kafka_error(msg):
-    """
-    Deal with the error if nany
-    :param msg:
-    :return:
-    """
-    logger.error(msg.error())
+    """ Deal with the error if any """
+    logger.error(msg.error().str())
 
 
 def transform_row(resource_id, row, time_refresh_analysis=None):
@@ -108,9 +94,16 @@ def transform():
             fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
             fhir_instances.append(fhir_document)
             try:
-                fhirstore.validate(fhir_document)
-            except ValidationError as e:
-                errors.append(str(e))
+                resource_type = fhir_document.get("resourceType")
+                construct_fhir_element(resource_type, fhir_document)
+            except pydantic.ValidationError as e:
+                errors.extend(
+                    [
+                        f"{err['msg'] or 'Validation error'}: "
+                        f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
+                        for err in e.errors()
+                    ]
+                )
 
         return jsonify({"instances": fhir_instances, "errors": errors})
 

@@ -2,7 +2,6 @@ from typing import Dict, List, NewType, Tuple, Union
 
 from datetime import datetime
 
-from analyzer.src.config.logger import get_logger
 from analyzer.src.errors import OperationOutcome
 
 from .sql_column import SqlColumn
@@ -25,8 +24,6 @@ UNARY_RELATIONS = ["NULL", "NOTNULL"]
 
 DataDictKey = NewType("DataDictKey", Tuple[str, Tuple[str, str]])
 DataDictValue = NewType("DataDictValue", Union[str, List[str]])
-
-logger = get_logger()
 
 
 class Condition:

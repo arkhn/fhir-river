@@ -2,10 +2,6 @@ from collections import defaultdict
 from datetime import datetime
 import re
 
-from transformer.src.config.logger import get_logger
-
-logger = get_logger()
-
 
 def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)

@@ -4,10 +4,6 @@ from collections import defaultdict
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.condition import CONDITION_FLAG
 
-from transformer.src.config.logger import get_logger
-
-logger = get_logger()
-
 
 def clean_data(data, attributes: List[Attribute], primary_key):
     """ Apply cleaning scripts and concept maps.
