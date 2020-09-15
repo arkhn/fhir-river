@@ -1,6 +1,6 @@
 {
   "source": {
-    "id": "ckdyl65ip0010gu9k22w8kvc1",
+    "id": "ckdrej0yf0006g0pj1cih3e9d",
     "name": "logilan"
   },
   "template": {
@@ -8,51 +8,51 @@
   },
   "resources": [
     {
-      "id": "ckdyl65kd0016gu9kfrfvghr9",
-      "logicalReference": "",
-      "label": "TransfersTest",
-      "primaryKeyTable": "transfers",
+      "id": "ckbrs9eis000057p3w7lpvyr4",
+      "logicalReference": "47326bab-a356-4ad3-a24f-860ed53c82e5",
+      "label": "AdmissionsTableTest",
+      "primaryKeyTable": "admissions",
       "primaryKeyColumn": "row_id",
       "definitionId": "Encounter",
-      "sourceId": "ckdyl65ip0010gu9k22w8kvc1",
-      "updatedAt": "2020-08-17T14:01:01.360Z",
-      "createdAt": "2020-08-17T14:01:01.358Z",
+      "sourceId": "ckdrej0yf0006g0pj1cih3e9d",
+      "updatedAt": "2020-08-12T13:21:04.359Z",
+      "createdAt": "2020-08-12T13:20:41.975Z",
       "source": {
-        "id": "ckdyl65ip0010gu9k22w8kvc1",
+        "id": "ckdrej0yf0006g0pj1cih3e9d",
         "name": "logilan",
         "version": null,
-        "templateId": "ckdyl65ia0001gu9kk3jf82e6",
-        "updatedAt": "2020-08-17T14:01:01.297Z",
-        "createdAt": "2020-08-17T14:01:01.297Z"
+        "templateId": "ckc1q6qm4000459mpjidvhrrp",
+        "updatedAt": "2020-08-12T13:20:41.368Z",
+        "createdAt": "2020-08-12T13:20:41.367Z"
       },
       "filters": [],
       "attributes": [
         {
-          "id": "ckdyl65ke0017gu9kuxmbk0jz",
-          "path": "class.system",
+          "id": "ckbrz8rjx000457p3d89t2tmp",
+          "path": "identifier[0].system",
           "sliceName": null,
           "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.975Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0018gu9k7kli3f11",
+              "id": "ckdrej1fb0189g0pjnqux88nb",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0017gu9kuxmbk0jz",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbrz8rjx000457p3d89t2tmp",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.975Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0019gu9khb95nqg0",
+                  "id": "ckbrz8rpi000657p3y3xj84p4",
                   "script": null,
                   "conceptMapId": null,
-                  "staticValue": "http://terminology.hl7.org/ValueSet/v3-ActEncounterCode",
+                  "staticValue": "http://terminology.arkhn.org/47326bab-a356-4ad3-a24f-860ed53c82e5",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ke0018gu9k7kli3f11",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
+                  "inputGroupId": "ckdrej1fb0189g0pjnqux88nb",
+                  "updatedAt": "2020-08-12T13:21:04.936Z",
+                  "createdAt": "2020-08-12T13:20:41.975Z",
                   "sqlValue": null
                 }
               ],
@@ -61,75 +61,31 @@
           ]
         },
         {
-          "id": "ckdyl65ke0020gu9km0w81vyw",
-          "path": "class",
-          "sliceName": null,
-          "definitionId": "Coding",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65ke0021gu9k885go9iy",
-          "path": "class.version",
-          "sliceName": null,
-          "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65ke0022gu9k683arrsz",
-              "mergingScript": null,
-              "attributeId": "ckdyl65ke0021gu9k885go9iy",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65ke0023gu9kt570xhz0",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "2014-03-26",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ke0022gu9k683arrsz",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65ke0024gu9kg4zzj0n9",
+          "id": "ckbrzxv51001257p3wfri90oi",
           "path": "class.code",
           "sliceName": null,
           "definitionId": "code",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.975Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0025gu9kpb81i9s1",
+              "id": "ckdrej1fb0190g0pj66w5ahpx",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0024gu9kg4zzj0n9",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbrzxv51001257p3wfri90oi",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.975Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0026gu9kid08udap",
+                  "id": "ckbrzxvak001457p3c4y1mb8m",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "IMP",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ke0025gu9kpb81i9s1",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
+                  "inputGroupId": "ckdrej1fb0190g0pj66w5ahpx",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.975Z",
                   "sqlValue": null
                 }
               ],
@@ -138,71 +94,49 @@
           ]
         },
         {
-          "id": "ckdyl65ke0027gu9kkrumqwn9",
-          "path": "subject",
-          "sliceName": null,
-          "definitionId": "Reference",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65ke0028gu9kdl3ciytg",
-          "path": "subject.identifier",
-          "sliceName": null,
-          "definitionId": "Identifier",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65ke0029gu9k6co854ud",
+          "id": "ckbrz8rmh000557p3t3np2waa",
           "path": "identifier[0]",
           "sliceName": null,
           "definitionId": "Identifier",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.975Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ke0030gu9kec9nf1ta",
+          "id": "ckbrz8w4j000757p3ru9sqe3c",
           "path": "identifier[0].value",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.975Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0031gu9koyu9y1kq",
+              "id": "ckdrej1fb0191g0pj4d4all73",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0030gu9kec9nf1ta",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbrz8w4j000757p3ru9sqe3c",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.975Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0032gu9k11bbscsv",
+                  "id": "ckbrz8w7b000857p30goc9mhe",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65ke0033gu9kkaca8rcd",
-                  "inputGroupId": "ckdyl65ke0031gu9koyu9y1kq",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
+                  "sqlValueId": "ckbrz8w7b000957p3kj6ketur",
+                  "inputGroupId": "ckdrej1fb0191g0pj4d4all73",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.975Z",
                   "sqlValue": {
-                    "id": "ckdyl65ke0033gu9kkaca8rcd",
-                    "table": "transfers",
-                    "column": "row_id",
+                    "id": "ckbrz8w7b000957p3kj6ketur",
+                    "table": "admissions",
+                    "column": "hadm_id",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.360Z",
-                    "createdAt": "2020-08-17T14:01:01.358Z",
+                    "updatedAt": "2020-08-12T13:20:41.979Z",
+                    "createdAt": "2020-08-12T13:20:41.975Z",
                     "joins": []
                   }
                 }
@@ -212,40 +146,32 @@
           ]
         },
         {
-          "id": "ckdyl65ke0034gu9k198y7sug",
-          "path": "period.start",
+          "id": "ckbrz93l2001057p3okfn3yyo",
+          "path": "status",
           "sliceName": null,
-          "definitionId": "dateTime",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "definitionId": "code",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0035gu9kjztzk7f8",
+              "id": "ckdrej1fc0192g0pjlxfkvhg9",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0034gu9k198y7sug",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbrz93l2001057p3okfn3yyo",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.976Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0036gu9k277a5gng",
-                  "script": "clean_dateTime",
+                  "id": "ckbrz93n2001157p36y4bleu0",
+                  "script": null,
                   "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65ke0037gu9kg47xjvau",
-                  "inputGroupId": "ckdyl65ke0035gu9kjztzk7f8",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
-                  "sqlValue": {
-                    "id": "ckdyl65ke0037gu9kg47xjvau",
-                    "table": "transfers",
-                    "column": "intime",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.360Z",
-                    "createdAt": "2020-08-17T14:01:01.358Z",
-                    "joins": []
-                  }
+                  "staticValue": "finished",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1fc0192g0pjlxfkvhg9",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.976Z",
+                  "sqlValue": null
                 }
               ],
               "conditions": []
@@ -253,40 +179,43 @@
           ]
         },
         {
-          "id": "ckdyl65ke0038gu9kln3he60m",
-          "path": "period.end",
+          "id": "ckbrzxv7h001357p3f2habyt2",
+          "path": "class",
           "sliceName": null,
-          "definitionId": "dateTime",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "definitionId": "Coding",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckbrzy97z001657p3zn5yjz9t",
+          "path": "class.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0039gu9k8wrycqxm",
+              "id": "ckdrej1fc0193g0pjwt41q9tp",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0038gu9kln3he60m",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbrzy97z001657p3zn5yjz9t",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.976Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0040gu9krrkijezg",
-                  "script": "clean_dateTime",
+                  "id": "ckbrzy99u001757p37283dt0j",
+                  "script": null,
                   "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65ke0041gu9k42cfzt75",
-                  "inputGroupId": "ckdyl65ke0039gu9k8wrycqxm",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
-                  "sqlValue": {
-                    "id": "ckdyl65ke0041gu9k42cfzt75",
-                    "table": "transfers",
-                    "column": "outtime",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.360Z",
-                    "createdAt": "2020-08-17T14:01:01.358Z",
-                    "joins": []
-                  }
+                  "staticValue": "http://terminology.hl7.org/ValueSet/v3-ActEncounterCode",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1fc0193g0pjwt41q9tp",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.976Z",
+                  "sqlValue": null
                 }
               ],
               "conditions": []
@@ -294,31 +223,64 @@
           ]
         },
         {
-          "id": "ckdyl65ke0042gu9k2thpwrpk",
+          "id": "ckbrzyms7001857p324rgp2gr",
+          "path": "class.version",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fc0194g0pjoud6787r",
+              "mergingScript": null,
+              "attributeId": "ckbrzyms7001857p324rgp2gr",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.976Z",
+              "inputs": [
+                {
+                  "id": "ckbrzymum001957p3a917yl8a",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "2014-03-26",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1fc0194g0pjoud6787r",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.976Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs01cke002057p3vmc01ssj",
           "path": "subject.type",
           "sliceName": null,
           "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.360Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0043gu9kojdb2v2d",
+              "id": "ckdrej1fc0195g0pjh0evw73r",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0042gu9k2thpwrpk",
-              "updatedAt": "2020-08-17T14:01:01.360Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbs01cke002057p3vmc01ssj",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.976Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0044gu9kk3w3wbx8",
+                  "id": "ckbs01cqj002257p3wjp8z9zj",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "Patient",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ke0043gu9kojdb2v2d",
-                  "updatedAt": "2020-08-17T14:01:01.360Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
+                  "inputGroupId": "ckdrej1fc0195g0pjh0evw73r",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.976Z",
                   "sqlValue": null
                 }
               ],
@@ -327,156 +289,104 @@
           ]
         },
         {
-          "id": "ckdyl65ke0045gu9ke2yvw29j",
-          "path": "subject.identifier.system",
+          "id": "ckbs01cmx002157p3za9n31ux",
+          "path": "subject",
           "sliceName": null,
-          "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "definitionId": "Reference",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65ke0046gu9kkyf4cydz",
-              "mergingScript": null,
-              "attributeId": "ckdyl65ke0045gu9ke2yvw29j",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65ke0047gu9ka0hooy69",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "http://terminology.arkhn.org/ck8oo01zm26944kp4ta60mfea/ck8oo3on226974kp4ns32n7xs",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ke0046gu9kkyf4cydz",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
+          "inputGroups": []
         },
         {
-          "id": "ckdyl65ke0048gu9kctmd0lm9",
-          "path": "subject.identifier.value",
+          "id": "ckbs01o6r002457p33294w5dt",
+          "path": "subject.identifier",
           "sliceName": null,
-          "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "definitionId": "Identifier",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65ke0049gu9kpguqreij",
-              "mergingScript": null,
-              "attributeId": "ckdyl65ke0048gu9kctmd0lm9",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65ke0050gu9kjboitj1y",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65ke0051gu9kelqpgjpf",
-                  "inputGroupId": "ckdyl65ke0049gu9kpguqreij",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
-                  "sqlValue": {
-                    "id": "ckdyl65ke0051gu9kelqpgjpf",
-                    "table": "transfers",
-                    "column": "subject_id",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.358Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": []
-            }
-          ]
+          "inputGroups": []
         },
         {
-          "id": "ckdyl65ke0052gu9koinvgoc9",
-          "path": "identifier[0].system",
-          "sliceName": null,
-          "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65ke0053gu9kw7ju3dj4",
-              "mergingScript": null,
-              "attributeId": "ckdyl65ke0052gu9koinvgoc9",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65ke0054gu9kd854mmee",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "http://terminology.arkhn.org/ck8oo01zm26944kp4ta60mfea/ckbjjts9k008758pwuo4uupux",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ke0053gu9kw7ju3dj4",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65ke0055gu9kh1fi98kz",
+          "id": "ckbs04b0n003057p3su1a79h1",
           "path": "period",
           "sliceName": null,
           "definitionId": "Period",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ke0056gu9kl01r1x31",
-          "path": "length.value",
+          "id": "ckbs01o4e002357p3abw03gis",
+          "path": "subject.identifier.system",
           "sliceName": null,
-          "definitionId": "decimal",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "definitionId": "uri",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ke0057gu9kc166fnk2",
+              "id": "ckdrej1fc0196g0pjg3mruscq",
               "mergingScript": null,
-              "attributeId": "ckdyl65ke0056gu9kl01r1x31",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.358Z",
+              "attributeId": "ckbs01o4e002357p3abw03gis",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.976Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ke0058gu9k2ac5vx5k",
+                  "id": "ckbs01o9k002557p3iyiwycwb",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/7c569359-af75-4eee-a552-b58405cfcda3",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1fc0196g0pjg3mruscq",
+                  "updatedAt": "2020-08-12T13:21:04.936Z",
+                  "createdAt": "2020-08-12T13:20:41.976Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs01xzl002657p3nafd2n17",
+          "path": "subject.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fc0197g0pj1wefbq9d",
+              "mergingScript": null,
+              "attributeId": "ckbs01xzl002657p3nafd2n17",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.976Z",
+              "inputs": [
+                {
+                  "id": "ckbs01y2m002757p3ai54iv4e",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65ke0059gu9kxdzq099p",
-                  "inputGroupId": "ckdyl65ke0057gu9kc166fnk2",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.358Z",
+                  "sqlValueId": "ckbs01y2m002857p3l1l4wmpd",
+                  "inputGroupId": "ckdrej1fc0197g0pj1wefbq9d",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.976Z",
                   "sqlValue": {
-                    "id": "ckdyl65ke0059gu9kxdzq099p",
-                    "table": "transfers",
-                    "column": "los",
+                    "id": "ckbs01y2m002857p3l1l4wmpd",
+                    "table": "admissions",
+                    "column": "subject_id",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.358Z",
+                    "updatedAt": "2020-08-12T13:20:41.979Z",
+                    "createdAt": "2020-08-12T13:20:41.976Z",
                     "joins": []
                   }
                 }
@@ -486,42 +396,157 @@
           ]
         },
         {
-          "id": "ckdyl65ke0060gu9kdkgyafuw",
-          "path": "length",
+          "id": "ckbs04axp002957p3weqmgesa",
+          "path": "period.start",
           "sliceName": null,
-          "definitionId": "Duration",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.358Z",
+          "definitionId": "dateTime",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.979Z",
+          "createdAt": "2020-08-12T13:20:41.976Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fd0198g0pjrs5rze92",
+              "mergingScript": null,
+              "attributeId": "ckbs04axp002957p3weqmgesa",
+              "updatedAt": "2020-08-12T13:20:41.979Z",
+              "createdAt": "2020-08-12T13:20:41.977Z",
+              "inputs": [
+                {
+                  "id": "ckbs04b49003157p3gxsyaoso",
+                  "script": "clean_dateTime",
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckbs04b49003257p365qyt6it",
+                  "inputGroupId": "ckdrej1fd0198g0pjrs5rze92",
+                  "updatedAt": "2020-08-12T13:20:41.979Z",
+                  "createdAt": "2020-08-12T13:20:41.977Z",
+                  "sqlValue": {
+                    "id": "ckbs04b49003257p365qyt6it",
+                    "table": "admissions",
+                    "column": "admittime",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:41.979Z",
+                    "createdAt": "2020-08-12T13:20:41.977Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs04hxz003357p3kojtiqni",
+          "path": "period.end",
+          "sliceName": null,
+          "definitionId": "dateTime",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fd0199g0pjcuqy6jwf",
+              "mergingScript": null,
+              "attributeId": "ckbs04hxz003357p3kojtiqni",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.977Z",
+              "inputs": [
+                {
+                  "id": "ckbs04i0r003457p3r764ct8n",
+                  "script": "clean_dateTime",
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckbs04i0r003557p3cws7yjlr",
+                  "inputGroupId": "ckdrej1fd0199g0pjcuqy6jwf",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.977Z",
+                  "sqlValue": {
+                    "id": "ckbs04i0r003557p3cws7yjlr",
+                    "table": "admissions",
+                    "column": "dischtime",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:41.980Z",
+                    "createdAt": "2020-08-12T13:20:41.977Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs06jqa003657p3t7qpn41s",
+          "path": "classHistory[0].class.code",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fd0200g0pjbqny7x1x",
+              "mergingScript": null,
+              "attributeId": "ckbs06jqa003657p3t7qpn41s",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.977Z",
+              "inputs": [
+                {
+                  "id": "ckbs06jzp003957p3zcjs97s7",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "EMER",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1fd0200g0pjbqny7x1x",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.977Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs06jt1003757p34836txmy",
+          "path": "classHistory[0].class",
+          "sliceName": null,
+          "definitionId": "Coding",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kf0061gu9koouj8k3k",
-          "path": "length.unit",
+          "id": "ckbs06qav004057p3xcig90yp",
+          "path": "classHistory[0].class.version",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kf0062gu9kc4tupdar",
+              "id": "ckdrej1fd0201g0pjp0o5snap",
               "mergingScript": null,
-              "attributeId": "ckdyl65kf0061gu9koouj8k3k",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
+              "attributeId": "ckbs06qav004057p3xcig90yp",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.977Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kf0063gu9kwilr4d0k",
+                  "id": "ckbs06qd3004157p3cr9rhf50",
                   "script": null,
                   "conceptMapId": null,
-                  "staticValue": "fractional days",
+                  "staticValue": "2014-03-26",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0062gu9kc4tupdar",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
+                  "inputGroupId": "ckdrej1fd0201g0pjp0o5snap",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.977Z",
                   "sqlValue": null
                 }
               ],
@@ -530,32 +555,40 @@
           ]
         },
         {
-          "id": "ckdyl65kf0064gu9k39dpe3r7",
-          "path": "hospitalization.preAdmissionIdentifier.system",
+          "id": "ckbs078mj004457p3hs3v76q5",
+          "path": "classHistory[0].period.start",
           "sliceName": null,
-          "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "definitionId": "dateTime",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kf0065gu9kgynf8bh0",
+              "id": "ckdrej1fd0202g0pjr2561g61",
               "mergingScript": null,
-              "attributeId": "ckdyl65kf0064gu9k39dpe3r7",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
+              "attributeId": "ckbs078mj004457p3hs3v76q5",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.977Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kf0066gu9ktovo1u2j",
-                  "script": null,
+                  "id": "ckbs078ss004657p3esmfrzml",
+                  "script": "clean_dateTime",
                   "conceptMapId": null,
-                  "staticValue": "http://terminology.arkhn.org/ck8oo01zm26944kp4ta60mfea/ckbjjts9k008758pwuo4uupux",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0065gu9kgynf8bh0",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": null
+                  "staticValue": null,
+                  "sqlValueId": "ckbs078ss004757p332g7kshl",
+                  "inputGroupId": "ckdrej1fd0202g0pjr2561g61",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.977Z",
+                  "sqlValue": {
+                    "id": "ckbs078ss004757p332g7kshl",
+                    "table": "admissions",
+                    "column": "edregtime",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:41.980Z",
+                    "createdAt": "2020-08-12T13:20:41.977Z",
+                    "joins": []
+                  }
                 }
               ],
               "conditions": []
@@ -563,176 +596,146 @@
           ]
         },
         {
-          "id": "ckdyl65kf0067gu9knr0c4tg0",
-          "path": "hospitalization.preAdmissionIdentifier",
+          "id": "ckbs07kq3004857p3sngqompq",
+          "path": "classHistory[0].period.end",
           "sliceName": null,
-          "definitionId": "Identifier",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "definitionId": "dateTime",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fd0203g0pjyfqf57kj",
+              "mergingScript": null,
+              "attributeId": "ckbs07kq3004857p3sngqompq",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.977Z",
+              "inputs": [
+                {
+                  "id": "ckbs07ksy004957p3l5ymuwnc",
+                  "script": "clean_dateTime",
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckbs07ksz005057p3x0s40efv",
+                  "inputGroupId": "ckdrej1fd0203g0pjyfqf57kj",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.977Z",
+                  "sqlValue": {
+                    "id": "ckbs07ksz005057p3x0s40efv",
+                    "table": "admissions",
+                    "column": "edouttime",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:41.980Z",
+                    "createdAt": "2020-08-12T13:20:41.977Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs0bvkn005157p38c59qtm5",
+          "path": "hospitalization.admitSource.coding[0].code",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.977Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1fe0204g0pjccj8zvub",
+              "mergingScript": null,
+              "attributeId": "ckbs0bvkn005157p38c59qtm5",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.978Z",
+              "inputs": [
+                {
+                  "id": "ckbs0cz9u006057p3xpehxg4s",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckbs0cz9u006157p3ld653lu0",
+                  "inputGroupId": "ckdrej1fe0204g0pjccj8zvub",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.978Z",
+                  "sqlValue": {
+                    "id": "ckbs0cz9u006157p3ld653lu0",
+                    "table": "admissions",
+                    "column": "admission_type",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:41.980Z",
+                    "createdAt": "2020-08-12T13:20:41.978Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckbs0bvmy005257p3ueu4qoc8",
+          "path": "hospitalization.admitSource.coding[0]",
+          "sliceName": null,
+          "definitionId": "Coding",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kf0068gu9kcfl6l545",
+          "id": "ckbs0bvu5005457p3ldrm8qfx",
           "path": "hospitalization",
           "sliceName": null,
           "definitionId": "BackboneElement",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kf0069gu9knhx37zbn",
-          "path": "hospitalization.preAdmissionIdentifier.value",
+          "id": "ckbs06jwr003857p3a4ubfpox",
+          "path": "classHistory[0]",
           "sliceName": null,
-          "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "definitionId": "BackboneElement",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckbs06wzj004257p3ps31x7jb",
+          "path": "classHistory[0].class.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kf0070gu9kcgl5bht7",
+              "id": "ckdrej1fe0205g0pj50o1dsze",
               "mergingScript": null,
-              "attributeId": "ckdyl65kf0069gu9knhx37zbn",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
+              "attributeId": "ckbs06wzj004257p3ps31x7jb",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.978Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kf0071gu9kjigbb8mq",
+                  "id": "ckbs06x1k004357p38y2s3ahe",
                   "script": null,
                   "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65kf0072gu9kj7lizsjk",
-                  "inputGroupId": "ckdyl65kf0070gu9kcgl5bht7",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": {
-                    "id": "ckdyl65kf0072gu9kj7lizsjk",
-                    "table": "transfers",
-                    "column": "hadm_id",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.359Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0073gu9ksyupxxgi",
-          "path": "subject.identifier.period.start",
-          "sliceName": null,
-          "definitionId": "dateTime",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0074gu9kn8jf0duc",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0073gu9ksyupxxgi",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0075gu9k9pboigx9",
-                  "script": "clean_dateTime",
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65kf0076gu9klrhaw31p",
-                  "inputGroupId": "ckdyl65kf0074gu9kn8jf0duc",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": {
-                    "id": "ckdyl65kf0076gu9klrhaw31p",
-                    "table": "transfers",
-                    "column": "intime",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.359Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0077gu9kugfezmxu",
-          "path": "subject.identifier.period.end",
-          "sliceName": null,
-          "definitionId": "dateTime",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0078gu9kiry7wy19",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0077gu9kugfezmxu",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0079gu9kq3svavd3",
-                  "script": "clean_dateTime",
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65kf0080gu9kxuqmwmd1",
-                  "inputGroupId": "ckdyl65kf0078gu9kiry7wy19",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": {
-                    "id": "ckdyl65kf0080gu9kxuqmwmd1",
-                    "table": "transfers",
-                    "column": "outtime",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.359Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0081gu9kmq702oo7",
-          "path": "hospitalization.specialCourtesy[0].coding[0].code",
-          "sliceName": null,
-          "definitionId": "code",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0082gu9k7prtzv5r",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0081gu9kmq702oo7",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0083gu9k4x0eoumv",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "UNK",
+                  "staticValue": "http://terminology.hl7.org/ValueSet/v3-ActEncounterCode",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0082gu9k7prtzv5r",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
+                  "inputGroupId": "ckdrej1fe0205g0pj50o1dsze",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.978Z",
                   "sqlValue": null
                 }
               ],
@@ -741,42 +744,53 @@
           ]
         },
         {
-          "id": "ckdyl65kf0084gu9kd9bcf05r",
-          "path": "hospitalization.specialCourtesy[0].coding[0]",
+          "id": "ckbs078ph004557p3zdcfovhs",
+          "path": "classHistory[0].period",
           "sliceName": null,
-          "definitionId": "Coding",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "definitionId": "Period",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kf0085gu9k39375b6d",
-          "path": "hospitalization.specialCourtesy[0].coding[0].version",
+          "id": "ckbs0bvql005357p3fqapin8f",
+          "path": "hospitalization.admitSource",
+          "sliceName": null,
+          "definitionId": "CodeableConcept",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckbs0c2f5005657p3qfl9benn",
+          "path": "hospitalization.admitSource.coding[0].version",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kf0086gu9kayd59dgj",
+              "id": "ckdrej1fe0206g0pjyiqr1qzb",
               "mergingScript": null,
-              "attributeId": "ckdyl65kf0085gu9k39375b6d",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
+              "attributeId": "ckbs0c2f5005657p3qfl9benn",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.978Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kf0087gu9koh6seajc",
+                  "id": "ckbs0c2h6005757p38qplmxjx",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "4.0.1",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0086gu9kayd59dgj",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
+                  "inputGroupId": "ckdrej1fe0206g0pjyiqr1qzb",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.978Z",
                   "sqlValue": null
                 }
               ],
@@ -785,399 +799,31 @@
           ]
         },
         {
-          "id": "ckdyl65kf0088gu9kgkr4bd03",
-          "path": "hospitalization.specialCourtesy[0].coding[0].system",
+          "id": "ckbs0c9tv005857p3kylnrzfe",
+          "path": "hospitalization.admitSource.coding[0].system",
           "sliceName": null,
           "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
+          "resourceId": "ckbrs9eis000057p3w7lpvyr4",
+          "updatedAt": "2020-08-12T13:20:41.980Z",
+          "createdAt": "2020-08-12T13:20:41.978Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kf0089gu9k7vseyzp5",
+              "id": "ckdrej1fe0207g0pjnp9ytm6z",
               "mergingScript": null,
-              "attributeId": "ckdyl65kf0088gu9kgkr4bd03",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
+              "attributeId": "ckbs0c9tv005857p3kylnrzfe",
+              "updatedAt": "2020-08-12T13:20:41.980Z",
+              "createdAt": "2020-08-12T13:20:41.978Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kf0090gu9klbbd55e4",
+                  "id": "ckbs0c9vt005957p3adf2v2nd",
                   "script": null,
                   "conceptMapId": null,
-                  "staticValue": "http://hl7.org/fhir/ValueSet/encounter-special-courtesy",
+                  "staticValue": "http://hl7.org/fhir/ValueSet/encounter-admit-source",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0089gu9k7vseyzp5",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0091gu9k7bwu6mex",
-          "path": "subject.identifier.period",
-          "sliceName": null,
-          "definitionId": "Period",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0092gu9kicrflkn3",
-          "path": "hospitalization.specialCourtesy[0]",
-          "sliceName": null,
-          "definitionId": "CodeableConcept",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0093gu9krlt1n76o",
-          "path": "hospitalization.admitSource.coding[0].code",
-          "sliceName": null,
-          "definitionId": "code",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0094gu9ki0cr7bdf",
-          "path": "hospitalization.admitSource.coding[0]",
-          "sliceName": null,
-          "definitionId": "Coding",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0095gu9kq75oxk63",
-          "path": "location[1].location.type",
-          "sliceName": null,
-          "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0096gu9kvg9ela9d",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0095gu9kq75oxk63",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0097gu9k7rjqhyuc",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "Location",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0096gu9kvg9ela9d",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0098gu9kzctoh3lv",
-          "path": "location[0].status",
-          "sliceName": null,
-          "definitionId": "code",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0099gu9kzz7j68lb",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0098gu9kzctoh3lv",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0100gu9kohgzlu49",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "completed",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0099gu9kzz7j68lb",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0101gu9k951tyks5",
-          "path": "location[1].status",
-          "sliceName": null,
-          "definitionId": "code",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0102gu9k99ff1lgf",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0101gu9k951tyks5",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0103gu9kvq1i7xku",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "active",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0102gu9k99ff1lgf",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0104gu9ky2dlq47t",
-          "path": "hospitalization.admitSource",
-          "sliceName": null,
-          "definitionId": "CodeableConcept",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0105gu9kbv0uqqiu",
-          "path": "location[0].location.type",
-          "sliceName": null,
-          "definitionId": "uri",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0106gu9k80mnr13r",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0105gu9kbv0uqqiu",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0107gu9knj7icg5z",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "Location",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kf0106gu9k80mnr13r",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": null
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0108gu9k3n3uxc3z",
-          "path": "location[0].location",
-          "sliceName": null,
-          "definitionId": "Reference",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0109gu9k2rhsb4pz",
-          "path": "location[0]",
-          "sliceName": null,
-          "definitionId": "BackboneElement",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0110gu9k4ahm1o8t",
-          "path": "location[1].location",
-          "sliceName": null,
-          "definitionId": "Reference",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0111gu9kdtx4kjyj",
-          "path": "location[1]",
-          "sliceName": null,
-          "definitionId": "BackboneElement",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0112gu9k8mxt9ev8",
-          "path": "location[0].location.identifier.value",
-          "sliceName": null,
-          "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0113gu9k7hsv3d4k",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0112gu9k8mxt9ev8",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0114gu9kx6k81shc",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65kf0115gu9k0fpunyf3",
-                  "inputGroupId": "ckdyl65kf0113gu9k7hsv3d4k",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": {
-                    "id": "ckdyl65kf0115gu9k0fpunyf3",
-                    "table": "transfers",
-                    "column": "prev_careunit",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.359Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0116gu9kjszq2bur",
-          "path": "location[0].location.identifier",
-          "sliceName": null,
-          "definitionId": "Identifier",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0117gu9kv8wgxzn7",
-          "path": "location[1].location.identifier.value",
-          "sliceName": null,
-          "definitionId": "string",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kf0118gu9k26an239a",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0117gu9kv8wgxzn7",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.359Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kf0119gu9knfm9ujhb",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65kf0120gu9k73vic7l6",
-                  "inputGroupId": "ckdyl65kf0118gu9k26an239a",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.359Z",
-                  "sqlValue": {
-                    "id": "ckdyl65kf0120gu9k73vic7l6",
-                    "table": "transfers",
-                    "column": "curr_careunit",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.361Z",
-                    "createdAt": "2020-08-17T14:01:01.359Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": []
-            }
-          ]
-        },
-        {
-          "id": "ckdyl65kf0121gu9kcfaom3l4",
-          "path": "location[1].location.identifier",
-          "sliceName": null,
-          "definitionId": "Identifier",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": []
-        },
-        {
-          "id": "ckdyl65kf0122gu9kbb6388ty",
-          "path": "status",
-          "sliceName": null,
-          "definitionId": "code",
-          "resourceId": "ckdyl65kd0016gu9kfrfvghr9",
-          "updatedAt": "2020-08-17T14:01:01.361Z",
-          "createdAt": "2020-08-17T14:01:01.359Z",
-          "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65kg0123gu9kfhg6uucc",
-              "mergingScript": null,
-              "attributeId": "ckdyl65kf0122gu9kbb6388ty",
-              "updatedAt": "2020-08-17T14:01:01.361Z",
-              "createdAt": "2020-08-17T14:01:01.360Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65kg0124gu9kqj689r5u",
-                  "script": null,
-                  "conceptMapId": null,
-                  "staticValue": "unknown",
-                  "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kg0123gu9kfhg6uucc",
-                  "updatedAt": "2020-08-17T14:01:01.361Z",
-                  "createdAt": "2020-08-17T14:01:01.360Z",
+                  "inputGroupId": "ckdrej1fe0207g0pjnp9ytm6z",
+                  "updatedAt": "2020-08-12T13:20:41.980Z",
+                  "createdAt": "2020-08-12T13:20:41.978Z",
                   "sqlValue": null
                 }
               ],
@@ -1253,116 +899,149 @@
       }
     },
     {
-      "id": "ckdyl65kh0125gu9kpvjbja6j",
-      "logicalReference": "",
+      "id": "ck8oo3on226974kp4ns32n7xs",
+      "logicalReference": "7c569359-af75-4eee-a552-b58405cfcda3",
       "label": "",
       "primaryKeyTable": "patients",
       "primaryKeyColumn": "row_id",
       "definitionId": "Patient",
-      "sourceId": "ckdyl65ip0010gu9k22w8kvc1",
-      "updatedAt": "2020-08-17T14:01:01.366Z",
-      "createdAt": "2020-08-17T14:01:01.361Z",
+      "sourceId": "ckdrej0yf0006g0pj1cih3e9d",
+      "updatedAt": "2020-08-12T13:21:04.359Z",
+      "createdAt": "2020-08-12T13:20:42.009Z",
       "source": {
-        "id": "ckdyl65ip0010gu9k22w8kvc1",
+        "id": "ckdrej0yf0006g0pj1cih3e9d",
         "name": "logilan",
         "version": null,
-        "templateId": "ckdyl65ia0001gu9kk3jf82e6",
-        "updatedAt": "2020-08-17T14:01:01.297Z",
-        "createdAt": "2020-08-17T14:01:01.297Z"
+        "templateId": "ckc1q6qm4000459mpjidvhrrp",
+        "updatedAt": "2020-08-12T13:20:41.368Z",
+        "createdAt": "2020-08-12T13:20:41.367Z"
       },
       "filters": [],
       "attributes": [
         {
-          "id": "ckdyl65kh0126gu9ka6svbibh",
+          "id": "ck8pwwhv928524kp4uil5g6t0",
           "path": "birthDate",
           "sliceName": null,
           "definitionId": "date",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.361Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.010Z",
+          "comments": [
+            {
+              "id": "ckdrej1ga0330g0pjnsv0ds9b",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8pwwhv928524kp4uil5g6t0",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-04-27T15:41:19.243Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kh0127gu9kqdxatrkr",
+              "id": "ckdrej1gb0331g0pj3dg0bjup",
               "mergingScript": null,
-              "attributeId": "ckdyl65kh0126gu9ka6svbibh",
-              "updatedAt": "2020-08-17T14:01:01.366Z",
-              "createdAt": "2020-08-17T14:01:01.361Z",
+              "attributeId": "ck8pwwhv928524kp4uil5g6t0",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.011Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kh0128gu9k4ooybxa7",
+                  "id": "ck8pwwk3o28534kp4iqcuca8j",
                   "script": "clean_date",
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65kh0129gu9kdqxrzzr3",
-                  "inputGroupId": "ckdyl65kh0127gu9kqdxatrkr",
-                  "updatedAt": "2020-08-17T14:01:01.366Z",
-                  "createdAt": "2020-08-17T14:01:01.361Z",
+                  "sqlValueId": "ck8pwwk3o28544kp4p9151ez8",
+                  "inputGroupId": "ckdrej1gb0331g0pj3dg0bjup",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.011Z",
                   "sqlValue": {
-                    "id": "ckdyl65kh0129gu9kdqxrzzr3",
+                    "id": "ck8pwwk3o28544kp4p9151ez8",
                     "table": "patients",
                     "column": "dob",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.366Z",
-                    "createdAt": "2020-08-17T14:01:01.361Z",
+                    "updatedAt": "2020-08-12T13:20:42.022Z",
+                    "createdAt": "2020-08-12T13:20:42.011Z",
                     "joins": []
                   }
                 }
               ],
-              "conditions": [
-                {
-                  "id": "ckdyl6i2f0114gz9k66jmib2j",
-                  "action": "INCLUDE",
-                  "columnId": "ckdyl6i2f0115gz9k4z7aecfc",
-                  "relation": "GE",
-                  "value": "1000-01-01",
-                  "inputGroupId": "ckdyl65kh0127gu9kqdxatrkr",
-                  "sqlValue": {
-                    "id": "ckdyl6i2f0115gz9k4z7aecfc",
-                    "table": "patients",
-                    "column": "dob",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:17.559Z",
-                    "createdAt": "2020-08-17T14:01:17.559Z"
-                  }
-                }
-              ]
+              "conditions": []
             }
           ]
         },
         {
-          "id": "ckdyl65kh0130gu9kmkk8c0p0",
+          "id": "ck8px2nul28584kp41vbctv7i",
           "path": "deceasedBoolean",
           "sliceName": null,
           "definitionId": "boolean",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.361Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.011Z",
+          "comments": [
+            {
+              "id": "ckdrej1gb0332g0pjmc4ie0v0",
+              "content": "This cleaning script takes (O, N) as entry and outputs (True, False), look at scripts binary_to_bool1 or 2 instead :)",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8px2nul28584kp41vbctv7i",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-04-27T15:43:20.497Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            },
+            {
+              "id": "ckdrej1gb0333g0pjvb4x1gqd",
+              "content": "Script modified",
+              "validation": false,
+              "authorId": "ck8omfenu26924kp4008qs7y3",
+              "attributeId": "ck8px2nul28584kp41vbctv7i",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-04-28T12:47:09.655Z",
+              "author": {
+                "email": "ilan@arkhn.com"
+              }
+            },
+            {
+              "id": "ckdrej1gb0334g0pj4op8vxjp",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8px2nul28584kp41vbctv7i",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-04-28T14:19:41.133Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kh0131gu9ktf0n3454",
+              "id": "ckdrej1gb0335g0pja470bkgm",
               "mergingScript": null,
-              "attributeId": "ckdyl65kh0130gu9kmkk8c0p0",
-              "updatedAt": "2020-08-17T14:01:01.366Z",
-              "createdAt": "2020-08-17T14:01:01.361Z",
+              "attributeId": "ck8px2nul28584kp41vbctv7i",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.011Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kh0132gu9kbih91upu",
+                  "id": "ck8px2nxz28594kp4f8fki75e",
                   "script": "binary_to_bool_1",
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65kh0133gu9kp4umizkr",
-                  "inputGroupId": "ckdyl65kh0131gu9ktf0n3454",
-                  "updatedAt": "2020-08-17T14:01:01.366Z",
-                  "createdAt": "2020-08-17T14:01:01.361Z",
+                  "sqlValueId": "ck8px2nxz28604kp4if4j8yj5",
+                  "inputGroupId": "ckdrej1gb0335g0pja470bkgm",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.011Z",
                   "sqlValue": {
-                    "id": "ckdyl65kh0133gu9kp4umizkr",
+                    "id": "ck8px2nxz28604kp4if4j8yj5",
                     "table": "patients",
                     "column": "expire_flag",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.366Z",
-                    "createdAt": "2020-08-17T14:01:01.361Z",
+                    "updatedAt": "2020-08-12T13:20:42.022Z",
+                    "createdAt": "2020-08-12T13:20:42.011Z",
                     "joins": []
                   }
                 }
@@ -1372,71 +1051,84 @@
           ]
         },
         {
-          "id": "ckdyl65kh0134gu9kkyyxl0p6",
+          "id": "ck8px80gj28624kp4z8opjmnw",
           "path": "maritalStatus.coding[0]",
           "sliceName": null,
           "definitionId": "Coding",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.361Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.011Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kh0135gu9kl9zbygli",
+          "id": "ck8pxbu5a28664kp4e7sdtqgz",
           "path": "maritalStatus.text",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.361Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.011Z",
+          "comments": [
+            {
+              "id": "ckdrej1gb0336g0pjwxaafryn",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8pxbu5a28664kp4e7sdtqgz",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-04-27T15:47:36.840Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65ki0136gu9knbiso6wf",
+              "id": "ckdrej1gb0337g0pj8kcn7pq1",
               "mergingScript": null,
-              "attributeId": "ckdyl65kh0135gu9kl9zbygli",
-              "updatedAt": "2020-08-17T14:01:01.366Z",
-              "createdAt": "2020-08-17T14:01:01.362Z",
+              "attributeId": "ck8pxbu5a28664kp4e7sdtqgz",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.011Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ki0137gu9kjfjdbf23",
+                  "id": "ck8pzr7ts28944kp40h2k411i",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65ki0138gu9kb1g4xfat",
-                  "inputGroupId": "ckdyl65ki0136gu9knbiso6wf",
-                  "updatedAt": "2020-08-17T14:01:01.366Z",
-                  "createdAt": "2020-08-17T14:01:01.362Z",
+                  "sqlValueId": "ck8pzr7ts28954kp4je177tlq",
+                  "inputGroupId": "ckdrej1gb0337g0pj8kcn7pq1",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.011Z",
                   "sqlValue": {
-                    "id": "ckdyl65ki0138gu9kb1g4xfat",
+                    "id": "ck8pzr7ts28954kp4je177tlq",
                     "table": "admissions",
                     "column": "marital_status",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.366Z",
-                    "createdAt": "2020-08-17T14:01:01.362Z",
+                    "updatedAt": "2020-08-12T13:20:42.022Z",
+                    "createdAt": "2020-08-12T13:20:42.011Z",
                     "joins": [
                       {
-                        "id": "ckdyl65ki0139gu9km494twhn",
-                        "columnId": "ckdyl65ki0138gu9kb1g4xfat",
-                        "updatedAt": "2020-08-17T14:01:01.366Z",
-                        "createdAt": "2020-08-17T14:01:01.362Z",
+                        "id": "ck8pzr99v28964kp4x74x3xnx",
+                        "columnId": "ck8pzr7ts28954kp4je177tlq",
+                        "updatedAt": "2020-08-12T13:20:42.022Z",
+                        "createdAt": "2020-08-12T13:20:42.011Z",
                         "tables": [
                           {
-                            "id": "ckdyl65ki0140gu9kno8jumsr",
+                            "id": "ck8pzr99w28984kp49p7canfq",
                             "table": "patients",
                             "column": "subject_id",
-                            "joinId": "ckdyl65ki0139gu9km494twhn",
-                            "updatedAt": "2020-08-17T14:01:01.366Z",
-                            "createdAt": "2020-08-17T14:01:01.362Z"
+                            "joinId": "ck8pzr99v28964kp4x74x3xnx",
+                            "updatedAt": "2020-08-12T13:20:42.022Z",
+                            "createdAt": "2020-08-12T13:20:42.012Z"
                           },
                           {
-                            "id": "ckdyl65ki0141gu9klt9e790b",
+                            "id": "ck8pzr99w28974kp4wipvncdt",
                             "table": "admissions",
                             "column": "subject_id",
-                            "joinId": "ckdyl65ki0139gu9km494twhn",
-                            "updatedAt": "2020-08-17T14:01:01.366Z",
-                            "createdAt": "2020-08-17T14:01:01.362Z"
+                            "joinId": "ck8pzr99v28964kp4x74x3xnx",
+                            "updatedAt": "2020-08-12T13:20:42.022Z",
+                            "createdAt": "2020-08-12T13:20:42.012Z"
                           }
                         ]
                       }
@@ -1449,71 +1141,257 @@
           ]
         },
         {
-          "id": "ckdyl65ki0142gu9kwhxhohfm",
+          "id": "ck8pxif3q28684kp4mc2nqd90",
           "path": "identifier[0].period",
           "sliceName": null,
           "definitionId": "Period",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0159gu9k5crn7gb8",
-          "path": "identifier[0].period.start",
+          "id": "ckao5wrg202744vqmlw30lj2a",
+          "path": "link[6].type",
           "sliceName": null,
-          "definitionId": "dateTime",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65ki0160gu9k7uknj1rm",
+              "id": "ckdrej1gc0338g0pjd7birrxd",
               "mergingScript": null,
-              "attributeId": "ckdyl65ki0159gu9k5crn7gb8",
-              "updatedAt": "2020-08-17T14:01:01.366Z",
-              "createdAt": "2020-08-17T14:01:01.362Z",
+              "attributeId": "ckao5wrg202744vqmlw30lj2a",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.012Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ki0161gu9kz5ppa445",
+                  "id": "ckao5wrnc02764vqm51uefhc0",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "refer",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gc0338g0pjd7birrxd",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.012Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5x2xo02774vqmdirqw7x8",
+          "path": "link[6].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gc0339g0pjorl56tgq",
+              "mergingScript": null,
+              "attributeId": "ckao5x2xo02774vqmdirqw7x8",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.012Z",
+              "inputs": [
+                {
+                  "id": "ckao5x36e02794vqmu6q0xr9t",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "MedicationRequest",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gc0339g0pjorl56tgq",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.012Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5x31d02784vqmb2joauue",
+          "path": "link[6].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5xdjj02814vqm26mnasip",
+          "path": "link[6].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5xjq602834vqm0qwmxzgb",
+          "path": "link[6].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [
+            {
+              "id": "ckdrej1gc0340g0pj6f2k0zer",
+              "content": "Validé ou non? idem pour tous les autres",
+              "validation": false,
+              "authorId": "ck8omfenu26924kp4008qs7y3",
+              "attributeId": "ckao5xjq602834vqm0qwmxzgb",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-05-26T16:57:51.397Z",
+              "author": {
+                "email": "ilan@arkhn.com"
+              }
+            }
+          ],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gc0341g0pj4hy2j875",
+              "mergingScript": null,
+              "attributeId": "ckao5xjq602834vqm0qwmxzgb",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.012Z",
+              "inputs": [
+                {
+                  "id": "ckao5xjuf02844vqm6v3b0sof",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5xjuf02854vqmxa8kx5wl",
+                  "inputGroupId": "ckdrej1gc0341g0pj4hy2j875",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.012Z",
+                  "sqlValue": {
+                    "id": "ckao5xjuf02854vqmxa8kx5wl",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.022Z",
+                    "createdAt": "2020-08-12T13:20:42.012Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5wrjl02754vqmko4byhmm",
+          "path": "link[6]",
+          "sliceName": null,
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5xdgq02804vqmt6cc6typ",
+          "path": "link[6].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gc0342g0pji56rihum",
+              "mergingScript": null,
+              "attributeId": "ckao5xdgq02804vqmt6cc6typ",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.012Z",
+              "inputs": [
+                {
+                  "id": "ckao5xdnt02824vqmmodibdz1",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/d02cbcaa-a507-4bb4-9b9c-35ec5f87adb1",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gc0342g0pji56rihum",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.012Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ck8pxvikj28724kp43qzv0m4x",
+          "path": "identifier[0].period.start",
+          "sliceName": null,
+          "definitionId": "dateTime",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.022Z",
+          "createdAt": "2020-08-12T13:20:42.012Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gc0343g0pj7wb80lol",
+              "mergingScript": null,
+              "attributeId": "ck8pxvikj28724kp43qzv0m4x",
+              "updatedAt": "2020-08-12T13:20:42.022Z",
+              "createdAt": "2020-08-12T13:20:42.012Z",
+              "inputs": [
+                {
+                  "id": "ck8pxvioo28734kp4j3i2zc4x",
                   "script": "clean_date",
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65ki0162gu9kd4duet1w",
-                  "inputGroupId": "ckdyl65ki0160gu9k7uknj1rm",
-                  "updatedAt": "2020-08-17T14:01:01.366Z",
-                  "createdAt": "2020-08-17T14:01:01.362Z",
+                  "sqlValueId": "ck8pxvioo28744kp4jxxyo62h",
+                  "inputGroupId": "ckdrej1gc0343g0pj7wb80lol",
+                  "updatedAt": "2020-08-12T13:20:42.022Z",
+                  "createdAt": "2020-08-12T13:20:42.012Z",
                   "sqlValue": {
-                    "id": "ckdyl65ki0162gu9kd4duet1w",
+                    "id": "ck8pxvioo28744kp4jxxyo62h",
                     "table": "admissions",
                     "column": "admittime",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.366Z",
-                    "createdAt": "2020-08-17T14:01:01.362Z",
+                    "updatedAt": "2020-08-12T13:20:42.022Z",
+                    "createdAt": "2020-08-12T13:20:42.013Z",
                     "joins": [
                       {
-                        "id": "ckdyl65ki0163gu9kxozsk9f5",
-                        "columnId": "ckdyl65ki0162gu9kd4duet1w",
-                        "updatedAt": "2020-08-17T14:01:01.366Z",
-                        "createdAt": "2020-08-17T14:01:01.362Z",
+                        "id": "ck8pxw3sb28754kp458bgg2j4",
+                        "columnId": "ck8pxvioo28744kp4jxxyo62h",
+                        "updatedAt": "2020-08-12T13:20:42.022Z",
+                        "createdAt": "2020-08-12T13:20:42.013Z",
                         "tables": [
                           {
-                            "id": "ckdyl65ki0164gu9kwv9nzan4",
+                            "id": "ck8pxw3sb28764kp4hgx2sgx3",
                             "table": "patients",
                             "column": "subject_id",
-                            "joinId": "ckdyl65ki0163gu9kxozsk9f5",
-                            "updatedAt": "2020-08-17T14:01:01.366Z",
-                            "createdAt": "2020-08-17T14:01:01.362Z"
+                            "joinId": "ck8pxw3sb28754kp458bgg2j4",
+                            "updatedAt": "2020-08-12T13:20:42.022Z",
+                            "createdAt": "2020-08-12T13:20:42.013Z"
                           },
                           {
-                            "id": "ckdyl65ki0165gu9kq6n7amie",
+                            "id": "ck8pxw3sb28774kp4ffl9r1o8",
                             "table": "admissions",
                             "column": "subject_id",
-                            "joinId": "ckdyl65ki0163gu9kxozsk9f5",
-                            "updatedAt": "2020-08-17T14:01:01.366Z",
-                            "createdAt": "2020-08-17T14:01:01.362Z"
+                            "joinId": "ck8pxw3sb28754kp458bgg2j4",
+                            "updatedAt": "2020-08-12T13:20:42.022Z",
+                            "createdAt": "2020-08-12T13:20:42.013Z"
                           }
                         ]
                       }
@@ -1526,86 +1404,112 @@
           ]
         },
         {
-          "id": "ckdyl65ki0166gu9kc38lftnl",
+          "id": "ck8q07a4v29004kp4as66y94h",
           "path": "generalPractitioner[0].identifier",
           "sliceName": null,
           "definitionId": "Identifier",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0167gu9k6vnf9zi8",
+          "id": "ck8q07aa129014kp40nzjxatj",
           "path": "generalPractitioner[0]",
           "sliceName": null,
           "definitionId": "Reference",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0168gu9k7wspteq8",
+          "id": "ck8q2ficq29044kp4u7972ahn",
           "path": "communication[0].language.text",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
+          "comments": [
+            {
+              "id": "ckdrej1gd0344g0pjd8t9rnz3",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8q2ficq29044kp4u7972ahn",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:55:58.427Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0169gu9k64usikyw",
+          "id": "ck8q2fiih29054kp4o82k14tf",
           "path": "communication[0].language",
           "sliceName": null,
           "definitionId": "CodeableConcept",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0170gu9ksbmld4cq",
+          "id": "ck8q2fiu229064kp4at6wag0a",
           "path": "communication[0]",
           "sliceName": null,
           "definitionId": "BackboneElement",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0171gu9ki5id0xeo",
+          "id": "ck8r37c8c29094kp41otz80xa",
           "path": "communication[0].language.coding[0].version",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
+          "comments": [
+            {
+              "id": "ckdrej1gd0345g0pj443p55bx",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8r37c8c29094kp41otz80xa",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:55:49.801Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65ki0172gu9k8c38147a",
+              "id": "ckdrej1gd0346g0pjdf18uqjn",
               "mergingScript": null,
-              "attributeId": "ckdyl65ki0171gu9ki5id0xeo",
-              "updatedAt": "2020-08-17T14:01:01.366Z",
-              "createdAt": "2020-08-17T14:01:01.362Z",
+              "attributeId": "ck8r37c8c29094kp41otz80xa",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.013Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ki0173gu9kpac1r0k9",
+                  "id": "ck9a14ew703684vpmdwuyf06g",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "\t4.0.1",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ki0172gu9k8c38147a",
-                  "updatedAt": "2020-08-17T14:01:01.366Z",
-                  "createdAt": "2020-08-17T14:01:01.362Z",
+                  "inputGroupId": "ckdrej1gd0346g0pjdf18uqjn",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.013Z",
                   "sqlValue": null
                 }
               ],
@@ -1614,42 +1518,55 @@
           ]
         },
         {
-          "id": "ckdyl65ki0174gu9k3idenodi",
+          "id": "ck8r37da129104kp4bzn53sn6",
           "path": "communication[0].language.coding[0]",
           "sliceName": null,
           "definitionId": "Coding",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65ki0175gu9k7boy2cmp",
+          "id": "ck8r3vuhv29174kp4ruxwyrkb",
           "path": "maritalStatus.coding[0].system",
           "sliceName": null,
           "definitionId": "uri",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.366Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
+          "comments": [
+            {
+              "id": "ckdrej1gd0347g0pjxblobs7q",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8r3vuhv29174kp4ruxwyrkb",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:48:11.585Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65ki0176gu9ka160z08m",
+              "id": "ckdrej1gd0348g0pjszxq1d8l",
               "mergingScript": null,
-              "attributeId": "ckdyl65ki0175gu9k7boy2cmp",
-              "updatedAt": "2020-08-17T14:01:01.366Z",
-              "createdAt": "2020-08-17T14:01:01.362Z",
+              "attributeId": "ck8r3vuhv29174kp4ruxwyrkb",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.013Z",
               "inputs": [
                 {
-                  "id": "ckdyl65ki0177gu9k867o5p1b",
+                  "id": "ck8r3vul229184kp4mwm2vcx3",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65ki0176gu9ka160z08m",
-                  "updatedAt": "2020-08-17T14:01:01.366Z",
-                  "createdAt": "2020-08-17T14:01:01.362Z",
+                  "inputGroupId": "ckdrej1gd0348g0pjszxq1d8l",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.013Z",
                   "sqlValue": null
                 }
               ],
@@ -1658,180 +1575,84 @@
           ]
         },
         {
-          "id": "ckdyl65ki0178gu9kuoxst904",
+          "id": "ckazbkv9v00004wnqmp64dz3h",
           "path": "active",
           "sliceName": null,
           "definitionId": "boolean",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.362Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
           "comments": [],
-          "inputGroups": [
-            {
-              "id": "ckdyl65ki0179gu9kuxeejnhv",
-              "mergingScript": null,
-              "attributeId": "ckdyl65ki0178gu9kuoxst904",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.362Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65ki0180gu9kw18c3gvv",
-                  "script": "binary_to_bool_2",
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65ki0181gu9k67d69xpq",
-                  "inputGroupId": "ckdyl65ki0179gu9kuxeejnhv",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.362Z",
-                  "sqlValue": {
-                    "id": "ckdyl65ki0181gu9k67d69xpq",
-                    "table": "patients",
-                    "column": "expire_flag",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.362Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": [
-                {
-                  "id": "ckdyl65ki0182gu9ko0t52yaf",
-                  "action": "INCLUDE",
-                  "columnId": "ckdyl65ki0183gu9ktqia3dvk",
-                  "relation": "EQ",
-                  "value": "1",
-                  "inputGroupId": "ckdyl65ki0179gu9kuxeejnhv",
-                  "sqlValue": {
-                    "id": "ckdyl65ki0183gu9ktqia3dvk",
-                    "table": "patients",
-                    "column": "expire_flag",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.362Z"
-                  }
-                }
-              ]
-            },
-            {
-              "id": "ckdyl65ki0184gu9k5w21kpyl",
-              "mergingScript": null,
-              "attributeId": "ckdyl65ki0178gu9kuoxst904",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.362Z",
-              "inputs": [
-                {
-                  "id": "ckdyl65ki0185gu9kzeztscb6",
-                  "script": "binary_to_bool_2",
-                  "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65ki0186gu9kqd8gyj0l",
-                  "inputGroupId": "ckdyl65ki0184gu9k5w21kpyl",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.362Z",
-                  "sqlValue": {
-                    "id": "ckdyl65ki0186gu9kqd8gyj0l",
-                    "table": "patients",
-                    "column": "expire_flag",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.362Z",
-                    "joins": []
-                  }
-                }
-              ],
-              "conditions": [
-                {
-                  "id": "ckdyl65ki0187gu9kraptuchn",
-                  "action": "INCLUDE",
-                  "columnId": "ckdyl65kj0188gu9k87u9vwv6",
-                  "relation": "EQ",
-                  "value": "0",
-                  "inputGroupId": "ckdyl65ki0184gu9k5w21kpyl",
-                  "sqlValue": {
-                    "id": "ckdyl65kj0188gu9k87u9vwv6",
-                    "table": "patients",
-                    "column": "expire_flag",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.363Z"
-                  }
-                },
-                {
-                  "id": "ckdyl65kj0189gu9kgdeq6j2o",
-                  "action": "EXCLUDE",
-                  "columnId": "ckdyl65kj0190gu9kwv4kj0mj",
-                  "relation": "EQ",
-                  "value": "555555",
-                  "inputGroupId": "ckdyl65ki0184gu9k5w21kpyl",
-                  "sqlValue": {
-                    "id": "ckdyl65kj0190gu9kwv4kj0mj",
-                    "table": "patients",
-                    "column": "row_id",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.363Z"
-                  }
-                }
-              ]
-            }
-          ]
+          "inputGroups": []
         },
         {
-          "id": "ckdyl65kj0191gu9k4wxwc7vt",
+          "id": "ck8r3xrb629194kp47ebwwast",
           "path": "maritalStatus.coding[0].code",
           "sliceName": null,
           "definitionId": "code",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.013Z",
+          "comments": [
+            {
+              "id": "ckdrej1gd0349g0pjhu0c6i5i",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8r3xrb629194kp47ebwwast",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:48:09.112Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0192gu9kqc7349sl",
+              "id": "ckdrej1gd0350g0pjdhn4j4jk",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0191gu9k4wxwc7vt",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8r3xrb629194kp47ebwwast",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.013Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0193gu9kdkqes6ej",
+                  "id": "ck8r3xrf129204kp4jhbxzu3g",
                   "script": "map_marital_status",
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65kj0194gu9k6ez7yirb",
-                  "inputGroupId": "ckdyl65kj0192gu9kqc7349sl",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "sqlValueId": "ck8r3xrf129214kp4swacrkf2",
+                  "inputGroupId": "ckdrej1gd0350g0pjdhn4j4jk",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.014Z",
                   "sqlValue": {
-                    "id": "ckdyl65kj0194gu9k6ez7yirb",
+                    "id": "ck8r3xrf129214kp4swacrkf2",
                     "table": "admissions",
                     "column": "marital_status",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.363Z",
+                    "updatedAt": "2020-08-12T13:20:42.023Z",
+                    "createdAt": "2020-08-12T13:20:42.014Z",
                     "joins": [
                       {
-                        "id": "ckdyl65kj0195gu9k43qei6xp",
-                        "columnId": "ckdyl65kj0194gu9k6ez7yirb",
-                        "updatedAt": "2020-08-17T14:01:01.367Z",
-                        "createdAt": "2020-08-17T14:01:01.363Z",
+                        "id": "ck8r3xtfi29224kp4pxja3iz5",
+                        "columnId": "ck8r3xrf129214kp4swacrkf2",
+                        "updatedAt": "2020-08-12T13:20:42.023Z",
+                        "createdAt": "2020-08-12T13:20:42.014Z",
                         "tables": [
                           {
-                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                            "id": "ck8r3xtfi29234kp4d4ffxztm",
                             "table": "patients",
                             "column": "subject_id",
-                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                            "updatedAt": "2020-08-17T14:01:01.367Z",
-                            "createdAt": "2020-08-17T14:01:01.363Z"
+                            "joinId": "ck8r3xtfi29224kp4pxja3iz5",
+                            "updatedAt": "2020-08-12T13:20:42.023Z",
+                            "createdAt": "2020-08-12T13:20:42.014Z"
                           },
                           {
-                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                            "id": "ck8r3xtfi29244kp4fdqkpquh",
                             "table": "admissions",
                             "column": "subject_id",
-                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                            "updatedAt": "2020-08-17T14:01:01.367Z",
-                            "createdAt": "2020-08-17T14:01:01.363Z"
+                            "joinId": "ck8r3xtfi29224kp4pxja3iz5",
+                            "updatedAt": "2020-08-12T13:20:42.023Z",
+                            "createdAt": "2020-08-12T13:20:42.014Z"
                           }
                         ]
                       }
@@ -1844,38 +1665,51 @@
           ]
         },
         {
-          "id": "ckdyl65kj0198gu9kwlqhg8qn",
+          "id": "ck8rcz0oe29414kp4b84sdq4d",
           "path": "identifier[0].value",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.014Z",
+          "comments": [
+            {
+              "id": "ckdrej1ge0351g0pjqv5d1yjl",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8rcz0oe29414kp4b84sdq4d",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-28T14:19:25.232Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0199gu9kwzvczmwc",
+              "id": "ckdrej1ge0352g0pjpuvhufg0",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0198gu9kwlqhg8qn",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8rcz0oe29414kp4b84sdq4d",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.014Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0200gu9ktzxzdgrx",
+                  "id": "ck8rczg6h29424kp4a3vfe3wa",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65kj0201gu9k991p2071",
-                  "inputGroupId": "ckdyl65kj0199gu9kwzvczmwc",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "sqlValueId": "ck8rczg6h29434kp48vkuzq9v",
+                  "inputGroupId": "ckdrej1ge0352g0pjpuvhufg0",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.014Z",
                   "sqlValue": {
-                    "id": "ckdyl65kj0201gu9k991p2071",
+                    "id": "ck8rczg6h29434kp48vkuzq9v",
                     "table": "patients",
                     "column": "subject_id",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.363Z",
+                    "updatedAt": "2020-08-12T13:20:42.023Z",
+                    "createdAt": "2020-08-12T13:20:42.014Z",
                     "joins": []
                   }
                 }
@@ -1885,42 +1719,55 @@
           ]
         },
         {
-          "id": "ckdyl65kj0202gu9kuvproxtq",
+          "id": "ck9u0rftv006057nqmix122xl",
           "path": "maritalStatus.coding[0].userSelected",
           "sliceName": null,
           "definitionId": "boolean",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.014Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kj0203gu9k592x4h1t",
+          "id": "ck8rdbd4n29444kp46c2j1hsk",
           "path": "identifier[0].type.coding[0].code",
           "sliceName": null,
           "definitionId": "code",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.014Z",
+          "comments": [
+            {
+              "id": "ckdrej1ge0353g0pjmvr67cm8",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8rdbd4n29444kp46c2j1hsk",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:41:07.318Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0204gu9k7bkjz02w",
+              "id": "ckdrej1ge0354g0pjvh9519zu",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0203gu9k592x4h1t",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8rdbd4n29444kp46c2j1hsk",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.014Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0205gu9k31y6y6ut",
+                  "id": "ck902f6wc03386opev8pngnd7",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "PPN",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kj0204gu9k7bkjz02w",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "inputGroupId": "ckdrej1ge0354g0pjvh9519zu",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.014Z",
                   "sqlValue": null
                 }
               ],
@@ -1929,42 +1776,55 @@
           ]
         },
         {
-          "id": "ckdyl65kj0206gu9kdz7jgi4t",
+          "id": "ck8rdbde329464kp4toecyz55",
           "path": "identifier[0].type",
           "sliceName": null,
           "definitionId": "CodeableConcept",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.014Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kj0207gu9kplr9zmjl",
+          "id": "ck8rddho629494kp4e6zee5tu",
           "path": "identifier[0].type.coding[0].system",
           "sliceName": null,
           "definitionId": "uri",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.014Z",
+          "comments": [
+            {
+              "id": "ckdrej1ge0355g0pjev5wxpvj",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8rddho629494kp4e6zee5tu",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:40:59.329Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0208gu9kot49ezne",
+              "id": "ckdrej1gf0356g0pjaq6dflv0",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0207gu9kplr9zmjl",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8rddho629494kp4e6zee5tu",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.015Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0209gu9kgl3m5z12",
+                  "id": "ck902g11y03396ope3q42f26j",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "http://terminology.interopsante.org/CodeSystem/v2-0203",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kj0208gu9kot49ezne",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "inputGroupId": "ckdrej1gf0356g0pjaq6dflv0",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.015Z",
                   "sqlValue": null
                 }
               ],
@@ -1973,64 +1833,77 @@
           ]
         },
         {
-          "id": "ckdyl65kj0210gu9kyhzb2ot3",
+          "id": "ck8rdbd9u29454kp4nuphlqbs",
           "path": "identifier[0].type.coding[0]",
           "sliceName": null,
           "definitionId": "Coding",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.015Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kj0211gu9k44jlg51b",
+          "id": "ck8zxrxnt02106ope74al1tfb",
           "path": "generalPractitioner[0].identifier.type.coding[0]",
           "sliceName": null,
           "definitionId": "Coding",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.015Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kj0212gu9kl9fmssfp",
+          "id": "ck8zxrxtc02116opee9eeacel",
           "path": "generalPractitioner[0].identifier.type",
           "sliceName": null,
           "definitionId": "CodeableConcept",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.015Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kj0213gu9k85n9yxb2",
+          "id": "ck8zmp5j933504kp46iwew8mu",
           "path": "communication[0].language.coding[0].system",
           "sliceName": null,
           "definitionId": "uri",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.015Z",
+          "comments": [
+            {
+              "id": "ckdrej1gf0357g0pjgx31cyh0",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8zmp5j933504kp46iwew8mu",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:55:51.659Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0214gu9k8uss6298",
+              "id": "ckdrej1gf0358g0pjvyf9vuir",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0213gu9k85n9yxb2",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8zmp5j933504kp46iwew8mu",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.015Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0215gu9k4ifjbpjk",
+                  "id": "ck8zmqtu833524kp4f30s32fj",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "http://hl7.org/fhir/ValueSet/languages",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kj0214gu9k8uss6298",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "inputGroupId": "ckdrej1gf0358g0pjvyf9vuir",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.015Z",
                   "sqlValue": null
                 }
               ],
@@ -2039,60 +1912,85 @@
           ]
         },
         {
-          "id": "ckdyl65kj0216gu9kpn4juqbd",
+          "id": "ck8zn4jal33534kp45y9p3ddy",
           "path": "communication[0].language.coding[0].code",
           "sliceName": null,
           "definitionId": "code",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.015Z",
+          "comments": [
+            {
+              "id": "ckdrej1gf0359g0pjclf84fgj",
+              "content": "I'm not sure the language code in Mimic is the same as the one in http://hl7.org/fhir/ValueSet/languages ",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8zn4jal33534kp45y9p3ddy",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:55:01.584Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            },
+            {
+              "id": "ckdrej1gf0360g0pjzaf7jbeg",
+              "content": "How to change that? I deleted the language because it is not possible to list all the different languages in the dataset and create a customized concept map.",
+              "validation": false,
+              "authorId": "ck8omfenu26924kp4008qs7y3",
+              "attributeId": "ck8zn4jal33534kp45y9p3ddy",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-28T12:24:02.853Z",
+              "author": {
+                "email": "ilan@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0217gu9kehdknh0v",
+              "id": "ckdrej1gf0361g0pj10la0hdm",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0216gu9kpn4juqbd",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8zn4jal33534kp45y9p3ddy",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.015Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0218gu9knepcj1xx",
+                  "id": "ck9u1ckp4006457nqqqjbolgi",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65kj0219gu9k250llw77",
-                  "inputGroupId": "ckdyl65kj0217gu9kehdknh0v",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "sqlValueId": "ck9u1ckp4006557nqrc9cej7y",
+                  "inputGroupId": "ckdrej1gf0361g0pj10la0hdm",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.015Z",
                   "sqlValue": {
-                    "id": "ckdyl65kj0219gu9k250llw77",
+                    "id": "ck9u1ckp4006557nqrc9cej7y",
                     "table": "admissions",
                     "column": "language",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.363Z",
+                    "updatedAt": "2020-08-12T13:20:42.023Z",
+                    "createdAt": "2020-08-12T13:20:42.015Z",
                     "joins": [
                       {
-                        "id": "ckdyl65kj0220gu9k3o1rdpx7",
-                        "columnId": "ckdyl65kj0219gu9k250llw77",
-                        "updatedAt": "2020-08-17T14:01:01.367Z",
-                        "createdAt": "2020-08-17T14:01:01.363Z",
+                        "id": "ck9u1cm3k006657nqo2005t55",
+                        "columnId": "ck9u1ckp4006557nqrc9cej7y",
+                        "updatedAt": "2020-08-12T13:20:42.023Z",
+                        "createdAt": "2020-08-12T13:20:42.015Z",
                         "tables": [
                           {
-                            "id": "ckdyl65kj0221gu9ko0mokuf2",
+                            "id": "ck9u1cm3k006757nqxm1gts5g",
                             "table": "patients",
                             "column": "subject_id",
-                            "joinId": "ckdyl65kj0220gu9k3o1rdpx7",
-                            "updatedAt": "2020-08-17T14:01:01.367Z",
-                            "createdAt": "2020-08-17T14:01:01.363Z"
+                            "joinId": "ck9u1cm3k006657nqo2005t55",
+                            "updatedAt": "2020-08-12T13:20:42.023Z",
+                            "createdAt": "2020-08-12T13:20:42.015Z"
                           },
                           {
-                            "id": "ckdyl65kj0222gu9kghzy2876",
+                            "id": "ck9u1cm3k006857nqbd1c302r",
                             "table": "admissions",
                             "column": "subject_id",
-                            "joinId": "ckdyl65kj0220gu9k3o1rdpx7",
-                            "updatedAt": "2020-08-17T14:01:01.367Z",
-                            "createdAt": "2020-08-17T14:01:01.363Z"
+                            "joinId": "ck9u1cm3k006657nqo2005t55",
+                            "updatedAt": "2020-08-12T13:20:42.023Z",
+                            "createdAt": "2020-08-12T13:20:42.015Z"
                           }
                         ]
                       }
@@ -2105,31 +2003,44 @@
           ]
         },
         {
-          "id": "ckdyl65kj0223gu9kxul5zak6",
+          "id": "ck903wj0403426opei0sd9ci5",
           "path": "identifier[0].type.coding[0].display",
           "sliceName": null,
           "definitionId": "string",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.015Z",
+          "comments": [
+            {
+              "id": "ckdrej1gf0362g0pj36me9c72",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck903wj0403426opei0sd9ci5",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:41:09.062Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0224gu9kom4lmqsq",
+              "id": "ckdrej1gf0363g0pjjpn3dv9t",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0223gu9kxul5zak6",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck903wj0403426opei0sd9ci5",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.015Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0225gu9k46kb688f",
+                  "id": "ck903wj3l03436ope8lrvk4rd",
                   "script": null,
                   "conceptMapId": null,
                   "staticValue": "Passport number",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kj0224gu9kom4lmqsq",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "inputGroupId": "ckdrej1gf0363g0pjjpn3dv9t",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.016Z",
                   "sqlValue": null
                 }
               ],
@@ -2138,38 +2049,51 @@
           ]
         },
         {
-          "id": "ckdyl65kj0226gu9k3iea8hv1",
+          "id": "ck8ooenpu26984kp4wyiz4yc2",
           "path": "gender",
           "sliceName": null,
           "definitionId": "code",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.363Z",
-          "comments": [],
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [
+            {
+              "id": "ckdrej1gg0364g0pjc6c76d19",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8ooenpu26984kp4wyiz4yc2",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-04-27T15:56:21.392Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
           "inputGroups": [
             {
-              "id": "ckdyl65kj0227gu9kpnmchyvk",
+              "id": "ckdrej1gg0365g0pjog8r0m8a",
               "mergingScript": null,
-              "attributeId": "ckdyl65kj0226gu9k3iea8hv1",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.363Z",
+              "attributeId": "ck8ooenpu26984kp4wyiz4yc2",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.016Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kj0228gu9kwwr85x4e",
+                  "id": "ck8ooenw826994kp4whpirhdo",
                   "script": null,
                   "conceptMapId": "8d45157a-12c5-4da2-8b80-0c5607fa37d7",
                   "staticValue": null,
-                  "sqlValueId": "ckdyl65kj0229gu9krs3zwuph",
-                  "inputGroupId": "ckdyl65kj0227gu9kpnmchyvk",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.363Z",
+                  "sqlValueId": "ck8ooenw827004kp41nv3kcmq",
+                  "inputGroupId": "ckdrej1gg0365g0pjog8r0m8a",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.016Z",
                   "sqlValue": {
-                    "id": "ckdyl65kj0229gu9krs3zwuph",
+                    "id": "ck8ooenw827004kp41nv3kcmq",
                     "table": "patients",
                     "column": "gender",
                     "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.363Z",
+                    "updatedAt": "2020-08-12T13:20:42.023Z",
+                    "createdAt": "2020-08-12T13:20:42.016Z",
                     "joins": []
                   }
                 }
@@ -2179,31 +2103,31 @@
           ]
         },
         {
-          "id": "ckdyl65kk0247gu9ki0zqiqpy",
-          "path": "identifier[0].system",
+          "id": "ckao5g5ur01984vqm5a6q2ljn",
+          "path": "link[0].type",
           "sliceName": null,
-          "definitionId": "uri",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.364Z",
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kk0248gu9kkn4umbx1",
+              "id": "ckdrej1gg0366g0pjqdndweez",
               "mergingScript": null,
-              "attributeId": "ckdyl65kk0247gu9ki0zqiqpy",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.364Z",
+              "attributeId": "ckao5g5ur01984vqm5a6q2ljn",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.016Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kk0249gu9kk2tlubfc",
+                  "id": "ckao5g61s02004vqm8saplvmx",
                   "script": null,
                   "conceptMapId": null,
-                  "staticValue": "http://terminology.arkhn.org/ck8oo01zm26944kp4ta60mfea/ck8oo3on226974kp4ns32n7xs/Mimic_identifier",
+                  "staticValue": "refer",
                   "sqlValueId": null,
-                  "inputGroupId": "ckdyl65kk0248gu9kkn4umbx1",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.364Z",
+                  "inputGroupId": "ckdrej1gg0366g0pjqdndweez",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.016Z",
                   "sqlValue": null
                 }
               ],
@@ -2212,82 +2136,1140 @@
           ]
         },
         {
-          "id": "ckdyl65kl0329gu9k3t8fwf7j",
-          "path": "identifier[0]",
+          "id": "ckao5g5xr01994vqmw57dth0l",
+          "path": "link[0]",
           "sliceName": null,
-          "definitionId": "Identifier",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.365Z",
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
           "comments": [],
           "inputGroups": []
         },
         {
-          "id": "ckdyl65kl0330gu9kg0g9kl08",
-          "path": "deceasedDateTime",
+          "id": "ckao5gazp02024vqmh6cijamw",
+          "path": "link[1]",
           "sliceName": null,
-          "definitionId": "dateTime",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.365Z",
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5gk3n02044vqm2tsd73tz",
+          "path": "link[0].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
           "comments": [],
           "inputGroups": [
             {
-              "id": "ckdyl65kl0331gu9kjada4vf4",
+              "id": "ckdrej1gg0367g0pj2sjdcnqu",
               "mergingScript": null,
-              "attributeId": "ckdyl65kl0330gu9kg0g9kl08",
-              "updatedAt": "2020-08-17T14:01:01.367Z",
-              "createdAt": "2020-08-17T14:01:01.365Z",
+              "attributeId": "ckao5gk3n02044vqm2tsd73tz",
+              "updatedAt": "2020-08-12T13:20:42.023Z",
+              "createdAt": "2020-08-12T13:20:42.016Z",
               "inputs": [
                 {
-                  "id": "ckdyl65kl0332gu9ktbm5l90s",
-                  "script": "clean_date",
+                  "id": "ckao5gkb102064vqmqw4gyfnx",
+                  "script": null,
                   "conceptMapId": null,
-                  "staticValue": null,
-                  "sqlValueId": "ckdyl65kl0333gu9kf9udz7lz",
-                  "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
-                  "updatedAt": "2020-08-17T14:01:01.367Z",
-                  "createdAt": "2020-08-17T14:01:01.365Z",
-                  "sqlValue": {
-                    "id": "ckdyl65kl0333gu9kf9udz7lz",
-                    "table": "patients",
-                    "column": "dod",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.365Z",
-                    "joins": []
-                  }
+                  "staticValue": "DiagnosticReport",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gg0367g0pj2sjdcnqu",
+                  "updatedAt": "2020-08-12T13:20:42.023Z",
+                  "createdAt": "2020-08-12T13:20:42.016Z",
+                  "sqlValue": null
                 }
               ],
-              "conditions": [
-                {
-                  "id": "ckdyl65kl0334gu9ky8x57zvb",
-                  "action": "EXCLUDE",
-                  "columnId": "ckdyl65kl0335gu9kup0hwhe0",
-                  "relation": "EQ",
-                  "value": "1",
-                  "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
-                  "sqlValue": {
-                    "id": "ckdyl65kl0335gu9kup0hwhe0",
-                    "table": "patients",
-                    "column": "expire_flag",
-                    "joinId": null,
-                    "updatedAt": "2020-08-17T14:01:01.367Z",
-                    "createdAt": "2020-08-17T14:01:01.365Z"
-                  }
-                }
-              ]
+              "conditions": []
             }
           ]
         },
         {
-          "id": "ckdyl65kl0336gu9ko7kvv67a",
+          "id": "ckao5gk6u02054vqm3tvj1w9s",
+          "path": "link[0].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.023Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5gawh02014vqmwia0u7ty",
+          "path": "link[1].type",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gg0368g0pjya0g01ly",
+              "mergingScript": null,
+              "attributeId": "ckao5gawh02014vqmwia0u7ty",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.016Z",
+              "inputs": [
+                {
+                  "id": "ckao5gb4f02034vqmfu33doeo",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "refer",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gg0368g0pjya0g01ly",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.016Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5gyiq02074vqmjeukgzav",
+          "path": "link[0].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gg0369g0pjr47y3tne",
+              "mergingScript": null,
+              "attributeId": "ckao5gyiq02074vqmjeukgzav",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.016Z",
+              "inputs": [
+                {
+                  "id": "ckao5gyuk02094vqmqb8i7sj4",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5gyuk02104vqma42j8d2r",
+                  "inputGroupId": "ckdrej1gg0369g0pjr47y3tne",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.016Z",
+                  "sqlValue": {
+                    "id": "ckao5gyuk02104vqma42j8d2r",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.024Z",
+                    "createdAt": "2020-08-12T13:20:42.016Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5gyo002084vqm6iimognz",
+          "path": "link[0].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "cka8bw3o900224wntss50qdjn",
+          "path": "identifier[0].system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.016Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gg0370g0pjlm0em7op",
+              "mergingScript": null,
+              "attributeId": "cka8bw3o900224wntss50qdjn",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.016Z",
+              "inputs": [
+                {
+                  "id": "cka8bw3uo00234wnte1f1hz9c",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/7c569359-af75-4eee-a552-b58405cfcda3",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gg0370g0pjlm0em7op",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5hxvb02114vqm0rg5gmwp",
+          "path": "link[0].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0371g0pj71pn0ej5",
+              "mergingScript": null,
+              "attributeId": "ckao5hxvb02114vqm0rg5gmwp",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5j00f02124vqm8kp2izjj",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/6247993f-cfc3-4b36-8244-ce1a6649cb63",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gh0371g0pj71pn0ej5",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5jvxo02134vqm46kw0vw9",
+          "path": "link[1].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0372g0pjh0awb63q",
+              "mergingScript": null,
+              "attributeId": "ckao5jvxo02134vqm46kw0vw9",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5jw5m02154vqm84l4s157",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "DiagnosticReport",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gh0372g0pjh0awb63q",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5k59202164vqmnxcg1o32",
+          "path": "link[1].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0373g0pj4xqu8aqh",
+              "mergingScript": null,
+              "attributeId": "ckao5k59202164vqmnxcg1o32",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5k5j802184vqmtt1lgto5",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/5b95ca8a-1d1e-4547-8d11-3a0a6d220de3",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gh0373g0pj4xqu8aqh",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5k5ch02174vqm6pcsmx4k",
+          "path": "link[1].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5kosh02224vqmd1hnrngl",
+          "path": "link[2].type",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0374g0pjv44udp93",
+              "mergingScript": null,
+              "attributeId": "ckao5kosh02224vqmd1hnrngl",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5kp1a02244vqmfzd9enyr",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "refer",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gh0374g0pjv44udp93",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5kuz302254vqmddcc1tto",
+          "path": "link[2].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0375g0pj60ybivui",
+              "mergingScript": null,
+              "attributeId": "ckao5kuz302254vqmddcc1tto",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5kv6302274vqmnc01o8i3",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "DiagnosticReport",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gh0375g0pj60ybivui",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5kv2702264vqmo3bflf3b",
+          "path": "link[2].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5jw1202144vqm29bo3xhh",
+          "path": "link[1].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5kaq302194vqm7liwjkc3",
+          "path": "link[1].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0376g0pjcql5b26a",
+              "mergingScript": null,
+              "attributeId": "ckao5kaq302194vqm7liwjkc3",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5kavk02204vqmy0df50hr",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5kavk02214vqmt31q31fa",
+                  "inputGroupId": "ckdrej1gh0376g0pjcql5b26a",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.017Z",
+                  "sqlValue": {
+                    "id": "ckao5kavk02214vqmt31q31fa",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.024Z",
+                    "createdAt": "2020-08-12T13:20:42.017Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5kovu02234vqmjz2krnwo",
+          "path": "link[2]",
+          "sliceName": null,
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5l9j802314vqmcvctqan5",
+          "path": "link[2].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.017Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gh0377g0pj7c5x58x2",
+              "mergingScript": null,
+              "attributeId": "ckao5l9j802314vqmcvctqan5",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.017Z",
+              "inputs": [
+                {
+                  "id": "ckao5l9n402324vqm8vs6x6kp",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5l9n402334vqmkza4vbje",
+                  "inputGroupId": "ckdrej1gh0377g0pj7c5x58x2",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": {
+                    "id": "ckao5l9n402334vqmkza4vbje",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.024Z",
+                    "createdAt": "2020-08-12T13:20:42.018Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5llb402344vqmm96ldhbp",
+          "path": "link[3].type",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gi0378g0pj4c49ig5c",
+              "mergingScript": null,
+              "attributeId": "ckao5llb402344vqmm96ldhbp",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.018Z",
+              "inputs": [
+                {
+                  "id": "ckao5llh702364vqmvn6b7f1z",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "refer",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gi0378g0pj4c49ig5c",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5lldt02354vqmbmvta0zy",
+          "path": "link[3]",
+          "sliceName": null,
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5lsos02374vqmaqbuf97k",
+          "path": "link[3].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gi0379g0pj96ccqlu1",
+              "mergingScript": null,
+              "attributeId": "ckao5lsos02374vqmaqbuf97k",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.018Z",
+              "inputs": [
+                {
+                  "id": "ckao5lszr02394vqm0xi3wmpp",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "Observation",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gi0379g0pj96ccqlu1",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5lssi02384vqmal8ahm6c",
+          "path": "link[3].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5m4ms02404vqmp0znhz3p",
+          "path": "link[3].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gi0380g0pj0k4vexmu",
+              "mergingScript": null,
+              "attributeId": "ckao5m4ms02404vqmp0znhz3p",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.018Z",
+              "inputs": [
+                {
+                  "id": "ckao5m4uj02424vqmowu2l7xk",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/53b20e9f-3247-4925-8761-de5e6577084e",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gi0380g0pj0k4vexmu",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5mqg102474vqmw9gd3mfj",
+          "path": "link[4]",
+          "sliceName": null,
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5nwjf02504vqm0c9tmk10",
+          "path": "link[4].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5o5c902534vqmhnh80oue",
+          "path": "link[4].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5o89d02554vqmjarsdemo",
+          "path": "link[4].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gi0381g0pjsv0ptcu1",
+              "mergingScript": null,
+              "attributeId": "ckao5o89d02554vqmjarsdemo",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.018Z",
+              "inputs": [
+                {
+                  "id": "ckao5o8df02564vqmi9j961gt",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5o8df02574vqmf2jspkgy",
+                  "inputGroupId": "ckdrej1gi0381g0pjsv0ptcu1",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": {
+                    "id": "ckao5o8df02574vqmf2jspkgy",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.024Z",
+                    "createdAt": "2020-08-12T13:20:42.018Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5terb02584vqmzm2ttic7",
+          "path": "link[5].type",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gi0382g0pjkykqhk0e",
+              "mergingScript": null,
+              "attributeId": "ckao5terb02584vqmzm2ttic7",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.018Z",
+              "inputs": [
+                {
+                  "id": "ckao5tezn02604vqmdisu871h",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "refer",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gi0382g0pjkykqhk0e",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5tuxi02654vqm4gz0zonz",
+          "path": "link[5].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5u08e02674vqm41i5equ2",
+          "path": "link[5].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.018Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gi0383g0pjh6toe8to",
+              "mergingScript": null,
+              "attributeId": "ckao5u08e02674vqm41i5equ2",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.018Z",
+              "inputs": [
+                {
+                  "id": "ckao5u0cd02684vqmymfn0pjc",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5u0cd02694vqm1taaacjc",
+                  "inputGroupId": "ckdrej1gi0383g0pjh6toe8to",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.018Z",
+                  "sqlValue": {
+                    "id": "ckao5u0cd02694vqm1taaacjc",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.024Z",
+                    "createdAt": "2020-08-12T13:20:42.019Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5l3bk02284vqm08lduvle",
+          "path": "link[2].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0384g0pj6pns88bn",
+              "mergingScript": null,
+              "attributeId": "ckao5l3bk02284vqm08lduvle",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5l3jp02304vqm7uoo2e3a",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/e8f8e1e0-ffb1-4d7a-9417-739603143ee0",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gj0384g0pj6pns88bn",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.019Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5l3ex02294vqmvfkfa0gi",
+          "path": "link[2].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5m4pz02414vqmhd4g3ulg",
+          "path": "link[3].other.identifier",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5m85d02434vqm06fat6fo",
+          "path": "link[3].other.identifier.value",
+          "sliceName": null,
+          "definitionId": "string",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0385g0pjn320wdun",
+              "mergingScript": null,
+              "attributeId": "ckao5m85d02434vqm06fat6fo",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5m89s02444vqmmetycpwc",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ckao5m89s02454vqmq7ctq9oh",
+                  "inputGroupId": "ckdrej1gj0385g0pjn320wdun",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.019Z",
+                  "sqlValue": {
+                    "id": "ckao5m89s02454vqmq7ctq9oh",
+                    "table": "patients",
+                    "column": "subject_id",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.024Z",
+                    "createdAt": "2020-08-12T13:20:42.019Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5mqd202464vqmcvgb4njb",
+          "path": "link[4].type",
+          "sliceName": null,
+          "definitionId": "code",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0386g0pjsfu8i7mw",
+              "mergingScript": null,
+              "attributeId": "ckao5mqd202464vqmcvgb4njb",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5mql402484vqmd762um6v",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "refer",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gj0386g0pjsfu8i7mw",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.019Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5nwg102494vqmhx5f6ykw",
+          "path": "link[4].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0387g0pjhf04z7ff",
+              "mergingScript": null,
+              "attributeId": "ckao5nwg102494vqmhx5f6ykw",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5nwo902514vqmho8hffk9",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "Observation",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gj0387g0pjhf04z7ff",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.019Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5o59602524vqmgrjvvwv9",
+          "path": "link[4].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0388g0pj3su0qqp7",
+              "mergingScript": null,
+              "attributeId": "ckao5o59602524vqmgrjvvwv9",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5o5gf02544vqm1srh3uk9",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/00ceddef-fb53-447a-8cf2-e4a752e07a09",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gj0388g0pj3su0qqp7",
+                  "updatedAt": "2020-08-12T13:21:04.937Z",
+                  "createdAt": "2020-08-12T13:20:42.019Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5teuu02594vqmjl2ienzd",
+          "path": "link[5]",
+          "sliceName": null,
+          "definitionId": "BackboneElement",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5tngn02614vqmtvj5v1i8",
+          "path": "link[5].other.type",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0389g0pj6s8kxoe4",
+              "mergingScript": null,
+              "attributeId": "ckao5tngn02614vqmtvj5v1i8",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5tnop02634vqm3p5kj03r",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "Specimen",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gj0389g0pj6s8kxoe4",
+                  "updatedAt": "2020-08-12T13:20:42.024Z",
+                  "createdAt": "2020-08-12T13:20:42.019Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ckao5tnjr02624vqmb7uou4f4",
+          "path": "link[5].other",
+          "sliceName": null,
+          "definitionId": "Reference",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ckao5tuuf02644vqmdt3yt54s",
+          "path": "link[5].other.identifier.system",
+          "sliceName": null,
+          "definitionId": "uri",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.019Z",
+          "comments": [],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gj0390g0pjzdxt93ym",
+              "mergingScript": null,
+              "attributeId": "ckao5tuuf02644vqmdt3yt54s",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-08-12T13:20:42.019Z",
+              "inputs": [
+                {
+                  "id": "ckao5tv4p02664vqm5dtaotn5",
+                  "script": null,
+                  "conceptMapId": null,
+                  "staticValue": "http://terminology.arkhn.org/e766d5f6-3575-4f1a-8076-21875d0b6d02",
+                  "sqlValueId": null,
+                  "inputGroupId": "ckdrej1gj0390g0pjzdxt93ym",
+                  "updatedAt": "2020-08-12T13:21:04.938Z",
+                  "createdAt": "2020-08-12T13:20:42.020Z",
+                  "sqlValue": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ck8pwkxl528494kp4qzayer7f",
+          "path": "identifier[0]",
+          "sliceName": null,
+          "definitionId": "Identifier",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.020Z",
+          "comments": [],
+          "inputGroups": []
+        },
+        {
+          "id": "ck8pwxzpp28554kp4zl4oh1lh",
+          "path": "deceasedDateTime",
+          "sliceName": null,
+          "definitionId": "dateTime",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.024Z",
+          "createdAt": "2020-08-12T13:20:42.020Z",
+          "comments": [
+            {
+              "id": "ckdrej1gk0391g0pjesiy6c5f",
+              "content": "Maybe add a cleaning script here ? (just in case)",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8pwxzpp28554kp4zl4oh1lh",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-04-27T15:43:52.818Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            },
+            {
+              "id": "ckdrej1gk0392g0pjl0ohssn3",
+              "content": "Thanks !",
+              "validation": false,
+              "authorId": "ck8omfenu26924kp4008qs7y3",
+              "attributeId": "ck8pwxzpp28554kp4zl4oh1lh",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-04-28T12:50:32.178Z",
+              "author": {
+                "email": "ilan@arkhn.com"
+              }
+            },
+            {
+              "id": "ckdrej1gk0393g0pjhndqw3k8",
+              "content": "",
+              "validation": false,
+              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
+              "attributeId": "ck8pwxzpp28554kp4zl4oh1lh",
+              "updatedAt": "2020-08-12T13:20:42.024Z",
+              "createdAt": "2020-04-28T14:19:45.221Z",
+              "author": {
+                "email": "admin@arkhn.com"
+              }
+            }
+          ],
+          "inputGroups": [
+            {
+              "id": "ckdrej1gk0394g0pjxauiuira",
+              "mergingScript": null,
+              "attributeId": "ck8pwxzpp28554kp4zl4oh1lh",
+              "updatedAt": "2020-08-12T13:20:42.025Z",
+              "createdAt": "2020-08-12T13:20:42.020Z",
+              "inputs": [
+                {
+                  "id": "ck8pwyxu428564kp4p3qdorry",
+                  "script": "clean_date",
+                  "conceptMapId": null,
+                  "staticValue": null,
+                  "sqlValueId": "ck8pwyxu428574kp4qopj49sl",
+                  "inputGroupId": "ckdrej1gk0394g0pjxauiuira",
+                  "updatedAt": "2020-08-12T13:20:42.025Z",
+                  "createdAt": "2020-08-12T13:20:42.020Z",
+                  "sqlValue": {
+                    "id": "ck8pwyxu428574kp4qopj49sl",
+                    "table": "patients",
+                    "column": "dod",
+                    "joinId": null,
+                    "updatedAt": "2020-08-12T13:20:42.025Z",
+                    "createdAt": "2020-08-12T13:20:42.020Z",
+                    "joins": []
+                  }
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "id": "ck8px80ll28634kp4lv5ksxkt",
           "path": "maritalStatus",
           "sliceName": null,
           "definitionId": "CodeableConcept",
-          "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
-          "updatedAt": "2020-08-17T14:01:01.367Z",
-          "createdAt": "2020-08-17T14:01:01.365Z",
+          "resourceId": "ck8oo3on226974kp4ns32n7xs",
+          "updatedAt": "2020-08-12T13:20:42.025Z",
+          "createdAt": "2020-08-12T13:20:42.020Z",
           "comments": [],
           "inputGroups": []
         }
