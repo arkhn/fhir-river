@@ -61,18 +61,19 @@ jobs:
           PYROG_LOGIN: admin@arkhn.com
           PYROG_PASSWORD: password
           KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
+          TEST: true
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper fhir-api
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper
           sleep 15
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
+          docker-compose -f test/docker-compose.yml up -d fhir-api
+          sleep 15
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
-          docker restart fhir-api
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
           docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
           docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
-          docker-compose -f test/docker-compose.yml up -d fluentd
           sleep 15
           python -m pytest -svv test/test_batch.py
 

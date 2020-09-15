@@ -5,28 +5,23 @@ import os
 import pydantic
 
 from confluent_kafka import KafkaException, KafkaError
+from fhir.resources import construct_fhir_element
 from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from uwsgidecorators import thread, postfork
 
-from fhir.resources import construct_fhir_element
-
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from transformer.src.config.service_logger import logger
 from transformer.src.transform import Transformer
-
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
-
-from transformer.src.config.logger import get_logger
 from transformer.src.errors import OperationOutcome
 
 
 CONSUMED_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
-
-logger = get_logger()
 
 analyzer = Analyzer(PyrogClient())
 transformer = Transformer()

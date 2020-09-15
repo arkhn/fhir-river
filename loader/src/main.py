@@ -12,8 +12,7 @@ from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
-
-from loader.src.config.logger import get_logger
+from loader.src.config.service_logger import logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
 from loader.src.load.utils import get_resource_id
@@ -25,8 +24,6 @@ from loader.src.producer_class import LoaderProducer
 CONSUMED_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
-
-logger = get_logger()
 
 fhirstore = get_fhirstore()
 

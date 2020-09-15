@@ -11,7 +11,6 @@ FHIRSTORE_USER = os.getenv("FHIRSTORE_USER")
 FHIRSTORE_PASSWORD = os.getenv("FHIRSTORE_PASSWORD")
 
 _client = None
-_fhirstore = None
 
 
 def get_mongo_client():
