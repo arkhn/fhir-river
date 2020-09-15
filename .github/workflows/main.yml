@@ -66,7 +66,7 @@ jobs:
           sleep 15
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker exec fhir-api printenv ES_URL
-          docker exec fhir-api bash -c 'apt-get install -y curl && curl elastic:SuperSecurePassword2019@elasticsearch:9200'
+          docker exec fhir-api bash -c 'sudo apt-get install -y curl && curl elastic:SuperSecurePassword2019@elasticsearch:9200'
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
           docker restart fhir-api
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
