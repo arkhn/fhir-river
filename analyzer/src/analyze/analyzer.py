@@ -33,8 +33,10 @@ class Analyzer:
         self._cur_analysis = Analysis()
 
     def get_analysis(
-        self, resource_mapping_id, max_seconds_refresh=MAX_SECONDS_REFRESH_ANALYSIS
+        self, resource_mapping_id, max_seconds_refresh=None
     ) -> Analysis:
+        if max_seconds_refresh is None:
+            max_seconds_refresh = MAX_SECONDS_REFRESH_ANALYSIS
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
         else:
