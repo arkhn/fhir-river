@@ -65,20 +65,21 @@ class ReferenceBinder:
     def __init__(self, fhirstore):
         self.fhirstore = fhirstore
 
-        # cache is a dict of form
-        # {
-        #   (fhir_type_target, (value, system, code, code_system)):
-        #           {
-        #               (fhir_type_source, path, isArray): [fhir_id1, ...]
-        #           },
-        #   ...
-        # }
-        # eg:
-        # {
-        #   (Practitioner, 1234, system): {(Patient, generalPractitioner, True): [fhir-pract-id]},
-        #   ...
-        # }
-
+        # In Redis, we have sets identified with keys defined as a stringified
+        # json array:
+        # "[fhir_type_target, [value, system, code, code_system]]"
+        #
+        # A Redis set is a list. Here a list of stringified json arrays
+        # [
+        #     "[ [fhir_type_source, path, isArray], fhir_id1 ]",
+        #     "[ [fhir_type_source, path, isArray], fhir_id2 ]",
+        #     ...
+        # ]
+        # eg: A Redis set "[Practitioner, [1234, system]]" contains
+        # [
+        #     "[ [Patient, generalPractitioner, True], fhir-pract-id ]",
+        #     ...
+        # ]
         self.cache = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
@@ -197,7 +198,22 @@ class ReferenceBinder:
 
         return value, system, identifier_type_code, identifier_type_system
 
-    def load_cached_references(self, target_ref):
+    # load_cached_references requests cached references from Redis. The SMEMBERS
+    # command gets the set target_ref
+    # "[fhir_type_target, [value, system, code, code_system]]"
+    # and returns a list
+    # [
+    #     "[ [fhir_type_source, path, isArray], fhir_id1 ]",
+    #     "[ [fhir_type_source, path, isArray], fhir_id2 ]",
+    #     ...
+    # ]
+    #
+    # This list is formatted as a dict which is then returned
+    # {
+    #     (fhir_type_source, path, isArray): [fhir_id1, fhir_id2],
+    #     ...
+    # }
+    def load_cached_references(self, target_ref: str) -> defaultdict[list]:
         references_set = self.cache.smembers(target_ref)
         pending_refs = defaultdict(list)
         for element in references_set:

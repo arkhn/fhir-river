@@ -62,13 +62,12 @@ jobs:
           PYROG_PASSWORD: password
           KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
         run: |
-          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper fhir-api
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper
           sleep 15
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
-          docker exec fhir-api printenv ES_URL
-          docker exec fhir-api bash -c 'sudo apt-get install -y curl && curl elastic:SuperSecurePassword2019@elasticsearch:9200'
+          docker-compose -f test/docker-compose.yml up -d fhir-api
+          sleep 15
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
-          docker restart fhir-api
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
           docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
