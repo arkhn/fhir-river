@@ -182,9 +182,16 @@ class Extractor:
         try:
             return table.c[column.column].label(column.dataframe_column_name())
         except KeyError:
-            raise ImproperMappingError(
-                f"Column '{column.column}' not found in table '{column.table}'."
-            )
+            # If column.column is not in table.c it may be because the column names are case
+            # insensitive. If so, the schema can be in upper case (what oracle considers as
+            # case insensitive) but the keys in table.c are in lower case (what sqlalchemy
+            # considers as case insensitive).
+            try:
+                return table.c[column.column.lower()].label(column.dataframe_column_name())
+            except KeyError:
+                raise ImproperMappingError(
+                    f"Column '{column.column}' not found in table '{column.table}'."
+                )
 
     def get_table(self, column: SqlColumn) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)

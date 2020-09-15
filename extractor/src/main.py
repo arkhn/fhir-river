@@ -90,7 +90,7 @@ def manage_kafka_error(msg):
     :param msg:
     :return:
     """
-    logger.error(msg.error())
+    logger.error(msg.error().str())
 
 
 def extract_resource(resource_id, primary_key_values):

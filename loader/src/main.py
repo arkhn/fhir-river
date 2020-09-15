@@ -67,24 +67,33 @@ def process_event_with_producer(producer):
         :param msg:
         :return:
         """
-        fhir_instance = json.loads(msg.value())
-        resource_id = get_resource_id(fhir_instance)
+        logger.debug(msg.value())
 
-        logger.debug("Get Analysis", extra={"resource_id": resource_id})
-        # FIXME: filter meta.tags by system to get the right
-        # resource_id (ARKHN_CODE_SYSTEMS.resource)
-        analysis = analyzer.get_analysis(resource_id)
+        # TODO clean this big try/except
+        try:
+            fhir_instance = json.loads(msg.value())
+            resource_id = get_resource_id(fhir_instance)
 
-        # Resolve existing and pending references (if the fhir_instance
-        # references OR is referenced by other documents)
-        logger.debug(
-            f"Resolving references {analysis.reference_paths}", extra={"resource_id": resource_id}
-        )
-        resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
+            logger.debug("Get Analysis", extra={"resource_id": resource_id})
+            # FIXME: filter meta.tags by system to get the right
+            # resource_id (ARKHN_CODE_SYSTEMS.resource)
+            analysis = analyzer.get_analysis(resource_id)
 
-        # TODO how will we handle override in fhir-river?
-        # if True:  # should be "if override:" or something like that
-        #     override_document(resolved_fhir_instance)
+            # Resolve existing and pending references (if the fhir_instance
+            # references OR is referenced by other documents)
+            logger.debug(
+                f"Resolving references {analysis.reference_paths}",
+                extra={"resource_id": resource_id},
+            )
+            resolved_fhir_instance = binder.resolve_references(
+                fhir_instance, analysis.reference_paths
+            )
+
+            # TODO how will we handle override in fhir-river?
+            # if True:  # should be "if override:" or something like that
+            #     override_document(resolved_fhir_instance)
+        except Exception as err:
+            logger.error(err)
 
         try:
             logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
@@ -99,12 +108,8 @@ def process_event_with_producer(producer):
 
 
 def manage_kafka_error(msg):
-    """
-    Deal with the error if nany
-    :param msg:
-    :return:
-    """
-    logger.error(msg.error())
+    """Deal with the error if any """
+    logger.error(msg.error().str())
 
 
 @app.route("/delete-resources", methods=["POST"])

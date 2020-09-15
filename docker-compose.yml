@@ -188,7 +188,6 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
-      METRICS_PORT: 3003
       SERVICE_NAME: loader
     ports:
       - 3003:3003
