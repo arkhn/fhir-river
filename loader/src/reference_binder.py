@@ -1,6 +1,7 @@
 import re
 import json
 from collections import defaultdict
+from typing import DefaultDict
 from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
@@ -213,7 +214,7 @@ class ReferenceBinder:
     #     (fhir_type_source, path, isArray): [fhir_id1, fhir_id2],
     #     ...
     # }
-    def load_cached_references(self, target_ref: str) -> defaultdict[list]:
+    def load_cached_references(self, target_ref: str) -> DefaultDict[list]:
         references_set = self.cache.smembers(target_ref)
         pending_refs = defaultdict(list)
         for element in references_set:
