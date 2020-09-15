@@ -1,5 +1,5 @@
 import os
-from loader.src.config.logger import get_logger
+from loader.src.config.service_logger import get_logger
 
 
 REDIS_HOST = os.getenv("REDIS_HOST")
