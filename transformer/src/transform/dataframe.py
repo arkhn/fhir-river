@@ -3,7 +3,6 @@ from collections import defaultdict
 
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.condition import CONDITION_FLAG
-from transformer.src.config.service_logger import logger
 
 
 def clean_data(data, attributes: List[Attribute], primary_key):

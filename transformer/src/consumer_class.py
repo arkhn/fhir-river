@@ -3,8 +3,6 @@
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 
-from transformer.src.config.service_logger import logger
-
 
 class TransformerConsumer:
     def __init__(

@@ -2,7 +2,6 @@ from typing import Dict, List, NewType, Tuple, Union
 
 from datetime import datetime
 
-from analyzer.src.config.service_logger import logger
 from analyzer.src.errors import OperationOutcome
 
 from .sql_column import SqlColumn
