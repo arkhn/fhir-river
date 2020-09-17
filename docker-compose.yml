@@ -199,13 +199,22 @@ services:
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
       SERVICE_NAME: loader
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_DB: 0
+      LOADER_REDIS_HOST: loader-redis
+      LOADER_REDIS_PORT: 6379
+      LOADER_REDIS_DB: 0
     ports:
       - 3003:3003
     networks:
       - river-network
+
+    loader-redis:
+      image: redis:6.0.7
+      container_name: loader-redis
+      restart: always
+      networks:
+        - river-network
+      volumes:
+        - loader-redis-data:/data
 
   # Uncomment if you want monitoring
   # prometheus:
@@ -267,6 +276,7 @@ volumes:
     name: mimic-db
   fhirstore-db:
   redis-data:
+  loader-redis-data:
 
 networks:
   river-network:

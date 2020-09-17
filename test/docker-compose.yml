@@ -106,11 +106,19 @@ services:
     depends_on:
       - kafka
       - mongo
-      - redis
+      - loader-redis
     env_file:
       - ./.env.test
     environment:
       FHIR_API_TOKEN: ${FHIR_API_TOKEN}
+
+  loader-redis:
+    image: redis:5.0.7-alpine
+    container_name: loader-redis
+    ports:
+      - 6379:6379
+    volumes:
+      - loader-redis-data:/data
 
   extractor:
     build:
@@ -216,3 +224,4 @@ volumes:
   test-postgres-data:
   kafka-config:
   redis-data:
+  loader-redis-data:
