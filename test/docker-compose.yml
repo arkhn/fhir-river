@@ -116,7 +116,7 @@ services:
     image: redis:5.0.7-alpine
     container_name: loader-redis
     ports:
-      - 6379:6379
+      - 6380:6379
     volumes:
       - loader-redis-data:/data
 
@@ -157,6 +157,7 @@ services:
   pyrog-server:
     image: arkhn/pyrog-server:latest
     container_name: pyrog-server
+    restart: always
     ports:
       - 1000:1000
     env_file:

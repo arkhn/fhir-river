@@ -6,6 +6,7 @@ from .consumer_class import EventConsumer
 from analyzer.src.analyze.graphql import PyrogClient
 import redis
 
+
 BATCH_SIZE_TOPIC = "batch_size"
 LOAD_TOPIC = "load"
 
@@ -27,7 +28,7 @@ def get_resource_ids():
     """
     client = PyrogClient()
     sources_resp = client.run_graphql_query(sources_query)
-
+    print(f"Source response: {sources_resp}")
     return [resource["id"] for resource in sources_resp["data"]["sources"][0]["resources"]]
 
 
@@ -35,7 +36,7 @@ def test_batch_single_row():
     print("START")
 
     resource_ids = get_resource_ids()
-    r = redis.Redis()
+    r = redis.Redis(port=6380)
 
     # declare kafka consumer of "load" events
     consumer = EventConsumer(
@@ -64,6 +65,7 @@ def test_batch_single_row():
             response = requests.post(
                 "http://0.0.0.0:3001/batch", json={"resource_ids": [resource_id]},
             )
+            print(f"New POST request sent to River API: {resource_id}")
         except requests.exceptions.ConnectionError:
             raise Exception("Could not connect to the api service")
 
@@ -72,5 +74,5 @@ def test_batch_single_row():
         print("Waiting for a batch_size event...")
         batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
 
-    # Check if references cache is empty
+    # Check if reference cache is empty
     assert r.dbsize() == 0
