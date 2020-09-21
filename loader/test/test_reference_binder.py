@@ -17,8 +17,8 @@ def test_extract_key_tuple():
 
     with raises(
         Exception,
-        match="identifier.value and identifier.system or identifier.type "
-        "are required and mutually exclusive",
+            match="(identifier.value and identifier.system) or (identifier.type.coding.code and "
+                  "identifier.type.coding.system) are required and mutually exclusive"
     ):
         identifier3 = {
             "value": "v",
