@@ -56,7 +56,7 @@ def manage_kafka_error(msg):
     logger.error(msg.error().str())
 
 
-def transform_row(resource_id, row, time_refresh_analysis=3600):
+def transform_row(resource_id, row, time_refresh_analysis=None):
     logger.debug("Get Analysis", extra={"resource_id": resource_id})
     analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
 

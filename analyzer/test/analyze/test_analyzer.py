@@ -1,4 +1,5 @@
 import pytest
+import time
 from unittest import mock
 
 from analyzer.src.analyze.graphql import PyrogClient
@@ -11,6 +12,53 @@ from analyzer.src.analyze.sql_filter import SqlFilter
 from analyzer.src.analyze.sql_join import SqlJoin
 
 from analyzer.test.conftest import mock_api_get_maps
+
+
+@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
+def test_get_analysis_first_time(mock_login):
+    analyzer = Analyzer(PyrogClient())
+
+    # patch the fetch_analysis method
+    def side_effect(resource):
+        analyzer.analyses[resource] = None
+
+    analyzer.fetch_analysis = mock.MagicMock()
+    analyzer.fetch_analysis.side_effect = side_effect
+
+    analyzer.get_analysis("Resource")
+
+    analyzer.fetch_analysis.assert_called_with("Resource")
+
+
+@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
+def test_get_analysis_no_refresh(mock_login):
+    resource_id = "Resource"
+
+    analyzer = Analyzer(PyrogClient())
+    analyzer.analyses[resource_id] = None
+    analyzer.last_updated_at[resource_id] = time.time() - 200
+
+    analyzer.fetch_analysis = mock.MagicMock()
+
+    analyzer.get_analysis(resource_id)
+
+    analyzer.fetch_analysis.assert_not_called()
+
+
+@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
+def test_get_analysis_refresh_old(mock_login):
+    resource_id = "Resource"
+
+    analyzer = Analyzer(PyrogClient())
+    analyzer.analyses[resource_id] = None
+    analyzer.last_updated_at[resource_id] = time.time() - 5000
+
+    analyzer.fetch_analysis = mock.MagicMock()
+
+    analyzer.get_analysis(resource_id)
+
+    analyzer.fetch_analysis.assert_called_with(resource_id)
+    analyzer.fetch_analysis.reset_mock()
 
 
 @mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
