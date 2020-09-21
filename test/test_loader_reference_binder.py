@@ -85,7 +85,14 @@ def test_batch_single_row():
 
     # Check reference binding
     store = get_fhirstore()
-    collection = store.db["Encounter"]
-    cursor = collection.find({})
+    encounters = store.db["Encounter"]
+    patients = store.db["Patient"]
+    cursor = encounters.find({})
     for document in cursor:
         assert "reference" in document["subject"]
+        reference = document["subject"]["reference"].split("/")
+        assert reference[0] == "Patient"
+        patient = patients.find_one(filter={"id": reference[1]})
+        assert patient
+    encounters.delete_many({})
+    patients.delete_many({})
