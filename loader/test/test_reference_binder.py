@@ -27,7 +27,6 @@ def test_extract_key_tuple():
             "type": {"coding": [{"code": "c", "system": "s"}]},
         }
         ReferenceBinder.extract_key_tuple(identifier3)
-
     with raises(
             Exception,
             match=error
