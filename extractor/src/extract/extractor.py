@@ -30,7 +30,13 @@ MSSQL = "MSSQL"
 ORACLE = "ORACLE"
 POSTGRES = "POSTGRES"
 DB_DRIVERS = {POSTGRES: "postgresql", ORACLE: "oracle+cx_oracle", MSSQL: "mssql+pyodbc"}
-URL_SUFFIXES = {POSTGRES: "", ORACLE: "", MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server"}
+URL_SUFFIXES = {
+    POSTGRES: "",
+    ORACLE: "",
+    # the param MARS_Connection=Yes solves the following issue:
+    # https://github.com/catherinedevlin/ipython-sql/issues/54
+    MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server&MARS_Connection=Yes",
+}
 
 
 class Extractor:
