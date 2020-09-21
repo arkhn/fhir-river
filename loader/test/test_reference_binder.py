@@ -15,28 +15,26 @@ def test_extract_key_tuple():
     identifier2 = {"type": {"coding": [{"code": "c", "system": "s"}]}}
     assert ReferenceBinder.extract_key_tuple(identifier2) == (None, None, "c", "s")
 
-    identifier3 = {
-        "value": "v",
-        "system": "s",
-        "type": {"coding": [{"code": "c", "system": "s"}]},
-    }
+    error = r".*\(identifier.value and identifier.system\) or \(identifier.type.coding.code and " \
+            r"identifier.type.coding.system\) are required and mutually exclusive$"
     with raises(
-        Exception,
-            match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) "
-                  "or (identifier.type.coding.code and identifier.type.coding.system) are required "
-                  "and mutually exclusive"
+            Exception,
+            match=error
     ):
+        identifier3 = {
+            "value": "v",
+            "system": "s",
+            "type": {"coding": [{"code": "c", "system": "s"}]},
+        }
         ReferenceBinder.extract_key_tuple(identifier3)
 
-    identifier3 = {
-        "value": "v",
-    }
     with raises(
-        Exception,
-        match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) "
-              "or (identifier.type.coding.code and identifier.type.coding.system) are required "
-              "and mutually exclusive"
+            Exception,
+            match=error
     ):
+        identifier3 = {
+            "value": "v",
+        }
         ReferenceBinder.extract_key_tuple(identifier3)
 
 
@@ -213,7 +211,8 @@ def test_resolve_pending_references(
                     "generalPractitioner": {
                         "$elemMatch": {
                             "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                            # noqa
                         }
                     },
                 },
@@ -233,7 +232,8 @@ def test_resolve_pending_references(
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner.identifier.value": "456",
-                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
+                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
+                    # noqa
                 },
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
@@ -242,7 +242,8 @@ def test_resolve_pending_references(
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization.identifier.value": "789",
-                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
+                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
+                    # noqa
                 },
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
@@ -257,7 +258,7 @@ def test_resolve_pending_references(
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references_code_identifier(
-    mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
+        mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -323,7 +324,8 @@ def test_resolve_pending_references_code_identifier(
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner.identifier.type.coding.0.code": "code_456",
-                    "identifier.0.assigner.identifier.type.coding.0.system": "fhir_code_system_organization",  # noqa
+                    "identifier.0.assigner.identifier.type.coding.0.system": "fhir_code_system_organization",
+                    # noqa
                 },
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
@@ -332,7 +334,8 @@ def test_resolve_pending_references_code_identifier(
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization.identifier.type.coding.0.code": "code_789",
-                    "managingOrganization.identifier.type.coding.0.system": "fhir_code_system_organization",  # noqa
+                    "managingOrganization.identifier.type.coding.0.system": "fhir_code_system_organization",
+                    # noqa
                 },
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
@@ -388,7 +391,7 @@ def test_resolve_batch_references(
         mock.call(
             json.dumps(target_ref),
             json.dumps(
-                (source_ref,  patient_2["id"])
+                (source_ref, patient_2["id"])
             )
         )
     ]
@@ -409,7 +412,8 @@ def test_resolve_batch_references(
                 "link": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                        # noqa
                     }
                 },
             },
@@ -422,7 +426,8 @@ def test_resolve_batch_references(
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                        # noqa
                     }
                 },
             },
@@ -435,7 +440,8 @@ def test_resolve_batch_references(
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                        # noqa
                     }
                 },
             },
