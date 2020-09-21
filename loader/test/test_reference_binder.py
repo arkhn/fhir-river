@@ -15,26 +15,28 @@ def test_extract_key_tuple():
     identifier2 = {"type": {"coding": [{"code": "c", "system": "s"}]}}
     assert ReferenceBinder.extract_key_tuple(identifier2) == (None, None, "c", "s")
 
+    identifier3 = {
+        "value": "v",
+        "system": "s",
+        "type": {"coding": [{"code": "c", "system": "s"}]},
+    }
     with raises(
         Exception,
-            match="(identifier.value and identifier.system) or (identifier.type.coding.code and "
-                  "identifier.type.coding.system) are required and mutually exclusive"
+            match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) or "
+                  "(identifier.type.coding.code and identifier.type.coding.system) are required and"
+                  " mutually exclusive"
     ):
-        identifier3 = {
-            "value": "v",
-            "system": "s",
-            "type": {"coding": [{"code": "c", "system": "s"}]},
-        }
         ReferenceBinder.extract_key_tuple(identifier3)
 
+    identifier3 = {
+        "value": "v",
+    }
     with raises(
         Exception,
-        match="(identifier.value and identifier.system) or (identifier.type.coding.code and "
-              "identifier.type.coding.system) are required and mutually exclusive"
+        match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) or "
+              "(identifier.type.coding.code and identifier.type.coding.system) are required and"
+              " mutually exclusive"
     ):
-        identifier3 = {
-            "value": "v",
-        }
         ReferenceBinder.extract_key_tuple(identifier3)
 
 
