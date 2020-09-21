@@ -210,8 +210,7 @@ def test_resolve_pending_references(
                     "generalPractitioner": {
                         "$elemMatch": {
                             "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                            # noqa
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
                         }
                     },
                 },
@@ -231,8 +230,7 @@ def test_resolve_pending_references(
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner.identifier.value": "456",
-                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                    # noqa
+                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id", # noqa
                 },
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
@@ -241,8 +239,7 @@ def test_resolve_pending_references(
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization.identifier.value": "789",
-                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                    # noqa
+                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id", # noqa
                 },
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
@@ -323,8 +320,7 @@ def test_resolve_pending_references_code_identifier(
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner.identifier.type.coding.0.code": "code_456",
-                    "identifier.0.assigner.identifier.type.coding.0.system": "fhir_code_system_organization",
-                    # noqa
+                    "identifier.0.assigner.identifier.type.coding.0.system": "fhir_code_system_organization", # noqa
                 },
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
@@ -333,8 +329,7 @@ def test_resolve_pending_references_code_identifier(
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization.identifier.type.coding.0.code": "code_789",
-                    "managingOrganization.identifier.type.coding.0.system": "fhir_code_system_organization",
-                    # noqa
+                    "managingOrganization.identifier.type.coding.0.system": "fhir_code_system_organization", # noqa
                 },
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
@@ -411,8 +406,7 @@ def test_resolve_batch_references(
                 "link": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                        # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
                     }
                 },
             },
@@ -425,8 +419,7 @@ def test_resolve_batch_references(
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                        # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
                     }
                 },
             },
@@ -439,8 +432,7 @@ def test_resolve_batch_references(
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                        # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
                     }
                 },
             },
