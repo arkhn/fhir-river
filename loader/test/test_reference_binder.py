@@ -22,9 +22,9 @@ def test_extract_key_tuple():
     }
     with raises(
         Exception,
-            match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) or "
-                  "(identifier.type.coding.code and identifier.type.coding.system) are required and"
-                  " mutually exclusive"
+            match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) "
+                  "or (identifier.type.coding.code and identifier.type.coding.system) are required "
+                  "and mutually exclusive"
     ):
         ReferenceBinder.extract_key_tuple(identifier3)
 
@@ -33,9 +33,9 @@ def test_extract_key_tuple():
     }
     with raises(
         Exception,
-        match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) or "
-              "(identifier.type.coding.code and identifier.type.coding.system) are required and"
-              " mutually exclusive"
+        match=f"invalid identifier: {identifier3} (identifier.value and identifier.system) "
+              "or (identifier.type.coding.code and identifier.type.coding.system) are required "
+              "and mutually exclusive"
     ):
         ReferenceBinder.extract_key_tuple(identifier3)
 
