@@ -4,7 +4,7 @@ import requests
 
 from .consumer_class import EventConsumer
 from analyzer.src.analyze.graphql import PyrogClient
-import redis
+from loader.src.load.fhirstore import get_fhirstore
 
 
 BATCH_SIZE_TOPIC = "batch_size"
@@ -22,22 +22,17 @@ def get_resource_ids():
                 id
                 resources {
                     id
+                    definitionId
                 }
             }
         }
     """
-    client = PyrogClient()
-    sources_resp = client.run_graphql_query(sources_query)
-    print(f"Source response: {sources_resp}")
-    return [resource["id"] for resource in sources_resp["data"]["sources"][0]["resources"]]
+    pyrog_client = PyrogClient()
+    sources_resp = pyrog_client.run_graphql_query(sources_query)
+    return [resource for resource in sources_resp["data"]["sources"][0]["resources"]]
 
 
-def test_batch_single_row():
-    print("START")
-
-    resource_ids = get_resource_ids()
-    r = redis.Redis(port=6380)
-
+def send_batch(resource_id):
     # declare kafka consumer of "load" events
     consumer = EventConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS_EXTERNAL"),
@@ -48,7 +43,7 @@ def test_batch_single_row():
 
     def wait_batch(msg):
         msg_value = json.loads(msg.value())
-        print(f"Go batch of size {msg_value['size']}, consuming events...")
+        print(f"Got batch of size {msg_value['size']}, consuming events...")
         consumer.run_consumer(event_count=msg_value["size"], poll_timeout=15)
 
     batch_size_consumer = EventConsumer(
@@ -59,20 +54,38 @@ def test_batch_single_row():
         process_event=wait_batch,
     )
 
-    for resource_id in resource_ids:
-        try:
-            # send a batch request
-            response = requests.post(
-                "http://0.0.0.0:3001/batch", json={"resource_ids": [resource_id]},
-            )
-            print(f"New POST request sent to River API: {resource_id}")
-        except requests.exceptions.ConnectionError:
-            raise Exception("Could not connect to the api service")
+    try:
+        # send a batch request
+        response = requests.post(
+            "http://0.0.0.0:3001/batch", json={"resource_ids": [resource_id]},
+        )
+        print(f"New POST request sent to River API: {resource_id}")
+    except requests.exceptions.ConnectionError:
+        raise Exception("Could not connect to the api service")
 
-        assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
+    assert response.status_code == 200, f"api POST /batch returned an error: {response.text}"
 
-        print("Waiting for a batch_size event...")
-        batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
+    print("Waiting for a batch_size event...")
+    batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
 
-    # Check if reference cache is empty
-    assert r.dbsize() == 0
+
+def test_batch_single_row():
+    print("START")
+
+    resources = get_resource_ids()
+
+    # Send Encounter batch
+    for resource in resources:
+        if resource["definitionId"] == "Encounter":
+            send_batch(resource["id"])
+    # Send Patient batch
+    for resource in resources:
+        if resource["definitionId"] == "Patient":
+            send_batch(resource["id"])
+
+    # Check reference binding
+    store = get_fhirstore()
+    collection = store.db["Encounter"]
+    cursor = collection.find({})
+    for document in cursor:
+        assert "reference" in document["subject"]

@@ -191,8 +191,9 @@ class ReferenceBinder:
 
         if not (bool(value and system) ^ bool(identifier_type_system and identifier_type_code)):
             raise Exception(
-                f"invalid identifier: {identifier} identifier.value and identifier.system "
-                "or identifier.type are required and mutually exclusive"
+                f"invalid identifier: {identifier} (identifier.value and identifier.system) "
+                "or (identifier.type.coding.code and identifier.type.coding.system) are required "
+                "and mutually exclusive"
             )
 
         return value, system, identifier_type_code, identifier_type_system
