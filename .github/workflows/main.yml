@@ -80,8 +80,7 @@ jobs:
           docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
           sleep 15
-          python -m pytest -svv test/test_loader_reference_binder.py
-          python -m pytest -svv test/test_batch.py
+          python -m pytest -svv test
 
   publish:
     name: Publish docker images

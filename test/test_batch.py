@@ -1,13 +1,25 @@
 import os
 import json
 import requests
+import pytest
 
 from .consumer_class import EventConsumer
 from analyzer.src.analyze.graphql import PyrogClient
+from loader.src.load.fhirstore import get_fhirstore
 
 
 BATCH_SIZE_TOPIC = "batch_size"
 LOAD_TOPIC = "load"
+
+
+@pytest.fixture(scope="module")
+def get_store():
+    store = get_fhirstore()
+    yield
+    encounters = store.db["Encounter"]
+    patients = store.db["Patient"]
+    encounters.delete_many({})
+    patients.delete_many({})
 
 
 def handle_kafka_error(err):
@@ -70,6 +82,5 @@ def test_batch_single_row():
 
         print("Waiting for a batch_size event...")
         batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
-
 
 # check in elastic that references have been set
