@@ -13,7 +13,7 @@ LOAD_TOPIC = "load"
 
 
 @pytest.fixture(scope="module")
-def get_store():
+def store():
     store = get_fhirstore()
     yield store
     encounters = store.db["Encounter"]
@@ -79,7 +79,7 @@ def send_batch(resource_id):
     batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
 
 
-def test_batch_reference_binder():
+def test_batch_reference_binder(store):
     resource_ids = get_resource_ids()
 
     # Send Patient and Encounter batches
@@ -87,7 +87,6 @@ def test_batch_reference_binder():
         send_batch(resource["id"])
 
     # Check reference binding
-    store = get_store()
     encounters = store.db["Encounter"]
     patients = store.db["Patient"]
     cursor = encounters.find({})
