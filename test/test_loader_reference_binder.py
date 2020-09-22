@@ -69,7 +69,7 @@ def send_batch(resource_id):
     batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
 
 
-def test_batch_single_row():
+def test_batch_reference_binder():
     resources = get_resources()
 
     # Send Encounter batch
