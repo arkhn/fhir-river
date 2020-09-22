@@ -15,14 +15,13 @@ def handle_kafka_error(err):
     raise err
 
 
-def get_resources():
+def get_resource_ids():
     sources_query = """
         query s {
             sources {
                 id
                 resources {
                     id
-                    definitionId
                 }
             }
         }
@@ -70,16 +69,11 @@ def send_batch(resource_id):
 
 
 def test_batch_reference_binder():
-    resources = get_resources()
+    resource_ids = get_resource_ids()
 
-    # Send Encounter batch
-    for resource in resources:
-        if resource["definitionId"] == "Encounter":
-            send_batch(resource["id"])
-    # Send Patient batch
-    for resource in resources:
-        if resource["definitionId"] == "Patient":
-            send_batch(resource["id"])
+    # Send Patient and Encounter batches
+    for resource in resource_ids:
+        send_batch(resource["id"])
 
     # Check reference binding
     store = get_fhirstore()
