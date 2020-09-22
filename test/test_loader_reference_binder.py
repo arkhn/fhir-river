@@ -92,5 +92,3 @@ def test_batch_reference_binder():
         assert reference[0] == "Patient"
         patient = patients.find_one(filter={"id": reference[1]})
         assert patient
-    encounters.delete_many({})
-    patients.delete_many({})
