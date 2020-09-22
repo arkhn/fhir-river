@@ -15,7 +15,7 @@ def handle_kafka_error(err):
     raise err
 
 
-def get_resource_ids():
+def get_resources():
     sources_query = """
         query s {
             sources {
@@ -70,9 +70,7 @@ def send_batch(resource_id):
 
 
 def test_batch_single_row():
-    print("START")
-
-    resources = get_resource_ids()
+    resources = get_resources()
 
     # Send Encounter batch
     for resource in resources:
