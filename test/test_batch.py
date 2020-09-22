@@ -12,7 +12,7 @@ BATCH_SIZE_TOPIC = "batch_size"
 LOAD_TOPIC = "load"
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="module", autouse=True)
 def get_store():
     store = get_fhirstore()
     yield
