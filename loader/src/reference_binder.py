@@ -1,11 +1,14 @@
 import re
+import json
 from collections import defaultdict
+from typing import DefaultDict
 from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
 
 from loader.src.config.service_logger import logger
 from loader.src.load.utils import get_resource_id
+from loader.src.cache import redis
 
 
 # dotty-dict does not handle brackets indices,
@@ -61,21 +64,22 @@ class ReferenceBinder:
     def __init__(self, fhirstore):
         self.fhirstore = fhirstore
 
-        # cache is a dict of form
-        # {
-        #   (fhir_type_target, (value, system, code, code_system)):
-        #           {(fhir_type_source, path, isArray): [fhir_id1, ...]},
-        #   (fhir_type_target, (value, system, code, code_system)):
-        #           {(fhir_type_source, path, isArray): [fhir_id]},
-        #   ...
-        # }
-        # eg:
-        # {
-        #   (Practitioner, 1234, system): {(Patient, generalPractitioner, True): [fhir-pract-id]},
-        #   ...
-        # }
-
-        self.cache = defaultdict(lambda: defaultdict(list))
+        # In Redis, we have sets identified with keys defined as a stringified
+        # json array:
+        # "[fhir_type_target, [value, system, code, code_system]]"
+        #
+        # A Redis set is a list. Here a list of stringified json arrays
+        # [
+        #     "[ [fhir_type_source, path, isArray], fhir_id1 ]",
+        #     "[ [fhir_type_source, path, isArray], fhir_id2 ]",
+        #     ...
+        # ]
+        # eg: A Redis set "[Practitioner, [1234, system]]" contains
+        # [
+        #     "[ [Patient, generalPractitioner, True], fhir-pract-id ]",
+        #     ...
+        # ]
+        self.cache = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
     def resolve_references(self, unresolved_fhir_object, reference_paths):
@@ -137,10 +141,13 @@ class ReferenceBinder:
                     extra={"resource_id": resource_id},
                 )
 
-                # otherwise, cache the reference to resolve it later
+                # otherwise, cache in Redis the reference to resolve it later
                 target_ref = (reference_type, identifier_tuple)
                 source_ref = (fhir_object["resourceType"], reference_path, isArray)
-                self.cache[target_ref][source_ref].append(fhir_object["id"])
+                self.cache.sadd(
+                    json.dumps(target_ref),
+                    json.dumps((source_ref, fhir_object["id"]))
+                )
             return ref
 
         # If we have a list of references, we want to bind all of them.
@@ -158,19 +165,18 @@ class ReferenceBinder:
             except Exception as e:
                 logger.error(e)
                 continue
-
-            target_ref = (fhir_object["resourceType"], identifier_tuple)
-            pending_refs = self.cache.get(target_ref, {})
-            for (source_type, reference_path, isArray), refs in pending_refs.items():
-                find_predicate = build_find_predicate(refs, reference_path, identifier, isArray)
-                update_predicate = build_update_predicate(reference_path, fhir_object, isArray)
+            target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
+            pending_refs = self.load_cached_references(target_ref)
+            for (source_type, reference_path, is_array), refs in pending_refs.items():
+                find_predicate = build_find_predicate(refs, reference_path, identifier, is_array)
+                update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
                 logger.debug(
                     f"Updating resource {source_type}: {find_predicate} {update_predicate}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
                 self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
-            if len(pending_refs) > 0:
-                del self.cache[target_ref]
+            if pending_refs:
+                self.cache.delete(target_ref)
 
     @staticmethod
     def extract_key_tuple(identifier):
@@ -185,8 +191,35 @@ class ReferenceBinder:
 
         if not (bool(value and system) ^ bool(identifier_type_system and identifier_type_code)):
             raise Exception(
-                f"invalid identifier: {identifier} identifier.value and identifier.system "
-                "or identifier.type are required and mutually exclusive"
+                f"invalid identifier: {identifier} (identifier.value and identifier.system) "
+                "or (identifier.type.coding.code and identifier.type.coding.system) are required "
+                "and mutually exclusive"
             )
 
-        return (value, system, identifier_type_code, identifier_type_system)
+        return value, system, identifier_type_code, identifier_type_system
+
+    def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
+        """Requests cached references from Redis
+
+        :param target_ref: "[fhir_type_target, [value, system, code, code_system]]"
+        :type target_ref: str
+        The SMEMBERS command gets the set target_ref and returns a list
+        [
+            "[ [fhir_type_source, path, isArray], fhir_id1 ]",
+            "[ [fhir_type_source, path, isArray], fhir_id2 ]",
+            ...
+        ]
+        This list is formatted as a defaultdict which is then returned
+        :return pending_refs: {
+            (fhir_type_source, path, isArray): [fhir_id1, fhir_id2],
+            ...
+        }
+        :rtype: DefaultDict[tuple, list]
+        """
+
+        references_set = self.cache.smembers(target_ref)
+        pending_refs = defaultdict(list)
+        for element in references_set:
+            (source_ref, ref) = json.loads(element)
+            pending_refs[tuple(source_ref)].append(ref)
+        return pending_refs
