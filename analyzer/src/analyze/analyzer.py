@@ -32,33 +32,11 @@ class Analyzer:
 
         self._cur_analysis = Analysis()
 
-    def get_analysis(
-        self, resource_mapping_id, max_seconds_refresh=None
-    ) -> Analysis:
-        if max_seconds_refresh is None:
-            max_seconds_refresh = MAX_SECONDS_REFRESH_ANALYSIS
+    def get_analysis(self, resource_mapping_id) -> Analysis:
+        logger.debug("Get Analysis", extra={"resource_id": resource_mapping_id})
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
-        else:
-            self.check_refresh_analysis(resource_mapping_id, max_seconds_refresh)
         return self.analyses[resource_mapping_id]
-
-    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh):
-        """
-        This method refreshes the analyser if the last update was later than `max_seconds_refresh`
-        for each resource
-        """
-        if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
-            logger.info(
-                f"Analysis too old for resource {resource_mapping_id}.",
-                extra={"resource_id": resource_mapping_id},
-            )
-            self.fetch_analysis(resource_mapping_id)
-        else:
-            logger.debug(
-                "Analysis was updated recently. Using cached analysis.",
-                extra={"resource_id": resource_mapping_id},
-            )
 
     def fetch_analysis(self, resource_mapping_id):
         """

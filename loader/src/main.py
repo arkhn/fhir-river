@@ -6,6 +6,7 @@ import json
 import os
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
+from typings import Dict
 from uwsgidecorators import thread, postfork
 
 from fhirstore import NotFoundError
@@ -15,7 +16,6 @@ from analyzer.src.analyze.graphql import PyrogClient
 from loader.src.config.service_logger import logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
-from loader.src.load.utils import get_resource_id
 from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
@@ -24,6 +24,10 @@ from loader.src.producer_class import LoaderProducer
 fhirstore = get_fhirstore()
 loader = Loader(fhirstore)
 analyzer = Analyzer(PyrogClient())
+# analyzers is a map of Analyzer indexed by batch_id
+analyzers: Dict[str, Analyzer] = {}
+# users_tokens is a map of {auth_token: str, id_token: str} indexed by batch_id
+users_tokens: Dict[str, Dict[str, str]] = {}
 binder = ReferenceBinder(fhirstore)
 
 ####################
@@ -78,7 +82,8 @@ def handle_bad_request(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TOPIC = "transform"
+CONSUMED_BATCH_TOPIC = "batch"
+CONSUMED_TRANSFORM_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
 
@@ -88,13 +93,32 @@ CONSUMER_GROUP_ID = "loader"
 # is started at the same time as the Flask API.
 @postfork
 @thread
+def run_batch_consumer():
+    logger.info("Running batch consumer")
+
+    consumer = LoaderConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=CONSUMED_BATCH_TOPIC,
+        group_id=CONSUMER_GROUP_ID,
+        process_event=process_batch_event,
+        manage_error=manage_kafka_error,
+    )
+
+    try:
+        consumer.run_consumer()
+    except (KafkaException, KafkaError) as err:
+        logger.error(err)
+
+
+@postfork
+@thread
 def run_consumer():
     logger.info("Running Consumer")
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
+        topics=CONSUMED_TRANSFORM_TOPIC,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
@@ -106,17 +130,36 @@ def run_consumer():
         logger.error(err)
 
 
+def process_batch_event(msg):
+    msg_value = json.loads(msg.value())
+    batch_id = msg_value.get("batch_id")
+
+    tokens = users_tokens.get(batch_id)
+    if batch_id not in users_tokens:
+        logger.info(f"Caching tokens for batch {batch_id}")
+        auth_header = msg_value.get("auth_header", None)
+        id_token = msg_value.get("id_token", None)
+        tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
+
+
 def process_event_with_producer(producer):
     def process_event(msg):
-        """
-        Process the event
-        :param msg:
-        :return:
-        """
-        fhir_instance = json.loads(msg.value())
-        resource_id = get_resource_id(fhir_instance)
+        """ Process the event """
+        msg_value = json.loads(msg.value())
+        logger.debug(msg_value)
+        fhir_instance = msg_value.get("fhir_object")
+        batch_id = msg_value.get("batch_id")
+        resource_id = msg_value.get("resource_id")
 
-        logger.debug("Get Analysis", extra={"resource_id": resource_id})
+        analyzer = analyzers.get(batch_id)
+        if not analyzer:
+            tokens = users_tokens.get("batch_id")
+            if not tokens:
+                logger.error(f"Tokens not found for batch {batch_id}, aborting")
+                return
+            pyrog_client = PyrogClient(tokens["auth_header"], tokens["id_token"])
+            analyzer = Analyzer(pyrog_client)
+            analyzers[batch_id] = analyzer
         # FIXME: filter meta.tags by system to get the right
         # resource_id (ARKHN_CODE_SYSTEMS.resource)
         analysis = analyzer.get_analysis(resource_id)

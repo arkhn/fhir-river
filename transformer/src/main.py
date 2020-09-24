@@ -3,6 +3,7 @@
 import json
 import os
 import pydantic
+from typings import Dict
 
 from confluent_kafka import KafkaException, KafkaError
 from fhir.resources import construct_fhir_element
@@ -19,11 +20,15 @@ from transformer.src.producer_class import TransformerProducer
 from transformer.src.errors import OperationOutcome
 
 
-CONSUMED_TOPIC = "extract"
+CONSUMED_BATCH_TOPIC = "batch"
+CONSUMED_EXTRACT_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
 
-analyzer = Analyzer(PyrogClient())
+# analyzers is a map of Analyzer indexed by batch_id
+analyzers: Dict[str, Analyzer] = {}
+# users_tokens is a map of {auth_token: str, id_token: str} indexed by batch_id
+users_tokens: Dict[str, Dict[str, str]] = {}
 transformer = Transformer()
 
 
@@ -35,15 +40,47 @@ def create_app():
 app = create_app()
 
 
+def process_batch_event(msg):
+    msg_value = json.loads(msg.value())
+    batch_id = msg_value.get("batch_id")
+
+    tokens = users_tokens.get(batch_id)
+    if batch_id not in users_tokens:
+        logger.info(f"Caching tokens for batch {batch_id}")
+        auth_header = msg_value.get("auth_header", None)
+        id_token = msg_value.get("id_token", None)
+        tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
+
+
 def process_event_with_producer(producer):
     def process_event(msg):
         """ Process the event """
         msg_value = json.loads(msg.value())
         logger.debug(msg_value)
+        record = msg_value.get("record")
+        batch_id = msg_value.get("batch_id")
+        resource_id = msg_value.get("resource_id")
 
+        analyzer = analyzers.get(batch_id)
+        if not analyzer:
+            tokens = users_tokens.get("batch_id")
+            if not tokens:
+                logger.error(f"Tokens not found for batch {batch_id}, aborting")
+                return
+            pyrog_client = PyrogClient(tokens["auth_header"], tokens["id_token"])
+            analyzer = Analyzer(pyrog_client)
+            analyzers[batch_id] = analyzer
+        analysis = analyzer.get_analysis(resource_id)
         try:
-            fhir_document = transform_row(msg_value["resource_id"], msg_value["record"])
-            producer.produce_event(topic=PRODUCED_TOPIC, record=fhir_document)
+            fhir_document = transform_row(analysis, record)
+            producer.produce_event(
+                topic=PRODUCED_TOPIC,
+                record={
+                    "fhir_object": fhir_document,
+                    "batch_id": batch_id,
+                    "resource_id": resource_id,
+                },
+            )
 
         except Exception as err:
             logger.error(err)
@@ -56,12 +93,9 @@ def manage_kafka_error(msg):
     logger.error(msg.error().str())
 
 
-def transform_row(resource_id, row, time_refresh_analysis=None):
-    logger.debug("Get Analysis", extra={"resource_id": resource_id})
-    analysis = analyzer.get_analysis(resource_id, time_refresh_analysis)
-
+def transform_row(analysis, row):
     primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
-    logging_extras = {"resource_id": resource_id, "primary_key_value": primary_key_value}
+    logging_extras = {"resource_id": analysis.resource_id, "primary_key_value": primary_key_value}
 
     try:
         logger.debug("Transform dataframe", extra=logging_extras)
@@ -75,7 +109,7 @@ def transform_row(resource_id, row, time_refresh_analysis=None):
     except Exception as e:
         logger.error(
             f"Failed to transform {row}:\n{e}",
-            extra={"resource_id": resource_id, "primary_key_value": primary_key_value},
+            extra={"resource_id": analysis.resource_id, "primary_key_value": primary_key_value},
         )
 
 
@@ -84,14 +118,21 @@ def transform():
     body = request.get_json()
     resource_id = body.get("resource_id")
     rows = body.get("dataframe")
+
+    # Get headers
+    authorization_header = request.headers.get("Authorization")
+    id_token = request.headers.get("IdToken")
+
     logger.info(
         f"POST /transform. Transforming {len(rows)} row(s).", extra={"resource_id": resource_id}
     )
+    pyrog_client = PyrogClient(authorization_header, id_token)
+    analysis = Analyzer(pyrog_client).get_analysis(resource_id)
     try:
         fhir_instances = []
         errors = []
         for row in rows:
-            fhir_document = transform_row(resource_id, row, time_refresh_analysis=0)
+            fhir_document = transform_row(analysis, row)
             fhir_instances.append(fhir_document)
             try:
                 resource_type = fhir_document.get("resourceType")
@@ -130,15 +171,34 @@ def handle_bad_request(e):
 # is started at the same time as the Flask API.
 @postfork
 @thread
-def run_consumer():
-    logger.info("Running Consumer")
+def run_extract_consumer():
+    logger.info("Running transform consumer")
 
     producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
+        topics=CONSUMED_EXTRACT_TOPIC,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_producer(producer),
+        manage_error=manage_kafka_error,
+    )
+
+    try:
+        consumer.run_consumer()
+    except (KafkaException, KafkaError) as err:
+        logger.error(err)
+
+
+@postfork
+@thread
+def run_batch_consumer():
+    logger.info("Running batch consumer")
+
+    consumer = TransformerConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=CONSUMED_BATCH_TOPIC,
+        group_id=CONSUMER_GROUP_ID,
+        process_event=process_batch_event,
         manage_error=manage_kafka_error,
     )
 
