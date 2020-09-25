@@ -1,13 +1,10 @@
 import os
 import requests
 
-from analyzer.src.config.service_logger import logger
 from analyzer.src.errors import OperationOutcome
 
 
 PYROG_API_URL = os.getenv("PYROG_API_URL")
-PYROG_LOGIN = os.getenv("PYROG_LOGIN")
-PYROG_PASSWORD = os.getenv("PYROG_PASSWORD")
 
 login_mutation = """
 mutation login($email: String!, $password: String!) {

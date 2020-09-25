@@ -1,10 +1,13 @@
+from collections.abc import Mapping
 import os
 import re
-import time
-from collections.abc import Mapping
+import requests
+
+from authlib.integrations.requests_client import OAuth2Session, OAuth2Auth
 
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.service_logger import logger
+from analyzer.src.errors import OperationOutcome
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -18,19 +21,28 @@ from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
 
+FHIR_API_URL = os.getenv("FHIR_API_URL")
 MAX_SECONDS_REFRESH_ANALYSIS = int(os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600))
+TOKEN_ENDPOINT = os.getenv("OAUTH2_TOKEN_URL")
+OAUTH_CLIENT_ID = os.getenv("OAUTH2_CLIENT_ID")
+OAUTH_CLIENT_SECRET = os.getenv("OAUTH2_CLIENT_SECRET")
 
 
 class Analyzer:
     def __init__(self, pyrog_client: PyrogClient):
         self.pyrog = pyrog_client
+        self.oauth_client = OAuth2Session(OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET)
+        self.fetch_access_token()
         # Store analyses
         # TODO think about the design here. Use http caching instead of
         # storing here, for instance?
         self.analyses: Mapping = {}
-        self.last_updated_at: Mapping = {}  # store last updated timestamp for each resource_id
 
         self._cur_analysis = Analysis()
+
+    def fetch_access_token(self):
+        token = self.oauth_client.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
+        self.auth_token = OAuth2Auth(token)
 
     def get_analysis(self, resource_mapping_id) -> Analysis:
         logger.debug("Get Analysis", extra={"resource_id": resource_mapping_id})
@@ -47,9 +59,6 @@ class Analyzer:
         logger.info("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
         resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
         self.analyze(resource_mapping)
-        self.last_updated_at[resource_mapping_id] = time.time()
-
-    # TODO add an update_analysis(self, resource_mapping_id)?
 
     def analyze(self, resource_mapping):
         self._cur_analysis = Analysis()
@@ -145,7 +154,7 @@ class Analyzer:
                     cur_col.cleaning_script = CleaningScript(input_["script"])
 
                 if input_["conceptMapId"]:
-                    cur_col.concept_map = ConceptMap(input_["conceptMapId"])
+                    cur_col.concept_map = ConceptMap(self.fetch_concept_map(input_["conceptMapId"]))
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
@@ -202,3 +211,22 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["source"]["credential"]["owner"],
         )
+
+    def fetch_concept_map(self, concept_map_id: str) -> dict:
+        try:
+            response = requests.get(
+                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", auth=self.auth_token
+            )
+            # FIXME how could this be a bit cleaner?
+            if response.status_code == 401:
+                # Refetch a token and retry
+                self.fetch_access_token()
+                response = requests.get(
+                    f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", auth=self.auth_token
+                )
+        except requests.exceptions.ConnectionError as e:
+            raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
+
+        if response.status_code != 200:
+            raise Exception(f"Error while fetching concept map {concept_map_id}: {response.text}.")
+        return response.json()
