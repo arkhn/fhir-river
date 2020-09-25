@@ -20,11 +20,7 @@ from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
-
-fhirstore = get_fhirstore()
-loader = Loader(fhirstore)
 analyzer = Analyzer(PyrogClient())
-binder = ReferenceBinder(fhirstore)
 
 ####################
 # LOADER FLASK API #
@@ -49,6 +45,7 @@ def delete_resources():
         resource_type = analysis.definition_id
 
         # Call fhirstore.delete
+        fhirstore = get_fhirstore()
         try:
             fhirstore.delete(resource_type, resource_id=resource_id)
         except NotFoundError:
@@ -107,6 +104,11 @@ def run_consumer():
 
 
 def process_event_with_producer(producer):
+    # Mongo client need to be called in each separate process
+    fhirstore = get_fhirstore()
+    loader = Loader(fhirstore)
+    binder = ReferenceBinder(fhirstore)
+
     def process_event(msg):
         """
         Process the event
@@ -151,7 +153,6 @@ def manage_kafka_error(msg):
     :return:
     """
     logger.error(msg.error())
-
 
 # @Timer("time_override", "time to delete a potential document with the same identifier")
 # def override_document(fhir_instance):
