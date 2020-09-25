@@ -188,7 +188,7 @@ services:
       - kafka
       - mongo
       - fluentd
-      - redis
+      - loader-redis
     env_file:
       - .env
     environment:
