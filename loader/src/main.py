@@ -20,7 +20,6 @@ from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
-
 analyzer = Analyzer(PyrogClient())
 
 ####################
@@ -105,6 +104,7 @@ def run_consumer():
 
 
 def process_event_with_producer(producer):
+    # Mongo client need to be called in each separate process
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
@@ -153,7 +153,6 @@ def manage_kafka_error(msg):
     :return:
     """
     logger.error(msg.error())
-
 
 # @Timer("time_override", "time to delete a potential document with the same identifier")
 # def override_document(fhir_instance):
