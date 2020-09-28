@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify, Response
 import json
 import os
+
+from confluent_kafka import KafkaException, KafkaError
+from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
-from typings import Dict
+from typing import Dict
 from uwsgidecorators import thread, postfork
 
 from fhirstore import NotFoundError
@@ -23,7 +24,6 @@ from loader.src.producer_class import LoaderProducer
 
 fhirstore = get_fhirstore()
 loader = Loader(fhirstore)
-analyzer = Analyzer(PyrogClient())
 # analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
 # users_tokens is a map of {auth_token: str, id_token: str} indexed by batch_id
@@ -41,16 +41,15 @@ app = Flask(__name__)
 @app.route("/delete-resources", methods=["POST"])
 def delete_resources():
     body = request.get_json()
-    resource_ids = body.get("resource_ids", None)
+    resources = body.get("resources", None)
 
-    for resource_id in resource_ids:
+    for resource in resources:
+        resource_id = resource.get("resource_id")
+        resource_type = resource.get("resource_type")
         logger.info(
-            f"Deleting all documents for resource {resource_id}",
+            f"Deleting all documents of type {resource_type} with resource id {resource_id}",
             extra={"resource_id": resource_id},
         )
-        # Fetch analysis to get resource type
-        analysis = analyzer.get_analysis(resource_id)
-        resource_type = analysis.definition_id
 
         # Call fhirstore.delete
         try:
@@ -134,12 +133,11 @@ def process_batch_event(msg):
     msg_value = json.loads(msg.value())
     batch_id = msg_value.get("batch_id")
 
-    tokens = users_tokens.get(batch_id)
     if batch_id not in users_tokens:
         logger.info(f"Caching tokens for batch {batch_id}")
         auth_header = msg_value.get("auth_header", None)
         id_token = msg_value.get("id_token", None)
-        tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
+        users_tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
 
 
 def process_event_with_producer(producer):
@@ -153,7 +151,7 @@ def process_event_with_producer(producer):
 
         analyzer = analyzers.get(batch_id)
         if not analyzer:
-            tokens = users_tokens.get("batch_id")
+            tokens = users_tokens.get(batch_id)
             if not tokens:
                 logger.error(f"Tokens not found for batch {batch_id}, aborting")
                 return
