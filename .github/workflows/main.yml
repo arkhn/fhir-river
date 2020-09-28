@@ -54,19 +54,14 @@ jobs:
 
       - name: Integration tests with pytest
         env:
-          FHIR_API_TOKEN: ${{ secrets.FHIR_API_TOKEN }}
-          AUTH_SIGNING_PUBLIC_KEY: ${{ secrets.AUTH_SIGNING_PUBLIC_KEY }}
-          AUTH_SIGNING_PRIVATE_KEY: ${{ secrets.AUTH_SIGNING_PRIVATE_KEY }}
           PYROG_API_URL: http://0.0.0.0:1000
-          PYROG_LOGIN: admin@arkhn.com
-          PYROG_PASSWORD: password
           KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
           FHIRSTORE_HOST: localhost
           FHIRSTORE_PORT: 27017
           FHIRSTORE_DATABASE: fhirstore
           FHIRSTORE_USER: arkhn
           FHIRSTORE_PASSWORD: SuperSecurePassword2019
-          TEST: true
+          ENV: test
         run: |
           docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper
           sleep 15
@@ -76,7 +71,6 @@ jobs:
           docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
-          docker exec --env SUPERUSER_PASSWORD="password" pyrog-server yarn seed:superuser
           docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
           docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
           sleep 15
