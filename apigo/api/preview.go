@@ -67,7 +67,15 @@ func transform(resourceID string, rows []interface{}, authorizationHeader string
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 200 {
+	switch resp.StatusCode {
+	case 200:
+		// If everything went well, we go on
+	case 401:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: 401}
+	case 403:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: 403}
+	default:
+		// Return other errors
 		return nil, errors.New(string(body))
 	}
 
@@ -97,7 +105,15 @@ func extract(preview *PreviewRequest, authorizationHeader string, idToken string
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
+	switch resp.StatusCode {
+	case 200:
+		// If everything went well, we go on
+	case 401:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: 401}
+	case 403:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: 403}
+	default:
+		// Return other errors
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
@@ -135,14 +151,24 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// extract the rows
 	rows, err := extract(&body, authorizationHeader, idToken)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		switch e := err.(type) {
+		case *invalidTokenError:
+			http.Error(w, err.Error(), e.statusCode)
+		default:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 
 	// transform rows
 	res, err := transform(body.ResourceID, rows, authorizationHeader, idToken)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		switch e := err.(type) {
+		case *invalidTokenError:
+			http.Error(w, err.Error(), e.statusCode)
+		default:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 
