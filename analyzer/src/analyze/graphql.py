@@ -125,11 +125,10 @@ query resource($resourceId: ID!) {
 
 
 class PyrogClient:
-    def __init__(self, auth_header, id_token):
+    def __init__(self, auth_header):
         self.headers = {
             "content-type": "application/json",
             "Authorization": auth_header,
-            "IdToken": id_token,
         }
 
     def run_graphql_query(self, graphql_query, variables=None):

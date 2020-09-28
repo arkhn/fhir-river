@@ -30,8 +30,8 @@ CONSUMER_GROUP_ID = "transformer"
 
 # analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
-# users_tokens is a map of {auth_token: str, id_token: str} indexed by batch_id
-users_tokens: Dict[str, Dict[str, str]] = {}
+# user_authorization is a map of str indexed by batch_id
+user_authorization: Dict[str, str] = {}
 transformer = Transformer()
 
 
@@ -47,11 +47,10 @@ def process_batch_event(msg):
     msg_value = json.loads(msg.value())
     batch_id = msg_value.get("batch_id")
 
-    if batch_id not in users_tokens:
+    if batch_id not in user_authorization:
         logger.info(f"Caching tokens for batch {batch_id}")
         auth_header = msg_value.get("auth_header", None)
-        id_token = msg_value.get("id_token", None)
-        users_tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
+        user_authorization[batch_id] = auth_header
 
 
 def process_event_with_producer(producer):
@@ -65,11 +64,11 @@ def process_event_with_producer(producer):
 
         analyzer = analyzers.get(batch_id)
         if not analyzer:
-            tokens = users_tokens.get(batch_id)
-            if not tokens:
-                logger.error(f"Tokens not found for batch {batch_id}, aborting")
+            auth_header = user_authorization.get(batch_id)
+            if not auth_header:
+                logger.error(f"authorization header not found for batch {batch_id}, aborting")
                 return
-            pyrog_client = PyrogClient(tokens["auth_header"], tokens["id_token"])
+            pyrog_client = PyrogClient(auth_header)
             analyzer = Analyzer(pyrog_client)
             analyzers[batch_id] = analyzer
         analysis = analyzer.get_analysis(resource_id)
@@ -123,12 +122,11 @@ def transform():
 
     # Get headers
     authorization_header = request.headers.get("Authorization")
-    id_token = request.headers.get("IdToken")
 
     logger.info(
         f"POST /transform. Transforming {len(rows)} row(s).", extra={"resource_id": resource_id}
     )
-    pyrog_client = PyrogClient(authorization_header, id_token)
+    pyrog_client = PyrogClient(authorization_header)
     analysis = Analyzer(pyrog_client).get_analysis(resource_id)
     try:
         fhir_instances = []

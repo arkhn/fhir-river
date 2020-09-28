@@ -39,7 +39,7 @@ type PreviewRequest struct {
 
 // transform sends an HTTP request to the transformer service
 // with the extracted rows and returns its response body.
-func transform(resourceID string, rows []interface{}, authorizationHeader string, idToken string) (res []byte, err error) {
+func transform(resourceID string, rows []interface{}, authorizationHeader string) (res []byte, err error) {
 	jBody, _ := json.Marshal(map[string]interface{}{
 		"resource_id": resourceID,
 		"dataframe":   rows,
@@ -51,12 +51,7 @@ func transform(resourceID string, rows []interface{}, authorizationHeader string
 	if err != nil {
 		return nil, err
 	}
-	if authorizationHeader != "" {
-		req.Header.Set("Authorization", authorizationHeader)
-	}
-	if idToken != "" {
-		req.Header.Set("IdToken", idToken)
-	}
+	req.Header.Set("Authorization", authorizationHeader)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -84,7 +79,7 @@ func transform(resourceID string, rows []interface{}, authorizationHeader string
 
 // transform sends an HTTP request to the transformer service
 // using the PreviewRequest as JSON body. It returns the extrcted rows.
-func extract(preview *PreviewRequest, authorizationHeader string, idToken string) (rows []interface{}, err error) {
+func extract(preview *PreviewRequest, authorizationHeader string) (rows []interface{}, err error) {
 	jBody, _ := json.Marshal(preview)
 	url := fmt.Sprintf("%s/extract", extractorURL)
 
@@ -92,12 +87,7 @@ func extract(preview *PreviewRequest, authorizationHeader string, idToken string
 	if err != nil {
 		return nil, err
 	}
-	if authorizationHeader != "" {
-		req.Header.Set("Authorization", authorizationHeader)
-	}
-	if idToken != "" {
-		req.Header.Set("IdToken", idToken)
-	}
+	req.Header.Set("Authorization", authorizationHeader)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -146,10 +136,9 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	log.Infof("Preview request: %+v", body)
 
 	authorizationHeader := r.Header.Get("Authorization")
-	idToken := r.Header.Get("IdToken")
 
 	// extract the rows
-	rows, err := extract(&body, authorizationHeader, idToken)
+	rows, err := extract(&body, authorizationHeader)
 	if err != nil {
 		switch e := err.(type) {
 		case *invalidTokenError:
@@ -161,7 +150,7 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	// transform rows
-	res, err := transform(body.ResourceID, rows, authorizationHeader, idToken)
+	res, err := transform(body.ResourceID, rows, authorizationHeader)
 	if err != nil {
 		switch e := err.(type) {
 		case *invalidTokenError:

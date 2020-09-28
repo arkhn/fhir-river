@@ -40,7 +40,6 @@ type BatchEvent struct {
 	BatchID    string `json:"batch_id"`
 	ResourceID string `json:"resource_id"`
 	AuthHeader string `json:"auth_header"`
-	IdToken    string `json:"id_token"`
 }
 
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
@@ -57,7 +56,6 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 
 		// Get authorization headers
 		authorizationHeader := r.Header.Get("Authorization")
-		idToken := r.Header.Get("IdToken")
 
 		// generate a new batch ID.
 		batchID, err := uuid.NewRandom()
@@ -92,7 +90,6 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 				BatchID:    batchID.String(),
 				ResourceID: resourceID,
 				AuthHeader: authorizationHeader,
-				IdToken:    idToken,
 			})
 			log.WithField("event", string(event)).Info("produce event")
 			err = producer.Produce(&kafka.Message{

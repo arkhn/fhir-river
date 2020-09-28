@@ -63,7 +63,6 @@ def process_event_with_producer(producer):
         primary_key_values = msg_value.get("primary_key_values", None)
         batch_id = msg_value.get("batch_id", None)
         auth_header = msg_value.get("auth_header", None)
-        id_token = msg_value.get("id_token", None)
 
         msg_topic = msg.topic()
 
@@ -74,7 +73,7 @@ def process_event_with_producer(producer):
         try:
             analyzer = analyzers.get(batch_id)
             if not analyzer:
-                pyrog_client = PyrogClient(auth_header, id_token)
+                pyrog_client = PyrogClient(auth_header)
                 analyzer = Analyzer(pyrog_client)
                 analyzers[batch_id] = analyzer
             analysis = analyzer.get_analysis(resource_id)
@@ -122,7 +121,6 @@ def extract_resource(analysis, primary_key_values):
 @app.route("/extract", methods=["POST"])
 def extract():
     authorization_header = request.headers.get("Authorization")
-    id_token = request.headers.get("IdToken")
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
@@ -136,7 +134,7 @@ def extract():
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        pyrog_client = PyrogClient(authorization_header, id_token)
+        pyrog_client = PyrogClient(authorization_header)
         analyzer = Analyzer(pyrog_client)
         analysis = analyzer.get_analysis(resource_id)
         df = extract_resource(analysis, primary_key_values)
