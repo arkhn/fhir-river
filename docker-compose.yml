@@ -147,6 +147,9 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
       SERVICE_NAME: extractor
+      OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
+      OAUTH2_CLIENT_ID: fhir-river
+      OAUTH2_CLIENT_SECRET: river-secret
     ports:
       - 3001:3001
     networks:
@@ -172,6 +175,9 @@ services:
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
       SERVICE_NAME: transformer
+      OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
+      OAUTH2_CLIENT_ID: fhir-river
+      OAUTH2_CLIENT_SECRET: river-secret
     ports:
       - 3002:3002
     networks:
@@ -202,6 +208,9 @@ services:
       LOADER_REDIS_HOST: loader-redis
       LOADER_REDIS_PORT: 6379
       LOADER_REDIS_DB: 0
+      OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
+      OAUTH2_CLIENT_ID: fhir-river
+      OAUTH2_CLIENT_SECRET: river-secret
     ports:
       - 3003:3003
     networks:

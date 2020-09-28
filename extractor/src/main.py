@@ -2,6 +2,7 @@
 
 import os
 import json
+from typing import Dict
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
@@ -10,6 +11,7 @@ from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from analyzer.src.errors import AuthenticationError, AuthorizationError
 from extractor.src.config.service_logger import logger
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError, MissingInformationError
@@ -22,7 +24,8 @@ EXTRACT_TOPIC = "extract"
 BATCH_SIZE_TOPIC = "batch_size"
 CONSUMED_TOPIC = "batch"
 
-analyzer = Analyzer(PyrogClient())
+# analyzers is a map of Analyzer indexed by batch_id
+analyzers: Dict[str, Analyzer] = {}
 extractor = Extractor()
 
 
@@ -59,6 +62,7 @@ def process_event_with_producer(producer):
         resource_id = msg_value.get("resource_id", None)
         primary_key_values = msg_value.get("primary_key_values", None)
         batch_id = msg_value.get("batch_id", None)
+        auth_header = msg_value.get("auth_header", None)
 
         msg_topic = msg.topic()
 
@@ -67,7 +71,13 @@ def process_event_with_producer(producer):
         )
 
         try:
-            analysis, df = extract_resource(resource_id, primary_key_values)
+            analyzer = analyzers.get(batch_id)
+            if not analyzer:
+                pyrog_client = PyrogClient(auth_header)
+                analyzer = Analyzer(pyrog_client)
+                analyzers[batch_id] = analyzer
+            analysis = analyzer.get_analysis(resource_id)
+            df = extract_resource(analysis, primary_key_values)
             batch_size = extractor.batch_size(analysis)
             logger.info(
                 f"Batch size is {batch_size} for resource type {analysis.definition_id}",
@@ -93,9 +103,8 @@ def manage_kafka_error(msg):
     logger.error(msg.error().str())
 
 
-def extract_resource(resource_id, primary_key_values):
-    logger.debug("Get Analysis", extra={"resource_id": resource_id})
-    analysis = analyzer.get_analysis(resource_id)
+def extract_resource(analysis, primary_key_values):
+    logger.debug("Get Analysis", extra={"resource_id": analysis.resource_id})
 
     if not analysis.source_credentials:
         raise MissingInformationError("credential is required to run fhir-river.")
@@ -103,17 +112,19 @@ def extract_resource(resource_id, primary_key_values):
     credentials = analysis.source_credentials
     extractor.update_connection(credentials)
 
-    logger.info("Extracting rows", extra={"resource_id": resource_id})
+    logger.info("Extracting rows", extra={"resource_id": analysis.resource_id})
     df = extractor.extract(analysis, primary_key_values)
 
-    return analysis, df
+    return df
 
 
 @app.route("/extract", methods=["POST"])
 def extract():
+    authorization_header = request.headers.get("Authorization")
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
+
     logger.info(
         f"Extract from API with primary key value {primary_key_values}",
         extra={"resource_id": resource_id},
@@ -123,7 +134,10 @@ def extract():
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        analysis, df = extract_resource(resource_id, primary_key_values)
+        pyrog_client = PyrogClient(authorization_header)
+        analyzer = Analyzer(pyrog_client)
+        analysis = analyzer.get_analysis(resource_id)
+        df = extract_resource(analysis, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
             logger.debug("One record from extract", extra={"resource_id": resource_id})
@@ -132,7 +146,7 @@ def extract():
         return jsonify({"rows": rows})
 
     except Exception as err:
-        logger.error(err)
+        logger.error(repr(err))
         raise err
 
 
@@ -145,8 +159,18 @@ def metrics():
 
 
 @app.errorhandler(Exception)
-def handle_bad_request(e):
-    return str(e), 400
+def handle_operation_outcome(e):
+    return jsonify({"error": str(e)}), 400
+
+
+@app.errorhandler(AuthenticationError)
+def handle_authentication_error(e):
+    return jsonify({"error": str(e)}), 401
+
+
+@app.errorhandler(AuthorizationError)
+def handle_authorization_error(e):
+    return jsonify({"error": str(e)}), 403
 
 
 # these decorators tell uWSGI (the server with which the app is run)
@@ -155,7 +179,7 @@ def handle_bad_request(e):
 @postfork
 @thread
 def run_consumer():
-    logger.info("Running Consumer")
+    logger.info("Running extract consumer")
 
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(

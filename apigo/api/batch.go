@@ -21,18 +21,25 @@ var (
 
 // BatchRequest is the body of the POST /batch request.
 type BatchRequest struct {
-	ResourceIDs []string `json:"resource_ids"`
+	Resources []struct {
+		ID           string `json:"resource_id"`
+		ResourceType string `json:"resource_type"`
+	} `json:"resources"`
 }
 
 // DeleteResourceRequest is the body of the POST /delete-resource request.
 type DeleteResourceRequest struct {
-	ResourceIDs []string `json:"resource_ids"`
+	Resources []struct {
+		ID           string `json:"resource_id"`
+		ResourceType string `json:"resource_type"`
+	} `json:"resources"`
 }
 
 // BatchEvent is the kind of event produced to trigger a batch ETL.
 type BatchEvent struct {
 	BatchID    string `json:"batch_id"`
 	ResourceID string `json:"resource_id"`
+	AuthHeader string `json:"auth_header"`
 }
 
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
@@ -47,6 +54,9 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 			return
 		}
 
+		// Get authorization headers
+		authorizationHeader := r.Header.Get("Authorization")
+
 		// generate a new batch ID.
 		batchID, err := uuid.NewRandom()
 		if err != nil {
@@ -56,7 +66,7 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 
 		// delete all the documents correspondng to the batch resources
 		deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
-		jBody, _ := json.Marshal(DeleteResourceRequest{ResourceIDs: body.ResourceIDs})
+		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: body.Resources})
 		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -74,10 +84,12 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		}
 
 		// produce a "batch" kafka event for each resource ID.
-		for _, resourceID := range body.ResourceIDs {
+		for _, resource := range body.Resources {
+			resourceID := resource.ID
 			event, _ := json.Marshal(BatchEvent{
 				BatchID:    batchID.String(),
 				ResourceID: resourceID,
+				AuthHeader: authorizationHeader,
 			})
 			log.WithField("event", string(event)).Info("produce event")
 			err = producer.Produce(&kafka.Message{

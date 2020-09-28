@@ -1,20 +1,10 @@
-import pytest
 from unittest import mock
 
+from analyzer.src.analyze.graphql import PyrogClient
+from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.concept_map import ConceptMap
 
 from analyzer.test.conftest import mock_api_get_maps
-
-
-@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
-def test_fetch_concept_map(fhir_concept_map_gender):
-    concept_map = ConceptMap.fetch(fhir_concept_map_gender["id"])
-
-    assert concept_map == fhir_concept_map_gender
-
-    # should raise if not found
-    with pytest.raises(Exception, match="Error while fetching concept map nope: not found."):
-        ConceptMap.fetch("nope")
 
 
 def test_convert_to_dict():
@@ -55,9 +45,10 @@ def test_convert_to_dict():
     }
 
 
-@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
+@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
 def test_concept_map_apply(fhir_concept_map_gender):
-    concept_map = ConceptMap(fhir_concept_map_gender["id"])
+    analyzer = Analyzer(PyrogClient(None))
+    concept_map = ConceptMap(analyzer.fetch_concept_map(fhir_concept_map_gender["id"]))
 
     data = ["M", "F", "M", "F"]
 

@@ -91,8 +91,6 @@ services:
       - kafka
     env_file:
       - ./.env.test
-    environment:
-      FHIR_API_TOKEN: ${FHIR_API_TOKEN}
     ports:
       - 3002
 
@@ -109,8 +107,6 @@ services:
       - loader-redis
     env_file:
       - ./.env.test
-    environment:
-      FHIR_API_TOKEN: ${FHIR_API_TOKEN}
 
   loader-redis:
     image: redis:5.0.7-alpine
@@ -131,8 +127,6 @@ services:
       - kafka
     env_file:
       - ./.env.test
-    environment:
-      FHIR_API_TOKEN: ${FHIR_API_TOKEN}
     ports:
       - 3001
 
@@ -163,8 +157,6 @@ services:
     env_file:
       - ./.env.test
     environment:
-      JWT_PRIVATE_KEY: ${AUTH_SIGNING_PRIVATE_KEY}
-      JWT_TOKEN: ${FHIR_API_TOKEN}
       PORT: 1000
     volumes:
       - ./volumes/mapping.json:/app/mapping.json
@@ -174,7 +166,7 @@ services:
       - redis
 
   postgres:
-    image: postgres
+    image: postgres:12
     container_name: postgres
     command: -p 55432
     ports:
@@ -200,22 +192,12 @@ services:
     env_file:
       - ./.env.test
     environment:
-      JWT_PUBLIC_KEY: ${AUTH_SIGNING_PUBLIC_KEY}
       AUTH_DISABLED: 1
     depends_on:
       - mongo
       - elasticsearch
     volumes:
       - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
-
-  # TODO logs could be exported to an external kibana instance during integration tests
-  # fluentd:
-  #   image: arkhn/fluentd:latest
-  #   container_name: fluentd
-  #   volumes:
-  #     - ./fluent.conf:/fluentd/etc/fluent.conf
-  #   ports:
-  #     - 24224:24224
 
 volumes:
   test-mimic-db:

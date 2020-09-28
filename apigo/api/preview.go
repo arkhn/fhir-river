@@ -39,14 +39,22 @@ type PreviewRequest struct {
 
 // transform sends an HTTP request to the transformer service
 // with the extracted rows and returns its response body.
-func transform(resourceID string, rows []interface{}) (res []byte, err error) {
+func transform(resourceID string, rows []interface{}, authorizationHeader string) (res []byte, err error) {
 	jBody, _ := json.Marshal(map[string]interface{}{
 		"resource_id": resourceID,
 		"dataframe":   rows,
 	})
 
 	url := fmt.Sprintf("%s/transform", transformerURL)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jBody))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jBody))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", authorizationHeader)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +62,15 @@ func transform(resourceID string, rows []interface{}) (res []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 200 {
+	switch resp.StatusCode {
+	case 200:
+		// If everything went well, we go on
+	case 401:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: 401}
+	case 403:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: 403}
+	default:
+		// Return other errors
 		return nil, errors.New(string(body))
 	}
 
@@ -63,15 +79,31 @@ func transform(resourceID string, rows []interface{}) (res []byte, err error) {
 
 // transform sends an HTTP request to the transformer service
 // using the PreviewRequest as JSON body. It returns the extrcted rows.
-func extract(req *PreviewRequest) (rows []interface{}, err error) {
-	jBody, _ := json.Marshal(req)
+func extract(preview *PreviewRequest, authorizationHeader string) (rows []interface{}, err error) {
+	jBody, _ := json.Marshal(preview)
 	url := fmt.Sprintf("%s/extract", extractorURL)
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jBody))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jBody))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", authorizationHeader)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	if resp.StatusCode != 200 {
+	switch resp.StatusCode {
+	case 200:
+		// If everything went well, we go on
+	case 401:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: 401}
+	case 403:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: 403}
+	default:
+		// Return other errors
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
@@ -103,17 +135,29 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 	log.Infof("Preview request: %+v", body)
 
+	authorizationHeader := r.Header.Get("Authorization")
+
 	// extract the rows
-	rows, err := extract(&body)
+	rows, err := extract(&body, authorizationHeader)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		switch e := err.(type) {
+		case *invalidTokenError:
+			http.Error(w, err.Error(), e.statusCode)
+		default:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 
 	// transform rows
-	res, err := transform(body.ResourceID, rows)
+	res, err := transform(body.ResourceID, rows, authorizationHeader)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		switch e := err.(type) {
+		case *invalidTokenError:
+			http.Error(w, err.Error(), e.statusCode)
+		default:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
 		return
 	}
 

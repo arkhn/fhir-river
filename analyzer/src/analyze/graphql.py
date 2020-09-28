@@ -1,13 +1,10 @@
 import os
 import requests
 
-from analyzer.src.config.service_logger import logger
-from analyzer.src.errors import OperationOutcome
+from analyzer.src.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 
 PYROG_API_URL = os.getenv("PYROG_API_URL")
-PYROG_LOGIN = os.getenv("PYROG_LOGIN")
-PYROG_PASSWORD = os.getenv("PYROG_PASSWORD")
 
 login_mutation = """
 mutation login($email: String!, $password: String!) {
@@ -128,22 +125,13 @@ query resource($resourceId: ID!) {
 
 
 class PyrogClient:
-    def __init__(self):
-        self.token = self.login()
-        logger.info("Login to pyrog successful")
+    def __init__(self, auth_header):
+        self.headers = {
+            "content-type": "application/json",
+            "Authorization": auth_header,
+        }
 
-    def get_headers(self, auth_required=True):
-        if auth_required and not self.token:
-            raise OperationOutcome(
-                "PyrogClient is not authenticated (login has probably failed, check your logs)"
-            )
-        headers = {"content-type": "application/json"}
-        if auth_required:
-            headers["Authorization"] = f"Bearer {self.token}"
-
-        return headers
-
-    def run_graphql_query(self, graphql_query, variables=None, auth_required=True):
+    def run_graphql_query(self, graphql_query, variables=None):
         """
         This function queries a GraphQL endpoint
         and returns a json parsed response.
@@ -154,7 +142,7 @@ class PyrogClient:
         try:
             response = requests.post(
                 PYROG_API_URL,
-                headers=self.get_headers(auth_required),
+                headers=self.headers,
                 json={"query": graphql_query, "variables": variables},
             )
         except requests.exceptions.ConnectionError:
@@ -167,25 +155,17 @@ class PyrogClient:
             )
         body = response.json()
         if "errors" in body:
-            raise Exception(f"GraphQL query failed with errors: {body['errors']}.")
-
-        return body
-
-    def login(self):
-        if not PYROG_LOGIN or not PYROG_PASSWORD:
-            raise OperationOutcome("PYROG_LOGIN and PYROG_PASSWORD are missing from environment")
-        resp = self.run_graphql_query(
-            login_mutation,
-            variables={"email": PYROG_LOGIN, "password": PYROG_PASSWORD},
-            auth_required=False,
-        )
-        data = resp["data"]
-        if not data:
+            status_code = body["errors"][0].get("statusCode")
+            error_message = body["errors"][0].get("message")
+            if status_code == 401:
+                raise AuthenticationError(error_message)
+            if status_code == 403:
+                raise AuthorizationError("You don't have the rights to perform this action.")
             raise OperationOutcome(
-                f"Could not login to pyrog (email={PYROG_LOGIN}): {resp['errors'][0]['message']}"
+                f"GraphQL query failed with errors: {[err['message'] for err in body['errors']]}."
             )
 
-        return data["login"]["token"]
+        return body
 
     def get_resource_from_id(self, resource_id):
         resp = self.run_graphql_query(resource_from_id_query, variables={"resourceId": resource_id})

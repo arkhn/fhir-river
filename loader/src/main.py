@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
-from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify, Response
 import json
 import os
+
+from confluent_kafka import KafkaException, KafkaError
+from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
+from typing import Dict
 from uwsgidecorators import thread, postfork
 
 from fhirstore import NotFoundError
@@ -15,12 +17,15 @@ from analyzer.src.analyze.graphql import PyrogClient
 from loader.src.config.service_logger import logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
-from loader.src.load.utils import get_resource_id
 from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
-analyzer = Analyzer(PyrogClient())
+
+# analyzers is a map of Analyzer indexed by batch_id
+analyzers: Dict[str, Analyzer] = {}
+# user_authorization is a map of str indexed by batch_id
+user_authorization: Dict[str, str] = {}
 
 ####################
 # LOADER FLASK API #
@@ -33,16 +38,15 @@ app = Flask(__name__)
 @app.route("/delete-resources", methods=["POST"])
 def delete_resources():
     body = request.get_json()
-    resource_ids = body.get("resource_ids", None)
+    resources = body.get("resources", None)
 
-    for resource_id in resource_ids:
+    for resource in resources:
+        resource_id = resource.get("resource_id")
+        resource_type = resource.get("resource_type")
         logger.info(
-            f"Deleting all documents for resource {resource_id}",
+            f"Deleting all documents of type {resource_type} with resource id {resource_id}",
             extra={"resource_id": resource_id},
         )
-        # Fetch analysis to get resource type
-        analysis = analyzer.get_analysis(resource_id)
-        resource_type = analysis.definition_id
 
         # Call fhirstore.delete
         fhirstore = get_fhirstore()
@@ -75,7 +79,8 @@ def handle_bad_request(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TOPIC = "transform"
+CONSUMED_BATCH_TOPIC = "batch"
+CONSUMED_TRANSFORM_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
 
@@ -85,13 +90,32 @@ CONSUMER_GROUP_ID = "loader"
 # is started at the same time as the Flask API.
 @postfork
 @thread
+def run_batch_consumer():
+    logger.info("Running batch consumer")
+
+    consumer = LoaderConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=CONSUMED_BATCH_TOPIC,
+        group_id=CONSUMER_GROUP_ID,
+        process_event=process_batch_event,
+        manage_error=manage_kafka_error,
+    )
+
+    try:
+        consumer.run_consumer()
+    except (KafkaException, KafkaError) as err:
+        logger.error(err)
+
+
+@postfork
+@thread
 def run_consumer():
     logger.info("Running Consumer")
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
+        topics=CONSUMED_TRANSFORM_TOPIC,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_producer(producer),
         manage_error=manage_kafka_error,
@@ -103,6 +127,16 @@ def run_consumer():
         logger.error(err)
 
 
+def process_batch_event(msg):
+    msg_value = json.loads(msg.value())
+    batch_id = msg_value.get("batch_id")
+
+    if batch_id not in user_authorization:
+        logger.info(f"Caching tokens for batch {batch_id}")
+        auth_header = msg_value.get("auth_header", None)
+        user_authorization[batch_id] = auth_header
+
+
 def process_event_with_producer(producer):
     # Mongo client need to be called in each separate process
     fhirstore = get_fhirstore()
@@ -110,15 +144,22 @@ def process_event_with_producer(producer):
     binder = ReferenceBinder(fhirstore)
 
     def process_event(msg):
-        """
-        Process the event
-        :param msg:
-        :return:
-        """
-        fhir_instance = json.loads(msg.value())
-        resource_id = get_resource_id(fhir_instance)
+        """ Process the event """
+        msg_value = json.loads(msg.value())
+        logger.debug(msg_value)
+        fhir_instance = msg_value.get("fhir_object")
+        batch_id = msg_value.get("batch_id")
+        resource_id = msg_value.get("resource_id")
 
-        logger.debug("Get Analysis", extra={"resource_id": resource_id})
+        analyzer = analyzers.get(batch_id)
+        if not analyzer:
+            auth_header = user_authorization.get(batch_id)
+            if not auth_header:
+                logger.error(f"authorization header not found for batch {batch_id}, aborting")
+                return
+            pyrog_client = PyrogClient(auth_header)
+            analyzer = Analyzer(pyrog_client)
+            analyzers[batch_id] = analyzer
         # FIXME: filter meta.tags by system to get the right
         # resource_id (ARKHN_CODE_SYSTEMS.resource)
         analysis = analyzer.get_analysis(resource_id)
@@ -153,6 +194,7 @@ def manage_kafka_error(msg):
     :return:
     """
     logger.error(msg.error())
+
 
 # @Timer("time_override", "time to delete a potential document with the same identifier")
 # def override_document(fhir_instance):

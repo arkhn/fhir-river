@@ -1,11 +1,9 @@
 import pytest
-import time
 from unittest import mock
 
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.analyze import Analyzer
-
 from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_filter import SqlFilter
@@ -14,9 +12,8 @@ from analyzer.src.analyze.sql_join import SqlJoin
 from analyzer.test.conftest import mock_api_get_maps
 
 
-@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_get_analysis_first_time(mock_login):
-    analyzer = Analyzer(PyrogClient())
+def test_get_analysis_first_time():
+    analyzer = Analyzer(None)
 
     # patch the fetch_analysis method
     def side_effect(resource):
@@ -30,40 +27,21 @@ def test_get_analysis_first_time(mock_login):
     analyzer.fetch_analysis.assert_called_with("Resource")
 
 
-@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_get_analysis_no_refresh(mock_login):
-    resource_id = "Resource"
-
-    analyzer = Analyzer(PyrogClient())
-    analyzer.analyses[resource_id] = None
-    analyzer.last_updated_at[resource_id] = time.time() - 200
-
+def test_use_existing_analysis():
+    analyzer = Analyzer(None)
     analyzer.fetch_analysis = mock.MagicMock()
 
-    analyzer.get_analysis(resource_id)
+    dummy_mapping = {"dummy": "mapping"}
+    analyzer.analyses["Resource"] = dummy_mapping
 
+    mapping = analyzer.get_analysis("Resource")
+
+    assert mapping == dummy_mapping
     analyzer.fetch_analysis.assert_not_called()
 
 
-@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_get_analysis_refresh_old(mock_login):
-    resource_id = "Resource"
-
-    analyzer = Analyzer(PyrogClient())
-    analyzer.analyses[resource_id] = None
-    analyzer.last_updated_at[resource_id] = time.time() - 5000
-
-    analyzer.fetch_analysis = mock.MagicMock()
-
-    analyzer.get_analysis(resource_id)
-
-    analyzer.fetch_analysis.assert_called_with(resource_id)
-    analyzer.fetch_analysis.reset_mock()
-
-
-@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_get_primary_key(mock_login):
-    analyzer = Analyzer(PyrogClient())
+def test_get_primary_key():
+    analyzer = Analyzer(None)
 
     # With owner
     resource_mapping = {
@@ -98,10 +76,9 @@ def test_get_primary_key(mock_login):
         analyzer.get_primary_key(resource_mapping)
 
 
-@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
-@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_analyze_mapping(mock_login, patient_mapping):
-    analyzer = Analyzer(PyrogClient())
+@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
+def test_analyze_mapping(patient_mapping):
+    analyzer = Analyzer(PyrogClient(None))
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 
@@ -127,10 +104,9 @@ def test_analyze_mapping(mock_login, patient_mapping):
     assert analysis.reference_paths == {"generalPractitioner"}
 
 
-@mock.patch("analyzer.src.analyze.concept_map.requests.get", mock_api_get_maps)
-@mock.patch("analyzer.src.analyze.graphql.PyrogClient.login")
-def test_analyze_attribute(mock_login, patient_mapping):
-    analyzer = Analyzer(PyrogClient())
+@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
+def test_analyze_attribute(patient_mapping):
+    analyzer = Analyzer(PyrogClient(None))
     analyzer._cur_analysis.primary_key_column = SqlColumn("patients", "subject_id")
 
     attribute_mapping = {
@@ -190,3 +166,15 @@ def test_analyze_attribute(mock_login, patient_mapping):
     expected.add_input_group(group)
 
     assert actual == expected
+
+
+@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
+def test_fetch_concept_map(fhir_concept_map_gender):
+    analyzer = Analyzer(PyrogClient(None))
+    concept_map = analyzer.fetch_concept_map(fhir_concept_map_gender["id"])
+
+    assert concept_map == fhir_concept_map_gender
+
+    # should raise if not found
+    with pytest.raises(Exception, match="Error while fetching concept map nope: not found."):
+        analyzer.fetch_concept_map("nope")

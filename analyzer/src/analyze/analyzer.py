@@ -1,10 +1,11 @@
+from collections.abc import Mapping
 import os
 import re
-import time
-from collections.abc import Mapping
+import requests
 
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.service_logger import logger
+from analyzer.src.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -18,7 +19,7 @@ from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
 
-MAX_SECONDS_REFRESH_ANALYSIS = int(os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600))
+FHIR_API_URL = os.getenv("FHIR_API_URL")
 
 
 class Analyzer:
@@ -28,37 +29,14 @@ class Analyzer:
         # TODO think about the design here. Use http caching instead of
         # storing here, for instance?
         self.analyses: Mapping = {}
-        self.last_updated_at: Mapping = {}  # store last updated timestamp for each resource_id
 
         self._cur_analysis = Analysis()
 
-    def get_analysis(
-        self, resource_mapping_id, max_seconds_refresh=None
-    ) -> Analysis:
-        if max_seconds_refresh is None:
-            max_seconds_refresh = MAX_SECONDS_REFRESH_ANALYSIS
+    def get_analysis(self, resource_mapping_id) -> Analysis:
+        logger.debug("Get Analysis", extra={"resource_id": resource_mapping_id})
         if resource_mapping_id not in self.analyses:
             self.fetch_analysis(resource_mapping_id)
-        else:
-            self.check_refresh_analysis(resource_mapping_id, max_seconds_refresh)
         return self.analyses[resource_mapping_id]
-
-    def check_refresh_analysis(self, resource_mapping_id, max_seconds_refresh):
-        """
-        This method refreshes the analyser if the last update was later than `max_seconds_refresh`
-        for each resource
-        """
-        if time.time() - self.last_updated_at.get(resource_mapping_id) > max_seconds_refresh:
-            logger.info(
-                f"Analysis too old for resource {resource_mapping_id}.",
-                extra={"resource_id": resource_mapping_id},
-            )
-            self.fetch_analysis(resource_mapping_id)
-        else:
-            logger.debug(
-                "Analysis was updated recently. Using cached analysis.",
-                extra={"resource_id": resource_mapping_id},
-            )
 
     def fetch_analysis(self, resource_mapping_id):
         """
@@ -69,9 +47,6 @@ class Analyzer:
         logger.info("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
         resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
         self.analyze(resource_mapping)
-        self.last_updated_at[resource_mapping_id] = time.time()
-
-    # TODO add an update_analysis(self, resource_mapping_id)?
 
     def analyze(self, resource_mapping):
         self._cur_analysis = Analysis()
@@ -167,7 +142,7 @@ class Analyzer:
                     cur_col.cleaning_script = CleaningScript(input_["script"])
 
                 if input_["conceptMapId"]:
-                    cur_col.concept_map = ConceptMap(input_["conceptMapId"])
+                    cur_col.concept_map = ConceptMap(self.fetch_concept_map(input_["conceptMapId"]))
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
@@ -224,3 +199,26 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["source"]["credential"]["owner"],
         )
+
+    def fetch_concept_map(self, concept_map_id: str) -> dict:
+        try:
+            # TODO clean headers usage
+            response = requests.get(
+                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", headers=self.pyrog.headers
+            )
+        except requests.exceptions.ConnectionError as e:
+            raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
+
+        if response.status_code == 401:
+            raise AuthenticationError(
+                f"Could not fetch concept map {concept_map_id}: {response.text}."
+            )
+        if response.status_code == 403:
+            raise AuthorizationError(
+                f"Could not fetch concept map {concept_map_id}: {response.text}."
+            )
+        if response.status_code != 200:
+            raise OperationOutcome(
+                f"Error while fetching concept map {concept_map_id}: {response.text}."
+            )
+        return response.json()
