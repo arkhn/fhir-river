@@ -24,7 +24,7 @@ from loader.src.producer_class import LoaderProducer
 
 # analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
-# users_token is a map of str indexed by batch_id
+# user_authorization is a map of str indexed by batch_id
 user_authorization: Dict[str, str] = {}
 
 ####################
@@ -194,6 +194,7 @@ def manage_kafka_error(msg):
     :return:
     """
     logger.error(msg.error())
+
 
 # @Timer("time_override", "time to delete a potential document with the same identifier")
 # def override_document(fhir_instance):

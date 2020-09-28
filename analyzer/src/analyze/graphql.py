@@ -161,7 +161,9 @@ class PyrogClient:
                 raise AuthenticationError(error_message)
             if status_code == 403:
                 raise AuthorizationError("You don't have the rights to perform this action.")
-            raise OperationOutcome(f"GraphQL query failed with errors: {body['errors']}.")
+            raise OperationOutcome(
+                f"GraphQL query failed with errors: {[err['message'] for err in body['errors']]}."
+            )
 
         return body
 

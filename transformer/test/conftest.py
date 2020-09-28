@@ -43,7 +43,7 @@ cm_identifier = {
 }
 
 
-def mock_fetch_maps(*args):
+def mock_fetch_maps(self, *args):
     if args[0] == "id_cm_code":
         return cm_code
     elif args[0] == "id_cm_gender":
