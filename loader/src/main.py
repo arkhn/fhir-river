@@ -22,13 +22,10 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
 
-fhirstore = get_fhirstore()
-loader = Loader(fhirstore)
 # analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
 # users_tokens is a map of {auth_token: str, id_token: str} indexed by batch_id
 users_tokens: Dict[str, Dict[str, str]] = {}
-binder = ReferenceBinder(fhirstore)
 
 ####################
 # LOADER FLASK API #
@@ -52,6 +49,7 @@ def delete_resources():
         )
 
         # Call fhirstore.delete
+        fhirstore = get_fhirstore()
         try:
             fhirstore.delete(resource_type, resource_id=resource_id)
         except NotFoundError:
@@ -141,6 +139,11 @@ def process_batch_event(msg):
 
 
 def process_event_with_producer(producer):
+    # Mongo client need to be called in each separate process
+    fhirstore = get_fhirstore()
+    loader = Loader(fhirstore)
+    binder = ReferenceBinder(fhirstore)
+
     def process_event(msg):
         """ Process the event """
         msg_value = json.loads(msg.value())
