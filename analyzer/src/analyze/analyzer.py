@@ -3,11 +3,9 @@ import os
 import re
 import requests
 
-from authlib.integrations.requests_client import OAuth2Session, OAuth2Auth
-
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.service_logger import logger
-from analyzer.src.errors import OperationOutcome
+from analyzer.src.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -22,27 +20,17 @@ from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
 
 FHIR_API_URL = os.getenv("FHIR_API_URL")
-MAX_SECONDS_REFRESH_ANALYSIS = int(os.getenv("MAX_SECONDS_REFRESH_ANALYSIS", 3600))
-TOKEN_ENDPOINT = os.getenv("OAUTH2_TOKEN_URL")
-OAUTH_CLIENT_ID = os.getenv("OAUTH2_CLIENT_ID")
-OAUTH_CLIENT_SECRET = os.getenv("OAUTH2_CLIENT_SECRET")
 
 
 class Analyzer:
     def __init__(self, pyrog_client: PyrogClient):
         self.pyrog = pyrog_client
-        self.oauth_client = OAuth2Session(OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET)
-        self.fetch_access_token()
         # Store analyses
         # TODO think about the design here. Use http caching instead of
         # storing here, for instance?
         self.analyses: Mapping = {}
 
         self._cur_analysis = Analysis()
-
-    def fetch_access_token(self):
-        token = self.oauth_client.fetch_token(TOKEN_ENDPOINT, grant_type="client_credentials")
-        self.auth_token = OAuth2Auth(token)
 
     def get_analysis(self, resource_mapping_id) -> Analysis:
         logger.debug("Get Analysis", extra={"resource_id": resource_mapping_id})
@@ -214,19 +202,23 @@ class Analyzer:
 
     def fetch_concept_map(self, concept_map_id: str) -> dict:
         try:
+            # TODO clean headers usage
             response = requests.get(
-                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", auth=self.auth_token
+                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", headers=self.pyrog.headers
             )
-            # FIXME how could this be a bit cleaner?
-            if response.status_code == 401:
-                # Refetch a token and retry
-                self.fetch_access_token()
-                response = requests.get(
-                    f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", auth=self.auth_token
-                )
         except requests.exceptions.ConnectionError as e:
             raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
 
+        if response.status_code == 401:
+            raise AuthenticationError(
+                f"Could not fetch concept map {concept_map_id}: {response.text}."
+            )
+        if response.status_code == 403:
+            raise AuthorizationError(
+                f"Could not fetch concept map {concept_map_id}: {response.text}."
+            )
         if response.status_code != 200:
-            raise Exception(f"Error while fetching concept map {concept_map_id}: {response.text}.")
+            raise OperationOutcome(
+                f"Error while fetching concept map {concept_map_id}: {response.text}."
+            )
         return response.json()

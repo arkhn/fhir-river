@@ -1,7 +1,7 @@
 import os
 import requests
 
-from analyzer.src.errors import OperationOutcome
+from analyzer.src.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 
 PYROG_API_URL = os.getenv("PYROG_API_URL")
@@ -156,7 +156,13 @@ class PyrogClient:
             )
         body = response.json()
         if "errors" in body:
-            raise Exception(f"GraphQL query failed with errors: {body['errors']}.")
+            status_code = body["errors"][0].get("statusCode")
+            error_message = body["errors"][0].get("message")
+            if status_code == 401:
+                raise AuthenticationError(error_message)
+            if status_code == 403:
+                raise AuthorizationError("You don't have the rights to perform this action.")
+            raise OperationOutcome(f"GraphQL query failed with errors: {body['errors']}.")
 
         return body
 

@@ -2,7 +2,7 @@
 
 import os
 import json
-from typings import Dict
+from typing import Dict
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
@@ -11,6 +11,7 @@ from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from analyzer.src.errors import AuthenticationError, AuthorizationError
 from extractor.src.config.service_logger import logger
 from extractor.src.consumer_class import ExtractorConsumer
 from extractor.src.errors import BadRequestError, MissingInformationError
@@ -120,12 +121,12 @@ def extract_resource(analysis, primary_key_values):
 
 @app.route("/extract", methods=["POST"])
 def extract():
+    authorization_header = request.headers.get("Authorization")
+    id_token = request.headers.get("IdToken")
     body = request.get_json()
     resource_id = body.get("resource_id", None)
     primary_key_values = body.get("primary_key_values", None)
-    # Get headers
-    authorization_header = request.headers.get("Authorization")
-    id_token = request.headers.get("IdToken")
+
     logger.info(
         f"Extract from API with primary key value {primary_key_values}",
         extra={"resource_id": resource_id},
@@ -134,10 +135,10 @@ def extract():
     if not primary_key_values:
         raise BadRequestError("primary_key_values is required in request body")
 
-    pyrog_client = PyrogClient(authorization_header, id_token)
-    analyzer = Analyzer(pyrog_client)
-    analysis = analyzer.get_analysis(resource_id)
     try:
+        pyrog_client = PyrogClient(authorization_header, id_token)
+        analyzer = Analyzer(pyrog_client)
+        analysis = analyzer.get_analysis(resource_id)
         df = extract_resource(analysis, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
@@ -147,7 +148,7 @@ def extract():
         return jsonify({"rows": rows})
 
     except Exception as err:
-        logger.error(err)
+        logger.error(repr(err))
         raise err
 
 
@@ -160,8 +161,18 @@ def metrics():
 
 
 @app.errorhandler(Exception)
-def handle_bad_request(e):
-    return str(e), 400
+def handle_operation_outcome(e):
+    return jsonify({"error": str(e)}), 400
+
+
+@app.errorhandler(AuthenticationError)
+def handle_authentication_error(e):
+    return jsonify({"error": str(e)}), 401
+
+
+@app.errorhandler(AuthorizationError)
+def handle_authorization_error(e):
+    return jsonify({"error": str(e)}), 403
 
 
 # these decorators tell uWSGI (the server with which the app is run)

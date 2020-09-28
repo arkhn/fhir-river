@@ -3,7 +3,7 @@
 import json
 import os
 import pydantic
-from typings import Dict
+from typing import Dict
 
 from confluent_kafka import KafkaException, KafkaError
 from fhir.resources import construct_fhir_element
@@ -13,11 +13,14 @@ from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from analyzer.src.errors import AuthenticationError, AuthorizationError
 from transformer.src.config.service_logger import logger
 from transformer.src.transform import Transformer
 from transformer.src.consumer_class import TransformerConsumer
 from transformer.src.producer_class import TransformerProducer
 from transformer.src.errors import OperationOutcome
+
+# FIXME there are 2 OperationOutcome: 1 in tranformer and 1 in analyzer
 
 
 CONSUMED_BATCH_TOPIC = "batch"
@@ -44,12 +47,11 @@ def process_batch_event(msg):
     msg_value = json.loads(msg.value())
     batch_id = msg_value.get("batch_id")
 
-    tokens = users_tokens.get(batch_id)
     if batch_id not in users_tokens:
         logger.info(f"Caching tokens for batch {batch_id}")
         auth_header = msg_value.get("auth_header", None)
         id_token = msg_value.get("id_token", None)
-        tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
+        users_tokens[batch_id] = {"auth_header": auth_header, "id_token": id_token}
 
 
 def process_event_with_producer(producer):
@@ -63,7 +65,7 @@ def process_event_with_producer(producer):
 
         analyzer = analyzers.get(batch_id)
         if not analyzer:
-            tokens = users_tokens.get("batch_id")
+            tokens = users_tokens.get(batch_id)
             if not tokens:
                 logger.error(f"Tokens not found for batch {batch_id}, aborting")
                 return
@@ -161,9 +163,19 @@ def metrics():
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
-@app.errorhandler(OperationOutcome)
-def handle_bad_request(e):
-    return str(e), 400
+@app.errorhandler(Exception)
+def handle_operation_outcome(e):
+    return jsonify({"error": str(e)}), 400
+
+
+@app.errorhandler(AuthenticationError)
+def handle_authentication_error(e):
+    return jsonify({"error": str(e)}), 401
+
+
+@app.errorhandler(AuthorizationError)
+def handle_authorization_error(e):
+    return jsonify({"error": str(e)}), 403
 
 
 # these decorators tell uWSGI (the server with which the app is run)
