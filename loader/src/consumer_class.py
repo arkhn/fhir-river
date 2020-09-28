@@ -7,14 +7,15 @@ from loader.src.config.service_logger import logger
 
 
 class LoaderConsumer:
-
-    def __init__(self,
-                 broker=None,
-                 topics=None,
-                 group_id=None,
-                 offset_start=-1,
-                 process_event=None,
-                 manage_error=None):
+    def __init__(
+        self,
+        broker=None,
+        topics=None,
+        group_id=None,
+        offset_start=-1,
+        process_event=None,
+        manage_error=None,
+    ):
         """
         Instantiate the class and create the consumer object
         :param broker: host[:port]’ string (or list of ‘host[:port]’ strings) that
@@ -46,10 +47,12 @@ class LoaderConsumer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {'bootstrap.servers': self.broker,
-                  'group.id': self.group_id,
-                  'session.timeout.ms': 6000,
-                  'auto.offset.reset': 'earliest'}
+        config = {
+            "bootstrap.servers": self.broker,
+            "group.id": self.group_id,
+            "session.timeout.ms": 6000,
+            "auto.offset.reset": "earliest",
+        }
         return config
 
     def consume_event(self):
@@ -68,7 +71,10 @@ class LoaderConsumer:
                 self.manage_error(msg)
             else:
                 # Proper message
-                self.process_event(msg)
+                try:
+                    self.process_event(msg)
+                except Exception as err:
+                    logger.error(f"failed to process kafka event: {err}")
 
     def run_consumer(self):
         """

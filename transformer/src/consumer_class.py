@@ -3,6 +3,8 @@
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 
+from transformer.src.config.service_logger import logger
+
 
 class TransformerConsumer:
     def __init__(
@@ -69,7 +71,10 @@ class TransformerConsumer:
                 self.manage_error(msg)
             else:
                 # Proper message
-                self.process_event(msg)
+                try:
+                    self.process_event(msg)
+                except Exception as err:
+                    logger.error(f"failed to process kafka event: {err}")
 
     def run_consumer(self):
         """

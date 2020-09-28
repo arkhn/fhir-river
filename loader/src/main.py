@@ -5,7 +5,6 @@ from flask import Flask, request, jsonify, Response
 import json
 import os
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-from pymongo.errors import DuplicateKeyError
 from uwsgidecorators import thread, postfork
 
 from fhirstore import NotFoundError
@@ -134,14 +133,11 @@ def process_event_with_producer(producer):
         # if True:  # should be "if override:" or something like that
         #     override_document(resolved_fhir_instance)
 
-        try:
-            logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
-            loader.load(
-                resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
-            )
-            producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
-        except DuplicateKeyError as e:
-            logger.error(e)
+        logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
+        loader.load(
+            resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
+        )
+        producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
 
     return process_event
 
@@ -153,6 +149,7 @@ def manage_kafka_error(msg):
     :return:
     """
     logger.error(msg.error())
+
 
 # @Timer("time_override", "time to delete a potential document with the same identifier")
 # def override_document(fhir_instance):
