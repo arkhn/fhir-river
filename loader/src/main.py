@@ -196,7 +196,6 @@ def manage_kafka_error(msg):
     """
     logger.error(msg.error())
 
-
 # @Timer("time_override", "time to delete a potential document with the same identifier")
 # def override_document(fhir_instance):
 #     try:
