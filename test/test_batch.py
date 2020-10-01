@@ -26,27 +26,31 @@ def handle_kafka_error(err):
     raise err
 
 
-def get_resource_ids():
+def get_resources():
     sources_query = """
         query s {
             sources {
                 id
                 resources {
                     id
+                    definitionId
                 }
             }
         }
     """
-    client = PyrogClient()
+    client = PyrogClient(None)
     sources_resp = client.run_graphql_query(sources_query)
 
-    return [resource["id"] for resource in sources_resp["data"]["sources"][0]["resources"]]
+    return [
+        {"resource_id": resource["id"], "resource_type": resource["definitionId"]}
+        for resource in sources_resp["data"]["sources"][0]["resources"]
+    ]
 
 
 def test_batch_single_row():
     print("START")
 
-    resource_ids = get_resource_ids()
+    resources = get_resources()
 
     # declare kafka consumer of "load" events
     consumer = EventConsumer(
@@ -69,12 +73,10 @@ def test_batch_single_row():
         process_event=wait_batch,
     )
 
-    for resource_id in resource_ids:
+    for resource in resources:
         try:
             # send a batch request
-            response = requests.post(
-                "http://0.0.0.0:3001/batch", json={"resource_ids": [resource_id]},
-            )
+            response = requests.post("http://0.0.0.0:3000/batch", json={"resources": [resource]},)
         except requests.exceptions.ConnectionError:
             raise Exception("Could not connect to the api service")
 
@@ -82,5 +84,6 @@ def test_batch_single_row():
 
         print("Waiting for a batch_size event...")
         batch_size_consumer.run_consumer(event_count=1, poll_timeout=15)
+
 
 # check in elastic that references have been set

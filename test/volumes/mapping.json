@@ -926,20 +926,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.022Z",
           "createdAt": "2020-08-12T13:20:42.010Z",
-          "comments": [
-            {
-              "id": "ckdrej1ga0330g0pjnsv0ds9b",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8pwwhv928524kp4uil5g6t0",
-              "updatedAt": "2020-08-12T13:20:42.022Z",
-              "createdAt": "2020-04-27T15:41:19.243Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gb0331g0pj3dg0bjup",
@@ -980,44 +967,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.022Z",
           "createdAt": "2020-08-12T13:20:42.011Z",
-          "comments": [
-            {
-              "id": "ckdrej1gb0332g0pjmc4ie0v0",
-              "content": "This cleaning script takes (O, N) as entry and outputs (True, False), look at scripts binary_to_bool1 or 2 instead :)",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8px2nul28584kp41vbctv7i",
-              "updatedAt": "2020-08-12T13:20:42.022Z",
-              "createdAt": "2020-04-27T15:43:20.497Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            },
-            {
-              "id": "ckdrej1gb0333g0pjvb4x1gqd",
-              "content": "Script modified",
-              "validation": false,
-              "authorId": "ck8omfenu26924kp4008qs7y3",
-              "attributeId": "ck8px2nul28584kp41vbctv7i",
-              "updatedAt": "2020-08-12T13:20:42.022Z",
-              "createdAt": "2020-04-28T12:47:09.655Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            },
-            {
-              "id": "ckdrej1gb0334g0pj4op8vxjp",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8px2nul28584kp41vbctv7i",
-              "updatedAt": "2020-08-12T13:20:42.022Z",
-              "createdAt": "2020-04-28T14:19:41.133Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gb0335g0pja470bkgm",
@@ -1069,20 +1019,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.022Z",
           "createdAt": "2020-08-12T13:20:42.011Z",
-          "comments": [
-            {
-              "id": "ckdrej1gb0336g0pjwxaafryn",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8pxbu5a28664kp4e7sdtqgz",
-              "updatedAt": "2020-08-12T13:20:42.022Z",
-              "createdAt": "2020-04-27T15:47:36.840Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gb0337g0pj8kcn7pq1",
@@ -1247,20 +1184,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.022Z",
           "createdAt": "2020-08-12T13:20:42.012Z",
-          "comments": [
-            {
-              "id": "ckdrej1gc0340g0pj6f2k0zer",
-              "content": "Validé ou non? idem pour tous les autres",
-              "validation": false,
-              "authorId": "ck8omfenu26924kp4008qs7y3",
-              "attributeId": "ckao5xjq602834vqm0qwmxzgb",
-              "updatedAt": "2020-08-12T13:20:42.022Z",
-              "createdAt": "2020-05-26T16:57:51.397Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gc0341g0pj4hy2j875",
@@ -1411,20 +1335,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.013Z",
-          "comments": [
-            {
-              "id": "ckdrej1gd0344g0pjd8t9rnz3",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8q2ficq29044kp4u7972ahn",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:55:58.427Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": []
         },
         {
@@ -1457,20 +1368,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.013Z",
-          "comments": [
-            {
-              "id": "ckdrej1gd0345g0pj443p55bx",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8r37c8c29094kp41otz80xa",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:55:49.801Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gd0346g0pjdf18uqjn",
@@ -1514,20 +1412,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.013Z",
-          "comments": [
-            {
-              "id": "ckdrej1gd0347g0pjxblobs7q",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8r3vuhv29174kp4ruxwyrkb",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:48:11.585Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gd0348g0pjszxq1d8l",
@@ -1571,20 +1456,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.013Z",
-          "comments": [
-            {
-              "id": "ckdrej1gd0349g0pjhu0c6i5i",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8r3xrb629194kp47ebwwast",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:48:09.112Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gd0350g0pjdhn4j4jk",
@@ -1650,20 +1522,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.014Z",
-          "comments": [
-            {
-              "id": "ckdrej1ge0351g0pjqv5d1yjl",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8rcz0oe29414kp4b84sdq4d",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-28T14:19:25.232Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1ge0352g0pjpuvhufg0",
@@ -1715,20 +1574,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.015Z",
-          "comments": [
-            {
-              "id": "ckdrej1gf0357g0pjgx31cyh0",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8zmp5j933504kp46iwew8mu",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:55:51.659Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gf0358g0pjvyf9vuir",
@@ -1761,32 +1607,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.015Z",
-          "comments": [
-            {
-              "id": "ckdrej1gf0359g0pjclf84fgj",
-              "content": "I'm not sure the language code in Mimic is the same as the one in http://hl7.org/fhir/ValueSet/languages ",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8zn4jal33534kp45y9p3ddy",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:55:01.584Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            },
-            {
-              "id": "ckdrej1gf0360g0pjzaf7jbeg",
-              "content": "How to change that? I deleted the language because it is not possible to list all the different languages in the dataset and create a customized concept map.",
-              "validation": false,
-              "authorId": "ck8omfenu26924kp4008qs7y3",
-              "attributeId": "ck8zn4jal33534kp45y9p3ddy",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-28T12:24:02.853Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gf0361g0pj10la0hdm",
@@ -1852,20 +1673,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.015Z",
-          "comments": [
-            {
-              "id": "ckdrej1gf0362g0pj36me9c72",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck903wj0403426opei0sd9ci5",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:41:09.062Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gf0363g0pjjpn3dv9t",
@@ -1898,20 +1706,7 @@
           "resourceId": "ck8oo3on226974kp4ns32n7xs",
           "updatedAt": "2020-08-12T13:20:42.023Z",
           "createdAt": "2020-08-12T13:20:42.016Z",
-          "comments": [
-            {
-              "id": "ckdrej1gg0364g0pjc6c76d19",
-              "content": "",
-              "validation": false,
-              "authorId": "ck7z0lhvk0000ahn6iftw4i5l",
-              "attributeId": "ck8ooenpu26984kp4wyiz4yc2",
-              "updatedAt": "2020-08-12T13:20:42.023Z",
-              "createdAt": "2020-04-27T15:56:21.392Z",
-              "author": {
-                "email": "admin@arkhn.com"
-              }
-            }
-          ],
+          "comments": [],
           "inputGroups": [
             {
               "id": "ckdrej1gg0365g0pjog8r0m8a",

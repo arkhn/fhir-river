@@ -21,6 +21,7 @@ from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
+ENV = os.getenv("ENV")
 
 # analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
@@ -154,7 +155,7 @@ def process_event_with_producer(producer):
         analyzer = analyzers.get(batch_id)
         if not analyzer:
             auth_header = user_authorization.get(batch_id)
-            if not auth_header:
+            if not auth_header and ENV != "test":
                 logger.error(f"authorization header not found for batch {batch_id}, aborting")
                 return
             pyrog_client = PyrogClient(auth_header)
