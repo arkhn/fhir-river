@@ -76,7 +76,7 @@ def test_batch_single_row():
     for resource in resources:
         try:
             # send a batch request
-            response = requests.post("http://0.0.0.0:3000/batch", json={"resources": [resource]},)
+            response = requests.post("http://0.0.0.0:3000/batch", json={"resources": [resource]})
         except requests.exceptions.ConnectionError:
             raise Exception("Could not connect to the api service")
 
