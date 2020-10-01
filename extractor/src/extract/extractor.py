@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List
+from typing import Callable, Dict, List
 
 from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
@@ -13,17 +13,17 @@ from extractor.src.errors import EmptyResult, ImproperMappingError
 from arkhn_monitoring import Timer
 
 
-SQL_RELATIONS_TO_METHOD = {
-    "<": "__lt__",
-    "<=": "__le__",
-    "<>": "__ne__",
-    "=": "__eq__",
-    ">": "__gt__",
-    ">=": "__ge__",
+SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], Callable]] = {
+    "<": lambda col, value: col.__lt__(value),
+    "<=": lambda col, value: col.__le__(value),
+    "<>": lambda col, value: col.__ne__(value),
+    "=": lambda col, value: col.__eq__(value),
+    ">": lambda col, value: col.__gt__(value),
+    ">=": lambda col, value: col.__ge__(value),
     # not handled yet
     # "BETWEEN": "",
-    "IN": "in_",
-    "LIKE": "like",
+    "IN": lambda col, value: col.in_(value.split(",")),
+    "LIKE": lambda col, value: col.like(value),
 }
 
 MSSQL = "MSSQL"
@@ -138,8 +138,8 @@ class Extractor:
 
         for sql_filter in analysis.filters:
             col = self.get_column(sql_filter.sql_column)
-            rel_method = SQL_RELATIONS_TO_METHOD[sql_filter.relation]
-            query = query.filter(getattr(col, rel_method)(sql_filter.value))
+            filter_clause = SQL_RELATIONS_TO_METHOD[sql_filter.relation](col, sql_filter.value)
+            query = query.filter(filter_clause)
 
         return query
 
