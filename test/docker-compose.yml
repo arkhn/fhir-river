@@ -146,7 +146,7 @@ services:
       TRANSFORMER_URL: http://transformer:3002
       LOADER_URL: http://loader:3003
     ports:
-      - "3001:3000"
+      - "3000:3000"
 
   pyrog-server:
     image: arkhn/pyrog-server:latest

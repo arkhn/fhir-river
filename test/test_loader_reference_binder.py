@@ -26,23 +26,27 @@ def handle_kafka_error(err):
     raise err
 
 
-def get_resource_ids():
+def get_resources():
     sources_query = """
         query s {
             sources {
                 id
                 resources {
                     id
+                    definitionId
                 }
             }
         }
     """
-    pyrog_client = PyrogClient()
+    pyrog_client = PyrogClient(None)
     sources_resp = pyrog_client.run_graphql_query(sources_query)
-    return [resource for resource in sources_resp["data"]["sources"][0]["resources"]]
+    return [
+        {"resource_id": resource["id"], "resource_type": resource["definitionId"]}
+        for resource in sources_resp["data"]["sources"][0]["resources"]
+    ]
 
 
-def send_batch(resource_id):
+def send_batch(resource):
     # declare kafka consumer of "load" events
     consumer = EventConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS_EXTERNAL"),
@@ -66,10 +70,8 @@ def send_batch(resource_id):
 
     try:
         # send a batch request
-        response = requests.post(
-            "http://0.0.0.0:3001/batch", json={"resource_ids": [resource_id]},
-        )
-        print(f"New POST request sent to River API: {resource_id}")
+        response = requests.post("http://0.0.0.0:3000/batch", json={"resources": [resource]})
+        print(f"New POST request sent to River API: {resource['resource_id']}")
     except requests.exceptions.ConnectionError:
         raise Exception("Could not connect to the api service")
 
@@ -80,11 +82,11 @@ def send_batch(resource_id):
 
 
 def test_batch_reference_binder(store):
-    resource_ids = get_resource_ids()
+    resources = get_resources()
 
     # Send Patient and Encounter batches
-    for resource in resource_ids:
-        send_batch(resource["id"])
+    for resource in resources:
+        send_batch(resource)
 
     # Check reference binding
     encounters = store.db["Encounter"]

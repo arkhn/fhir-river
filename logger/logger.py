@@ -14,6 +14,7 @@ FLUENTD_PORT = getenv("FLUENTD_PORT", 24224)
 LOGGING_LEVEL = getenv("LOGGING_LEVEL", "INFO")
 SERVICE_NAME = getenv("SERVICE_NAME", "analyzer")
 ENV = getenv("ENV")
+IN_PROD = ENV != "test"
 
 logger = None
 
@@ -25,7 +26,7 @@ def get_logger(extra_fields=[]):
         return logger
 
     # When we are doing tests
-    if ENV == "test":
+    if not IN_PROD:
         logging.basicConfig(stream=stdout, level=logging.DEBUG)
         logger = logging.getLogger()
         return logger
