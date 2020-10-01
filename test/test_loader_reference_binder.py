@@ -86,7 +86,7 @@ def test_batch_reference_binder(store):
 
     # Send Patient and Encounter batches
     for resource in resources:
-        send_batch(resource["resource_id"])
+        send_batch(resource)
 
     # Check reference binding
     encounters = store.db["Encounter"]
