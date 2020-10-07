@@ -18,32 +18,6 @@ def dotty_paths(paths):
         yield re.sub(r"\[(\d+)\]", r".\1", path)
 
 
-def partial_identifier(identifier):
-    (
-        value,
-        system,
-        identifier_type_code,
-        identifier_type_system,
-    ) = ReferenceBinder.extract_key_tuple(identifier)
-    if value:
-        return {"identifier.value": value, "identifier.system": system}
-    else:
-        return {
-            "identifier.type.coding.0.code": identifier_type_code,
-            "identifier.type.coding.0.system": identifier_type_system,
-        }
-
-
-def build_find_predicate(refs, reference_path, identifier, isArray):
-    res = {"id": {"$in": refs}}
-    if isArray:
-        res[reference_path] = {"$elemMatch": partial_identifier(identifier)}
-    else:
-        for identifier_path, identifier_value in partial_identifier(identifier).items():
-            res[f"{reference_path}.{identifier_path}"] = identifier_value
-    return res
-
-
 # handle updating reference arrays:
 # we keep the indices in the path (eg: "identifier.0.assigner.reference")
 # but if fhir_object[reference_path] is an array, we use the '$' feature of mongo
@@ -51,8 +25,8 @@ def build_find_predicate(refs, reference_path, identifier, isArray):
 # https://docs.mongodb.com/manual/reference/operator/update/positional/#update-documents-in-an-array
 # FIXME: won't work if multiple elements of the array need to be updated (see
 # https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
-def build_update_predicate(reference_path, fhir_object, isArray):
-    if isArray:
+def build_update_predicate(reference_path, fhir_object, is_array):
+    if is_array:
         target_path = f"{reference_path}.$.reference"
     else:
         target_path = f"{reference_path}.reference"
@@ -104,6 +78,10 @@ class ReferenceBinder:
                 )
 
         if "identifier" in fhir_object:
+            resource_type = fhir_object["resourceType"]
+            for identifier in fhir_object["identifier"]:
+                _identifier = json.dumps(self.partial_identifier(identifier))
+                self.cache.set(f"{resource_type}:{_identifier}", fhir_object["id"])
             self.resolve_pending_references(fhir_object)
 
         return fhir_object.to_dict()
@@ -113,7 +91,7 @@ class ReferenceBinder:
         reference_attribute = fhir_object[reference_path]
         resource_id = get_resource_id(fhir_object)
 
-        def bind(ref, isArray=False):
+        def bind(ref, is_array=False):
             # extract the type and itentifier of the reference
             reference_type = ref["type"]
             identifier = ref["identifier"]
@@ -124,17 +102,16 @@ class ReferenceBinder:
                 return ref
 
             # search the referenced resource in the database
-            referenced_resource = self.fhirstore.db[reference_type].find_one(
-                partial_identifier(identifier), ["id"],
-            )
-            if referenced_resource:
+            _identifier = json.dumps(self.partial_identifier(identifier))
+            referenced_resource_id = self.cache.get(f"{reference_type}:{_identifier}")
+            if referenced_resource_id:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
                 logger.debug(
                     f"reference to {reference_type} {identifier} resolved",
                     extra={"resource_id": resource_id},
                 )
-                ref["reference"] = f"{reference_type}/{referenced_resource['id']}"
+                ref["reference"] = f"{reference_type}/{referenced_resource_id}"
             else:
                 logger.debug(
                     f"caching reference to {reference_type} {identifier} at {reference_path}",
@@ -143,7 +120,7 @@ class ReferenceBinder:
 
                 # otherwise, cache in Redis the reference to resolve it later
                 target_ref = (reference_type, identifier_tuple)
-                source_ref = (fhir_object["resourceType"], reference_path, isArray)
+                source_ref = (fhir_object["resourceType"], reference_path, is_array)
                 self.cache.sadd(
                     json.dumps(target_ref),
                     json.dumps((source_ref, fhir_object["id"]))
@@ -153,7 +130,7 @@ class ReferenceBinder:
         # If we have a list of references, we want to bind all of them.
         # Thus, we loop on all the items in reference_attribute.
         if isinstance(reference_attribute, list):
-            return [bind(ref, isArray=True) for ref in reference_attribute]
+            return [bind(ref, is_array=True) for ref in reference_attribute]
         else:
             return bind(reference_attribute)
 
@@ -168,7 +145,12 @@ class ReferenceBinder:
             target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
-                find_predicate = build_find_predicate(refs, reference_path, identifier, is_array)
+                find_predicate = self.build_find_predicate(
+                    refs,
+                    reference_path,
+                    identifier,
+                    is_array
+                )
                 update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
                 logger.debug(
                     f"Updating resource {source_type}: {find_predicate} {update_predicate}",
@@ -223,3 +205,27 @@ class ReferenceBinder:
             (source_ref, ref) = json.loads(element)
             pending_refs[tuple(source_ref)].append(ref)
         return pending_refs
+
+    def partial_identifier(self, identifier) -> dict:
+        (
+            value,
+            system,
+            identifier_type_code,
+            identifier_type_system,
+        ) = self.extract_key_tuple(identifier)
+        if value:
+            return {"identifier.value": value, "identifier.system": system}
+        else:
+            return {
+                "identifier.type.coding.0.code": identifier_type_code,
+                "identifier.type.coding.0.system": identifier_type_system,
+            }
+
+    def build_find_predicate(self, refs, reference_path, identifier, is_array):
+        res = {"id": {"$in": refs}}
+        if is_array:
+            res[reference_path] = {"$elemMatch": self.partial_identifier(identifier)}
+        else:
+            for identifier_path, identifier_value in self.partial_identifier(identifier).items():
+                res[f"{reference_path}.{identifier_path}"] = identifier_value
+        return res
