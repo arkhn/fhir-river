@@ -123,10 +123,7 @@ class ReferenceBinder:
                 # otherwise, cache in Redis the reference to resolve it later
                 target_ref = (reference_type, identifier_tuple)
                 source_ref = (fhir_object["resourceType"], reference_path, is_array)
-                self.cache.sadd(
-                    json.dumps(target_ref),
-                    json.dumps((source_ref, fhir_object["id"]))
-                )
+                self.cache.sadd(json.dumps(target_ref), json.dumps((source_ref, fhir_object["id"])))
             return ref
 
         # If we have a list of references, we want to bind all of them.
@@ -173,15 +170,9 @@ class ReferenceBinder:
         identifier_type_system = identifier_type_coding.get("system")
         identifier_type_code = identifier_type_coding.get("code")
 
-        if not (bool(value and system) ^ bool(identifier_type_system and identifier_type_code)):
-            raise Exception(
-                f"invalid identifier: {identifier} (identifier.value and identifier.system) "
-                "or (identifier.type.coding.code and identifier.type.coding.system) are required "
-                "and mutually exclusive"
-            )
-
         return value, system, identifier_type_code, identifier_type_system
 
+    @Timer("time_load_cached_references", "time spent loading references from redis")
     def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
         """Requests cached references from Redis
 
@@ -215,12 +206,13 @@ class ReferenceBinder:
             identifier_type_code,
             identifier_type_system,
         ) = self.extract_key_tuple(identifier)
-        if value:
+        if system:
             return {"identifier.value": value, "identifier.system": system}
         else:
             return {
-                "identifier.type.coding.0.code": identifier_type_code,
-                "identifier.type.coding.0.system": identifier_type_system,
+                "identifier.value": value,
+                "identifier.type.coding.code": identifier_type_code,
+                "identifier.type.coding.system": identifier_type_system,
             }
 
     def build_find_predicate(self, refs, reference_path, identifier, is_array):

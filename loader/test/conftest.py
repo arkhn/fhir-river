@@ -50,6 +50,7 @@ def patient_code_identifier():
                 "assigner": {
                     "type": "Organization",
                     "identifier": {
+                        "value": "654",
                         "type": {
                             "coding": [
                                 {"code": "code_456", "system": "fhir_code_system_organization"}
@@ -63,6 +64,7 @@ def patient_code_identifier():
             {
                 "type": "Practitioner",
                 "identifier": {
+                    "value": "222",
                     "type": {
                         "coding": [{"code": "code_123", "system": "fhir_code_system_practitioner"}]
                     },
@@ -72,6 +74,7 @@ def patient_code_identifier():
         "managingOrganization": {
             "type": "Organization",
             "identifier": {
+                "value": "333",
                 "type": {
                     "coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]
                 },
@@ -87,7 +90,12 @@ def test_practitioner():
         "resourceType": "Practitioner",
         "identifier": [
             {"system": "http://terminology.arkhn.org/mimic_id/practitioner_id", "value": "123"},
-            {"type": {"coding": [{"code": "code_123", "system": "fhir_code_system_practitioner"}]}},
+            {
+                "value": "222",
+                "type": {
+                    "coding": [{"code": "code_123", "system": "fhir_code_system_practitioner"}]
+                },
+            },
         ],
     }
 
@@ -100,7 +108,17 @@ def test_organization():
         "identifier": [
             {"system": "http://terminology.arkhn.org/mimic_id/organization_id", "value": "456"},
             {"system": "http://terminology.arkhn.org/mimic_id/organization_id", "value": "789"},
-            {"type": {"coding": [{"code": "code_456", "system": "fhir_code_system_organization"}]}},
-            {"type": {"coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]}},
+            {
+                "value": "654",
+                "type": {
+                    "coding": [{"code": "code_456", "system": "fhir_code_system_organization"}]
+                },
+            },
+            {
+                "value": "333",
+                "type": {
+                    "coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]
+                },
+            },
         ],
     }
