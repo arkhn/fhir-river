@@ -79,9 +79,11 @@ class ReferenceBinder:
 
         if "identifier" in fhir_object:
             resource_type = fhir_object["resourceType"]
+            mapping = dict()
             for identifier in fhir_object["identifier"]:
                 _identifier = json.dumps(self.partial_identifier(identifier))
-                self.cache.set(f"{resource_type}:{_identifier}", fhir_object["id"])
+                mapping[f"{resource_type}:{_identifier}"] = fhir_object["id"]
+            self.cache.mset(mapping)
             self.resolve_pending_references(fhir_object)
 
         return fhir_object.to_dict()
