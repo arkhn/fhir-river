@@ -1,4 +1,3 @@
-from collections.abc import Mapping
 import os
 import re
 import requests
@@ -26,9 +25,7 @@ class Analyzer:
     def __init__(self, pyrog_client: PyrogClient):
         self.pyrog = pyrog_client
         # Store analyses
-        # TODO think about the design here. Use http caching instead of
-        # storing here, for instance?
-        self.analyses: Mapping = {}
+        self.analyses: dict = {}
 
         self._cur_analysis = Analysis()
 
@@ -37,14 +34,10 @@ class Analyzer:
         return self.analyses.get(resource_mapping_id)
 
     def fetch_analysis(self, resource_mapping_id):
-        """
-        Fetch mapping from API and store last updated timestamp
-        :param resource_mapping_id:
-        :return:
-        """
+        """ Fetch mapping from API """
         logger.info("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
         resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
-        self.analyze(resource_mapping)
+        return self.analyze(resource_mapping)
 
     def analyze(self, resource_mapping):
         self._cur_analysis = Analysis()

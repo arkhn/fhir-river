@@ -30,8 +30,6 @@ extractor = Extractor()
 
 
 def extract_resource(analysis, primary_key_values):
-    logger.debug("Get Analysis", extra={"resource_id": analysis.resource_id})
-
     if not analysis.source_credentials:
         raise MissingInformationError("credential is required to run fhir-river.")
 
