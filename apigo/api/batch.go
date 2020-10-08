@@ -32,9 +32,8 @@ type BatchRequest struct {
 
 // FetchAnalysisRequest is the body of the POST /fetch-analysis request.
 type FetchAnalysisRequest struct {
-	BatchID       string   `json:"batch_id"`
-	ResourceIDs   []string `json:"resource_ids"`
-	Authorization string   `json:"authorization"`
+	BatchID     string   `json:"batch_id"`
+	ResourceIDs []string `json:"resource_ids"`
 }
 
 // DeleteResourceRequest is the body of the POST /delete-resource request.
@@ -94,12 +93,20 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 				fetchAnalysisURL := fmt.Sprintf("%s/fetch-analysis", serviceURL)
 				jBody, _ := json.Marshal(
 					FetchAnalysisRequest{
-						BatchID:       batchID,
-						ResourceIDs:   resourceIDs,
-						Authorization: authorizationHeader,
+						BatchID:     batchID,
+						ResourceIDs: resourceIDs,
 					},
 				)
-				resp, err := http.Post(fetchAnalysisURL, "application/json", bytes.NewBuffer(jBody))
+
+				req, err := http.NewRequest("POST", fetchAnalysisURL, bytes.NewBuffer(jBody))
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+				}
+				req.Header.Set("Authorization", authorizationHeader)
+				req.Header.Set("Content-Type", "application/json")
+
+				resp, err := http.DefaultClient.Do(req)
+
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusBadRequest)
 				}

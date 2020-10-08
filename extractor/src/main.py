@@ -2,6 +2,8 @@
 
 import os
 import json
+import sys
+import traceback
 from typing import Dict
 
 from confluent_kafka import KafkaException, KafkaError
@@ -75,7 +77,7 @@ def extract():
     try:
         pyrog_client = PyrogClient(authorization_header)
         analyzer = Analyzer(pyrog_client)
-        analysis = analyzer.get_analysis(resource_id)
+        analysis = analyzer.fetch_analysis(resource_id)
         df = extract_resource(analysis, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
@@ -85,7 +87,7 @@ def extract():
         return jsonify({"rows": rows})
 
     except Exception as err:
-        logger.error(repr(err))
+        logger.error("".join(traceback.format_exception(*sys.exc_info())))
         raise err
 
 
@@ -94,7 +96,7 @@ def fetch_analysis():
     body = request.get_json()
     resource_ids = body.get("resource_ids", None)
     batch_id = body.get("batch_id", None)
-    authorization_header = body.get("authorization")
+    authorization_header = request.headers.get("Authorization")
 
     logger.info(f"Fetch analysis for batch {batch_id}")
 

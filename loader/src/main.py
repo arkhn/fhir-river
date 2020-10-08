@@ -67,7 +67,7 @@ def fetch_analysis():
     body = request.get_json()
     resource_ids = body.get("resource_ids", None)
     batch_id = body.get("batch_id", None)
-    authorization_header = body.get("authorization")
+    authorization_header = request.headers.get("Authorization")
 
     logger.info(f"Fetch analysis for batch {batch_id}")
 
