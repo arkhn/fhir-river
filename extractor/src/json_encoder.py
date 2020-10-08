@@ -12,10 +12,6 @@ class MyJSONEncoder(flask.json.JSONEncoder):
     """
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
-            # Convert decimal instances to strings
-            # If the decimal reprensents an integer, we want to avoid a trailing ".0"
-            nearest_int = obj.to_integral_exact()
-            if nearest_int == obj:
-                return str(nearest_int)
-            return str(obj)
+            # Convert decimal instances to strings without trailing 0
+            return str(obj.normalize())
         return super(MyJSONEncoder, self).default(obj)
