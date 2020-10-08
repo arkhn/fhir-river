@@ -75,7 +75,7 @@ def transform():
         f"POST /transform. Transforming {len(rows)} row(s).", extra={"resource_id": resource_id}
     )
     pyrog_client = PyrogClient(authorization_header)
-    analysis = Analyzer(pyrog_client).get_analysis(resource_id)
+    analysis = Analyzer(pyrog_client).fetch_analysis(resource_id)
     try:
         fhir_instances = []
         errors = []
