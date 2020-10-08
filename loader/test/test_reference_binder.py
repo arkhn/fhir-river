@@ -1,40 +1,15 @@
 from unittest import mock
-from pytest import raises
 import json
 from loader.src.reference_binder import ReferenceBinder
 import fakeredis
 
 
 def test_extract_key_tuple():
-    identifier1 = {
-        "value": "v",
-        "system": "s",
-    }
+    identifier1 = {"value": "v", "system": "s"}
     assert ReferenceBinder.extract_key_tuple(identifier1) == ("v", "s", None, None)
 
-    identifier2 = {"type": {"coding": [{"code": "c", "system": "s"}]}}
-    assert ReferenceBinder.extract_key_tuple(identifier2) == (None, None, "c", "s")
-
-    error = r".*\(identifier.value and identifier.system\) or \(identifier.type.coding.code and " \
-            r"identifier.type.coding.system\) are required and mutually exclusive$"
-    with raises(
-            Exception,
-            match=error
-    ):
-        identifier3 = {
-            "value": "v",
-            "system": "s",
-            "type": {"coding": [{"code": "c", "system": "s"}]},
-        }
-        ReferenceBinder.extract_key_tuple(identifier3)
-    with raises(
-            Exception,
-            match=error
-    ):
-        identifier3 = {
-            "value": "v",
-        }
-        ReferenceBinder.extract_key_tuple(identifier3)
+    identifier2 = {"value": "v", "type": {"coding": [{"code": "c", "system": "s"}]}}
+    assert ReferenceBinder.extract_key_tuple(identifier2) == ("v", None, "c", "s")
 
 
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
@@ -112,9 +87,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
                     ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
                 )
             ),
-            json.dumps(
-                (("Patient", "generalPractitioner", True), patient["id"])
-            )
+            json.dumps((("Patient", "generalPractitioner", True), patient["id"])),
         ),
         mock.call(
             json.dumps(
@@ -123,9 +96,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
                     ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
                 )
             ),
-            json.dumps(
-                (("Patient", "managingOrganization", False), patient["id"])
-            )
+            json.dumps((("Patient", "managingOrganization", False), patient["id"])),
         ),
         mock.call(
             json.dumps(
@@ -134,10 +105,8 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
                     ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
                 )
             ),
-            json.dumps(
-                (("Patient", "identifier.0.assigner", False), patient["id"])
-            )
-        )
+            json.dumps((("Patient", "identifier.0.assigner", False), patient["id"])),
+        ),
     ]
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
     assert ref_binder.cache.sadd.call_count == 3
@@ -146,11 +115,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references(
-        mock_fhirstore,
-        mock_redis,
-        patient,
-        test_organization,
-        test_practitioner
+    mock_fhirstore, mock_redis, patient, test_organization, test_practitioner
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -210,7 +175,7 @@ def test_resolve_pending_references(
                     "generalPractitioner": {
                         "$elemMatch": {
                             "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
                         }
                     },
                 },
@@ -230,7 +195,7 @@ def test_resolve_pending_references(
                 {
                     "id": {"$in": ["pat1"]},
                     "identifier.0.assigner.identifier.value": "456",
-                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id", # noqa
+                    "identifier.0.assigner.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
                 },
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
@@ -239,7 +204,7 @@ def test_resolve_pending_references(
                 {
                     "id": {"$in": ["pat1"]},
                     "managingOrganization.identifier.value": "789",
-                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id", # noqa
+                    "managingOrganization.identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",  # noqa
                 },
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
@@ -254,7 +219,7 @@ def test_resolve_pending_references(
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references_code_identifier(
-        mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
+    mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -278,15 +243,8 @@ def test_resolve_pending_references_code_identifier(
     # all references must have been cached
     assert ref_binder.cache.sadd.call_count == 3
     ref_binder.cache.sadd.assert_any_call(
-        json.dumps(
-            (
-                "Practitioner",
-                (None, None, "code_123", "fhir_code_system_practitioner")
-            )
-        ),
-        json.dumps(
-            (("Patient", "generalPractitioner", True), patient_code_identifier["id"])
-        )
+        json.dumps(("Practitioner", ("222", None, "code_123", "fhir_code_system_practitioner"))),
+        json.dumps((("Patient", "generalPractitioner", True), patient_code_identifier["id"])),
     )
 
     ref_binder.resolve_references(test_practitioner, [])
@@ -299,8 +257,9 @@ def test_resolve_pending_references_code_identifier(
                     "id": {"$in": ["pat1"]},
                     "generalPractitioner": {
                         "$elemMatch": {
-                            "identifier.type.coding.0.code": "code_123",
-                            "identifier.type.coding.0.system": "fhir_code_system_practitioner",
+                            "identifier.value": "222",
+                            "identifier.type.coding.code": "code_123",
+                            "identifier.type.coding.system": "fhir_code_system_practitioner",
                         }
                     },
                 },
@@ -309,18 +268,19 @@ def test_resolve_pending_references_code_identifier(
             )
         ]
     )
+    store.db["Patient"].update_many.reset_mock()
 
     ref_binder.resolve_references(test_organization, [])
-    assert store.db["Patient"].update_many.call_count == 3
+    assert store.db["Patient"].update_many.call_count == 2
     store.db["Patient"].update_many.assert_has_calls(
         [
-            # the Patient.identifier[0].assigner.reference must have been updated
             # the Patient.identifier[0].assigner.reference must have been updated
             mock.call(
                 {
                     "id": {"$in": ["pat1"]},
-                    "identifier.0.assigner.identifier.type.coding.0.code": "code_456",
-                    "identifier.0.assigner.identifier.type.coding.0.system": "fhir_code_system_organization", # noqa
+                    "identifier.0.assigner.identifier.value": "654",
+                    "identifier.0.assigner.identifier.type.coding.code": "code_456",
+                    "identifier.0.assigner.identifier.type.coding.system": "fhir_code_system_organization",  # noqa
                 },
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
             ),
@@ -328,8 +288,9 @@ def test_resolve_pending_references_code_identifier(
             mock.call(
                 {
                     "id": {"$in": ["pat1"]},
-                    "managingOrganization.identifier.type.coding.0.code": "code_789",
-                    "managingOrganization.identifier.type.coding.0.system": "fhir_code_system_organization", # noqa
+                    "managingOrganization.identifier.value": "333",
+                    "managingOrganization.identifier.type.coding.code": "code_789",
+                    "managingOrganization.identifier.type.coding.system": "fhir_code_system_organization",  # noqa
                 },
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
             ),
@@ -344,11 +305,7 @@ def test_resolve_pending_references_code_identifier(
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_batch_references(
-        mock_fhirstore,
-        mock_redis,
-        patient,
-        test_organization,
-        test_practitioner
+    mock_fhirstore, mock_redis, patient, test_organization, test_practitioner
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -376,18 +333,8 @@ def test_resolve_batch_references(
     )
     source_ref = ("Patient", "generalPractitioner", True)
     calls = [
-        mock.call(
-            json.dumps(target_ref),
-            json.dumps(
-                (source_ref, patient["id"])
-            )
-        ),
-        mock.call(
-            json.dumps(target_ref),
-            json.dumps(
-                (source_ref, patient_2["id"])
-            )
-        )
+        mock.call(json.dumps(target_ref), json.dumps((source_ref, patient["id"]))),
+        mock.call(json.dumps(target_ref), json.dumps((source_ref, patient_2["id"]))),
     ]
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
     # both references must have been cached using the same key.
@@ -406,11 +353,11 @@ def test_resolve_batch_references(
                 "link": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
                     }
                 },
             },
-            {"$set": {"link.$.reference": "Practitioner/practitioner1"}}
+            {"$set": {"link.$.reference": "Practitioner/practitioner1"}},
         ),
         # Any of the two following calls
         (
@@ -419,12 +366,12 @@ def test_resolve_batch_references(
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
                     }
                 },
             },
             # generalPractitioner is an array, therefore we use .$. to update the right item
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}}
+            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
         ),
         (
             {
@@ -432,12 +379,12 @@ def test_resolve_batch_references(
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id", # noqa
+                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
                     }
                 },
             },
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}}
-        )
+            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
+        ),
     ]
     store.db["Patient"].update_many.assert_any_call(*calls[0])
     try:
