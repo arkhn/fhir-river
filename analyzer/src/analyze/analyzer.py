@@ -34,9 +34,7 @@ class Analyzer:
 
     def get_analysis(self, resource_mapping_id) -> Analysis:
         logger.debug("Get Analysis", extra={"resource_id": resource_mapping_id})
-        if resource_mapping_id not in self.analyses:
-            self.fetch_analysis(resource_mapping_id)
-        return self.analyses[resource_mapping_id]
+        return self.analyses.get(resource_mapping_id)
 
     def fetch_analysis(self, resource_mapping_id):
         """

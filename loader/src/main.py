@@ -14,6 +14,7 @@ from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
+from analyzer.src.errors import AuthenticationError, AuthorizationError
 from loader.src.config.service_logger import logger
 from loader.src.load import Loader
 from loader.src.load.fhirstore import get_fhirstore
@@ -26,13 +27,10 @@ IN_PROD = ENV != "test"
 
 # analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
-# user_authorization is a map of str indexed by batch_id
-user_authorization: Dict[str, str] = {}
 
 ####################
 # LOADER FLASK API #
 ####################
-
 
 app = Flask(__name__)
 
@@ -64,6 +62,25 @@ def delete_resources():
     return jsonify(success=True)
 
 
+@app.route("/fetch-analysis", methods=["POST"])
+def fetch_analysis():
+    body = request.get_json()
+    resource_ids = body.get("resource_ids", None)
+    batch_id = body.get("batch_id", None)
+    authorization_header = body.get("authorization")
+
+    logger.info(f"Fetch analysis for batch {batch_id}")
+
+    if not authorization_header and ENV != "test":
+        raise AuthenticationError(f"authorization header not found for batch {batch_id}, aborting")
+
+    pyrog_client = PyrogClient(authorization_header)
+    analyzer = Analyzer(pyrog_client)
+    for resource_id in resource_ids:
+        analyzer.fetch_analysis(resource_id)
+    analyzers[batch_id] = analyzer
+
+
 @app.route("/metrics")
 def metrics():
     """
@@ -73,15 +90,24 @@ def metrics():
 
 
 @app.errorhandler(Exception)
-def handle_bad_request(e):
-    return str(e), 400
+def handle_operation_outcome(e):
+    return jsonify({"error": str(e)}), 400
+
+
+@app.errorhandler(AuthenticationError)
+def handle_authentication_error(e):
+    return jsonify({"error": str(e)}), 401
+
+
+@app.errorhandler(AuthorizationError)
+def handle_authorization_error(e):
+    return jsonify({"error": str(e)}), 403
 
 
 #######################
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_BATCH_TOPIC = "batch"
 CONSUMED_TRANSFORM_TOPIC = "transform"
 PRODUCED_TOPIC = "load"
 CONSUMER_GROUP_ID = "loader"
@@ -90,25 +116,6 @@ CONSUMER_GROUP_ID = "loader"
 # these decorators tell uWSGI (the server with which the app is run)
 # to spawn a new thread every time a worker starts. Hence the consumer
 # is started at the same time as the Flask API.
-@postfork
-@thread
-def run_batch_consumer():
-    logger.info("Running batch consumer")
-
-    consumer = LoaderConsumer(
-        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_BATCH_TOPIC,
-        group_id=CONSUMER_GROUP_ID,
-        process_event=process_batch_event,
-        manage_error=manage_kafka_error,
-    )
-
-    try:
-        consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)
-
-
 @postfork
 @thread
 def run_consumer():
@@ -129,16 +136,6 @@ def run_consumer():
         logger.error(err)
 
 
-def process_batch_event(msg):
-    msg_value = json.loads(msg.value())
-    batch_id = msg_value.get("batch_id")
-
-    if batch_id not in user_authorization:
-        logger.info(f"Caching tokens for batch {batch_id}")
-        auth_header = msg_value.get("auth_header", None)
-        user_authorization[batch_id] = auth_header
-
-
 def process_event_with_producer(producer):
     # Mongo client need to be called in each separate process
     fhirstore = get_fhirstore()
@@ -153,18 +150,15 @@ def process_event_with_producer(producer):
         batch_id = msg_value.get("batch_id")
         resource_id = msg_value.get("resource_id")
 
-        analyzer = analyzers.get(batch_id)
-        if not analyzer:
-            auth_header = user_authorization.get(batch_id)
-            if not auth_header and IN_PROD:
-                logger.error(f"authorization header not found for batch {batch_id}, aborting")
-                return
-            pyrog_client = PyrogClient(auth_header)
-            analyzer = Analyzer(pyrog_client)
-            analyzers[batch_id] = analyzer
-        # FIXME: filter meta.tags by system to get the right
-        # resource_id (ARKHN_CODE_SYSTEMS.resource)
-        analysis = analyzer.get_analysis(resource_id)
+        if batch_id not in analyzers:
+            logger.error(f"Analyzer not found for batch {batch_id}, aborting")
+            return
+        analysis = analyzers[batch_id].get_analysis(resource_id)
+        if not analysis:
+            logger.error(
+                f"Analysis not found for batch {batch_id} and resource {resource_id}, aborting"
+            )
+            return
 
         # Resolve existing and pending references (if the fhir_instance
         # references OR is referenced by other documents)
@@ -172,10 +166,6 @@ def process_event_with_producer(producer):
             f"Resolving references {analysis.reference_paths}", extra={"resource_id": resource_id}
         )
         resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
-
-        # TODO how will we handle override in fhir-river?
-        # if True:  # should be "if override:" or something like that
-        #     override_document(resolved_fhir_instance)
 
         try:
             logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
@@ -196,23 +186,3 @@ def manage_kafka_error(msg):
     :return:
     """
     logger.error(msg.error())
-
-
-# @Timer("time_override", "time to delete a potential document with the same identifier")
-# def override_document(fhir_instance):
-#     try:
-#         # TODO add a wrapper method in fhirstore to delete as follows?
-#         fhirstore.db[fhir_instance["resourceType"]].delete_one(
-#             {"identifier": fhir_instance["identifier"]}
-#         )
-#     except KeyError:
-#         logger.warning(
-#             f"instance {fhir_instance['id']} has no identifier",
-#             extra={"resource_id": get_resource_id(fhir_instance)},
-#         )
-#     except NotFoundError as e:
-#         # With the current policy of trying to delete a document with the same
-#         # identifier before each insertion, we may catch this Exception most of the time.
-#         # That's why the logging level is set to DEBUG.
-#         # TODO: better override strategy
-#         logger.debug(f"error while trying to delete previous documents: {e}")

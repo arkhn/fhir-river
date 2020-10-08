@@ -23,76 +23,10 @@ from transformer.src.errors import OperationOutcome
 # FIXME there are 2 OperationOutcome: 1 in tranformer and 1 in analyzer
 
 ENV = os.getenv("ENV")
+IN_PROD = ENV != "test"
 
-CONSUMED_BATCH_TOPIC = "batch"
-CONSUMED_EXTRACT_TOPIC = "extract"
-PRODUCED_TOPIC = "transform"
-CONSUMER_GROUP_ID = "transformer"
-
-# analyzers is a map of Analyzer indexed by batch_id
 analyzers: Dict[str, Analyzer] = {}
-# user_authorization is a map of str indexed by batch_id
-user_authorization: Dict[str, str] = {}
 transformer = Transformer()
-
-
-def create_app():
-    app = Flask(__name__)
-    return app
-
-
-app = create_app()
-
-
-def process_batch_event(msg):
-    msg_value = json.loads(msg.value())
-    batch_id = msg_value.get("batch_id")
-
-    if batch_id not in user_authorization:
-        logger.info(f"Caching tokens for batch {batch_id}")
-        auth_header = msg_value.get("auth_header", None)
-        user_authorization[batch_id] = auth_header
-
-
-def process_event_with_producer(producer):
-    def process_event(msg):
-        """ Process the event """
-        msg_value = json.loads(msg.value())
-        logger.debug(msg_value)
-        record = msg_value.get("record")
-        batch_id = msg_value.get("batch_id")
-        resource_id = msg_value.get("resource_id")
-
-        analyzer = analyzers.get(batch_id)
-        if not analyzer:
-            auth_header = user_authorization.get(batch_id)
-            if not auth_header and ENV != "test":
-                logger.error(f"authorization header not found for batch {batch_id}, aborting")
-                return
-            pyrog_client = PyrogClient(auth_header)
-            analyzer = Analyzer(pyrog_client)
-            analyzers[batch_id] = analyzer
-        analysis = analyzer.get_analysis(resource_id)
-        try:
-            fhir_document = transform_row(analysis, record)
-            producer.produce_event(
-                topic=PRODUCED_TOPIC,
-                record={
-                    "fhir_object": fhir_document,
-                    "batch_id": batch_id,
-                    "resource_id": resource_id,
-                },
-            )
-
-        except Exception as err:
-            logger.error(err)
-
-    return process_event
-
-
-def manage_kafka_error(msg):
-    """ Deal with the error if any """
-    logger.error(msg.error().str())
 
 
 def transform_row(analysis, row):
@@ -113,6 +47,19 @@ def transform_row(analysis, row):
             f"Failed to transform {row}:\n{e}",
             extra={"resource_id": analysis.resource_id, "primary_key_value": primary_key_value},
         )
+
+
+#############
+# FLASK API #
+#############
+
+
+def create_app():
+    app = Flask(__name__)
+    return app
+
+
+app = create_app()
 
 
 @app.route("/transform", methods=["POST"])
@@ -154,6 +101,25 @@ def transform():
         raise OperationOutcome(err)
 
 
+@app.route("/fetch-analysis", methods=["POST"])
+def fetch_analysis():
+    body = request.get_json()
+    resource_ids = body.get("resource_ids", None)
+    batch_id = body.get("batch_id", None)
+    authorization_header = body.get("authorization")
+
+    logger.info(f"Fetch analysis for batch {batch_id}")
+
+    if not authorization_header and IN_PROD:
+        raise AuthenticationError(f"authorization header not found for batch {batch_id}, aborting")
+
+    pyrog_client = PyrogClient(authorization_header)
+    analyzer = Analyzer(pyrog_client)
+    for resource_id in resource_ids:
+        analyzer.fetch_analysis(resource_id)
+    analyzers[batch_id] = analyzer
+
+
 @app.route("/metrics")
 def metrics():
     """
@@ -176,6 +142,14 @@ def handle_authentication_error(e):
 def handle_authorization_error(e):
     return jsonify({"error": str(e)}), 403
 
+
+################
+# KAFKA CLIENT #
+################
+
+CONSUMED_EXTRACT_TOPIC = "extract"
+PRODUCED_TOPIC = "transform"
+CONSUMER_GROUP_ID = "transformer"
 
 # these decorators tell uWSGI (the server with which the app is run)
 # to spawn a new thread every time a worker starts. Hence the consumer
@@ -200,20 +174,42 @@ def run_extract_consumer():
         logger.error(err)
 
 
-@postfork
-@thread
-def run_batch_consumer():
-    logger.info("Running batch consumer")
+def process_event_with_producer(producer):
+    def process_event(msg):
+        """ Process the event """
+        msg_value = json.loads(msg.value())
+        logger.debug(msg_value)
+        record = msg_value.get("record")
+        batch_id = msg_value.get("batch_id")
+        resource_id = msg_value.get("resource_id")
 
-    consumer = TransformerConsumer(
-        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_BATCH_TOPIC,
-        group_id=CONSUMER_GROUP_ID,
-        process_event=process_batch_event,
-        manage_error=manage_kafka_error,
-    )
+        if batch_id not in analyzers:
+            logger.error(f"Analyzer not found for batch {batch_id}, aborting")
+            return
+        analysis = analyzers[batch_id].get_analysis(resource_id)
+        if not analysis:
+            logger.error(
+                f"Analysis not found for batch {batch_id} and resource {resource_id}, aborting"
+            )
+            return
 
-    try:
-        consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)
+        try:
+            fhir_document = transform_row(analysis, record)
+            producer.produce_event(
+                topic=PRODUCED_TOPIC,
+                record={
+                    "fhir_object": fhir_document,
+                    "batch_id": batch_id,
+                    "resource_id": resource_id,
+                },
+            )
+
+        except Exception as err:
+            logger.error(err)
+
+    return process_event
+
+
+def manage_kafka_error(msg):
+    """ Deal with the error if any """
+    logger.error(msg.error().str())
