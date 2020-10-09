@@ -202,7 +202,7 @@ def test_resolve_batch_references(
     # Accordingly, in Redis, there is only one set.
     assert r.dbsize() == 1
     # In the set, we have three items (2 related to pat_2 and 1 related to pat_1)
-    assert len(r.smembers(json.dumps(target_ref))) == 3
+    assert len(r.smembers(target_ref)) == 3
 
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
