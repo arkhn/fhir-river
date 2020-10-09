@@ -73,30 +73,15 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
     # all references must have been cached
     calls = [
         mock.call(
-            json.dumps(
-                (
-                    "Practitioner",
-                    ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
-                )
-            ),
+            "Practitioner:123:http://terminology.arkhn.org/mimic_id/practitioner_id",
             json.dumps((("Patient", "generalPractitioner", True), patient["id"])),
         ),
         mock.call(
-            json.dumps(
-                (
-                    "Organization",
-                    ("789", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
-                )
-            ),
+            "Organization:789:http://terminology.arkhn.org/mimic_id/organization_id",
             json.dumps((("Patient", "managingOrganization", False), patient["id"])),
         ),
         mock.call(
-            json.dumps(
-                (
-                    "Organization",
-                    ("456", "http://terminology.arkhn.org/mimic_id/organization_id", None, None,),
-                )
-            ),
+            "Organization:456:http://terminology.arkhn.org/mimic_id/organization_id",
             json.dumps((("Patient", "identifier.0.assigner", False), patient["id"])),
         ),
     ]
@@ -118,45 +103,12 @@ def test_resolve_pending_references(
 
     store.db["any"].find_one.side_effect = [None, None, None]
 
-    res = ref_binder.resolve_references(
+    ref_binder.resolve_references(
         patient, ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
     )
 
-    store.db["any"].find_one.assert_has_calls(
-        [
-            mock.call(
-                {
-                    "identifier.value": "123",
-                    "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
-                },
-                ["id"],
-            ),
-            mock.call(
-                {
-                    "identifier.value": "789",
-                    "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                },
-                ["id"],
-            ),
-            mock.call(
-                {
-                    "identifier.value": "456",
-                    "identifier.system": "http://terminology.arkhn.org/mimic_id/organization_id",
-                },
-                ["id"],
-            ),
-        ]
-    )
-
-    # references must not have been resolved
-    assert res["generalPractitioner"][0].get("reference") is None
-    assert res["managingOrganization"].get("reference") is None
-    assert res["identifier"][0]["assigner"].get("reference") is None
-
-    # all references must have been cached
-    assert ref_binder.cache.sadd.call_count == 3
-
     ref_binder.resolve_references(test_practitioner, [])
+
     # the Patient.generalPractitioner.reference must have been updated
     assert store.db["Patient"].update_many.call_count == 1
     store.db["Patient"].update_many.assert_has_calls(
@@ -167,12 +119,18 @@ def test_resolve_pending_references(
                     "generalPractitioner": {
                         "$elemMatch": {
                             "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id" # noqa
                         }
                     },
                 },
-                # generalPractitioner is an array, therefore we use .$. to update the right item
-                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
+                # generalPractitioner is an array, therefore we use $ to update the right item
+                {"$set": {"generalPractitioner.$[ref].reference": "Practitioner/practitioner1"}},
+                array_filters=[
+                    {
+                        "ref.identifier.value": "123",
+                        "ref.identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id" # noqa
+                    }
+                ]
             )
         ]
     )
@@ -210,92 +168,6 @@ def test_resolve_pending_references(
 
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
-def test_resolve_pending_references_code_identifier(
-    mock_fhirstore, mock_redis, patient_code_identifier, test_organization, test_practitioner
-):
-    store = mock_fhirstore()
-    ref_binder = ReferenceBinder(store)
-    r = fakeredis.FakeStrictRedis()
-    ref_binder.cache.sadd.side_effect = r.sadd
-    ref_binder.cache.smembers.side_effect = r.smembers
-    ref_binder.cache.delete.side_effect = r.delete
-
-    store.db["any"].find_one.side_effect = [None, None, None]
-
-    res = ref_binder.resolve_references(
-        patient_code_identifier,
-        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
-    )
-
-    # references must not have been resolved
-    assert res["generalPractitioner"][0].get("reference") is None
-    assert res["managingOrganization"].get("reference") is None
-    assert res["identifier"][0]["assigner"].get("reference") is None
-
-    # all references must have been cached
-    assert ref_binder.cache.sadd.call_count == 3
-    ref_binder.cache.sadd.assert_any_call(
-        json.dumps(("Practitioner", ("222", None, "code_123", "fhir_code_system_practitioner"))),
-        json.dumps((("Patient", "generalPractitioner", True), patient_code_identifier["id"])),
-    )
-
-    ref_binder.resolve_references(test_practitioner, [])
-    # the Patient.generalPractitioner.reference must have been updated
-    assert store.db["Patient"].update_many.call_count == 1
-    store.db["Patient"].update_many.assert_has_calls(
-        [
-            mock.call(
-                {
-                    "id": {"$in": ["pat1"]},
-                    "generalPractitioner": {
-                        "$elemMatch": {
-                            "identifier.value": "222",
-                            "identifier.type.coding.code": "code_123",
-                            "identifier.type.coding.system": "fhir_code_system_practitioner",
-                        }
-                    },
-                },
-                # generalPractitioner is an array, therefore we use .$. to update the right item
-                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
-            )
-        ]
-    )
-    store.db["Patient"].update_many.reset_mock()
-
-    ref_binder.resolve_references(test_organization, [])
-    assert store.db["Patient"].update_many.call_count == 2
-    store.db["Patient"].update_many.assert_has_calls(
-        [
-            # the Patient.identifier[0].assigner.reference must have been updated
-            mock.call(
-                {
-                    "id": {"$in": ["pat1"]},
-                    "identifier.0.assigner.identifier.value": "654",
-                    "identifier.0.assigner.identifier.type.coding.code": "code_456",
-                    "identifier.0.assigner.identifier.type.coding.system": "fhir_code_system_organization",  # noqa
-                },
-                {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
-            ),
-            # the Patient.managingOrganization must have been updated
-            mock.call(
-                {
-                    "id": {"$in": ["pat1"]},
-                    "managingOrganization.identifier.value": "333",
-                    "managingOrganization.identifier.type.coding.code": "code_789",
-                    "managingOrganization.identifier.type.coding.system": "fhir_code_system_organization",  # noqa
-                },
-                {"$set": {"managingOrganization.reference": "Organization/organization1"}},
-            ),
-        ]
-    )
-
-    # cache must have been emptied
-    assert ref_binder.cache.delete.called
-    assert r.dbsize() == 0
-
-
-@mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
-@mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_batch_references(
     mock_fhirstore, mock_redis, patient, test_organization, test_practitioner
 ):
@@ -319,14 +191,11 @@ def test_resolve_batch_references(
     res = ref_binder.resolve_references(patient_2, ["generalPractitioner", "link"])
     assert res["generalPractitioner"][0].get("reference") is None
 
-    target_ref = (
-        "Practitioner",
-        ("123", "http://terminology.arkhn.org/mimic_id/practitioner_id", None, None,),
-    )
+    target_ref = "Practitioner:123:http://terminology.arkhn.org/mimic_id/practitioner_id"
     source_ref = ("Patient", "generalPractitioner", True)
     calls = [
-        mock.call(json.dumps(target_ref), json.dumps((source_ref, patient["id"]))),
-        mock.call(json.dumps(target_ref), json.dumps((source_ref, patient_2["id"]))),
+        mock.call(target_ref, json.dumps((source_ref, patient["id"]))),
+        mock.call(target_ref, json.dumps((source_ref, patient_2["id"]))),
     ]
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
     # both references must have been cached using the same key.
@@ -338,21 +207,26 @@ def test_resolve_batch_references(
     ref_binder.resolve_references(test_practitioner, [])
     # the Patient.generalPractitioner.reference must have been updated
     assert store.db["Patient"].update_many.call_count == 2
-    calls = [
-        (
-            {
-                "id": {"$in": ["pat2"]},
-                "link": {
-                    "$elemMatch": {
-                        "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                    }
-                },
+    store.db["Patient"].update_many.assert_any_call(
+        {
+            "id": {"$in": ["pat2"]},
+            "link": {
+                "$elemMatch": {
+                    "identifier.value": "123",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
+                }
             },
-            {"$set": {"link.$.reference": "Practitioner/practitioner1"}},
-        ),
-        # Any of the two following calls
-        (
+        },
+        {"$set": {"link.$[ref].reference": "Practitioner/practitioner1"}},
+        array_filters=[
+            {
+                "ref.identifier.value": "123",
+                "ref.identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id" # noqa
+            }
+        ]
+    )
+    try:
+        store.db["Patient"].update_many.assert_any_call(
             {
                 "id": {"$in": ["pat1", "pat2"]},
                 "generalPractitioner": {
@@ -362,10 +236,17 @@ def test_resolve_batch_references(
                     }
                 },
             },
-            # generalPractitioner is an array, therefore we use .$. to update the right item
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
-        ),
-        (
+            # generalPractitioner is an array, therefore we use $ to update the right item
+            {"$set": {"generalPractitioner.$[ref].reference": "Practitioner/practitioner1"}},
+            array_filters=[
+                {
+                    "ref.identifier.value": "123",
+                    "ref.identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id" # noqa
+                }
+            ]
+        )
+    except AssertionError:
+        store.db["Patient"].update_many.assert_any_call(
             {
                 "id": {"$in": ["pat2", "pat1"]},
                 "generalPractitioner": {
@@ -375,14 +256,14 @@ def test_resolve_batch_references(
                     }
                 },
             },
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
-        ),
-    ]
-    store.db["Patient"].update_many.assert_any_call(*calls[0])
-    try:
-        store.db["Patient"].update_many.assert_any_call(*calls[1])
-    except AssertionError:
-        store.db["Patient"].update_many.assert_any_call(*calls[2])
+            {"$set": {"generalPractitioner.$[ref].reference": "Practitioner/practitioner1"}},
+            array_filters=[
+                {
+                    "ref.identifier.value": "123",
+                    "ref.identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id" # noqa
+                }
+            ]
+        )
     assert store.db["Patient"].update_many.call_count == 2
 
     # cache must have been emptied
