@@ -87,7 +87,7 @@ class ReferenceBinder:
                     f"reference to {reference_type} {identifier} resolved",
                     extra={"resource_id": resource_id},
                 )
-                ref["reference"] = f'{reference_type}/{referenced_resource["id"]}'
+                ref["reference"] = f"{reference_type}/{referenced_resource['id']}"
             else:
                 logger.debug(
                     f"caching reference to {reference_type} {identifier} at {reference_path}",
