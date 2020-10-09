@@ -61,13 +61,7 @@ class ReferenceBinder:
                     extra={"resource_id": resource_id},
                 )
 
-        # For each resource, the identifiers associated with the resource id are cached in Redis
         if "identifier" in fhir_object:
-            resource_type = fhir_object["resourceType"]
-            mapping = dict()
-            for identifier in fhir_object["identifier"]:
-                mapping[self.identifier_to_key(resource_type, identifier)] = fhir_object["id"]
-            self.cache.mset(mapping)
             self.resolve_pending_references(fhir_object)
 
         return fhir_object.to_dict()
@@ -82,24 +76,25 @@ class ReferenceBinder:
             reference_type = ref["type"]
             identifier = ref["identifier"]
             # search the referenced resource in the database
-            referenced_resource_id = self.cache.get(
-                self.identifier_to_key(reference_type, identifier)
+            referenced_resource = self.fhirstore.db[reference_type].find_one(
+                self.partial_identifier(identifier),
+                ["id"]
             )
-            if referenced_resource_id:
+            if referenced_resource:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
                 logger.debug(
                     f"reference to {reference_type} {identifier} resolved",
                     extra={"resource_id": resource_id},
                 )
-                ref["reference"] = f"{reference_type}/{referenced_resource_id}"
+                ref["reference"] = f'{reference_type}/{referenced_resource["id"]}'
             else:
                 logger.debug(
                     f"caching reference to {reference_type} {identifier} at {reference_path}",
                     extra={"resource_id": resource_id},
                 )
-                source_ref = (fhir_object["resourceType"], reference_path, is_array)
                 target_ref = self.identifier_to_key(reference_type, identifier)
+                source_ref = (fhir_object["resourceType"], reference_path, is_array)
                 self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
             return ref
 
@@ -181,7 +176,13 @@ class ReferenceBinder:
         return f"{resource_type}:{value}:{system}"
 
     @staticmethod
-    def build_find_predicate(resource_ids, reference_path, identifier, is_array):
+    def partial_identifier(identifier):
+        return {
+            "identifier.value": identifier.get("value"),
+            "identifier.system": identifier.get("system")
+        }
+
+    def build_find_predicate(self, resource_ids, reference_path, identifier, is_array):
         """Finds all resources with unresolved references to a given identifier"""
         res = {
             "id": {
@@ -190,10 +191,7 @@ class ReferenceBinder:
         }
         if is_array:
             res[reference_path] = {
-                "$elemMatch": {
-                    "identifier.value": identifier.get("value"),
-                    "identifier.system": identifier.get("system")
-                }
+                "$elemMatch": self.partial_identifier(identifier)
             }
         else:
             res[f"{reference_path}.identifier.value"] = identifier.get("value")

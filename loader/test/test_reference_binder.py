@@ -4,14 +4,6 @@ from loader.src.reference_binder import ReferenceBinder
 import fakeredis
 
 
-def test_extract_key_tuple():
-    identifier1 = {"value": "v", "system": "s"}
-    assert ReferenceBinder.extract_key_tuple(identifier1) == ("v", "s", None, None)
-
-    identifier2 = {"value": "v", "type": {"coding": [{"code": "c", "system": "s"}]}}
-    assert ReferenceBinder.extract_key_tuple(identifier2) == ("v", None, "c", "s")
-
-
 @mock.patch("loader.src.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.src.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
