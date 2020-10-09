@@ -18,29 +18,13 @@ def dotty_paths(paths):
         yield re.sub(r"\[(\d+)\]", r".\1", path)
 
 
-# handle updating reference arrays:
-# we keep the indices in the path (eg: "identifier.0.assigner.reference")
-# but if fhir_object[reference_path] is an array, we use the '$' feature of mongo
-# in order to update the right element of the array.
-# https://docs.mongodb.com/manual/reference/operator/update/positional/#update-documents-in-an-array
-# FIXME: won't work if multiple elements of the array need to be updated (see
-# https://docs.mongodb.com/manual/reference/operator/update/positional-filtered/#identifier).
-def build_update_predicate(reference_path, fhir_object, is_array):
-    if is_array:
-        target_path = f"{reference_path}.$.reference"
-    else:
-        target_path = f"{reference_path}.reference"
-
-    return {"$set": {target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"}}
-
-
 class ReferenceBinder:
     def __init__(self, fhirstore):
         self.fhirstore = fhirstore
 
         # In Redis, we have sets identified with keys defined as a stringified
         # json array:
-        # "[fhir_type_target, [value, system, code, code_system]]"
+        # "fhir_type_target:value:system"
         #
         # A Redis set is a list. Here a list of stringified json arrays
         # [
@@ -50,7 +34,7 @@ class ReferenceBinder:
         # ]
         # eg: A Redis set "[Practitioner, [1234, system]]" contains
         # [
-        #     "[ [Patient, generalPractitioner, True], fhir-pract-id ]",
+        #     "[ [Patient, generalPractitioner, True], fhir-pract-id1 ]",
         #     ...
         # ]
         self.cache = redis.conn()
@@ -77,12 +61,12 @@ class ReferenceBinder:
                     extra={"resource_id": resource_id},
                 )
 
+        # For each resource, the identifiers associated with the resource id are cached in Redis
         if "identifier" in fhir_object:
             resource_type = fhir_object["resourceType"]
             mapping = dict()
             for identifier in fhir_object["identifier"]:
-                _identifier = json.dumps(self.partial_identifier(identifier))
-                mapping[f"{resource_type}:{_identifier}"] = fhir_object["id"]
+                mapping[self.identifier_to_key(resource_type, identifier)] = fhir_object["id"]
             self.cache.mset(mapping)
             self.resolve_pending_references(fhir_object)
 
@@ -97,15 +81,10 @@ class ReferenceBinder:
             # extract the type and itentifier of the reference
             reference_type = ref["type"]
             identifier = ref["identifier"]
-            try:
-                identifier_tuple = self.extract_key_tuple(identifier)
-            except Exception as e:
-                logger.error(e)
-                return ref
-
             # search the referenced resource in the database
-            _identifier = json.dumps(self.partial_identifier(identifier))
-            referenced_resource_id = self.cache.get(f"{reference_type}:{_identifier}")
+            referenced_resource_id = self.cache.get(
+                self.identifier_to_key(reference_type, identifier)
+            )
             if referenced_resource_id:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
@@ -119,11 +98,9 @@ class ReferenceBinder:
                     f"caching reference to {reference_type} {identifier} at {reference_path}",
                     extra={"resource_id": resource_id},
                 )
-
-                # otherwise, cache in Redis the reference to resolve it later
-                target_ref = (reference_type, identifier_tuple)
                 source_ref = (fhir_object["resourceType"], reference_path, is_array)
-                self.cache.sadd(json.dumps(target_ref), json.dumps((source_ref, fhir_object["id"])))
+                target_ref = self.identifier_to_key(reference_type, identifier)
+                self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
             return ref
 
         # If we have a list of references, we want to bind all of them.
@@ -136,12 +113,7 @@ class ReferenceBinder:
     @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
         for identifier in fhir_object["identifier"]:
-            try:
-                identifier_tuple = self.extract_key_tuple(identifier)
-            except Exception as e:
-                logger.error(e)
-                continue
-            target_ref = json.dumps((fhir_object["resourceType"], identifier_tuple))
+            target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
                 find_predicate = self.build_find_predicate(
@@ -150,33 +122,36 @@ class ReferenceBinder:
                     identifier,
                     is_array
                 )
-                update_predicate = build_update_predicate(reference_path, fhir_object, is_array)
+                update_predicate = self.build_update_predicate(
+                    reference_path,
+                    fhir_object,
+                    is_array
+                )
                 logger.debug(
                     f"Updating resource {source_type}: {find_predicate} {update_predicate}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
-                self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
+                if is_array:
+                    self.fhirstore.db[source_type].update_many(
+                        find_predicate,
+                        update_predicate,
+                        array_filters=[
+                            {
+                                "ref.identifier.value": identifier.get("value"),
+                                "ref.identifier.system": identifier.get("system")
+                            }
+                        ]
+                    )
+                else:
+                    self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
             if pending_refs:
                 self.cache.delete(target_ref)
-
-    @staticmethod
-    def extract_key_tuple(identifier):
-        """ Build a tuple that contains the essential information from an Identifier.
-        This tuple serves as a map key.
-        """
-        value = identifier.get("value")
-        system = identifier.get("system")
-        identifier_type_coding = identifier["type"]["coding"][0] if "type" in identifier else {}
-        identifier_type_system = identifier_type_coding.get("system")
-        identifier_type_code = identifier_type_coding.get("code")
-
-        return value, system, identifier_type_code, identifier_type_system
 
     @Timer("time_load_cached_references", "time spent loading references from redis")
     def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
         """Requests cached references from Redis
 
-        :param target_ref: "[fhir_type_target, [value, system, code, code_system]]"
+        :param target_ref: "fhir_type_target:value:system"
         :type target_ref: str
         The SMEMBERS command gets the set target_ref and returns a list
         [
@@ -199,27 +174,40 @@ class ReferenceBinder:
             pending_refs[tuple(source_ref)].append(ref)
         return pending_refs
 
-    def partial_identifier(self, identifier) -> dict:
-        (
-            value,
-            system,
-            identifier_type_code,
-            identifier_type_system,
-        ) = self.extract_key_tuple(identifier)
-        if system:
-            return {"identifier.value": value, "identifier.system": system}
-        else:
-            return {
-                "identifier.value": value,
-                "identifier.type.coding.code": identifier_type_code,
-                "identifier.type.coding.system": identifier_type_system,
-            }
+    @staticmethod
+    def identifier_to_key(resource_type, identifier):
+        value = identifier.get("value")
+        system = identifier.get("system")
+        return f"{resource_type}:{value}:{system}"
 
-    def build_find_predicate(self, refs, reference_path, identifier, is_array):
-        res = {"id": {"$in": refs}}
+    @staticmethod
+    def build_find_predicate(resource_ids, reference_path, identifier, is_array):
+        """Finds all resources with unresolved references to a given identifier"""
+        res = {
+            "id": {
+                "$in": resource_ids
+            }
+        }
         if is_array:
-            res[reference_path] = {"$elemMatch": self.partial_identifier(identifier)}
+            res[reference_path] = {
+                "$elemMatch": {
+                    "identifier.value": identifier.get("value"),
+                    "identifier.system": identifier.get("system")
+                }
+            }
         else:
-            for identifier_path, identifier_value in self.partial_identifier(identifier).items():
-                res[f"{reference_path}.{identifier_path}"] = identifier_value
+            res[f"{reference_path}.identifier.value"] = identifier.get("value")
+            res[f"{reference_path}.identifier.system"] = identifier.get("system")
         return res
+
+    @staticmethod
+    def build_update_predicate(reference_path, fhir_object, is_array):
+        if is_array:
+            target_path = f"{reference_path}.$[ref].reference"
+        else:
+            target_path = f"{reference_path}.reference"
+        return {
+            "$set": {
+                target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"
+            }
+        }
