@@ -1,6 +1,5 @@
 import re
 import json
-import base64
 from collections import defaultdict
 from typing import DefaultDict
 from dotty_dict import dotty
@@ -169,9 +168,11 @@ class ReferenceBinder:
 
     @staticmethod
     def identifier_to_key(resource_type, identifier):
-        value = base64.b64encode(str(identifier.get("value")).encode())
+        value = identifier.get("value")
         system = identifier.get("system")
-        return f"{resource_type}:{value}:{system}"
+        # Default separators include whitespaces
+        _id = json.dumps((value, system), separators=(',', ':'))
+        return f"{resource_type}:{_id}"
 
     @staticmethod
     def partial_identifier(identifier):
