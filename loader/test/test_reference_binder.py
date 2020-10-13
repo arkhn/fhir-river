@@ -136,11 +136,13 @@ def test_resolve_pending_references(
             mock.call(
                 {"id": {"$in": ["pat1"]}},
                 {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
+                array_filters=None,
             ),
             # the Patient.managingOrganization must have been updated
             mock.call(
                 {"id": {"$in": ["pat1"]}},
                 {"$set": {"managingOrganization.reference": "Organization/organization1"}},
+                array_filters=None,
             ),
         ]
     )

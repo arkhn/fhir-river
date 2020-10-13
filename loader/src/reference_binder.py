@@ -24,7 +24,7 @@ class ReferenceBinder:
 
         # In Redis, we have sets identified with keys defined as a stringified
         # json array:
-        # "fhir_type_target:(value, system)"
+        # "fhir_type_target:[value, system]"
         #
         # A Redis set is a list. Here a list of stringified json arrays
         # [
@@ -32,7 +32,7 @@ class ReferenceBinder:
         #     "[ [fhir_type_source, path, isArray], fhir_id2 ]",
         #     ...
         # ]
-        # eg: A Redis set "[Practitioner, [1234, system]]" contains
+        # eg: A Redis set "Practitioner:[1234, system]" contains
         # [
         #     "[ [Patient, generalPractitioner, True], fhir-pract-id1 ]",
         #     ...
@@ -120,22 +120,17 @@ class ReferenceBinder:
                     f"Updating resources {source_type}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
-                if is_array:
-                    self.fhirstore.db[source_type].update_many(
-                        {"id": {"$in": refs}},
-                        update_predicate,
-                        array_filters=[
-                            {
-                                "ref.identifier.value": identifier.get("value"),
-                                "ref.identifier.system": identifier.get("system")
-                            }
-                        ]
-                    )
-                else:
-                    self.fhirstore.db[source_type].update_many(
-                        {"id": {"$in": refs}},
-                        update_predicate
-                    )
+                filters = [
+                    {
+                        "ref.identifier.value": identifier.get("value"),
+                        "ref.identifier.system": identifier.get("system")
+                    }
+                ]
+                self.fhirstore.db[source_type].update_many(
+                    {"id": {"$in": refs}},
+                    update_predicate,
+                    array_filters=filters if is_array else None
+                )
             if pending_refs:
                 self.cache.delete(target_ref)
 
@@ -143,7 +138,7 @@ class ReferenceBinder:
     def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
         """Requests cached references from Redis
 
-        :param target_ref: "fhir_type_target:(value, system)"
+        :param target_ref: "fhir_type_target:[value, system]"
         :type target_ref: str
         The SMEMBERS command gets the set target_ref and returns a list
         [
