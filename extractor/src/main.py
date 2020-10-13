@@ -89,25 +89,6 @@ def extract():
         raise err
 
 
-@app.route("/fetch-analysis", methods=["POST"])
-def fetch_analysis():
-    body = request.get_json()
-    resource_ids = body.get("resource_ids", None)
-    batch_id = body.get("batch_id", None)
-    authorization_header = request.headers.get("Authorization")
-
-    logger.info(f"Fetch analysis for batch {batch_id}")
-
-    if not authorization_header and IN_PROD:
-        raise AuthenticationError(f"authorization header not found for batch {batch_id}, aborting")
-
-    pyrog_client = PyrogClient(authorization_header)
-    analyzer = Analyzer(pyrog_client)
-    for resource_id in resource_ids:
-        analyzer.fetch_analysis(resource_id)
-    analyzers[batch_id] = analyzer
-
-
 @app.route("/metrics")
 def metrics():
     """ Flask endpoint to gather the metrics, will be called by Prometheus. """

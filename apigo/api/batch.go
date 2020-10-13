@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"sync"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
@@ -78,57 +77,18 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		}
 		batchID := batchUUID.String()
 
-		// Make all the services fetch the analyses
+		// Fetch and store the mappings to use for the batch
 		// This needs to be synchronous because we don't want a token to become invalid
 		// in the middle of a batch
-		var wg sync.WaitGroup
-		// Status codes channel to check for errors
-		chStatusCodes := make(chan int)
-
-		serviceURLs := []string{extractorURL, transformerURL, loaderURL}
-		for _, serviceURL := range serviceURLs {
-			go func(serviceURL string) {
-				wg.Add(1)
-				defer wg.Done()
-				fetchAnalysisURL := fmt.Sprintf("%s/fetch-analysis", serviceURL)
-				jBody, _ := json.Marshal(
-					FetchAnalysisRequest{
-						BatchID:     batchID,
-						ResourceIDs: resourceIDs,
-					},
-				)
-
-				req, err := http.NewRequest("POST", fetchAnalysisURL, bytes.NewBuffer(jBody))
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-				}
-				req.Header.Set("Authorization", authorizationHeader)
-				req.Header.Set("Content-Type", "application/json")
-
-				resp, err := http.DefaultClient.Do(req)
-
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-				}
-				chStatusCodes <- resp.StatusCode
-			}(serviceURL)
-		}
-		wg.Wait()
-		close(chStatusCodes)
-
-		for statusCode := range chStatusCodes {
-			switch statusCode {
-			case http.StatusOK:
-				// If everything went well, we go on
-			case http.StatusUnauthorized:
-				http.Error(w, "Token is invalid", http.StatusUnauthorized)
+		for _, resourceID := range resourceIDs {
+			resourceMapping, err := fetchMapping(resourceID, authorizationHeader)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
-			case http.StatusForbidden:
-				http.Error(w, "You don't have rights to perform this action", http.StatusForbidden)
-				return
-			default:
-				// Return other errors
-				http.Error(w, "Error while fetching analyses", http.StatusBadRequest)
+			}
+			err = storeMapping(resourceMapping, resourceID, batchID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 		}
