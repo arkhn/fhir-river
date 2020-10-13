@@ -111,24 +111,18 @@ class ReferenceBinder:
             target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
-                find_predicate = self.build_find_predicate(
-                    refs,
-                    reference_path,
-                    identifier,
-                    is_array
-                )
                 update_predicate = self.build_update_predicate(
                     reference_path,
                     fhir_object,
                     is_array
                 )
                 logger.debug(
-                    f"Updating resource {source_type}: {find_predicate} {update_predicate}",
+                    f"Updating resources {source_type}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
                 if is_array:
                     self.fhirstore.db[source_type].update_many(
-                        find_predicate,
+                        {"id": {"$in": refs}},
                         update_predicate,
                         array_filters=[
                             {
@@ -138,7 +132,10 @@ class ReferenceBinder:
                         ]
                     )
                 else:
-                    self.fhirstore.db[source_type].update_many(find_predicate, update_predicate)
+                    self.fhirstore.db[source_type].update_many(
+                        {"id": {"$in": refs}},
+                        update_predicate
+                    )
             if pending_refs:
                 self.cache.delete(target_ref)
 
@@ -181,22 +178,6 @@ class ReferenceBinder:
             "identifier.value": identifier.get("value"),
             "identifier.system": identifier.get("system")
         }
-
-    def build_find_predicate(self, resource_ids, reference_path, identifier, is_array):
-        """Finds all resources with unresolved references to a given identifier"""
-        res = {
-            "id": {
-                "$in": resource_ids
-            }
-        }
-        if is_array:
-            res[reference_path] = {
-                "$elemMatch": self.partial_identifier(identifier)
-            }
-        else:
-            res[f"{reference_path}.identifier.value"] = identifier.get("value")
-            res[f"{reference_path}.identifier.system"] = identifier.get("system")
-        return res
 
     @staticmethod
     def build_update_predicate(reference_path, fhir_object, is_array):
