@@ -12,18 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ensure that the required environment variables are defined.
-// this function is run when this package is imported.
-func init() {
-	if !isExtractorURLDefined {
-		panic("EXTRACTOR_URL is required in environment")
-	}
-
-	if !isTransformerURLDefined {
-		panic("TRANSFORMER_URL is required in environment")
-	}
-}
-
 // PreviewRequest is the body of the POST /preview request.
 type PreviewRequest struct {
 	// PrimaryKeyValues can be a list of strings (eg ["E65"]) or a list of integers ([59])

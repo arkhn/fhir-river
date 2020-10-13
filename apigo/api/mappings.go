@@ -2,18 +2,19 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
-
-	"github.com/go-redis/redis"
 )
 
 var (
 	PYROG_API_URL           = os.Getenv("PYROG_API_URL")
-	REDIS_MAPPINGS_URL      = os.Getenv("REDIS_MAPPINGS_URL")
+	REDIS_MAPPINGS_HOST     = os.Getenv("REDIS_MAPPINGS_HOST")
+	REDIS_MAPPINGS_PORT     = os.Getenv("REDIS_MAPPINGS_PORT")
 	REDIS_MAPPINGS_PASSWORD = os.Getenv("REDIS_MAPPINGS_PASSWORD")
+	REDIS_MAPPINGS_DB       = os.Getenv("REDIS_MAPPINGS_DB")
 )
 
 const attrFragment = `
@@ -122,37 +123,46 @@ query resource($resourceId: ID!) {
 }
 `, attrFragment, credFragment)
 
-func fetchMapping(resourceID string, authorizationHeader string) (interface{}, error) {
+type graphqlVariables struct {
+	ResourceID string `json:"resourceId"`
+}
+
+func fetchMapping(resourceID string, authorizationHeader string) (string, error) {
 	// TODO make a type for the response?
-	graphqlQuery, err := http.NewRequest("POST", PYROG_API_URL, bytes.NewBuffer([]byte(resourceFromIDQuery)))
+	variables := graphqlVariables{
+		ResourceID: resourceID,
+	}
+	graphqlQueryBody := struct {
+		Query     string           `json:"query"`
+		Variables graphqlVariables `json:"variables"`
+	}{
+		Query:     resourceFromIDQuery,
+		Variables: variables,
+	}
+	jBody, _ := json.Marshal(graphqlQueryBody)
+	graphqlQuery, err := http.NewRequest("POST", PYROG_API_URL, bytes.NewBuffer(jBody))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	graphqlQuery.Header.Set("Authorization", authorizationHeader)
 	graphqlQuery.Header.Set("Content-Type", "application/json")
 
 	response, err := http.DefaultClient.Do(graphqlQuery)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer response.Body.Close()
 
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// TODO dereference concept maps
 	return string(data), nil
 }
 
-var rdb = redis.NewClient(&redis.Options{
-	Addr:     REDIS_MAPPINGS_URL,
-	Password: REDIS_MAPPINGS_PASSWORD,
-	DB:       0,
-})
-
-func storeMapping(mapping interface{}, resourceID string, batchID string) error {
+func storeMapping(mapping string, resourceID string, batchID string) error {
 	err := rdb.Set(fmt.Sprintf("%s:%s", batchID, resourceID), mapping, 0)
 	if err != nil {
 		return err.Err()

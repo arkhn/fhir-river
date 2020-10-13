@@ -42,7 +42,7 @@ class Analyzer:
         return self.analyze(resource_mapping)
 
     def load_cached_analysis(self, batch_id, resource_id):
-        if self.pyrog is None:
+        if self.redis is None:
             raise Exception("Cannot use caching without a redis client")
 
         cache_key = f"{batch_id}:{resource_id}"
@@ -51,17 +51,21 @@ class Analyzer:
         else:
             # Get mapping from redis
             serialized_mapping = self.redis.get(cache_key)
-            mapping = json.loads(serialized_mapping)
-
+            logger.info(
+                f"FETCHED MAPPING {serialized_mapping}",
+                extra={"resource_id": resource_id},
+            )
             # Raise error if mapping wasn't found
-            if mapping is None:
+            if serialized_mapping is None:
                 logger.error(
                     f"Mapping not found for batch {batch_id} and resource {resource_id}",
                     extra={"resource_id": resource_id},
                 )
 
             # Turn serialized mapping into an object
-            analysis = self.analyse(mapping)
+            # TODO parse data in apigo
+            mapping = json.loads(serialized_mapping)["data"]["resource"]
+            analysis = self.analyze(mapping)
 
             # Store analysis
             self.analyses[cache_key] = analysis
