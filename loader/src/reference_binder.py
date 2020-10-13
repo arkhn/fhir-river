@@ -24,7 +24,7 @@ class ReferenceBinder:
 
         # In Redis, we have sets identified with keys defined as a stringified
         # json array:
-        # "fhir_type_target:value:system"
+        # "fhir_type_target:(value, system)"
         #
         # A Redis set is a list. Here a list of stringified json arrays
         # [
@@ -143,7 +143,7 @@ class ReferenceBinder:
     def load_cached_references(self, target_ref: str) -> DefaultDict[tuple, list]:
         """Requests cached references from Redis
 
-        :param target_ref: "fhir_type_target:value:system"
+        :param target_ref: "fhir_type_target:(value, system)"
         :type target_ref: str
         The SMEMBERS command gets the set target_ref and returns a list
         [
