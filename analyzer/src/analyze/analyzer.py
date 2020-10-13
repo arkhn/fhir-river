@@ -2,11 +2,9 @@ import json
 import os
 import re
 import redis
-import requests
 
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.service_logger import logger
-from analyzer.src.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -51,10 +49,6 @@ class Analyzer:
         else:
             # Get mapping from redis
             serialized_mapping = self.redis.get(cache_key)
-            logger.info(
-                f"FETCHED MAPPING {serialized_mapping}",
-                extra={"resource_id": resource_id},
-            )
             # Raise error if mapping wasn't found
             if serialized_mapping is None:
                 logger.error(
@@ -64,7 +58,7 @@ class Analyzer:
 
             # Turn serialized mapping into an object
             # TODO parse data in apigo
-            mapping = json.loads(serialized_mapping)["data"]["resource"]
+            mapping = json.loads(serialized_mapping)
             analysis = self.analyze(mapping)
 
             # Store analysis
@@ -150,8 +144,10 @@ class Analyzer:
         input_group = InputGroup(id_=mapping_group["id"], attribute=parent_attribute)
         parent_attribute.add_input_group(input_group)
         for input_ in mapping_group["inputs"]:
-            if input_["sqlValue"]:
+            if input_["staticValue"]:
+                input_group.add_static_input(input_["staticValue"])
 
+            elif input_["sqlValue"] and input_["sqlValue"]["table"]:
                 sqlValue = input_["sqlValue"]
                 cur_col = SqlColumn(
                     sqlValue["table"],
@@ -162,8 +158,8 @@ class Analyzer:
                 if input_["script"]:
                     cur_col.cleaning_script = CleaningScript(input_["script"])
 
-                if input_["conceptMapId"]:
-                    cur_col.concept_map = ConceptMap(self.fetch_concept_map(input_["conceptMapId"]))
+                if "conceptMap" in input_ and input_["conceptMap"]:
+                    cur_col.concept_map = ConceptMap(input_["conceptMap"], input_["conceptMapId"])
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
@@ -181,9 +177,6 @@ class Analyzer:
 
                 self._cur_analysis.add_column(cur_col)
                 input_group.add_column(cur_col)
-
-            elif input_["staticValue"]:
-                input_group.add_static_input(input_["staticValue"])
 
         for mapping_condition in mapping_group["conditions"]:
             condition_column = SqlColumn(
@@ -220,26 +213,3 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["source"]["credential"]["owner"],
         )
-
-    def fetch_concept_map(self, concept_map_id: str) -> dict:
-        try:
-            # TODO clean headers usage
-            response = requests.get(
-                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", headers=self.pyrog.headers
-            )
-        except requests.exceptions.ConnectionError as e:
-            raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
-
-        if response.status_code == 401:
-            raise AuthenticationError(
-                f"Could not fetch concept map {concept_map_id}: {response.text}."
-            )
-        if response.status_code == 403:
-            raise AuthorizationError(
-                f"Could not fetch concept map {concept_map_id}: {response.text}."
-            )
-        if response.status_code != 200:
-            raise OperationOutcome(
-                f"Error while fetching concept map {concept_map_id}: {response.text}."
-            )
-        return response.json()

@@ -6,19 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
-)
-
-var (
-	topic                                   = "batch"
-	extractorURL, isExtractorURLDefined     = os.LookupEnv("EXTRACTOR_URL")
-	transformerURL, isTransformerURLDefined = os.LookupEnv("TRANSFORMER_URL")
-	loaderURL, isLoaderURLDefined           = os.LookupEnv("LOADER_URL")
 )
 
 // BatchRequest is the body of the POST /batch request.
@@ -83,10 +75,22 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		for _, resourceID := range resourceIDs {
 			resourceMapping, err := fetchMapping(resourceID, authorizationHeader)
 			if err != nil {
+				switch e := err.(type) {
+				case *invalidTokenError:
+					http.Error(w, err.Error(), e.statusCode)
+				default:
+					http.Error(w, err.Error(), http.StatusBadRequest)
+				}
+				return
+			}
+
+			serializedMapping, err := json.Marshal(resourceMapping)
+			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-			err = storeMapping(resourceMapping, resourceID, batchID)
+
+			err = storeMapping(serializedMapping, resourceID, batchID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
