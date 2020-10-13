@@ -3,12 +3,12 @@
 import json
 import os
 import pydantic
-from typing import Dict
 
 from confluent_kafka import KafkaException, KafkaError
 from fhir.resources import construct_fhir_element
 from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
@@ -22,10 +22,12 @@ from transformer.src.errors import OperationOutcome
 
 # FIXME there are 2 OperationOutcome: 1 in tranformer and 1 in analyzer
 
+REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
+REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
+REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
 ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
 
-analyzers: Dict[str, Analyzer] = {}
 transformer = Transformer()
 
 
@@ -156,6 +158,11 @@ def run_extract_consumer():
 
 
 def process_event_with_producer(producer):
+    redis_client = redis.Redis(
+        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+    )
+    analyzer = Analyzer(redis_client=redis_client)
+
     def process_event(msg):
         """ Process the event """
         msg_value = json.loads(msg.value())
@@ -164,17 +171,9 @@ def process_event_with_producer(producer):
         batch_id = msg_value.get("batch_id")
         resource_id = msg_value.get("resource_id")
 
-        if batch_id not in analyzers:
-            logger.error(f"Analyzer not found for batch {batch_id}, aborting")
-            return
-        analysis = analyzers[batch_id].get_analysis(resource_id)
-        if not analysis:
-            logger.error(
-                f"Analysis not found for batch {batch_id} and resource {resource_id}, aborting"
-            )
-            return
-
         try:
+            analysis = analyzer.load_cached_analysis(batch_id, resource_id)
+
             fhir_document = transform_row(analysis, record)
             producer.produce_event(
                 topic=PRODUCED_TOPIC,

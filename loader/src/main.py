@@ -7,13 +7,12 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
-from typing import Dict
+import redis
 from uwsgidecorators import thread, postfork
 
 from fhirstore import NotFoundError
 
 from analyzer.src.analyze import Analyzer
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.errors import AuthenticationError, AuthorizationError
 from loader.src.config.service_logger import logger
 from loader.src.load import Loader
@@ -22,11 +21,11 @@ from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 
+REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
+REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
+REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
 ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
-
-# analyzers is a map of Analyzer indexed by batch_id
-analyzers: Dict[str, Analyzer] = {}
 
 ####################
 # LOADER FLASK API #
@@ -122,6 +121,10 @@ def process_event_with_producer(producer):
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
+    redis_client = redis.Redis(
+        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+    )
+    analyzer = Analyzer(redis_client=redis_client)
 
     def process_event(msg):
         """ Process the event """
@@ -131,24 +134,19 @@ def process_event_with_producer(producer):
         batch_id = msg_value.get("batch_id")
         resource_id = msg_value.get("resource_id")
 
-        if batch_id not in analyzers:
-            logger.error(f"Analyzer not found for batch {batch_id}, aborting")
-            return
-        analysis = analyzers[batch_id].get_analysis(resource_id)
-        if not analysis:
-            logger.error(
-                f"Analysis not found for batch {batch_id} and resource {resource_id}, aborting"
-            )
-            return
-
-        # Resolve existing and pending references (if the fhir_instance
-        # references OR is referenced by other documents)
-        logger.debug(
-            f"Resolving references {analysis.reference_paths}", extra={"resource_id": resource_id}
-        )
-        resolved_fhir_instance = binder.resolve_references(fhir_instance, analysis.reference_paths)
-
         try:
+            analysis = analyzer.load_cached_analysis(batch_id, resource_id)
+
+            # Resolve existing and pending references (if the fhir_instance
+            # references OR is referenced by other documents)
+            logger.debug(
+                f"Resolving references {analysis.reference_paths}",
+                extra={"resource_id": resource_id},
+            )
+            resolved_fhir_instance = binder.resolve_references(
+                fhir_instance, analysis.reference_paths
+            )
+
             logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],

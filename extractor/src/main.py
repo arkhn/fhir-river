@@ -4,11 +4,11 @@ import os
 import json
 import sys
 import traceback
-from typing import Dict
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
@@ -21,11 +21,12 @@ from extractor.src.extract import Extractor
 from extractor.src.json_encoder import MyJSONEncoder
 from extractor.src.producer_class import ExtractorProducer
 
+REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
+REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
+REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
 ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
 
-# analyzers is a map of Analyzer indexed by batch_id
-analyzers: Dict[str, Analyzer] = {}
 extractor = Extractor()
 
 
@@ -144,6 +145,11 @@ def run_consumer():
 
 
 def process_event_with_producer(producer):
+    redis_client = redis.Redis(
+        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+    )
+    analyzer = Analyzer(redis_client=redis_client)
+
     def broadcast_events(dataframe, analysis, batch_id=None):
         resource_type = analysis.definition_id
         resource_id = analysis.resource_id
@@ -174,15 +180,7 @@ def process_event_with_producer(producer):
         )
 
         try:
-            if batch_id not in analyzers:
-                logger.error(f"Analyzer not found for batch {batch_id}, aborting")
-                return
-            analysis = analyzers[batch_id].get_analysis(resource_id)
-            if not analysis:
-                logger.error(
-                    f"Analysis not found for batch {batch_id} and resource {resource_id}, aborting"
-                )
-                return
+            analysis = analyzer.load_cached_analysis(batch_id, resource_id)
 
             df = extract_resource(analysis, primary_key_values)
             batch_size = extractor.batch_size(analysis)
