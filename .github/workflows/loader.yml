@@ -1,0 +1,105 @@
+name: loader
+
+on:
+  push:
+    paths:
+      - "loader/**"
+
+jobs:
+  unit-tests:
+    name: Lint and test
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.7
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install postgresql libpq-dev
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 loader --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 loader --count --max-complexity=10 --max-line-length=100 --statistics
+
+      - name: Test with pytest
+        env:
+          PYROG_API_URL: http://test.com
+        run: |
+          python -m pytest -svv loader/test
+
+  integration-tests:
+    name: Run integration tests
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.7
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install postgresql libpq-dev
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Integration tests with pytest
+        env:
+          PYROG_API_URL: http://0.0.0.0:1000
+          KAFKA_BOOTSTRAP_SERVERS_EXTERNAL: "0.0.0.0:9092"
+          FHIRSTORE_HOST: localhost
+          FHIRSTORE_PORT: 27017
+          FHIRSTORE_DATABASE: fhirstore
+          FHIRSTORE_USER: arkhn
+          FHIRSTORE_PASSWORD: SuperSecurePassword2019
+          ENV: test
+        run: |
+          docker-compose -f test/docker-compose.yml up -d mongo mimic elasticsearch monstache kafka zookeeper
+          sleep 15
+          MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
+          docker-compose -f test/docker-compose.yml up -d fhir-api
+          sleep 15
+          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
+          docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
+          sleep 30
+          docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
+          docker-compose -f test/docker-compose.yml up -d --build api extractor transformer loader
+          sleep 15
+          python -m pytest -svv test
+
+  publish:
+    name: Publish docker images
+    runs-on: ubuntu-18.04
+
+    needs:
+      - integration-tests
+    if: github.ref == 'refs/heads/master'
+
+    env:
+      ARKHN_REGISTRY: mammouth.arkhn.com
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Build images
+        run: |
+          docker build -f loader/Dockerfile -t arkhn/river-loader:$GITHUB_SHA -t arkhn/river-loader:latest .
+
+          echo "${{ secrets.ARKHN_DOCKER_PASSWORD }}" | docker login $ARKHN_REGISTRY -u ${{ secrets.ARKHN_DOCKER_LOGIN }} --password-stdin
+
+      - name: Publish the latest tag to the docker hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+          docker push arkhn/river-loader
