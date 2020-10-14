@@ -47,9 +47,6 @@ func init() {
 	if !isRedisMappingsPort {
 		panic("REDIS_MAPPINGS_PORT is required in environment")
 	}
-	if !isRedisMappingsPassword {
-		panic("REDIS_MAPPINGS_PASSWORD is required in environment")
-	}
 	if !isRedisMappingsDb {
 		panic("REDIS_MAPPINGS_DB is required in environment")
 	}
