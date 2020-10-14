@@ -109,7 +109,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
       - run: |
-          python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
+          python -m pytest -svv loader/test analyzer/test
         env:
           PYROG_API_URL: http://test.com
 
