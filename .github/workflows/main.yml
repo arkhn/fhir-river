@@ -34,6 +34,19 @@ jobs:
         run: |
           python -m pytest -svv extractor/test transformer/test loader/test analyzer/test
 
+      - name: Test apigo
+        env:
+          EXTRACTOR_URL: http://test.com
+          TRANSFORMER_URL: http://test.com
+          LOADER_URL: http://test.com
+          PYROG_API_URL: http://test.com
+          FHIR_API_URL: http://test.com
+          REDIS_MAPPINGS_HOST: REDIS_MAPPINGS_HOST
+          REDIS_MAPPINGS_PORT: REDIS_MAPPINGS_PORT
+          REDIS_MAPPINGS_PASSWORD: REDIS_MAPPINGS_PASSWORD
+          REDIS_MAPPINGS_DB: 1
+        run: cd apigo/api && go test -v
+
   integration-tests:
     name: Run integration tests
     runs-on: ubuntu-18.04
