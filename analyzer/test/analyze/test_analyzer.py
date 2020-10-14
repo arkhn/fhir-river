@@ -1,3 +1,4 @@
+import json
 import pytest
 from unittest import mock
 
@@ -9,35 +10,49 @@ from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_filter import SqlFilter
 from analyzer.src.analyze.sql_join import SqlJoin
 
-from analyzer.test.conftest import mock_api_get_maps
 
-
-def test_get_analysis_first_time():
+def test_fetch_analysis(patient_mapping):
     analyzer = Analyzer(None)
 
-    # patch the fetch_analysis method
-    def side_effect(resource):
-        analyzer.analyses[resource] = None
+    analyzer.pyrog = mock.MagicMock()
+    analyzer.pyrog.get_resource_from_id.return_value = patient_mapping
 
-    analyzer.fetch_analysis = mock.MagicMock()
-    analyzer.fetch_analysis.side_effect = side_effect
+    res = analyzer.fetch_analysis("Patient_resource_id")
 
-    analyzer.get_analysis("Resource")
-
-    analyzer.fetch_analysis.assert_called_with("Resource")
+    assert res.definition_id == "Patient"
+    assert res.primary_key_column.table == "patients"
+    assert res.primary_key_column.column == "row_id"
 
 
-def test_use_existing_analysis():
-    analyzer = Analyzer(None)
-    analyzer.fetch_analysis = mock.MagicMock()
+def test_load_cached_analysis_redis(patient_mapping):
+    fake_redis = "fake_redis"
+    analyzer = Analyzer(redis_client=fake_redis)
+    analyzer.redis = mock.MagicMock()
+    analyzer.redis.get.return_value = json.dumps(patient_mapping)
+
+    res = analyzer.load_cached_analysis("abc", "123")
+
+    assert res.definition_id == "Patient"
+    assert res.primary_key_column.table == "patients"
+    assert res.primary_key_column.column == "row_id"
+
+    assert analyzer.analyses["abc:123"].definition_id == "Patient"
+    assert analyzer.analyses["abc:123"].primary_key_column.table == "patients"
+    assert analyzer.analyses["abc:123"].primary_key_column.column == "row_id"
+
+
+def test_load_cached_analysis_memory():
+    fake_redis = "fake_redis"
+    analyzer = Analyzer(redis_client=fake_redis)
+    analyzer.analyze = mock.MagicMock()
 
     dummy_mapping = {"dummy": "mapping"}
-    analyzer.analyses["Resource"] = dummy_mapping
+    analyzer.analyses["abc:123"] = dummy_mapping
 
-    mapping = analyzer.get_analysis("Resource")
+    res = analyzer.load_cached_analysis("abc", "123")
 
-    assert mapping == dummy_mapping
-    analyzer.fetch_analysis.assert_not_called()
+    assert res == dummy_mapping
+    analyzer.analyze.assert_not_called()
 
 
 def test_get_primary_key():
@@ -76,7 +91,6 @@ def test_get_primary_key():
         analyzer.get_primary_key(resource_mapping)
 
 
-@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
 def test_analyze_mapping(patient_mapping):
     analyzer = Analyzer(PyrogClient(None))
 
@@ -104,8 +118,7 @@ def test_analyze_mapping(patient_mapping):
     assert analysis.reference_paths == {"generalPractitioner"}
 
 
-@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
-def test_analyze_attribute(patient_mapping):
+def test_analyze_attribute(patient_mapping, dict_map_gender):
     analyzer = Analyzer(PyrogClient(None))
     analyzer._cur_analysis.primary_key_column = SqlColumn("patients", "subject_id")
 
@@ -130,6 +143,7 @@ def test_analyze_attribute(patient_mapping):
                         "id": "ck8ooenw826994kp4whpirhdo",
                         "script": None,
                         "conceptMapId": "id_cm_gender",
+                        "conceptMap": dict_map_gender,
                         "staticValue": None,
                         "sqlValueId": "ck8ooenw827004kp41nv3kcmq",
                         "inputGroupId": "ckdom8lgq0045m29ksz6vudvc",
@@ -166,15 +180,3 @@ def test_analyze_attribute(patient_mapping):
     expected.add_input_group(group)
 
     assert actual == expected
-
-
-@mock.patch("analyzer.src.analyze.analyzer.requests.get", mock_api_get_maps)
-def test_fetch_concept_map(fhir_concept_map_gender):
-    analyzer = Analyzer(PyrogClient(None))
-    concept_map = analyzer.fetch_concept_map(fhir_concept_map_gender["id"])
-
-    assert concept_map == fhir_concept_map_gender
-
-    # should raise if not found
-    with pytest.raises(Exception, match="Error while fetching concept map nope: not found."):
-        analyzer.fetch_concept_map("nope")

@@ -57,7 +57,6 @@ class Analyzer:
                 )
 
             # Turn serialized mapping into an object
-            # TODO parse data in apigo
             mapping = json.loads(serialized_mapping)
             analysis = self.analyze(mapping)
 
@@ -158,7 +157,7 @@ class Analyzer:
                 if input_["script"]:
                     cur_col.cleaning_script = CleaningScript(input_["script"])
 
-                if "conceptMap" in input_ and input_["conceptMap"]:
+                if input_["conceptMapId"] and input_["conceptMap"]:
                     cur_col.concept_map = ConceptMap(input_["conceptMap"], input_["conceptMapId"])
 
                 for join in sqlValue["joins"]:

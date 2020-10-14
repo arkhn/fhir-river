@@ -923,6 +923,10 @@
               "id": "ckdyl65kj0228gu9kwwr85x4e",
               "script": null,
               "conceptMapId": "id_cm_gender",
+              "conceptMap": {
+                "M": "male",
+                "F": "female"
+              },
               "staticValue": null,
               "sqlValueId": "ckdyl65kj0229gu9krs3zwuph",
               "inputGroupId": "ckdyl65kj0227gu9kpnmchyvk",
