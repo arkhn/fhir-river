@@ -23,7 +23,7 @@
     {
       "id": "ckdu1t41o1171iepjprcl7qji",
       "relation": ">=",
-      "value": 0,
+      "value": "0",
       "resourceId": "ckd62orz2052659mpwse7w8ms",
       "sqlColumnId": "ckdu1t41o1172iepju4j8od0x",
       "sqlColumn": {

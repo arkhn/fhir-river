@@ -193,7 +193,6 @@ type graphqlResponse struct {
 }
 
 func fetchMapping(resourceID string, authorizationHeader string) (*mappingResource, error) {
-	// TODO make a type for the response?
 	variables := graphqlVariables{
 		ResourceID: resourceID,
 	}
@@ -215,6 +214,17 @@ func fetchMapping(resourceID string, authorizationHeader string) (*mappingResour
 	resp, err := http.DefaultClient.Do(graphqlQuery)
 	if err != nil {
 		return nil, err
+	}
+	switch resp.StatusCode {
+	case http.StatusOK:
+		// If everything went well, we go on
+	case http.StatusUnauthorized:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: http.StatusUnauthorized}
+	case http.StatusForbidden:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: http.StatusForbidden}
+	default:
+		// Return other errors
+		return nil, errors.New("Error while requesting mapping from pyrog")
 	}
 	defer resp.Body.Close()
 
@@ -274,14 +284,13 @@ func fetchConceptMap(conceptMapID string, authorizationHeader string) (map[strin
 	if err != nil {
 		return nil, err
 	}
-
 	switch resp.StatusCode {
-	case 200:
+	case http.StatusOK:
 		// If everything went well, we go on
-	case 401:
-		return nil, &invalidTokenError{message: "Token is invalid", statusCode: 401}
-	case 403:
-		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: 403}
+	case http.StatusUnauthorized:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: http.StatusUnauthorized}
+	case http.StatusForbidden:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: http.StatusForbidden}
 	default:
 		// Return other errors
 		return nil, errors.New("Error while fetching concept map")
