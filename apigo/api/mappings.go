@@ -133,24 +133,24 @@ type mappingFilter struct {
 }
 
 type mappingAttribute struct {
-	Path         string              `json:"path"`
-	DefinitionId string              `json:"definitionId"`
-	InputGroups  []mappingInputGroup `json:"inputGroups"`
+	Path         string               `json:"path"`
+	DefinitionId string               `json:"definitionId"`
+	InputGroups  []*mappingInputGroup `json:"inputGroups"`
 }
 
 type mappingInputGroup struct {
-	ID            string             `json:"id"`
-	MergingScript string             `json:"mergingScript"`
-	Inputs        []mappingInput     `json:"inputs"`
-	Conditions    []mappingCondition `json:"conditions"`
+	ID            string              `json:"id"`
+	MergingScript string              `json:"mergingScript"`
+	Inputs        []*mappingInput     `json:"inputs"`
+	Conditions    []*mappingCondition `json:"conditions"`
 }
 
 type mappingInput struct {
 	SqlValue struct {
 		Table  string `json:"table"`
 		Column string `json:"column"`
-		Joins  []struct {
-			Tables []mappingColumn `json:"tables"`
+		Joins  []*struct {
+			Tables []*mappingColumn `json:"tables"`
 		} `json:"joins"`
 	} `json:"sqlValue"`
 	Script          string            `json:"script"`
@@ -178,8 +178,8 @@ type mappingResource struct {
 		Derivation string `json:"derivation"`
 		Url        string `json:"url"`
 	} `json:"definition"`
-	Filters    []mappingFilter    `json:"filters"`
-	Attributes []mappingAttribute `json:"attributes"`
+	Filters    []*mappingFilter    `json:"filters"`
+	Attributes []*mappingAttribute `json:"attributes"`
 	Source     struct {
 		ID         string             `json:"id"`
 		Credential mappingCredentials `json:"credential"`
