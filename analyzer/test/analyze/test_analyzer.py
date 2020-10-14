@@ -110,7 +110,7 @@ def test_analyze_mapping(patient_mapping):
         SqlColumn("admissions", "language"),
     }
     assert analysis.filters == [
-        SqlFilter(SqlColumn("patients", "row_id"), ">=", 0),
+        SqlFilter(SqlColumn("patients", "row_id"), ">=", "0"),
     ]
     assert analysis.joins == {
         SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
