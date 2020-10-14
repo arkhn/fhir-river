@@ -35,7 +35,7 @@ jobs:
 
     outputs:
       tags: ${{ steps.metadata.outputs.tags }}
-      local_tags: ${{ steps.metadata.outputs.tags }}
+      local_tag: ${{ steps.metadata.outputs.local_tag }}
 
     steps:
       - id: metadata
@@ -43,6 +43,7 @@ jobs:
           IMAGE=arkhn/river-loader
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
+          LOCAL_TAG="localhost:5000/${IMAGE}:${GITHUB_SHA::8}"
 
           # Has this workflow been triggered by a tag ?
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
@@ -62,14 +63,9 @@ jobs:
             TAGS="${TAGS},${IMAGE}:${VERSION}"
           fi
 
-          LOCAL_TAGS=""
-          for tag in ${TAGS//,/ }; do
-            LOCAL_TAGS="${LOCAL_TAGS},localhost:5000/${tag}"
-          done
-
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=tags::${TAGS}
-          echo ::set-output name=local_tags::${LOCAL_TAGS}
+          echo ::set-output name=local_tag::${LOCAL_TAG}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
@@ -84,7 +80,7 @@ jobs:
             VERSION_SHA=${GITHUB_SHA::8}
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.metadata.outputs.local_tags }}
+          tags: ${{ steps.metadata.outputs.local_tag }}
           labels: |
             com.arkhn.image.title=loader
             com.arkhn.image.description=${{ github.event.repository.description }}
@@ -123,6 +119,11 @@ jobs:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - run: |
-          LOCAL_IMAGE=$(echo ${{ needs.build.outputs.local_tags }} | cut -f1 -d,)
-          docker pull ${LOCAL_IMAGE}
-          echo ${{ needs.build.outputs.tags }} | xargs -n 1 docker push
+          TAGS=${{ needs.build.outputs.tags }}
+
+          docker pull ${{ needs.build.outputs.local_tag }}
+
+          for tag in ${TAGS//,/ }; do
+            docker tag ${{ needs.build.outputs.local_tag }} "${tag}"
+            docker push "${tag}"
+          done
