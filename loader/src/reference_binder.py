@@ -112,7 +112,8 @@ class ReferenceBinder:
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
                 logger.debug(
-                    f"Updating resources {source_type}",
+                    f"Updating {source_type} resources {', '.join(refs)} "
+                    f"on reference {reference_path}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
                 self.fhirstore.db[source_type].update_many(
