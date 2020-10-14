@@ -111,25 +111,13 @@ class ReferenceBinder:
             target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
-                update_predicate = self.build_update_predicate(
-                    reference_path,
-                    fhir_object,
-                    is_array
-                )
                 logger.debug(
                     f"Updating resources {source_type}",
                     extra={"resource_id": get_resource_id(fhir_object)},
                 )
-                filters = [
-                    {
-                        "ref.identifier.value": identifier.get("value"),
-                        "ref.identifier.system": identifier.get("system")
-                    }
-                ]
                 self.fhirstore.db[source_type].update_many(
-                    {"id": {"$in": refs}},
-                    update_predicate,
-                    array_filters=filters if is_array else None
+                    self.unresolved_resources_filter(reference_path, identifier, refs, is_array),
+                    self.reference_update(reference_path, fhir_object, is_array)
                 )
             if pending_refs:
                 self.cache.delete(target_ref)
@@ -161,6 +149,26 @@ class ReferenceBinder:
             pending_refs[tuple(source_ref)].append(ref)
         return pending_refs
 
+    def unresolved_resources_filter(self, reference_path, identifier, refs, is_array):
+        query = {"id": {"$in": refs}}
+        if is_array:
+            query[reference_path] = {
+                "$elemMatch": self.partial_identifier(identifier)
+            }
+        return query
+
+    @staticmethod
+    def reference_update(reference_path, fhir_object, is_array):
+        if is_array:
+            target_path = f"{reference_path}.$.reference"
+        else:
+            target_path = f"{reference_path}.reference"
+        return {
+            "$set": {
+                target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"
+            }
+        }
+
     @staticmethod
     def identifier_to_key(resource_type, identifier):
         value = identifier.get("value")
@@ -174,16 +182,4 @@ class ReferenceBinder:
         return {
             "identifier.value": identifier.get("value"),
             "identifier.system": identifier.get("system")
-        }
-
-    @staticmethod
-    def build_update_predicate(reference_path, fhir_object, is_array):
-        if is_array:
-            target_path = f"{reference_path}.$[ref].reference"
-        else:
-            target_path = f"{reference_path}.reference"
-        return {
-            "$set": {
-                target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"
-            }
         }
