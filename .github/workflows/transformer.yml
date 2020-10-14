@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "transformer/**"
+      - "logger/**"
+      - "analyzer/**"
 
 jobs:
   unit-tests:

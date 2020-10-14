@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "loader/**"
+      - "logger/**"
+      - "analyzer/**"
 
 jobs:
   lint:

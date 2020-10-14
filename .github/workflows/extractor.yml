@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "extractor/**"
+      - "logger/**"
+      - "analyzer/**"
 
 jobs:
   unit-tests:
