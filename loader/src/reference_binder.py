@@ -56,7 +56,7 @@ class ReferenceBinder:
                 fhir_object[reference_path] = bound_ref
             except KeyError as e:
                 logger.warning(
-                    f"{reference_path} does not exist for resource {fhir_object['id']}: {e}"
+                    f"{reference_path} does not exist in resource {fhir_object['id']}: {e}"
                 )
         if "identifier" in fhir_object:
             self.resolve_pending_references(fhir_object)

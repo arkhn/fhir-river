@@ -172,7 +172,7 @@ def test_resolve_batch_references(
     }
     store.db["any"].find_one.side_effect = [None, None, None]
 
-    res = ref_binder.resolve_references(patient, ["generalPractitioner"])
+    res = ref_binder.resolve_references(patient, ["generalPractitioner", "link"])
     assert res["generalPractitioner"][0].get("reference") is None
     res = ref_binder.resolve_references(patient_2, ["generalPractitioner", "link"])
     assert res["generalPractitioner"][0].get("reference") is None
