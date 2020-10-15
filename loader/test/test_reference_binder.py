@@ -215,6 +215,9 @@ def test_resolve_batch_references(
                     }
                 }
             },
+            # generalPractitioner is an array, therefore we use $ to update the right item
+            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}}
+        )
     except AssertionError:
         store.db["Patient"].update_many.assert_any_call(
             {"id": {"$in": ["pat2", "pat1"]},
