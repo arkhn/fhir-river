@@ -207,8 +207,7 @@ def test_resolve_batch_references(
     )
     try:
         store.db["Patient"].update_many.assert_any_call(
-            {
-                "id": {"$in": ["pat1", "pat2"]},
+            {"id": {"$in": ["pat1", "pat2"]},
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
@@ -216,13 +215,9 @@ def test_resolve_batch_references(
                     }
                 }
             },
-            # generalPractitioner is an array, therefore we use $ to update the right item
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}}
-        )
     except AssertionError:
         store.db["Patient"].update_many.assert_any_call(
-            {
-                "id": {"$in": ["pat2", "pat1"]},
+            {"id": {"$in": ["pat2", "pat1"]},
                 "generalPractitioner": {
                     "$elemMatch": {
                         "identifier.value": "123",
