@@ -27,15 +27,8 @@ jobs:
     needs: lint
     runs-on: ubuntu-18.04
 
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
-
     outputs:
       tags: ${{ steps.metadata.outputs.tags }}
-      local_tag: ${{ steps.metadata.outputs.local_tag }}
 
     steps:
       - id: metadata
@@ -43,7 +36,6 @@ jobs:
           IMAGE=arkhn/river-loader
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
-          LOCAL_TAG="localhost:5000/${IMAGE}:${GITHUB_SHA::8}"
 
           # Has this workflow been triggered by a tag ?
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
@@ -65,7 +57,6 @@ jobs:
 
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=tags::${TAGS}
-          echo ::set-output name=local_tag::${LOCAL_TAG}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
@@ -79,8 +70,8 @@ jobs:
             VERSION_NAME=${{ steps.metadata.outputs.version }}
             VERSION_SHA=${GITHUB_SHA::8}
           platforms: linux/amd64
-          push: true
-          tags: ${{ steps.metadata.outputs.local_tag }}
+          outputs: type=docker,dest=image
+          tags: ${{ steps.metadata.outputs.tags }}
           labels: |
             com.arkhn.image.title=loader
             com.arkhn.image.description=${{ github.event.repository.description }}
@@ -90,6 +81,10 @@ jobs:
             com.arkhn.image.created=${{ steps.metadata.outputs.created }}
             com.arkhn.image.revision=${{ github.sha }}
             com.arkhn.image.licenses=${{ github.event.repository.license.spdx_id }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: image
+          path: image
 
   tests:
     needs: build
@@ -114,6 +109,11 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: image
+      - run: |
+          docker load -i image
       - uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
@@ -121,9 +121,6 @@ jobs:
       - run: |
           TAGS=${{ needs.build.outputs.tags }}
 
-          docker pull ${{ needs.build.outputs.local_tag }}
-
           for tag in ${TAGS//,/ }; do
-            docker tag ${{ needs.build.outputs.local_tag }} "${tag}"
             docker push "${tag}"
           done
