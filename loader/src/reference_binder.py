@@ -51,9 +51,13 @@ class ReferenceBinder:
                 f"at {reference_path}",
                 extra={"resource_id": resource_id},
             )
-            bound_ref = self.bind_existing_reference(fhir_object, reference_path)
-            fhir_object[reference_path] = bound_ref
-
+            try:
+                bound_ref = self.bind_existing_reference(fhir_object, reference_path)
+                fhir_object[reference_path] = bound_ref
+            except KeyError as e:
+                logger.warning(
+                    f"{reference_path} does not exist for resource {fhir_object['id']}: {e}"
+                )
         if "identifier" in fhir_object:
             self.resolve_pending_references(fhir_object)
 
