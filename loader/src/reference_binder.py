@@ -17,6 +17,7 @@ def dotty_paths(paths):
     for path in paths:
         yield re.sub(r"\[(\d+)\]", r".\1", path)
 
+
 class ReferenceBinder:
     def __init__(self, fhirstore):
         self.fhirstore = fhirstore
