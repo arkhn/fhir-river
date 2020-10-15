@@ -15,7 +15,7 @@ from loader.src.cache import redis
 # it uses dots instead (a.0.b instead of a[0].b)
 def dotty_paths(paths):
     for path in paths:
-        yield re.sub(r"\[(\d+)\]", r".\1", path)
+        yield re.sub(r"\[(\d+)]", r".\1", path)
 
 
 class ReferenceBinder:
