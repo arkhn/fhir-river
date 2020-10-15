@@ -51,15 +51,8 @@ class ReferenceBinder:
                 f"at {reference_path}",
                 extra={"resource_id": resource_id},
             )
-            try:
-                bound_ref = self.bind_existing_reference(fhir_object, reference_path)
-                fhir_object[reference_path] = bound_ref
-            except Exception as e:
-                logger.warning(
-                    "Error while binding reference for instance "
-                    f"{fhir_object} at path {reference_path}: {e}",
-                    extra={"resource_id": resource_id},
-                )
+            bound_ref = self.bind_existing_reference(fhir_object, reference_path)
+            fhir_object[reference_path] = bound_ref
 
         if "identifier" in fhir_object:
             self.resolve_pending_references(fhir_object)
@@ -76,10 +69,15 @@ class ReferenceBinder:
             reference_type = ref["type"]
             identifier = ref["identifier"]
             # search the referenced resource in the database
-            referenced_resource = self.fhirstore.db[reference_type].find_one(
-                self.partial_identifier(identifier),
-                ["id"]
-            )
+            try:
+                _identifier = self.partial_identifier(identifier)
+            except (ValueError, KeyError) as e:
+                logger.warning(
+                    f"incomplete identifier on reference of type "
+                    f"{reference_type} at path {ref} of resource {fhir_object['id']}: {e}"
+                )
+                return ref
+            referenced_resource = self.fhirstore.db[reference_type].find_one(_identifier, ["id"])
             if referenced_resource:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
@@ -108,7 +106,13 @@ class ReferenceBinder:
     @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
         for identifier in fhir_object["identifier"]:
-            target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
+            try:
+                target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
+            except (KeyError, ValueError) as e:
+                logger.warning(
+                    f"incomplete identifier on resource {fhir_object['id']}: {e}"
+                )
+                continue
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
                 logger.debug(
@@ -172,15 +176,20 @@ class ReferenceBinder:
 
     @staticmethod
     def identifier_to_key(resource_type, identifier):
-        value = identifier.get("value")
-        system = identifier.get("system")
+        value = identifier["value"]
+        system = identifier["system"]
+        if not value or not system:
+            raise ValueError
         # Default separators include whitespaces
-        _id = json.dumps((value, system), separators=(',', ':'))
-        return f"{resource_type}:{_id}"
+        key = json.dumps((value, system), separators=(',', ':'))
+        return f"{resource_type}:{key}"
 
     @staticmethod
     def partial_identifier(identifier):
-        return {
-            "identifier.value": identifier.get("value"),
-            "identifier.system": identifier.get("system")
+        _id = {
+            "identifier.value": identifier["value"],
+            "identifier.system": identifier["system"]
         }
+        if not identifier["value"] or not identifier["system"]:
+            raise ValueError
+        return _id
