@@ -5,6 +5,7 @@ import json
 import datetime
 
 from loader.src.config.service_logger import logger
+from logger import format_traceback
 
 
 class LoaderProducer:
@@ -45,8 +46,8 @@ class LoaderProducer:
                 callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
-        except ValueError as error:
-            logger.error(error)
+        except ValueError:
+            logger.error(format_traceback())
 
     @staticmethod
     def default_json_encoder(o):

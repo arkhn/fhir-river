@@ -3,8 +3,6 @@
 import json
 import os
 import pydantic
-import sys
-import traceback
 
 from confluent_kafka import KafkaException, KafkaError
 from fhir.resources import construct_fhir_element
@@ -16,6 +14,7 @@ from uwsgidecorators import thread, postfork
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.errors import AuthenticationError, AuthorizationError
+from logger import format_traceback
 from transformer.src.config.service_logger import logger
 from transformer.src.transform import Transformer
 from transformer.src.consumer_class import TransformerConsumer
@@ -48,7 +47,7 @@ def transform_row(analysis, row):
 
     except Exception as e:
         logger.error(
-            "".join(traceback.format_exception(*sys.exc_info())),
+            format_traceback(),
             extra={"resource_id": analysis.resource_id, "primary_key_value": primary_key_value},
         )
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
@@ -104,7 +103,7 @@ def transform():
     except OperationOutcome:
         raise
     except Exception as err:
-        logger.error("".join(traceback.format_exception(*sys.exc_info())))
+        logger.error(format_traceback())
         raise OperationOutcome(err)
 
 
@@ -158,8 +157,8 @@ def run_extract_consumer():
 
     try:
         consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)
+    except (KafkaException, KafkaError):
+        logger.error(format_traceback())
 
 
 def process_event_with_context(producer):
@@ -191,7 +190,7 @@ def process_event_with_context(producer):
         except OperationOutcome:
             pass
         except Exception:
-            logger.error("".join(traceback.format_exception(*sys.exc_info())))
+            logger.error(format_traceback())
 
     return process_event
 

@@ -69,7 +69,6 @@ def test_check():
 
 @pytest.mark.parametrize("relation", BINARY_RELATIONS)
 def test_check_include_with_none(relation):
-    # EQ
     row = {(CONDITION_FLAG, ("patients", "gender")): None}
 
     cond = Condition("INCLUDE", SqlColumn("patients", "gender"), relation, "M")
@@ -78,7 +77,6 @@ def test_check_include_with_none(relation):
 
 @pytest.mark.parametrize("relation", BINARY_RELATIONS)
 def test_check_exclude_with_none(relation):
-    # EQ
     row = {(CONDITION_FLAG, ("patients", "gender")): None}
 
     cond = Condition("EXCLUDE", SqlColumn("patients", "gender"), relation, "M")

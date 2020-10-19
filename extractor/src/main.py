@@ -2,8 +2,6 @@
 
 import os
 import json
-import sys
-import traceback
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
@@ -20,6 +18,7 @@ from extractor.src.errors import BadRequestError, MissingInformationError
 from extractor.src.extract import Extractor
 from extractor.src.json_encoder import MyJSONEncoder
 from extractor.src.producer_class import ExtractorProducer
+from logger import format_traceback
 
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
@@ -86,7 +85,7 @@ def extract():
         return jsonify({"rows": rows})
 
     except Exception as err:
-        logger.error("".join(traceback.format_exception(*sys.exc_info())))
+        logger.error(format_traceback())
         raise err
 
 
@@ -140,8 +139,8 @@ def run_consumer():
 
     try:
         consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)
+    except (KafkaException, KafkaError):
+        logger.error(format_traceback())
 
 
 def process_event_with_context(producer):
@@ -193,8 +192,8 @@ def process_event_with_context(producer):
             )
             broadcast_events(df, analysis, batch_id)
 
-        except Exception as err:
-            logger.error(err, extra={"resource_id": resource_id})
+        except Exception:
+            logger.error(format_traceback(), extra={"resource_id": resource_id})
 
     return process_event
 

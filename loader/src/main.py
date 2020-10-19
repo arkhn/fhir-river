@@ -20,6 +20,7 @@ from loader.src.load.fhirstore import get_fhirstore
 from loader.src.reference_binder import ReferenceBinder
 from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
+from logger import format_traceback
 
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
@@ -112,8 +113,8 @@ def run_consumer():
 
     try:
         consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)
+    except (KafkaException, KafkaError):
+        logger.error(format_traceback())
 
 
 def process_event_with_context(producer):
@@ -152,8 +153,8 @@ def process_event_with_context(producer):
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
             producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
-        except DuplicateKeyError as e:
-            logger.error(e)
+        except DuplicateKeyError:
+            logger.error(format_traceback())
 
     return process_event
 
