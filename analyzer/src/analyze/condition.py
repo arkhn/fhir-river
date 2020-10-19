@@ -76,7 +76,7 @@ class Condition:
         return (self.action == "EXCLUDE") ^ is_relation_true
 
     def cast_value_type(self, data_value):
-        if self.relation in UNARY_RELATIONS:
+        if self.relation in UNARY_RELATIONS or data_value is None:
             # For unary relations, we don't need a reference value
             cast_value = None
         elif isinstance(data_value, bool):
