@@ -106,10 +106,11 @@ def handle_array_attributes(attributes_in_array, row):
     # {"adress": [{"city": "Paris", "country": "France"}, {"city": "Lyon", "country": "France"}]}
     length = 1
     for attr in attributes_in_array.values():
-        val = row[attr.path]
+        val = row.get(attr.path)
         if not isinstance(val, tuple) or len(val) == 1:
             continue
-        assert length == 1 or len(val) == length, "mismatch in array lengths"
+        if length != 1 and len(val) != length:
+            raise ValueError("mismatch in array lengths")
         length = len(val)
 
     # Now we can build the array
@@ -128,9 +129,11 @@ def insert_in_fhir_object(fhir_object, path, value):
         # the values are identical and insert only one of them.
         # This can happen after a join on a table for which the other values are different
         # and have been squashed.
-        assert all(
-            [v == value[0] for v in value]
-        ), f"Trying to insert several different values in a non-list attribute: {value} in {path}"
+        if any([v != value[0] for v in value]):
+            raise ValueError(
+                "Trying to insert several different values in a non-list attribute: "
+                f"{value} in {path}"
+            )
         val = value[0]
     # TODO we return if value is "" because empty strings don't pass validation for some fhir
     # attributes but it would be better to return None in the cleaning scripts if we don't want to

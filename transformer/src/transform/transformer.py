@@ -14,7 +14,6 @@ from transformer.src.transform.fhir import clean_fhir_object
 
 class Transformer:
 
-    # TODO refine buckets if needed
     @Timer(
         "time_transformer_transform_data",
         "time to perform transform_data method of Transformer",
