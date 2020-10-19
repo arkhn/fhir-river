@@ -106,7 +106,7 @@ def run_consumer():
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=CONSUMED_TRANSFORM_TOPIC,
         group_id=CONSUMER_GROUP_ID,
-        process_event=process_event_with_producer(producer),
+        process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
     )
 
@@ -116,7 +116,7 @@ def run_consumer():
         logger.error(err)
 
 
-def process_event_with_producer(producer):
+def process_event_with_context(producer):
     # Mongo client need to be called in each separate process
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)

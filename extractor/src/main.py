@@ -134,7 +134,7 @@ def run_consumer():
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
         topics=CONSUMED_TOPIC,
         group_id=CONSUMER_GROUP_ID,
-        process_event=process_event_with_producer(producer),
+        process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
     )
 
@@ -144,7 +144,7 @@ def run_consumer():
         logger.error(err)
 
 
-def process_event_with_producer(producer):
+def process_event_with_context(producer):
     redis_client = redis.Redis(
         host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
     )
