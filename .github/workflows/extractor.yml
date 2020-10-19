@@ -135,20 +135,3 @@ jobs:
           for tag in ${TAGS//,/ }; do
             docker push "${tag}"
           done
-
-      - name: Build images
-        run: |
-          docker build -f extractor/Dockerfile -t arkhn/river-extractor:$GITHUB_SHA -t arkhn/river-extractor:latest .
-
-          echo "${{ secrets.ARKHN_DOCKER_PASSWORD }}" | docker login $ARKHN_REGISTRY -u ${{ secrets.ARKHN_DOCKER_LOGIN }} --password-stdin
-          docker build -f extractor/Dockerfile.oracle11 -t $ARKHN_REGISTRY/arkhn/river-extractor:oracle11 .
-
-      - name: Publish the latest tag to the docker hub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" |  docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
-          docker push arkhn/river-extractor
-
-      - name: Publish to arkhn regitry (mammouth)
-        run: |
-          echo "${{ secrets.ARKHN_DOCKER_PASSWORD }}" | docker login $ARKHN_REGISTRY -u ${{ secrets.ARKHN_DOCKER_LOGIN }} --password-stdin
-          docker push $ARKHN_REGISTRY/arkhn/river-extractor:oracle11
