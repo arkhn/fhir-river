@@ -7,28 +7,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
-
-var (
-	transformerURL, isTransformerURLDefined = os.LookupEnv("TRANSFORMER_URL")
-	extractorURL, isExtractorURLDefined     = os.LookupEnv("EXTRACTOR_URL")
-)
-
-// ensure that the required environment variables are defined.
-// this function is run when this package is imported.
-func init() {
-	if !isExtractorURLDefined {
-		panic("EXTRACTOR_URL is required in environment")
-	}
-
-	if !isTransformerURLDefined {
-		panic("TRANSFORMER_URL is required in environment")
-	}
-}
 
 // PreviewRequest is the body of the POST /preview request.
 type PreviewRequest struct {
@@ -96,12 +78,12 @@ func extract(preview *PreviewRequest, authorizationHeader string) (rows []interf
 	}
 
 	switch resp.StatusCode {
-	case 200:
+	case http.StatusOK:
 		// If everything went well, we go on
-	case 401:
-		return nil, &invalidTokenError{message: "Token is invalid", statusCode: 401}
-	case 403:
-		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: 403}
+	case http.StatusUnauthorized:
+		return nil, &invalidTokenError{message: "Token is invalid", statusCode: http.StatusUnauthorized}
+	case http.StatusForbidden:
+		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: http.StatusForbidden}
 	default:
 		// Return other errors
 		body, err := ioutil.ReadAll(resp.Body)

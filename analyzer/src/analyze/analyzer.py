@@ -1,11 +1,10 @@
-from collections.abc import Mapping
+import json
 import os
 import re
-import requests
+import redis
 
 from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.service_logger import logger
-from analyzer.src.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -23,30 +22,48 @@ FHIR_API_URL = os.getenv("FHIR_API_URL")
 
 
 class Analyzer:
-    def __init__(self, pyrog_client: PyrogClient):
+    def __init__(self, pyrog_client: PyrogClient = None, redis_client: redis.Redis = None):
         self.pyrog = pyrog_client
+        self.redis = redis_client
         # Store analyses
-        # TODO think about the design here. Use http caching instead of
-        # storing here, for instance?
-        self.analyses: Mapping = {}
+        self.analyses: dict = {}
 
         self._cur_analysis = Analysis()
 
-    def get_analysis(self, resource_mapping_id) -> Analysis:
-        logger.debug("Get Analysis", extra={"resource_id": resource_mapping_id})
-        if resource_mapping_id not in self.analyses:
-            self.fetch_analysis(resource_mapping_id)
-        return self.analyses[resource_mapping_id]
-
     def fetch_analysis(self, resource_mapping_id):
-        """
-        Fetch mapping from API and store last updated timestamp
-        :param resource_mapping_id:
-        :return:
-        """
+        """ Fetch mapping from API """
+        if self.pyrog is None:
+            raise Exception("Cannot fetch analysis without a Pyrog client")
+
         logger.info("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
         resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
-        self.analyze(resource_mapping)
+        return self.analyze(resource_mapping)
+
+    def load_cached_analysis(self, batch_id, resource_id):
+        if self.redis is None:
+            raise Exception("Cannot use caching without a redis client")
+
+        cache_key = f"{batch_id}:{resource_id}"
+        if cache_key in self.analyses:
+            analysis = self.analyses[cache_key]
+        else:
+            # Get mapping from redis
+            serialized_mapping = self.redis.get(cache_key)
+            # Raise error if mapping wasn't found
+            if serialized_mapping is None:
+                logger.error(
+                    f"Mapping not found for batch {batch_id} and resource {resource_id}",
+                    extra={"resource_id": resource_id},
+                )
+
+            # Turn serialized mapping into an object
+            mapping = json.loads(serialized_mapping)
+            analysis = self.analyze(mapping)
+
+            # Store analysis
+            self.analyses[cache_key] = analysis
+
+        return analysis
 
     def analyze(self, resource_mapping):
         self._cur_analysis = Analysis()
@@ -66,9 +83,6 @@ class Analyzer:
                 self._cur_analysis.joins,
                 self._cur_analysis.primary_key_column.table_name(),
             )
-
-        # Store analysis
-        self.analyses[resource_mapping["id"]] = self._cur_analysis
 
         return self._cur_analysis
 
@@ -129,8 +143,10 @@ class Analyzer:
         input_group = InputGroup(id_=mapping_group["id"], attribute=parent_attribute)
         parent_attribute.add_input_group(input_group)
         for input_ in mapping_group["inputs"]:
-            if input_["sqlValue"]:
+            if input_["staticValue"]:
+                input_group.add_static_input(input_["staticValue"])
 
+            elif input_["sqlValue"] and input_["sqlValue"]["table"]:
                 sqlValue = input_["sqlValue"]
                 cur_col = SqlColumn(
                     sqlValue["table"],
@@ -141,8 +157,8 @@ class Analyzer:
                 if input_["script"]:
                     cur_col.cleaning_script = CleaningScript(input_["script"])
 
-                if input_["conceptMapId"]:
-                    cur_col.concept_map = ConceptMap(self.fetch_concept_map(input_["conceptMapId"]))
+                if input_["conceptMapId"] and input_["conceptMap"]:
+                    cur_col.concept_map = ConceptMap(input_["conceptMap"], input_["conceptMapId"])
 
                 for join in sqlValue["joins"]:
                     tables = join["tables"]
@@ -160,9 +176,6 @@ class Analyzer:
 
                 self._cur_analysis.add_column(cur_col)
                 input_group.add_column(cur_col)
-
-            elif input_["staticValue"]:
-                input_group.add_static_input(input_["staticValue"])
 
         for mapping_condition in mapping_group["conditions"]:
             condition_column = SqlColumn(
@@ -199,26 +212,3 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["source"]["credential"]["owner"],
         )
-
-    def fetch_concept_map(self, concept_map_id: str) -> dict:
-        try:
-            # TODO clean headers usage
-            response = requests.get(
-                f"{FHIR_API_URL}/ConceptMap/{concept_map_id}", headers=self.pyrog.headers
-            )
-        except requests.exceptions.ConnectionError as e:
-            raise OperationOutcome(f"Could not connect to the fhir-api service: {e}")
-
-        if response.status_code == 401:
-            raise AuthenticationError(
-                f"Could not fetch concept map {concept_map_id}: {response.text}."
-            )
-        if response.status_code == 403:
-            raise AuthorizationError(
-                f"Could not fetch concept map {concept_map_id}: {response.text}."
-            )
-        if response.status_code != 200:
-            raise OperationOutcome(
-                f"Error while fetching concept map {concept_map_id}: {response.text}."
-            )
-        return response.json()

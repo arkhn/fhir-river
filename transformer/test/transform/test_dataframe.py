@@ -1,6 +1,5 @@
 from unittest import mock, TestCase
 
-from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.cleaning_script import CleaningScript
 from analyzer.src.analyze.concept_map import ConceptMap
@@ -10,8 +9,6 @@ from analyzer.src.analyze.merging_script import MergingScript
 from analyzer.src.analyze.sql_column import SqlColumn
 
 import transformer.src.transform.dataframe as transform
-
-from transformer.test.conftest import mock_fetch_maps
 
 
 def mock_get_script(*args):
@@ -24,9 +21,7 @@ def mock_get_script(*args):
 
 
 @mock.patch("analyzer.src.analyze.cleaning_script.scripts.get_script", return_value=mock_get_script)
-@mock.patch("analyzer.src.analyze.Analyzer.fetch_concept_map", mock_fetch_maps)
-def test_clean_data(_):
-    analyzer = Analyzer(None)
+def test_clean_data(_, dict_map_gender, dict_map_code):
     data = {
         "PATIENTS_NAME": ["alice", "bob", "charlie"],
         "PATIENTS_ID": ["id1", "id2", "id3"],
@@ -60,7 +55,7 @@ def test_clean_data(_):
             SqlColumn(
                 "ADMISSIONS",
                 "LANGUAGE",
-                concept_map=ConceptMap(analyzer.fetch_concept_map("id_cm_gender")),
+                concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
             )
         ],
         static_inputs=["val"],
@@ -76,7 +71,7 @@ def test_clean_data(_):
                 "ADMISSIONS",
                 "ID",
                 cleaning_script=CleaningScript("clean2"),
-                concept_map=ConceptMap(analyzer.fetch_concept_map("id_cm_code")),
+                concept_map=ConceptMap(dict_map_code, "id_cm_code"),
             )
         ],
     )

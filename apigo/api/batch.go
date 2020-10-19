@@ -6,17 +6,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
-)
-
-var (
-	topic                         = "batch"
-	loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
 )
 
 // BatchRequest is the body of the POST /batch request.
@@ -25,6 +19,12 @@ type BatchRequest struct {
 		ID           string `json:"resource_id"`
 		ResourceType string `json:"resource_type"`
 	} `json:"resources"`
+}
+
+// FetchAnalysisRequest is the body of the POST /fetch-analysis request.
+type FetchAnalysisRequest struct {
+	BatchID     string   `json:"batch_id"`
+	ResourceIDs []string `json:"resource_ids"`
 }
 
 // DeleteResourceRequest is the body of the POST /delete-resource request.
@@ -39,7 +39,6 @@ type DeleteResourceRequest struct {
 type BatchEvent struct {
 	BatchID    string `json:"batch_id"`
 	ResourceID string `json:"resource_id"`
-	AuthHeader string `json:"auth_header"`
 }
 
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
@@ -54,14 +53,48 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 			return
 		}
 
-		// Get authorization headers
+		var resourceIDs []string
+		for _, resource := range body.Resources {
+			resourceIDs = append(resourceIDs, resource.ID)
+		}
+
+		// Get authorization header
 		authorizationHeader := r.Header.Get("Authorization")
 
 		// generate a new batch ID.
-		batchID, err := uuid.NewRandom()
+		batchUUID, err := uuid.NewRandom()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+		}
+		batchID := batchUUID.String()
+
+		// Fetch and store the mappings to use for the batch
+		// This needs to be synchronous because we don't want a token to become invalid
+		// in the middle of a batch
+		for _, resourceID := range resourceIDs {
+			resourceMapping, err := fetchMapping(resourceID, authorizationHeader)
+			if err != nil {
+				switch e := err.(type) {
+				case *invalidTokenError:
+					http.Error(w, err.Error(), e.statusCode)
+				default:
+					http.Error(w, err.Error(), http.StatusBadRequest)
+				}
+				return
+			}
+
+			serializedMapping, err := json.Marshal(resourceMapping)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			err = storeMapping(serializedMapping, resourceID, batchID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 		}
 
 		// delete all the documents correspondng to the batch resources
@@ -87,9 +120,8 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		for _, resource := range body.Resources {
 			resourceID := resource.ID
 			event, _ := json.Marshal(BatchEvent{
-				BatchID:    batchID.String(),
+				BatchID:    batchID,
 				ResourceID: resourceID,
-				AuthHeader: authorizationHeader,
 			})
 			log.WithField("event", string(event)).Info("produce event")
 			err = producer.Produce(&kafka.Message{
@@ -102,6 +134,6 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		}
 
 		// return the batch ID to the client immediately.
-		fmt.Fprint(w, batchID.String())
+		fmt.Fprint(w, batchID)
 	}
 }

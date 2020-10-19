@@ -6,14 +6,6 @@ from analyzer.src.errors import AuthenticationError, AuthorizationError, Operati
 
 PYROG_API_URL = os.getenv("PYROG_API_URL")
 
-login_mutation = """
-mutation login($email: String!, $password: String!) {
-  login(email: $email, password: $password) {
-    token
-  }
-}
-"""
-
 attr_fragment = """
 fragment entireFilter on Filter {
   id

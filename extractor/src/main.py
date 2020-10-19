@@ -2,11 +2,13 @@
 
 import os
 import json
-from typing import Dict
+import sys
+import traceback
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
@@ -19,14 +21,31 @@ from extractor.src.extract import Extractor
 from extractor.src.json_encoder import MyJSONEncoder
 from extractor.src.producer_class import ExtractorProducer
 
-CONSUMER_GROUP_ID = "extractor"
-EXTRACT_TOPIC = "extract"
-BATCH_SIZE_TOPIC = "batch_size"
-CONSUMED_TOPIC = "batch"
+REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
+REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
+REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
+ENV = os.getenv("ENV")
+IN_PROD = ENV != "test"
 
-# analyzers is a map of Analyzer indexed by batch_id
-analyzers: Dict[str, Analyzer] = {}
 extractor = Extractor()
+
+
+def extract_resource(analysis, primary_key_values):
+    if not analysis.source_credentials:
+        raise MissingInformationError("credential is required to run fhir-river.")
+
+    credentials = analysis.source_credentials
+    extractor.update_connection(credentials)
+
+    logger.info("Extracting rows", extra={"resource_id": analysis.resource_id})
+    df = extractor.extract(analysis, primary_key_values)
+
+    return df
+
+
+#############
+# FLASK API #
+#############
 
 
 def create_app():
@@ -39,7 +58,98 @@ app = create_app()
 app.json_encoder = MyJSONEncoder
 
 
-def process_event_with_producer(producer):
+@app.route("/extract", methods=["POST"])
+def extract():
+    authorization_header = request.headers.get("Authorization")
+    body = request.get_json()
+    resource_id = body.get("resource_id", None)
+    primary_key_values = body.get("primary_key_values", None)
+
+    logger.info(
+        f"Extract from API with primary key value {primary_key_values}",
+        extra={"resource_id": resource_id},
+    )
+
+    if not primary_key_values:
+        raise BadRequestError("primary_key_values is required in request body")
+
+    try:
+        pyrog_client = PyrogClient(authorization_header)
+        analyzer = Analyzer(pyrog_client)
+        analysis = analyzer.fetch_analysis(resource_id)
+        df = extract_resource(analysis, primary_key_values)
+        rows = []
+        for record in extractor.split_dataframe(df, analysis):
+            logger.debug("One record from extract", extra={"resource_id": resource_id})
+            rows.append(record)
+
+        return jsonify({"rows": rows})
+
+    except Exception as err:
+        logger.error("".join(traceback.format_exception(*sys.exc_info())))
+        raise err
+
+
+@app.route("/metrics")
+def metrics():
+    """ Flask endpoint to gather the metrics, will be called by Prometheus. """
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+
+@app.errorhandler(Exception)
+def handle_operation_outcome(e):
+    return jsonify({"error": str(e)}), 400
+
+
+@app.errorhandler(AuthenticationError)
+def handle_authentication_error(e):
+    return jsonify({"error": str(e)}), 401
+
+
+@app.errorhandler(AuthorizationError)
+def handle_authorization_error(e):
+    return jsonify({"error": str(e)}), 403
+
+
+################
+# KAFKA CLIENT #
+################
+
+CONSUMER_GROUP_ID = "extractor"
+EXTRACT_TOPIC = "extract"
+BATCH_SIZE_TOPIC = "batch_size"
+CONSUMED_TOPIC = "batch"
+
+
+# these decorators tell uWSGI (the server with which the app is run)
+# to spawn a new thread every time a worker starts. Hence the consumer
+# is started at the same time as the Flask API.
+@postfork
+@thread
+def run_consumer():
+    logger.info("Running extract consumer")
+
+    producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
+    consumer = ExtractorConsumer(
+        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+        topics=CONSUMED_TOPIC,
+        group_id=CONSUMER_GROUP_ID,
+        process_event=process_event_with_context(producer),
+        manage_error=manage_kafka_error,
+    )
+
+    try:
+        consumer.run_consumer()
+    except (KafkaException, KafkaError) as err:
+        logger.error(err)
+
+
+def process_event_with_context(producer):
+    redis_client = redis.Redis(
+        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+    )
+    analyzer = Analyzer(redis_client=redis_client)
+
     def broadcast_events(dataframe, analysis, batch_id=None):
         resource_type = analysis.definition_id
         resource_id = analysis.resource_id
@@ -62,7 +172,6 @@ def process_event_with_producer(producer):
         resource_id = msg_value.get("resource_id", None)
         primary_key_values = msg_value.get("primary_key_values", None)
         batch_id = msg_value.get("batch_id", None)
-        auth_header = msg_value.get("auth_header", None)
 
         msg_topic = msg.topic()
 
@@ -71,12 +180,8 @@ def process_event_with_producer(producer):
         )
 
         try:
-            analyzer = analyzers.get(batch_id)
-            if not analyzer:
-                pyrog_client = PyrogClient(auth_header)
-                analyzer = Analyzer(pyrog_client)
-                analyzers[batch_id] = analyzer
-            analysis = analyzer.get_analysis(resource_id)
+            analysis = analyzer.load_cached_analysis(batch_id, resource_id)
+
             df = extract_resource(analysis, primary_key_values)
             batch_size = extractor.batch_size(analysis)
             logger.info(
@@ -95,102 +200,5 @@ def process_event_with_producer(producer):
 
 
 def manage_kafka_error(msg):
-    """
-    Deal with the error if any
-    :param msg:
-    :return:
-    """
+    """ Deal with the error if any """
     logger.error(msg.error().str())
-
-
-def extract_resource(analysis, primary_key_values):
-    logger.debug("Get Analysis", extra={"resource_id": analysis.resource_id})
-
-    if not analysis.source_credentials:
-        raise MissingInformationError("credential is required to run fhir-river.")
-
-    credentials = analysis.source_credentials
-    extractor.update_connection(credentials)
-
-    logger.info("Extracting rows", extra={"resource_id": analysis.resource_id})
-    df = extractor.extract(analysis, primary_key_values)
-
-    return df
-
-
-@app.route("/extract", methods=["POST"])
-def extract():
-    authorization_header = request.headers.get("Authorization")
-    body = request.get_json()
-    resource_id = body.get("resource_id", None)
-    primary_key_values = body.get("primary_key_values", None)
-
-    logger.info(
-        f"Extract from API with primary key value {primary_key_values}",
-        extra={"resource_id": resource_id},
-    )
-
-    if not primary_key_values:
-        raise BadRequestError("primary_key_values is required in request body")
-
-    try:
-        pyrog_client = PyrogClient(authorization_header)
-        analyzer = Analyzer(pyrog_client)
-        analysis = analyzer.get_analysis(resource_id)
-        df = extract_resource(analysis, primary_key_values)
-        rows = []
-        for record in extractor.split_dataframe(df, analysis):
-            logger.debug("One record from extract", extra={"resource_id": resource_id})
-            rows.append(record)
-
-        return jsonify({"rows": rows})
-
-    except Exception as err:
-        logger.error(repr(err))
-        raise err
-
-
-@app.route("/metrics")
-def metrics():
-    """
-    Flask endpoint to gather the metrics, will be called by Prometheus.
-    """
-    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
-
-
-@app.errorhandler(Exception)
-def handle_operation_outcome(e):
-    return jsonify({"error": str(e)}), 400
-
-
-@app.errorhandler(AuthenticationError)
-def handle_authentication_error(e):
-    return jsonify({"error": str(e)}), 401
-
-
-@app.errorhandler(AuthorizationError)
-def handle_authorization_error(e):
-    return jsonify({"error": str(e)}), 403
-
-
-# these decorators tell uWSGI (the server with which the app is run)
-# to spawn a new thread every time a worker starts. Hence the consumer
-# is started at the same time as the Flask API.
-@postfork
-@thread
-def run_consumer():
-    logger.info("Running extract consumer")
-
-    producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
-    consumer = ExtractorConsumer(
-        broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
-        group_id=CONSUMER_GROUP_ID,
-        process_event=process_event_with_producer(producer),
-        manage_error=manage_kafka_error,
-    )
-
-    try:
-        consumer.run_consumer()
-    except (KafkaException, KafkaError) as err:
-        logger.error(err)

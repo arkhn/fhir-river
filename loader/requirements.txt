@@ -5,11 +5,10 @@ dotty-dict==1.2.1
 fhir.resources @ git+https://github.com/arkhn/fhir.resources@6.0.1#egg=fhir.resources
 fhirstore @ git+https://github.com/arkhn/pyfhirstore@0.5.0#egg=fhirstore
 fluent-logger==0.9.6
+hiredis==1.1.0
 jsonschema==3.0.2
 prometheus-client==0.8.0
 pymongo==3.9.0
+redis==3.5.3
 requests==2.21.0
 uWSGI==2.0.18
-redis==3.5.3
-hiredis==1.1.0
-
