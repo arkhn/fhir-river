@@ -3,6 +3,8 @@
 import json
 import os
 import pydantic
+import sys
+import traceback
 
 from confluent_kafka import KafkaException, KafkaError
 from fhir.resources import construct_fhir_element
@@ -46,9 +48,10 @@ def transform_row(analysis, row):
 
     except Exception as e:
         logger.error(
-            f"Failed to transform {row}:\n{e}",
+            "".join(traceback.format_exception(*sys.exc_info())),
             extra={"resource_id": analysis.resource_id, "primary_key_value": primary_key_value},
         )
+        raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
 
 #############
@@ -98,8 +101,10 @@ def transform():
 
         return jsonify({"instances": fhir_instances, "errors": errors})
 
+    except OperationOutcome:
+        raise
     except Exception as err:
-        logger.error(err)
+        logger.error("".join(traceback.format_exception(*sys.exc_info())))
         raise OperationOutcome(err)
 
 
@@ -183,9 +188,10 @@ def process_event_with_context(producer):
                     "resource_id": resource_id,
                 },
             )
-
-        except Exception as err:
-            logger.error(err)
+        except OperationOutcome:
+            pass
+        except Exception:
+            logger.error("".join(traceback.format_exception(*sys.exc_info())))
 
     return process_event
 
