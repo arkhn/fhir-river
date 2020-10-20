@@ -5,6 +5,8 @@ Create the logger to be used in the service
 from os import getenv
 from sys import stdout
 import logging
+import sys
+import traceback
 
 from arkhn_monitoring import create_logger
 
@@ -36,3 +38,8 @@ def get_logger(extra_fields=[]):
     )
 
     return logger
+
+
+def format_traceback():
+    """ Helper function to cast the traceback to a string in order to log it. """
+    return "".join(traceback.format_exception(*sys.exc_info()))

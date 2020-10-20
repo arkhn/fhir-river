@@ -4,6 +4,7 @@ import json
 import datetime
 from confluent_kafka import Producer
 
+from logger import format_traceback
 from transformer.src.config.service_logger import logger
 
 
@@ -45,8 +46,8 @@ class TransformerProducer:
                 callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
-        except ValueError as error:
-            logger.error(error)
+        except ValueError:
+            logger.error(format_traceback())
 
     @staticmethod
     def default_json_encoder(o):

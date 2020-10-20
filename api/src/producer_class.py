@@ -5,6 +5,7 @@ import datetime
 from confluent_kafka import Producer
 
 from api.src.config.service_logger import logger
+from logger import format_traceback
 
 
 class RiverApiProducer:
@@ -19,9 +20,7 @@ class RiverApiProducer:
         """
         self.broker = broker
         self.partition = 0
-        self.callback_function = (
-            callback_function if callback_function else self.callback_fn
-        )
+        self.callback_function = callback_function if callback_function else self.callback_fn
 
         # Create consumer
         self.producer = Producer(self._generate_config())
@@ -45,13 +44,11 @@ class RiverApiProducer:
             self.producer.produce(
                 topic=topic,
                 value=json.dumps(event, default=self.default_json_encoder),
-                callback=lambda err, msg, obj=event: self.callback_function(
-                    err, msg, obj
-                ),
+                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
-        except ValueError as error:
-            logger.error(error)
+        except ValueError:
+            logger.error(format_traceback())
 
     @staticmethod
     def default_json_encoder(o):

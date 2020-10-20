@@ -38,6 +38,56 @@
   ],
   "attributes": [
     {
+      "id": "ckdyl65kh0126gu9ka6svbibj",
+      "path": "active",
+      "sliceName": null,
+      "definitionId": "boolean",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.361Z",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65kh0127gu9kqdxatrks",
+          "mergingScript": null,
+          "attributeId": "ckdyl65kh0126gu9ka6svbibj",
+          "updatedAt": "2020-08-17T14:01:01.366Z",
+          "createdAt": "2020-08-17T14:01:01.361Z",
+          "inputs": [
+            {
+              "id": "ckdyl65kh0128gu9k4ooybxa8",
+              "script": null,
+              "conceptMapId": null,
+              "staticValue": "active",
+              "sqlValueId": "ckdyl65kh0129gu9kdqxrzzr3",
+              "inputGroupId": "ckdyl65kh0127gu9kqdxatrks",
+              "updatedAt": "2020-08-17T14:01:01.366Z",
+              "createdAt": "2020-08-17T14:01:01.361Z",
+              "sqlValue": null
+            }
+          ],
+          "conditions": [
+            {
+              "id": "ckdyl6i2f0114gz9k66jmib2j",
+              "action": "INCLUDE",
+              "columnId": "ckdyl6i2f0115gz9k4z7aecfc",
+              "relation": "NULL",
+              "value": "",
+              "inputGroupId": "ckdyl65kh0127gu9kqdxatrks",
+              "sqlValue": {
+                "id": "ckdyl6i2f0115gz9k4z7aecfc",
+                "table": "patients",
+                "column": "dob",
+                "joinId": null,
+                "updatedAt": "2020-08-17T14:01:17.559Z",
+                "createdAt": "2020-08-17T14:01:17.559Z"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "ckdyl65kh0126gu9ka6svbibh",
       "path": "birthDate",
       "sliceName": null,

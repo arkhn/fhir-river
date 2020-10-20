@@ -1,5 +1,16 @@
-from analyzer.src.analyze.condition import Condition, CONDITION_FLAG
+import pytest
+
+from analyzer.src.analyze.condition import (
+    Condition,
+    CONDITION_FLAG,
+    CONDITION_RELATION_TO_FUNCTION,
+    UNARY_RELATIONS,
+)
 from analyzer.src.analyze.sql_column import SqlColumn
+
+BINARY_RELATIONS = [
+    rel for rel in CONDITION_RELATION_TO_FUNCTION.keys() if rel not in UNARY_RELATIONS
+]
 
 
 def test_check():
@@ -53,6 +64,22 @@ def test_check():
     assert not cond.check(row)
 
     row = {(CONDITION_FLAG, ("patients", "age")): 3}
+    assert cond.check(row)
+
+
+@pytest.mark.parametrize("relation", BINARY_RELATIONS)
+def test_check_include_with_none(relation):
+    row = {(CONDITION_FLAG, ("patients", "gender")): None}
+
+    cond = Condition("INCLUDE", SqlColumn("patients", "gender"), relation, "M")
+    assert not cond.check(row)
+
+
+@pytest.mark.parametrize("relation", BINARY_RELATIONS)
+def test_check_exclude_with_none(relation):
+    row = {(CONDITION_FLAG, ("patients", "gender")): None}
+
+    cond = Condition("EXCLUDE", SqlColumn("patients", "gender"), relation, "M")
     assert cond.check(row)
 
 

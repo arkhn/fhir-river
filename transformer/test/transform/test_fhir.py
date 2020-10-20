@@ -102,7 +102,7 @@ def test_handle_array_attributes():
         attr1.path: ("A1", "A2", "A3"),
         attr2.path: ("B1", "B2"),
     }
-    with raises(AssertionError, match="mismatch in array lengths"):
+    with raises(ValueError, match="mismatch in array lengths"):
         transform.handle_array_attributes(attributes_in_array, row)
 
 

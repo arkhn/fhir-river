@@ -9,13 +9,19 @@ from .sql_column import SqlColumn
 
 CONDITION_FLAG = "__condition__"
 
+# NOTE If the reference value is null, we want the relation to be False,
+# that's why we check for `x is not None` in all the binary relations.
+# For instance, if we want to INCLUDE the attribute if a column EQ a value and
+# this value is null, we won't keep it. On the other hand,
+# if we want to EXCLUDE the attribute if a column EQ a value and
+# this value is null, we will keep it.
 CONDITION_RELATION_TO_FUNCTION = {
-    "EQ": lambda x, y: x == y,
-    "NEQ": lambda x, y: x != y,
-    "LT": lambda x, y: x < y,
-    "LE": lambda x, y: x <= y,
-    "GE": lambda x, y: x >= y,
-    "GT": lambda x, y: x > y,
+    "EQ": lambda x, y: x is not None and x == y,
+    "NEQ": lambda x, y: x is not None and x != y,
+    "LT": lambda x, y: x is not None and x < y,
+    "LE": lambda x, y: x is not None and x <= y,
+    "GE": lambda x, y: x is not None and x >= y,
+    "GT": lambda x, y: x is not None and x > y,
     "NULL": lambda x, _: x is None,
     "NOTNULL": lambda x, _: x is not None,
 }
@@ -70,7 +76,7 @@ class Condition:
         return (self.action == "EXCLUDE") ^ is_relation_true
 
     def cast_value_type(self, data_value):
-        if self.relation in UNARY_RELATIONS:
+        if self.relation in UNARY_RELATIONS or data_value is None:
             # For unary relations, we don't need a reference value
             cast_value = None
         elif isinstance(data_value, bool):

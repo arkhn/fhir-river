@@ -96,7 +96,7 @@ def test_analyze_mapping(patient_mapping):
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 
-    assert len(analysis.attributes) == 17
+    assert len(analysis.attributes) == 18
 
     assert analysis.columns == {
         SqlColumn("patients", "row_id"),
