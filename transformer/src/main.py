@@ -170,7 +170,7 @@ def process_event_with_context(producer):
     def process_event(msg):
         """ Process the event """
         msg_value = json.loads(msg.value())
-        logger.debug(msg_value)
+        logger.debug(msg.value())
         record = msg_value.get("record")
         batch_id = msg_value.get("batch_id")
         resource_id = msg_value.get("resource_id")
