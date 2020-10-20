@@ -2,6 +2,7 @@
 
 from confluent_kafka import Producer
 import datetime
+import decimal
 import json
 
 from extractor.src.config.service_logger import logger
@@ -51,13 +52,15 @@ class ExtractorProducer:
             logger.error(format_traceback())
 
     @staticmethod
-    def default_json_encoder(o):
+    def default_json_encoder(obj):
         """
         Json Encoder for datetime
         :return:
         """
-        if isinstance(o, (datetime.date, datetime.datetime)):
-            return o.isoformat()
+        if isinstance(obj, decimal.Decimal):
+            return str(obj.normalize())
+        if isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat()
 
     @staticmethod
     def callback_fn(err, msg, obj):
