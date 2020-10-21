@@ -77,7 +77,6 @@ class Extractor:
             self.metadata = MetaData(bind=self.engine)
             self.session = sessionmaker(self.engine)()
 
-    # TODO refine buckets if needed
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis, pk_values=None):
         """ Main method of the Extractor class.
