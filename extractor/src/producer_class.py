@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
 from confluent_kafka import Producer
-import datetime
-import decimal
-import json
 
 from extractor.src.config.service_logger import logger
+from extractor.src.json_encoder import MyJSONEncoder
 from logger import format_traceback
 
 
@@ -44,23 +42,12 @@ class ExtractorProducer:
         try:
             self.producer.produce(
                 topic=topic,
-                value=json.dumps(event, default=self.default_json_encoder),
+                value=MyJSONEncoder().encode(event),
                 callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
         except ValueError:
             logger.error(format_traceback())
-
-    @staticmethod
-    def default_json_encoder(obj):
-        """
-        Json Encoder for datetime
-        :return:
-        """
-        if isinstance(obj, decimal.Decimal):
-            return str(obj.normalize())
-        if isinstance(obj, (datetime.date, datetime.datetime)):
-            return obj.isoformat()
 
     @staticmethod
     def callback_fn(err, msg, obj):

@@ -110,7 +110,7 @@ class Analyzer:
         self._cur_analysis.add_filter(sql_filter)
 
     def analyze_attribute(self, attribute_mapping):
-        logger.info(
+        logger.debug(
             f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}",
             extra={"resource_id": self._cur_analysis.resource_id},
         )
@@ -122,7 +122,7 @@ class Analyzer:
             # attribute (ie not a leaf). It is here to give us some context information.
             # For instance, we can use it if its children attributes represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
-                logger.info(
+                logger.debug(
                     f"Analyze attribute reference",
                     extra={"resource_id": self._cur_analysis.resource_id},
                 )
