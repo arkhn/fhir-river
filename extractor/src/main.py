@@ -10,7 +10,6 @@ import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.errors import AuthenticationError, AuthorizationError
 from extractor.src.config.service_logger import logger
 from extractor.src.consumer_class import ExtractorConsumer

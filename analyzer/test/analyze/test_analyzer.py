@@ -4,24 +4,10 @@ from unittest import mock
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.attribute import Attribute
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_filter import SqlFilter
 from analyzer.src.analyze.sql_join import SqlJoin
-
-
-def test_fetch_analysis(patient_mapping):
-    analyzer = Analyzer(None)
-
-    analyzer.pyrog = mock.MagicMock()
-    analyzer.pyrog.get_resource_from_id.return_value = patient_mapping
-
-    res = analyzer.fetch_analysis("Patient_resource_id")
-
-    assert res.definition_id == "Patient"
-    assert res.primary_key_column.table == "patients"
-    assert res.primary_key_column.column == "row_id"
 
 
 def test_load_cached_analysis_redis(patient_mapping):
@@ -92,7 +78,7 @@ def test_get_primary_key():
 
 
 def test_analyze_mapping(patient_mapping):
-    analyzer = Analyzer(PyrogClient(None))
+    analyzer = Analyzer()
 
     analysis = analyzer.analyze_mapping(patient_mapping)
 
@@ -119,7 +105,7 @@ def test_analyze_mapping(patient_mapping):
 
 
 def test_analyze_attribute(patient_mapping, dict_map_gender):
-    analyzer = Analyzer(PyrogClient(None))
+    analyzer = Analyzer()
     analyzer._cur_analysis.primary_key_column = SqlColumn("patients", "subject_id")
 
     attribute_mapping = {
