@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,13 +18,15 @@ type PreviewRequest struct {
 	// PrimaryKeyValues can be a list of strings (eg ["E65"]) or a list of integers ([59])
 	PrimaryKeyValues []interface{} `json:"primary_key_values"`
 	ResourceID       string        `json:"resource_id"`
+	PreviewID        string        `json:"preview_id"`
 }
 
 // transform sends an HTTP request to the transformer service
 // with the extracted rows and returns its response body.
-func transform(resourceID string, rows []interface{}, authorizationHeader string) (res []byte, err error) {
+func transform(resourceID, previewID string, rows []interface{}) (res []byte, err error) {
 	jBody, _ := json.Marshal(map[string]interface{}{
 		"resource_id": resourceID,
+		"preview_id":  previewID,
 		"dataframe":   rows,
 	})
 
@@ -33,7 +36,6 @@ func transform(resourceID string, rows []interface{}, authorizationHeader string
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", authorizationHeader)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -61,7 +63,7 @@ func transform(resourceID string, rows []interface{}, authorizationHeader string
 
 // transform sends an HTTP request to the transformer service
 // using the PreviewRequest as JSON body. It returns the extrcted rows.
-func extract(preview *PreviewRequest, authorizationHeader string) (rows []interface{}, err error) {
+func extract(preview *PreviewRequest) (rows []interface{}, err error) {
 	jBody, _ := json.Marshal(preview)
 	url := fmt.Sprintf("%s/extract", extractorURL)
 
@@ -69,7 +71,6 @@ func extract(preview *PreviewRequest, authorizationHeader string) (rows []interf
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", authorizationHeader)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
@@ -115,12 +116,45 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// generate a new preview ID.
+	previewUUID, err := uuid.NewRandom()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	body.PreviewID = previewUUID.String()
+
 	log.Infof("Preview request: %+v", body)
 
 	authorizationHeader := r.Header.Get("Authorization")
 
+	// Fetch and store the mappings to use for the preview
+	resourceMapping, err := fetchMapping(body.ResourceID, authorizationHeader)
+	if err != nil {
+		switch e := err.(type) {
+		case *invalidTokenError:
+			http.Error(w, err.Error(), e.statusCode)
+		default:
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+		return
+	}
+
+	serializedMapping, err := json.Marshal(resourceMapping)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = storeMapping(serializedMapping, body.ResourceID, body.PreviewID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	// extract the rows
-	rows, err := extract(&body, authorizationHeader)
+	rows, err := extract(&body)
 	if err != nil {
 		switch e := err.(type) {
 		case *invalidTokenError:
@@ -132,7 +166,7 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	// transform rows
-	res, err := transform(body.ResourceID, rows, authorizationHeader)
+	res, err := transform(body.ResourceID, body.PreviewID, rows)
 	if err != nil {
 		switch e := err.(type) {
 		case *invalidTokenError:

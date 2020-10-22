@@ -3,7 +3,6 @@ import os
 import re
 import redis
 
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.config.service_logger import logger
 
 from .analysis import Analysis
@@ -22,22 +21,12 @@ FHIR_API_URL = os.getenv("FHIR_API_URL")
 
 
 class Analyzer:
-    def __init__(self, pyrog_client: PyrogClient = None, redis_client: redis.Redis = None):
-        self.pyrog = pyrog_client
+    def __init__(self, redis_client: redis.Redis = None):
         self.redis = redis_client
         # Store analyses
         self.analyses: dict = {}
 
         self._cur_analysis = Analysis()
-
-    def fetch_analysis(self, resource_mapping_id):
-        """ Fetch mapping from API """
-        if self.pyrog is None:
-            raise Exception("Cannot fetch analysis without a Pyrog client")
-
-        logger.info("Fetching mapping from api.", extra={"resource_id": resource_mapping_id})
-        resource_mapping = self.pyrog.get_resource_from_id(resource_id=resource_mapping_id)
-        return self.analyze(resource_mapping)
 
     def load_cached_analysis(self, batch_id, resource_id):
         if self.redis is None:

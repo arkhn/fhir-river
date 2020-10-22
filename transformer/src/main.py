@@ -12,7 +12,6 @@ import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.errors import AuthenticationError, AuthorizationError
 from logger import format_traceback
 from transformer.src.config.service_logger import logger
@@ -64,22 +63,20 @@ def create_app():
 
 
 app = create_app()
+redis_client = redis.Redis(host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB)
 
 
 @app.route("/transform", methods=["POST"])
 def transform():
     body = request.get_json()
     resource_id = body.get("resource_id")
+    preview_id = body.get("preview_id")
     rows = body.get("dataframe")
-
-    # Get headers
-    authorization_header = request.headers.get("Authorization")
 
     logger.info(
         f"POST /transform. Transforming {len(rows)} row(s).", extra={"resource_id": resource_id}
     )
-    pyrog_client = PyrogClient(authorization_header)
-    analysis = Analyzer(pyrog_client).fetch_analysis(resource_id)
+    analysis = Analyzer(redis_client=redis_client).load_cached_analysis(preview_id, resource_id)
     try:
         fhir_instances = []
         errors = []
