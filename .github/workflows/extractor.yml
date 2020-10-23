@@ -44,7 +44,7 @@ jobs:
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
           DOCKERFILE=${{ matrix.dockerfile }}
 
-          if [[ ${{ matrix.dockerfile }} =~ Dockerfile. ]]; then
+          if [[ ${{ matrix.dockerfile }} =~ Dockerfile\..* ]]; then
             IMAGE="${IMAGE}-${DOCKERFILE#Dockerfile.}"
           fi
 
