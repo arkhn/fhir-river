@@ -4,7 +4,7 @@ import os
 import json
 
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify, Response
+from flask import Flask, g, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 import redis
 from uwsgidecorators import thread, postfork
@@ -41,6 +41,14 @@ def extract_resource(analysis, primary_key_values):
     return df
 
 
+def get_redis_client():
+    if "redis_client" not in g:
+        g.redis_client = redis.Redis(
+            host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+        )
+    return g.redis_client
+
+
 #############
 # FLASK API #
 #############
@@ -48,14 +56,17 @@ def extract_resource(analysis, primary_key_values):
 
 def create_app():
     app = Flask(__name__)
+
+    # load redis client
+    with app.app_context():
+        get_redis_client()
+
     return app
 
 
 app = create_app()
 # Override default JSONEncoder
 app.json_encoder = MyJSONEncoder
-
-redis_client = redis.Redis(host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB)
 
 
 @app.route("/extract", methods=["POST"])
@@ -74,7 +85,9 @@ def extract():
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        analysis = Analyzer(redis_client=redis_client).load_cached_analysis(preview_id, resource_id)
+        analysis = Analyzer(redis_client=get_redis_client()).load_cached_analysis(
+            preview_id, resource_id
+        )
         df = extract_resource(analysis, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
@@ -143,9 +156,8 @@ def run_consumer():
 
 
 def process_event_with_context(producer):
-    redis_client = redis.Redis(
-        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
-    )
+    with app.app_context():
+        redis_client = get_redis_client()
     analyzer = Analyzer(redis_client=redis_client)
 
     def broadcast_events(dataframe, analysis, batch_id=None):
