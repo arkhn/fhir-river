@@ -139,6 +139,7 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
+	// cache the mapping in redis
 	err = storeMapping(serializedMapping, body.ResourceID, body.PreviewID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -154,6 +155,13 @@ func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	// transform rows
 	res, err := transform(body.ResourceID, body.PreviewID, rows)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// delete the mapping from redis
+	err = deleteMapping(body.ResourceID, body.PreviewID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

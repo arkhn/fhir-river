@@ -323,3 +323,11 @@ func storeMapping(mapping []byte, resourceID string, batchID string) error {
 	}
 	return nil
 }
+
+func deleteMapping(resourceID string, batchID string) error {
+	err := rdb.Del(fmt.Sprintf("%s:%s", batchID, resourceID))
+	if err != nil {
+		return err.Err()
+	}
+	return nil
+}
