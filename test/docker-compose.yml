@@ -185,7 +185,7 @@ services:
       - redis-data:/data
 
   fhir-api:
-    image: arkhn/fhir-api:v0.1.0
+    image: arkhn/fhir-api:debug
     depends_on:
       - elasticsearch
       - mongo
