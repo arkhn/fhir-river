@@ -103,7 +103,7 @@ class Extractor:
             )
 
         logger.info(
-            f"Extracting resource: {analysis.definition_id}",
+            f"Start extracting resource: {analysis.definition_id}",
             extra={"resource_id": analysis.resource_id},
         )
 
@@ -116,11 +116,19 @@ class Extractor:
     def sqlalchemy_query(self, analysis: Analysis, pk_values) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
         """
+        logger.info(
+            f"Start building query for resource {analysis.definition_id}",
+            extra={"resource_id": analysis.resource_id},
+        )
         alchemy_cols = self.get_columns(analysis.columns)
         base_query = self.session.query(*alchemy_cols)
         query_w_joins = self.apply_joins(base_query, analysis.joins)
         query_w_filters = self.apply_filters(query_w_joins, analysis, pk_values)
 
+        logger.info(
+            f"Built query for resource {analysis.definition_id}: {query_w_filters.statement}",
+            extra={"resource_id": analysis.resource_id},
+        )
         return query_w_filters
 
     def apply_joins(self, query: Query, joins: List[SqlJoin]) -> Query:
@@ -161,17 +169,22 @@ class Extractor:
             the result of the sql query
         """
         query = query.statement
-        logger.info(f"sql query: {query}", extra={"resource_id": resource_id})
+        logger.info(f"Executing query: {query}", extra={"resource_id": resource_id})
 
         return self.session.execute(query)
 
     def batch_size(self, analysis) -> int:
+        logger.info(
+            f"Start computing batch size for resource {analysis.definition_id}",
+            extra={"resource_id": analysis.resource_id},
+        )
         pk_column = self.get_column(analysis.primary_key_column)
         base_query = self.session.query(func.count(distinct(pk_column)))
         query_w_joins = self.apply_joins(base_query, analysis.joins)
         query_w_filters = self.apply_filters(query_w_joins, analysis, None)
         logger.info(
-            f"sql query: {query_w_filters.statement}", extra={"resource_id": analysis.resource_id}
+            f"Sql query to compute batch size: {query_w_filters.statement}",
+            extra={"resource_id": analysis.resource_id},
         )
         res = query_w_filters.session.execute(query_w_filters)
 
@@ -216,7 +229,10 @@ class Extractor:
     @Timer("time_extractor_split", "time to split dataframe")
     def split_dataframe(df, analysis):
         # Find primary key column
-        logger.debug("Splitting Dataframe", extra={"resource_id": analysis.resource_id})
+        logger.info(
+            f"Splitting dataframe for resource {analysis.definition_id}",
+            extra={"resource_id": analysis.resource_id},
+        )
         # TODO I don't think it's necessarily present in the df
         pk_col = analysis.primary_key_column.dataframe_column_name()
 
