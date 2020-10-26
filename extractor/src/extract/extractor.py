@@ -1,8 +1,8 @@
 from collections import defaultdict
-from typing import Callable, Dict, List
-
+from prometheus_client import Counter as PromCounter
 from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
+from typing import Callable, Dict, List
 
 from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
@@ -37,6 +37,12 @@ URL_SUFFIXES = {
     # https://github.com/catherinedevlin/ipython-sql/issues/54
     MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server&MARS_Connection=Yes",
 }
+
+counter_extract_instances = PromCounter(
+    "count_extracted_instances",
+    "Number of resource instances extracted",
+    labelnames=("resource_id", "resource_type"),
+)
 
 
 class Extractor:
@@ -230,4 +236,9 @@ class Extractor:
                 "you provided are not present in the database or the mapping "
                 "is erroneous."
             )
+
+        counter_extract_instances.labels(
+            resource_id=analysis.resource_id, resource_type=analysis.definition_id
+        ).inc()
+
         yield acc
