@@ -216,14 +216,14 @@ services:
     networks:
       - river-network
 
-    loader-redis:
-      image: redis:6.0.7
-      container_name: loader-redis
-      restart: always
-      networks:
-        - river-network
-      volumes:
-        - loader-redis-data:/data
+  loader-redis:
+    image: redis:6.0.7
+    container_name: loader-redis
+    restart: always
+    networks:
+      - river-network
+    volumes:
+      - loader-redis-data:/data
 
   # Uncomment if you want monitoring
   # prometheus:
