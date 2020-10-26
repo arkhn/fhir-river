@@ -159,8 +159,8 @@ services:
     environment:
       PORT: 1000
     volumes:
-      - ./volumes/mapping.json:/app/mapping.json
-      - ./volumes/credentials.json:/app/credentials.json
+      - ./data/mapping.json:/app/mapping.json
+      - ./data/credentials.json:/app/credentials.json
     depends_on:
       - postgres
       - redis
@@ -185,19 +185,23 @@ services:
       - redis-data:/data
 
   fhir-api:
-    image: arkhn/fhir-api:latest
-    container_name: fhir-api
-    ports:
-      - 2000:2000
-    env_file:
-      - ./.env.test
-    environment:
-      AUTH_DISABLED: 1
+    image: arkhn/fhir-api:v0.1.0
     depends_on:
-      - mongo
       - elasticsearch
+      - mongo
+    environment:
+      - MONGO_DB=fhirstore
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_USER=arkhn
+      - MONGO_PASSWORD=SuperSecurePassword2019
+      - ES_HOST=elasticsearch
+      - ES_PORT=9200
+      - ES_USERNAME=elastic
+      - EL_PASSWORD=SuperSecurePassword2019
+      - AUTH_DISABLED=True
     volumes:
-      - ./volumes/conceptMaps.json:/srv/flask_app/fhir_bundles/conceptMaps.json
+      - ./data/definitions:/var/data/definitions
 
 volumes:
   test-mimic-db:

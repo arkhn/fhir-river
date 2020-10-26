@@ -81,7 +81,6 @@ jobs:
           MONGO_USERNAME=arkhn MONGO_PASSWORD=SuperSecurePassword2019 ./test/initiate_rep_set.sh
           docker-compose -f test/docker-compose.yml up -d fhir-api
           sleep 15
-          docker exec fhir-api python3 scripts/upload_bundles.py fhir_bundles/resources.json fhir_bundles/conceptMaps.json
           docker-compose -f test/docker-compose.yml up -d postgres redis pyrog-server
           sleep 30
           docker exec pyrog-server yarn seed:mapping /app/mapping.json /app/credentials.json
