@@ -240,6 +240,9 @@ class Extractor:
         acc = defaultdict(list)
         for row in df:
             if acc and row[pk_col] != prev_pk_val:
+                counter_extract_instances.labels(
+                    resource_id=analysis.resource_id, resource_type=analysis.definition_id
+                ).inc()
                 yield acc
                 acc = defaultdict(list)
             for key, value in row.items():
@@ -256,5 +259,4 @@ class Extractor:
         counter_extract_instances.labels(
             resource_id=analysis.resource_id, resource_type=analysis.definition_id
         ).inc()
-
         yield acc
