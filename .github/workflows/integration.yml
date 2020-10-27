@@ -1,0 +1,13 @@
+name: Integration tests
+
+on:
+  pull_request:
+    types: [ready_for_review]
+
+jobs:
+  integration:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - run: |
+          echo "noop"
