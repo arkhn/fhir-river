@@ -34,7 +34,10 @@ transformer = Transformer()
 
 def transform_row(analysis, row):
     primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
-    logging_extras = {"resource_id": analysis.resource_id, "primary_key_value": primary_key_value}
+    logging_extras = {
+        "resource_id": analysis.resource_id,
+        "primary_key_value": primary_key_value,
+    }
 
     try:
         logger.debug("Transform dataframe", extra=logging_extras)
@@ -48,7 +51,10 @@ def transform_row(analysis, row):
     except Exception as e:
         logger.error(
             format_traceback(),
-            extra={"resource_id": analysis.resource_id, "primary_key_value": primary_key_value},
+            extra={
+                "resource_id": analysis.resource_id,
+                "primary_key_value": primary_key_value,
+            },
         )
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
@@ -76,7 +82,8 @@ def transform():
     authorization_header = request.headers.get("Authorization")
 
     logger.info(
-        f"POST /transform. Transforming {len(rows)} row(s).", extra={"resource_id": resource_id}
+        f"POST /transform. Transforming {len(rows)} row(s).",
+        extra={"resource_id": resource_id},
     )
     pyrog_client = PyrogClient(authorization_header)
     analysis = Analyzer(pyrog_client).fetch_analysis(resource_id)
@@ -137,6 +144,7 @@ def handle_authorization_error(e):
 CONSUMED_EXTRACT_TOPIC = "extract"
 PRODUCED_TOPIC = "transform"
 CONSUMER_GROUP_ID = "transformer"
+
 
 # these decorators tell uWSGI (the server with which the app is run)
 # to spawn a new thread every time a worker starts. Hence the consumer
