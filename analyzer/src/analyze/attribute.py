@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import List
 
 from analyzer.src.config.service_logger import logger
@@ -12,13 +13,19 @@ numerical_types_map = {
 }
 
 
+def normalize_to_str(value):
+    if isinstance(value, float):
+        value = Decimal(value).normalize()
+    return str(value)
+
+
 class Attribute:
     def __init__(
         self, path, definition_id: str = None, input_groups: List[InputGroup] = None,
     ):
         self.path = path
         self.input_groups = input_groups or []
-        self.type = numerical_types_map.get(definition_id, str)
+        self.normalizer = numerical_types_map.get(definition_id, normalize_to_str)
 
     def __eq__(self, other):
         if not isinstance(other, Attribute):
@@ -39,7 +46,7 @@ class Attribute:
             return None
 
         try:
-            return self.type(value)
+            return self.normalizer(value)
         except Exception as e:
             logger.error(
                 f"Could not cast value {value} to type {self.type} "
