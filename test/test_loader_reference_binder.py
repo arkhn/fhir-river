@@ -4,8 +4,9 @@ import requests
 import pytest
 
 from .consumer_class import EventConsumer
-from analyzer.src.analyze.graphql import PyrogClient
 from loader.src.load.fhirstore import get_fhirstore
+
+from test.pyrog_client import PyrogClient
 
 
 BATCH_SIZE_TOPIC = "batch_size"

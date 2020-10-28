@@ -7,9 +7,22 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/alicebob/miniredis"
+	"github.com/go-redis/redis"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
 )
+
+func newTestRedis() (*miniredis.Miniredis, *redis.Client) {
+	mr, err := miniredis.Run()
+	if err != nil {
+		panic(err)
+	}
+	return mr, redis.NewClient(&redis.Options{
+		Addr: mr.Addr(),
+	})
+}
 
 func TestPreview(t *testing.T) {
 
@@ -25,10 +38,23 @@ func TestPreview(t *testing.T) {
 	transformerURL = mockTransformer.URL
 	extractorURL = mockExtractor.URL
 
+	var mockRedis *miniredis.Miniredis
+	mockRedis, rdb = newTestRedis()
+	defer mockRedis.Close()
+
+	fhirAPI := mockFhirAPI()
+	defer fhirAPI.Close()
+	fhirURL = fhirAPI.URL
+
+	mockPyrog := mockPyrogServer()
+	pyrogURL = mockPyrog.URL
+	defer mockPyrog.Close()
+
 	t.Run("accepts primary keys as strings", func(t *testing.T) {
 		// use a list of strings in primary_key_values
-		b := bytes.NewReader([]byte(`{"resource_id": "1", "primary_key_values": ["1"]}`))
+		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": ["1"]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		req.Header.Add("Authorization", "Bearer validToken")
 		assert.NoError(t, err)
 
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
@@ -49,8 +75,9 @@ func TestPreview(t *testing.T) {
 
 	t.Run("accepts primary keys as integers", func(t *testing.T) {
 		// use a list of integers in primary_key_values
-		b := bytes.NewReader([]byte(`{"resource_id": "1", "primary_key_values": [1]}`))
+		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": [1]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		req.Header.Add("Authorization", "Bearer validToken")
 		assert.NoError(t, err)
 
 		rr := httptest.NewRecorder()
@@ -66,8 +93,9 @@ func TestPreview(t *testing.T) {
 
 	t.Run("accepts arbitrary primary keys", func(t *testing.T) {
 		// use a list of integers in primary_key_values
-		b := bytes.NewReader([]byte(`{"resource_id": "1", "primary_key_values": ["E98"]}`))
+		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": ["E98"]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		req.Header.Add("Authorization", "Bearer validToken")
 		assert.NoError(t, err)
 
 		rr := httptest.NewRecorder()
@@ -80,4 +108,27 @@ func TestPreview(t *testing.T) {
 
 		assert.Equal(t, `{}`, rr.Body.String(), "bad response body")
 	})
+
+	t.Run("returns an error if invalid auth token", func(t *testing.T) {
+		// use a list of strings in primary_key_values
+		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": ["1"]}`))
+		req, err := http.NewRequest("POST", "/preview", b)
+		assert.NoError(t, err)
+
+		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+		rr := httptest.NewRecorder()
+		router := httprouter.New()
+		router.POST("/preview", Preview)
+
+		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+		// directly and pass in our Request and ResponseRecorder.
+		router.ServeHTTP(rr, req)
+
+		// Check the status code is what we expect.
+		assert.Equal(t, http.StatusUnauthorized, rr.Code, "bad response status")
+
+		// Check the response body is what we expect.
+		assert.Equal(t, "Token is invalid\n", rr.Body.String(), "bad response body")
+	})
+
 }

@@ -4,13 +4,12 @@ import os
 import json
 
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify, Response
+from flask import Flask, g, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.errors import AuthenticationError, AuthorizationError
 from extractor.src.config.service_logger import logger
 from extractor.src.consumer_class import ExtractorConsumer
@@ -42,6 +41,14 @@ def extract_resource(analysis, primary_key_values):
     return df
 
 
+def get_redis_client():
+    if "redis_client" not in g:
+        g.redis_client = redis.Redis(
+            host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+        )
+    return g.redis_client
+
+
 #############
 # FLASK API #
 #############
@@ -49,6 +56,11 @@ def extract_resource(analysis, primary_key_values):
 
 def create_app():
     app = Flask(__name__)
+
+    # load redis client
+    with app.app_context():
+        get_redis_client()
+
     return app
 
 
@@ -59,10 +71,10 @@ app.json_encoder = MyJSONEncoder
 
 @app.route("/extract", methods=["POST"])
 def extract():
-    authorization_header = request.headers.get("Authorization")
     body = request.get_json()
-    resource_id = body.get("resource_id", None)
-    primary_key_values = body.get("primary_key_values", None)
+    resource_id = body.get("resource_id")
+    preview_id = body.get("preview_id")
+    primary_key_values = body.get("primary_key_values")
 
     logger.info(
         f"Extract from API with primary key value {primary_key_values}",
@@ -73,9 +85,9 @@ def extract():
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        pyrog_client = PyrogClient(authorization_header)
-        analyzer = Analyzer(pyrog_client)
-        analysis = analyzer.fetch_analysis(resource_id)
+        analysis = Analyzer(redis_client=get_redis_client()).load_cached_analysis(
+            preview_id, resource_id
+        )
         df = extract_resource(analysis, primary_key_values)
         rows = []
         for record in extractor.split_dataframe(df, analysis):
@@ -144,9 +156,8 @@ def run_consumer():
 
 
 def process_event_with_context(producer):
-    redis_client = redis.Redis(
-        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
-    )
+    with app.app_context():
+        redis_client = get_redis_client()
     analyzer = Analyzer(redis_client=redis_client)
 
     def broadcast_events(dataframe, analysis, batch_id=None):

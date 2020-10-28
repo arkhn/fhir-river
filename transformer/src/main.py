@@ -6,13 +6,12 @@ import pydantic
 
 from confluent_kafka import KafkaException, KafkaError
 from fhir.resources import construct_fhir_element
-from flask import Flask, request, jsonify, Response
+from flask import Flask, g, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 import redis
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
-from analyzer.src.analyze.graphql import PyrogClient
 from analyzer.src.errors import AuthenticationError, AuthorizationError
 from logger import format_traceback
 from transformer.src.config.service_logger import logger
@@ -59,6 +58,14 @@ def transform_row(analysis, row):
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
 
+def get_redis_client():
+    if "redis_client" not in g:
+        g.redis_client = redis.Redis(
+            host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+        )
+    return g.redis_client
+
+
 #############
 # FLASK API #
 #############
@@ -66,6 +73,11 @@ def transform_row(analysis, row):
 
 def create_app():
     app = Flask(__name__)
+
+    # load redis client
+    with app.app_context():
+        get_redis_client()
+
     return app
 
 
@@ -76,17 +88,16 @@ app = create_app()
 def transform():
     body = request.get_json()
     resource_id = body.get("resource_id")
+    preview_id = body.get("preview_id")
     rows = body.get("dataframe")
-
-    # Get headers
-    authorization_header = request.headers.get("Authorization")
 
     logger.info(
         f"POST /transform. Transforming {len(rows)} row(s).",
         extra={"resource_id": resource_id},
     )
-    pyrog_client = PyrogClient(authorization_header)
-    analysis = Analyzer(pyrog_client).fetch_analysis(resource_id)
+    analysis = Analyzer(redis_client=get_redis_client()).load_cached_analysis(
+        preview_id, resource_id
+    )
     try:
         fhir_instances = []
         errors = []
@@ -170,9 +181,8 @@ def run_extract_consumer():
 
 
 def process_event_with_context(producer):
-    redis_client = redis.Redis(
-        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
-    )
+    with app.app_context():
+        redis_client = get_redis_client()
     analyzer = Analyzer(redis_client=redis_client)
 
     def process_event(msg):
