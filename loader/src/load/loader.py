@@ -10,7 +10,7 @@ from loader.src.load.utils import get_resource_id
 counter_failed_validations = PromCounter(
     "count_failed_validations",
     "count number of times validation has failed",
-    labelnames=("resource_id",),
+    labelnames=("resource_id", "resource_type"),
 )
 
 
@@ -32,7 +32,9 @@ class Loader:
         if isinstance(resource, OperationOutcome):
             resource_id = get_resource_id(fhir_instance)
             # Increment counter for failed validations
-            counter_failed_validations.labels(resource_id=resource_id).inc()
+            counter_failed_validations.labels(
+                resource_id=resource_id, resource_type=resource_type
+            ).inc()
             # Log
             logger.error(
                 f"Validation failed for resource {fhir_instance}: "
