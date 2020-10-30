@@ -60,18 +60,18 @@ def build_fhir_object(row, path_attributes_map, index=None):
             # If we didn't find an index in the path, then we don't worry about arrays
             val = row[attr.path]
 
-            if isinstance(val, (tuple, list)) and len(val) == 1:
-                # If we have a tuple of length 1, we simply extract the value and put it in
+            if len(val) == 1:
+                # If we have a value with length 1, we simply extract the value and put it in
                 # the fhir object
                 insert_in_fhir_object(fhir_object, path, val[0])
-            elif isinstance(val, (tuple, list)) and index is not None:
+            elif index is not None:
                 # If index is not None, we met an array before. Here, val will have
                 # several elements but we know which one we need
                 insert_in_fhir_object(fhir_object, path, val[index])
             else:
                 # Otherwise, we try to send it all to insert_in_fhir_object.
-                # We could have a literal value or a tuple but in this case, this function
-                # will check that all the values in the tuple are equal.
+                # We could have a literal value or an iterable but in this case, this function
+                # will check that all the values in the iterable are equal.
                 insert_in_fhir_object(fhir_object, path, val)
 
         else:
@@ -107,7 +107,7 @@ def handle_array_attributes(attributes_in_array, row):
     length = 1
     for attr in attributes_in_array.values():
         val = row.get(attr.path)
-        if not isinstance(val, tuple) or len(val) == 1:
+        if len(val) == 1:
             continue
         if length != 1 and len(val) != length:
             raise ValueError("mismatch in array lengths")
@@ -124,7 +124,7 @@ def handle_array_attributes(attributes_in_array, row):
 
 
 def insert_in_fhir_object(fhir_object, path, value):
-    if isinstance(value, tuple):
+    if isinstance(value, (tuple, list)):
         # If we try to insert a tuple in the fhir object, we need to make sure that all
         # the values are identical and insert only one of them.
         # This can happen after a join on a table for which the other values are different
