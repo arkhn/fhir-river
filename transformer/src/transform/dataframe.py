@@ -172,9 +172,20 @@ def merge_by_attributes(
                             )
                         merged_data[attribute.path] = input_group.static_inputs[0]
                 elif input_group.merging_script:
-                    # TODO I don't think the order of pyrog inputs is preserved here
-                    merged_data[attribute.path] = input_group.merging_script.apply(
-                        cur_attr_columns, input_group.static_inputs, attribute.path, primary_key,
+                    # TODO I don't think the order of pyrog inputs is preserved for merging scripts
+                    # If there is a merging for columns of length > 1, we want to merge
+                    # corresponding items together (first with first, etc.)
+                    col_len = len(cur_attr_columns[0])
+                    if any(len(col) != col_len for col in cur_attr_columns):
+                        raise ValueError("Can't merge columns with inconsistent lengths.")
+                    merged_data[attribute.path] = tuple(
+                        input_group.merging_script.apply(
+                            [col[i] for col in cur_attr_columns],
+                            input_group.static_inputs,
+                            attribute.path,
+                            primary_key,
+                        )
+                        for i in range(col_len)
                     )
                 elif len(cur_attr_columns) != 1:
                     raise ValueError(
@@ -182,7 +193,7 @@ def merge_by_attributes(
                         f"for attribute {attribute}"
                     )
                 else:
-                    merged_data[attribute.path] = cur_attr_columns[0]
+                    merged_data[attribute.path] = tuple(cur_attr_columns[0])
 
                 break
 

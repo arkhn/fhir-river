@@ -29,10 +29,10 @@ def test_create_instance(mock_datetime):
     }
 
     row = {
-        attr_maritalStatus.path: "D",
-        attr_birthDate.path: "2000-10-10",
-        attr_identifier.path: "A",
-        attr_generalPractitioner.path: "Practitioner",
+        attr_maritalStatus.path: ("D",),
+        attr_birthDate.path: ("2000-10-10",),
+        attr_identifier.path: ("A",),
+        attr_generalPractitioner.path: ("Practitioner",),
     }
 
     actual = transform.build_fhir_object(row, path_attributes_map)
