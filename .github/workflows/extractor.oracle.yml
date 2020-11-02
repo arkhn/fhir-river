@@ -33,7 +33,7 @@ jobs:
     steps:
       - id: metadata
         run: |
-          IMAGE=arkhn/river-extractor-oracle
+          IMAGE=mammouth.arkhn.com/arkhn/river-extractor-oracle
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
 
@@ -123,8 +123,9 @@ jobs:
           docker load -i image
       - uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_LOGIN }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: mammouth.arkhn.com
+          username: ${{ secrets.ARKHN_DOCKER_LOGIN }}
+          password: ${{ secrets.ARKHN_DOCKER_PASSWORD }}
       - run: |
           TAGS=${{ needs.build.outputs.tags }}
 
