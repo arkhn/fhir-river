@@ -2,7 +2,7 @@ from collections import defaultdict
 from prometheus_client import Counter as PromCounter
 from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
 from sqlalchemy.orm import sessionmaker, Query
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Any, Optional
 
 from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.sql_column import SqlColumn
@@ -84,7 +84,7 @@ class Extractor:
             self.session = sessionmaker(self.engine)()
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
-    def extract(self, analysis, pk_values=None):
+    def extract(self, analysis, pk_values: Optional[List[Any]] = None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
         source DB, run it and returns the result as an sqlalchemy ResultProxy.
@@ -143,7 +143,9 @@ class Extractor:
             )
         return query
 
-    def apply_filters(self, query: Query, analysis: Analysis, pk_values) -> Query:
+    def apply_filters(
+        self, query: Query, analysis: Analysis, pk_values: Optional[List[Any]]
+    ) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.
         """
         if pk_values is not None:
