@@ -147,7 +147,10 @@ class Extractor:
         """ Augment the sql alchemy query with filters from the analysis.
         """
         if pk_values is not None:
-            query = query.filter(self.get_column(analysis.primary_key_column).in_(pk_values))
+            if len(pk_values) == 1:
+                query = query.filter(self.get_column(analysis.primary_key_column) == pk_values[0])
+            else:
+                query = query.filter(self.get_column(analysis.primary_key_column).in_(pk_values))
 
         for sql_filter in analysis.filters:
             col = self.get_column(sql_filter.sql_column)
