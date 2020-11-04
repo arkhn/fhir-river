@@ -55,6 +55,11 @@ URL_SUFFIXES = {
     MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server&MARS_Connection=Yes",
 }
 
+# CHUNK_SIZE is the argument we give to sqlalchemy's Query.yield_per
+# Rows will be loaded by batches of length CHUNK_SIZE. This avoids
+# filling up all the RAM with huge tables.
+CHUNK_SIZE = 10_000
+
 counter_extract_instances = PromCounter(
     "count_extracted_instances",
     "Number of resource instances extracted",
@@ -190,10 +195,9 @@ class Extractor:
         return:
             the result of the sql query
         """
-        query = query.statement
-        logger.info(f"Executing query: {query}", extra={"resource_id": resource_id})
+        logger.info(f"Executing query: {query.statement}", extra={"resource_id": resource_id})
 
-        return self.session.execute(query)
+        return query.yield_per(CHUNK_SIZE)
 
     def batch_size(self, analysis) -> int:
         logger.info(
@@ -249,7 +253,7 @@ class Extractor:
 
     @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")
-    def split_dataframe(df, analysis):
+    def split_dataframe(df: Query, analysis: Analysis):
         # Find primary key column
         logger.info(
             f"Splitting dataframe for resource {analysis.definition_id}",
@@ -261,15 +265,21 @@ class Extractor:
         prev_pk_val = None
         acc = defaultdict(list)
         for row in df:
-            if acc and row[pk_col] != prev_pk_val:
+            # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy results)
+            # that behaves like tuples and have a `keys` methods returning the
+            # column names in the same order as they are in the tuple.
+            # For instance a row could look like: ("bob", 34)
+            # and its `keys` method could return: ["name", "age"]
+            pk_ind = row.keys().index(pk_col)
+            if acc and row[pk_ind] != prev_pk_val:
                 counter_extract_instances.labels(
                     resource_id=analysis.resource_id, resource_type=analysis.definition_id
                 ).inc()
                 yield acc
                 acc = defaultdict(list)
-            for key, value in row.items():
+            for key, value in zip(row.keys(), row):
                 acc[key].append(value)
-            prev_pk_val = row[pk_col]
+            prev_pk_val = row[pk_ind]
 
         if not acc:
             raise EmptyResult(
