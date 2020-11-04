@@ -25,6 +25,7 @@ class Attribute:
     ):
         self.path = path
         self.input_groups = input_groups or []
+        self.type = numerical_types_map.get(definition_id, str)
         self.normalizer = numerical_types_map.get(definition_id, normalize_to_str)
 
     def __eq__(self, other):
@@ -48,7 +49,9 @@ class Attribute:
         try:
             return self.normalizer(value)
         except Exception as e:
-            logger.error(
+            logger.warning(
                 f"Could not cast value {value} to type {self.type} "
                 f"on attribute at path = {self.path}): {e}"
             )
+
+        return value
