@@ -243,15 +243,16 @@ class Extractor:
         prev_pk_val = None
         acc = defaultdict(list)
         for row in df:
-            if acc and row[pk_col] != prev_pk_val:
+            pk_ind = row.keys().index(pk_col)
+            if acc and row[pk_ind] != prev_pk_val:
                 counter_extract_instances.labels(
                     resource_id=analysis.resource_id, resource_type=analysis.definition_id
                 ).inc()
                 yield acc
                 acc = defaultdict(list)
-            for key, value in row.items():
+            for key, value in zip(row.keys(), row):
                 acc[key].append(value)
-            prev_pk_val = row[pk_col]
+            prev_pk_val = row[pk_ind]
 
         if not acc:
             raise EmptyResult(
