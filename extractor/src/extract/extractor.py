@@ -236,7 +236,7 @@ class Extractor:
 
     @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")
-    def split_dataframe(df, analysis):
+    def split_dataframe(df: Query, analysis: Analysis):
         # Find primary key column
         logger.info(
             f"Splitting dataframe for resource {analysis.definition_id}",
@@ -248,6 +248,11 @@ class Extractor:
         prev_pk_val = None
         acc = defaultdict(list)
         for row in df:
+            # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy results)
+            # that behaves like tuples and have a `keys` methods returning the
+            # column names in the same order as they are in the tuple.
+            # For instance a row could look like: ("bob", 34)
+            # and its `keys` method could return: ["name", "age"]
             pk_ind = row.keys().index(pk_col)
             if acc and row[pk_ind] != prev_pk_val:
                 counter_extract_instances.labels(
