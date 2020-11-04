@@ -1,7 +1,12 @@
 from pytest import raises
 from unittest import mock
 
-from sqlalchemy import Table, Column, MetaData
+from sqlalchemy import (
+    and_,
+    Column,
+    MetaData,
+    Table,
+)
 from sqlalchemy.orm.query import Query
 
 from analyzer.src.analyze.analysis import Analysis
@@ -127,6 +132,7 @@ def test_apply_filters():
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
     analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
     analysis.add_filter(SqlFilter(SqlColumn("patients", "row_id"), "<=", "1000"))
+    analysis.add_filter(SqlFilter(SqlColumn("patients", "row_id"), "BETWEEN", "500,800"))
 
     pk_values = [123, 456]
 
@@ -139,6 +145,10 @@ def test_apply_filters():
         extractor.get_column(SqlColumn("patients", "subject_id")).in_(pk_values),
         extractor.get_column(SqlColumn("admissions", "admittime")).like("'2150-08-29'"),
         extractor.get_column(SqlColumn("patients", "row_id")) <= "1000",
+        and_(
+            extractor.get_column(SqlColumn("patients", "row_id")) >= "500",
+            extractor.get_column(SqlColumn("patients", "row_id")) <= "800",
+        ),
     ]
 
     for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
