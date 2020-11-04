@@ -173,10 +173,9 @@ class Extractor:
         return:
             the result of the sql query
         """
-        query = query.statement
-        logger.info(f"Executing query: {query}", extra={"resource_id": resource_id})
+        logger.info(f"Executing query: {query.statement}", extra={"resource_id": resource_id})
 
-        return self.session.execute(query)
+        return query.yield_per(10000)
 
     def batch_size(self, analysis) -> int:
         logger.info(
