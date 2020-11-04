@@ -38,6 +38,11 @@ URL_SUFFIXES = {
     MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server&MARS_Connection=Yes",
 }
 
+# CHUNK_SIZE is the argument we give to sqlalchemy's Query.yield_per
+# Rows will be loaded by batches of length CHUNK_SIZE. This avoids
+# filling up all the RAM with huge tables.
+CHUNK_SIZE = 10_000
+
 counter_extract_instances = PromCounter(
     "count_extracted_instances",
     "Number of resource instances extracted",
@@ -175,7 +180,7 @@ class Extractor:
         """
         logger.info(f"Executing query: {query.statement}", extra={"resource_id": resource_id})
 
-        return query.yield_per(10000)
+        return query.yield_per(CHUNK_SIZE)
 
     def batch_size(self, analysis) -> int:
         logger.info(
