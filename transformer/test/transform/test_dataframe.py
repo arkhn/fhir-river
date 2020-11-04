@@ -53,9 +53,7 @@ def test_clean_data(_, dict_map_gender, dict_map_code):
         attribute=attr_name,
         columns=[
             SqlColumn(
-                "ADMISSIONS",
-                "LANGUAGE",
-                concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
+                "ADMISSIONS", "LANGUAGE", concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
             )
         ],
         static_inputs=["val"],
@@ -199,10 +197,10 @@ def test_merge_by_attributes(_):
 
     actual = transform.merge_by_attributes(data, attributes, "pk")
     expected = {
-        "name": "bob",
-        "id": "id1id21merge",
-        "language": ("lang21", "lang22", "lang23", "lang24"),
-        "admid": ("hadmid1", "hadmid2", "hadmid3", "hadmid4"),
+        "name": ("bob",),
+        "id": ("id1id21merge",),
+        "language": (("lang21", "lang22", "lang23", "lang24"),),
+        "admid": (("hadmid1", "hadmid2", "hadmid3", "hadmid4"),),
     }
 
     assert actual == expected

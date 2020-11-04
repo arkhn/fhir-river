@@ -61,7 +61,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
             val = row[attr.path]
 
             if isinstance(val, (tuple, list)) and len(val) == 1:
-                # If we have a tuple of length 1, we simply extract the value and put it in
+                # If we have a value with length 1, we simply extract the value and put it in
                 # the fhir object
                 insert_in_fhir_object(fhir_object, path, val[0])
             elif isinstance(val, (tuple, list)) and index is not None:
@@ -70,8 +70,8 @@ def build_fhir_object(row, path_attributes_map, index=None):
                 insert_in_fhir_object(fhir_object, path, val[index])
             else:
                 # Otherwise, we try to send it all to insert_in_fhir_object.
-                # We could have a literal value or a tuple but in this case, this function
-                # will check that all the values in the tuple are equal.
+                # We could have a literal value or an iterable but in this case, this function
+                # will check that all the values in the iterable are equal.
                 insert_in_fhir_object(fhir_object, path, val)
 
         else:

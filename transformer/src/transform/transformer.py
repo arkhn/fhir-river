@@ -32,17 +32,18 @@ class Transformer:
         logging_extras = {"resource_id": analysis.resource_id, "primary_key_value": primary_key}
 
         # Apply cleaning scripts and concept map on data
-        logger.debug("Apply Cleaning", extra=logging_extras)
+        logger.debug(f"Apply cleaning to {data}", extra=logging_extras)
         data = clean_data(data, analysis.attributes, primary_key)
 
         # Apply join rule to merge some lines from the same resource
-        logger.debug("Apply Squash Rows", extra=logging_extras)
+        logger.debug(f"Apply squash rows to {data}", extra=logging_extras)
         data = squash_rows(data, analysis.squash_rules)
 
         # Apply merging scripts on data
-        logger.debug("Apply Merging Scripts", extra=logging_extras)
+        logger.debug(f"Apply merging scripts to {data}", extra=logging_extras)
         data = merge_by_attributes(data, analysis.attributes, primary_key)
 
+        logger.debug(f"Transformed data: {data}", extra=logging_extras)
         return data
 
     @Timer(

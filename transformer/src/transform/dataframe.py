@@ -152,9 +152,6 @@ def merge_by_attributes(
 
     where values are merged with the mergig scripts.
     """
-    # Un-list values in dict
-    data = {k: v[0] for k, v in data.items()}
-
     merged_data = {}
     for attribute in attributes:
         for input_group in attribute.input_groups:
@@ -175,9 +172,26 @@ def merge_by_attributes(
                             )
                         merged_data[attribute.path] = input_group.static_inputs[0]
                 elif input_group.merging_script:
-                    # TODO I don't think the order of pyrog inputs is preserved here
-                    merged_data[attribute.path] = input_group.merging_script.apply(
-                        cur_attr_columns, input_group.static_inputs, attribute.path, primary_key,
+                    # TODO I don't think the order of pyrog inputs is preserved for merging scripts
+                    # When trying to merge several columns that each contain multiple values
+                    # (represented as a list), we want to merge corresponding items together
+                    # (first with first, etc.) as follows:
+                    # col1: [a1, a2, a3]
+                    #        |   |   |
+                    # col2: [b1, b2, b3]
+                    #        |   |   |
+                    # col3: [c1, c2, c3]
+                    col_len = len(cur_attr_columns[0])
+                    if any(len(col) != col_len for col in cur_attr_columns):
+                        raise ValueError("Can't merge columns with inconsistent lengths.")
+                    merged_data[attribute.path] = tuple(
+                        input_group.merging_script.apply(
+                            [col[i] for col in cur_attr_columns],
+                            input_group.static_inputs,
+                            attribute.path,
+                            primary_key,
+                        )
+                        for i in range(col_len)
                     )
                 elif len(cur_attr_columns) != 1:
                     raise ValueError(
@@ -185,7 +199,7 @@ def merge_by_attributes(
                         f"for attribute {attribute}"
                     )
                 else:
-                    merged_data[attribute.path] = cur_attr_columns[0]
+                    merged_data[attribute.path] = tuple(cur_attr_columns[0])
 
                 break
 
