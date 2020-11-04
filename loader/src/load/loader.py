@@ -37,7 +37,8 @@ class Loader:
             ).inc()
             # Log
             logger.error(
-                f"Validation failed for resource {fhir_instance}: "
-                f"{[issue.diagnostics for issue in resource.issue]}",
+                f"Validation failed\n"
+                f"Diagnostics: {[issue.diagnostics for issue in resource.issue]}\n"
+                f"Document: {fhir_instance}",
                 extra={"resource_id": resource_id},
             )
