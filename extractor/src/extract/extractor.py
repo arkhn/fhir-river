@@ -1,6 +1,14 @@
 from collections import defaultdict
 from prometheus_client import Counter as PromCounter
-from sqlalchemy import create_engine, func, distinct, MetaData, Table, Column as AlchemyColumn
+from sqlalchemy import (
+    and_,
+    Column as AlchemyColumn,
+    create_engine,
+    distinct,
+    func,
+    MetaData,
+    Table,
+)
 from sqlalchemy.orm import sessionmaker, Query
 from typing import Callable, Dict, List, Any, Optional
 
@@ -19,7 +27,7 @@ def handle_between_filter(col, value):
         raise ValueError("BETWEEN filter expects 2 values separated by a comma.")
     min_val = values[0].strip()
     max_val = values[1].strip()
-    return col.__ge__(min_val) and col.__le__(max_val)
+    return and_(col.__ge__(min_val), col.__le__(max_val))
 
 
 SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], Callable]] = {
