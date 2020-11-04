@@ -144,3 +144,27 @@ def test_apply_filters():
     for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
         args, _ = call
         assert args[0].compare(binary_expression)
+
+
+@mock.patch("extractor.src.extract.extractor.Extractor.get_column", mock_get_column)
+@mock.patch("extractor.src.extract.extractor.Extractor.get_table", mock_get_table)
+def test_apply_filters_single_value():
+    extractor = Extractor()
+    analysis = Analysis()
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    primary_key = 123
+    filter_values = [primary_key]
+
+    base_query = mock.MagicMock()
+    base_query.filter.return_value = base_query
+
+    extractor.apply_filters(base_query, analysis, filter_values)
+
+    binary_expressions = [
+        extractor.get_column(SqlColumn("patients", "subject_id")).__eq__(primary_key),
+    ]
+
+    for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
+        args, _ = call
+        assert args[0].compare(binary_expression)
