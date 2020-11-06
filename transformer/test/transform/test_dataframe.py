@@ -13,7 +13,7 @@ import transformer.src.transform.dataframe as transform
 
 def mock_get_script(*args):
     if len(args) == 1:
-        return args[0] + "cleaned"
+        return args[0].replace("dirty", "")
     elif len(args) == 2:
         return args[0]
     else:
@@ -23,11 +23,11 @@ def mock_get_script(*args):
 @mock.patch("analyzer.src.analyze.cleaning_script.scripts.get_script", return_value=mock_get_script)
 def test_clean_data(_, dict_map_gender, dict_map_code):
     data = {
-        "PATIENTS_NAME": ["alice", "bob", "charlie"],
+        "PATIENTS_NAME": ["alicedirty", "bobdirty", "charliedirty"],
         "PATIENTS_ID": ["id1", "id2", "id3"],
         "PATIENTS_ID2": ["id21", "id22", "id23"],
-        "ADMISSIONS_LANGUAGE": ["M", "F", "F"],
-        "ADMISSIONS_ID": ["ABC", "DEF", "GHI"],
+        "ADMISSIONS_LANGUAGE": ["Mdirty", "Fdirty", "Fdirty"],
+        "ADMISSIONS_ID": ["ABCdirty", "DEFdirty", "GHIdirty"],
     }
 
     attr_name = Attribute("name")
@@ -53,7 +53,10 @@ def test_clean_data(_, dict_map_gender, dict_map_code):
         attribute=attr_name,
         columns=[
             SqlColumn(
-                "ADMISSIONS", "LANGUAGE", concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
+                "ADMISSIONS",
+                "LANGUAGE",
+                cleaning_script=CleaningScript("clean1"),
+                concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
             )
         ],
         static_inputs=["val"],
@@ -89,7 +92,7 @@ def test_clean_data(_, dict_map_gender, dict_map_code):
     ]
 
     expected = {
-        columns[0]: ["alicecleaned", "bobcleaned", "charliecleaned"],
+        columns[0]: ["alice", "bob", "charlie"],
         columns[1]: ["id1", "id2", "id3"],
         columns[2]: ["id21", "id22", "id23"],
         columns[3]: ["male", "female", "female"],

@@ -26,16 +26,19 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 # The column name in the new intermediary dataframe
                 attr_col_name = (input_group.id, (col.table, col.column))
 
-                # Get the original column
-                cleaned_data[attr_col_name] = [
-                    attribute.cast_type(row) for row in data[dict_col_name]
-                ]
+                # cleaned_data will be modified several times
+                cleaned_data[attr_col_name] = data[dict_col_name]
 
                 # Apply cleaning script
                 if col.cleaning_script:
                     cleaned_data[attr_col_name] = col.cleaning_script.apply(
                         cleaned_data[attr_col_name], dict_col_name, primary_key
                     )
+
+                # Cast the data to the right type
+                cleaned_data[attr_col_name] = [
+                    attribute.cast_type(row) for row in cleaned_data[attr_col_name]
+                ]
 
                 # Apply concept map
                 if col.concept_map:
