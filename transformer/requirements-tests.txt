@@ -1,3 +1,4 @@
 -r requirements.txt
+fhirstore @ git+https://github.com/arkhn/pyfhirstore@0.5.0#egg=fhirstore
 nose2==0.9.1
 nose2[coverage_plugin]==0.9.1
