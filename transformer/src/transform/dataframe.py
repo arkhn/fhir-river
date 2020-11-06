@@ -37,7 +37,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
 
                 # Cast the data to the right type
                 cleaned_data[attr_col_name] = [
-                    attribute.cast_type(row) for row in data[dict_col_name]
+                    attribute.cast_type(row) for row in cleaned_data[attr_col_name]
                 ]
 
                 # Apply concept map
