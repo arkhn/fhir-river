@@ -25,6 +25,7 @@ tables = {
         "admissions", meta, Column("subject_id"), Column("row_id"), Column("admittime")
     ),
     "prescriptions": Table("prescriptions", meta, Column("row_id")),
+    "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id")),
 }
 
 
@@ -85,6 +86,48 @@ def test_sqlalchemy_query():
         "FROM admissions AS admissions_2, patients "
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = patients.row_id \n"
         "WHERE admissions_2.admittime LIKE :param_1"
+    )
+
+
+@mock.patch("extractor.src.extract.query_builder.Table", mock_table)
+def test_2hop_joins():
+    analysis = Analysis()
+
+    attributeC = Attribute(path="path", definition_id="string")
+    input_groupC = InputGroup(id_="group", attribute=attributeC)
+    attributeC.add_input_group(input_groupC)
+    input_groupC.add_column(
+        SqlColumn(
+            "admissions",
+            "admittime",
+            None,
+            joins=[
+                SqlJoin(
+                    SqlColumn("patients", "row_id", None), SqlColumn("join_table", "pat_id", None),
+                ),
+                SqlJoin(
+                    SqlColumn("join_table", "adm_id", None),
+                    SqlColumn("admissions", "row_id", None),
+                ),
+            ],
+        )
+    )
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.attributes.append(attributeC)
+
+    extractor = Extractor()
+    extractor.session = mock.MagicMock()
+    extractor.session.query = mock_alchemy_query
+    query_builder = QueryBuilder(extractor, analysis, None)
+    query = query_builder.build_query()
+
+    assert str(query) == (
+        "SELECT patients.subject_id AS patients_subject_id, "
+        "admissions_1.admittime AS admissions_admittime \n"
+        "FROM patients "
+        "LEFT OUTER JOIN admissions AS admissions_1 ON join_table_1.pat_id = patients.row_id "
+        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_2.adm_id"
     )
 
 
