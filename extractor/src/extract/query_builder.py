@@ -11,7 +11,6 @@ from sqlalchemy.orm import (
 )
 from typing import Callable, Dict
 
-from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.sql_column import SqlColumn
 from extractor.src.config.service_logger import logger
@@ -83,21 +82,21 @@ class QueryBuilder:
         )
         return query
 
-    def batch_size(self, analysis: Analysis) -> int:
+    def batch_size(self) -> int:
         logger.info(
-            f"Start computing batch size for resource {analysis.definition_id}",
-            extra={"resource_id": analysis.resource_id},
+            f"Start computing batch size for resource {self.analysis.definition_id}",
+            extra={"resource_id": self.analysis.resource_id},
         )
 
         sqlalchemy_pk_column = self.get_column(self.analysis.primary_key_column)
-        query = self.session.query(func.count(distinct(sqlalchemy_pk_column)))
+        query = self.extractor.session.query(func.count(distinct(sqlalchemy_pk_column)))
 
         # Add filters to query
         query = self.apply_filters(query)
 
         logger.info(
             f"Sql query to compute batch size: {query.statement}",
-            extra={"resource_id": analysis.resource_id},
+            extra={"resource_id": self.analysis.resource_id},
         )
         res = self.extractor.session.execute(query)
 

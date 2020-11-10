@@ -6,7 +6,6 @@ from sqlalchemy import (
     MetaData,
     Table,
 )
-from sqlalchemy.orm import aliased
 from sqlalchemy.orm.query import Query
 
 from analyzer.src.analyze.analysis import Analysis
@@ -33,11 +32,12 @@ def mock_table(name, metadata, **kwargs):
     return tables[name]
 
 
+def mock_alchemy_query(*columns):
+    return Query([*columns])
+
+
 @mock.patch("extractor.src.extract.query_builder.Table", mock_table)
 def test_sqlalchemy_query():
-    def mock_alchemy_query(*columns):
-        return Query([*columns])
-
     analysis = Analysis()
 
     attributeA = Attribute(path="path", definition_id="string")
@@ -72,12 +72,10 @@ def test_sqlalchemy_query():
     analysis.attributes.append(attributeB)
     analysis.attributes.append(attributeC)
 
-    pk_values = None
-
     extractor = Extractor()
     extractor.session = mock.MagicMock()
     extractor.session.query = mock_alchemy_query
-    query_builder = QueryBuilder(extractor, analysis, pk_values)
+    query_builder = QueryBuilder(extractor, analysis, None)
     query = query_builder.build_query()
 
     assert str(query) == (
@@ -147,3 +145,39 @@ def test_apply_filters_single_value():
     for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
         args, _ = call
         assert str(args[0]) == str(binary_expression)
+
+
+@mock.patch("extractor.src.extract.query_builder.Table", mock_table)
+def test_batch_size():
+    analysis = Analysis()
+
+    attributeA = Attribute(path="path", definition_id="string")
+    input_groupA = InputGroup(id_="group", attribute=attributeA)
+    attributeA.add_input_group(input_groupA)
+    input_groupA.add_column(SqlColumn("patients", "subject_id", None))
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
+    analysis.attributes.append(attributeA)
+
+    # Mock what we want to observe
+    extractor = Extractor()
+    extractor.session = mock.MagicMock()
+    extractor.session.query = mock_alchemy_query
+    mock_exec_return = mock.MagicMock()
+    extractor.session.execute.return_value = mock_exec_return
+
+    query_builder = QueryBuilder(extractor, analysis, None)
+    _ = query_builder.batch_size()
+
+    # Check the query that has been executed
+    query = extractor.session.execute.call_args_list[0][0][0]
+
+    assert str(query) == (
+        "SELECT count(DISTINCT patients.subject_id) AS count_1 \n"
+        "FROM patients, admissions AS admissions_1 \n"
+        "WHERE admissions_1.admittime LIKE :param_1"
+    )
+
+    # Check that the scalar method on the query result has been called
+    mock_exec_return.scalar.assert_called()
