@@ -1,8 +1,6 @@
 from collections import defaultdict
 from prometheus_client import Counter as PromCounter
 from sqlalchemy import (
-    and_,
-    Column as AlchemyColumn,
     create_engine,
     MetaData,
 )
@@ -10,7 +8,7 @@ from sqlalchemy.orm import (
     sessionmaker,
     Query,
 )
-from typing import Callable, Dict, List, Any, Optional
+from typing import List, Any, Optional
 
 from analyzer.src.analyze.analysis import Analysis
 from extractor.src.config.service_logger import logger
@@ -18,28 +16,6 @@ from extractor.src.errors import EmptyResult
 from extractor.src.extract.query_builder import QueryBuilder
 
 from arkhn_monitoring import Timer
-
-
-def handle_between_filter(col, value):
-    values = value.split(",")
-    if len(values) != 2:
-        raise ValueError("BETWEEN filter expects 2 values separated by a comma.")
-    min_val = values[0].strip()
-    max_val = values[1].strip()
-    return and_(col.__ge__(min_val), col.__le__(max_val))
-
-
-SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], Callable]] = {
-    "<": lambda col, value: col.__lt__(value),
-    "<=": lambda col, value: col.__le__(value),
-    "<>": lambda col, value: col.__ne__(value),
-    "=": lambda col, value: col.__eq__(value),
-    ">": lambda col, value: col.__gt__(value),
-    ">=": lambda col, value: col.__ge__(value),
-    "BETWEEN": handle_between_filter,
-    "IN": lambda col, value: col.in_(value.split(",")),
-    "LIKE": lambda col, value: col.like(value),
-}
 
 
 MSSQL = "MSSQL"

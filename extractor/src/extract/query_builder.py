@@ -48,6 +48,15 @@ class QueryBuilder:
         self.analysis = analysis
         self.pk_values = pk_values
 
+        # The PK table has no reason to be aliased so we keep it here
+        self._sqlalchemy_pk_table = Table(
+            self.analysis.primary_key_column.table,
+            self.extractor.metadata,
+            schema=self.analysis.primary_key_column.owner,
+            keep_existing=True,
+            autoload=True,
+        )
+
     @Timer("time_extractor_build_query", "time to build sql query")
     def build_query(self) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
@@ -57,14 +66,13 @@ class QueryBuilder:
             extra={"resource_id": self.analysis.resource_id},
         )
 
-        sqlalchemy_pk_table = self.get_table(self.analysis.primary_key_column)
         query = self.extractor.session.query(
-            self.get_column(self.analysis.primary_key_column, sqlalchemy_pk_table)
+            self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table)
         )
 
         # Add attributes to query
         for attribute in self.analysis.attributes:
-            query = self.add_attribute_to_query(query, attribute, sqlalchemy_pk_table)
+            query = self.add_attribute_to_query(query, attribute)
 
         # Add filters to query
         query = self.apply_filters(query)
@@ -95,9 +103,7 @@ class QueryBuilder:
 
         return res.scalar()
 
-    def add_attribute_to_query(
-        self, query: Query, attribute: Attribute, sqlalchemy_pk_table: Table
-    ):
+    def add_attribute_to_query(self, query: Query, attribute: Attribute):
         for input_group in attribute.input_groups:
             for col in input_group.columns:
                 # Add the column to select to the query
@@ -107,16 +113,10 @@ class QueryBuilder:
 
                 # Apply joins to the query
                 for join in col.joins:
-                    left_table = (
-                        sqlalchemy_pk_table
-                        if self.analysis.primary_key_column.table == join.left.table
-                        else None
-                    )
                     right_table = sqlalchemy_table if col.table == join.right.table else None
                     query = query.join(
                         sqlalchemy_table,
-                        self.get_column(join.right, right_table)
-                        == self.get_column(join.left, left_table),
+                        self.get_column(join.right, right_table) == self.get_column(join.left),
                         isouter=True,
                     )
 
@@ -169,6 +169,9 @@ class QueryBuilder:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
         from the analysis.
         """
+        if self.analysis.primary_key_column.table == column.table:
+            return self._sqlalchemy_pk_table
+
         table = Table(
             column.table,
             self.extractor.metadata,
