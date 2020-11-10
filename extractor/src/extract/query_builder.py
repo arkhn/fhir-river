@@ -1,8 +1,6 @@
 from sqlalchemy import (
     and_,
     Column as AlchemyColumn,
-    distinct,
-    func,
     Table,
 )
 from sqlalchemy.orm import (
@@ -81,26 +79,6 @@ class QueryBuilder:
             extra={"resource_id": self.analysis.resource_id},
         )
         return query
-
-    def batch_size(self) -> int:
-        logger.info(
-            f"Start computing batch size for resource {self.analysis.definition_id}",
-            extra={"resource_id": self.analysis.resource_id},
-        )
-
-        sqlalchemy_pk_column = self.get_column(self.analysis.primary_key_column)
-        query = self.extractor.session.query(func.count(distinct(sqlalchemy_pk_column)))
-
-        # Add filters to query
-        query = self.apply_filters(query)
-
-        logger.info(
-            f"Sql query to compute batch size: {query.statement}",
-            extra={"resource_id": self.analysis.resource_id},
-        )
-        res = self.extractor.session.execute(query)
-
-        return res.scalar()
 
     def add_attribute_to_query(self, query: Query, attribute: Attribute):
         for input_group in attribute.input_groups:

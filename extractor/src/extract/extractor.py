@@ -123,7 +123,6 @@ class Extractor:
             the result of the sql query
         """
         logger.info(f"Executing query: {query.statement}", extra={"resource_id": resource_id})
-        print(f"Executing query: {query.statement}")
 
         return query.yield_per(CHUNK_SIZE)
 
