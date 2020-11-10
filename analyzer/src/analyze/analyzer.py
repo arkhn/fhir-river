@@ -60,18 +60,12 @@ class Analyzer:
         # Analyze the mapping
         self.analyze_mapping(resource_mapping)
 
-        if not self._cur_analysis.columns:
-            self._cur_analysis.is_static = True
-        else:
-            # Add primary key to columns to fetch if needed
-            self._cur_analysis.add_column(self._cur_analysis.primary_key_column)
-
-            # Build squash rules
-            self._cur_analysis.squash_rules = build_squash_rules(
-                self._cur_analysis.columns,
-                self._cur_analysis.joins,
-                self._cur_analysis.primary_key_column.table_name(),
-            )
+        # Build squash rules
+        self._cur_analysis.squash_rules = build_squash_rules(
+            self.get_analysis_columns(self._cur_analysis),
+            self.get_analysis_joins(self._cur_analysis),
+            self._cur_analysis.primary_key_column.table_name(),
+        )
 
         return self._cur_analysis
 
@@ -199,3 +193,27 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["source"]["credential"]["owner"],
         )
+
+    @staticmethod
+    def get_analysis_columns(analysis):
+        analysis_columns = set()
+        for attribute in analysis.attributes:
+            for input_group in attribute.input_groups:
+                for col in input_group.columns:
+                    analysis_columns.add(col)
+
+                for condition in input_group.conditions:
+                    analysis_columns.add(condition.sql_column)
+
+        return analysis_columns
+
+    @staticmethod
+    def get_analysis_joins(analysis):
+        analysis_joins = set()
+        for attribute in analysis.attributes:
+            for input_group in attribute.input_groups:
+                for col in input_group.columns:
+                    for join in col.joins:
+                        analysis_joins.add(join)
+
+        return analysis_joins
