@@ -9,12 +9,16 @@ from sqlalchemy import (
     MetaData,
     Table,
 )
-from sqlalchemy.orm import sessionmaker, Query
+from sqlalchemy.orm import (
+    aliased,
+    sessionmaker,
+    Query,
+)
 from typing import Callable, Dict, List, Any, Optional
 
 from analyzer.src.analyze.analysis import Analysis
+from analyzer.src.analyze.attribute import Attribute
 from analyzer.src.analyze.sql_column import SqlColumn
-from analyzer.src.analyze.sql_join import SqlJoin
 from extractor.src.config.service_logger import logger
 from extractor.src.errors import EmptyResult, ImproperMappingError
 
@@ -142,10 +146,20 @@ class Extractor:
             f"Start building query for resource {analysis.definition_id}",
             extra={"resource_id": analysis.resource_id},
         )
-        alchemy_cols = self.get_columns(analysis.columns)
-        base_query = self.session.query(*alchemy_cols)
-        query_w_joins = self.apply_joins(base_query, analysis.joins)
-        query_w_filters = self.apply_filters(query_w_joins, analysis, pk_values)
+
+        sqlalchemy_pk_table = self.get_table(analysis.primary_key_column)
+        query = self.session.query(
+            self.get_column(analysis.primary_key_column, sqlalchemy_pk_table)
+        )
+
+        # Add attributes to query
+        for attribute in analysis.attributes:
+            query = self.add_attribute_to_query(
+                query, attribute, analysis.primary_key_column.table, sqlalchemy_pk_table
+            )
+
+        # Add filters to query
+        query_w_filters = self.apply_filters(query, analysis, pk_values)
 
         logger.info(
             f"Built query for resource {analysis.definition_id}: {query_w_filters.statement}",
@@ -153,16 +167,28 @@ class Extractor:
         )
         return query_w_filters
 
-    def apply_joins(self, query: Query, joins: List[SqlJoin]) -> Query:
-        """ Augment the sql alchemy query with joins from the analysis.
-        """
-        for join in joins:
-            foreign_table = self.get_table(join.right)
-            query = query.join(
-                foreign_table,
-                self.get_column(join.right) == self.get_column(join.left),
-                isouter=True,
-            )
+    def add_attribute_to_query(
+        self, query: Query, attribute: Attribute, pk_table, sqlalchemy_pk_table
+    ):
+        for input_group in attribute.input_groups:
+            for col in input_group.columns:
+                sqlalchemy_table = self.get_table(col)
+                sqlalchemy_col = self.get_column(col, sqlalchemy_table)
+                query = query.add_columns(sqlalchemy_col)
+
+                for join in col.joins:
+                    left_table = sqlalchemy_pk_table if pk_table == join.left.table else None
+                    right_table = sqlalchemy_table if col.table == join.right.table else None
+                    query = query.join(
+                        sqlalchemy_table,
+                        self.get_column(join.right, right_table)
+                        == self.get_column(join.left, left_table),
+                        isouter=True,
+                    )
+
+            for condition in input_group.conditions:
+                query = query.add_columns(condition.sql_column)
+
         return query
 
     def apply_filters(
@@ -196,6 +222,7 @@ class Extractor:
             the result of the sql query
         """
         logger.info(f"Executing query: {query.statement}", extra={"resource_id": resource_id})
+        print(f"Executing query: {query.statement}")
 
         return query.yield_per(CHUNK_SIZE)
 
@@ -206,8 +233,7 @@ class Extractor:
         )
         pk_column = self.get_column(analysis.primary_key_column)
         base_query = self.session.query(func.count(distinct(pk_column)))
-        query_w_joins = self.apply_joins(base_query, analysis.joins)
-        query_w_filters = self.apply_filters(query_w_joins, analysis, None)
+        query_w_filters = self.apply_filters(base_query, analysis, None)
         logger.info(
             f"Sql query to compute batch size: {query_w_filters.statement}",
             extra={"resource_id": analysis.resource_id},
@@ -216,19 +242,14 @@ class Extractor:
 
         return res.scalar()
 
-    def get_columns(self, columns: List[SqlColumn]) -> List[AlchemyColumn]:
-        """ Get the sql alchemy columns corresponding to the SqlColumns (custom type)
-        from the analysis.
-        """
-        return [self.get_column(col) for col in columns]
-
-    def get_column(self, column: SqlColumn) -> AlchemyColumn:
+    def get_column(self, column: SqlColumn, table: Table = None) -> AlchemyColumn:
         """ Get the sql alchemy column corresponding to the SqlColumn (custom type)
         from the analysis.
         """
-        table = self.get_table(column)
         # Note that we label the column manually to avoid collisions and
         # sqlAlchemy automatic labelling
+        if table is None:
+            table = self.get_table(column)
         try:
             return table.c[column.column].label(column.dataframe_column_name())
         except KeyError:
@@ -247,9 +268,10 @@ class Extractor:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
         from the analysis.
         """
-        return Table(
+        table = Table(
             column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
+        return aliased(table)
 
     @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")

@@ -161,9 +161,8 @@ class Analyzer:
                         tables[1]["column"],
                         self._cur_analysis.primary_key_column.owner,
                     )
-                    self._cur_analysis.add_join(SqlJoin(left, right))
+                    cur_col.add_join(SqlJoin(left, right))
 
-                self._cur_analysis.add_column(cur_col)
                 input_group.add_column(cur_col)
 
         for mapping_condition in mapping_group["conditions"]:
@@ -172,7 +171,6 @@ class Analyzer:
                 mapping_condition["sqlValue"]["column"],
                 self._cur_analysis.primary_key_column.owner,
             )
-            self._cur_analysis.add_column(condition_column)
 
             condition = Condition(
                 action=mapping_condition["action"],

@@ -1,4 +1,5 @@
 import hashlib
+from typing import List
 
 from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
@@ -12,6 +13,7 @@ class SqlColumn:
         owner: str = None,
         cleaning_script: CleaningScript = None,
         concept_map: ConceptMap = None,
+        joins: List[ConceptMap] = None,
     ):
         self.table = table.strip()
         self.column = column.strip()
@@ -22,6 +24,10 @@ class SqlColumn:
 
         self.cleaning_script = cleaning_script
         self.concept_map = concept_map
+        self.joins = joins or []
+
+    def add_join(self, join):
+        self.joins.append(join)
 
     def __eq__(self, other) -> bool:
         return (
