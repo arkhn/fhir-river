@@ -40,15 +40,16 @@ SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], Callable]] = {
 
 
 class QueryBuilder:
-    def __init__(self, extractor, analysis, pk_values):
-        self.extractor = extractor
+    def __init__(self, session, metadata, analysis, pk_values):
+        self.session = session
+        self.metadata = metadata
         self.analysis = analysis
         self.pk_values = pk_values
 
         # The PK table has no reason to be aliased so we keep it here
         self._sqlalchemy_pk_table = Table(
             self.analysis.primary_key_column.table,
-            self.extractor.metadata,
+            self.metadata,
             schema=self.analysis.primary_key_column.owner,
             keep_existing=True,
             autoload=True,
@@ -63,7 +64,7 @@ class QueryBuilder:
             extra={"resource_id": self.analysis.resource_id},
         )
 
-        query = self.extractor.session.query(
+        query = self.session.query(
             self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table)
         )
 
@@ -151,7 +152,7 @@ class QueryBuilder:
 
         table = Table(
             column.table,
-            self.extractor.metadata,
+            self.metadata,
             schema=column.owner,
             keep_existing=True,
             autoload=True,

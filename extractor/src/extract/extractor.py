@@ -105,7 +105,9 @@ class Extractor:
         )
 
         # Build sqlalchemy query
-        builder = QueryBuilder(extractor=self, analysis=analysis, pk_values=pk_values)
+        builder = QueryBuilder(
+            session=self.session, metadata=self.metadata, analysis=analysis, pk_values=pk_values
+        )
         query = builder.build_query()
 
         return self.run_sql_query(query)

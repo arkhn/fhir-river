@@ -1,5 +1,3 @@
-from unittest import mock
-
 from sqlalchemy import (
     and_,
     Column,
@@ -7,6 +5,7 @@ from sqlalchemy import (
     Table,
 )
 from sqlalchemy.orm.query import Query
+from unittest import mock
 
 from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.attribute import Attribute
@@ -35,6 +34,13 @@ def mock_table(name, metadata, **kwargs):
 
 def mock_alchemy_query(*columns):
     return Query([*columns])
+
+
+def make_query_builder(analysis, pk_values=None):
+    extractor = Extractor()
+    extractor.session = mock.MagicMock()
+    extractor.session.query = mock_alchemy_query
+    return QueryBuilder(extractor.session, extractor.metadata, analysis, pk_values)
 
 
 @mock.patch("extractor.src.extract.query_builder.Table", mock_table)
@@ -73,10 +79,7 @@ def test_sqlalchemy_query():
     analysis.attributes.append(attributeB)
     analysis.attributes.append(attributeC)
 
-    extractor = Extractor()
-    extractor.session = mock.MagicMock()
-    extractor.session.query = mock_alchemy_query
-    query_builder = QueryBuilder(extractor, analysis, None)
+    query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
 
     assert str(query) == (
@@ -116,10 +119,7 @@ def test_2hop_joins():
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
     analysis.attributes.append(attributeC)
 
-    extractor = Extractor()
-    extractor.session = mock.MagicMock()
-    extractor.session.query = mock_alchemy_query
-    query_builder = QueryBuilder(extractor, analysis, None)
+    query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
 
     assert str(query) == (
@@ -142,8 +142,7 @@ def test_apply_filters():
 
     pk_values = [123, 456]
 
-    extractor = Extractor()
-    query_builder = QueryBuilder(extractor, analysis, pk_values)
+    query_builder = make_query_builder(analysis, pk_values)
 
     base_query = mock.MagicMock()
     base_query.filter.return_value = base_query
@@ -173,8 +172,7 @@ def test_apply_filters_single_value():
     primary_key = 123
     filter_values = [primary_key]
 
-    extractor = Extractor()
-    query_builder = QueryBuilder(extractor, analysis, filter_values)
+    query_builder = make_query_builder(analysis, filter_values)
 
     base_query = mock.MagicMock()
     base_query.filter.return_value = base_query

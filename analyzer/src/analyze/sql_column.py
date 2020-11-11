@@ -1,5 +1,4 @@
 import hashlib
-from typing import List
 
 from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
@@ -13,7 +12,7 @@ class SqlColumn:
         owner: str = None,
         cleaning_script: CleaningScript = None,
         concept_map: ConceptMap = None,
-        joins: List[ConceptMap] = None,
+        joins=None,
     ):
         self.table = table.strip()
         self.column = column.strip()
