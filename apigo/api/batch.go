@@ -126,6 +126,7 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 			log.WithField("event", string(event)).Info("produce event")
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				Key:            []byte(batchID),
 				Value:          event,
 			}, nil)
 			if err != nil {
@@ -134,6 +135,6 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		}
 
 		// return the batch ID to the client immediately.
-		fmt.Fprint(w, batchID)
+		_, _ = fmt.Fprint(w, batchID)
 	}
 }
