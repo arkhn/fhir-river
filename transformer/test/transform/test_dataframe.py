@@ -20,14 +20,17 @@ def mock_get_script(*args):
         return args[0] + args[1] + "merge"
 
 
+@mock.patch("analyzer.src.analyze.sql_column.hashlib.sha1")
 @mock.patch("analyzer.src.analyze.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_clean_data(_, dict_map_gender, dict_map_code):
+def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
     data = {
-        "PATIENTS_NAME": ["alicedirty", "bobdirty", "charliedirty"],
-        "PATIENTS_ID": ["id1", "id2", "id3"],
-        "PATIENTS_ID2": ["id21", "id22", "id23"],
-        "ADMISSIONS_LANGUAGE": ["Mdirty", "Fdirty", "Fdirty"],
-        "ADMISSIONS_ID": ["ABCdirty", "DEFdirty", "GHIdirty"],
+        "PATIENTS_NAME_hash": ["alicedirty", "bobdirty", "charliedirty"],
+        "PATIENTS_ID_hash": ["id1", "id2", "id3"],
+        "PATIENTS_ID2_hash": ["id21", "id22", "id23"],
+        "ADMISSIONS_LANGUAGE_hash": ["Mdirty", "Fdirty", "Fdirty"],
+        "ADMISSIONS_ID_hash": ["ABCdirty", "DEFdirty", "GHIdirty"],
     }
 
     attr_name = Attribute("name")

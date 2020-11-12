@@ -2,6 +2,7 @@ import hashlib
 
 from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
+from analyzer.src.config.service_logger import logger
 
 
 class SqlColumn:
@@ -53,11 +54,12 @@ class SqlColumn:
         This method helps retrieving the needed columns from the dataframe.
         """
         name = f"{self.table}_{self.column}"
-        if len(name) <= 30:
-            return name
+        hash_ = hashlib.sha1(
+            f"{name}{''.join(str(join) for join in self.joins)}".encode()
+        ).hexdigest()
 
-        # Otherwise, we may have problems with sql not accepting aliases of length > 30
-        # so we truncate and add a hash
-        hashed_name = hashlib.sha1(name.encode()).hexdigest()
-
-        return f"{name[:10]}_{name[-10:]}_{hashed_name[:8]}"
+        # We may have problems with sql not accepting aliases of length > 30
+        if len(name) < 22:
+            return f"{name}_{hash_[:8]}"
+        else:
+            return f"{name[:10]}_{name[-10:]}_{hash_[:8]}"

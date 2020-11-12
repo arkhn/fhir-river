@@ -43,8 +43,11 @@ def make_query_builder(analysis, pk_values=None):
     return QueryBuilder(extractor.session, extractor.metadata, analysis, pk_values)
 
 
+@mock.patch("analyzer.src.analyze.sql_column.hashlib.sha1")
 @mock.patch("extractor.src.extract.query_builder.Table", mock_table)
-def test_sqlalchemy_query():
+def test_sqlalchemy_query(mock_sha1):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
     analysis = Analysis()
 
     attributeA = Attribute(path="path", definition_id="string")
@@ -83,17 +86,20 @@ def test_sqlalchemy_query():
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id, "
-        "patients.subject_id AS patients_subject_id, patients.row_id AS patients_row_id, "
-        "admissions_1.admittime AS admissions_admittime \n"
+        "SELECT patients.subject_id AS patients_subject_id_hash, "
+        "patients.subject_id AS patients_subject_id_hash, patients.row_id AS patients_row_id_hash, "
+        "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM admissions AS admissions_2, patients "
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = patients.row_id \n"
         "WHERE admissions_2.admittime LIKE :param_1"
     )
 
 
+@mock.patch("analyzer.src.analyze.sql_column.hashlib.sha1")
 @mock.patch("extractor.src.extract.query_builder.Table", mock_table)
-def test_2hop_joins():
+def test_2hop_joins(mock_sha1):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
     analysis = Analysis()
 
     attributeC = Attribute(path="path", definition_id="string")
@@ -123,8 +129,8 @@ def test_2hop_joins():
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id, "
-        "admissions_1.admittime AS admissions_admittime \n"
+        "SELECT patients.subject_id AS patients_subject_id_hash, "
+        "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM patients "
         "LEFT OUTER JOIN admissions AS admissions_1 ON join_table_1.pat_id = patients.row_id "
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_2.adm_id"
