@@ -12,6 +12,7 @@ class SqlColumn:
         owner: str = None,
         cleaning_script: CleaningScript = None,
         concept_map: ConceptMap = None,
+        joins=None,
     ):
         self.table = table.strip()
         self.column = column.strip()
@@ -22,6 +23,10 @@ class SqlColumn:
 
         self.cleaning_script = cleaning_script
         self.concept_map = concept_map
+        self.joins = joins or []
+
+    def add_join(self, join):
+        self.joins.append(join)
 
     def __eq__(self, other) -> bool:
         return (
@@ -46,13 +51,18 @@ class SqlColumn:
     def dataframe_column_name(self):
         """ sqlalchemy builds column names as {table}_{column}.
         This method helps retrieving the needed columns from the dataframe.
+
+        We add a hash to the name built based on the column name and the joins used because:
+        - we want to avoid collision if we need to truncate the name.
+        - we may need to differentiate the same column used with different joins.
         """
         name = f"{self.table}_{self.column}"
-        if len(name) <= 30:
-            return name
+        hash_ = hashlib.sha1(
+            f"{name}{''.join(str(join) for join in self.joins)}".encode()
+        ).hexdigest()
 
-        # Otherwise, we may have problems with sql not accepting aliases of length > 30
-        # so we truncate and add a hash
-        hashed_name = hashlib.sha1(name.encode()).hexdigest()
-
-        return f"{name[:10]}_{name[-10:]}_{hashed_name[:8]}"
+        # We may have problems with sql not accepting aliases of length > 30
+        if len(name) < 22:
+            return f"{name}_{hash_[:8]}"
+        else:
+            return f"{name[:10]}_{name[-10:]}_{hash_[:8]}"

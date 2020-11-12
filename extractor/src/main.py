@@ -193,7 +193,7 @@ def process_event_with_context(producer):
             analysis = analyzer.load_cached_analysis(batch_id, resource_id)
 
             df = extract_resource(analysis, primary_key_values)
-            batch_size = extractor.batch_size(analysis)
+            batch_size = df.count()
             logger.info(
                 f"Batch size is {batch_size} for resource type {analysis.definition_id}",
                 extra={"resource_id": resource_id},

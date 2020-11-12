@@ -84,7 +84,7 @@ def test_analyze_mapping(patient_mapping):
 
     assert len(analysis.attributes) == 18
 
-    assert analysis.columns == {
+    assert analyzer.get_analysis_columns(analysis) == {
         SqlColumn("patients", "row_id"),
         SqlColumn("patients", "subject_id"),
         SqlColumn("patients", "dob"),
@@ -98,7 +98,7 @@ def test_analyze_mapping(patient_mapping):
     assert analysis.filters == [
         SqlFilter(SqlColumn("patients", "row_id"), ">=", "0"),
     ]
-    assert analysis.joins == {
+    assert analyzer.get_analysis_joins(analysis) == {
         SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
     }
     assert analysis.reference_paths == {"generalPractitioner"}

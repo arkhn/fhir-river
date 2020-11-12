@@ -2,7 +2,7 @@ from .sql_column import SqlColumn
 
 
 class SqlJoin:
-    def __init__(self, left: "SqlColumn", right: "SqlColumn"):
+    def __init__(self, left: SqlColumn, right: SqlColumn):
         self.left = left
         self.right = right
 
