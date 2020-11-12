@@ -2,7 +2,6 @@ import hashlib
 
 from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
-from analyzer.src.config.service_logger import logger
 
 
 class SqlColumn:
@@ -52,6 +51,10 @@ class SqlColumn:
     def dataframe_column_name(self):
         """ sqlalchemy builds column names as {table}_{column}.
         This method helps retrieving the needed columns from the dataframe.
+
+        We add a hash to the name built based on the column name and the joins used because:
+        - we want to avoid collision if we need to truncate the name.
+        - we may need to differentiate the same column used with different joins.
         """
         name = f"{self.table}_{self.column}"
         hash_ = hashlib.sha1(
