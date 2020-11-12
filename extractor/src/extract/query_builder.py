@@ -90,11 +90,19 @@ class QueryBuilder:
                 query = query.add_columns(sqlalchemy_col)
 
                 # Apply joins to the query
+                # We keep the used join tables in a dict in case we have multi-hop joins
+                join_tables = {col.table: sqlalchemy_table}
                 for join in col.joins:
-                    right_table = sqlalchemy_table if col.table == join.right.table else None
+                    # Get tables
+                    right_table = join_tables.get(join.right.table, self.get_table(join.right))
+                    join_tables[join.right.table] = right_table
+                    left_table = join_tables.get(join.left.table, self.get_table(join.left))
+                    join_tables[join.left.table] = left_table
+                    # Add join
                     query = query.join(
-                        sqlalchemy_table,
-                        self.get_column(join.right, right_table) == self.get_column(join.left),
+                        right_table,
+                        self.get_column(join.right, right_table)
+                        == self.get_column(join.left, left_table),
                         isouter=True,
                     )
 
@@ -151,10 +159,6 @@ class QueryBuilder:
             return self._sqlalchemy_pk_table
 
         table = Table(
-            column.table,
-            self.metadata,
-            schema=column.owner,
-            keep_existing=True,
-            autoload=True,
+            column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
         return aliased(table)

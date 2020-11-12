@@ -132,8 +132,8 @@ def test_2hop_joins(mock_sha1):
         "SELECT patients.subject_id AS patients_subject_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM patients "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON join_table_1.pat_id = patients.row_id "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_2.adm_id"
+        "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
+        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
     )
 
 
