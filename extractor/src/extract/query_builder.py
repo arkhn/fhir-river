@@ -47,8 +47,12 @@ class QueryBuilder:
         self.pk_values = pk_values
 
         # The PK table has no reason to be aliased so we keep it here
-        self._sqlalchemy_pk_table = self.get_table(
-            self.analysis.primary_key_column, with_alias=False
+        self._sqlalchemy_pk_table = Table(
+            self.analysis.primary_key_column.table,
+            self.metadata,
+            schema=self.analysis.primary_key_column.owner,
+            keep_existing=True,
+            autoload=True,
         )
 
         # We don't need to have condition columns duplicated in the dataframe
@@ -109,6 +113,8 @@ class QueryBuilder:
             # Add the condition columns to the query
             for condition in input_group.conditions:
                 if condition.sql_column.table != self.analysis.primary_key_column.table:
+                    # TODO handle conditions with joins:
+                    # https://github.com/arkhn/fhir-river/issues/169
                     raise ValueError(
                         f"Cannot use a condition with a column that does not belong "
                         f"to the primary key table: {condition.sql_column.table}"
@@ -169,15 +175,10 @@ class QueryBuilder:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
         from the analysis.
         """
-        if self.analysis.primary_key_column.table == column.table and hasattr(
-            self, "_sqlalchemy_pk_table"
-        ):
+        if self.analysis.primary_key_column.table == column.table:
             return self._sqlalchemy_pk_table
 
         table = Table(
             column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
-        if with_alias:
-            return aliased(table)
-        else:
-            return table
+        return aliased(table) if with_alias else table

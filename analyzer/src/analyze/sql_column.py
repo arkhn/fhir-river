@@ -39,16 +39,19 @@ class SqlColumn:
         else:
             return f"{self.table}.{self.column}"
 
-    def __hash__(self):
-        return hash(
-            f"{self.owner}{self.table}{self.column}{''.join(str(join) for join in self.joins)}"
-        )
-
     def table_name(self) -> str:
         if self.owner:
             return f"{self.owner}.{self.table}"
         else:
             return f"{self.table}"
+
+    def table_name_with_joins(self) -> str:
+        return (
+            f"{self.owner}_{self.table}_{self.column}_{'_'.join(str(join) for join in self.joins)}"
+        )
+
+    def __hash__(self):
+        return hash(self.table_name_with_joins())
 
     def dataframe_column_name(self):
         """ sqlalchemy builds column names as {table}_{column}.
@@ -59,9 +62,7 @@ class SqlColumn:
         - we may need to differentiate the same column used with different joins.
         """
         name = f"{self.table}_{self.column}"
-        hash_ = hashlib.sha1(
-            f"{name}{''.join(str(join) for join in self.joins)}".encode()
-        ).hexdigest()
+        hash_ = hashlib.sha1(self.table_name_with_joins().encode()).hexdigest()
 
         # We may have problems with sql not accepting aliases of length > 30
         if len(name) < 22:
