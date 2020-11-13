@@ -16,6 +16,7 @@ numerical_types_map = {
 def normalize_to_str(value):
     if isinstance(value, float):
         value = Decimal(value).normalize()
+        return format(value, "f")
     return str(value)
 
 
