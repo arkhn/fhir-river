@@ -1,3 +1,4 @@
+from pytest import raises
 from sqlalchemy import (
     and_,
     Column,
@@ -50,7 +51,6 @@ def test_sqlalchemy_query(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.primary_key_column = SqlColumn("patients", "subject_id", None)
 
     attributeA = Attribute(path="path", definition_id="string")
     input_groupA = InputGroup(id_="group", attribute=attributeA)
@@ -110,6 +110,35 @@ def test_sqlalchemy_query(mock_sha1):
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = patients.row_id \n"
         "WHERE admissions_2.admittime LIKE :param_1"
     )
+
+
+@mock.patch("extractor.src.extract.query_builder.Table", mock_table)
+def test_fail_conditions_not_on_PK_table():
+    analysis = Analysis()
+
+    attribute = Attribute(path="path", definition_id="string")
+    input_group = InputGroup(id_="group", attribute=attribute)
+    attribute.add_input_group(input_group)
+    input_group.add_column(SqlColumn("patients", "row_id", None))
+    condition = Condition(
+        action="INCLUDE",
+        sql_column=SqlColumn("admissions", "row_id", None),
+        relation="EQ",
+        value="333",
+    )
+    input_group.add_condition(condition)
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
+    analysis.attributes.append(attribute)
+
+    query_builder = make_query_builder(analysis)
+
+    with raises(
+        ValueError,
+        match="Cannot use a condition with a column that does not belong to the primary key table",
+    ):
+        query_builder.build_query()
 
 
 @mock.patch("analyzer.src.analyze.sql_column.hashlib.sha1")
