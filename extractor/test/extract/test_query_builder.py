@@ -9,6 +9,7 @@ from unittest import mock
 
 from analyzer.src.analyze.analysis import Analysis
 from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.condition import Condition
 from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_filter import SqlFilter
@@ -49,6 +50,7 @@ def test_sqlalchemy_query(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
+    analysis.primary_key_column = SqlColumn("patients", "subject_id", None)
 
     attributeA = Attribute(path="path", definition_id="string")
     input_groupA = InputGroup(id_="group", attribute=attributeA)
@@ -59,6 +61,13 @@ def test_sqlalchemy_query(mock_sha1):
     input_groupB = InputGroup(id_="group", attribute=attributeB)
     attributeB.add_input_group(input_groupB)
     input_groupB.add_column(SqlColumn("patients", "row_id", None))
+    condition = Condition(
+        action="INCLUDE",
+        sql_column=SqlColumn("patients", "row_id", None),
+        relation="EQ",
+        value="333",
+    )
+    input_groupB.add_condition(condition)
 
     attributeC = Attribute(path="path", definition_id="string")
     input_groupC = InputGroup(id_="group", attribute=attributeC)
@@ -75,6 +84,13 @@ def test_sqlalchemy_query(mock_sha1):
             ],
         )
     )
+    condition = Condition(
+        action="INCLUDE",
+        sql_column=SqlColumn("patients", "row_id", None),
+        relation="EQ",
+        value="333",
+    )
+    input_groupC.add_condition(condition)
 
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
     analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
@@ -88,6 +104,7 @@ def test_sqlalchemy_query(mock_sha1):
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
         "patients.subject_id AS patients_subject_id_hash, patients.row_id AS patients_row_id_hash, "
+        "patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM admissions AS admissions_2, patients "
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = patients.row_id \n"

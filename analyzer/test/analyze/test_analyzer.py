@@ -91,9 +91,27 @@ def test_analyze_mapping(patient_mapping):
         SqlColumn("patients", "dod"),
         SqlColumn("patients", "expire_flag"),
         SqlColumn("patients", "gender"),
-        SqlColumn("admissions", "admittime"),
-        SqlColumn("admissions", "marital_status"),
-        SqlColumn("admissions", "language"),
+        SqlColumn(
+            "admissions",
+            "admittime",
+            joins=[
+                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+            ],
+        ),
+        SqlColumn(
+            "admissions",
+            "marital_status",
+            joins=[
+                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+            ],
+        ),
+        SqlColumn(
+            "admissions",
+            "language",
+            joins=[
+                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+            ],
+        ),
     }
     assert analysis.filters == [
         SqlFilter(SqlColumn("patients", "row_id"), ">=", "0"),

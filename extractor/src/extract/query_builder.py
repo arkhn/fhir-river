@@ -47,13 +47,13 @@ class QueryBuilder:
         self.pk_values = pk_values
 
         # The PK table has no reason to be aliased so we keep it here
-        self._sqlalchemy_pk_table = Table(
-            self.analysis.primary_key_column.table,
-            self.metadata,
-            schema=self.analysis.primary_key_column.owner,
-            keep_existing=True,
-            autoload=True,
+        self._sqlalchemy_pk_table = self.get_table(
+            self.analysis.primary_key_column, with_alias=False
         )
+
+        # We don't need to have condition columns duplicated in the dataframe
+        # so we keep the one we've already seen here.
+        self._condition_columns = set()
 
     @Timer("time_extractor_build_query", "time to build sql query")
     def build_query(self) -> Query:
@@ -108,7 +108,21 @@ class QueryBuilder:
 
             # Add the condition columns to the query
             for condition in input_group.conditions:
-                query = query.add_columns(condition.sql_column)
+                if condition.sql_column.table != self.analysis.primary_key_column.table:
+                    raise ValueError(
+                        f"Cannot use a condition with a column that does not belong "
+                        f"to the primary key table: {condition.sql_column.table}"
+                    )
+                if condition.sql_column in self._condition_columns:
+                    # As we currently don't process conditions columns, we don't need to have them
+                    # duplicated in the resulting dataframe.
+                    continue
+                sqlalchemy_table = self.get_table(condition.sql_column, with_alias=False)
+                sqlalchemy_col = self.get_column(condition.sql_column, sqlalchemy_table)
+                query = query.add_columns(sqlalchemy_col)
+
+                # Add the condition columns to the _condition_columns attribute
+                self._condition_columns.add(condition.sql_column)
 
         return query
 
@@ -151,14 +165,19 @@ class QueryBuilder:
                     f"Column '{column.column}' not found in table '{column.table}'."
                 )
 
-    def get_table(self, column: SqlColumn) -> Table:
+    def get_table(self, column: SqlColumn, with_alias: bool = True) -> Table:
         """ Get the sql alchemy table corresponding to the SqlColumn (custom type)
         from the analysis.
         """
-        if self.analysis.primary_key_column.table == column.table:
+        if self.analysis.primary_key_column.table == column.table and hasattr(
+            self, "_sqlalchemy_pk_table"
+        ):
             return self._sqlalchemy_pk_table
 
         table = Table(
             column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,
         )
-        return aliased(table)
+        if with_alias:
+            return aliased(table)
+        else:
+            return table

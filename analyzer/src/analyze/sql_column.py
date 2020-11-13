@@ -40,7 +40,9 @@ class SqlColumn:
             return f"{self.table}.{self.column}"
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(
+            f"{self.owner}{self.table}{self.column}{''.join(str(join) for join in self.joins)}"
+        )
 
     def table_name(self) -> str:
         if self.owner:
