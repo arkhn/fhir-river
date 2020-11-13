@@ -7,7 +7,6 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/websocket"
-	"github.com/julienschmidt/httprouter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -117,7 +116,7 @@ func (h *Hub) handleEvent(event kafka.Event) error {
 	return nil
 }
 
-func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request) {
 
 	if err := consumer.SubscribeTopics(subscribedTopics.Slice(), nil); err != nil {
 		panic(err)
@@ -131,7 +130,7 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 	}
 	go hub.notifySubscribers()
 
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -153,7 +152,9 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 		hub.register <- subscriber
 		defer func() {
 			hub.unregister <- subscriber
-			subscriber.conn.Close()
+			if err := subscriber.conn.Close(); err != nil {
+				log.Println(err)
+			}
 		}()
 
 		incomingMessages := make(chan bool)

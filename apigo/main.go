@@ -1,15 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
-
-	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/julienschmidt/httprouter"
-	log "github.com/sirupsen/logrus"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/arkhn/fhir-river/api/api"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -58,21 +63,51 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer consumer.Close()
+	defer func() {
+		if err := consumer.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	// define the HTTP routes and handlers
-	router := httprouter.New()
-	router.POST("/preview", api.Preview)
-	router.POST("/batch", api.Batch(producer))
-	router.GET("/ws", api.Subscribe(consumer))
+	router := mux.NewRouter()
+	router.HandleFunc("/preview", api.Preview).Methods("POST")
+	router.HandleFunc("/batch", api.Batch(producer)).Methods("POST")
+	router.HandleFunc("/batch/{id}", api.CancelBatch).Methods("POST")
+	router.HandleFunc("/ws", api.Subscribe(consumer)).Methods("GET")
+
 
 	// this is a temporary route to test websocket functionality
-	router.HandlerFunc("GET", "/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("home")
 		http.ServeFile(w, r, "websockets.html")
-	})
+	}).Methods("GET")
 
-	// run the HTTP server
-	log.Infof("Listening on port %s...", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
+	// Run River API server
+	s := &http.Server{
+		Addr:         ":" + port,
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+		Handler: handlers.CORS(
+			handlers.AllowedHeaders([]string{"Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"}),
+			handlers.AllowedOrigins([]string{"*"}),
+			handlers.AllowCredentials(),
+		)(router),
+	}
+	go func() {
+		log.Infof("Listening on port %s...", port)
+		if err := s.ListenAndServe(); err != http.ErrServerClosed {
+			log.Println(err)
+		}
+	}()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGTERM)
+	<-c
+	log.Println("Shutting down River API gracefully...")
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	if err := s.Shutdown(ctx); err != nil {
+		log.Println(err)
+	}
 }

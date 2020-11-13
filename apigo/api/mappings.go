@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -224,9 +225,13 @@ func fetchMapping(resourceID string, authorizationHeader string) (*mappingResour
 		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: http.StatusForbidden}
 	default:
 		// Return other errors
-		return nil, errors.New("Error while requesting mapping from pyrog")
+		return nil, errors.New("error while requesting mapping from Pyrog")
 	}
-	defer resp.Body.Close()
+	defer func () {
+		if err := resp.Body.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	gqlResp := graphqlResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&gqlResp)
@@ -293,7 +298,7 @@ func fetchConceptMap(conceptMapID string, authorizationHeader string) (map[strin
 		return nil, &invalidTokenError{message: "You don't have rights to perform this action", statusCode: http.StatusForbidden}
 	default:
 		// Return other errors
-		return nil, errors.New("Error while fetching concept map")
+		return nil, errors.New("error while fetching concept map")
 	}
 
 	conceptMapResp := conceptMapResponse{}

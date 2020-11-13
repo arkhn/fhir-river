@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 )
 
 // BatchRequest is the body of the POST /batch request.
@@ -43,8 +42,8 @@ type BatchEvent struct {
 
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		// decode the request body
 		body := BatchRequest{}
 		err := json.NewDecoder(r.Body).Decode(&body)
@@ -116,6 +115,12 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 			return
 		}
 
+		// Add new batch to Redis
+		if _, err = rdb.SAdd("batch:current", batchID, 0).Result(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		// produce a "batch" kafka event for each resource ID.
 		for _, resource := range body.Resources {
 			resourceID := resource.ID
@@ -132,8 +137,18 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 				http.Error(w, err.Error(), http.StatusBadRequest)
 			}
 		}
-
 		// return the batch ID to the client immediately.
-		fmt.Fprint(w, batchID)
+		_, _ = fmt.Fprint(w, batchID)
 	}
+}
+
+func CancelBatch(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	batchID := vars["id"]
+	if _, err := rdb.SRem("batch:current", batchID).Result(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// return the batch ID to the client immediately.
+	_, _ = fmt.Fprint(w, batchID)
 }

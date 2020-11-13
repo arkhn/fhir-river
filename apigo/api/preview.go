@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -100,7 +99,7 @@ func extract(preview *PreviewRequest) (rows []interface{}, err error) {
 // Preview is the HTTP handler for the POST /preview route.
 // It calls both the extractor and the transformer service to preview
 // the FHIR transformation of a set of rows for a given resource.
-func Preview(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func Preview(w http.ResponseWriter, r *http.Request) {
 	// decode the request body
 	body := PreviewRequest{}
 	err := json.NewDecoder(r.Body).Decode(&body)
