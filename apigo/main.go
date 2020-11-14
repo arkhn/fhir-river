@@ -47,6 +47,13 @@ func init() {
 }
 
 func main() {
+	// create Kafka admin client
+	admin, err := kafka.NewAdminClient(&kafka.ConfigMap{"bootstrap.servers": kafkaURL})
+	if err != nil {
+		panic(err)
+	}
+	defer admin.Close()
+
 	// create a new kafka producer
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": kafkaURL})
 	if err != nil {
@@ -72,8 +79,8 @@ func main() {
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()
 	router.HandleFunc("/preview", api.Preview).Methods("POST")
-	router.HandleFunc("/batch", api.Batch(producer)).Methods("POST")
-	router.HandleFunc("/batch/{id}", api.CancelBatch).Methods("POST")
+	router.HandleFunc("/batch", api.Batch(producer, admin)).Methods("POST")
+	router.HandleFunc("/batch/{id}", api.CancelBatch(admin)).Methods("DELETE")
 	router.HandleFunc("/ws", api.Subscribe(consumer)).Methods("GET")
 
 

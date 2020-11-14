@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
@@ -10,6 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"time"
 )
 
 // BatchRequest is the body of the POST /batch request.
@@ -42,7 +44,7 @@ type BatchEvent struct {
 
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request) {
+func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// decode the request body
 		body := BatchRequest{}
@@ -67,6 +69,19 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 		batchID := batchUUID.String()
+
+		// create batchID topic
+		batchTopics := []kafka.TopicSpecification{
+			{Topic: "extract-" + batchID, NumPartitions: 2},
+			{Topic: "transform-" + batchID, NumPartitions: 2},
+			{Topic: "load-" + batchID, NumPartitions: 2},
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+		if _, err = admin.CreateTopics(ctx, batchTopics); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		// Fetch and store the mappings to use for the batch
 		// This needs to be synchronous because we don't want a token to become invalid
@@ -115,12 +130,6 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request) {
 			return
 		}
 
-		// Add new batch to Redis
-		if _, err = rdb.SAdd("batch:current", batchID, 0).Result(); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		// produce a "batch" kafka event for each resource ID.
 		for _, resource := range body.Resources {
 			resourceID := resource.ID
@@ -142,13 +151,22 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-func CancelBatch(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	batchID := vars["id"]
-	if _, err := rdb.SRem("batch:current", batchID).Result(); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+func CancelBatch(admin *kafka.AdminClient) func (http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		batchID := vars["id"]
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+		batchTopics := []string{
+			"extract-" + batchID,
+			"transform-" + batchID,
+			"load-" + batchID,
+		}
+		if _, err := admin.DeleteTopics(ctx, batchTopics); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// return the batch ID to the client immediately.
+		_, _ = fmt.Fprint(w, batchID)
 	}
-	// return the batch ID to the client immediately.
-	_, _ = fmt.Fprint(w, batchID)
 }
