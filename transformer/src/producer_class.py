@@ -2,7 +2,7 @@
 
 import json
 import datetime
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaError, KafkaException
 
 from logger import format_traceback
 from transformer.src.config.service_logger import logger
@@ -19,7 +19,6 @@ class TransformerProducer:
         and an error increment (int). Default logs the error or success
         """
         self.broker = broker
-        self.partition = 0
         self.callback_function = callback_function if callback_function else self.callback_fn
 
         # Create consumer
@@ -29,7 +28,11 @@ class TransformerProducer:
         """
         Generate configuration dictionary for consumer
         """
-        config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
+        config = {
+            "bootstrap.servers": self.broker,
+            "session.timeout.ms": 6000,
+            "max.block.ms": 15000,
+        }
         return config
 
     def produce_event(self, topic, record):
@@ -48,6 +51,11 @@ class TransformerProducer:
             self.producer.poll(1)  # Callback function
         except ValueError:
             logger.error(format_traceback())
+        except KafkaException as e:
+            if e == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                pass
+            else:
+                logger.error(format_traceback())
 
     @staticmethod
     def default_json_encoder(o):

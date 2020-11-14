@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaException, KafkaError
 
 from extractor.src.config.service_logger import logger
 from extractor.src.json_encoder import MyJSONEncoder
@@ -18,7 +18,6 @@ class ExtractorProducer:
             Default logs the error or success
         """
         self.broker = broker
-        self.partition = 0
         self.callback_function = callback_function if callback_function else self.callback_fn
 
         # Create producer
@@ -29,7 +28,11 @@ class ExtractorProducer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
+        config = {
+            "bootstrap.servers": self.broker,
+            "session.timeout.ms": 6000,
+            "max.block.ms": 15000
+        }
         return config
 
     def produce_event(self, topic, event):
@@ -48,6 +51,11 @@ class ExtractorProducer:
             self.producer.poll(1)  # Callback function
         except ValueError:
             logger.error(format_traceback())
+        except KafkaException as e:
+            if e == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                pass
+            else:
+                logger.error(format_traceback())
 
     @staticmethod
     def callback_fn(err, msg, obj):

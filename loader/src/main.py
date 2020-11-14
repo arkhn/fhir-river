@@ -89,9 +89,9 @@ def handle_authorization_error(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TRANSFORM_TOPIC = "transform"
-PRODUCED_TOPIC = "load"
+CONSUMED_TOPICS = "^load.*"
 CONSUMER_GROUP_ID = "loader"
+PRODUCED_TOPIC_PREFIX = "load."
 
 
 # these decorators tell uWSGI (the server with which the app is run)
@@ -105,7 +105,7 @@ def run_consumer():
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TRANSFORM_TOPIC,
+        topics=CONSUMED_TOPICS,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
@@ -152,7 +152,10 @@ def process_event_with_context(producer):
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
-            producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
+            producer.produce_event(
+                topic=PRODUCED_TOPIC_PREFIX+batch_id,
+                record=resolved_fhir_instance
+            )
         except DuplicateKeyError:
             logger.error(format_traceback())
 

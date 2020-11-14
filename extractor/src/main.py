@@ -126,10 +126,10 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
+CONSUMED_TOPICS = "^batch.*"
 CONSUMER_GROUP_ID = "extractor"
-EXTRACT_TOPIC = "extract"
+PRODUCED_TOPIC_PREFIX = "extract."
 BATCH_SIZE_TOPIC = "batch_size"
-CONSUMED_TOPIC = "batch"
 
 
 # these decorators tell uWSGI (the server with which the app is run)
@@ -143,7 +143,7 @@ def run_consumer():
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
+        topics=CONSUMED_TOPICS,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
@@ -174,8 +174,7 @@ def process_event_with_context(producer):
             event["resource_type"] = resource_type
             event["resource_id"] = resource_id
             event["record"] = record
-
-            producer.produce_event(topic=EXTRACT_TOPIC, event=event)
+            producer.produce_event(topic=PRODUCED_TOPIC_PREFIX+batch_id, event=event)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
@@ -199,12 +198,16 @@ def process_event_with_context(producer):
                 extra={"resource_id": resource_id},
             )
             producer.produce_event(
-                topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
+                topic=BATCH_SIZE_TOPIC,
+                event={"resource_id": resource_id, "batch_id": batch_id, "size": batch_size},
             )
             broadcast_events(df, analysis, batch_id)
 
         except Exception:
-            logger.error(format_traceback(), extra={"resource_id": resource_id})
+            logger.error(
+                format_traceback(),
+                extra={"resource_id": resource_id, "batch_id": batch_id}
+            )
 
     return process_event
 
@@ -212,3 +215,4 @@ def process_event_with_context(producer):
 def manage_kafka_error(msg):
     """ Deal with the error if any """
     logger.error(msg.error().str())
+
