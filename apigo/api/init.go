@@ -9,7 +9,11 @@ import (
 )
 
 var (
-	topic                                          = "batch"
+	batchTopicPrefix                               = "batch."
+	extractTopicPrefix                             = "extract."
+	transformTopicPrefix                           = "transform."
+	loadTopicPrefix                                = "load."
+	numTopicPartitions                             = 2
 	extractorURL, isExtractorURLDefined            = os.LookupEnv("EXTRACTOR_URL")
 	transformerURL, isTransformerURLDefined        = os.LookupEnv("TRANSFORMER_URL")
 	loaderURL, isLoaderURLDefined                  = os.LookupEnv("LOADER_URL")

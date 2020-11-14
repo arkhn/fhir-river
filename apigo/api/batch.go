@@ -72,9 +72,10 @@ func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respons
 
 		// create batchID topic
 		batchTopics := []kafka.TopicSpecification{
-			{Topic: "extract-" + batchID, NumPartitions: 2},
-			{Topic: "transform-" + batchID, NumPartitions: 2},
-			{Topic: "load-" + batchID, NumPartitions: 2},
+			{Topic: batchTopicPrefix + batchID, NumPartitions: numTopicPartitions},
+			{Topic: extractTopicPrefix + batchID, NumPartitions: numTopicPartitions},
+			{Topic: transformTopicPrefix + batchID, NumPartitions: numTopicPartitions},
+			{Topic: loadTopicPrefix + batchID, NumPartitions: numTopicPartitions},
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
@@ -138,8 +139,9 @@ func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respons
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
+			topicName := batchTopicPrefix + batchID
 			err = producer.Produce(&kafka.Message{
-				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
 				Value:          event,
 			}, nil)
 			if err != nil {
@@ -158,9 +160,10 @@ func CancelBatch(admin *kafka.AdminClient) func (http.ResponseWriter, *http.Requ
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 		batchTopics := []string{
-			"extract-" + batchID,
-			"transform-" + batchID,
-			"load-" + batchID,
+			batchTopicPrefix + batchID,
+			extractTopicPrefix + batchID,
+			transformTopicPrefix + batchID,
+			loadTopicPrefix + batchID,
 		}
 		if _, err := admin.DeleteTopics(ctx, batchTopics); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
