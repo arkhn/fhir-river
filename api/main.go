@@ -3,48 +3,21 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/arkhn/fhir-river/api/routes/preview"
+	"github.com/arkhn/fhir-river/api/routes/websockets"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/arkhn/fhir-river/api/api"
+	"github.com/arkhn/fhir-river/api/routes/batch"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	log "github.com/sirupsen/logrus"
 )
-
-const (
-	consumerGroupID = "api"
-)
-
-var (
-	port, isPortDefined         = os.LookupEnv("PORT")
-	kafkaURL, isKafkaURLDefined = os.LookupEnv("KAFKA_BOOTSTRAP_SERVERS")
-)
-
-// ensure that the required environment variables are defined
-func init() {
-	if !isPortDefined {
-		panic("PORT is required in environment")
-	}
-
-	if !isKafkaURLDefined {
-		panic("KAFKA_BOOTSTRAP_SERVERS is required in environment")
-	}
-
-	// Use the default text formatter.
-	log.SetFormatter(&log.TextFormatter{})
-
-	// Output to stdout instead of the default stderr
-	log.SetOutput(os.Stdout)
-
-	// Only log the debug severity or above.
-	log.SetLevel(log.DebugLevel)
-}
 
 func main() {
 	// create Kafka admin client
@@ -78,12 +51,10 @@ func main() {
 
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()
-	router.HandleFunc("/preview", api.Preview).Methods("POST")
-	router.HandleFunc("/batch", api.Batch(producer, admin)).Methods("POST")
-	router.HandleFunc("/batch/{id}", api.CancelBatch(admin)).Methods("DELETE")
-	router.HandleFunc("/ws", api.Subscribe(consumer)).Methods("GET")
-
-
+	router.HandleFunc("/preview", preview.Preview).Methods("POST")
+	router.HandleFunc("/batch", batch.Create(producer, admin)).Methods("POST")
+	router.HandleFunc("/batch/{id}", batch.Cancel(admin)).Methods("DELETE")
+	router.HandleFunc("/ws", websockets.Subscribe(consumer)).Methods("GET")
 	// this is a temporary route to test websocket functionality
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("home")

@@ -1,8 +1,10 @@
-package api
+package preview
 
 import (
 	"bytes"
 	"fmt"
+	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/tests"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,14 +26,18 @@ func newTestRedis() (*miniredis.Miniredis, *redis.Client) {
 	})
 }
 
+func PreviewHandle(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
+	Preview(writer, request)
+}
+
 func TestPreview(t *testing.T) {
 
 	mockExtractor := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{"rows": []}`)
+		_, _ = fmt.Fprint(w, `{"rows": []}`)
 	}))
 	defer mockExtractor.Close()
 	mockTransformer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{}`)
+		_, _ = fmt.Fprint(w, `{}`)
 	}))
 	defer mockTransformer.Close()
 
@@ -39,28 +45,31 @@ func TestPreview(t *testing.T) {
 	extractorURL = mockExtractor.URL
 
 	var mockRedis *miniredis.Miniredis
-	mockRedis, rdb = newTestRedis()
+	mockRedis, mapping.Rdb = newTestRedis()
 	defer mockRedis.Close()
 
-	fhirAPI := mockFhirAPI()
+	fhirAPI := tests.MockFhirAPI()
 	defer fhirAPI.Close()
-	fhirURL = fhirAPI.URL
+	mapping.FhirURL = fhirAPI.URL
 
-	mockPyrog := mockPyrogServer()
-	pyrogURL = mockPyrog.URL
+	mockPyrog := tests.MockPyrogServer()
+	mapping.PyrogURL = mockPyrog.URL
 	defer mockPyrog.Close()
 
 	t.Run("accepts primary keys as strings", func(t *testing.T) {
 		// use a list of strings in primary_key_values
 		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": ["1"]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		if err != nil {
+			panic(err)
+		}
 		req.Header.Add("Authorization", "Bearer validToken")
 		assert.NoError(t, err)
 
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 		rr := httptest.NewRecorder()
 		router := httprouter.New()
-		router.POST("/preview", Preview)
+		router.POST("/preview", PreviewHandle)
 
 		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 		// directly and pass in our Request and ResponseRecorder.
@@ -77,12 +86,15 @@ func TestPreview(t *testing.T) {
 		// use a list of integers in primary_key_values
 		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": [1]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		if err != nil {
+			panic(err)
+		}
 		req.Header.Add("Authorization", "Bearer validToken")
 		assert.NoError(t, err)
 
 		rr := httptest.NewRecorder()
 		router := httprouter.New()
-		router.POST("/preview", Preview)
+		router.POST("/preview", PreviewHandle)
 
 		router.ServeHTTP(rr, req)
 
@@ -95,12 +107,15 @@ func TestPreview(t *testing.T) {
 		// use a list of integers in primary_key_values
 		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": ["E98"]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		if err != nil {
+			panic(err)
+		}
 		req.Header.Add("Authorization", "Bearer validToken")
 		assert.NoError(t, err)
 
 		rr := httptest.NewRecorder()
 		router := httprouter.New()
-		router.POST("/preview", Preview)
+		router.POST("/preview", PreviewHandle)
 
 		router.ServeHTTP(rr, req)
 
@@ -118,7 +133,7 @@ func TestPreview(t *testing.T) {
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 		rr := httptest.NewRecorder()
 		router := httprouter.New()
-		router.POST("/preview", Preview)
+		router.POST("/preview", PreviewHandle)
 
 		// Our handlers satisfy http.Handler, so we can call their ServeHTTP method
 		// directly and pass in our Request and ResponseRecorder.
@@ -130,5 +145,4 @@ func TestPreview(t *testing.T) {
 		// Check the response body is what we expect.
 		assert.Equal(t, "Token is invalid\n", rr.Body.String(), "bad response body")
 	})
-
 }

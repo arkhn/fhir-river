@@ -1,4 +1,4 @@
-package api
+package websockets
 
 import (
 	"net/http"
@@ -26,7 +26,6 @@ func NewTopicsFromString(in string) (Topics, error) {
 	for _, t := range strings.Split(in, ",") {
 		topics[t] = struct{}{}
 	}
-
 	return topics, nil
 }
 
@@ -49,7 +48,11 @@ func (t Topics) Slice() []string {
 func (t Topics) Validate() error {
 	for topic := range t {
 		if _, ok := subscribedTopics[topic]; !ok {
-			errors.Errorf("cannot subscribe to topic '%s', only [%s] are handled", topic, subscribedTopics)
+			return errors.Errorf(
+				"cannot subscribe to topic '%s', only [%s] are handled",
+				topic,
+				subscribedTopics,
+			)
 		}
 	}
 	return nil
@@ -75,7 +78,7 @@ type Hub struct {
 	unregister chan *Subscriber
 }
 
-func (h *Hub) notifySubscribers() error {
+func (h *Hub) notifySubscribers() {
 	for {
 		select {
 		case subscriber := <-h.register:
@@ -173,10 +176,10 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 		for {
 			select {
 			case message, ok := <-subscriber.send:
-				subscriber.conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+				_ = subscriber.conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
 				if !ok {
 					// The hub closed the channel.
-					subscriber.conn.WriteMessage(websocket.CloseMessage, []byte{})
+					_ = subscriber.conn.WriteMessage(websocket.CloseMessage, []byte{})
 					return
 				}
 

@@ -1,53 +1,26 @@
-package api
+package batch
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/arkhn/fhir-river/api/errors"
+	"github.com/arkhn/fhir-river/api/mapping"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
-// BatchRequest is the body of the POST /batch request.
-type BatchRequest struct {
-	Resources []struct {
-		ID           string `json:"resource_id"`
-		ResourceType string `json:"resource_type"`
-	} `json:"resources"`
-}
-
-// FetchAnalysisRequest is the body of the POST /fetch-analysis request.
-type FetchAnalysisRequest struct {
-	BatchID     string   `json:"batch_id"`
-	ResourceIDs []string `json:"resource_ids"`
-}
-
-// DeleteResourceRequest is the body of the POST /delete-resource request.
-type DeleteResourceRequest struct {
-	Resources []struct {
-		ID           string `json:"resource_id"`
-		ResourceType string `json:"resource_type"`
-	} `json:"resources"`
-}
-
-// BatchEvent is the kind of event produced to trigger a batch ETL.
-type BatchEvent struct {
-	BatchID    string `json:"batch_id"`
-	ResourceID string `json:"resource_id"`
-}
-
 // Batch is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.ResponseWriter, *http.Request) {
+func Create(producer *kafka.Producer, admin *kafka.AdminClient) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// decode the request body
-		body := BatchRequest{}
+		body := Request{}
 		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -88,11 +61,11 @@ func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respons
 		// This needs to be synchronous because we don't want a token to become invalid
 		// in the middle of a batch
 		for _, resourceID := range resourceIDs {
-			resourceMapping, err := fetchMapping(resourceID, authorizationHeader)
+			resourceMapping, err := mapping.Fetch(resourceID, authorizationHeader)
 			if err != nil {
 				switch e := err.(type) {
-				case *invalidTokenError:
-					http.Error(w, err.Error(), e.statusCode)
+				case *errors.InvalidTokenError:
+					http.Error(w, err.Error(), e.StatusCode)
 				default:
 					http.Error(w, err.Error(), http.StatusBadRequest)
 				}
@@ -105,7 +78,7 @@ func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respons
 				return
 			}
 
-			err = storeMapping(serializedMapping, resourceID, batchID)
+			err = mapping.Store(serializedMapping, resourceID, batchID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -134,7 +107,7 @@ func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respons
 		// produce a "batch" kafka event for each resource ID.
 		for _, resource := range body.Resources {
 			resourceID := resource.ID
-			event, _ := json.Marshal(BatchEvent{
+			event, _ := json.Marshal(Event{
 				BatchID:    batchID,
 				ResourceID: resourceID,
 			})
@@ -147,27 +120,6 @@ func Batch(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respons
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 			}
-		}
-		// return the batch ID to the client immediately.
-		_, _ = fmt.Fprint(w, batchID)
-	}
-}
-
-func CancelBatch(admin *kafka.AdminClient) func (http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		batchID := vars["id"]
-		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-		defer cancel()
-		batchTopics := []string{
-			batchTopicPrefix + batchID,
-			extractTopicPrefix + batchID,
-			transformTopicPrefix + batchID,
-			loadTopicPrefix + batchID,
-		}
-		if _, err := admin.DeleteTopics(ctx, batchTopics); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
 		}
 		// return the batch ID to the client immediately.
 		_, _ = fmt.Fprint(w, batchID)
