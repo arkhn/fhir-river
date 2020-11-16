@@ -50,7 +50,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
         # will try to create fhir objects with an empty path (remove_root_path removes
         # what's before the [...] included).
         if path == "":
-            return row[attr.path]
+            return row[attr.path][index]
 
         # Find if there is an index in the path
         split_path = path.split(".")
