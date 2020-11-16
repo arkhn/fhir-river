@@ -86,6 +86,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
                 for path, attr in path_attributes_map.items()
                 if path.startswith(array_path)
             }
+
             # Build the array of sub fhir object
             array = handle_array_attributes(attributes_in_array, row)
             # Insert them a the right position
