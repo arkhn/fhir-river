@@ -18,6 +18,12 @@ var (
 )
 
 func init() {
+	if !isPyrogURLDefined {
+		panic("PYROG_API_URL is required in environment")
+	}
+	if !isFhirURL {
+		panic("FHIR_API_URL is required in environment")
+	}
 	if !isRedisMappingsHost {
 		panic("REDIS_MAPPINGS_HOST is required in environment")
 	}
@@ -27,19 +33,13 @@ func init() {
 	if !isRedisMappingsDb {
 		panic("REDIS_MAPPINGS_DB is required in environment")
 	}
-	if !isPyrogURLDefined {
-		panic("PYROG_API_URL is required in environment")
-	}
-	if !isFhirURL {
-		panic("FHIR_API_URL is required in environment")
-	}
-	IntRedisMappingsDb, err := strconv.Atoi(redisMappingsDb)
+	intRedisMappingsDb, err := strconv.Atoi(redisMappingsDb)
 	if err != nil {
-		panic("env var REDIS_MAPPINGS_DB should represent an int")
+		panic("REDIS_MAPPINGS_DB should represent an int")
 	}
 	Rdb = redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", redisMappingsHost, redisMappingsPort),
 		Password: redisMappingsPassword,
-		DB:       IntRedisMappingsDb,
+		DB:       intRedisMappingsDb,
 	})
 }

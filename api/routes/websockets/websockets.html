@@ -1,12 +1,12 @@
-<input id="input" type="text" />
+<label for="input"></label><input id="input" type="text" />
 <button onclick="send()">Send</button>
 <pre id="output"></pre>
 <script>
-  var input = document.getElementById("input");
-  var output = document.getElementById("output");
-  var socket = new WebSocket("ws://localhost:3001/ws?topics=a,b,c,d");
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    const socket = new WebSocket("ws://localhost:3001/ws?topics=a,b,c,d");
 
-  socket.onopen = function () {
+    socket.onopen = function () {
     output.innerHTML += "Status: Connected\n";
   };
 

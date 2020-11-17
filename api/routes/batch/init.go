@@ -1,16 +1,12 @@
 package batch
 
-import "os"
-
-const (
-	batchTopicPrefix     = "batch."
-	extractTopicPrefix   = "extract."
-	transformTopicPrefix = "transform."
-	loadTopicPrefix      = "load."
-	numTopicPartitions   = 2
+import (
+	"os"
 )
 
-var loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
+var (
+	loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
+)
 
 func init() {
 	if !isLoaderURLDefined {

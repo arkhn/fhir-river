@@ -16,7 +16,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	subscribedTopics, _ = NewTopicsFromSlice([]string{"batch", "batch_size", "extract", "transform", "load"})
+	subscribedTopics, _ = NewTopicsFromSlice([]string{"batch", "extract", "transform", "load"})
 )
 
 type Topics map[string]struct{}
@@ -145,7 +145,7 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		} else if len(topics) == 0 {
-			http.Error(w, "at least one topic should be provided as query paramaeter", http.StatusBadRequest)
+			http.Error(w, "at least one topic should be provided as query parameter", http.StatusBadRequest)
 			return
 		} else if err := topics.Validate(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

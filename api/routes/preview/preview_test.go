@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/arkhn/fhir-river/api/mapping"
-	"github.com/arkhn/fhir-river/api/tests"
+	"github.com/arkhn/fhir-river/api/mocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +27,7 @@ func newTestRedis() (*miniredis.Miniredis, *redis.Client) {
 }
 
 func PreviewHandle(writer http.ResponseWriter, request *http.Request, _ httprouter.Params) {
-	Preview(writer, request)
+	Run(writer, request)
 }
 
 func TestPreview(t *testing.T) {
@@ -48,11 +48,11 @@ func TestPreview(t *testing.T) {
 	mockRedis, mapping.Rdb = newTestRedis()
 	defer mockRedis.Close()
 
-	fhirAPI := tests.MockFhirAPI()
+	fhirAPI := mocks.MockFhirAPI()
 	defer fhirAPI.Close()
 	mapping.FhirURL = fhirAPI.URL
 
-	mockPyrog := tests.MockPyrogServer()
+	mockPyrog := mocks.MockPyrogServer()
 	mapping.PyrogURL = mockPyrog.URL
 	defer mockPyrog.Close()
 

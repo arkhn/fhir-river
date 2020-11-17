@@ -2,7 +2,7 @@ package mapping
 
 import (
 	"github.com/arkhn/fhir-river/api/errors"
-	"github.com/arkhn/fhir-river/api/tests"
+	"github.com/arkhn/fhir-river/api/mocks"
 	"net/http"
 	"testing"
 
@@ -10,11 +10,11 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	pyrogServer := tests.MockPyrogServer()
+	pyrogServer := mocks.MockPyrogServer()
 	defer pyrogServer.Close()
 	PyrogURL = pyrogServer.URL
 
-	fhirApi := tests.MockFhirAPI()
+	fhirApi := mocks.MockFhirAPI()
 	defer fhirApi.Close()
 	FhirURL = fhirApi.URL
 
@@ -51,7 +51,7 @@ func TestFetch(t *testing.T) {
 }
 
 func TestFetchConceptMap(t *testing.T) {
-	fhirApi := tests.MockFhirAPI()
+	fhirApi := mocks.MockFhirAPI()
 	defer fhirApi.Close()
 	FhirURL = fhirApi.URL
 
@@ -89,7 +89,7 @@ func TestFetchConceptMap(t *testing.T) {
 }
 
 func TestDereferenceConceptMap(t *testing.T) {
-	fhirApi := tests.MockFhirAPI()
+	fhirApi := mocks.MockFhirAPI()
 	defer fhirApi.Close()
 	FhirURL = fhirApi.URL
 

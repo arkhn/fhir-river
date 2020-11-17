@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/arkhn/fhir-river/api/monitor"
 	"github.com/arkhn/fhir-river/api/routes/preview"
 	"github.com/arkhn/fhir-river/api/routes/websockets"
+	"github.com/go-redis/redis"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -49,12 +52,32 @@ func main() {
 		}
 	}()
 
+	// open Redis connection
+	intRedisDb, err := strconv.Atoi(redisDb)
+	if err != nil {
+		panic("REDIS_DB should represent an int")
+	}
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
+		Password: redisPassword,
+		DB:       intRedisDb,
+	})
+	defer func () {
+		if err := rdb.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	// Monitor pipeline
+	go monitor.Load(rdb, admin)
+
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()
-	router.HandleFunc("/preview", preview.Preview).Methods("POST")
-	router.HandleFunc("/batch", batch.Create(producer, admin)).Methods("POST")
-	router.HandleFunc("/batch/{id}", batch.Cancel(admin)).Methods("DELETE")
+	router.HandleFunc("/preview", preview.Run).Methods("POST")
+	router.HandleFunc("/batch", batch.Create(producer, admin, rdb)).Methods("POST")
+	router.HandleFunc("/batch/{id}", batch.Cancel(rdb, admin)).Methods("DELETE")
 	router.HandleFunc("/ws", websockets.Subscribe(consumer)).Methods("GET")
+
 	// this is a temporary route to test websocket functionality
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("home")
@@ -80,7 +103,7 @@ func main() {
 		}
 	}()
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGTERM)
+	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
 	<-c
 	log.Println("Shutting down River API gracefully...")
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)

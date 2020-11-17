@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// PreviewRequest is the body of the POST /preview request.
+// Request is the body of the POST /preview request.
 type Request struct {
 	// PrimaryKeyValues can be a list of strings (eg ["E65"]) or a list of integers ([59])
 	PrimaryKeyValues []interface{} `json:"primary_key_values"`
@@ -97,10 +97,10 @@ func extract(preview *Request) (rows []interface{}, err error) {
 	return body.Rows, nil
 }
 
-// Preview is the HTTP handler for the POST /preview route.
+// Run is the HTTP handler for the POST /preview route.
 // It calls both the extractor and the transformer service to preview
 // the FHIR transformation of a set of rows for a given resource.
-func Preview(w http.ResponseWriter, r *http.Request) {
+func Run(w http.ResponseWriter, r *http.Request) {
 	// decode the request body
 	body := Request{}
 	err := json.NewDecoder(r.Body).Decode(&body)

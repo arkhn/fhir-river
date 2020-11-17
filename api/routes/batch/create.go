@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"github.com/arkhn/fhir-river/api/errors"
 	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/topics"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/go-redis/redis"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -15,9 +17,9 @@ import (
 	"time"
 )
 
-// Batch is a wrapper around the HTTP handler for the POST /batch route.
+// Create is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Create(producer *kafka.Producer, admin *kafka.AdminClient) func(http.ResponseWriter, *http.Request) {
+func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Client) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// decode the request body
 		body := Request{}
@@ -27,13 +29,13 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respon
 			return
 		}
 
+		// Get authorization header
+		authorizationHeader := r.Header.Get("Authorization")
+
 		var resourceIDs []string
 		for _, resource := range body.Resources {
 			resourceIDs = append(resourceIDs, resource.ID)
 		}
-
-		// Get authorization header
-		authorizationHeader := r.Header.Get("Authorization")
 
 		// generate a new batch ID.
 		batchUUID, err := uuid.NewRandom()
@@ -43,16 +45,22 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respon
 		}
 		batchID := batchUUID.String()
 
+		// List resources of current batch in Redis
+		if err := rdb.SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		// create batchID topic
 		batchTopics := []kafka.TopicSpecification{
-			{Topic: batchTopicPrefix + batchID, NumPartitions: numTopicPartitions},
-			{Topic: extractTopicPrefix + batchID, NumPartitions: numTopicPartitions},
-			{Topic: transformTopicPrefix + batchID, NumPartitions: numTopicPartitions},
-			{Topic: loadTopicPrefix + batchID, NumPartitions: numTopicPartitions},
+			{Topic: topics.BatchPrefix + batchID, NumPartitions: topics.NumParts},
+			{Topic: topics.ExtractPrefix + batchID, NumPartitions: topics.NumParts},
+			{Topic: topics.TransformPrefix + batchID, NumPartitions: topics.NumParts},
+			{Topic: topics.LoadPrefix + batchID, NumPartitions: topics.NumParts},
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		if _, err = admin.CreateTopics(ctx, batchTopics); err != nil {
+		if _, err = admin.CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -112,7 +120,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient) func(http.Respon
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := batchTopicPrefix + batchID
+			topicName := topics.BatchPrefix + batchID
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
 				Value:          event,
