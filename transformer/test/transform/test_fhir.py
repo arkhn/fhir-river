@@ -124,21 +124,6 @@ def test_array_of_literals():
     assert fhir_object == {"name": [{"given": ["Bob", "Dylan"]}], "other_attr": "Ross"}
 
 
-def test_clean_fhir_object():
-    dirty = {
-        "a": {"b": [{"c": 123}, {"c": 123}, {"c": 123}, {"c": 222}, {"c": 222}]},
-        "d": [{"e": {"f": 456}}, {"e": {"f": 456}}, {"e": 456}],
-    }
-    clean = transform.clean_fhir_object(dirty)
-
-    expected = {
-        "a": {"b": [{"c": 123}, {"c": 222}]},
-        "d": [{"e": {"f": 456}}, {"e": 456}],
-    }
-
-    assert clean == expected
-
-
 def test_get_position_first_index():
     path = ["root", "identifier[0]", "value"]
     index = transform.get_position_first_index(path)

@@ -9,7 +9,6 @@ from transformer.src.transform.dataframe import squash_rows
 from transformer.src.transform.dataframe import merge_by_attributes
 from transformer.src.transform.fhir import build_fhir_object
 from transformer.src.transform.fhir import build_metadata
-from transformer.src.transform.fhir import clean_fhir_object
 
 
 class Transformer:
@@ -64,8 +63,5 @@ class Transformer:
         fhir_object["id"] = str(uuid4())
         fhir_object["resourceType"] = analysis.definition["type"]
         fhir_object["meta"] = build_metadata(analysis)
-
-        # Remove duplicates in fhir object
-        fhir_object = clean_fhir_object(fhir_object)
 
         return fhir_object

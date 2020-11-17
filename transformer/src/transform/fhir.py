@@ -163,27 +163,6 @@ def insert_in_fhir_object(fhir_object, path, value):
         cur_location[path[-1]] = val
 
 
-def clean_fhir_object(fhir_obj):
-    """ Remove duplicate list elements from fhir object
-    """
-    if isinstance(fhir_obj, dict):
-        for key in fhir_obj:
-            fhir_obj[key] = clean_fhir_object(fhir_obj[key])
-        return fhir_obj
-
-    elif isinstance(fhir_obj, list):
-        to_rm = []
-        for i in range(len(fhir_obj)):
-            for j in range(i + 1, len(fhir_obj)):
-                if fhir_obj[i] == fhir_obj[j]:
-                    to_rm.append(i)
-                    break
-        return [el for ind, el in enumerate(fhir_obj) if ind not in to_rm]
-
-    else:
-        return fhir_obj
-
-
 def get_position_first_index(path):
     # Find first step which has an index
     for i, step in enumerate(path):
