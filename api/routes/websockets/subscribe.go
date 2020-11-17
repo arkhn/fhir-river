@@ -16,12 +16,12 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	subscribedTopics, _ = NewTopicsFromSlice([]string{"batch", "extract", "transform", "load"})
+	subscribedTopics, _ = newTopicsFromSlice([]string{"^batch*.", "^extract*.", "^transform*.", "^load*."})
 )
 
 type Topics map[string]struct{}
 
-func NewTopicsFromString(in string) (Topics, error) {
+func newTopicsFromString(in string) (Topics, error) {
 	topics := Topics{}
 	for _, t := range strings.Split(in, ",") {
 		topics[t] = struct{}{}
@@ -29,7 +29,7 @@ func NewTopicsFromString(in string) (Topics, error) {
 	return topics, nil
 }
 
-func NewTopicsFromSlice(in []string) (Topics, error) {
+func newTopicsFromSlice(in []string) (Topics, error) {
 	topics := Topics{}
 	for _, t := range in {
 		topics[t] = struct{}{}
@@ -140,7 +140,7 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 			return
 		}
 		// register the new subscriber in the hub
-		topics, err := NewTopicsFromString(r.URL.Query().Get("topics"))
+		topics, err := newTopicsFromString(r.URL.Query().Get("topics"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
