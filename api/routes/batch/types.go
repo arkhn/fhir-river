@@ -1,6 +1,6 @@
 package batch
 
-// BatchRequest is the body of the POST /batch request.
+// Request is the body of the POST /batch request.
 type Request struct {
 	Resources []struct {
 		ID           string `json:"resource_id"`
@@ -16,7 +16,7 @@ type DeleteResourceRequest struct {
 	} `json:"resources"`
 }
 
-// BatchEvent is the kind of event produced to trigger a batch ETL.
+// Event is the kind of event produced to trigger a batch ETL.
 type Event struct {
 	BatchID    string `json:"batch_id"`
 	ResourceID string `json:"resource_id"`

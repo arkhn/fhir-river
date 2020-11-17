@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Delete deletes a batch by removing its Redis keys and Kafka topics
 func Delete(batchID string, rdb *redis.Client, admin *kafka.AdminClient) error {
 	if _, err := rdb.Del("batch:"+batchID+":counter").Result(); err != nil {
 		return err
