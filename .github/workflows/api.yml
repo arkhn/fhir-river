@@ -55,7 +55,7 @@ jobs:
           driver-opts: network=host
       - uses: docker/build-push-action@v2
         with:
-          file: ./apigo/Dockerfile
+          file: ./api/Dockerfile
           context: ./api
           build-args: |
             VERSION_NAME=${{ steps.metadata.outputs.version }}
