@@ -17,7 +17,7 @@ RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build  -o /go/bin/api
 
 WORKDIR /dist
 RUN cp /go/bin/api ./api
-RUN cp /build/websockets.html ./websockets.html
+RUN cp /build/routes/websockets/websockets.html ./websockets.html
 
 # final image
 FROM scratch
@@ -26,7 +26,7 @@ FROM scratch
 COPY --from=builder /lib /lib
 COPY --from=builder /lib64 /lib64
 
-COPY --from=builder /build/websockets.html /websockets.html
+COPY --from=builder /build/routes/websockets/websockets.html /websockets.html
 COPY --from=builder /go/bin/api /go/bin/api
 
 ENTRYPOINT ["/go/bin/api"]

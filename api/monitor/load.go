@@ -92,7 +92,7 @@ func Load(rdb *redis.Client, admin *kafka.AdminClient) {
 					continue
 				}
 				// Increment counter in Redis
-				rdb.HIncrBy("batch:"+msg.BatchID, "resource:"+msg.ResourceID+":load", 1)
+				rdb.HIncrBy("batch:"+msg.BatchID+":counter", "resource:"+msg.ResourceID+":load", 1)
 				eob, err := isEndOfBatch(msg, rdb)
 				if err != nil {
 					log.Println(err)
