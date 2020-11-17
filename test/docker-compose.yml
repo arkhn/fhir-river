@@ -132,7 +132,7 @@ services:
 
   api:
     build:
-      context: ../apigo
+      context: ../api
     container_name: api
     image: arkhn/river-api-go:latest
     restart: always

@@ -115,9 +115,9 @@ services:
 
   api:
     build:
-      context: ./apigo
+      context: api
     container_name: api
-    image: arkhn/river-api-go:latest
+    image: arkhn/river-api:latest
     restart: always
     depends_on:
       - kafka

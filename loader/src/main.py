@@ -4,7 +4,7 @@ import json
 import os
 
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, g
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
 import redis
@@ -28,11 +28,30 @@ REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
 ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
 
+
+def get_redis_mappings_client():
+    if "redis_mappings_client" not in g:
+        g.redis_mappings_client = redis.Redis(
+            host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+        )
+    return g.redis_mappings_client
+
+
 ####################
 # LOADER FLASK API #
 ####################
 
-app = Flask(__name__)
+def create_app():
+    _app = Flask(__name__)
+
+    # load redis client
+    with _app.app_context():
+        get_redis_mappings_client()
+
+    return _app
+
+
+app = create_app()
 
 
 @app.route("/delete-resources", methods=["POST"])
@@ -89,7 +108,7 @@ def handle_authorization_error(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TOPICS = "^load.*"
+CONSUMED_TOPICS = "^transform.*"
 CONSUMER_GROUP_ID = "loader"
 PRODUCED_TOPIC_PREFIX = "load."
 
@@ -122,10 +141,8 @@ def process_event_with_context(producer):
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
-    redis_client = redis.Redis(
-        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
-    )
-    analyzer = Analyzer(redis_client=redis_client)
+    redis_mappings_client = get_redis_mappings_client()
+    analyzer = Analyzer(redis_client=redis_mappings_client)
 
     def process_event(msg):
         """ Process the event """
@@ -152,9 +169,14 @@ def process_event_with_context(producer):
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
+
             producer.produce_event(
                 topic=PRODUCED_TOPIC_PREFIX+batch_id,
-                record=resolved_fhir_instance
+                record={
+                    "fhir_object": resolved_fhir_instance,
+                    "batch_id": batch_id,
+                    "resource_id": resource_id,
+                }
             )
         except DuplicateKeyError:
             logger.error(format_traceback())

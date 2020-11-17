@@ -3,7 +3,7 @@ name: api
 on:
   push:
     paths:
-      - "apigo/**"
+      - "api/**"
 
 jobs:
   lint:
@@ -56,7 +56,7 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           file: ./apigo/Dockerfile
-          context: ./apigo
+          context: ./api
           build-args: |
             VERSION_NAME=${{ steps.metadata.outputs.version }}
             VERSION_SHA=${GITHUB_SHA::8}
