@@ -51,7 +51,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Clien
 			return
 		}
 
-		// create batchID topic
+		// create batchID topics
 		batchTopics := []kafka.TopicSpecification{
 			{Topic: topics.BatchPrefix + batchID, NumPartitions: topics.NumParts},
 			{Topic: topics.ExtractPrefix + batchID, NumPartitions: topics.NumParts},
