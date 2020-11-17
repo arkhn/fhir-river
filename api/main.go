@@ -31,7 +31,11 @@ func main() {
 	defer admin.Close()
 
 	// create a new kafka producer
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": kafkaURL})
+	producer, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": kafkaURL,
+		"session.timeout.ms": 6000,
+		"max.block.ms": 15000,
+	})
 	if err != nil {
 		panic(err)
 	}
