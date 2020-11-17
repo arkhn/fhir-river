@@ -67,6 +67,11 @@ func Load(rdb *redis.Client, admin *kafka.AdminClient) {
 	if err != nil {
 		panic(err)
 	}
+	defer func() {
+		if err := c.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
 	if err = c.Subscribe(topics.Load, nil); err != nil {
 		panic(err)
 	}
