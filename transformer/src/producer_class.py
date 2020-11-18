@@ -52,7 +52,7 @@ class TransformerProducer:
         except ValueError:
             logger.error(format_traceback())
         except KafkaException as e:
-            if e == KafkaError.UNKNOWN_TOPIC_OR_PART:
+            if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                 pass
             else:
                 logger.error(format_traceback())
