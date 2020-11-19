@@ -32,6 +32,8 @@ class LoaderProducer:
         config = {
             "bootstrap.servers": self.broker,
             "session.timeout.ms": 6000,
+            # max.block.ms (default 1 minute) controls how long the producer will block.
+            # It can be blocked if the topic has been deleted.
             "max.block.ms": 15000,
         }
         return config
