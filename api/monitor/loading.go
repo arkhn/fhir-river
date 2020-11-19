@@ -57,9 +57,9 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 // Loading consumes load.* topics. Each time a new resource instance is loaded,
 // it increments the batch_id counter of the resource type resource_id in Redis.
 // A batch counter is a Redis hash of key "batch:{batch_id}:count" containing elements of keys
-// "resource:{resource_id}:extract" and "resource:{resource_id}:load".
-// "resource:{resource_id}:extract" refers to the number of resources of type {resource_id} extracted.
-// "resource:{resource_id}:load" refers to the number of loaded resources of type {resource_id}.
+// "resource:{resource_id}:extracted" and "resource:{resource_id}:loaded".
+// "resource:{resource_id}:extracted" refers to the number of resources of type {resource_id} extracted.
+// "resource:{resource_id}:loaded" refers to the number of loaded resources of type {resource_id}.
 // The list of resource types of a batch is in a Redis set "batch:{batch_id}:resources"
 func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
