@@ -173,7 +173,6 @@ def process_event_with_context(producer):
             producer.produce_event(
                 topic=PRODUCED_TOPIC_PREFIX+batch_id,
                 record={
-                    "fhir_object": resolved_fhir_instance,
                     "batch_id": batch_id,
                     "resource_id": resource_id,
                 }

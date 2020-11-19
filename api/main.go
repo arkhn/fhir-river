@@ -75,7 +75,7 @@ func main() {
 	}()
 
 	// Monitor pipeline
-	go monitor.Load(rdb, admin)
+	go monitor.Loading(rdb, admin)
 
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()

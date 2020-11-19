@@ -28,36 +28,40 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 		return false, err
 	}
 	for _, resource := range batchResources {
-		extractCount, ok := counter["resource:"+resource+":extract"]
-		if !ok {
+		extractCountStr, isExtracting := counter["resource:"+resource+":extracted"]
+		if !isExtracting {
 			return false, nil
 		}
-		count, err := strconv.ParseInt(extractCount, 10, 32)
+		extractCountInt, err := strconv.ParseInt(extractCountStr, 10, 32)
 		if err != nil {
 			return false, err
 		}
-		if count == 0 {
+		if extractCountInt == 0 {
 			continue
 		}
-		loadCount, ok := counter["resource:"+resource+":load"]
-		if !ok {
+		loadCountStr, isLoading := counter["resource:"+resource+":loaded"]
+		if !isLoading {
 			return false, nil
 		}
-		if extractCount != loadCount {
+		loadCountInt, err := strconv.ParseInt(loadCountStr, 10, 32)
+		if err != nil {
+			return false, err
+		}
+		if extractCountInt < loadCountInt {
 			return false, nil
 		}
 	}
 	return true, nil
 }
 
-// Load consumes load.* topics. Each time a new resource instance is loaded,
+// Loading consumes load.* topics. Each time a new resource instance is loaded,
 // it increments the batch_id counter of the resource type resource_id in Redis.
 // A batch counter is a Redis hash of key "batch:{batch_id}:count" containing elements of keys
 // "resource:{resource_id}:extract" and "resource:{resource_id}:load".
 // "resource:{resource_id}:extract" refers to the number of resources of type {resource_id} extracted.
 // "resource:{resource_id}:load" refers to the number of loaded resources of type {resource_id}.
 // The list of resource types of a batch is in a Redis set "batch:{batch_id}:resources"
-func Load(rdb *redis.Client, admin *kafka.AdminClient) {
+func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":   kafkaURL,
 		"group.id":            consumerGroupID,
@@ -97,7 +101,7 @@ func Load(rdb *redis.Client, admin *kafka.AdminClient) {
 					continue
 				}
 				// Increment counter in Redis
-				rdb.HIncrBy("batch:"+msg.BatchID+":counter", "resource:"+msg.ResourceID+":load", 1)
+				rdb.HIncrBy("batch:"+msg.BatchID+":counter", "resource:"+msg.ResourceID+":loaded", 1)
 				eob, err := isEndOfBatch(msg, rdb)
 				if err != nil {
 					log.Println(err)

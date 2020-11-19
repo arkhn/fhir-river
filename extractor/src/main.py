@@ -195,7 +195,7 @@ def process_event_with_context(producer):
             )
         # Initialize a batch counter in Redis. For each resource_id, it records
         # the number of produced records
-        redis_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extract", count)
+        redis_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
