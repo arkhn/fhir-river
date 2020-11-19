@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from contextlib import contextmanager
 import os
 import json
 
@@ -7,6 +7,7 @@ from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, g, request, jsonify, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 import redis
+from sqlalchemy.orm import sessionmaker
 from uwsgidecorators import thread, postfork
 
 from analyzer.src.analyze import Analyzer
@@ -28,7 +29,17 @@ IN_PROD = ENV != "test"
 extractor = Extractor()
 
 
-def extract_resource(analysis, primary_key_values):
+@contextmanager
+def session_scope():
+    """Provide a scope for sqlalchemy sessions."""
+    session = sessionmaker(extractor.engine)()
+    try:
+        yield session
+    finally:
+        session.close()
+
+
+def extract_resource(session, analysis, primary_key_values):
     if not analysis.source_credentials:
         raise MissingInformationError("credential is required to run fhir-river.")
 
@@ -36,7 +47,7 @@ def extract_resource(analysis, primary_key_values):
     extractor.update_connection(credentials)
 
     logger.info("Extracting rows", extra={"resource_id": analysis.resource_id})
-    df = extractor.extract(analysis, primary_key_values)
+    df = extractor.extract(session, analysis, primary_key_values)
 
     return df
 
@@ -88,11 +99,12 @@ def extract():
         analysis = Analyzer(redis_client=get_redis_client()).load_cached_analysis(
             preview_id, resource_id
         )
-        df = extract_resource(analysis, primary_key_values)
-        rows = []
-        for record in extractor.split_dataframe(df, analysis):
-            logger.debug("One record from extract", extra={"resource_id": resource_id})
-            rows.append(record)
+        with session_scope() as session:
+            df = extract_resource(session, analysis, primary_key_values)
+            rows = []
+            for record in extractor.split_dataframe(df, analysis):
+                logger.debug("One record from extract", extra={"resource_id": resource_id})
+                rows.append(record)
 
         return jsonify({"rows": rows})
 
@@ -192,16 +204,17 @@ def process_event_with_context(producer):
         try:
             analysis = analyzer.load_cached_analysis(batch_id, resource_id)
 
-            df = extract_resource(analysis, primary_key_values)
-            batch_size = df.count()
-            logger.info(
-                f"Batch size is {batch_size} for resource type {analysis.definition_id}",
-                extra={"resource_id": resource_id},
-            )
-            producer.produce_event(
-                topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
-            )
-            broadcast_events(df, analysis, batch_id)
+            with session_scope() as session:
+                df = extract_resource(session, analysis, primary_key_values)
+                batch_size = df.count()
+                logger.info(
+                    f"Batch size is {batch_size} for resource type {analysis.definition_id}",
+                    extra={"resource_id": resource_id},
+                )
+                producer.produce_event(
+                    topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
+                )
+                broadcast_events(df, analysis, batch_id)
 
         except Exception:
             logger.error(format_traceback(), extra={"resource_id": resource_id})

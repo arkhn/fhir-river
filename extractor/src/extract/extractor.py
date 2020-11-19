@@ -5,8 +5,8 @@ from sqlalchemy import (
     MetaData,
 )
 from sqlalchemy.orm import (
-    sessionmaker,
     Query,
+    Session,
 )
 from typing import List, Any, Optional
 
@@ -47,7 +47,6 @@ class Extractor:
         self.db_string = None
         self.engine = None
         self.metadata = None
-        self.session = None
 
     @staticmethod
     def build_db_url(credentials):
@@ -78,10 +77,9 @@ class Extractor:
             # Setting pool_pre_ping to True avoids random connection closing
             self.engine = create_engine(self.db_string, pool_pre_ping=True)
             self.metadata = MetaData(bind=self.engine)
-            self.session = sessionmaker(self.engine)()
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
-    def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
+    def extract(self, session: Session, analysis: Analysis, pk_values: Optional[List[Any]] = None):
         """ Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
         source DB, run it and returns the result as an sqlalchemy ResultProxy.
@@ -94,11 +92,6 @@ class Extractor:
         Returns:
             a an sqlalchemy RestulProxy containing all the columns asked for in the mapping
         """
-        if self.session is None:
-            raise ValueError(
-                "You need to create a session for the Extractor before using extract()."
-            )
-
         logger.info(
             f"Start extracting resource: {analysis.definition_id}",
             extra={"resource_id": analysis.resource_id},
@@ -106,7 +99,7 @@ class Extractor:
 
         # Build sqlalchemy query
         builder = QueryBuilder(
-            session=self.session, metadata=self.metadata, analysis=analysis, pk_values=pk_values
+            session=session, metadata=self.metadata, analysis=analysis, pk_values=pk_values
         )
         query = builder.build_query()
 
