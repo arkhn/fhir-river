@@ -22,7 +22,7 @@ jobs:
     steps:
       - id: metadata
         run: |
-          IMAGE=arkhn/river-api-go
+          IMAGE=arkhn/river-api
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
 

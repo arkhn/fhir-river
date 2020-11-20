@@ -23,9 +23,9 @@ from loader.src.producer_class import LoaderProducer
 from logger import format_traceback
 
 
-REDIS_HOST = os.getenv("REDIS_HOST")
-REDIS_PORT = os.getenv("REDIS_PORT")
-REDIS_DB = os.getenv("REDIS_DB")
+REDIS_HOST = os.getenv("REDIS_COUNTER_HOST")
+REDIS_PORT = os.getenv("REDIS_COUNTER_PORT")
+REDIS_DB = os.getenv("REDIS_COUNTER_DB")
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
 REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")

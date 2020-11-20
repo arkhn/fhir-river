@@ -209,6 +209,12 @@ services:
       LOADER_REDIS_HOST: loader-redis
       LOADER_REDIS_PORT: 6379
       LOADER_REDIS_DB: 0
+      LOADER_REDIS_HOST: loader-redis
+      LOADER_REDIS_PORT: 6379
+      LOADER_REDIS_DB: 0
+      LOADER_REDIS_HOST: loader-redis
+      LOADER_REDIS_PORT: 6379
+      LOADER_REDIS_DB: 0
       OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
       OAUTH2_CLIENT_ID: fhir-river
       OAUTH2_CLIENT_SECRET: river-secret

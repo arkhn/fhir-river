@@ -12,10 +12,10 @@ const (
 var (
 	port, isPortDefined         = os.LookupEnv("PORT")
 	kafkaURL, isKafkaURLDefined = os.LookupEnv("KAFKA_BOOTSTRAP_SERVERS")
-	redisHost, isRedisHost      = os.LookupEnv("REDIS_HOST")
-	redisPort, isRedisPort      = os.LookupEnv("REDIS_PORT")
-	redisPassword               = os.Getenv("REDIS_PASSWORD")
-	redisDb, isRedisDb          = os.LookupEnv("REDIS_DB")
+	redisHost, isRedisHost      = os.LookupEnv("REDIS_COUNTER_HOST")
+	redisPort, isRedisPort      = os.LookupEnv("REDIS_COUNTER_PORT")
+	redisPassword               = os.Getenv("REDIS_COUNTER_PASSWORD")
+	redisDb, isRedisDb          = os.LookupEnv("REDIS_COUNTER_DB")
 )
 
 // ensure that the required environment variables are defined
