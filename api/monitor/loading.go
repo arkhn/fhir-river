@@ -56,7 +56,7 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 
 // Loading consumes load.* topics. Each time a new resource instance is loaded,
 // it increments the batch_id counter of the resource type resource_id in Redis.
-// A batch counter is a Redis hash of key "batch:{batch_id}:count" containing elements of keys
+// A batch counter is a Redis hash of key "batch:{batch_id}:counter" containing elements of keys
 // "resource:{resource_id}:extracted" and "resource:{resource_id}:loaded".
 // "resource:{resource_id}:extracted" refers to the number of resources of type {resource_id} extracted.
 // "resource:{resource_id}:loaded" refers to the number of loaded resources of type {resource_id}.
@@ -72,8 +72,9 @@ func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 		panic(err)
 	}
 	defer func() {
+		log.Println("Closing consumer")
 		if err := c.Close(); err != nil {
-			log.Println(err)
+			panic(err)
 		}
 	}()
 	if err = c.Subscribe(topics.Load, nil); err != nil {
@@ -82,14 +83,15 @@ func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, syscall.SIGTERM, syscall.SIGINT)
-	run := true
-	for run == true {
+
+	ConsumerLoop:
+	for {
 		select {
 		case sig := <-s:
 			log.Printf("Caught signal %v: terminating\n", sig)
-			run = false
+			break ConsumerLoop
 		default:
-			ev := c.Poll(100)
+			ev := c.Poll(1000)
 			if ev == nil {
 				continue
 			}
@@ -119,9 +121,5 @@ func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 				log.Printf("Ignored %v\n\n", e)
 			}
 		}
-	}
-	log.Println("Closing consumer")
-	if err = c.Close(); err != nil {
-		panic(err)
 	}
 }

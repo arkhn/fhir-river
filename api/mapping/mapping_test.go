@@ -1,12 +1,13 @@
 package mapping
 
 import (
-	"github.com/arkhn/fhir-river/api/errors"
-	"github.com/arkhn/fhir-river/api/mocks"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/arkhn/fhir-river/api/errors"
+	"github.com/arkhn/fhir-river/api/mocks"
 )
 
 func TestFetch(t *testing.T) {
