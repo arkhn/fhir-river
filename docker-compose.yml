@@ -128,6 +128,12 @@ services:
       EXTRACTOR_URL: http://extractor:3001
       TRANSFORMER_URL: http://transformer:3002
       LOADER_URL: http://loader:3003
+      REDIS_MAPPINGS_HOST: redis
+      REDIS_MAPPINGS_PORT: 6379
+      REDIS_MAPPINGS_DB: 1
+      REDIS_COUNTER_HOST: redis
+      REDIS_COUNTER_PORT: 6379
+      REDIS_COUNTER_DB: 2
     ports:
       - "3000:3000"
     networks:
@@ -151,6 +157,15 @@ services:
       OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
       OAUTH2_CLIENT_ID: fhir-river
       OAUTH2_CLIENT_SECRET: river-secret
+      REDIS_REFERENCES_HOST: redis
+      REDIS_REFERENCES_PORT: 6379
+      REDIS_REFERENCES_DB: 0
+      REDIS_MAPPINGS_HOST: redis
+      REDIS_MAPPINGS_PORT: 6379
+      REDIS_MAPPINGS_DB: 1
+      REDIS_COUNTER_HOST: redis
+      REDIS_COUNTER_PORT: 6379
+      REDIS_COUNTER_DB: 2
     ports:
       - 3001:3001
     networks:
@@ -175,6 +190,9 @@ services:
       FHIRSTORE_DATABASE: fhirstore
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
+      REDIS_MAPPINGS_HOST: redis
+      REDIS_MAPPINGS_PORT: 6379
+      REDIS_MAPPINGS_DB: 1
       SERVICE_NAME: transformer
       OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
       OAUTH2_CLIENT_ID: fhir-river
@@ -206,15 +224,15 @@ services:
       FHIRSTORE_USER: null
       FHIRSTORE_PASSWORD: null
       SERVICE_NAME: loader
-      LOADER_REDIS_HOST: loader-redis
-      LOADER_REDIS_PORT: 6379
-      LOADER_REDIS_DB: 0
-      LOADER_REDIS_HOST: loader-redis
-      LOADER_REDIS_PORT: 6379
-      LOADER_REDIS_DB: 0
-      LOADER_REDIS_HOST: loader-redis
-      LOADER_REDIS_PORT: 6379
-      LOADER_REDIS_DB: 0
+      REDIS_REFERENCES_HOST: redis
+      REDIS_REFERENCES_PORT: 6379
+      REDIS_REFERENCES_DB: 0
+      REDIS_MAPPINGS_HOST: redis
+      REDIS_MAPPINGS_PORT: 6379
+      REDIS_MAPPINGS_DB: 1
+      REDIS_COUNTER_HOST: redis
+      REDIS_COUNTER_PORT: 6379
+      REDIS_COUNTER_DB: 2
       OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
       OAUTH2_CLIENT_ID: fhir-river
       OAUTH2_CLIENT_SECRET: river-secret
@@ -222,15 +240,6 @@ services:
       - 3003:3003
     networks:
       - river-network
-
-  loader-redis:
-    image: redis:6.0.7
-    container_name: loader-redis
-    restart: always
-    networks:
-      - river-network
-    volumes:
-      - loader-redis-data:/data
 
   # Uncomment if you want monitoring
   # prometheus:
@@ -292,7 +301,6 @@ volumes:
     name: mimic-db
   fhirstore-db:
   redis-data:
-  loader-redis-data:
 
 networks:
   river-network:
