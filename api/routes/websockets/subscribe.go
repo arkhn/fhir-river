@@ -1,6 +1,7 @@
 package websockets
 
 import (
+	"github.com/arkhn/fhir-river/api/topics"
 	"net/http"
 	"strings"
 	"time"
@@ -16,7 +17,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	subscribedTopics, _ = newTopicsFromSlice([]string{"^batch.*", "^extract.*", "^transform.*", "^load.*"})
+	subscribedTopics, _ = newTopicsFromSlice([]string{topics.Batch, topics.Extract, topics.Transform, topics.Load})
 )
 
 type Topics map[string]struct{}
