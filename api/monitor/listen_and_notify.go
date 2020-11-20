@@ -27,8 +27,8 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	for _, resource := range batchResources {
-		extractCountStr, isExtracting := counter["resource:"+resource+":extracted"]
+	for _, resourceID := range batchResources {
+		extractCountStr, isExtracting := counter["resource:"+resourceID+":extracted"]
 		if !isExtracting {
 			return false, nil
 		}
@@ -39,7 +39,7 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 		if extractCountInt == 0 {
 			continue
 		}
-		loadCountStr, isLoading := counter["resource:"+resource+":loaded"]
+		loadCountStr, isLoading := counter["resource:"+resourceID+":loaded"]
 		if !isLoading {
 			return false, nil
 		}
