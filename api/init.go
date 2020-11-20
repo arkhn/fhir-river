@@ -27,13 +27,13 @@ func init() {
 		panic("KAFKA_BOOTSTRAP_SERVERS is required in environment")
 	}
 	if !isRedisHost {
-		panic("REDIS_HOST is required in environment")
+		panic("REDIS_COUNTER_HOST is required in environment")
 	}
 	if !isRedisPort {
-		panic("REDIS_PORT is required in environment")
+		panic("REDIS_COUNTER_PORT is required in environment")
 	}
 	if !isRedisDb {
-		panic("REDIS_DB is required in environment")
+		panic("REDIS_COUNTER_DB is required in environment")
 	}
 
 	// Use the default text formatter.

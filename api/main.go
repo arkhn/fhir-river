@@ -61,7 +61,7 @@ func main() {
 	// open Redis connection
 	intRedisDb, err := strconv.Atoi(redisDb)
 	if err != nil {
-		panic("REDIS_DB should represent an int")
+		panic("REDIS_COUNTER_DB should represent an int")
 	}
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),

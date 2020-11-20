@@ -33,12 +33,12 @@ ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
 
 
-def get_redis_client():
-    if "redis_client" not in g:
-        g.redis_client = redis.Redis(
+def get_redis_counter_client():
+    if "redis_counter_client" not in g:
+        g.redis_counter_client = redis.Redis(
             host=REDIS_COUNTER_HOST, port=REDIS_COUNTER_PORT, db=REDIS_COUNTER_DB
         )
-    return g.redis_client
+    return g.redis_counter_client
 
 
 def get_redis_mappings_client():
@@ -58,7 +58,7 @@ def create_app():
 
     # load redis client
     with _app.app_context():
-        get_redis_client()
+        get_redis_counter_client()
         get_redis_mappings_client()
 
     return _app
@@ -154,7 +154,7 @@ def process_event_with_context(producer):
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
-    redis_client = get_redis_client()
+    redis_client = get_redis_counter_client()
     redis_mappings_client = get_redis_mappings_client()
     analyzer = Analyzer(redis_client=redis_mappings_client)
 
@@ -188,7 +188,6 @@ def process_event_with_context(producer):
             producer.produce_event(
                 topic=PRODUCED_TOPIC_PREFIX+batch_id,
                 record={
-                    "fhir_object": resolved_fhir_instance,
                     "batch_id": batch_id,
                     "resource_id": resource_id,
                 }
