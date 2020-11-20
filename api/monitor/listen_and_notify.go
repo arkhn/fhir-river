@@ -54,30 +54,33 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 	return true, nil
 }
 
-// Loading consumes load.* topics. Each time a new resource instance is loaded,
+// ListenAndNotify consumes load.* topics. Each time a new resource instance is loaded,
 // it increments the batch_id counter of the resource type resource_id in Redis.
 // A batch counter is a Redis hash of key "batch:{batch_id}:counter" containing elements of keys
 // "resource:{resource_id}:extracted" and "resource:{resource_id}:loaded".
 // "resource:{resource_id}:extracted" refers to the number of resources of type {resource_id} extracted.
 // "resource:{resource_id}:loaded" refers to the number of loaded resources of type {resource_id}.
 // The list of resource types of a batch is in a Redis set "batch:{batch_id}:resources"
-func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
-	c, err := kafka.NewConsumer(&kafka.ConfigMap{
+func (m BatchListener) ListenAndNotify() {
+	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":   kafkaURL,
 		"group.id":            consumerGroupID,
 		"session.timeout.ms":  6000,
+		// metadata.max.age.ms (default 5 min) is the period of time in milliseconds after which
+		// we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
 		"metadata.max.age.ms": 5000,
 		"auto.offset.reset":   "earliest"})
 	if err != nil {
 		panic(err)
 	}
+	m.c = consumer
 	defer func() {
 		log.Println("Closing consumer")
-		if err := c.Close(); err != nil {
+		if err := m.c.Close(); err != nil {
 			panic(err)
 		}
 	}()
-	if err = c.Subscribe(topics.Load, nil); err != nil {
+	if err = m.c.Subscribe(topics.Load, nil); err != nil {
 		panic(err)
 	}
 
@@ -91,7 +94,7 @@ func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 			log.Printf("Caught signal %v: terminating\n", sig)
 			break ConsumerLoop
 		default:
-			ev := c.Poll(1000)
+			ev := m.c.Poll(1000)
 			if ev == nil {
 				continue
 			}
@@ -102,15 +105,13 @@ func Loading(rdb *redis.Client, admin *kafka.AdminClient) {
 					log.Printf("Error while decoding Kafka message: %v\n", err)
 					continue
 				}
-				// Increment counter in Redis
-				rdb.HIncrBy("batch:"+msg.BatchID+":counter", "resource:"+msg.ResourceID+":loaded", 1)
-				eob, err := isEndOfBatch(msg, rdb)
+				eob, err := isEndOfBatch(msg, m.Rdb)
 				if err != nil {
 					log.Println(err)
 					continue
 				}
 				if eob {
-					if err := batch.Delete(msg.BatchID, rdb, admin); err != nil {
+					if err := batch.Delete(msg.BatchID, m.Rdb, m.Admin); err != nil {
 						log.Println(err)
 						continue
 					}
