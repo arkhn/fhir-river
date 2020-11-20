@@ -22,11 +22,23 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 from logger import format_traceback
 
+
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+REDIS_DB = os.getenv("REDIS_DB")
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
 REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
 ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
+
+
+def get_redis_client():
+    if "redis_client" not in g:
+        g.redis_client = redis.Redis(
+            host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB
+        )
+    return g.redis_client
 
 
 def get_redis_mappings_client():
@@ -46,6 +58,7 @@ def create_app():
 
     # load redis client
     with _app.app_context():
+        get_redis_client()
         get_redis_mappings_client()
 
     return _app
@@ -141,6 +154,7 @@ def process_event_with_context(producer):
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
+    redis_client = get_redis_client()
     redis_mappings_client = get_redis_mappings_client()
     analyzer = Analyzer(redis_client=redis_mappings_client)
 
@@ -169,10 +183,12 @@ def process_event_with_context(producer):
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
-
+            # Increment loaded resources counter in Redis
+            redis_client.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
             producer.produce_event(
                 topic=PRODUCED_TOPIC_PREFIX+batch_id,
                 record={
+                    "fhir_object": resolved_fhir_instance,
                     "batch_id": batch_id,
                     "resource_id": resource_id,
                 }
