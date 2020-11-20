@@ -55,7 +55,7 @@ func isEndOfBatch(msg message, rdb *redis.Client) (bool, error) {
 }
 
 // ListenAndNotify consumes load.* topics. Each time a new resource instance is loaded,
-// it increments the batch_id counter of the resource type resource_id in Redis.
+// the batch_id counter of the resource type resource_id in Redis is incremented.
 // A batch counter is a Redis hash of key "batch:{batch_id}:counter" containing elements of keys
 // "resource:{resource_id}:extracted" and "resource:{resource_id}:loaded".
 // "resource:{resource_id}:extracted" refers to the number of resources of type {resource_id} extracted.
