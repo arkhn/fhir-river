@@ -23,9 +23,9 @@ from loader.src.producer_class import LoaderProducer
 from logger import format_traceback
 
 
-REDIS_HOST = os.getenv("REDIS_COUNTER_HOST")
-REDIS_PORT = os.getenv("REDIS_COUNTER_PORT")
-REDIS_DB = os.getenv("REDIS_COUNTER_DB")
+REDIS_COUNTER_HOST = os.getenv("REDIS_COUNTER_HOST")
+REDIS_COUNTER_PORT = os.getenv("REDIS_COUNTER_PORT")
+REDIS_COUNTER_DB = os.getenv("REDIS_COUNTER_DB")
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
 REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
@@ -36,7 +36,7 @@ IN_PROD = ENV != "test"
 def get_redis_client():
     if "redis_client" not in g:
         g.redis_client = redis.Redis(
-            host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB
+            host=REDIS_COUNTER_HOST, port=REDIS_COUNTER_PORT, db=REDIS_COUNTER_DB
         )
     return g.redis_client
 
