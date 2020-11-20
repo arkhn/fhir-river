@@ -106,19 +106,22 @@ def test_handle_array_attributes():
         transform.handle_array_attributes(attributes_in_array, row)
 
 
-def test_clean_fhir_object():
-    dirty = {
-        "a": {"b": [{"c": 123}, {"c": 123}, {"c": 123}, {"c": 222}, {"c": 222}]},
-        "d": [{"e": {"f": 456}}, {"e": {"f": 456}}, {"e": 456}],
-    }
-    clean = transform.clean_fhir_object(dirty)
+def test_array_of_literals():
+    attr_0 = Attribute("name[0].given[0]")
+    attr_1 = Attribute("name[0].given[1]")
+    attr_2 = Attribute("other_attr")
 
-    expected = {
-        "a": {"b": [{"c": 123}, {"c": 222}]},
-        "d": [{"e": {"f": 456}}, {"e": 456}],
+    path_attributes_map = {attr_0.path: attr_0, attr_1.path: attr_1, attr_2.path: attr_2}
+
+    row = {
+        attr_0.path: ("Bob",),
+        attr_1.path: ("Dylan",),
+        attr_2.path: ("Ross",),
     }
 
-    assert clean == expected
+    fhir_object = transform.build_fhir_object(row, path_attributes_map)
+
+    assert fhir_object == {"name": [{"given": ["Bob", "Dylan"]}], "other_attr": "Ross"}
 
 
 def test_get_position_first_index():

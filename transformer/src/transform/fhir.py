@@ -50,7 +50,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
         # will try to create fhir objects with an empty path (remove_root_path removes
         # what's before the [...] included).
         if path == "":
-            return row[attr.path]
+            return row[attr.path][index]
 
         # Find if there is an index in the path
         split_path = path.split(".")
@@ -86,6 +86,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
                 for path, attr in path_attributes_map.items()
                 if path.startswith(array_path)
             }
+
             # Build the array of sub fhir object
             array = handle_array_attributes(attributes_in_array, row)
             # Insert them a the right position
@@ -160,27 +161,6 @@ def insert_in_fhir_object(fhir_object, path, value):
     else:
         # Else, we are inserting a literal
         cur_location[path[-1]] = val
-
-
-def clean_fhir_object(fhir_obj):
-    """ Remove duplicate list elements from fhir object
-    """
-    if isinstance(fhir_obj, dict):
-        for key in fhir_obj:
-            fhir_obj[key] = clean_fhir_object(fhir_obj[key])
-        return fhir_obj
-
-    elif isinstance(fhir_obj, list):
-        to_rm = []
-        for i in range(len(fhir_obj)):
-            for j in range(i + 1, len(fhir_obj)):
-                if fhir_obj[i] == fhir_obj[j]:
-                    to_rm.append(i)
-                    break
-        return [el for ind, el in enumerate(fhir_obj) if ind not in to_rm]
-
-    else:
-        return fhir_obj
 
 
 def get_position_first_index(path):
