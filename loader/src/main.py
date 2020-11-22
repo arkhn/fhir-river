@@ -8,6 +8,8 @@ from flask import Flask, request, jsonify, Response, g
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
 import redis
+from redlock import Redlock
+from loader.src.cache import REDIS_REFERENCES_HOST, REDIS_REFERENCES_PORT, REDIS_REFERENCES_DB
 from uwsgidecorators import thread, postfork
 
 from fhirstore import NotFoundError
@@ -173,11 +175,26 @@ def process_event_with_context(producer):
             # references OR is referenced by other documents)
             logger.debug(
                 f"Resolving references {analysis.reference_paths}",
-                extra={"resource_id": resource_id},
+                extra={"batch_id": batch_id, "resource_id": resource_id},
             )
+
+            # Redis distributed lock for reference binding
+            dlm = Redlock(
+                [{
+                    "host": REDIS_REFERENCES_HOST,
+                    "port": REDIS_REFERENCES_PORT,
+                    "db": REDIS_REFERENCES_DB
+                }, ]
+            )
+            while True:
+                # Lock TTL is 5 min
+                ref_lock = dlm.lock(f"batch:{batch_id}:lock", 3600_000)
+                if ref_lock:
+                    break
             resolved_fhir_instance = binder.resolve_references(
                 fhir_instance, analysis.reference_paths
             )
+            dlm.unlock(ref_lock)
 
             logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
             loader.load(

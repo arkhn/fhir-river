@@ -10,5 +10,6 @@ jsonschema==3.0.2
 prometheus-client==0.8.0
 pymongo==3.9.0
 redis==3.5.3
+redlock-py==1.0.8
 requests==2.21.0
 uWSGI==2.0.18
