@@ -2,17 +2,18 @@ package batch
 
 import (
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/go-redis/redis"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
+
+	"github.com/arkhn/fhir-river/api/monitor"
 )
 
-func Cancel(rdb *redis.Client, admin *kafka.AdminClient) func (http.ResponseWriter, *http.Request) {
+func Cancel(ctl monitor.BatchController) func (http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		batchID := vars["id"]
-		if err := Delete(batchID, rdb, admin); err != nil {
+		if err := ctl.Destroy(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		// return the batch ID to the client immediately.

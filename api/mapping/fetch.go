@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/errors"
 	"log"
 	"net/http"
+
+	"github.com/arkhn/fhir-river/api/errors"
 )
 
 const resourceFromIDQuery = `

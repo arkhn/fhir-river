@@ -1,12 +1,8 @@
 package batch
 
-import (
-	"os"
-)
+import "os"
 
-var (
-	loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
-)
+var loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
 
 func init() {
 	if !isLoaderURLDefined {

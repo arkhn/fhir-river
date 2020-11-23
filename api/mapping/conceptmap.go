@@ -3,8 +3,9 @@ package mapping
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/errors"
 	"net/http"
+
+	"github.com/arkhn/fhir-river/api/errors"
 )
 
 type conceptMapResponse struct {

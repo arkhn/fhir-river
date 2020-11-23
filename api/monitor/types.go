@@ -5,8 +5,7 @@ import (
 	"github.com/go-redis/redis"
 )
 
-type BatchListener struct {
-	Rdb   *redis.Client
-	Admin *kafka.AdminClient
-	c     *kafka.Consumer
+type BatchController struct {
+	Rdb        *redis.Client
+	KafkaAdmin *kafka.AdminClient
 }

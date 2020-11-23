@@ -3,17 +3,17 @@ package preview
 import (
 	"bytes"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/mapping"
-	"github.com/arkhn/fhir-river/api/mocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
-
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/mocks"
 )
 
 func newTestRedis() (*miniredis.Miniredis, *redis.Client) {

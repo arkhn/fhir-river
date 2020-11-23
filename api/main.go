@@ -3,10 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/monitor"
-	"github.com/arkhn/fhir-river/api/routes/preview"
-	"github.com/arkhn/fhir-river/api/routes/websockets"
-	"github.com/go-redis/redis"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,12 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/arkhn/fhir-river/api/routes/batch"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/go-redis/redis"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-
 	log "github.com/sirupsen/logrus"
+
+	"github.com/arkhn/fhir-river/api/monitor"
+	"github.com/arkhn/fhir-river/api/routes/batch"
+	"github.com/arkhn/fhir-river/api/routes/preview"
+	"github.com/arkhn/fhir-river/api/routes/websockets"
 )
 
 func main() {
@@ -75,14 +75,14 @@ func main() {
 	}()
 
 	// Monitor pipeline
-	m := monitor.BatchListener{Rdb: rdb, Admin: admin}
-	go m.ListenAndNotify()
+	ctl := monitor.BatchController{Rdb: rdb, KafkaAdmin: admin}
+	go ctl.ListenAndDestroy()
 
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()
 	router.HandleFunc("/preview", preview.Run).Methods("POST")
-	router.HandleFunc("/batch", batch.Create(producer, admin, rdb)).Methods("POST")
-	router.HandleFunc("/batch/{id}", batch.Cancel(rdb, admin)).Methods("DELETE")
+	router.HandleFunc("/batch", batch.Create(producer, ctl)).Methods("POST")
+	router.HandleFunc("/batch/{id}", batch.Cancel(ctl)).Methods("DELETE")
 	router.HandleFunc("/ws", websockets.Subscribe(consumer)).Methods("GET")
 
 	// this is a temporary route to test websocket functionality

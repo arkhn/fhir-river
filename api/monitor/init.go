@@ -1,12 +1,8 @@
 package monitor
 
-import (
-	"os"
-)
+import "os"
 
-const (
-	consumerGroupID      = "monitor"
-)
+const consumerGroupID      = "monitor"
 
 var kafkaURL, isKafkaURLDefined = os.LookupEnv("KAFKA_BOOTSTRAP_SERVERS")
 

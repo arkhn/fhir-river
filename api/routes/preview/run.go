@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/errors"
-	"github.com/arkhn/fhir-river/api/mapping"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/arkhn/fhir-river/api/errors"
+	"github.com/arkhn/fhir-river/api/mapping"
 )
 
 // Request is the body of the POST /preview request.
