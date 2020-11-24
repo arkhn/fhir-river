@@ -10,16 +10,19 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 
-	"github.com/arkhn/fhir-river/api/routes/batch"
 	"github.com/arkhn/fhir-river/api/topics"
 )
 
+type message struct {
+	BatchID string `json:"batch_id"`
+}
+
 func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
-	batchResources, err := ctl.Rdb.SMembers("batch:"+batchID+":resources").Result()
+	batchResources, err := ctl.Rdb.SMembers("batch:" + batchID + ":resources").Result()
 	if err != nil {
 		return false, err
 	}
-	counter, err := ctl.Rdb.HGetAll("batch:"+batchID+":counter").Result()
+	counter, err := ctl.Rdb.HGetAll("batch:" + batchID + ":counter").Result()
 	if err != nil {
 		return false, err
 	}
@@ -59,9 +62,9 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 // The list of resource types of a batch is in a Redis set "batch:{batch_id}:resources"
 func (ctl BatchController) ListenAndDestroy() {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers":   kafkaURL,
-		"group.id":            consumerGroupID,
-		"session.timeout.ms":  6000,
+		"bootstrap.servers":  kafkaURL,
+		"group.id":           consumerGroupID,
+		"session.timeout.ms": 6000,
 		// metadata.max.age.ms (default 5 min) is the period of time in milliseconds after which
 		// we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
 		"metadata.max.age.ms": 5000,
@@ -82,7 +85,7 @@ func (ctl BatchController) ListenAndDestroy() {
 	s := make(chan os.Signal, 1)
 	signal.Notify(s, syscall.SIGTERM, syscall.SIGINT)
 
-	ConsumerLoop:
+ConsumerLoop:
 	for {
 		select {
 		case sig := <-s:
@@ -95,7 +98,7 @@ func (ctl BatchController) ListenAndDestroy() {
 			}
 			switch e := ev.(type) {
 			case *kafka.Message:
-				var msg batch.Event
+				var msg message
 				if err := json.Unmarshal(e.Value, &msg); err != nil {
 					log.Printf("Error while decoding Kafka message: %v\n", err)
 					continue
