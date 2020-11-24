@@ -11,10 +11,10 @@ import (
 
 // Destroy deletes a batch by removing its Redis keys and Kafka topics
 func (ctl BatchController) Destroy(batchID string) error {
-	if _, err := ctl.Rdb.Del("batch:"+batchID+":counter").Result(); err != nil {
+	if _, err := ctl.Redis().Del("batch:"+batchID+":counter").Result(); err != nil {
 		return err
 	}
-	if _, err := ctl.Rdb.Del("batch:"+batchID+":resources").Result(); err != nil {
+	if _, err := ctl.Redis().Del("batch:"+batchID+":resources").Result(); err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -25,7 +25,7 @@ func (ctl BatchController) Destroy(batchID string) error {
 		topics.TransformPrefix + batchID,
 		topics.LoadPrefix + batchID,
 	}
-	if _, err := ctl.KafkaAdmin.DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
+	if _, err := ctl.Kafka().DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
 		return err
 	}
 	return nil

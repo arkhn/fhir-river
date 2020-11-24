@@ -47,7 +47,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		batchID := batchUUID.String()
 
 		// List resources of current batch in Redis
-		if err := ctl.Rdb.SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
+		if err := ctl.Redis().SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -61,7 +61,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		}
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		if _, err = ctl.KafkaAdmin.CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
+		if _, err = ctl.Kafka().CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

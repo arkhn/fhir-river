@@ -75,7 +75,7 @@ func main() {
 	}()
 
 	// Monitor pipeline
-	ctl := monitor.BatchController{Rdb: rdb, KafkaAdmin: admin}
+	ctl := monitor.NewBatchController(rdb, admin)
 	go ctl.ListenAndDestroy()
 
 	// define the HTTP routes and handlers

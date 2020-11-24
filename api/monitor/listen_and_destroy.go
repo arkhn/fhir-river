@@ -18,11 +18,11 @@ type message struct {
 }
 
 func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
-	batchResources, err := ctl.Rdb.SMembers("batch:" + batchID + ":resources").Result()
+	batchResources, err := ctl.Redis().SMembers("batch:" + batchID + ":resources").Result()
 	if err != nil {
 		return false, err
 	}
-	counter, err := ctl.Rdb.HGetAll("batch:" + batchID + ":counter").Result()
+	counter, err := ctl.Redis().HGetAll("batch:" + batchID + ":counter").Result()
 	if err != nil {
 		return false, err
 	}
