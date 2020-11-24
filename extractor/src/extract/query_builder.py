@@ -1,6 +1,8 @@
 from sqlalchemy import (
     and_,
     Column as AlchemyColumn,
+    distinct,
+    func,
     Table,
 )
 from sqlalchemy.orm import (
@@ -88,6 +90,27 @@ class QueryBuilder:
 
         logger.info(
             f"Built query for resource {self.analysis.definition_id}: {query.statement}",
+            extra={"resource_id": self.analysis.resource_id},
+        )
+        return query
+
+    @Timer("time_extractor_build_batch_size_query", "time to build vatch size sql query")
+    def build_batch_size_query(self) -> Query:
+        logger.info(
+            f"Start building batch size query for resource {self.analysis.definition_id}",
+            extra={"resource_id": self.analysis.resource_id},
+        )
+
+        sqlalchemy_pk_column = self.get_column(
+            self.analysis.primary_key_column, self._sqlalchemy_pk_table
+        )
+        query = self.session.query(func.count(distinct(sqlalchemy_pk_column)))
+
+        # Add filters to query
+        query = self.apply_filters(query)
+
+        logger.info(
+            f"Built batch size query for resource {self.analysis.definition_id}: {query.statement}",
             extra={"resource_id": self.analysis.resource_id},
         )
         return query
