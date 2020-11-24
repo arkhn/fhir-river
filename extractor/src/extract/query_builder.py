@@ -1,6 +1,8 @@
 from sqlalchemy import (
     and_,
     Column as AlchemyColumn,
+    distinct,
+    func,
     Table,
 )
 from sqlalchemy.orm import (
@@ -55,10 +57,6 @@ class QueryBuilder:
             autoload=True,
         )
 
-        # We don't need to have condition columns duplicated in the dataframe
-        # so we keep the one we've already seen here.
-        self._condition_columns = set()
-
     @Timer("time_extractor_build_query", "time to build sql query")
     def build_query(self) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
@@ -67,6 +65,12 @@ class QueryBuilder:
             f"Start building query for resource {self.analysis.definition_id}",
             extra={"resource_id": self.analysis.resource_id},
         )
+
+        # We don't need to have condition columns duplicated in the dataframe
+        # so we keep the one we've already seen here.
+        self._condition_columns = set()
+        # To avoid duplciated joins, we keep them here
+        self._cur_query_join_tables = {}
 
         query = self.session.query(
             self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table)
@@ -85,23 +89,48 @@ class QueryBuilder:
         )
         return query
 
+    @Timer("time_extractor_build_batch_size_query", "time to build vatch size sql query")
+    def build_batch_size_query(self) -> Query:
+        logger.info(
+            f"Start building batch size query for resource {self.analysis.definition_id}",
+            extra={"resource_id": self.analysis.resource_id},
+        )
+
+        sqlalchemy_pk_column = self.get_column(
+            self.analysis.primary_key_column, self._sqlalchemy_pk_table
+        )
+        query = self.session.query(func.count(distinct(sqlalchemy_pk_column)))
+
+        # Add filters to query
+        query = self.apply_filters(query)
+
+        logger.info(
+            f"Built batch size query for resource {self.analysis.definition_id}: {query.statement}",
+            extra={"resource_id": self.analysis.resource_id},
+        )
+        return query
+
     def add_attribute_to_query(self, query: Query, attribute: Attribute):
         for input_group in attribute.input_groups:
             for col in input_group.columns:
-                # Add the column to select to the query
-                sqlalchemy_table = self.get_table(col)
-                sqlalchemy_col = self.get_column(col, sqlalchemy_table)
-                query = query.add_columns(sqlalchemy_col)
 
                 # Apply joins to the query
                 # We keep the used join tables in a dict in case we have multi-hop joins
-                join_tables = {col.table: sqlalchemy_table}
+                join_tables = {}
                 for join in col.joins:
+                    if join in self._cur_query_join_tables:
+                        # This join was already added to the query
+                        continue
+
                     # Get tables
                     right_table = join_tables.get(join.right.table, self.get_table(join.right))
-                    join_tables[join.right.table] = right_table
                     left_table = join_tables.get(join.left.table, self.get_table(join.left))
+                    join_tables[join.right.table] = right_table
                     join_tables[join.left.table] = left_table
+
+                    # Add the join to the temp join dict
+                    self._cur_query_join_tables[join] = right_table
+
                     # Add join
                     query = query.join(
                         right_table,
@@ -109,6 +138,19 @@ class QueryBuilder:
                         == self.get_column(join.left, left_table),
                         isouter=True,
                     )
+
+                # We need to use the right sqlalchemy table for the input:
+                if col.joins:
+                    # If there is a join on this attribute, we need to use the same table
+                    # as in the joins. The last join will be the one on the input table
+                    sqlalchemy_table = self._cur_query_join_tables[col.joins[-1]]
+                else:
+                    # Otherwise, it's the primary table and we don't need to alias it
+                    sqlalchemy_table = self.get_table(col, with_alias=False)
+
+                # Add the column to select to the query
+                sqlalchemy_col = self.get_column(col, sqlalchemy_table)
+                query = query.add_columns(sqlalchemy_col)
 
             # Add the condition columns to the query
             for condition in input_group.conditions:
