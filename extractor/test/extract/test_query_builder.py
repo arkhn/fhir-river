@@ -148,10 +148,10 @@ def test_2hop_joins(mock_sha1):
 
     analysis = Analysis()
 
-    attributeC = Attribute(path="path", definition_id="string")
-    input_groupC = InputGroup(id_="group", attribute=attributeC)
-    attributeC.add_input_group(input_groupC)
-    input_groupC.add_column(
+    attribute = Attribute(path="path", definition_id="string")
+    input_group = InputGroup(id_="group", attribute=attribute)
+    attribute.add_input_group(input_group)
+    input_group.add_column(
         SqlColumn(
             "admissions",
             "admittime",
@@ -169,7 +169,7 @@ def test_2hop_joins(mock_sha1):
     )
 
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
-    analysis.attributes.append(attributeC)
+    analysis.attributes.append(attribute)
 
     query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
@@ -180,6 +180,82 @@ def test_2hop_joins(mock_sha1):
         "FROM patients "
         "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+    )
+
+
+@mock.patch("analyzer.src.analyze.sql_column.hashlib.sha1")
+@mock.patch("extractor.src.extract.query_builder.Table", mock_table)
+def test_duplicated_joins(mock_sha1):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
+    analysis = Analysis()
+
+    attributeA = Attribute(path="path", definition_id="string")
+    input_groupA = InputGroup(id_="group", attribute=attributeA)
+    attributeA.add_input_group(input_groupA)
+    input_groupA.add_column(
+        SqlColumn(
+            "admissions",
+            "subject_id",
+            None,
+            joins=[
+                SqlJoin(
+                    SqlColumn("patients", "subject_id", None),
+                    SqlColumn("admissions", "subject_id", None),
+                ),
+            ],
+        )
+    )
+
+    attributeB = Attribute(path="path", definition_id="string")
+    input_groupB = InputGroup(id_="group", attribute=attributeB)
+    attributeB.add_input_group(input_groupB)
+    input_groupB.add_column(
+        SqlColumn(
+            "admissions",
+            "row_id",
+            None,
+            joins=[
+                SqlJoin(
+                    SqlColumn("patients", "subject_id", None),
+                    SqlColumn("admissions", "subject_id", None),
+                ),
+            ],
+        )
+    )
+
+    attributeC = Attribute(path="path", definition_id="string")
+    input_groupC = InputGroup(id_="group", attribute=attributeC)
+    attributeC.add_input_group(input_groupC)
+    input_groupC.add_column(
+        SqlColumn(
+            "admissions",
+            "admittime",
+            None,
+            joins=[
+                SqlJoin(
+                    SqlColumn("patients", "row_id", None), SqlColumn("admissions", "row_id", None),
+                ),
+            ],
+        )
+    )
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.attributes.append(attributeA)
+    analysis.attributes.append(attributeB)
+    analysis.attributes.append(attributeC)
+
+    query_builder = make_query_builder(analysis)
+    query = query_builder.build_query()
+
+    assert str(query) == (
+        "SELECT patients.subject_id AS patients_subject_id_hash, "
+        "admissions_1.subject_id AS admissions_subject_id_hash, "
+        "admissions_1.row_id AS admissions_row_id_hash, "
+        "admissions_2.admittime AS admissions_admittime_hash \n"
+        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
+        "ON admissions_1.subject_id = patients.subject_id "
+        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id"
     )
 
 

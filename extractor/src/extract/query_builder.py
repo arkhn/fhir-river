@@ -57,13 +57,6 @@ class QueryBuilder:
             autoload=True,
         )
 
-        # We don't need to have condition columns duplicated in the dataframe
-        # so we keep the one we've already seen here.
-        self._condition_columns = set()
-
-        # To avoid duplciated joins, we keep them here
-        self._cur_query_join_tables = {}
-
     @Timer("time_extractor_build_query", "time to build sql query")
     def build_query(self) -> Query:
         """ Builds an sql alchemy query which will be run in run_sql_query.
@@ -73,8 +66,10 @@ class QueryBuilder:
             extra={"resource_id": self.analysis.resource_id},
         )
 
-        # Check that temp attributes are empty
+        # We don't need to have condition columns duplicated in the dataframe
+        # so we keep the one we've already seen here.
         self._condition_columns = set()
+        # To avoid duplciated joins, we keep them here
         self._cur_query_join_tables = {}
 
         query = self.session.query(
@@ -144,13 +139,16 @@ class QueryBuilder:
                         isouter=True,
                     )
 
-                # Add the column to select to the query
+                # We need to use the right sqlalchemy table for the input:
                 if col.joins:
-                    # The last join will be the one on the input table
+                    # If there is a join on this attribute, we need to use the same table
+                    # as in the joins. The last join will be the one on the input table
                     sqlalchemy_table = self._cur_query_join_tables[col.joins[-1]]
                 else:
-                    with_alias = len(col.joins) > 0
-                    sqlalchemy_table = self.get_table(col, with_alias=with_alias)
+                    # Otherwise, it's the primary table and we don't need to alias it
+                    sqlalchemy_table = self.get_table(col, with_alias=False)
+
+                # Add the column to select to the query
                 sqlalchemy_col = self.get_column(col, sqlalchemy_table)
                 query = query.add_columns(sqlalchemy_col)
 
