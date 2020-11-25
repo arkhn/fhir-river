@@ -70,7 +70,7 @@ class QueryBuilder:
         # so we keep the one we've already seen here.
         # Note that the primary key column is added at the query initialization.
         self._cur_query_columns = {self.analysis.primary_key_column}
-        # To avoid duplciated joins, we keep them here
+        # To avoid duplicated joins, we keep them here
         self._cur_query_join_tables = {}
 
         query = self.session.query(
@@ -149,7 +149,7 @@ class QueryBuilder:
                     # Otherwise, it's the primary table and we don't need to alias it
                     sqlalchemy_table = self.get_table(col, with_alias=False)
 
-                query = self.add_column_to_query(col, query, sqlalchemy_table)
+                query = self.add_column_to_query(col, sqlalchemy_table, query)
 
             # Add the condition columns to the query
             for condition in input_group.conditions:
@@ -160,20 +160,18 @@ class QueryBuilder:
                         f"Cannot use a condition with a column that does not belong "
                         f"to the primary key table: {condition.sql_column.table}"
                     )
-
-                query = self.add_column_to_query(condition.sql_column, query)
+                sqlalchemy_table = self.get_table(condition.sql_column, with_alias=False)
+                query = self.add_column_to_query(condition.sql_column, sqlalchemy_table, query)
 
         return query
 
-    def add_column_to_query(self, sql_column, query, sqlalchemy_table=None):
+    def add_column_to_query(self, sql_column: SqlColumn, sqlalchemy_table: Table, query: Query):
         """ Helper function to add a column to the sqlalchemy query if it is not already present
         and to add the column to the set of columns already present in the query.
         """
         if sql_column in self._cur_query_columns:
             return query
 
-        if sqlalchemy_table is None:
-            sqlalchemy_table = self.get_table(sql_column, with_alias=False)
         sqlalchemy_col = self.get_column(sql_column, sqlalchemy_table)
 
         # Add the column to the _cur_query_columns attribute
