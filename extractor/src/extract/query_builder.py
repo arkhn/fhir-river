@@ -66,10 +66,11 @@ class QueryBuilder:
             extra={"resource_id": self.analysis.resource_id},
         )
 
-        # We don't need to have condition columns duplicated in the dataframe
+        # We don't need to have columns duplicated in the dataframe
         # so we keep the one we've already seen here.
-        self._condition_columns = set()
-        # To avoid duplciated joins, we keep them here
+        # Note that the primary key column is added at the query initialization.
+        self._cur_query_columns = {self.analysis.primary_key_column}
+        # To avoid duplicated joins, we keep them here
         self._cur_query_join_tables = {}
 
         query = self.session.query(
@@ -148,9 +149,7 @@ class QueryBuilder:
                     # Otherwise, it's the primary table and we don't need to alias it
                     sqlalchemy_table = self.get_table(col, with_alias=False)
 
-                # Add the column to select to the query
-                sqlalchemy_col = self.get_column(col, sqlalchemy_table)
-                query = query.add_columns(sqlalchemy_col)
+                query = self.add_column_to_query(col, sqlalchemy_table, query)
 
             # Add the condition columns to the query
             for condition in input_group.conditions:
@@ -161,18 +160,24 @@ class QueryBuilder:
                         f"Cannot use a condition with a column that does not belong "
                         f"to the primary key table: {condition.sql_column.table}"
                     )
-                if condition.sql_column in self._condition_columns:
-                    # As we currently don't process conditions columns, we don't need to have them
-                    # duplicated in the resulting dataframe.
-                    continue
                 sqlalchemy_table = self.get_table(condition.sql_column, with_alias=False)
-                sqlalchemy_col = self.get_column(condition.sql_column, sqlalchemy_table)
-                query = query.add_columns(sqlalchemy_col)
-
-                # Add the condition columns to the _condition_columns attribute
-                self._condition_columns.add(condition.sql_column)
+                query = self.add_column_to_query(condition.sql_column, sqlalchemy_table, query)
 
         return query
+
+    def add_column_to_query(self, sql_column: SqlColumn, sqlalchemy_table: Table, query: Query):
+        """ Helper function to add a column to the sqlalchemy query if it is not already present
+        and to add the column to the set of columns already present in the query.
+        """
+        if sql_column in self._cur_query_columns:
+            return query
+
+        sqlalchemy_col = self.get_column(sql_column, sqlalchemy_table)
+
+        # Add the column to the _cur_query_columns attribute
+        self._cur_query_columns.add(sql_column)
+
+        return query.add_columns(sqlalchemy_col)
 
     def apply_filters(self, query: Query) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.

@@ -103,7 +103,6 @@ def test_sqlalchemy_query(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "patients.subject_id AS patients_subject_id_hash, patients.row_id AS patients_row_id_hash, "
         "patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM admissions AS admissions_2, patients "
