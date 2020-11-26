@@ -1,8 +1,10 @@
 name: Integration tests
 
 on:
-  pull_request:
-    types: [ready_for_review]
+  workflow_run:
+    workflows: ["api", "extractor", "transformer", "loader"]
+    types:
+      - completed
 
 jobs:
   integration:
@@ -19,5 +21,5 @@ jobs:
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           versions: |
             {
-              "fhir_river": "$(echo ${GITHUB_REF#refs/heads/} | sed -r 's#/+#-#g')"
+              "fhir_river": "${{ github.sha }}"
             }
