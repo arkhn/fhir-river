@@ -1,13 +1,25 @@
 name: Integration tests
 
 on:
-  pull_request:
-    types: [ready_for_review]
+  workflow_run:
+    workflows: ["api", "extractor", "transformer", "loader"]
+    types:
+      - completed
 
 jobs:
   integration:
     runs-on: ubuntu-18.04
 
     steps:
-      - run: |
-          echo "noop"
+      - name: Provision, deploy and test
+        uses: arkhn/testy-action@v0.4.0
+        with:
+          cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
+          cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
+          cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
+          contextName: river-ci-${{ github.sha }}
+          deploymentToken: ${{ secrets.GIT_USER_KEY }}
+          versions: |
+            {
+              "fhir_river": "${{ github.sha }}"
+            }
