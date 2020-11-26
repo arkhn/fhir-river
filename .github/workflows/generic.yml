@@ -56,10 +56,25 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
-  tests:
-    needs: build-and-publish
+  unit-tests:
     runs-on: ubuntu-18.04
-
     steps:
       - run: |
           echo "noop"
+
+  integration:
+    runs-on: ubuntu-18.04
+    needs: build-and-publish
+    steps:
+      - name: Provision, deploy and test
+        uses: arkhn/testy-action@v0.4.0
+        with:
+          cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
+          cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
+          cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
+          contextName: river-ci-${{ github.sha }}
+          deploymentToken: ${{ secrets.GIT_USER_KEY }}
+          versions: |
+            {
+              "fhir_river": "sha-${GITHUB_SHA::7}"
+            }
