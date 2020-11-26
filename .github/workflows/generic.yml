@@ -25,7 +25,7 @@ jobs:
       - id: metadata
         name: metadata-${{ matrix.service }}
         run: |
-          IMAGE=arkhn/${{ matrix.service }}
+          IMAGE=arkhn/river-${{ matrix.service }}
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
 
@@ -59,7 +59,6 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           file: ./${{ matrix.service }}/Dockerfile
-          context: ./${{ matrix.service }}
           build-args: |
             VERSION_NAME=${{ steps.metadata.outputs.version }}
             VERSION_SHA=${GITHUB_SHA::8}

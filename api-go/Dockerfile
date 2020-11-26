@@ -3,15 +3,15 @@ FROM golang:1.14-stretch as cache
 
 WORKDIR /build
 
-COPY go.mod .
-COPY go.sum .
+COPY api-go/go.mod .
+COPY api-go/go.sum .
 
 RUN go mod download
 
 # build go binary
 FROM cache as builder
 
-COPY . .
+COPY api-go/ .
 
 RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build  -o /go/bin/api
 
