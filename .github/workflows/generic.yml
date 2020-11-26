@@ -1,9 +1,6 @@
-name: api
+name: generic
 
-on:
-  push:
-    paths:
-      - "apigo/**"
+on: ["push"]
 
 jobs:
   lint:
@@ -14,6 +11,11 @@ jobs:
           echo "noop"
 
   build:
+
+    strategy:
+      matrix:
+        service: ["api-go", "extractor", "transformer", "loader"]
+
     runs-on: ubuntu-18.04
 
     outputs:
@@ -21,8 +23,9 @@ jobs:
 
     steps:
       - id: metadata
+        name: metadata-${{ matrix.service }}
         run: |
-          IMAGE=arkhn/river-api-go
+          IMAGE=arkhn/${{ matrix.service }}
           # Always tag with first 8 of sha
           TAGS="${IMAGE}:${GITHUB_SHA::8}"
 
@@ -55,8 +58,8 @@ jobs:
           driver-opts: network=host
       - uses: docker/build-push-action@v2
         with:
-          file: ./apigo/Dockerfile
-          context: ./apigo
+          file: ./${{ matrix.service }}/Dockerfile
+          context: ./${{ matrix.service }}
           build-args: |
             VERSION_NAME=${{ steps.metadata.outputs.version }}
             VERSION_SHA=${GITHUB_SHA::8}
@@ -64,7 +67,7 @@ jobs:
           outputs: type=docker,dest=image
           tags: ${{ steps.metadata.outputs.tags }}
           labels: |
-            com.arkhn.image.title=api
+            com.arkhn.image.title=river-${{ matrix.service }}
             com.arkhn.image.description=${{ github.event.repository.description }}
             com.arkhn.image.url=${{ github.event.repository.html_url }}
             com.arkhn.image.source=${{ github.event.repository.clone_url }}
@@ -76,6 +79,7 @@ jobs:
         with:
           name: image
           path: image
+
   tests:
     needs: build
     runs-on: ubuntu-18.04
