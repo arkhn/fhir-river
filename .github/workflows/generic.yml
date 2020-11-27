@@ -104,6 +104,7 @@ jobs:
 
   integration:
     runs-on: ubuntu-18.04
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
     needs: [build-and-publish, python-unit-tests, golang-unit-tests]
     steps:
 
