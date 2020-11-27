@@ -13,10 +13,8 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - id: docker-tag
-        run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
-
-      - run: echo "${{ steps.docker-tag.outputs.river-version }}"
+      - run: |
+          echo "noop"
 
   build-and-publish:
     runs-on: ubuntu-18.04
