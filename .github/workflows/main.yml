@@ -21,14 +21,13 @@ jobs:
     strategy:
       matrix:
         service: ["extractor", "transformer", "loader", "analyzer"]
-        python-version: [3.7]
 
     # TODO(vmttn): Run tests in previously built container instead
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.7
       - run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
@@ -40,13 +39,12 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        go-version: [1.14.x, 1.15.x]
         service: ["api-go"]
     steps:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
-        go-version: ${{ matrix.go-version }}
+        go-version: 1.15.x
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Test
@@ -108,6 +106,10 @@ jobs:
     needs: [build-and-publish, python-unit-tests, golang-unit-tests]
     steps:
 
+      # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
+      # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}
+      # however we cannot use ${{ jobs.build-and-publish.steps.docker_meta.tags }} because it's
+      # a string like: "arkhn/river-loader:sha-d1e2a3d,arkhn/river-loader:1.2.3"
       - id: docker-tag
         run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
 
