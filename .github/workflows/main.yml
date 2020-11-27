@@ -1,4 +1,4 @@
-name: generic
+name: main
 
 on:
   push:
