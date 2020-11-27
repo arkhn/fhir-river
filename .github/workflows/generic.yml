@@ -32,7 +32,7 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
-      - run: pytest -svv ${{ matrix.service }}/test
+      - run: python -m pytest -svv ${{ matrix.service }}/test
         env:
           PYROG_API_URL: http://test.com
 
@@ -104,7 +104,7 @@ jobs:
 
   integration:
     runs-on: ubuntu-18.04
-    needs: build-and-publish
+    needs: [build-and-publish, python-unit-tests, golang-unit-tests]
     steps:
 
       - id: docker-tag
