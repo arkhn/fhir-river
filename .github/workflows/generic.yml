@@ -13,8 +13,10 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - run: |
-          echo "noop"
+      - id: docker-tag
+        run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
+
+      - run: echo "${{ steps.docker-tag.outputs.river-version }}"
 
   build-and-publish:
     runs-on: ubuntu-18.04
@@ -66,6 +68,10 @@ jobs:
     runs-on: ubuntu-18.04
     needs: build-and-publish
     steps:
+
+      - id: docker-tag
+        run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
+
       - name: Provision, deploy and test
         uses: arkhn/testy-action@v0.4.0
         with:
@@ -76,5 +82,5 @@ jobs:
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           versions: |
             {
-              "fhir_river": "sha-${GITHUB_SHA::7}"
+              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
             }
