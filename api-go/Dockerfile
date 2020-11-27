@@ -1,5 +1,5 @@
 # cache dependencies
-FROM golang:1.15-stretch as cache
+FROM golang:1.15-buster as cache
 
 WORKDIR /build
 
