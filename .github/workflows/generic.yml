@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         service: ["extractor", "transformer", "loader", "analyzer"]
-        python-version: [3.7, 3.9]
+        python-version: [3.7]
 
     # TODO(vmttn): Run tests in previously built container instead
     steps:
@@ -60,7 +60,7 @@ jobs:
         REDIS_MAPPINGS_PORT: required
         REDIS_MAPPINGS_DB: 1
       working-directory: ./${{ matrix.service }}
-      run: go test ./...  
+      run: go test -v ./...  
 
   build-and-publish:
     runs-on: ubuntu-18.04
