@@ -1,0 +1,127 @@
+name: main
+
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - run: |
+          echo "noop"
+
+  python-unit-tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        service: ["extractor", "transformer", "loader", "analyzer"]
+
+    # TODO(vmttn): Run tests in previously built container instead
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - run: python -m pytest -svv ${{ matrix.service }}/test
+        env:
+          PYROG_API_URL: http://test.com
+
+  golang-unit-tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        service: ["api"]
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15.x
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Test
+      env:
+        EXTRACTOR_URL: required
+        TRANSFORMER_URL: required
+        LOADER_URL: required
+        PYROG_API_URL: required
+        FHIR_API_URL: required
+        REDIS_MAPPINGS_HOST: required
+        REDIS_MAPPINGS_PORT: required
+        REDIS_MAPPINGS_DB: 1
+      working-directory: ./${{ matrix.service }}
+      run: go test -v ./...  
+
+  build-and-publish:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        service: ["api", "extractor", "transformer", "loader"]
+
+    steps:
+      - id: docker_meta
+        name: Docker meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        # compute tags:
+        # - always tag with a short commit SHA : (arkhn/image:sha-${GITHUB_SHA::7})
+        # - always tag with the branch same (replacing '/' with '-')
+        # - when a tag follows semver (eg: v1.2.3), tag with 'latest' and '1.2.3'
+        with:
+          images: arkhn/river-${{ matrix.service }}
+          tag-sha: true
+          tag-semver: |
+            {{version}}
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: network=host
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - uses: docker/build-push-action@v2
+        with:
+          file: ./${{ matrix.service }}/Dockerfile
+          build-args: |
+            VERSION_NAME=${{ steps.docker_meta.outputs.version }}
+            VERSION_SHA=${GITHUB_SHA::8}
+          platforms: linux/amd64
+          # always push images to the hub
+          push: true
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+
+  integration:
+    runs-on: ubuntu-18.04
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
+    needs: [build-and-publish, python-unit-tests, golang-unit-tests]
+    steps:
+
+      # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
+      # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}
+      # however we cannot use ${{ jobs.build-and-publish.steps.docker_meta.tags }} because it's
+      # a string like: "arkhn/river-loader:sha-d1e2a3d,arkhn/river-loader:1.2.3"
+      - id: docker-tag
+        run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
+
+      - name: Provision, deploy and test
+        uses: arkhn/testy-action@v0.4.0
+        with:
+          cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
+          cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
+          cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
+          contextName: river-ci-${{ github.sha }}
+          deploymentToken: ${{ secrets.GIT_USER_KEY }}
+          versions: |
+            {
+              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
+            }
