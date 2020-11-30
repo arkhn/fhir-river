@@ -11,11 +11,11 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	pyrogServer := mocks.MockPyrogServer()
+	pyrogServer := mocks.PyrogServer()
 	defer pyrogServer.Close()
 	PyrogURL = pyrogServer.URL
 
-	fhirApi := mocks.MockFhirAPI()
+	fhirApi := mocks.FhirAPI()
 	defer fhirApi.Close()
 	FhirURL = fhirApi.URL
 
@@ -52,7 +52,7 @@ func TestFetch(t *testing.T) {
 }
 
 func TestFetchConceptMap(t *testing.T) {
-	fhirApi := mocks.MockFhirAPI()
+	fhirApi := mocks.FhirAPI()
 	defer fhirApi.Close()
 	FhirURL = fhirApi.URL
 
@@ -90,7 +90,7 @@ func TestFetchConceptMap(t *testing.T) {
 }
 
 func TestDereferenceConceptMap(t *testing.T) {
-	fhirApi := mocks.MockFhirAPI()
+	fhirApi := mocks.FhirAPI()
 	defer fhirApi.Close()
 	FhirURL = fhirApi.URL
 

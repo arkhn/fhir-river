@@ -48,11 +48,11 @@ func TestPreview(t *testing.T) {
 	mockRedis, mapping.Rdb = newTestRedis()
 	defer mockRedis.Close()
 
-	fhirAPI := mocks.MockFhirAPI()
-	defer fhirAPI.Close()
-	mapping.FhirURL = fhirAPI.URL
+	mockfhirAPI := mocks.FhirAPI()
+	defer mockfhirAPI.Close()
+	mapping.FhirURL = mockfhirAPI.URL
 
-	mockPyrog := mocks.MockPyrogServer()
+	mockPyrog := mocks.PyrogServer()
 	mapping.PyrogURL = mockPyrog.URL
 	defer mockPyrog.Close()
 

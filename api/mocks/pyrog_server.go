@@ -7,9 +7,11 @@ import (
 	"net/http/httptest"
 )
 
-func MockPyrogServer() *httptest.Server {
-	mappingBytes, _ := ioutil.ReadFile("../../analyzer/test/fixtures/patient_mapping.json")
-
+func PyrogServer() *httptest.Server {
+	mappingBytes, err := ioutil.ReadFile("../../../analyzer/test/fixtures/patient_mapping.json")
+	if err != nil {
+		panic(err)
+	}
 	pyrogResponse := fmt.Sprintf(`{"data": {"resource": %s}}`, string(mappingBytes))
 	mockPyrogServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authorizationHeader := r.Header.Get("Authorization")

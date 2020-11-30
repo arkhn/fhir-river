@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 )
 
-func MockFhirAPI() *httptest.Server {
+func FhirAPI() *httptest.Server {
 	fhirConceptMap := `{
 		"id": "cm_gender",
 		"group": [{"element": [
