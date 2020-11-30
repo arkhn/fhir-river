@@ -165,7 +165,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	// TODO: FAIL
 	err = json.NewDecoder(resp.Body).Decode(&gqlResp)
 	if err != nil {
-		return nil, fmt.Errorf("%s %v", PyrogURL, err)
+		return nil, fmt.Errorf("%s %v", resourceID, err)
 	}
 
 	resourceMapping := gqlResp.Data.Resource
