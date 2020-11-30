@@ -132,14 +132,14 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	jBody, _ := json.Marshal(graphqlQueryBody)
 	graphqlQuery, err := http.NewRequest("POST", PyrogURL, bytes.NewBuffer(jBody))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("DEBUG 1: %v", err)
 	}
 	graphqlQuery.Header.Set("Authorization", authorizationHeader)
 	graphqlQuery.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(graphqlQuery)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("DEBUG 2: %v", err)
 	}
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -164,7 +164,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	gqlResp := graphqlResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&gqlResp)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("DEBUG 3: %v", err)
 	}
 
 	resourceMapping := gqlResp.Data.Resource
@@ -172,7 +172,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	// Dereference concept maps
 	err = dereferenceConceptMap(&resourceMapping, authorizationHeader)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("DEBUG 4: %v", err)
 	}
 
 	return &resourceMapping, nil
