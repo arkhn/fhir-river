@@ -64,6 +64,7 @@ func TestPreview(t *testing.T) {
 			panic(err)
 		}
 		req.Header.Add("Authorization", "Bearer validToken")
+		req.Header.Set("Content-Type", "application/json")
 		assert.NoError(t, err)
 
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
