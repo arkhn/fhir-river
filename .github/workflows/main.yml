@@ -57,6 +57,9 @@ jobs:
         REDIS_MAPPINGS_HOST: required
         REDIS_MAPPINGS_PORT: required
         REDIS_MAPPINGS_DB: 1
+        REDIS_COUNTER_HOST: required
+        REDIS_COUNTER_PORT: required
+        REDIS_COUNTER_DB: 2
       working-directory: ./${{ matrix.service }}
       run: go test -v ./...  
 
