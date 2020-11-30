@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -166,12 +165,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	// TODO: FAIL
 	err = json.NewDecoder(resp.Body).Decode(&gqlResp)
 	if err != nil {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		bodyString := string(bodyBytes)
-		return nil, fmt.Errorf("%s: %v", bodyString, err)
+		return nil, fmt.Errorf("%s %v", PyrogURL, err)
 	}
 
 	resourceMapping := gqlResp.Data.Resource
