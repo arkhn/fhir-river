@@ -106,14 +106,14 @@ func Run(w http.ResponseWriter, r *http.Request) {
 	body := Request{}
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 1)
 		return
 	}
 
 	// generate a new preview ID.
 	previewUUID, err := uuid.NewRandom()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 2)
 		return
 	}
 	body.PreviewID = previewUUID.String()
@@ -129,42 +129,42 @@ func Run(w http.ResponseWriter, r *http.Request) {
 		case *errors.InvalidTokenError:
 			http.Error(w, err.Error(), e.StatusCode)
 		default:
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), 3)
 		}
 		return
 	}
 
 	serializedMapping, err := json.Marshal(resourceMapping)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 4)
 		return
 	}
 
 	// cache the mapping in redis
 	err = mapping.Store(serializedMapping, body.ResourceID, body.PreviewID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 5)
 		return
 	}
 
 	// extract the rows
 	rows, err := extract(&body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 6)
 		return
 	}
 
 	// transform rows
 	res, err := transform(body.ResourceID, body.PreviewID, rows)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 7)
 		return
 	}
 
 	// delete the mapping from redis
 	err = mapping.Delete(body.ResourceID, body.PreviewID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), 8)
 		return
 	}
 
