@@ -3,8 +3,8 @@ FROM golang:1.15-buster as cache
 
 WORKDIR /build
 
-COPY go.mod .
-COPY go.sum .
+COPY ./api/go.mod .
+COPY ./api/go.sum .
 
 RUN go mod download
 
