@@ -216,6 +216,7 @@ def process_event_with_context(producer):
         try:
             analysis = analyzer.load_cached_analysis(batch_id, resource_id)
             df = extract_resource(analysis, primary_key_values)
+            # TODO: Remove this?
             batch_size = extractor.batch_size(analysis)
             logger.info(
                 f"Batch size is {batch_size} for resource type {analysis.definition_id}",
