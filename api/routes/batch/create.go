@@ -54,7 +54,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 
 		// create batchID topics
 		batchTopics := []kafka.TopicSpecification{
-			{Topic: topics.BatchPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
+			{Topic: topics.BatchPrefix, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
 			{Topic: topics.ExtractPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
 			{Topic: topics.TransformPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
 			{Topic: topics.LoadPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
