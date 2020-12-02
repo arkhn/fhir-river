@@ -152,7 +152,7 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
-CONSUMED_TOPICS = "^extract.*"
+CONSUMED_TOPICS = "^extract\..*"
 CONSUMER_GROUP_ID = "transformer"
 PRODUCED_TOPIC_PREFIX = "transform."
 

@@ -59,6 +59,7 @@ def get_redis_counter_client():
         )
     return g.redis_counter_client
 
+
 #############
 # FLASK API #
 #############
@@ -137,7 +138,7 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
-CONSUMED_TOPICS = "^batch.*"
+CONSUMED_TOPICS = "^batch\..*"
 CONSUMER_GROUP_ID = "extractor"
 PRODUCED_TOPIC_PREFIX = "extract."
 
@@ -186,7 +187,7 @@ def process_event_with_context(producer):
                 event["resource_type"] = resource_type
                 event["resource_id"] = resource_id
                 event["record"] = record
-                producer.produce_event(topic=PRODUCED_TOPIC_PREFIX+batch_id, event=event)
+                producer.produce_event(topic=PRODUCED_TOPIC_PREFIX + batch_id, event=event)
                 count += 1
         except EmptyResult as e:
             logger.warn(
@@ -195,7 +196,8 @@ def process_event_with_context(producer):
             )
         # Initialize a batch counter in Redis. For each resource_id, it records
         # the number of produced records
-        redis_counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+        redis_counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted",
+                                  count)
         logger.info(
             f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
             extra={"resource_id": resource_id},
