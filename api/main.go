@@ -31,13 +31,7 @@ func main() {
 	defer admin.Close()
 
 	// create a new kafka producer
-	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": kafkaURL,
-		"session.timeout.ms": 6000,
-		// max.block.ms (default 1 minute) controls how long the producer will block.
-		// It can be blocked if the topic has been deleted.
-		"max.block.ms": 15000,
-	})
+	producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": kafkaURL})
 	if err != nil {
 		panic(err)
 	}

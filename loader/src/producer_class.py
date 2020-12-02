@@ -29,13 +29,7 @@ class LoaderProducer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {
-            "bootstrap.servers": self.broker,
-            "session.timeout.ms": 6000,
-            # max.block.ms (default 1 minute) controls how long the producer will block.
-            # It can be blocked if the topic has been deleted.
-            "max.block.ms": 15000,
-        }
+        config = {"bootstrap.servers": self.broker}
         return config
 
     def produce_event(self, topic, record):
