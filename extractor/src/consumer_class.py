@@ -2,8 +2,8 @@
 
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
-from confluent_kafka import KafkaA
 from extractor.src.config.service_logger import logger
+from confluent_kafka.admin import AdminClient
 
 
 class ExtractorConsumer:
@@ -34,6 +34,7 @@ class ExtractorConsumer:
         self.offset_start = offset_start
         self.process_event = process_event
         self.manage_error = manage_error
+        self.kadmin = AdminClient({"bootstrap.servers": self.broker})
 
         # Create consumer
         self.consumer = Consumer(self._generate_config())
@@ -64,7 +65,10 @@ class ExtractorConsumer:
         """
         while True:
             # Deserialize Event
-            msg = self.consumer.poll(timeout=1.0)
+            msg = self.consumer.poll(timeout=5.0)
+            topics = self.kadmin.list_topics()
+            config = self._generate_config()
+            logger.info(f"Message received from KafKa: {topics} for config: {config}")
 
             # Process Event or Raise Error
             if msg is None:
