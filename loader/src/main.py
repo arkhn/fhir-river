@@ -186,8 +186,8 @@ def process_event_with_context(producer):
                 }, ]
             )
             while True:
-                # Lock TTL is 5 min
-                ref_lock = dlm.lock(f"batch:{batch_id}:lock", 3600_000)
+                # Lock TTL is 5s
+                ref_lock = dlm.lock(f"batch:{batch_id}:lock", 5000)
                 if ref_lock:
                     break
             resolved_fhir_instance = binder.resolve_references(
