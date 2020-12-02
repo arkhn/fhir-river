@@ -120,7 +120,7 @@ def handle_authorization_error(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TOPICS = "^transform\..*"
+CONSUMED_TOPICS = "^transform\\..*"
 CONSUMER_GROUP_ID = "loader"
 PRODUCED_TOPIC_PREFIX = "load."
 

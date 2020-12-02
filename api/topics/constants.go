@@ -7,8 +7,8 @@ const (
 	LoadPrefix        = "load."
 	NumParts          = 3
 	ReplicationFactor = 1
-	Batch             = "^batch.*"
-	Extract           = "^extract.*"
-	Transform         = "^transform.*"
-	Load              = "^load.*"
+	Batch             = "^batch\\..*"
+	Extract           = "^extract\\..*"
+	Transform         = "^transform\\..*"
+	Load              = "^load\\..*"
 )
