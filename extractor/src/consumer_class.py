@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from confluent_kafka import KafkaException, KafkaError
-from confluent_kafka import Consumer
+from confluent_kafka import Consumer, libversion, version
 from extractor.src.config.service_logger import logger
 
 
@@ -51,8 +51,9 @@ class ExtractorConsumer:
             "session.timeout.ms": 6000,
             # metadata.max.age.ms (default 5 min) is the period of time in milliseconds after which
             # we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
-            'metadata.max.age.ms': 5000,
+            'metadata.max.age.ms': 5,
             "auto.offset.reset": "smallest",
+            "debug": "consumer"
         }
         return config
 
@@ -79,7 +80,7 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        logger.info(f"Subscribing to topics {self.topics}")
+        logger.info(f"Subscribing to topics {self.topics} version {version()} lib {libversion()}")
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()
