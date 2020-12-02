@@ -68,7 +68,7 @@ class ExtractorConsumer:
             msg = self.consumer.poll(timeout=5.0)
             topics = self.kadmin.list_topics()
             config = self._generate_config()
-            logger.info(f"Message received from KafKa: {topics} for config: {config}")
+            logger.info(f"Kafka topics: {topics} for config: {config}")
 
             # Process Event or Raise Error
             if msg is None:
@@ -88,7 +88,9 @@ class ExtractorConsumer:
         def on_assign(c, ps):
             for p in ps:
                 p.offset = -2
+                logger.info(f"Assign Kafka partition {p}")
             c.assign(ps)
+        logger.info(f"Subscribing to topics {self.topics}")
         self.consumer.subscribe(self.topics, on_assign=on_assign)
         try:
             self.consume_event()
