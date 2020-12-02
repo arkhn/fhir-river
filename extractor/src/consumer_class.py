@@ -3,7 +3,6 @@
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 from extractor.src.config.service_logger import logger
-from confluent_kafka.admin import AdminClient
 
 
 class ExtractorConsumer:
@@ -34,7 +33,6 @@ class ExtractorConsumer:
         self.offset_start = offset_start
         self.process_event = process_event
         self.manage_error = manage_error
-        self.kadmin = AdminClient({"bootstrap.servers": self.broker})
 
         # Create consumer
         self.consumer = Consumer(self._generate_config())
@@ -66,9 +64,8 @@ class ExtractorConsumer:
         while True:
             # Deserialize Event
             msg = self.consumer.poll(timeout=5.0)
-            md = self.kadmin.list_topics()
-            for t in iter(md.values()):
-                logger.info(f"Kafka topics: {t}")
+            topics = self.consumer.list_topics().topics
+            logger.info(f"Kafka topics: {topics}")
             # Process Event or Raise Error
             if msg is None:
                 continue
@@ -84,13 +81,8 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        def on_assign(c, ps):
-            for p in ps:
-                p.offset = -2
-                logger.info(f"Assign Kafka partition {p}")
-            c.assign(ps)
         logger.info(f"Subscribing to topics {self.topics}")
-        self.consumer.subscribe(self.topics, on_assign=on_assign)
+        self.consumer.subscribe(self.topics)
         try:
             self.consume_event()
         except (KafkaException, KafkaError):
