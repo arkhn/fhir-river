@@ -78,7 +78,11 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        self.consumer.subscribe(self.topics)
+        def on_assign(c, ps):
+            for p in ps:
+                p.offset = -2
+            c.assign(ps)
+        self.consumer.subscribe(self.topics, on_assign=on_assign)
         try:
             self.consume_event()
         except (KafkaException, KafkaError):
