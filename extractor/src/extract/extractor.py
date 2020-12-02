@@ -170,16 +170,3 @@ class Extractor:
             resource_id=analysis.resource_id, resource_type=analysis.definition_id
         ).inc()
         yield acc
-
-    def batch_size(self, analysis) -> int:
-        logger.info(
-            f"Start computing batch size for resource {analysis.definition_id}",
-            extra={"resource_id": analysis.resource_id},
-        )
-
-        builder = QueryBuilder(
-            session=self.session, metadata=self.metadata, analysis=analysis, pk_values=None
-        )
-        query = builder.build_batch_size_query()
-
-        return self.session.execute(query).scalar()
