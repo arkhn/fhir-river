@@ -2,13 +2,14 @@
 
 import json
 import os
+import time
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response, g
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
 import redis
-from redlock import Redlock
+from redlock import Redlock, MultipleRedlockException
 from loader.src.cache import REDIS_REFERENCES_HOST, REDIS_REFERENCES_PORT, REDIS_REFERENCES_DB
 from uwsgidecorators import thread, postfork
 
@@ -188,6 +189,7 @@ def process_event_with_context(producer):
             while True:
                 # Lock TTL is 5s
                 ref_lock = dlm.lock(f"batch:{batch_id}:lock", 5000)
+                time.sleep(200)
                 if ref_lock:
                     break
             resolved_fhir_instance = binder.resolve_references(
@@ -205,7 +207,7 @@ def process_event_with_context(producer):
                 topic=PRODUCED_TOPIC_PREFIX + batch_id,
                 record={"batch_id": batch_id}
             )
-        except DuplicateKeyError:
+        except (DuplicateKeyError, MultipleRedlockException):
             logger.error(format_traceback())
 
     return process_event
