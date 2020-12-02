@@ -122,13 +122,24 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 			})
 			log.WithField("event", string(event)).Info("produce event")
 			topicName := topics.BatchPrefix + batchID
+			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
 				Value:          event,
-			}, nil)
+			}, deliveryChan)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
+			e := <-deliveryChan
+			m := e.(*kafka.Message)
+			if m.TopicPartition.Error != nil {
+				log.Printf("Delivery failed: %v\n", m.TopicPartition.Error)
+			} else {
+				log.Printf("Delivered message to topic %s [%d] at offset %v\n",
+					*m.TopicPartition.Topic, m.TopicPartition.Partition, m.TopicPartition.Offset)
+				http.Error(w, m.TopicPartition.Error.Error(), http.StatusInternalServerError)
+			}
+			close(deliveryChan)
 		}
 		// return the batch ID to the client immediately.
 		_, _ = fmt.Fprint(w, batchID)

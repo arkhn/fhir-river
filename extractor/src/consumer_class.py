@@ -2,6 +2,7 @@
 
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
+from confluent_kafka import KafkaA
 from extractor.src.config.service_logger import logger
 
 
@@ -52,7 +53,7 @@ class ExtractorConsumer:
             # metadata.max.age.ms (default 5 min) is the period of time in milliseconds after which
             # we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
             'metadata.max.age.ms': 5000,
-            "auto.offset.reset": "earliest",
+            "auto.offset.reset": "smallest",
         }
         return config
 
