@@ -24,7 +24,6 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 from logger import format_traceback
 
-
 REDIS_COUNTER_HOST = os.getenv("REDIS_COUNTER_HOST")
 REDIS_COUNTER_PORT = os.getenv("REDIS_COUNTER_PORT")
 REDIS_COUNTER_DB = os.getenv("REDIS_COUNTER_DB")
@@ -203,11 +202,8 @@ def process_event_with_context(producer):
             # Increment loaded resources counter in Redis
             redis_client.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
             producer.produce_event(
-                topic=PRODUCED_TOPIC_PREFIX+batch_id,
-                record={
-                    "batch_id": batch_id,
-                    "resource_id": resource_id,
-                }
+                topic=PRODUCED_TOPIC_PREFIX + batch_id,
+                record={"batch_id": batch_id}
             )
         except DuplicateKeyError:
             logger.error(format_traceback())

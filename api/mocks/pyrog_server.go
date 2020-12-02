@@ -2,15 +2,12 @@ package mocks
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 )
 
-func MockPyrogServer() *httptest.Server {
-	mappingBytes, _ := ioutil.ReadFile("../../analyzer/test/fixtures/patient_mapping.json")
-
-	pyrogResponse := fmt.Sprintf(`{"data": {"resource": %s}}`, string(mappingBytes))
+func PyrogServer() *httptest.Server {
+	pyrogResponse := fmt.Sprintf(`{"data": {"resource": %s}}`, patientMapping)
 	mockPyrogServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authorizationHeader := r.Header.Get("Authorization")
 		if authorizationHeader == "Bearer validToken" {

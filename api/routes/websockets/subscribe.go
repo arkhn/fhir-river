@@ -1,7 +1,6 @@
 package websockets
 
 import (
-	"github.com/arkhn/fhir-river/api/topics"
 	"net/http"
 	"strings"
 	"time"
@@ -10,6 +9,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/arkhn/fhir-river/api/topics"
 )
 
 var (

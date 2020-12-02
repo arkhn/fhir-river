@@ -3,17 +3,17 @@ package preview
 import (
 	"bytes"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/mapping"
-	"github.com/arkhn/fhir-river/api/mocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
-
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/mocks"
 )
 
 func newTestRedis() (*miniredis.Miniredis, *redis.Client) {
@@ -48,11 +48,11 @@ func TestPreview(t *testing.T) {
 	mockRedis, mapping.Rdb = newTestRedis()
 	defer mockRedis.Close()
 
-	fhirAPI := mocks.MockFhirAPI()
-	defer fhirAPI.Close()
-	mapping.FhirURL = fhirAPI.URL
+	mockfhirAPI := mocks.FhirAPI()
+	defer mockfhirAPI.Close()
+	mapping.FhirURL = mockfhirAPI.URL
 
-	mockPyrog := mocks.MockPyrogServer()
+	mockPyrog := mocks.PyrogServer()
 	mapping.PyrogURL = mockPyrog.URL
 	defer mockPyrog.Close()
 

@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/errors"
 	"log"
 	"net/http"
+
+	"github.com/arkhn/fhir-river/api/errors"
 )
 
 const resourceFromIDQuery = `
@@ -161,6 +162,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	}()
 
 	gqlResp := graphqlResponse{}
+	// TODO: FAIL
 	err = json.NewDecoder(resp.Body).Decode(&gqlResp)
 	if err != nil {
 		return nil, err

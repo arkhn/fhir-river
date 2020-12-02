@@ -1,7 +1,7 @@
 package batch
 
-// Request is the body of the POST /batch request.
-type Request struct {
+// ResourceRequest is the body of the POST /batch request.
+type ResourceRequest struct {
 	Resources []struct {
 		ID           string `json:"resource_id"`
 		ResourceType string `json:"resource_type"`

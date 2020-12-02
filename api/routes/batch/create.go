@@ -5,25 +5,26 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/errors"
-	"github.com/arkhn/fhir-river/api/mapping"
-	"github.com/arkhn/fhir-river/api/topics"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/go-redis/redis"
-	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
+	"github.com/arkhn/fhir-river/api/monitor"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/arkhn/fhir-river/api/errors"
+	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/topics"
 )
 
 // Create is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Client) func(http.ResponseWriter, *http.Request) {
+func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// decode the request body
-		body := Request{}
-		err := json.NewDecoder(r.Body).Decode(&body)
+		var request ResourceRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -33,7 +34,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Clien
 		authorizationHeader := r.Header.Get("Authorization")
 
 		var resourceIDs []string
-		for _, resource := range body.Resources {
+		for _, resource := range request.Resources {
 			resourceIDs = append(resourceIDs, resource.ID)
 		}
 
@@ -46,7 +47,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Clien
 		batchID := batchUUID.String()
 
 		// List resources of current batch in Redis
-		if err := rdb.SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
+		if err := ctl.Redis().SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -60,7 +61,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Clien
 		}
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		if _, err = admin.CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
+		if _, err = ctl.Kafka().CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -95,7 +96,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Clien
 
 		// delete all the documents correspondng to the batch resources
 		deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
-		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: body.Resources})
+		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: request.Resources})
 		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -113,7 +114,7 @@ func Create(producer *kafka.Producer, admin *kafka.AdminClient, rdb *redis.Clien
 		}
 
 		// produce a "batch" kafka event for each resource ID.
-		for _, resource := range body.Resources {
+		for _, resource := range request.Resources {
 			resourceID := resource.ID
 			event, _ := json.Marshal(Event{
 				BatchID:    batchID,

@@ -196,6 +196,10 @@ def process_event_with_context(producer):
         # Initialize a batch counter in Redis. For each resource_id, it records
         # the number of produced records
         redis_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+        logger.info(
+            f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
+            extra={"resource_id": resource_id},
+        )
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
@@ -212,6 +216,12 @@ def process_event_with_context(producer):
         try:
             analysis = analyzer.load_cached_analysis(batch_id, resource_id)
             df = extract_resource(analysis, primary_key_values)
+            # TODO: Remove this?
+            batch_size = extractor.batch_size(analysis)
+            logger.info(
+                f"Batch size is {batch_size} for resource type {analysis.definition_id}",
+                extra={"resource_id": resource_id},
+            )
             broadcast_events(df, analysis, batch_id)
         except Exception:
             logger.error(
