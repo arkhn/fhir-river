@@ -129,6 +129,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 			}, deliveryChan)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			e := <-deliveryChan
 			m := e.(*kafka.Message)
@@ -138,6 +139,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 				log.Printf("Delivered message to topic %s [%d] at offset %v\n",
 					*m.TopicPartition.Topic, m.TopicPartition.Partition, m.TopicPartition.Offset)
 				http.Error(w, m.TopicPartition.Error.Error(), http.StatusInternalServerError)
+				return
 			}
 			close(deliveryChan)
 		}
