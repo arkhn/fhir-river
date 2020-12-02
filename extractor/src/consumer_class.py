@@ -64,8 +64,6 @@ class ExtractorConsumer:
         while True:
             # Deserialize Event
             msg = self.consumer.poll(timeout=5.0)
-            topics = self.consumer.list_topics().topics
-            logger.info(f"Kafka topics: {topics}")
             # Process Event or Raise Error
             if msg is None:
                 continue
