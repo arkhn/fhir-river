@@ -168,7 +168,7 @@ def run_consumer():
 def process_event_with_context(producer):
     with app.app_context():
         redis_mappings_client = get_redis_mappings_client()
-        redis_client = get_redis_counter_client()
+        redis_counter_client = get_redis_counter_client()
     analyzer = Analyzer(redis_client=redis_mappings_client)
 
     def broadcast_events(dataframe, analysis, batch_id=None):
@@ -195,7 +195,7 @@ def process_event_with_context(producer):
             )
         # Initialize a batch counter in Redis. For each resource_id, it records
         # the number of produced records
-        redis_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+        redis_counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
         logger.info(
             f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
             extra={"resource_id": resource_id},
