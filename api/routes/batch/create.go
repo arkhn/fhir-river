@@ -121,7 +121,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := topics.BatchPrefix + batchID
+			topicName := topics.BatchPrefix
 			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
