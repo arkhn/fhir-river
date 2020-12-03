@@ -2,14 +2,12 @@ package monitor
 
 import (
 	"encoding/json"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
-	"time"
-
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 
 	"github.com/arkhn/fhir-river/api/topics"
 )
@@ -112,8 +110,7 @@ ConsumerLoop:
 					continue ConsumerLoop
 				}
 				if eob {
-					t := time.Now().Format(time.RFC3339)
-					log.Println("[" + t + "] Ending batch: " + msg.BatchID)
+					log.Println("ending batch: " + msg.BatchID)
 					if err := ctl.Destroy(msg.BatchID); err != nil {
 						log.Println(err)
 						continue ConsumerLoop
