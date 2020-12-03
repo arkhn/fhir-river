@@ -6,7 +6,7 @@ const (
 	TransformPrefix   = "transform."
 	LoadPrefix        = "load."
 	NumParts          = 1
-	ReplicationFactor = 1
+	ReplicationFactor = 3
 	Batch             = "^batch\\..*"
 	Extract           = "^extract\\..*"
 	Transform         = "^transform\\..*"

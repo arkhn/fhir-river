@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 from confluent_kafka import KafkaException, KafkaError
-from confluent_kafka import Consumer, libversion, version
-from extractor.src.config.service_logger import logger
+from confluent_kafka import Consumer
 
 
 class ExtractorConsumer:
@@ -72,7 +71,6 @@ class ExtractorConsumer:
             if msg.error():
                 self.manage_error(msg)
             else:
-                logger.info(f"Message received from KafKa: {msg}")
                 # Proper message
                 self.process_event(msg)
 
@@ -81,7 +79,6 @@ class ExtractorConsumer:
         Create consumer, assign topics, consume and process events
         :return:
         """
-        logger.info(f"Subscribing to topics {self.topics} version {version()} lib {libversion()}")
         self.consumer.subscribe(self.topics)
         try:
             self.consume_event()
