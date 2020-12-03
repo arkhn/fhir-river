@@ -57,8 +57,10 @@ def create_app():
 
     # load redis client
     with _app.app_context():
-        get_redis_counter_client()
         get_redis_mappings_client()
+
+    with _app.app_context():
+        get_redis_counter_client()
 
     return _app
 
