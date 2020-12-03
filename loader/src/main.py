@@ -187,11 +187,12 @@ def process_event_with_context(producer):
                 topic=PRODUCED_TOPIC_PREFIX + batch_id,
                 record={"batch_id": batch_id}
             )
+            # Increment loaded resources counter in Redis
+            redis_counter_client.hincrby(
+                f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1
+            )
         except DuplicateKeyError:
             logger.error(format_traceback())
-
-        # Increment loaded resources counter in Redis
-        redis_counter_client.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
 
     return process_event
 
