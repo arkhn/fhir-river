@@ -96,25 +96,25 @@ ConsumerLoop:
 		default:
 			ev := c.Poll(1000)
 			if ev == nil {
-				continue ConsumerLoop
+				continue
 			}
 			switch e := ev.(type) {
 			case *kafka.Message:
 				var msg message
 				if err := json.Unmarshal(e.Value, &msg); err != nil {
 					log.Printf("Error while decoding Kafka message: %v\n", err)
-					continue ConsumerLoop
+					break
 				}
 				eob, err := ctl.isEndOfBatch(msg.BatchID)
 				if err != nil {
 					log.Println(err)
-					continue ConsumerLoop
+					break
 				}
 				if eob {
 					log.Println("ending batch: " + msg.BatchID)
 					if err := ctl.Destroy(msg.BatchID); err != nil {
 						log.Println(err)
-						continue ConsumerLoop
+						break
 					}
 				}
 			case kafka.Error:
