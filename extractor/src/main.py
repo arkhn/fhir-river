@@ -149,7 +149,7 @@ PRODUCED_TOPIC_PREFIX = "extract."
 @postfork
 @thread
 def run_consumer():
-    logger.info("Running extract consumer")
+    logger.info("Running consumer")
 
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(
