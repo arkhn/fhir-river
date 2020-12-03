@@ -45,7 +45,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		if extractCountInt < loadCountInt {
+		if extractCountInt > loadCountInt {
 			return false, nil
 		}
 	}
