@@ -65,9 +65,10 @@ func (ctl BatchController) ListenAndDestroy() {
 		"bootstrap.servers":  kafkaURL,
 		"group.id":           consumerGroupID,
 		"session.timeout.ms": 6000,
-		// metadata.max.age.ms (default 5 min) is the period of time in milliseconds after which
-		// we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
-		"metadata.max.age.ms": 5000,
+		// topic.metadata.refresh.interval.ms (default 5 min) is the period of time
+		// in milliseconds after which we force a refresh of metadata.
+		// Here we refresh the list of consumed topics every 5s.
+		"topic.metadata.refresh.interval.ms": 5000,
 		"auto.offset.reset":   "earliest"})
 	if err != nil {
 		panic(err)
