@@ -114,8 +114,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		}
 
 		// produce a "batch" kafka event for each resource ID.
-		for _, resource := range request.Resources {
-			resourceID := resource.ID
+		for _, resourceID := range resourceIDs {
 			event, _ := json.Marshal(Event{
 				BatchID:    batchID,
 				ResourceID: resourceID,
