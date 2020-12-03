@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
@@ -32,6 +33,7 @@ func (ctl BatchController) Destroy(batchID string) error {
 	if _, err := ctl.Redis().Del("batch:"+batchID+":resources").Result(); err != nil {
 		return err
 	}
+	log.Println("batch:"+batchID+" destroyed")
 	return nil
 }
 

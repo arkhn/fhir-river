@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 
@@ -50,6 +51,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 			return false, nil
 		}
 	}
+	log.Printf("end of batch %s: %v", batchID, counter)
 	return true, nil
 }
 
@@ -69,7 +71,7 @@ func (ctl BatchController) ListenAndDestroy() {
 		// in milliseconds after which we force a refresh of metadata.
 		// Here we refresh the list of consumed topics every 5s.
 		"topic.metadata.refresh.interval.ms": 5000,
-		"auto.offset.reset":   "earliest"})
+		"auto.offset.reset":                  "earliest"})
 	if err != nil {
 		panic(err)
 	}
@@ -110,6 +112,8 @@ ConsumerLoop:
 					continue
 				}
 				if eob {
+					t := time.Now().Format(time.RFC3339)
+					log.Println("[" + t + "] Ending batch: " + msg.BatchID)
 					if err := ctl.Destroy(msg.BatchID); err != nil {
 						log.Println(err)
 						continue
