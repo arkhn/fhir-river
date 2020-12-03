@@ -1,7 +1,7 @@
 package topics
 
 const (
-	BatchPrefix       = "batch"
+	BatchPrefix       = "batch."
 	ExtractPrefix     = "extract."
 	TransformPrefix   = "transform."
 	LoadPrefix        = "load."

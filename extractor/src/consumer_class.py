@@ -53,7 +53,6 @@ class ExtractorConsumer:
             # we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
             'metadata.max.age.ms': 5000,
             "auto.offset.reset": "earliest",
-            "topic.metadata.refresh.interval.ms": 5000,
             "debug": "consumer"
         }
         return config

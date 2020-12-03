@@ -54,7 +54,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 
 		// create batchID topics
 		batchTopics := []kafka.TopicSpecification{
-			{Topic: topics.BatchPrefix, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
+			{Topic: topics.BatchPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
 			{Topic: topics.ExtractPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
 			{Topic: topics.TransformPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
 			{Topic: topics.LoadPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
@@ -121,7 +121,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := topics.BatchPrefix
+			topicName := topics.BatchPrefix + batchID
 			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
