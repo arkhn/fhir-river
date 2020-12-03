@@ -46,6 +46,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 			return false, err
 		}
 		if extractCountInt > loadCountInt {
+			log.Printf("Continue batch %s of resources %v: %v", batchID, batchResources, counter)
 			return false, nil
 		}
 	}
