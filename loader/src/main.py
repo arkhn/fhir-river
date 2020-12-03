@@ -183,13 +183,13 @@ def process_event_with_context(producer):
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
-            producer.produce_event(
-                topic=PRODUCED_TOPIC_PREFIX + batch_id,
-                record={"batch_id": batch_id}
-            )
             # Increment loaded resources counter in Redis
             redis_counter_client.hincrby(
                 f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1
+            )
+            producer.produce_event(
+                topic=PRODUCED_TOPIC_PREFIX + batch_id,
+                record={"batch_id": batch_id}
             )
         except DuplicateKeyError:
             logger.error(format_traceback())
