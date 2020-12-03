@@ -51,7 +51,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 			return false, nil
 		}
 	}
-	log.Printf("end of batch %s: %v", batchID, counter)
+	log.Printf("end of batch %s of resources %v: %v", batchID, batchResources, counter)
 	return true, nil
 }
 
@@ -97,26 +97,26 @@ ConsumerLoop:
 		default:
 			ev := c.Poll(1000)
 			if ev == nil {
-				continue
+				continue ConsumerLoop
 			}
 			switch e := ev.(type) {
 			case *kafka.Message:
 				var msg message
 				if err := json.Unmarshal(e.Value, &msg); err != nil {
 					log.Printf("Error while decoding Kafka message: %v\n", err)
-					continue
+					continue ConsumerLoop
 				}
 				eob, err := ctl.isEndOfBatch(msg.BatchID)
 				if err != nil {
 					log.Println(err)
-					continue
+					continue ConsumerLoop
 				}
 				if eob {
 					t := time.Now().Format(time.RFC3339)
 					log.Println("[" + t + "] Ending batch: " + msg.BatchID)
 					if err := ctl.Destroy(msg.BatchID); err != nil {
 						log.Println(err)
-						continue
+						continue ConsumerLoop
 					}
 				}
 			case kafka.Error:
