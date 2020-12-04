@@ -63,7 +63,7 @@ class ExtractorConsumer:
         """
         while True:
             # Deserialize Event
-            msg = self.consumer.poll(timeout=5.0)
+            msg = self.consumer.poll(timeout=1.0)
             # Process Event or Raise Error
             if msg is None:
                 continue
