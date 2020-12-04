@@ -20,17 +20,17 @@ func (ctl BatchController) Destroy(batchID string) error {
 		topics.TransformPrefix + batchID,
 		topics.LoadPrefix + batchID,
 	}
-	if _, err := ctl.Kafka().DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
+	if _, err := ctl.kadmin.DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
 		return err
 	}
 	twoWeeks, err := time.ParseDuration("336h")
 	if err != nil {
 		return err
 	}
-	if _, err := ctl.Redis().Expire("batch:"+batchID+":counter", twoWeeks).Result(); err != nil {
+	if _, err := ctl.rdb.Expire("batch:"+batchID+":counter", twoWeeks).Result(); err != nil {
 		return err
 	}
-	if _, err := ctl.Redis().Del("batch:"+batchID+":resources").Result(); err != nil {
+	if _, err := ctl.rdb.Del("batch:"+batchID+":resources").Result(); err != nil {
 		return err
 	}
 	log.Println("batch:"+batchID+" destroyed")

@@ -2,13 +2,10 @@ package batch
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/arkhn/fhir-river/api/monitor"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
@@ -16,6 +13,7 @@ import (
 
 	"github.com/arkhn/fhir-river/api/errors"
 	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/monitor"
 	"github.com/arkhn/fhir-river/api/topics"
 )
 
@@ -46,22 +44,12 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		}
 		batchID := batchUUID.String()
 
-		// List resources of current batch in Redis
-		if err := ctl.Redis().SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
+		if err := ctl.SaveResourcesList(batchID, resourceIDs); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		// create batchID topics
-		batchTopics := []kafka.TopicSpecification{
-			{Topic: topics.BatchPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
-			{Topic: topics.ExtractPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
-			{Topic: topics.TransformPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
-			{Topic: topics.LoadPrefix + batchID, NumPartitions: topics.NumParts, ReplicationFactor: topics.ReplicationFactor},
-		}
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		if _, err = ctl.Kafka().CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
+		if err = ctl.CreateTopics(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

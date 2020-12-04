@@ -2,12 +2,13 @@ package monitor
 
 import (
 	"encoding/json"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 
 	"github.com/arkhn/fhir-river/api/topics"
 )
@@ -17,11 +18,11 @@ type message struct {
 }
 
 func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
-	batchResources, err := ctl.Redis().SMembers("batch:" + batchID + ":resources").Result()
+	batchResources, err := ctl.rdb.SMembers("batch:" + batchID + ":resources").Result()
 	if err != nil {
 		return false, err
 	}
-	counter, err := ctl.Redis().HGetAll("batch:" + batchID + ":counter").Result()
+	counter, err := ctl.rdb.HGetAll("batch:" + batchID + ":counter").Result()
 	if err != nil {
 		return false, err
 	}
