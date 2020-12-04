@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        service: ["api-go"]
+        service: ["api"]
     steps:
     - name: Install Go
       uses: actions/setup-go@v2
@@ -57,6 +57,9 @@ jobs:
         REDIS_MAPPINGS_HOST: required
         REDIS_MAPPINGS_PORT: required
         REDIS_MAPPINGS_DB: 1
+        REDIS_COUNTER_HOST: required
+        REDIS_COUNTER_PORT: required
+        REDIS_COUNTER_DB: 2
       working-directory: ./${{ matrix.service }}
       run: go test -v ./...  
 
@@ -64,7 +67,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        service: ["api-go", "extractor", "transformer", "loader"]
+        service: ["api", "extractor", "transformer", "loader"]
 
     steps:
       - id: docker_meta

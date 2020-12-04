@@ -13,12 +13,15 @@ from analyzer.src.analyze import Analyzer
 from analyzer.src.errors import AuthenticationError, AuthorizationError
 from extractor.src.config.service_logger import logger
 from extractor.src.consumer_class import ExtractorConsumer
-from extractor.src.errors import BadRequestError, MissingInformationError
+from extractor.src.errors import BadRequestError, MissingInformationError, EmptyResult
 from extractor.src.extract import Extractor
 from extractor.src.json_encoder import MyJSONEncoder
 from extractor.src.producer_class import ExtractorProducer
 from logger import format_traceback
 
+REDIS_COUNTER_HOST = os.getenv("REDIS_COUNTER_HOST")
+REDIS_COUNTER_PORT = os.getenv("REDIS_COUNTER_PORT")
+REDIS_COUNTER_DB = os.getenv("REDIS_COUNTER_DB")
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
 REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
@@ -41,12 +44,20 @@ def extract_resource(analysis, primary_key_values):
     return df
 
 
-def get_redis_client():
-    if "redis_client" not in g:
-        g.redis_client = redis.Redis(
+def get_redis_mappings_client():
+    if "redis_mappings_client" not in g:
+        g.redis_mappings_client = redis.Redis(
             host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
         )
-    return g.redis_client
+    return g.redis_mappings_client
+
+
+def get_redis_counter_client():
+    if "redis_counter_client" not in g:
+        g.redis_counter_client = redis.Redis(
+            host=REDIS_COUNTER_HOST, port=REDIS_COUNTER_PORT, db=REDIS_COUNTER_DB
+        )
+    return g.redis_counter_client
 
 
 #############
@@ -55,13 +66,14 @@ def get_redis_client():
 
 
 def create_app():
-    app = Flask(__name__)
+    _app = Flask(__name__)
 
     # load redis client
-    with app.app_context():
-        get_redis_client()
+    with _app.app_context():
+        get_redis_mappings_client()
+        get_redis_counter_client()
 
-    return app
+    return _app
 
 
 app = create_app()
@@ -85,7 +97,7 @@ def extract():
         raise BadRequestError("primary_key_values is required in request body")
 
     try:
-        analysis = Analyzer(redis_client=get_redis_client()).load_cached_analysis(
+        analysis = Analyzer(redis_client=get_redis_mappings_client()).load_cached_analysis(
             preview_id, resource_id
         )
         df = extract_resource(analysis, primary_key_values)
@@ -126,10 +138,9 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
+CONSUMED_TOPICS = "^batch\\..*"
 CONSUMER_GROUP_ID = "extractor"
-EXTRACT_TOPIC = "extract"
-BATCH_SIZE_TOPIC = "batch_size"
-CONSUMED_TOPIC = "batch"
+PRODUCED_TOPIC_PREFIX = "extract."
 
 
 # these decorators tell uWSGI (the server with which the app is run)
@@ -138,12 +149,12 @@ CONSUMED_TOPIC = "batch"
 @postfork
 @thread
 def run_consumer():
-    logger.info("Running extract consumer")
+    logger.info("Running consumer")
 
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TOPIC,
+        topics=CONSUMED_TOPICS,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
@@ -157,25 +168,43 @@ def run_consumer():
 
 def process_event_with_context(producer):
     with app.app_context():
-        redis_client = get_redis_client()
-    analyzer = Analyzer(redis_client=redis_client)
+        redis_mappings_client = get_redis_mappings_client()
+        redis_counter_client = get_redis_counter_client()
+    analyzer = Analyzer(redis_client=redis_mappings_client)
 
     def broadcast_events(dataframe, analysis, batch_id=None):
         resource_type = analysis.definition_id
         resource_id = analysis.resource_id
-        list_records_from_db = extractor.split_dataframe(dataframe, analysis)
-
-        for record in list_records_from_db:
-            logger.debug(
-                "One record from extract", extra={"resource_id": resource_id},
+        count = 0
+        try:
+            list_records_from_db = extractor.split_dataframe(dataframe, analysis)
+            for record in list_records_from_db:
+                logger.debug(
+                    "One record from extract", extra={"resource_id": resource_id},
+                )
+                event = dict()
+                event["batch_id"] = batch_id
+                event["resource_type"] = resource_type
+                event["resource_id"] = resource_id
+                event["record"] = record
+                producer.produce_event(
+                    topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
+                    event=event
+                )
+                count += 1
+        except EmptyResult as e:
+            logger.warn(
+                e,
+                extra={"resource_id": resource_id, "batch_id": batch_id}
             )
-            event = dict()
-            event["batch_id"] = batch_id
-            event["resource_type"] = resource_type
-            event["resource_id"] = resource_id
-            event["record"] = record
-
-            producer.produce_event(topic=EXTRACT_TOPIC, event=event)
+        # Initialize a batch counter in Redis. For each resource_id, it records
+        # the number of produced records
+        redis_counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted",
+                                  count)
+        logger.info(
+            f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
+            extra={"resource_id": resource_id},
+        )
 
     def process_event(msg):
         msg_value = json.loads(msg.value())
@@ -191,20 +220,13 @@ def process_event_with_context(producer):
 
         try:
             analysis = analyzer.load_cached_analysis(batch_id, resource_id)
-
             df = extract_resource(analysis, primary_key_values)
-            batch_size = extractor.batch_size(analysis)
-            logger.info(
-                f"Batch size is {batch_size} for resource type {analysis.definition_id}",
-                extra={"resource_id": resource_id},
-            )
-            producer.produce_event(
-                topic=BATCH_SIZE_TOPIC, event={"batch_id": batch_id, "size": batch_size},
-            )
             broadcast_events(df, analysis, batch_id)
-
         except Exception:
-            logger.error(format_traceback(), extra={"resource_id": resource_id})
+            logger.error(
+                format_traceback(),
+                extra={"resource_id": resource_id, "batch_id": batch_id}
+            )
 
     return process_event
 

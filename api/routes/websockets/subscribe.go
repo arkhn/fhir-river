@@ -1,4 +1,4 @@
-package api
+package websockets
 
 import (
 	"net/http"
@@ -7,9 +7,10 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/websocket"
-	"github.com/julienschmidt/httprouter"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/arkhn/fhir-river/api/topics"
 )
 
 var (
@@ -17,21 +18,20 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	subscribedTopics, _ = NewTopicsFromSlice([]string{"batch", "batch_size", "extract", "transform", "load"})
+	subscribedTopics, _ = newTopicsFromSlice([]string{topics.Batch, topics.Extract, topics.Transform, topics.Load})
 )
 
 type Topics map[string]struct{}
 
-func NewTopicsFromString(in string) (Topics, error) {
+func newTopicsFromString(in string) (Topics, error) {
 	topics := Topics{}
 	for _, t := range strings.Split(in, ",") {
 		topics[t] = struct{}{}
 	}
-
 	return topics, nil
 }
 
-func NewTopicsFromSlice(in []string) (Topics, error) {
+func newTopicsFromSlice(in []string) (Topics, error) {
 	topics := Topics{}
 	for _, t := range in {
 		topics[t] = struct{}{}
@@ -50,7 +50,11 @@ func (t Topics) Slice() []string {
 func (t Topics) Validate() error {
 	for topic := range t {
 		if _, ok := subscribedTopics[topic]; !ok {
-			errors.Errorf("cannot subscribe to topic '%s', only [%s] are handled", topic, subscribedTopics)
+			return errors.Errorf(
+				"cannot subscribe to topic '%s', only [%s] are handled",
+				topic,
+				subscribedTopics,
+			)
 		}
 	}
 	return nil
@@ -76,7 +80,7 @@ type Hub struct {
 	unregister chan *Subscriber
 }
 
-func (h *Hub) notifySubscribers() error {
+func (h *Hub) notifySubscribers() {
 	for {
 		select {
 		case subscriber := <-h.register:
@@ -117,7 +121,7 @@ func (h *Hub) handleEvent(event kafka.Event) error {
 	return nil
 }
 
-func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request) {
 
 	if err := consumer.SubscribeTopics(subscribedTopics.Slice(), nil); err != nil {
 		panic(err)
@@ -131,19 +135,19 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 	}
 	go hub.notifySubscribers()
 
-	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		// register the new subscriber in the hub
-		topics, err := NewTopicsFromString(r.URL.Query().Get("topics"))
+		topics, err := newTopicsFromString(r.URL.Query().Get("topics"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		} else if len(topics) == 0 {
-			http.Error(w, "at least one topic should be provided as query paramaeter", http.StatusBadRequest)
+			http.Error(w, "at least one topic should be provided as query parameter", http.StatusBadRequest)
 			return
 		} else if err := topics.Validate(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -153,7 +157,9 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 		hub.register <- subscriber
 		defer func() {
 			hub.unregister <- subscriber
-			subscriber.conn.Close()
+			if err := subscriber.conn.Close(); err != nil {
+				log.Println(err)
+			}
 		}()
 
 		incomingMessages := make(chan bool)
@@ -172,10 +178,10 @@ func Subscribe(consumer *kafka.Consumer) func(http.ResponseWriter, *http.Request
 		for {
 			select {
 			case message, ok := <-subscriber.send:
-				subscriber.conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
+				_ = subscriber.conn.SetWriteDeadline(time.Now().Add(1 * time.Second))
 				if !ok {
 					// The hub closed the channel.
-					subscriber.conn.WriteMessage(websocket.CloseMessage, []byte{})
+					_ = subscriber.conn.WriteMessage(websocket.CloseMessage, []byte{})
 					return
 				}
 

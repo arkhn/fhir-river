@@ -1,22 +1,32 @@
-FROM python:3.7-slim
+# cache dependencies
+FROM golang:1.15-buster as cache
 
-RUN apt-get update \
-    && apt-get -y install build-essential
+WORKDIR /build
 
-ARG API_HOME=/river
-ENV PYTHONPATH=${API_HOME}
+COPY ./api/go.mod .
+COPY ./api/go.sum .
 
-WORKDIR ${API_HOME}
+RUN go mod download
 
-COPY api/requirements.txt ${API_HOME}/requirements.txt
+# build go binary
+FROM cache as builder
 
-RUN pip install -r ${API_HOME}/requirements.txt
+COPY ./api .
 
-COPY api/src ${API_HOME}/api/src
-COPY logger ${API_HOME}/logger
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build  -o /go/bin/api
 
-COPY api/uwsgi.ini ${API_HOME}/api/uwsgi.ini
+WORKDIR /dist
+RUN cp /go/bin/api ./api
+RUN cp /build/routes/websockets/websockets.html ./websockets.html
 
-COPY api/entrypoint.sh /entrypoint.sh
+# final image
+FROM scratch
 
-CMD ["sh", "/entrypoint.sh"]
+# we need this since the binary has a dependency to C libraries (librdkafka)
+COPY --from=builder /lib /lib
+COPY --from=builder /lib64 /lib64
+
+COPY --from=builder /build/routes/websockets/websockets.html /websockets.html
+COPY --from=builder /go/bin/api /go/bin/api
+
+ENTRYPOINT ["/go/bin/api"]

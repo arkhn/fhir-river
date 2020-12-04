@@ -1,2 +1,0 @@
-class OperationOutcome(Exception):
-    pass

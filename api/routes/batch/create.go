@@ -1,4 +1,4 @@
-package api
+package batch
 
 import (
 	"bytes"
@@ -9,57 +9,32 @@ import (
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
-	"github.com/julienschmidt/httprouter"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/arkhn/fhir-river/api/errors"
+	"github.com/arkhn/fhir-river/api/mapping"
+	"github.com/arkhn/fhir-river/api/monitor"
+	"github.com/arkhn/fhir-river/api/topics"
 )
 
-// BatchRequest is the body of the POST /batch request.
-type BatchRequest struct {
-	Resources []struct {
-		ID           string `json:"resource_id"`
-		ResourceType string `json:"resource_type"`
-	} `json:"resources"`
-}
-
-// FetchAnalysisRequest is the body of the POST /fetch-analysis request.
-type FetchAnalysisRequest struct {
-	BatchID     string   `json:"batch_id"`
-	ResourceIDs []string `json:"resource_ids"`
-}
-
-// DeleteResourceRequest is the body of the POST /delete-resource request.
-type DeleteResourceRequest struct {
-	Resources []struct {
-		ID           string `json:"resource_id"`
-		ResourceType string `json:"resource_type"`
-	} `json:"resources"`
-}
-
-// BatchEvent is the kind of event produced to trigger a batch ETL.
-type BatchEvent struct {
-	BatchID    string `json:"batch_id"`
-	ResourceID string `json:"resource_id"`
-}
-
-// Batch is a wrapper around the HTTP handler for the POST /batch route.
+// Create is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, httprouter.Params) {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		// decode the request body
-		body := BatchRequest{}
-		err := json.NewDecoder(r.Body).Decode(&body)
+func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request ResourceRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		var resourceIDs []string
-		for _, resource := range body.Resources {
-			resourceIDs = append(resourceIDs, resource.ID)
-		}
-
 		// Get authorization header
 		authorizationHeader := r.Header.Get("Authorization")
+
+		var resourceIDs []string
+		for _, resource := range request.Resources {
+			resourceIDs = append(resourceIDs, resource.ID)
+		}
 
 		// generate a new batch ID.
 		batchUUID, err := uuid.NewRandom()
@@ -69,15 +44,25 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		}
 		batchID := batchUUID.String()
 
+		if err := ctl.SaveResourcesList(batchID, resourceIDs); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if err = ctl.CreateTopics(batchID); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		// Fetch and store the mappings to use for the batch
 		// This needs to be synchronous because we don't want a token to become invalid
 		// in the middle of a batch
 		for _, resourceID := range resourceIDs {
-			resourceMapping, err := fetchMapping(resourceID, authorizationHeader)
+			resourceMapping, err := mapping.Fetch(resourceID, authorizationHeader)
 			if err != nil {
 				switch e := err.(type) {
-				case *invalidTokenError:
-					http.Error(w, err.Error(), e.statusCode)
+				case *errors.InvalidTokenError:
+					http.Error(w, err.Error(), e.StatusCode)
 				default:
 					http.Error(w, err.Error(), http.StatusBadRequest)
 				}
@@ -90,7 +75,7 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 				return
 			}
 
-			err = storeMapping(serializedMapping, resourceID, batchID)
+			err = mapping.Store(serializedMapping, resourceID, batchID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -99,7 +84,7 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 
 		// delete all the documents correspondng to the batch resources
 		deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
-		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: body.Resources})
+		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: request.Resources})
 		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -117,23 +102,35 @@ func Batch(producer *kafka.Producer) func(http.ResponseWriter, *http.Request, ht
 		}
 
 		// produce a "batch" kafka event for each resource ID.
-		for _, resource := range body.Resources {
-			resourceID := resource.ID
-			event, _ := json.Marshal(BatchEvent{
+		for _, resourceID := range resourceIDs {
+			event, _ := json.Marshal(Event{
 				BatchID:    batchID,
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
+			topicName := topics.BatchPrefix + batchID
+			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
-				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
 				Value:          event,
-			}, nil)
+			}, deliveryChan)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
+			e := <-deliveryChan
+			m := e.(*kafka.Message)
+			if m.TopicPartition.Error != nil {
+				log.Printf("delivery failed: %v", m.TopicPartition.Error)
+				http.Error(w, m.TopicPartition.Error.Error(), http.StatusInternalServerError)
+				return
+			} else {
+				log.Printf("delivered message to topic %s [%d] at offset %v",
+					*m.TopicPartition.Topic, m.TopicPartition.Partition, m.TopicPartition.Offset)
+			}
+			close(deliveryChan)
 		}
-
 		// return the batch ID to the client immediately.
-		fmt.Fprint(w, batchID)
+		_, _ = fmt.Fprint(w, batchID)
 	}
 }

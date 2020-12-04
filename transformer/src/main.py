@@ -152,9 +152,9 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
-CONSUMED_EXTRACT_TOPIC = "extract"
-PRODUCED_TOPIC = "transform"
+CONSUMED_TOPICS = "^extract\\..*"
 CONSUMER_GROUP_ID = "transformer"
+PRODUCED_TOPIC_PREFIX = "transform."
 
 
 # these decorators tell uWSGI (the server with which the app is run)
@@ -168,7 +168,7 @@ def run_extract_consumer():
     producer = TransformerProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = TransformerConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_EXTRACT_TOPIC,
+        topics=CONSUMED_TOPICS,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
@@ -198,7 +198,7 @@ def process_event_with_context(producer):
 
             fhir_document = transform_row(analysis, record)
             producer.produce_event(
-                topic=PRODUCED_TOPIC,
+                topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
                 record={
                     "fhir_object": fhir_document,
                     "batch_id": batch_id,

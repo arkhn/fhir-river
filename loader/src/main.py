@@ -4,7 +4,7 @@ import json
 import os
 
 from confluent_kafka import KafkaException, KafkaError
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, g
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 from pymongo.errors import DuplicateKeyError
 import redis
@@ -22,17 +22,48 @@ from loader.src.consumer_class import LoaderConsumer
 from loader.src.producer_class import LoaderProducer
 from logger import format_traceback
 
+REDIS_COUNTER_HOST = os.getenv("REDIS_COUNTER_HOST")
+REDIS_COUNTER_PORT = os.getenv("REDIS_COUNTER_PORT")
+REDIS_COUNTER_DB = os.getenv("REDIS_COUNTER_DB")
 REDIS_MAPPINGS_HOST = os.getenv("REDIS_MAPPINGS_HOST")
 REDIS_MAPPINGS_PORT = os.getenv("REDIS_MAPPINGS_PORT")
 REDIS_MAPPINGS_DB = os.getenv("REDIS_MAPPINGS_DB")
 ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
 
+
+def get_redis_mappings_client():
+    if "redis_mappings_client" not in g:
+        g.redis_mappings_client = redis.Redis(
+            host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
+        )
+    return g.redis_mappings_client
+
+
+def get_redis_counter_client():
+    if "redis_counter_client" not in g:
+        g.redis_counter_client = redis.Redis(
+            host=REDIS_COUNTER_HOST, port=REDIS_COUNTER_PORT, db=REDIS_COUNTER_DB
+        )
+    return g.redis_counter_client
+
+
 ####################
 # LOADER FLASK API #
 ####################
 
-app = Flask(__name__)
+def create_app():
+    _app = Flask(__name__)
+
+    # load redis client
+    with _app.app_context():
+        get_redis_mappings_client()
+        get_redis_counter_client()
+
+    return _app
+
+
+app = create_app()
 
 
 @app.route("/delete-resources", methods=["POST"])
@@ -89,9 +120,9 @@ def handle_authorization_error(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TRANSFORM_TOPIC = "transform"
-PRODUCED_TOPIC = "load"
+CONSUMED_TOPICS = "^transform\\..*"
 CONSUMER_GROUP_ID = "loader"
+PRODUCED_TOPIC_PREFIX = "load."
 
 
 # these decorators tell uWSGI (the server with which the app is run)
@@ -100,12 +131,12 @@ CONSUMER_GROUP_ID = "loader"
 @postfork
 @thread
 def run_consumer():
-    logger.info("Running Consumer")
+    logger.info("Running consumer")
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
         broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
-        topics=CONSUMED_TRANSFORM_TOPIC,
+        topics=CONSUMED_TOPICS,
         group_id=CONSUMER_GROUP_ID,
         process_event=process_event_with_context(producer),
         manage_error=manage_kafka_error,
@@ -122,10 +153,10 @@ def process_event_with_context(producer):
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
-    redis_client = redis.Redis(
-        host=REDIS_MAPPINGS_HOST, port=REDIS_MAPPINGS_PORT, db=REDIS_MAPPINGS_DB
-    )
-    analyzer = Analyzer(redis_client=redis_client)
+    with app.app_context():
+        redis_counter_client = get_redis_counter_client()
+        redis_mappings_client = get_redis_mappings_client()
+    analyzer = Analyzer(redis_client=redis_mappings_client)
 
     def process_event(msg):
         """ Process the event """
@@ -152,7 +183,14 @@ def process_event_with_context(producer):
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
-            producer.produce_event(topic=PRODUCED_TOPIC, record=resolved_fhir_instance)
+            # Increment loaded resources counter in Redis
+            redis_counter_client.hincrby(
+                f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1
+            )
+            producer.produce_event(
+                topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
+                record={"batch_id": batch_id}
+            )
         except DuplicateKeyError:
             logger.error(format_traceback())
 

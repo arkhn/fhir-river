@@ -30,7 +30,6 @@ class LoaderConsumer:
         self.broker = broker
         self.topics = topics
         self.group_id = group_id
-        self.partition = 0  # One partition for now
         self.offset_start = offset_start
         self.process_event = process_event
         self.manage_error = manage_error
@@ -46,10 +45,16 @@ class LoaderConsumer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {'bootstrap.servers': self.broker,
-                  'group.id': self.group_id,
-                  'session.timeout.ms': 6000,
-                  'auto.offset.reset': 'earliest'}
+        config = {
+            'bootstrap.servers': self.broker,
+            'group.id': self.group_id,
+            'session.timeout.ms': 6000,
+            # topic.metadata.refresh.interval.ms (default 5 min) is the period of time
+            # in milliseconds after which we force a refresh of metadata.
+            # Here we refresh the list of consumed topics every 5s.
+            "topic.metadata.refresh.interval.ms": 5000,
+            'auto.offset.reset': 'earliest'
+        }
         return config
 
     def consume_event(self):

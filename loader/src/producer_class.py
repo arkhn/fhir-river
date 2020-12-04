@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaException, KafkaError
 import json
 import datetime
 
@@ -29,7 +29,7 @@ class LoaderProducer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
+        config = {"bootstrap.servers": self.broker}
         return config
 
     def produce_event(self, topic, record):
@@ -48,6 +48,11 @@ class LoaderProducer:
             self.producer.poll(1)  # Callback function
         except ValueError:
             logger.error(format_traceback())
+        except KafkaException as e:
+            if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                pass
+            else:
+                logger.error(format_traceback())
 
     @staticmethod
     def default_json_encoder(o):
