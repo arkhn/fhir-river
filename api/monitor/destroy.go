@@ -10,6 +10,8 @@ import (
 	"github.com/arkhn/fhir-river/api/topics"
 )
 
+const counterExpiration = "336h"
+
 // Destroy deletes a batch by removing its Redis keys and Kafka topics
 func (ctl BatchController) Destroy(batchID string) error {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -23,7 +25,7 @@ func (ctl BatchController) Destroy(batchID string) error {
 	if _, err := ctl.kadmin.DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
 		return err
 	}
-	twoWeeks, err := time.ParseDuration("336h")
+	twoWeeks, err := time.ParseDuration(counterExpiration)
 	if err != nil {
 		return err
 	}
@@ -36,4 +38,3 @@ func (ctl BatchController) Destroy(batchID string) error {
 	log.Println("batch:"+batchID+" destroyed")
 	return nil
 }
-
