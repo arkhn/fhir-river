@@ -18,11 +18,19 @@ type message struct {
 }
 
 func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
+<<<<<<< HEAD
 	batchResources, err := ctl.Redis().SMembers("batch:" + batchID + ":resources").Result()
 	if err != nil {
 		return false, err
 	}
 	counter, err := ctl.Redis().HGetAll("batch:" + batchID + ":counter").Result()
+=======
+	batchResources, err := ctl.rdb.SMembers("batch:" + batchID + ":resources").Result()
+	if err != nil {
+		return false, err
+	}
+	counter, err := ctl.rdb.HGetAll("batch:" + batchID + ":counter").Result()
+>>>>>>> master
 	if err != nil {
 		return false, err
 	}
@@ -46,10 +54,19 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 		if err != nil {
 			return false, err
 		}
+<<<<<<< HEAD
 		if extractCountInt < loadCountInt {
 			return false, nil
 		}
 	}
+=======
+		if extractCountInt > loadCountInt {
+			log.Printf("continue batch %s of resources %v: %v", batchID, batchResources, counter)
+			return false, nil
+		}
+	}
+	log.Printf("end of batch %s of resources %v: %v", batchID, batchResources, counter)
+>>>>>>> master
 	return true, nil
 }
 
@@ -65,10 +82,18 @@ func (ctl BatchController) ListenAndDestroy() {
 		"bootstrap.servers":  kafkaURL,
 		"group.id":           consumerGroupID,
 		"session.timeout.ms": 6000,
+<<<<<<< HEAD
 		// metadata.max.age.ms (default 5 min) is the period of time in milliseconds after which
 		// we force a refresh of metadata. Here we refresh the list of consumed topics every 5s.
 		"metadata.max.age.ms": 5000,
 		"auto.offset.reset":   "earliest"})
+=======
+		// topic.metadata.refresh.interval.ms (default 5 min) is the period of time
+		// in milliseconds after which we force a refresh of metadata.
+		// Here we refresh the list of consumed topics every 5s.
+		"topic.metadata.refresh.interval.ms": 5000,
+		"auto.offset.reset":                  "earliest"})
+>>>>>>> master
 	if err != nil {
 		panic(err)
 	}
@@ -101,17 +126,31 @@ ConsumerLoop:
 				var msg message
 				if err := json.Unmarshal(e.Value, &msg); err != nil {
 					log.Printf("Error while decoding Kafka message: %v\n", err)
+<<<<<<< HEAD
 					continue
+=======
+					break
+>>>>>>> master
 				}
 				eob, err := ctl.isEndOfBatch(msg.BatchID)
 				if err != nil {
 					log.Println(err)
+<<<<<<< HEAD
 					continue
 				}
 				if eob {
 					if err := ctl.Destroy(msg.BatchID); err != nil {
 						log.Println(err)
 						continue
+=======
+					break
+				}
+				if eob {
+					log.Println("ending batch: " + msg.BatchID)
+					if err := ctl.Destroy(msg.BatchID); err != nil {
+						log.Println(err)
+						break
+>>>>>>> master
 					}
 				}
 			case kafka.Error:

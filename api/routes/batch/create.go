@@ -16,6 +16,10 @@ import (
 
 	"github.com/arkhn/fhir-river/api/errors"
 	"github.com/arkhn/fhir-river/api/mapping"
+<<<<<<< HEAD:api/routes/batch/create.go
+=======
+	"github.com/arkhn/fhir-river/api/monitor"
+>>>>>>> master:api-go/api/batch.go
 	"github.com/arkhn/fhir-river/api/topics"
 )
 
@@ -46,12 +50,17 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		}
 		batchID := batchUUID.String()
 
+<<<<<<< HEAD:api/routes/batch/create.go
 		// List resources of current batch in Redis
 		if err := ctl.Redis().SAdd("batch:"+batchID+":resources", resourceIDs).Err(); err != nil {
+=======
+		if err := ctl.SaveResourcesList(batchID, resourceIDs); err != nil {
+>>>>>>> master:api-go/api/batch.go
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+<<<<<<< HEAD:api/routes/batch/create.go
 		// create batchID topics
 		batchTopics := []kafka.TopicSpecification{
 			{Topic: topics.BatchPrefix + batchID, NumPartitions: topics.NumParts},
@@ -62,6 +71,9 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		if _, err = ctl.Kafka().CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60 * time.Second)); err != nil {
+=======
+		if err = ctl.CreateTopics(batchID); err != nil {
+>>>>>>> master:api-go/api/batch.go
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -114,21 +126,41 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 		}
 
 		// produce a "batch" kafka event for each resource ID.
+<<<<<<< HEAD:api/routes/batch/create.go
 		for _, resource := range request.Resources {
 			resourceID := resource.ID
+=======
+		for _, resourceID := range resourceIDs {
+>>>>>>> master:api-go/api/batch.go
 			event, _ := json.Marshal(Event{
 				BatchID:    batchID,
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
 			topicName := topics.BatchPrefix + batchID
+<<<<<<< HEAD:api/routes/batch/create.go
+=======
+			deliveryChan := make(chan kafka.Event)
+>>>>>>> master:api-go/api/batch.go
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
 				Value:          event,
-			}, nil)
+			}, deliveryChan)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
+			e := <-deliveryChan
+			m := e.(*kafka.Message)
+			if m.TopicPartition.Error != nil {
+				log.Printf("delivery failed: %v", m.TopicPartition.Error)
+				http.Error(w, m.TopicPartition.Error.Error(), http.StatusInternalServerError)
+				return
+			} else {
+				log.Printf("delivered message to topic %s [%d] at offset %v",
+					*m.TopicPartition.Topic, m.TopicPartition.Partition, m.TopicPartition.Offset)
+			}
+			close(deliveryChan)
 		}
 		// return the batch ID to the client immediately.
 		_, _ = fmt.Fprint(w, batchID)

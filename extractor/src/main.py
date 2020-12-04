@@ -59,6 +59,7 @@ def get_redis_counter_client():
         )
     return g.redis_counter_client
 
+
 #############
 # FLASK API #
 #############
@@ -137,7 +138,7 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
-CONSUMED_TOPICS = "^batch.*"
+CONSUMED_TOPICS = "^batch\\..*"
 CONSUMER_GROUP_ID = "extractor"
 PRODUCED_TOPIC_PREFIX = "extract."
 
@@ -148,7 +149,7 @@ PRODUCED_TOPIC_PREFIX = "extract."
 @postfork
 @thread
 def run_consumer():
-    logger.info("Running extract consumer")
+    logger.info("Running consumer")
 
     producer = ExtractorProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = ExtractorConsumer(
@@ -168,7 +169,7 @@ def run_consumer():
 def process_event_with_context(producer):
     with app.app_context():
         redis_mappings_client = get_redis_mappings_client()
-        redis_client = get_redis_counter_client()
+        redis_counter_client = get_redis_counter_client()
     analyzer = Analyzer(redis_client=redis_mappings_client)
 
     def broadcast_events(dataframe, analysis, batch_id=None):
@@ -186,7 +187,10 @@ def process_event_with_context(producer):
                 event["resource_type"] = resource_type
                 event["resource_id"] = resource_id
                 event["record"] = record
-                producer.produce_event(topic=PRODUCED_TOPIC_PREFIX+batch_id, event=event)
+                producer.produce_event(
+                    topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
+                    event=event
+                )
                 count += 1
         except EmptyResult as e:
             logger.warn(
@@ -195,7 +199,8 @@ def process_event_with_context(producer):
             )
         # Initialize a batch counter in Redis. For each resource_id, it records
         # the number of produced records
-        redis_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+        redis_counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted",
+                                  count)
         logger.info(
             f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
             extra={"resource_id": resource_id},
@@ -216,12 +221,6 @@ def process_event_with_context(producer):
         try:
             analysis = analyzer.load_cached_analysis(batch_id, resource_id)
             df = extract_resource(analysis, primary_key_values)
-            # TODO: Remove this?
-            batch_size = extractor.batch_size(analysis)
-            logger.info(
-                f"Batch size is {batch_size} for resource type {analysis.definition_id}",
-                extra={"resource_id": resource_id},
-            )
             broadcast_events(df, analysis, batch_id)
         except Exception:
             logger.error(

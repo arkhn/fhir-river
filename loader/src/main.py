@@ -35,14 +35,6 @@ ENV = os.getenv("ENV")
 IN_PROD = ENV != "test"
 
 
-def get_redis_counter_client():
-    if "redis_counter_client" not in g:
-        g.redis_counter_client = redis.Redis(
-            host=REDIS_COUNTER_HOST, port=REDIS_COUNTER_PORT, db=REDIS_COUNTER_DB
-        )
-    return g.redis_counter_client
-
-
 def get_redis_mappings_client():
     if "redis_mappings_client" not in g:
         g.redis_mappings_client = redis.Redis(
@@ -50,6 +42,13 @@ def get_redis_mappings_client():
         )
     return g.redis_mappings_client
 
+
+def get_redis_counter_client():
+    if "redis_counter_client" not in g:
+        g.redis_counter_client = redis.Redis(
+            host=REDIS_COUNTER_HOST, port=REDIS_COUNTER_PORT, db=REDIS_COUNTER_DB
+        )
+    return g.redis_counter_client
 
 ####################
 # LOADER FLASK API #
@@ -60,8 +59,8 @@ def create_app():
 
     # load redis client
     with _app.app_context():
-        get_redis_counter_client()
         get_redis_mappings_client()
+        get_redis_counter_client()
 
     return _app
 
@@ -123,7 +122,7 @@ def handle_authorization_error(e):
 # LOADER KAFKA CLIENT #
 #######################
 
-CONSUMED_TOPICS = "^transform.*"
+CONSUMED_TOPICS = "^transform\\..*"
 CONSUMER_GROUP_ID = "loader"
 PRODUCED_TOPIC_PREFIX = "load."
 
@@ -134,7 +133,7 @@ PRODUCED_TOPIC_PREFIX = "load."
 @postfork
 @thread
 def run_consumer():
-    logger.info("Running Consumer")
+    logger.info("Running consumer")
 
     producer = LoaderProducer(broker=os.getenv("KAFKA_BOOTSTRAP_SERVERS"))
     consumer = LoaderConsumer(
@@ -156,8 +155,9 @@ def process_event_with_context(producer):
     fhirstore = get_fhirstore()
     loader = Loader(fhirstore)
     binder = ReferenceBinder(fhirstore)
-    redis_client = get_redis_counter_client()
-    redis_mappings_client = get_redis_mappings_client()
+    with app.app_context():
+        redis_counter_client = get_redis_counter_client()
+        redis_mappings_client = get_redis_mappings_client()
     analyzer = Analyzer(redis_client=redis_mappings_client)
 
     def process_event(msg):
@@ -202,9 +202,11 @@ def process_event_with_context(producer):
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
             # Increment loaded resources counter in Redis
-            redis_client.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
+            redis_counter_client.hincrby(
+                f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1
+            )
             producer.produce_event(
-                topic=PRODUCED_TOPIC_PREFIX + batch_id,
+                topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
                 record={"batch_id": batch_id}
             )
         except (DuplicateKeyError, MultipleRedlockException):

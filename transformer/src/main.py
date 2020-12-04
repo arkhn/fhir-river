@@ -152,7 +152,7 @@ def handle_authorization_error(e):
 # KAFKA CLIENT #
 ################
 
-CONSUMED_TOPICS = "^extract.*"
+CONSUMED_TOPICS = "^extract\\..*"
 CONSUMER_GROUP_ID = "transformer"
 PRODUCED_TOPIC_PREFIX = "transform."
 
@@ -198,7 +198,7 @@ def process_event_with_context(producer):
 
             fhir_document = transform_row(analysis, record)
             producer.produce_event(
-                topic=PRODUCED_TOPIC_PREFIX+batch_id,
+                topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
                 record={
                     "fhir_object": fhir_document,
                     "batch_id": batch_id,
