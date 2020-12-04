@@ -162,7 +162,6 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	}()
 
 	gqlResp := graphqlResponse{}
-	// TODO: FAIL
 	err = json.NewDecoder(resp.Body).Decode(&gqlResp)
 	if err != nil {
 		return nil, err
