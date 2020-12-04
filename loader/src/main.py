@@ -188,7 +188,7 @@ def process_event_with_context(producer):
                 f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1
             )
             producer.produce_event(
-                topic=PRODUCED_TOPIC_PREFIX + batch_id,
+                topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
                 record={"batch_id": batch_id}
             )
         except DuplicateKeyError:

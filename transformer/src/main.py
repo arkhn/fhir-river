@@ -198,7 +198,7 @@ def process_event_with_context(producer):
 
             fhir_document = transform_row(analysis, record)
             producer.produce_event(
-                topic=PRODUCED_TOPIC_PREFIX+batch_id,
+                topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
                 record={
                     "fhir_object": fhir_document,
                     "batch_id": batch_id,
