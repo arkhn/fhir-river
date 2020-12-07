@@ -1,0 +1,4 @@
+-r base.txt
+
+tox==3.20.1
+pre-commit==2.8.1
