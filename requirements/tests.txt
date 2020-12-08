@@ -1,1 +1,5 @@
 -r base.txt
+
+pytest==6.1.2
+pytest-django==4.1.0
+pytest-pythonpath==0.7.3
