@@ -10,7 +10,6 @@ fluent-logger==0.9.6
 hiredis==1.1.0
 msgpack==0.6.2
 prometheus-client==0.8.0
-psycopg2==2.8.6
 pyodbc==4.0.30
 python-dotenv==0.15.0
 pytz==2020.4
