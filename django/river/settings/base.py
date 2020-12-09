@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # 1st parties
     "core",
+    "extractor",
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,17 @@ CORS_URLS_REGEX = r"^/api/.*$"
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
 }
+
+# Redis
+
+REDIS_COUNTER_HOST = os.environ.get("REDIS_COUNTER_HOST", "redis")
+REDIS_COUNTER_PORT = os.environ.get("REDIS_COUNTER_PORT", 6379)
+REDIS_COUNTER_DB = os.environ.get("REDIS_COUNTER_DB", 1)
+
+REDIS_MAPPINGS_HOST = os.environ.get("REDIS_MAPPINGS_HOST", "redis")
+REDIS_MAPPINGS_PORT = os.environ.get("REDIS_MAPPINGS_PORT", 6379)
+REDIS_MAPPINGS_DB = os.environ.get("REDIS_MAPPINGS_DB", 2)
+
+# Kafka
+
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
