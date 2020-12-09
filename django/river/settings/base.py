@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # 1st parties
     "core",
     "extractor",
+    "preview",
 ]
 
 MIDDLEWARE = [
