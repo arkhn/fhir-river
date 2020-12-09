@@ -2,7 +2,6 @@
 
 import json
 import os
-import time
 
 from confluent_kafka import KafkaException, KafkaError
 from flask import Flask, request, jsonify, Response, g
@@ -189,7 +188,6 @@ def process_event_with_context(producer):
             while True:
                 # Lock TTL is 5s
                 ref_lock = dlm.lock(f"batch:{batch_id}:lock", 5000)
-                time.sleep(200)
                 if ref_lock:
                     break
             resolved_fhir_instance = binder.resolve_references(
