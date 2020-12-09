@@ -23,7 +23,7 @@ RUN apt-get update \
 RUN python -m venv ${VIRTUAL_ENV}
 
 COPY requirements requirements
-RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements/tests.txt
 
 
