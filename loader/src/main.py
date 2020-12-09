@@ -192,7 +192,7 @@ def process_event_with_context(producer):
                     if ref_lock:
                         break
                 except MultipleRedlockException as e:
-                    logger.debug(f"Redis lock error: {e}")
+                    logger.debug(f"Redis lock error: {e}", extra={"batch_id": batch_id})
 
             resolved_fhir_instance = binder.resolve_references(
                 fhir_instance, analysis.reference_paths
@@ -200,7 +200,7 @@ def process_event_with_context(producer):
             try:
                 dlm.unlock(ref_lock)
             except MultipleRedlockException as e:
-                logger.debug(f"Redis unlock error: {e}")
+                logger.debug(f"Redis unlock error: {e}", extra={"batch_id": batch_id})
 
             logger.debug(
                 "Writing document to mongo",
