@@ -187,15 +187,25 @@ def process_event_with_context(producer):
             )
             while True:
                 # Lock TTL is 5s
-                ref_lock = dlm.lock(f"batch:{batch_id}:lock", 5000)
-                if ref_lock:
-                    break
+                try:
+                    ref_lock = dlm.lock(f"batch:{batch_id}:lock", 5000)
+                    if ref_lock:
+                        break
+                except MultipleRedlockException as e:
+                    logger.debug(f"Redis lock error: {e}")
+
             resolved_fhir_instance = binder.resolve_references(
                 fhir_instance, analysis.reference_paths
             )
-            dlm.unlock(ref_lock)
+            try:
+                dlm.unlock(ref_lock)
+            except MultipleRedlockException as e:
+                logger.debug(f"Redis unlock error: {e}")
 
-            logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
+            logger.debug(
+                "Writing document to mongo",
+                extra={"batch_id": batch_id, "resource_id": resource_id}
+            )
             loader.load(
                 resolved_fhir_instance, resource_type=resolved_fhir_instance["resourceType"],
             )
@@ -207,7 +217,7 @@ def process_event_with_context(producer):
                 topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
                 record={"batch_id": batch_id}
             )
-        except (DuplicateKeyError, MultipleRedlockException):
+        except DuplicateKeyError:
             logger.error(format_traceback())
 
     return process_event
