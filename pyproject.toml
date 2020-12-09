@@ -29,3 +29,7 @@ exclude = '''
 '''
 line-lenght = 119
 target-version = ["py38"]
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+python_paths = "django"
