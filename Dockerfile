@@ -24,7 +24,7 @@ RUN python -m venv ${VIRTUAL_ENV}
 
 COPY requirements requirements
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir -r requirements/tests.txt
+RUN pip install --no-cache-dir -r requirements/prod.txt
 
 
 ########
