@@ -178,13 +178,11 @@ def process_event_with_context(producer):
             )
 
             # Redis distributed lock for reference binding
-            dlm = Redlock(
-                [{
+            dlm = Redlock([{
                     "host": REDIS_REFERENCES_HOST,
                     "port": REDIS_REFERENCES_PORT,
                     "db": REDIS_REFERENCES_DB
-                }, ]
-            )
+            }])
             while True:
                 # Lock TTL is 5s
                 try:
@@ -193,7 +191,6 @@ def process_event_with_context(producer):
                         break
                 except MultipleRedlockException as e:
                     logger.debug(f"Redis lock error: {e}", extra={"batch_id": batch_id})
-
             resolved_fhir_instance = binder.resolve_references(
                 fhir_instance, analysis.reference_paths
             )
