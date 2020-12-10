@@ -38,12 +38,15 @@ class ExtractorProducer:
         :param event: dict
         :return:
         """
-        self.producer.produce(
-            topic=topic,
-            value=MyJSONEncoder().encode(event),
-            callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
-        )
-        self.producer.poll(1)
+        try:
+            self.producer.produce(
+                topic=topic,
+                value=MyJSONEncoder().encode(event),
+                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
+            )
+            self.producer.poll(1)
+        except ValueError:
+            logger.error(format_traceback())
 
     @staticmethod
     def callback_fn(err, msg, obj):

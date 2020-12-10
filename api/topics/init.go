@@ -21,12 +21,12 @@ var NumParts int64
 
 func init() {
 	numPartsEnv, isNumPartsEnv := os.LookupEnv("KAFKA_NUMBER_PARTITIONS")
-	if !isNumPartsEnv {
-		NumParts = 1
-	} else {
+	if isNumPartsEnv {
 		var err error
 		if NumParts, err = strconv.ParseInt(numPartsEnv, 10, 32); err != nil {
 			panic(err)
 		}
+	} else {
+		NumParts = 1
 	}
 }

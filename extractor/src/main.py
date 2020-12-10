@@ -194,14 +194,13 @@ def process_event_with_context(producer):
                     )
                 except KafkaException as e:
                     if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                        logger.debug(f"extract topic for batch {batch_id} does not exist")
+                        logger.debug(
+                            f"batch {batch_id} may have been deleted: extract topic does not exist"
+                        )
                         break
                     else:
                         logger.error(format_traceback())
                         break
-                except ValueError:
-                    logger.error(format_traceback())
-                    continue
                 count += 1
         except EmptyResult as e:
             logger.warn(
