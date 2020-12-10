@@ -1,20 +1,21 @@
-#!/usr/bin/env python
+import logging
 
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 
-from loader.src.config.service_logger import logger
+logger = logging.getLogger(__file__)
 
 
 class LoaderConsumer:
-
-    def __init__(self,
-                 broker=None,
-                 topics=None,
-                 group_id=None,
-                 offset_start=-1,
-                 process_event=None,
-                 manage_error=None):
+    def __init__(
+        self,
+        broker=None,
+        topics=None,
+        group_id=None,
+        offset_start=-1,
+        process_event=None,
+        manage_error=None,
+    ):
         """
         Instantiate the class and create the consumer object
         :param broker: host[:port]’ string (or list of ‘host[:port]’ strings) that
@@ -46,14 +47,14 @@ class LoaderConsumer:
         :return:
         """
         config = {
-            'bootstrap.servers': self.broker,
-            'group.id': self.group_id,
-            'session.timeout.ms': 6000,
+            "bootstrap.servers": self.broker,
+            "group.id": self.group_id,
+            "session.timeout.ms": 6000,
             # topic.metadata.refresh.interval.ms (default 5 min) is the period of time
             # in milliseconds after which we force a refresh of metadata.
             # Here we refresh the list of consumed topics every 5s.
             "topic.metadata.refresh.interval.ms": 5000,
-            'auto.offset.reset': 'earliest'
+            "auto.offset.reset": "earliest",
         }
         return config
 

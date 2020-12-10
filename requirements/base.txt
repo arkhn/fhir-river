@@ -6,6 +6,7 @@ cx-Oracle==7.1.2
 Django==3.1.2
 django-cors-headers==3.5.0
 djangorestframework==3.12.1
+dotty-dict==1.2.1
 fhirstore @ git+https://github.com/arkhn/pyfhirstore@0.5.0#egg=fhirstore
 fhir.resources @ git+https://github.com/arkhn/fhir.resources@6.0.1#egg=fhir.resources
 fluent-logger==0.9.6
@@ -14,6 +15,7 @@ jsonschema==3.0.2
 msgpack==0.6.2
 prometheus-client==0.8.0
 pyodbc==4.0.30
+pymongo==3.9.0
 python-dotenv==0.15.0
 pytz==2020.4
 redis==3.5.3

@@ -1,3 +1,4 @@
+import logging
 import re
 import json
 from collections import defaultdict
@@ -6,10 +7,11 @@ from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
 
-from loader.src.config.service_logger import logger
-from loader.src.load.utils import get_resource_id
-from loader.src.cache import redis
+from loader.load.utils import get_resource_id
+from loader.cache import redis
 
+
+logger = logging.getLogger(__file__)
 
 # dotty-dict does not handle brackets indices,
 # it uses dots instead (a.0.b instead of a[0].b)

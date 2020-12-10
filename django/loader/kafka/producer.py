@@ -1,11 +1,10 @@
-#!/usr/bin/env python
-
 from confluent_kafka import Producer, KafkaException, KafkaError
 import json
 import datetime
 
-from loader.src.config.service_logger import logger
-from logger import format_traceback
+import logging
+
+logger = logging.getLogger(__file__)
 
 
 class LoaderProducer:
@@ -46,13 +45,13 @@ class LoaderProducer:
                 callback=lambda err, msg, obj=record: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
-        except ValueError:
-            logger.error(format_traceback())
-        except KafkaException as e:
-            if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+        except ValueError as err:
+            logger.error(err)
+        except KafkaException as err:
+            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                 pass
             else:
-                logger.error(format_traceback())
+                logger.error(err)
 
     @staticmethod
     def default_json_encoder(o):

@@ -1,11 +1,14 @@
+import logging
+
 from arkhn_monitoring import Counter, Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
 from fhir.resources.operationoutcome import OperationOutcome
 from prometheus_client import Counter as PromCounter
 
-from loader.src.config.service_logger import logger
-from loader.src.load.utils import get_resource_id
 
+from loader.load.utils import get_resource_id
+
+logger = logging.getLogger(__file__)
 
 counter_failed_validations = PromCounter(
     "count_failed_validations",
