@@ -16,6 +16,9 @@ RUN apt-get update \
     binutils \
     build-essential \
     libpq-dev \
+    # git is unfortunately required for company packages
+    # that have not been published on pypi (yet)
+    git \
     && apt-get autoremove --purge -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
