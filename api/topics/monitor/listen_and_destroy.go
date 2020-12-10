@@ -81,7 +81,7 @@ func (ctl BatchController) ListenAndDestroy() {
 			panic(err)
 		}
 	}()
-	if err = c.Subscribe(ctl.Load.Regex, nil); err != nil {
+	if err = c.Subscribe(ctl.Load.GetRegex(), nil); err != nil {
 		panic(err)
 	}
 

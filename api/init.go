@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var port, isPortDefined         = os.LookupEnv("PORT")
+var port, isPortDefined = os.LookupEnv("PORT")
 
 // ensure that the required environment variables are defined
 func init() {

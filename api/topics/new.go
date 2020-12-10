@@ -7,8 +7,8 @@ import (
 )
 
 type Topic struct {
-	Prefix   string
-	Regex    string
+	prefix   string
+	regex    string
 	numParts int
 }
 
@@ -25,10 +25,16 @@ func New(title string) Topic {
 		numParts = 1
 	}
 	return Topic{
-		Prefix:   title + ".",
-		Regex:    "^" + title + "\\..*",
+		prefix:   title + ".",
+		regex:    "^" + title + "\\..*",
 		numParts: numParts,
 	}
 }
 
+func (t Topic) GetName(batchID string) string {
+	return t.prefix + batchID
+}
 
+func (t Topic) GetRegex() string {
+	return t.regex
+}

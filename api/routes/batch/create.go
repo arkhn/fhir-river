@@ -55,7 +55,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 			return
 		}
 
-		if err = ctl.TopicController.Create(batchID); err != nil {
+		if err = ctl.Controller.Create(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -114,7 +114,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := ctl.Batch.Prefix + batchID
+			topicName := ctl.Batch.GetName(batchID)
 			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},

@@ -7,14 +7,14 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-func (ctl TopicController) Delete(batchID string) error {
+func (ctl Controller) Delete(batchID string) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	batchTopics := []string{
-		ctl.Batch.Prefix + batchID,
-		ctl.Extract.Prefix + batchID,
-		ctl.Transform.Prefix + batchID,
-		ctl.Load.Prefix + batchID,
+		ctl.Batch.GetName(batchID),
+		ctl.Extract.GetName(batchID),
+		ctl.Transform.GetName(batchID),
+		ctl.Load.GetName(batchID),
 	}
 	if _, err := ctl.Kadmin.DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60*time.Second)); err != nil {
 		return err
