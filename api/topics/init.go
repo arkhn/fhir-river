@@ -17,15 +17,16 @@ const (
 	Load              = "^load\\..*"
 )
 
-var NumParts int64
+var NumParts int
 
 func init() {
 	numPartsEnv, isNumPartsEnv := os.LookupEnv("KAFKA_NUMBER_PARTITIONS")
 	if isNumPartsEnv {
-		var err error
-		if NumParts, err = strconv.ParseInt(numPartsEnv, 10, 32); err != nil {
+		NumPartsLong, err := strconv.ParseInt(numPartsEnv, 10, 32)
+		if err != nil {
 			panic(err)
 		}
+		NumParts = int(NumPartsLong)
 	} else {
 		NumParts = 1
 	}
