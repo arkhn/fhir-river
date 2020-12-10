@@ -201,7 +201,7 @@ def process_event_with_context(producer):
                         break
                 except ValueError:
                     logger.error(format_traceback())
-                    break
+                    continue
                 count += 1
         except EmptyResult as e:
             logger.warn(
