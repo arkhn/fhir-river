@@ -1,33 +1,11 @@
 package topics
 
-import (
-	"os"
-	"strconv"
-)
+import "os"
 
-const (
-	BatchPrefix       = "batch."
-	ExtractPrefix     = "extract."
-	TransformPrefix   = "transform."
-	LoadPrefix        = "load."
-	ReplicationFactor = 1
-	Batch             = "^batch\\..*"
-	Extract           = "^extract\\..*"
-	Transform         = "^transform\\..*"
-	Load              = "^load\\..*"
-)
-
-var NumParts int
+var KafkaURL, isKafkaURL = os.LookupEnv("KAFKA_BOOTSTRAP_SERVERS")
 
 func init() {
-	numPartsEnv, isNumPartsEnv := os.LookupEnv("KAFKA_NUMBER_PARTITIONS")
-	if isNumPartsEnv {
-		NumPartsLong, err := strconv.ParseInt(numPartsEnv, 10, 32)
-		if err != nil {
-			panic(err)
-		}
-		NumParts = int(NumPartsLong)
-	} else {
-		NumParts = 1
+	if !isKafkaURL {
+		panic("KAFKA_BOOTSTRAP_SERVERS is required in environment")
 	}
 }

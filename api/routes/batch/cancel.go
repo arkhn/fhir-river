@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/arkhn/fhir-river/api/monitor"
+	"github.com/arkhn/fhir-river/api/topics/monitor"
 )
 
 func Cancel(ctl monitor.BatchController) func (http.ResponseWriter, *http.Request) {
