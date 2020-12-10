@@ -187,10 +187,21 @@ def process_event_with_context(producer):
                 event["resource_type"] = resource_type
                 event["resource_id"] = resource_id
                 event["record"] = record
-                producer.produce_event(
-                    topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
-                    event=event
-                )
+                try:
+                    producer.produce_event(
+                        topic=f"{PRODUCED_TOPIC_PREFIX}{batch_id}",
+                        event=event
+                    )
+                except KafkaException as e:
+                    if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                        logger.debug(f"extract topic for batch {batch_id} does not exist")
+                        break
+                    else:
+                        logger.error(format_traceback())
+                        break
+                except ValueError:
+                    logger.error(format_traceback())
+                    break
                 count += 1
         except EmptyResult as e:
             logger.warn(

@@ -38,20 +38,12 @@ class ExtractorProducer:
         :param event: dict
         :return:
         """
-        try:
-            self.producer.produce(
-                topic=topic,
-                value=MyJSONEncoder().encode(event),
-                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
-            )
-            self.producer.poll(1)  # Callback function
-        except ValueError:
-            logger.error(format_traceback())
-        except KafkaException as e:
-            if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                pass
-            else:
-                logger.error(format_traceback())
+        self.producer.produce(
+            topic=topic,
+            value=MyJSONEncoder().encode(event),
+            callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
+        )
+        self.producer.poll(1)
 
     @staticmethod
     def callback_fn(err, msg, obj):
