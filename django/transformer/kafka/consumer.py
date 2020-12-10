@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+import logging
 
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer
 
+logger = logging.getLogger(__file__)
 
 class TransformerConsumer:
     def __init__(

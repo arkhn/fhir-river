@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from common.kafka.producer import CustomJSONEncoder
+from extractor.kafka.producer import CustomJSONEncoder
 
 
 def test_encode_decimal():

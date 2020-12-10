@@ -1,15 +1,16 @@
+import logging
 from uuid import uuid4
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
 
-from transformer.src.config.service_logger import logger
-from transformer.src.transform.dataframe import clean_data
-from transformer.src.transform.dataframe import squash_rows
-from transformer.src.transform.dataframe import merge_by_attributes
-from transformer.src.transform.fhir import build_fhir_object
-from transformer.src.transform.fhir import build_metadata
+from transformer.transform.dataframe import clean_data
+from transformer.transform.dataframe import squash_rows
+from transformer.transform.dataframe import merge_by_attributes
+from transformer.transform.fhir import build_fhir_object
+from transformer.transform.fhir import build_metadata
 
+logger = logging.getLogger(__file__)
 
 class Transformer:
 

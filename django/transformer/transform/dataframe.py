@@ -1,8 +1,8 @@
 from typing import List
 from collections import defaultdict
 
-from analyzer.src.analyze.attribute import Attribute
-from analyzer.src.analyze.condition import CONDITION_FLAG
+from common.analyzer.attribute import Attribute
+from common.analyzer.condition import CONDITION_FLAG
 
 
 def clean_data(data, attributes: List[Attribute], primary_key):

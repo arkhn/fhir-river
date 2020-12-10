@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-
 import json
 import datetime
+import logging
 from confluent_kafka import Producer, KafkaError, KafkaException
 
-from logger import format_traceback
-from transformer.src.config.service_logger import logger
+logger = logging.getLogger(__file__)
 
 
 class TransformerProducer:

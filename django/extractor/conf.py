@@ -1,7 +1,7 @@
 from django.conf import settings
 
 
-# Extractor-only settings
+# Set default configuration for extractor
 
 class Settings:
     @property
@@ -17,7 +17,7 @@ class Settings:
         return getattr(settings, "BATCH_SIZE_TOPIC", "batch_size")
 
     @property
-    def CONSUMED_TOPIC(self):
-        return getattr(settings, "CONSUMED_TOPIC", "batch")
+    def CONSUMED_TOPICS(self):
+        return getattr(settings, "CONSUMED_TOPIC", "^batch\\..*")
 
 conf = Settings()
