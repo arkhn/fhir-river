@@ -65,7 +65,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 func (ctl BatchController) ListenAndDestroy() {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":  topics.KafkaURL,
-		"group.id":           topics.ConsumerGroupID,
+		"group.id":           consumerGroupID,
 		"session.timeout.ms": 6000,
 		// topic.metadata.refresh.interval.ms (default 5 min) is the period of time
 		// in milliseconds after which we force a refresh of metadata.

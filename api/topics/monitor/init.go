@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+const consumerGroupID = "api"
+
 var (
 	redisHost, isRedisHost = os.LookupEnv("REDIS_COUNTER_HOST")
 	redisPort, isRedisPort = os.LookupEnv("REDIS_COUNTER_PORT")
