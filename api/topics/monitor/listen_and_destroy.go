@@ -73,7 +73,7 @@ func (ctl BatchController) ListenAndDestroy() {
 		"topic.metadata.refresh.interval.ms": 5000,
 		"auto.offset.reset":                  "earliest"})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer func() {
 		log.Println("Closing consumer")
