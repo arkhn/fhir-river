@@ -17,6 +17,6 @@ func (ctl Controller) Create(batchID string) error {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	_, err := ctl.Kadmin.CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60*time.Second)
+	_, err := ctl.Kadmin.CreateTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60*time.Second))
 	return err
 }
