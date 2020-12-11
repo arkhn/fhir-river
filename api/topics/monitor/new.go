@@ -9,8 +9,9 @@ import (
 )
 
 type BatchController struct {
-	rdb *redis.Client
 	topics.Controller
+
+	rdb *redis.Client
 }
 
 func NewBatchController() BatchController {
