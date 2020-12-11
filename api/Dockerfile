@@ -3,15 +3,15 @@ FROM golang:1.15-buster as cache
 
 WORKDIR /build
 
-COPY ./api/go.mod .
-COPY ./api/go.sum .
+COPY go.mod .
+COPY go.sum .
 
 RUN go mod download
 
 # build go binary
 FROM cache as builder
 
-COPY ./api .
+COPY . .
 
 RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build  -o /go/bin/api
 
