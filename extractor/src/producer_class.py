@@ -44,14 +44,9 @@ class ExtractorProducer:
                 value=MyJSONEncoder().encode(event),
                 callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
             )
-            self.producer.poll(1)  # Callback function
+            self.producer.poll(1)
         except ValueError:
             logger.error(format_traceback())
-        except KafkaException as e:
-            if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                pass
-            else:
-                logger.error(format_traceback())
 
     @staticmethod
     def callback_fn(err, msg, obj):

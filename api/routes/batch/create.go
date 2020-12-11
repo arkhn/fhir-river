@@ -13,17 +13,23 @@ import (
 
 	"github.com/arkhn/fhir-river/api/errors"
 	"github.com/arkhn/fhir-river/api/mapping"
-	"github.com/arkhn/fhir-river/api/monitor"
 	"github.com/arkhn/fhir-river/api/topics"
+	"github.com/arkhn/fhir-river/api/topics/monitor"
 )
 
 // Create is a wrapper around the HTTP handler for the POST /batch route.
 // It takes a kafka producer as argument in order to trigger batch events.
-func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
+func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var request ResourceRequest
-		err := json.NewDecoder(r.Body).Decode(&request)
+		producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": topics.KafkaURL})
 		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer producer.Close()
+
+		var request ResourceRequest
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -49,7 +55,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 			return
 		}
 
-		if err = ctl.CreateTopics(batchID); err != nil {
+		if err = ctl.Controller.Create(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -108,7 +114,7 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := topics.BatchPrefix + batchID
+			topicName := ctl.Batch.GetName(batchID)
 			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},

@@ -197,6 +197,13 @@ def process_event_with_context(producer):
                 e,
                 extra={"resource_id": resource_id, "batch_id": batch_id}
             )
+        except KafkaException as e:
+            if e.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                logger.warn(
+                    f"batch {batch_id} may have been deleted: extract topic does not exist"
+                )
+            else:
+                logger.error(format_traceback())
         # Initialize a batch counter in Redis. For each resource_id, it records
         # the number of produced records
         redis_counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted",

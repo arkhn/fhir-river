@@ -6,10 +6,10 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/arkhn/fhir-river/api/monitor"
+	"github.com/arkhn/fhir-river/api/topics/monitor"
 )
 
-func Cancel(ctl monitor.BatchController) func (http.ResponseWriter, *http.Request) {
+func Cancel(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		batchID := vars["id"]
