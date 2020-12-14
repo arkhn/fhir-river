@@ -164,7 +164,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 		return nil, err
 	}
 
-	// grqphql errors are retured as httpo.StatusOK but contains an "error"
+	// grqphql errors are retured as http.StatusOK but contains an "error"
 	if gqlResp.Errors != nil {
 		switch gqlResp.Errors[0].StatusCode {
 		case http.StatusUnauthorized:
