@@ -124,10 +124,11 @@ func TestPreview(t *testing.T) {
 		assert.Equal(t, `{}`, rr.Body.String(), "bad response body")
 	})
 
-	t.Run("returns an error if invalid auth token", func(t *testing.T) {
+	t.Run("returns an error if unauthorized auth token", func(t *testing.T) {
 		// use a list of strings in primary_key_values
 		b := bytes.NewReader([]byte(`{"resource_id": "1", "preview_id": "u-u-i-d", "primary_key_values": ["1"]}`))
 		req, err := http.NewRequest("POST", "/preview", b)
+		req.Header.Add("Authorization", "Bearer unauthorizedToken")
 		assert.NoError(t, err)
 
 		// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.

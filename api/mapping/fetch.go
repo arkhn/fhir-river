@@ -175,7 +175,7 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 				StatusCode: http.StatusForbidden,
 			}
 		default:
-			return nil, fmt.Errorf("error while requesting mapping from Pyrog")
+			return nil, fmt.Errorf(gqlResp.Errors[0].Message)
 		}
 	}
 	resourceMapping := gqlResp.Data.Resource
