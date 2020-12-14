@@ -113,9 +113,13 @@ type graphqlVariables struct {
 }
 
 type graphqlResponse struct {
-	Data struct {
+	Data *struct {
 		Resource resource `json:"resource"`
 	} `json:"data"`
+	Errors []struct {
+		Message    string `json:"message"`
+		StatusCode int    `json:"statusCode"`
+	} `json:"errors"`
 }
 
 func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
@@ -144,13 +148,6 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 	switch resp.StatusCode {
 	case http.StatusOK:
 		// If everything went well, we go on
-	case http.StatusUnauthorized:
-		return nil, &errors.InvalidTokenError{Message: "Token is invalid", StatusCode: http.StatusUnauthorized}
-	case http.StatusForbidden:
-		return nil, &errors.InvalidTokenError{
-			Message:    "You don't have rights to perform this action",
-			StatusCode: http.StatusForbidden,
-		}
 	default:
 		// Return other errors
 		return nil, fmt.Errorf("error while requesting mapping from Pyrog")
@@ -167,6 +164,20 @@ func Fetch(resourceID string, authorizationHeader string) (*resource, error) {
 		return nil, err
 	}
 
+	// grqphql errors are retured as httpo.StatusOK but contains an "error"
+	if gqlResp.Errors != nil {
+		switch gqlResp.Errors[0].StatusCode {
+		case http.StatusUnauthorized:
+			return nil, &errors.InvalidTokenError{Message: "Token is invalid", StatusCode: http.StatusUnauthorized}
+		case http.StatusForbidden:
+			return nil, &errors.InvalidTokenError{
+				Message:    "You don't have rights to perform this action",
+				StatusCode: http.StatusForbidden,
+			}
+		default:
+			return nil, fmt.Errorf("error while requesting mapping from Pyrog")
+		}
+	}
 	resourceMapping := gqlResp.Data.Resource
 
 	// Dereference concept maps
