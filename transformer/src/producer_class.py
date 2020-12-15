@@ -28,7 +28,7 @@ class TransformerProducer:
         """
         Generate configuration dictionary for consumer
         """
-        config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
+        config = {"bootstrap.servers": self.broker, "linger.ms": 0.5}
         return config
 
     def produce_event(self, topic, record):
