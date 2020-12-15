@@ -124,7 +124,7 @@ jobs:
           cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
           contextName: river-ci-${{ github.sha }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: 5d95181d0de6bca3ccbe066db0c202169de2306a
+          deploymentRef: dc6559c2e40bcdc51dc34606abd5e0cb6f68c2ec
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
