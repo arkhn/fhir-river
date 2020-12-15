@@ -1,4 +1,4 @@
-FROM arkhn/python-db-drivers:0.1.0
+FROM arkhn/python-db-drivers:0.2.0
 
 ARG EXTRACTOR_SQL_HOME=/app
 ENV PYTHONPATH=${EXTRACTOR_SQL_HOME}
