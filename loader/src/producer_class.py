@@ -29,7 +29,10 @@ class LoaderProducer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {"bootstrap.servers": self.broker}
+        # confluent-kafka-python v1.5.0 release note:
+        # The default producer batch accumulation time, linger.ms, has been changed
+        # from 0.5ms to 5ms but we require lower produce latency
+        config = {"bootstrap.servers": self.broker, "linger.ms": 0.5}
         return config
 
     def produce_event(self, topic, record):

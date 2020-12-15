@@ -40,7 +40,7 @@ func TestFetch(t *testing.T) {
 	})
 
 	t.Run("query pyrog with invalid token", func(t *testing.T) {
-		_, err := Fetch("resourceID", "Bearer invalidToken")
+		_, err := Fetch("resourceID", "Bearer unauthorizedToken")
 		assert.Error(t, err)
 
 		got, isInvalidTokenError := err.(*errors.InvalidTokenError)
@@ -48,6 +48,13 @@ func TestFetch(t *testing.T) {
 			t.Fatalf("expected an isInvalidTokenError, got %v", err)
 		}
 		assert.Equal(t, http.StatusUnauthorized, got.StatusCode, "status code is incorrect")
+	})
+
+	t.Run("query pyrog bad request", func(t *testing.T) {
+		_, err := Fetch("resourceID", "bad request")
+		assert.Error(t, err)
+
+		assert.EqualError(t, err, "error while requesting mapping from Pyrog")
 	})
 }
 
