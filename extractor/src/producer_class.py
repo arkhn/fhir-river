@@ -28,7 +28,7 @@ class ExtractorProducer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {"bootstrap.servers": self.broker}
+        config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
         return config
 
     def produce_event(self, topic, event):
