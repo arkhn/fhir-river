@@ -136,14 +136,15 @@ def insert_in_fhir_object(fhir_object, path, value):
                 f"{value} in {path}"
             )
         val = value[0]
-    # TODO we return if value is "" because empty strings don't pass validation for some fhir
+    # We return if value is "" because empty strings don't pass validation for some fhir
     # attributes but it would be better to return None in the cleaning scripts if we don't want to
     # add an empty string.
-    elif value is None or value == "" or value == {}:
-        # If value is None, we don't want to do anything so we stop here.
-        return
     else:
         val = value
+
+    if val is None or val == "" or val == {}:
+        # If value is None, we don't want to do anything so we stop here.
+        return
 
     # Here we iterate through the path to go down the fhir object.
     # Note that the object is a recursive defaultdict so if the key doesn't exist,
