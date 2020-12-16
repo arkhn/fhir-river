@@ -10,8 +10,8 @@ from confluent_kafka import KafkaException, KafkaError
 import redis
 
 from common.analyzer import Analyzer
-from transformer.kafka.consumer import TransformerConsumer
-from transformer.kafka.producer import TransformerProducer
+from common.kafka.consumer import Consumer
+from common.kafka.producer import Producer
 from transformer.transform import Transformer
 from transformer.errors import OperationOutcome
 from transformer.conf import conf
@@ -96,8 +96,8 @@ class Command(BaseCommand):
 
         logger.info("Running transform consumer")
 
-        producer = TransformerProducer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
-        consumer = TransformerConsumer(
+        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
+        consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,

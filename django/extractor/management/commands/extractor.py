@@ -10,8 +10,8 @@ from confluent_kafka import KafkaException, KafkaError
 import redis
 
 from common.analyzer import Analyzer
-from extractor.kafka.consumer import ExtractorConsumer
-from extractor.kafka.producer import ExtractorProducer
+from common.kafka.consumer import Consumer
+from common.kafka.producer import Producer
 from extractor.errors import MissingInformationError
 from extractor.extract import Extractor
 from extractor.conf import conf
@@ -105,8 +105,8 @@ class Command(BaseCommand):
 
         logger.info("Running extract consumer")
 
-        producer = ExtractorProducer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
-        consumer = ExtractorConsumer(
+        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
+        consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,

@@ -1,11 +1,11 @@
+import json
 import datetime
 import decimal
-import json
 import logging
-
-from confluent_kafka import Producer
+from confluent_kafka import Producer as KafkaProducer, KafkaError, KafkaException
 
 logger = logging.getLogger(__file__)
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -17,8 +17,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-
-class ExtractorProducer:
+class Producer:
     def __init__(self, broker=None, callback_function=None):
         """
         Instantiate the class and create the consumer object
@@ -29,16 +28,16 @@ class ExtractorProducer:
             Default logs the error or success
         """
         self.broker = broker
-        self.partition = 0
-        self.callback_function = callback_function if callback_function else self.callback_fn
+        self.callback_function = (
+            callback_function if callback_function else self.callback_fn
+        )
 
-        # Create producer
-        self.producer = Producer(self._generate_config())
+        # Create consumer
+        self.producer = KafkaProducer(self._generate_config())
 
     def _generate_config(self):
         """
         Generate configuration dictionary for consumer
-        :return:
         """
         config = {"bootstrap.servers": self.broker, "session.timeout.ms": 6000}
         return config
@@ -54,11 +53,18 @@ class ExtractorProducer:
             self.producer.produce(
                 topic=topic,
                 value=CustomJSONEncoder().encode(event),
-                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
+                callback=lambda err, msg, obj=event: self.callback_function(
+                    err, msg, obj
+                ),
             )
             self.producer.poll(1)  # Callback function
         except ValueError as err:
             logger.error(err)
+        except KafkaException as err:
+            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                pass
+            else:
+                logger.error(err)
 
     @staticmethod
     def callback_fn(err, msg, obj):
@@ -68,6 +74,8 @@ class ExtractorProducer:
         This allows the original contents to be included for debugging purposes.
         """
         if err is not None:
-            logger.debug(f"Message {obj} delivery failed with error {err} for topic {msg.topic()}")
+            logger.debug(
+                f"Message {obj} delivery failed with error {err} for topic {msg.topic()}"
+            )
         else:
             logger.debug("Event Successfully created")

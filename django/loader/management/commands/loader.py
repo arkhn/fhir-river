@@ -11,8 +11,8 @@ from confluent_kafka import KafkaException, KafkaError
 import redis
 
 from common.analyzer import Analyzer
-from loader.kafka.consumer import LoaderConsumer
-from loader.kafka.producer import LoaderProducer
+from common.kafka.consumer import Consumer
+from common.kafka.producer import Producer
 from loader.load import Loader
 from loader.reference_binder import ReferenceBinder
 from loader.conf import conf
@@ -89,8 +89,8 @@ class Command(BaseCommand):
 
         logger.info("Running consumer")
 
-        producer = LoaderProducer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
-        consumer = LoaderConsumer(
+        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
+        consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,

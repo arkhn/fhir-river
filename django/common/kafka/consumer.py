@@ -1,11 +1,12 @@
 import logging
 
 from confluent_kafka import KafkaException, KafkaError
-from confluent_kafka import Consumer
+from confluent_kafka import Consumer as KafkaConsumer
 
 logger = logging.getLogger(__file__)
 
-class TransformerConsumer:
+
+class Consumer:
     def __init__(
         self,
         broker=None,
@@ -35,7 +36,7 @@ class TransformerConsumer:
         self.manage_error = manage_error
 
         # Create consumer
-        self.consumer = Consumer(self._generate_config())
+        self.consumer = KafkaConsumer(self._generate_config())
 
         if isinstance(self.topics, str):
             self.topics = [self.topics]
