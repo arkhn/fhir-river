@@ -9,8 +9,8 @@ class Settings:
         return getattr(settings, "CONSUMER_GROUP_ID", "extractor")
 
     @property
-    def EXTRACT_TOPIC(self):
-        return getattr(settings, "EXTRACT_TOPIC", "extract")
+    def PRODUCED_TOPIC_PREFIX(self):
+        return getattr(settings, "PRODUCED_TOPIC_PREFIX", "extract.")
 
     @property
     def BATCH_SIZE_TOPIC(self):
