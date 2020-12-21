@@ -4,6 +4,7 @@ from unittest import mock
 
 from analyzer.src.analyze import Analyzer
 from analyzer.src.analyze.attribute import Attribute
+from analyzer.src.analyze.condition import Condition
 from analyzer.src.analyze.input_group import InputGroup
 from analyzer.src.analyze.sql_column import SqlColumn
 from analyzer.src.analyze.sql_filter import SqlFilter
@@ -132,16 +133,12 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
         "sliceName": None,
         "definitionId": "code",
         "resourceId": "ck8oo3on226974kp4ns32n7xs",
-        "updatedAt": "2020-08-10T14:33:13.135Z",
-        "createdAt": "2020-08-10T14:33:13.130Z",
         "comments": [],
         "inputGroups": [
             {
                 "id": "ckdom8lgq0045m29ksz6vudvc",
                 "mergingScript": None,
                 "attributeId": "ck8ooenpu26984kp4wyiz4yc2",
-                "updatedAt": "2020-08-10T14:33:13.135Z",
-                "createdAt": "2020-08-10T14:33:13.130Z",
                 "inputs": [
                     {
                         "id": "ck8ooenw826994kp4whpirhdo",
@@ -151,20 +148,88 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                         "staticValue": None,
                         "sqlValueId": "ck8ooenw827004kp41nv3kcmq",
                         "inputGroupId": "ckdom8lgq0045m29ksz6vudvc",
-                        "updatedAt": "2020-08-10T14:33:13.135Z",
-                        "createdAt": "2020-08-10T14:33:13.130Z",
                         "sqlValue": {
                             "id": "ck8ooenw827004kp41nv3kcmq",
                             "table": "patients",
                             "column": "gender",
                             "joinId": None,
-                            "updatedAt": "2020-08-10T14:33:13.135Z",
-                            "createdAt": "2020-08-10T14:33:13.130Z",
-                            "joins": [],
+                            "joins": [
+                                {
+                                    "id": "ckdyl65kj0195gu9k43qei6xp",
+                                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
+                                    "tables": [
+                                        {
+                                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                                            "table": "patients",
+                                            "column": "subject_id",
+                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                                        },
+                                        {
+                                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                                            "table": "admissions",
+                                            "column": "subject_id",
+                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                                        },
+                                    ],
+                                }
+                            ],
                         },
                     }
                 ],
-                "conditions": [],
+                "conditions": [
+                    {
+                        "id": "ckdyl65kl0334gu9ky8x57zvb",
+                        "action": "EXCLUDE",
+                        "columnId": "ckdyl65kl0335gu9kup0hwhe0",
+                        "relation": "EQ",
+                        "value": "1",
+                        "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
+                        "sqlValue": {
+                            "id": "ckdyl65kl0335gu9kup0hwhe0",
+                            "table": "admissions",
+                            "column": "expire_flag",
+                            "joinId": "ckdyl65kj0195gu9k43qei6xq",
+                            "joins": [
+                                {
+                                    "id": "ckdyl65kj0195gu9k43qei6xp",
+                                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
+                                    "tables": [
+                                        {
+                                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                                            "table": "patients",
+                                            "column": "subject_id",
+                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                                        },
+                                        {
+                                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                                            "table": "join_table",
+                                            "column": "subject_id",
+                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                                        },
+                                    ],
+                                },
+                                {
+                                    "id": "ckdyl65kj0195gu9k43qei6xp",
+                                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
+                                    "tables": [
+                                        {
+                                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                                            "table": "join_table",
+                                            "column": "adm_id",
+                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                                        },
+                                        {
+                                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                                            "table": "admissions",
+                                            "column": "adm_id",
+                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    }
+                ],
             }
         ],
     }
@@ -176,8 +241,38 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
     group = InputGroup(
         id_="ckdom8lgq0045m29ksz6vudvc",
         attribute=expected,
-        conditions=[],
-        columns=[SqlColumn("patients", "gender")],
+        conditions=[
+            Condition(
+                "EXCLUDE",
+                SqlColumn(
+                    "admissions",
+                    "expire_flag",
+                    joins=[
+                        SqlJoin(
+                            SqlColumn("patients", "subject_id"),
+                            SqlColumn("join_table", "subject_id"),
+                        ),
+                        SqlJoin(
+                            SqlColumn("join_table", "adm_id"),
+                            SqlColumn("admissions", "adm_id"),
+                        ),
+                    ],
+                ),
+                "EQ",
+                "1",
+            )
+        ],
+        columns=[
+            SqlColumn(
+                "patients",
+                "gender",
+                joins=[
+                    SqlJoin(
+                        SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")
+                    )
+                ],
+            )
+        ],
         static_inputs=[],
         merging_script=None,
     )

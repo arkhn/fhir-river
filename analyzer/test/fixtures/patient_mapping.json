@@ -32,7 +32,8 @@
         "column": "row_id",
         "joinId": null,
         "updatedAt": "2020-08-14T09:47:55.452Z",
-        "createdAt": "2020-08-14T09:47:55.452Z"
+        "createdAt": "2020-08-14T09:47:55.452Z",
+        "joins": []
       }
     }
   ],
@@ -79,6 +80,7 @@
                 "table": "patients",
                 "column": "dob",
                 "joinId": null,
+                "joins": [],
                 "updatedAt": "2020-08-17T14:01:17.559Z",
                 "createdAt": "2020-08-17T14:01:17.559Z"
               }
@@ -137,6 +139,7 @@
                 "table": "patients",
                 "column": "dob",
                 "joinId": null,
+                "joins": [],
                 "updatedAt": "2020-08-17T14:01:17.559Z",
                 "createdAt": "2020-08-17T14:01:17.559Z"
               }
@@ -522,6 +525,7 @@
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
+                "joins": [],
                 "updatedAt": "2020-08-17T14:01:01.367Z",
                 "createdAt": "2020-08-17T14:01:01.362Z"
               }
@@ -568,6 +572,7 @@
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
+                "joins": [],
                 "updatedAt": "2020-08-17T14:01:01.367Z",
                 "createdAt": "2020-08-17T14:01:01.363Z"
               }
@@ -584,6 +589,7 @@
                 "table": "patients",
                 "column": "row_id",
                 "joinId": null,
+                "joins": [],
                 "updatedAt": "2020-08-17T14:01:01.367Z",
                 "createdAt": "2020-08-17T14:01:01.363Z"
               }
@@ -1091,6 +1097,7 @@
                 "table": "patients",
                 "column": "expire_flag",
                 "joinId": null,
+                "joins": [],
                 "updatedAt": "2020-08-17T14:01:01.367Z",
                 "createdAt": "2020-08-17T14:01:01.365Z"
               }
