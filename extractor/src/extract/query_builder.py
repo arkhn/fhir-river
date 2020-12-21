@@ -1,8 +1,6 @@
 from sqlalchemy import (
     and_,
     Column as AlchemyColumn,
-    distinct,
-    func,
     Table,
 )
 from sqlalchemy.orm import (
@@ -148,7 +146,17 @@ class QueryBuilder:
                 query = query.filter(sqlalchemy_pk_column.in_(self.pk_values))
 
         for sql_filter in self.analysis.filters:
-            col = self.get_column(sql_filter.sql_column)
+            if sql_filter.sql_column.joins:
+                query = self.augment_query_with_joins(query, sql_filter.sql_column.joins)
+                # We need to use the right sqlalchemy table for the input:
+                # If there is a join on this attribute, we need to use the same table
+                # as in the joins. The last join will be the one on the input table
+                sqlalchemy_table = self._cur_query_join_tables[sql_filter.sql_column.joins[-1]]
+            else:
+                # Otherwise, it's the primary table and we don't need to alias it
+                sqlalchemy_table = self.get_table(sql_filter.sql_column, with_alias=False)
+
+            col = self.get_column(sql_filter.sql_column, sqlalchemy_table)
             filter_clause = SQL_RELATIONS_TO_METHOD[sql_filter.relation](col, sql_filter.value)
             query = query.filter(filter_clause)
 

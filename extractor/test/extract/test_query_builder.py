@@ -1,6 +1,4 @@
-from pytest import raises
 from sqlalchemy import (
-    and_,
     Column,
     MetaData,
     Table,
@@ -93,7 +91,23 @@ def test_sqlalchemy_query(mock_sha1):
     input_groupC.add_condition(condition)
 
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
-    analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "'2150-08-29'"))
+    analysis.add_filter(
+        SqlFilter(
+            SqlColumn(
+                "admissions",
+                "admittime",
+                None,
+                joins=[
+                    SqlJoin(
+                        SqlColumn("patients", "row_id", None),
+                        SqlColumn("admissions", "row_id", None),
+                    )
+                ],
+            ),
+            "LIKE",
+            "'2150-08-29'",
+        )
+    )
     analysis.attributes.append(attributeA)
     analysis.attributes.append(attributeB)
     analysis.attributes.append(attributeC)
@@ -105,9 +119,9 @@ def test_sqlalchemy_query(mock_sha1):
         "SELECT patients.subject_id AS patients_subject_id_hash, "
         "patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM admissions AS admissions_2, patients "
+        "FROM patients "
         "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = patients.row_id \n"
-        "WHERE admissions_2.admittime LIKE :param_1"
+        "WHERE admissions_1.admittime LIKE :param_1"
     )
 
 
@@ -248,18 +262,15 @@ def test_apply_filters():
     query_builder.apply_filters(base_query)
 
     binary_expressions = [
-        query_builder.get_column(SqlColumn("patients", "subject_id")).in_(pk_values),
-        query_builder.get_column(SqlColumn("admissions", "admittime")).like("'2150-08-29'"),
-        query_builder.get_column(SqlColumn("patients", "row_id")) <= "1000",
-        and_(
-            query_builder.get_column(SqlColumn("patients", "row_id")) >= "500",
-            query_builder.get_column(SqlColumn("patients", "row_id")) <= "800",
-        ),
+        "patients.subject_id IN (:param_1, :param_2)",
+        "admissions.admittime LIKE :param_1",
+        "patients.row_id <= :param_1",
+        "patients.row_id >= :param_1 AND patients.row_id <= :param_2",
     ]
 
     for call, binary_expression in zip(base_query.filter.call_args_list, binary_expressions):
         args, _ = call
-        assert str(args[0]) == str(binary_expression)
+        assert str(args[0]) == binary_expression
 
 
 @mock.patch("extractor.src.extract.query_builder.Table", mock_table)
