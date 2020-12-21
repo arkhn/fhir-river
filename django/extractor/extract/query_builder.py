@@ -54,7 +54,7 @@ class QueryBuilder:
         self._sqlalchemy_pk_table = Table(
             self.analysis.primary_key_column.table,
             self.metadata,
-            schema=self.analysis.primary_key_column.owner,
+            # Removed "schema=.." bc it does not work well when schema_name != owner
             keep_existing=True,
             autoload=True,
         )
