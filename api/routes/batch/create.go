@@ -1,10 +1,10 @@
 package batch
 
 import (
-	"bytes"
+	// "bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"net/http"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
@@ -82,24 +82,26 @@ func Create(producer *kafka.Producer, ctl monitor.BatchController) func(http.Res
 			}
 		}
 
-		// delete all the documents correspondng to the batch resources
-		deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
-		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: request.Resources})
-		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+		// Not doing the deleteResources call bc the endpoint is not implemented anymore
 
-		if resp.StatusCode != 200 {
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			http.Error(w, string(body), http.StatusBadRequest)
-			return
-		}
+		// delete all the documents correspondng to the batch resources
+		// deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
+		// jBody, _ := json.Marshal(DeleteResourceRequest{Resources: request.Resources})
+		// resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusBadRequest)
+		// 	return
+		// }
+
+		// if resp.StatusCode != 200 {
+		// 	body, err := ioutil.ReadAll(resp.Body)
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusBadRequest)
+		// 		return
+		// 	}
+		// 	http.Error(w, string(body), http.StatusBadRequest)
+		// 	return
+		// }
 
 		// produce a "batch" kafka event for each resource ID.
 		for _, resourceID := range resourceIDs {
