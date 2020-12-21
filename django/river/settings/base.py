@@ -136,6 +136,33 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = Path(os.environ.get("STATIC_ROOT", "var/www/static"))
 
+
+# Logging
+# https://docs.djangoproject.com/en/3.1/topics/logging/
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "format": "{asctime} [{levelname:>8}] {filename:>15}:{lineno:3d} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+        },
+        # TODO: add fluentd handler ?
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("LOG_LEVEL", "INFO"),
+    },
+}
+
+
 # CorsHeaders
 # Used to access api from third-party domain
 
