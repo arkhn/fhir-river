@@ -21,6 +21,9 @@ FHIR_API_URL = os.getenv("FHIR_API_URL")
 
 logger = logging.getLogger(__name__)
 
+class MappingUnavailable(Exception):
+    pass
+
 class Analyzer:
     def __init__(self, redis_client: redis.Redis = None):
         self.redis = redis_client
@@ -45,6 +48,7 @@ class Analyzer:
                     f"Mapping not found for batch {batch_id} and resource {resource_id}",
                     extra={"resource_id": resource_id},
                 )
+                raise MappingUnavailable(resource_id)
 
             # Turn serialized mapping into an object
             mapping = json.loads(serialized_mapping)
