@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from preview.api.serializers import PreviewSerializer
 
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 class PreviewEndpoint(views.APIView):

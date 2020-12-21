@@ -18,7 +18,7 @@ from extractor.extract.query_builder import QueryBuilder
 from arkhn_monitoring import Timer
 
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 MSSQL = "MSSQL"
 ORACLE = "ORACLE"

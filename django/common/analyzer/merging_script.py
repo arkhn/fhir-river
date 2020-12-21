@@ -3,7 +3,7 @@ from typing import List
 
 import scripts
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 class MergingScript:
     def __init__(self, name: str):

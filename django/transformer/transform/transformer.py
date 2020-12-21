@@ -10,7 +10,7 @@ from transformer.transform.dataframe import merge_by_attributes
 from transformer.transform.fhir import build_fhir_object
 from transformer.transform.fhir import build_metadata
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 class Transformer:
 

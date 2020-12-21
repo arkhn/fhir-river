@@ -11,7 +11,7 @@ from loader.load.utils import get_resource_id
 from loader.cache import redis
 
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 # dotty-dict does not handle brackets indices,
 # it uses dots instead (a.0.b instead of a[0].b)

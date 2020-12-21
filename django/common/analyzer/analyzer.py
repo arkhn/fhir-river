@@ -19,7 +19,7 @@ from .sql_join import SqlJoin
 
 FHIR_API_URL = os.getenv("FHIR_API_URL")
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 class Analyzer:
     def __init__(self, redis_client: redis.Redis = None):

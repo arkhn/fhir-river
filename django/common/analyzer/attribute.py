@@ -4,7 +4,7 @@ from typing import List
 
 from .input_group import InputGroup
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 numerical_types_map = {
     "integer": int,

@@ -19,7 +19,7 @@ from extractor.errors import ImproperMappingError
 
 from arkhn_monitoring import Timer
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 def handle_between_filter(col, value):
     values = value.split(",")

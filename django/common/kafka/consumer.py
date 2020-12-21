@@ -3,7 +3,7 @@ import logging
 from confluent_kafka import KafkaException, KafkaError
 from confluent_kafka import Consumer as KafkaConsumer
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 class Consumer:

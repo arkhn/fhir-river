@@ -8,7 +8,7 @@ from prometheus_client import Counter as PromCounter
 
 from loader.load.utils import get_resource_id
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 counter_failed_validations = PromCounter(
     "count_failed_validations",
