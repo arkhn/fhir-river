@@ -115,7 +115,19 @@ def test_analyze_mapping(patient_mapping):
         ),
     }
     assert analysis.filters == [
-        SqlFilter(SqlColumn("patients", "row_id"), ">=", "0"),
+        SqlFilter(
+            SqlColumn(
+                "admissions",
+                "adm_date",
+                joins=[
+                    SqlJoin(
+                        SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")
+                    )
+                ],
+            ),
+            ">=",
+            "2012",
+        ),
     ]
     assert analyzer.get_analysis_joins(analysis) == {
         SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
@@ -253,8 +265,7 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                             SqlColumn("join_table", "subject_id"),
                         ),
                         SqlJoin(
-                            SqlColumn("join_table", "adm_id"),
-                            SqlColumn("admissions", "adm_id"),
+                            SqlColumn("join_table", "adm_id"), SqlColumn("admissions", "adm_id"),
                         ),
                     ],
                 ),

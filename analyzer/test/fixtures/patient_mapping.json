@@ -23,17 +23,42 @@
     {
       "id": "ckdu1t41o1171iepjprcl7qji",
       "relation": ">=",
-      "value": "0",
+      "value": "2012",
       "resourceId": "ckd62orz2052659mpwse7w8ms",
       "sqlColumnId": "ckdu1t41o1172iepju4j8od0x",
       "sqlColumn": {
         "id": "ckdu1t41o1172iepju4j8od0x",
-        "table": "patients",
-        "column": "row_id",
+        "table": "admissions",
+        "column": "adm_date",
         "joinId": null,
         "updatedAt": "2020-08-14T09:47:55.452Z",
         "createdAt": "2020-08-14T09:47:55.452Z",
-        "joins": []
+        "joins": [
+          {
+            "id": "ckdyl65ki0139gu9km494twhn",
+            "columnId": "ckdyl65ki0138gu9kb1g4xfat",
+            "updatedAt": "2020-08-17T14:01:01.366Z",
+            "createdAt": "2020-08-17T14:01:01.362Z",
+            "tables": [
+              {
+                "id": "ckdyl65ki0140gu9kno8jumsr",
+                "table": "patients",
+                "column": "subject_id",
+                "joinId": "ckdyl65ki0139gu9km494twhn",
+                "updatedAt": "2020-08-17T14:01:01.366Z",
+                "createdAt": "2020-08-17T14:01:01.362Z"
+              },
+              {
+                "id": "ckdyl65ki0141gu9klt9e790b",
+                "table": "admissions",
+                "column": "subject_id",
+                "joinId": "ckdyl65ki0139gu9km494twhn",
+                "updatedAt": "2020-08-17T14:01:01.366Z",
+                "createdAt": "2020-08-17T14:01:01.362Z"
+              }
+            ]
+          }
+        ]
       }
     }
   ],
