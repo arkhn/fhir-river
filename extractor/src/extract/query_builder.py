@@ -94,33 +94,9 @@ class QueryBuilder:
         for input_group in attribute.input_groups:
             for col in input_group.columns:
 
-                # Apply joins to the query
-                # We keep the used join tables in a dict in case we have multi-hop joins
-                join_tables = {}
-                for join in col.joins:
-                    if join in self._cur_query_join_tables:
-                        # This join was already added to the query
-                        continue
-
-                    # Get tables
-                    right_table = join_tables.get(join.right.table, self.get_table(join.right))
-                    left_table = join_tables.get(join.left.table, self.get_table(join.left))
-                    join_tables[join.right.table] = right_table
-                    join_tables[join.left.table] = left_table
-
-                    # Add the join to the temp join dict
-                    self._cur_query_join_tables[join] = right_table
-
-                    # Add join
-                    query = query.join(
-                        right_table,
-                        self.get_column(join.right, right_table)
-                        == self.get_column(join.left, left_table),
-                        isouter=True,
-                    )
-
-                # We need to use the right sqlalchemy table for the input:
                 if col.joins:
+                    query = self.augment_query_with_joins(query, col.joins)
+                    # We need to use the right sqlalchemy table for the input:
                     # If there is a join on this attribute, we need to use the same table
                     # as in the joins. The last join will be the one on the input table
                     sqlalchemy_table = self._cur_query_join_tables[col.joins[-1]]
@@ -132,14 +108,17 @@ class QueryBuilder:
 
             # Add the condition columns to the query
             for condition in input_group.conditions:
-                if condition.sql_column.table != self.analysis.primary_key_column.table:
-                    # TODO handle conditions with joins:
-                    # https://github.com/arkhn/fhir-river/issues/169
-                    raise ValueError(
-                        f"Cannot use a condition with a column that does not belong "
-                        f"to the primary key table: {condition.sql_column.table}"
-                    )
-                sqlalchemy_table = self.get_table(condition.sql_column, with_alias=False)
+
+                if condition.sql_column.joins:
+                    query = self.augment_query_with_joins(query, condition.sql_column.joins)
+                    # We need to use the right sqlalchemy table for the input:
+                    # If there is a join on this attribute, we need to use the same table
+                    # as in the joins. The last join will be the one on the input table
+                    sqlalchemy_table = self._cur_query_join_tables[condition.sql_column.joins[-1]]
+                else:
+                    # Otherwise, it's the primary table and we don't need to alias it
+                    sqlalchemy_table = self.get_table(condition.sql_column, with_alias=False)
+
                 query = self.add_column_to_query(condition.sql_column, sqlalchemy_table, query)
 
         return query
@@ -172,6 +151,31 @@ class QueryBuilder:
             col = self.get_column(sql_filter.sql_column)
             filter_clause = SQL_RELATIONS_TO_METHOD[sql_filter.relation](col, sql_filter.value)
             query = query.filter(filter_clause)
+
+        return query
+
+    def augment_query_with_joins(self, query, analysis_joins):
+        join_tables = {}
+        for join in analysis_joins:
+            if join in self._cur_query_join_tables:
+                # This join was already added to the query
+                continue
+
+            # Get tables
+            right_table = join_tables.get(join.right.table, self.get_table(join.right))
+            left_table = join_tables.get(join.left.table, self.get_table(join.left))
+            join_tables[join.right.table] = right_table
+            join_tables[join.left.table] = left_table
+
+            # Add the join to the temp join dict
+            self._cur_query_join_tables[join] = right_table
+
+            # Add join
+            query = query.join(
+                right_table,
+                self.get_column(join.right, right_table) == self.get_column(join.left, left_table),
+                isouter=True,
+            )
 
         return query
 
