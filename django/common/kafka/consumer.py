@@ -1,7 +1,9 @@
+from contextlib import contextmanager
 import logging
+import json
+import time
 
-from confluent_kafka import KafkaException, KafkaError
-from confluent_kafka import Consumer as KafkaConsumer
+from confluent_kafka import Consumer as KafkaConsumer, KafkaError, KafkaException
 
 logger = logging.getLogger(__name__)
 
@@ -12,9 +14,6 @@ class Consumer:
         broker=None,
         topics=None,
         group_id=None,
-        offset_start=-1,
-        process_event=None,
-        manage_error=None,
     ):
         """
         Instantiate the class and create the consumer object
@@ -25,17 +24,11 @@ class Consumer:
         :param offset_start: integer
         :param process_event: function taking as an argument a deserialized message
             to process the event
-        :param manage_error: function taking as an argument adeserialized message
-            to manage any error
         """
         self.broker = broker
         self.topics = topics
         self.group_id = group_id
-        self.offset_start = offset_start
-        self.process_event = process_event
-        self.manage_error = manage_error
 
-        # Create consumer
         self.consumer = KafkaConsumer(self._generate_config())
 
         if isinstance(self.topics, str):
@@ -58,34 +51,33 @@ class Consumer:
         }
         return config
 
-    def consume_event(self):
-        """
-        Consume event in an infinite loop
-        :return:
-        """
-        while True:
-            # Deserialize Event
-            msg = self.consumer.poll(timeout=1.0)
+    @contextmanager
+    def subscribe(self):
+        self.consumer.subscribe(self.topics)
+        yield Subscription(self.consumer)
+        self.consumer.close()
 
-            # Process Event or Raise Error
+
+class Subscription:
+    def __init__(self, consumer) -> None:
+        self.consumer = consumer
+
+    def __call__(self) -> dict:
+        """Polls until a message's available for delivery"""
+        while True:
+            msg = self.consumer.poll(timeout=1.0)
             if msg is None:
                 continue
-            if msg.error():
-                self.manage_error(msg)
-            else:
-                # Proper message
-                self.process_event(msg)
+            if error := msg.error():
+                logger.debug(error.str())
+                self.handle_error(error)
+                continue
+            data = json.loads(msg.value())
+            return data
 
-    def run_consumer(self):
-        """
-        Create consumer, assign topics, consume and process events
-        :return:
-        """
-        self.consumer.subscribe(self.topics)
-        try:
-            self.consume_event()
-        except (KafkaException, KafkaError):
-            raise
-        finally:
-            # Close down consumer to commit final offsets.
-            self.consumer.close()
+    def handle_error(self, error: KafkaError):
+        """Handles a KafkaError"""
+        if error.retriable() or error.code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+            time.sleep(1)
+        else:
+            raise KafkaException(error)
