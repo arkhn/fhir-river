@@ -5,7 +5,7 @@ from django.conf import settings
 
 import redis
 
-from common.service.application import Application
+from common.service.service import Service
 from common.service.event import Event
 from common.service.handler import Handler
 from common.kafka.consumer import Consumer
@@ -119,7 +119,7 @@ class ExtractHandler(Handler):
         )
 
 
-class ExtractorApplication(Application):
+class ExtractorService(Service):
     @classmethod
     def make_app(cls):
         consumer = Consumer(
@@ -144,4 +144,4 @@ class ExtractorApplication(Application):
             counter_redis=counter_redis,
             analyzer=analyzer,
         )
-        return Application(consumer, handler)
+        return Service(consumer, handler)

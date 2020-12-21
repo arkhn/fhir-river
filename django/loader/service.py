@@ -4,7 +4,7 @@ from django.conf import settings
 
 import redis
 
-from common.service.application import Application
+from common.service.service import Service
 from common.service.event import Event
 from common.service.handler import Handler
 from common.kafka.consumer import Consumer
@@ -87,7 +87,7 @@ class LoadHandler(Handler):
         )
 
 
-class LoaderApplication(Application):
+class LoaderService(Service):
     @classmethod
     def make_app(cls):
         fhirstore_client = get_fhirstore()
@@ -117,4 +117,4 @@ class LoaderApplication(Application):
             counter_redis=counter_redis,
             analyzer=analyzer,
         )
-        return Application(consumer, handler)
+        return Service(consumer, handler)

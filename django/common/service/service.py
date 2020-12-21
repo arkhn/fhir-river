@@ -10,8 +10,8 @@ from common.service.handler import Handler
 logger = logging.getLogger(__name__)
 
 
-class Application:
-    """Stateful application"""
+class Service:
+    """Stateful service"""
 
     def __init__(self, consumer: Consumer, handler: Handler) -> None:
         self.consumer = consumer

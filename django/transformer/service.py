@@ -7,7 +7,7 @@ from django.conf import settings
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.application import Application
+from common.service.service import Service
 from common.service.event import Event
 from common.service.handler import Handler
 
@@ -98,7 +98,7 @@ class TransformHandler(Handler):
         )
 
 
-class TransformerApplication(Application):
+class TransformerService(Service):
     @classmethod
     def make_app(cls):
         consumer = Consumer(
@@ -117,4 +117,4 @@ class TransformerApplication(Application):
             transformer=Transformer(),
             analyzer=analyzer,
         )
-        return Application(consumer, handler)
+        return Service(consumer, handler)
