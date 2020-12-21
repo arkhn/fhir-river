@@ -89,6 +89,11 @@ class Analyzer:
             filter_["sqlColumn"]["column"],
             self._cur_analysis.source_credentials["owner"],
         )
+
+        filter_joins = self.parse_joins_mapping(filter_["sqlColumn"]["joins"])
+        for join in filter_joins:
+            col.add_join(join)
+
         sql_filter = SqlFilter(col, filter_["relation"], filter_["value"])
         self._cur_analysis.add_filter(sql_filter)
 
@@ -143,19 +148,9 @@ class Analyzer:
                 if input_["conceptMapId"] and input_["conceptMap"]:
                     cur_col.concept_map = ConceptMap(input_["conceptMap"], input_["conceptMapId"])
 
-                for join in sqlValue["joins"]:
-                    tables = join["tables"]
-                    left = SqlColumn(
-                        tables[0]["table"],
-                        tables[0]["column"],
-                        self._cur_analysis.primary_key_column.owner,
-                    )
-                    right = SqlColumn(
-                        tables[1]["table"],
-                        tables[1]["column"],
-                        self._cur_analysis.primary_key_column.owner,
-                    )
-                    cur_col.add_join(SqlJoin(left, right))
+                input_joins = self.parse_joins_mapping(sqlValue["joins"])
+                for join in input_joins:
+                    cur_col.add_join(join)
 
                 input_group.add_column(cur_col)
 
@@ -165,6 +160,10 @@ class Analyzer:
                 mapping_condition["sqlValue"]["column"],
                 self._cur_analysis.primary_key_column.owner,
             )
+
+            condition_joins = self.parse_joins_mapping(mapping_condition["sqlValue"]["joins"])
+            for join in condition_joins:
+                condition_column.add_join(join)
 
             condition = Condition(
                 action=mapping_condition["action"],
@@ -193,6 +192,24 @@ class Analyzer:
             resource_mapping["primaryKeyColumn"],
             resource_mapping["source"]["credential"]["owner"],
         )
+
+    def parse_joins_mapping(self, joins_mapping):
+        joins = []
+        for join in joins_mapping:
+            tables = join["tables"]
+            left = SqlColumn(
+                tables[0]["table"],
+                tables[0]["column"],
+                self._cur_analysis.primary_key_column.owner,
+            )
+            right = SqlColumn(
+                tables[1]["table"],
+                tables[1]["column"],
+                self._cur_analysis.primary_key_column.owner,
+            )
+            joins.append(SqlJoin(left, right))
+
+        return joins
 
     @staticmethod
     def get_analysis_columns(analysis):

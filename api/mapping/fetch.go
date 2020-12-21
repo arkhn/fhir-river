@@ -11,26 +11,24 @@ import (
 )
 
 const resourceFromIDQuery = `
-fragment entireFilter on Filter {
-    id
-    sqlColumn {
-        id
-        table
-        column
-    }
-    relation
-    value
-}
-
 fragment entireColumn on Column {
-    table
+	table
     column
     joins {
-        tables {
-            table
+		tables {
+			table
             column
         }
     }
+}
+
+fragment entireFilter on Filter {
+	id
+	sqlColumn {
+		...entireColumn
+	}
+	relation
+	value
 }
 
 fragment entireInput on Input {
@@ -45,8 +43,7 @@ fragment entireInput on Input {
 fragment entireCondition on Condition {
     action
     sqlValue {
-        table
-        column
+        ...entireColumn
     }
     relation
     value
