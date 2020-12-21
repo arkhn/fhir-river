@@ -148,17 +148,32 @@ LOGGING = {
             "format": "{asctime} [{levelname:>8}] {filename:>15}:{lineno:3d} {message}",
             "style": "{",
         },
+        "river.events": {
+            "format": "{asctime} [{levelname:>8}] {filename:>15}:{lineno:3d} {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "default",
         },
+        "river.events": {
+            "class": "logging.StreamHandler",
+            "formatter": "river.events",
+        }
         # TODO: add fluentd handler ?
     },
     "root": {
         "handlers": ["console"],
         "level": os.environ.get("LOG_LEVEL", "INFO"),
+    },
+    "loggers": {
+        "river.events": {
+            "propagate": False,
+            "handlers": ["river.events"],
+            "level": os.environ.get("LOG_LEVEL", "INFO"),
+        }
     },
 }
 
