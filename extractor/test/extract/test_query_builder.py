@@ -334,7 +334,41 @@ def test_filters_with_joins(mock_sha1):
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
 
+@mock.patch("analyzer.src.analyze.sql_column.hashlib.sha1")
 @mock.patch("extractor.src.extract.query_builder.Table", mock_table)
-def test_conditions_with_joins():
-    # TODO
-    pass
+def test_conditions_with_joins(mock_sha1):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
+    analysis = Analysis()
+
+    attribute = Attribute(path="path", definition_id="string")
+    input_group = InputGroup(id_="group", attribute=attribute)
+    attribute.add_input_group(input_group)
+    input_group.add_column(SqlColumn("patients", "row_id"))
+    condition = Condition(
+        action="INCLUDE",
+        sql_column=SqlColumn(
+            "admissions",
+            "admittime",
+            joins=[
+                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+            ],
+        ),
+        relation="EQ",
+        value="2013",
+    )
+    input_group.add_condition(condition)
+
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.attributes.append(attribute)
+
+    query_builder = make_query_builder(analysis)
+    query = query_builder.build_query()
+
+    assert str(query) == (
+        "SELECT patients.subject_id AS patients_subject_id_hash, "
+        "patients.row_id AS patients_row_id_hash, "
+        "admissions_1.admittime AS admissions_admittime_hash \n"
+        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
+        "ON admissions_1.subject_id = patients.subject_id"
+    )
