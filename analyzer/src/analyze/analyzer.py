@@ -193,7 +193,7 @@ class Analyzer:
             resource_mapping["source"]["credential"]["owner"],
         )
 
-    def parse_joins_mapping(self, joins_mapping):
+    def parse_joins_mapping(self, joins_mapping: dict):
         joins = []
         for join in joins_mapping:
             tables = join["tables"]

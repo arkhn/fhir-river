@@ -19,9 +19,16 @@ from extractor.src.extract.query_builder import QueryBuilder
 
 meta = MetaData()
 tables = {
-    "patients": Table("patients", meta, Column("subject_id"), Column("row_id")),
+    "patients": Table(
+        "patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id")
+    ),
     "admissions": Table(
-        "admissions", meta, Column("subject_id"), Column("row_id"), Column("admittime")
+        "admissions",
+        meta,
+        Column("subject_id"),
+        Column("row_id"),
+        Column("patient_id"),
+        Column("admittime"),
     ),
     "prescriptions": Table("prescriptions", meta, Column("row_id")),
     "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id")),
@@ -50,34 +57,35 @@ def test_sqlalchemy_query(mock_sha1):
 
     analysis = Analysis()
 
-    attributeA = Attribute(path="path", definition_id="string")
-    input_groupA = InputGroup(id_="group", attribute=attributeA)
-    attributeA.add_input_group(input_groupA)
-    input_groupA.add_column(SqlColumn("patients", "subject_id", None))
+    attribute_a = Attribute(path="path", definition_id="string")
+    input_group_a = InputGroup(id_="group", attribute=attribute_a)
+    attribute_a.add_input_group(input_group_a)
+    input_group_a.add_column(SqlColumn("patients", "subject_id", None))
 
-    attributeB = Attribute(path="path", definition_id="string")
-    input_groupB = InputGroup(id_="group", attribute=attributeB)
-    attributeB.add_input_group(input_groupB)
-    input_groupB.add_column(SqlColumn("patients", "row_id", None))
+    attribute_b = Attribute(path="path", definition_id="string")
+    input_group_b = InputGroup(id_="group", attribute=attribute_b)
+    attribute_b.add_input_group(input_group_b)
+    input_group_b.add_column(SqlColumn("patients", "row_id", None))
     condition = Condition(
         action="INCLUDE",
         sql_column=SqlColumn("patients", "row_id", None),
         relation="EQ",
         value="333",
     )
-    input_groupB.add_condition(condition)
+    input_group_b.add_condition(condition)
 
-    attributeC = Attribute(path="path", definition_id="string")
-    input_groupC = InputGroup(id_="group", attribute=attributeC)
-    attributeC.add_input_group(input_groupC)
-    input_groupC.add_column(
+    attribute_c = Attribute(path="path", definition_id="string")
+    input_group_c = InputGroup(id_="group", attribute=attribute_c)
+    attribute_c.add_input_group(input_group_c)
+    input_group_c.add_column(
         SqlColumn(
             "admissions",
             "admittime",
             None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "row_id", None), SqlColumn("admissions", "row_id", None),
+                    SqlColumn("patients", "patient_id", None),
+                    SqlColumn("admissions", "patient_id", None),
                 )
             ],
         )
@@ -88,7 +96,7 @@ def test_sqlalchemy_query(mock_sha1):
         relation="EQ",
         value="333",
     )
-    input_groupC.add_condition(condition)
+    input_group_c.add_condition(condition)
 
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
     analysis.add_filter(
@@ -99,8 +107,8 @@ def test_sqlalchemy_query(mock_sha1):
                 None,
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "row_id", None),
-                        SqlColumn("admissions", "row_id", None),
+                        SqlColumn("patients", "patient_id", None),
+                        SqlColumn("admissions", "patient_id", None),
                     )
                 ],
             ),
@@ -108,9 +116,9 @@ def test_sqlalchemy_query(mock_sha1):
             "2150-08-29",
         )
     )
-    analysis.attributes.append(attributeA)
-    analysis.attributes.append(attributeB)
-    analysis.attributes.append(attributeC)
+    analysis.attributes.append(attribute_a)
+    analysis.attributes.append(attribute_b)
+    analysis.attributes.append(attribute_c)
 
     query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
@@ -120,7 +128,8 @@ def test_sqlalchemy_query(mock_sha1):
         "patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM patients "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = patients.row_id \n"
+        "LEFT OUTER JOIN admissions AS admissions_1 "
+        "ON admissions_1.patient_id = patients.patient_id \n"
         "WHERE admissions_1.admittime LIKE :param_1"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
@@ -175,10 +184,10 @@ def test_duplicated_joins(mock_sha1):
 
     analysis = Analysis()
 
-    attributeA = Attribute(path="path", definition_id="string")
-    input_groupA = InputGroup(id_="group", attribute=attributeA)
-    attributeA.add_input_group(input_groupA)
-    input_groupA.add_column(
+    attribute_a = Attribute(path="path", definition_id="string")
+    input_group_a = InputGroup(id_="group", attribute=attribute_a)
+    attribute_a.add_input_group(input_group_a)
+    input_group_a.add_column(
         SqlColumn(
             "admissions",
             "subject_id",
@@ -192,10 +201,10 @@ def test_duplicated_joins(mock_sha1):
         )
     )
 
-    attributeB = Attribute(path="path", definition_id="string")
-    input_groupB = InputGroup(id_="group", attribute=attributeB)
-    attributeB.add_input_group(input_groupB)
-    input_groupB.add_column(
+    attribute_b = Attribute(path="path", definition_id="string")
+    input_group_b = InputGroup(id_="group", attribute=attribute_b)
+    attribute_b.add_input_group(input_group_b)
+    input_group_b.add_column(
         SqlColumn(
             "admissions",
             "row_id",
@@ -209,10 +218,10 @@ def test_duplicated_joins(mock_sha1):
         )
     )
 
-    attributeC = Attribute(path="path", definition_id="string")
-    input_groupC = InputGroup(id_="group", attribute=attributeC)
-    attributeC.add_input_group(input_groupC)
-    input_groupC.add_column(
+    attribute_c = Attribute(path="path", definition_id="string")
+    input_group_c = InputGroup(id_="group", attribute=attribute_c)
+    attribute_c.add_input_group(input_group_c)
+    input_group_c.add_column(
         SqlColumn(
             "admissions",
             "admittime",
@@ -226,9 +235,9 @@ def test_duplicated_joins(mock_sha1):
     )
 
     analysis.primary_key_column = SqlColumn("patients", "subject_id")
-    analysis.attributes.append(attributeA)
-    analysis.attributes.append(attributeB)
-    analysis.attributes.append(attributeC)
+    analysis.attributes.append(attribute_a)
+    analysis.attributes.append(attribute_b)
+    analysis.attributes.append(attribute_c)
 
     query_builder = make_query_builder(analysis)
     query = query_builder.build_query()

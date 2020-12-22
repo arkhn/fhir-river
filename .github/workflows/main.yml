@@ -126,5 +126,7 @@ jobs:
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           versions: |
             {
-              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
+              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
+              "pyrog_server": "jason-import-joins-filters-conditions",
+              "testy": "jason-change-mapping"
             }
