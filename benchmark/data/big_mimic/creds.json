@@ -1,0 +1,10 @@
+{
+  "host": "mammouth.arkhn.com",
+  "port": "5432",
+  "database": "mimic",
+  "login": "mimicuser",
+  "password": "bCCQnpKnGeP7M6L9",
+  "owner": "public",
+  "schema": "[]",
+  "model": "POSTGRES"
+}

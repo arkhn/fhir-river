@@ -1,0 +1,7 @@
+certifi==2020.12.5
+chardet==3.0.4
+fhirstore @ git+https://github.com/arkhn/pyfhirstore@0.5.0#egg=fhirstore
+idna==2.10
+pymongo==3.9.0
+requests==2.25.0
+urllib3==1.26.2

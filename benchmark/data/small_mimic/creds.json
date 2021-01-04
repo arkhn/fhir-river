@@ -1,0 +1,10 @@
+{
+  "host": "mimic",
+  "port": "5432",
+  "database": "mimic",
+  "login": "mimicuser",
+  "password": "u9VZruy54MfD6P",
+  "owner": "public",
+  "schema": "[]",
+  "model": "POSTGRES"
+}

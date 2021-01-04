@@ -1,0 +1,37 @@
+{
+  "resourceType": "Bundle",
+  "id": "types",
+  "meta": {
+    "lastUpdated": "2019-11-01T09:29:23.356+11:00"
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "status": "active",
+        "group": [
+          {
+            "element": [
+              {
+                "code": "F",
+                "target": [{ "code": "female", "equivalence": "equivalent" }]
+              },
+              {
+                "code": "M",
+                "target": [{ "code": "male", "equivalence": "equivalent" }]
+              }
+            ],
+            "source": "MimicGender",
+            "target": "AdministrativeGender"
+          }
+        ],
+        "id": "8d45157a-12c5-4da2-8b80-0c5607fa37d7",
+        "name": "MimicGender>AdministrativeGender",
+        "resourceType": "ConceptMap",
+        "sourceUri": "",
+        "targetUri": "",
+        "title": "MimicGender>AdministrativeGender"
+      }
+    }
+  ]
+}
