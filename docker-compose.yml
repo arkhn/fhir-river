@@ -1,307 +1,139 @@
 version: "3.7"
+
 services:
-  mimic:
-    image: arkhn/mimic:latest
-    container_name: mimic
-    env_file: .env
-    restart: always
-    environment:
-      POSTGRES_USER: mimicuser
-      POSTGRES_PASSWORD: mimicuser
-      POSTGRES_DB: mimic
-      POSTGRES_HOST: mimic
-      POSTGRES_PORT: 5432
-    volumes:
-      - mimic-db:/var/lib/postgresql/data
-    ports:
-      - 5431:5432
-    networks:
-      - river-network
-
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_DATABASE: fhirstore
-    ports:
-      - 27017:27017
-    volumes:
-      - fhirstore-db:/data/db
-    networks:
-      - river-network
-
-  redis:
-    image: redis:6.0.7
-    container_name: redis
-    restart: always
-    networks:
-      - river-network
-    volumes:
-      - redis-data:/data
-
-  # sftp:
-  #   image: atmoz/sftp
-  #   container_name: sftp
-  #   volumes:
-  #     - ~/Documents/Arkhn/river-river/test/sftp/host/upload/:/home/arkhn/upload/
-  #   ports:
-  #     - "2222:22"
-  #   command: arkhn:arkhnpwd:1001
-
-  zookeeper:
-    image: "zookeeper:3.4.10"
-    container_name: zookeeper
-    restart: always
-    ports:
-      - "2181:2181"
-    expose:
-      - "2181"
-    networks:
-      - river-network
-
-  kafka:
-    image: "wurstmeister/kafka:0.10.2.1"
-    restart: always
-    container_name: kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    expose:
-      - "9092"
-    environment:
-      - KAFKA_ADVERTISED_HOST_NAME=kafka
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_DELETE_TOPIC_ENABLE=true
-      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - river-network
-
-  #  kafka_connect:
-  #    image: confluentinc/cp-kafka-connect:latest
-  #    restart: always
-  #    container_name: kafka_connect
-  #    ports:
-  #      - "8083:8083"
-  #    depends_on:
-  #      - kafka
-  #    volumes:
-  #      - ./kafka_connect_connectors/plugins/confluentinc-kafka-connect-sftp-1.0.4/:/usr/share/java/kafka-connect-sftp/
-  #    environment:
-  #      CONNECT_CLASS_PATH: "/usr/share/java/kafka-connect-jdbc/,/usr/share/java/kafka-connect-sftp/"
-  #      CONNECT_PLUGIN_PATH: /usr/share/java/
-  #      CONNECT_BOOTSTRAP_SERVERS: kafka:9092
-  #      CONNECT_GROUP_ID: source-kafka-connect
-  #      CONNECT_CONFIG_STORAGE_TOPIC: default.config
-  #      CONNECT_STATUS_STORAGE_TOPIC: default.status
-  #      CONNECT_OFFSET_STORAGE_TOPIC: default.offset
-  #      CONNECT_STATUS_STORAGE_PARTITIONS: 1
-  #      CONNECT_OFFSET_STORAGE_PARTITIONS: 1
-  #      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-  #      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-  #      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-  #      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #      CONNECT_REST_PORT: 8083
-  #      CONNECT_REST_ADVERTISED_HOST_NAME: docker
-  #      CONNECT_SCHEMAS_ENABLE: "false"
-  #      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-  #      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-  #      CONNECT_ZOOKEEPER_CONNECT: zookeeper:2181
-
-  api:
-    build:
-      context: api
-    container_name: api
-    image: arkhn/river-api:latest
-    restart: always
-    depends_on:
-      - kafka
-      - fluentd
-    environment:
-      PORT: 3000
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      EXTRACTOR_URL: http://extractor:3001
-      TRANSFORMER_URL: http://transformer:3002
-      LOADER_URL: http://loader:3003
-      REDIS_MAPPINGS_HOST: redis
-      REDIS_MAPPINGS_PORT: 6379
-      REDIS_MAPPINGS_DB: 1
-      REDIS_COUNTER_HOST: redis
-      REDIS_COUNTER_PORT: 6379
-      REDIS_COUNTER_DB: 2
-    ports:
-      - "3000:3000"
-    networks:
-      - river-network
-
   extractor:
-    build:
-      dockerfile: extractor/Dockerfile
-      context: ./
-    container_name: extractor
-    image: arkhn/river-extractor:latest
-    restart: always
+    image: river
+    build: .
+    command: extractor
     depends_on:
       - kafka
-      - fluentd
-    env_file:
-      - .env
+    restart: on-failure
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      SERVICE_NAME: extractor
-      OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
-      OAUTH2_CLIENT_ID: fhir-river
-      OAUTH2_CLIENT_SECRET: river-secret
-      REDIS_REFERENCES_HOST: redis
-      REDIS_REFERENCES_PORT: 6379
-      REDIS_REFERENCES_DB: 0
-      REDIS_MAPPINGS_HOST: redis
-      REDIS_MAPPINGS_PORT: 6379
-      REDIS_MAPPINGS_DB: 1
-      REDIS_COUNTER_HOST: redis
-      REDIS_COUNTER_PORT: 6379
-      REDIS_COUNTER_DB: 2
-    ports:
-      - 3001:3001
-    networks:
-      - river-network
+      - ENV=dev
+      - SECRET_KEY=whatever
+      - LOG_LEVEL=DEBUG
+      - REDIS_MAPPINGS_HOST=river-redis
+      - REDIS_MAPPINGS_PORT=6379
+      - REDIS_MAPPINGS_DB=1
+      - REDIS_COUNTER_HOST=river-redis
+      - REDIS_COUNTER_PORT=6379
+      - REDIS_COUNTER_DB=2
 
   transformer:
-    build:
-      dockerfile: transformer/Dockerfile
-      context: ./
-    container_name: transformer
-    image: arkhn/river-transformer:latest
-    restart: always
+    image: river
+    build: .
+    command: transformer
     depends_on:
       - kafka
-      - fluentd
-    env_file:
-      - .env
+    restart: on-failure
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      FHIRSTORE_HOST: mongo
-      FHIRSTORE_PORT: 27017
-      FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORE_USER: null
-      FHIRSTORE_PASSWORD: null
-      REDIS_MAPPINGS_HOST: redis
-      REDIS_MAPPINGS_PORT: 6379
-      REDIS_MAPPINGS_DB: 1
-      SERVICE_NAME: transformer
-      OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
-      OAUTH2_CLIENT_ID: fhir-river
-      OAUTH2_CLIENT_SECRET: river-secret
-    ports:
-      - 3002:3002
-    networks:
-      - river-network
+      - ENV=dev
+      - SECRET_KEY=whatever
+      - LOG_LEVEL=DEBUG
+      - REDIS_MAPPINGS_HOST=river-redis
+      - REDIS_MAPPINGS_PORT=6379
+      - REDIS_MAPPINGS_DB=1
 
   loader:
-    build:
-      dockerfile: loader/Dockerfile
-      context: ./
-    container_name: loader
-    image: arkhn/river-loader:latest
-    restart: always
+    image: river
+    build: .
+    command: loader
     depends_on:
       - kafka
-      - mongo
-      - fluentd
-      - loader-redis
-    env_file:
-      - .env
+    restart: on-failure
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      FHIRSTORE_HOST: mongo
-      FHIRSTORE_PORT: 27017
-      FHIRSTORE_DATABASE: fhirstore
-      FHIRSTORE_USER: null
-      FHIRSTORE_PASSWORD: null
-      SERVICE_NAME: loader
-      REDIS_REFERENCES_HOST: redis
-      REDIS_REFERENCES_PORT: 6379
-      REDIS_REFERENCES_DB: 0
-      REDIS_MAPPINGS_HOST: redis
-      REDIS_MAPPINGS_PORT: 6379
-      REDIS_MAPPINGS_DB: 1
-      REDIS_COUNTER_HOST: redis
-      REDIS_COUNTER_PORT: 6379
-      REDIS_COUNTER_DB: 2
-      OAUTH2_TOKEN_URL: http://hydra:4444/oauth2/token
-      OAUTH2_CLIENT_ID: fhir-river
-      OAUTH2_CLIENT_SECRET: river-secret
-    ports:
-      - 3003:3003
-    networks:
-      - river-network
+      - ENV=dev
+      - SECRET_KEY=whatever
+      - LOG_LEVEL=DEBUG
+      - FHIRSTORE_USER=arkhn
+      - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
+      - REDIS_REFERENCES_HOST=river-redis
+      - REDIS_REFERENCES_PORT=6379
+      - REDIS_REFERENCES_DB=0
+      - REDIS_MAPPINGS_HOST=river-redis
+      - REDIS_MAPPINGS_PORT=6379
+      - REDIS_MAPPINGS_DB=1
+      - REDIS_COUNTER_HOST=river-redis
+      - REDIS_COUNTER_PORT=6379
+      - REDIS_COUNTER_DB=2
 
-  # Uncomment if you want monitoring
-  # prometheus:
-  #   container_name: prometheus
-  #   image: prom/prometheus:latest
-  #   volumes:
-  #     - ./prometheus.yaml:/etc/prometheus/prometheus.yml
-  #   ports:
-  #     - "9090:9090"
-  #   networks:
-  #     - river-network
-  # grafana:
-  #   container_name: grafana
-  #   image: grafana/grafana:latest
-  #   ports:
-  #     - 3010:3000
-  #   volumes:
-  #     - ./grafana/config.ini:/etc/grafana/config.ini
-  #     - ./grafana/provisioning:/etc/grafana/provisioning
-  #     - ./grafana/dashboards:/var/lib/grafana/dashboards
-  #   networks:
-  #     - river-network
-
-  fluentd:
-    image: arkhn/fluentd:latest
-    container_name: fluentd
-    volumes:
-      - ./fluentd/conf:/fluentd/etc
-    ports:
-      - 127.0.0.1:24224:24224
-      - "24224:24224/udp"
-    networks:
-      - river-network
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
-    container_name: elasticsearch
-    volumes:
-      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    expose:
-      - 9200
-    ports:
-      - "9200:9200"
-    networks:
-      - river-network
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.7.0
-    container_name: kibana
+  api:
+    build: api
+    restart: on-failure
     depends_on:
-      - elasticsearch
-    ports:
-      - "5601:5601"
-    networks:
-      - river-network
+      - kafka
+    environment:
+      - PORT=3000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - EXTRACTOR_URL=http://extractor:3001
+      - TRANSFORMER_URL=http://transformer:3002
+      - LOADER_URL=http://loader:3003
+      - PYROG_API_URL=http://pyrog-server:1000
+      - FHIR_API_URL=http://fhir-api:2000
+      - REDIS_MAPPINGS_HOST=river-redis
+      - REDIS_MAPPINGS_PORT=6379
+      - REDIS_MAPPINGS_DB=1
+      - REDIS_COUNTER_HOST=river-redis
+      - REDIS_COUNTER_PORT=6379
+      - REDIS_COUNTER_DB=2
 
-volumes:
-  mimic-db:
-    name: mimic-db
-  fhirstore-db:
-  redis-data:
+  zookeeper:
+    image: zookeeper:3.4.10
+    restart: on-failure
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.6.0
+    restart: on-failure
+    # This port mapping is required by the containerized kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_DELETE_TOPIC_ENABLE=true
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      # - KAFKA_HEAP_OPTS=-Xmx256M -Xms128M
+      - KAFKA_JMX_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9993 -Dcom.sun.management.jmxremote.port=9993
+      - JMX_PORT=9993
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka-jmx-exporter:
+    image: sscaling/jmx-prometheus-exporter
+    volumes:
+      - ./monitoring/jmx_exporter.yml:/opt/jmx_exporter/config.yml
+
+  river-redis:
+    image: redis:6.0.7
+    restart: on-failure
+    command: --loglevel verbose
+
+  prometheus:
+    image: prom/prometheus:v2.23.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:7.3.6
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana:/etc/grafana
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.38.6
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
 
 networks:
-  river-network:
-    name: river-network
+  default:
+    external:
+      name: arkhn_network
