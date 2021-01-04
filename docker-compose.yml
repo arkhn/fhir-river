@@ -1,6 +1,10 @@
 version: "3.7"
 
 services:
+  benchmark:
+    image: benchmark
+    build: benchmark
+
   extractor:
     image: river
     build: .
