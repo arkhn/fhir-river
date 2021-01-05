@@ -49,35 +49,6 @@ def transform_row(analysis, row, transformer: Transformer):
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
 
-def transform(
-    batch_id: str,
-    resource_id: str,
-    resource_type: str,
-    record: str,
-    producer: Producer,
-    transformer: Transformer,
-    analyzer: Analyzer,
-):
-    logger.info(f"Processing 1 event from batch {batch_id}")
-
-    try:
-        analysis = analyzer.load_cached_analysis(batch_id, resource_id)
-
-        fhir_document = transform_row(analysis, record, transformer=transformer)
-        producer.produce_event(
-            topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
-            event={
-                "fhir_object": fhir_document,
-                "batch_id": batch_id,
-                "resource_id": resource_id,
-            },
-        )
-    except OperationOutcome:
-        pass
-    except Exception as err:
-        logger.error(err)
-
-
 class TransformHandler(Handler):
     def __init__(
         self,
@@ -90,11 +61,19 @@ class TransformHandler(Handler):
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
-        transform(
-            producer=self.producer,
-            transformer=self.transformer,
-            analyzer=self.analyzer,
-            **event.data,
+        batch_id = event.data["batch_id"]
+        resource_id = event.data["resource_id"]
+        record = event.data["record"]
+
+        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
+        fhir_object = transform_row(analysis, record, transformer=self.transformer)
+        self.producer.produce_event(
+            topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
+            event={
+                "fhir_object": fhir_object,
+                "batch_id": batch_id,
+                "resource_id": resource_id,
+            },
         )
 
 

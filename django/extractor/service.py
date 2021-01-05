@@ -110,12 +110,23 @@ class ExtractHandler(Handler):
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
-        extract(
-            producer=self.producer,
-            extractor=self.extractor,
-            counter_client=self.counter_redis,
-            analyzer=self.analyzer,
-            **event.data,
+        batch_id = event.data["batch_id"]
+        resource_id = event.data["resource_id"]
+        primary_key_values = event.data.get("primary_key_values", None)
+
+        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
+        credentials = analysis.source_credentials
+        self.extractor.update_connection(credentials)
+        query = self.extractor.extract(analysis, primary_key_values)
+        batch_size = self.extractor.batch_size(analysis)
+
+        self.producer.produce_event(
+            topic=conf.BATCH_SIZE_TOPIC,
+            event={"batch_id": batch_id, "size": batch_size},
+        )
+
+        broadcast_events(
+            query, analysis, self.producer, self.extractor, self.counter_redis, batch_id
         )
 
 
