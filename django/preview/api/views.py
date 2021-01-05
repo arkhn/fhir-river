@@ -5,9 +5,11 @@ from rest_framework.response import Response
 from pydantic import ValidationError
 
 from fhir.resources import construct_fhir_element
+from fhirstore import NotFoundError
 
 from common.analyzer import Analyzer
 from extractor.extract import Extractor
+from loader.load.fhirstore import get_fhirstore
 from transformer.transform.transformer import Transformer
 
 from preview.api.serializers import PreviewSerializer
@@ -50,3 +52,28 @@ class PreviewEndpoint(views.APIView):
             {"rows": rows, "instances": documents, "errors": errors},
             status=status.HTTP_200_OK,
         )
+
+
+class ResourceEndpoint(views.APIView):
+    def post(self, request):
+        # TODO: add validation
+
+        for resource in request.data["resources"]:
+            resource_id = resource.get("resource_id")
+            resource_type = resource.get("resource_type")
+            logger.info(
+                f"Deleting all documents of type {resource_type} with resource id {resource_id}",
+                extra={"resource_id": resource_id},
+            )
+
+            fhirstore = get_fhirstore()
+            try:
+                fhirstore.delete(resource_type, resource_id=resource_id)
+            except NotFoundError:
+                logger.info(
+                    f"No documents for resource {resource_id} were found",
+                    extra={"resource_id": resource_id},
+                )
+                pass
+
+        return Response(status=status.HTTP_200_OK)
