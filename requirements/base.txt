@@ -15,6 +15,7 @@ jsonschema==3.0.2
 msgpack==0.6.2
 prometheus-client==0.8.0
 pyodbc==4.0.30
+pydantic==1.7.3
 pymongo==3.9.0
 python-dotenv==0.15.0
 pytz==2020.4
