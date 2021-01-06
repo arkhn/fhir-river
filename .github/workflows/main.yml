@@ -127,4 +127,5 @@ jobs:
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
+              "testy": "tr/test/batch_list"
             }
