@@ -2,7 +2,7 @@ package monitor
 
 import "time"
 
-// CacheBatchInfo stores resource ids of current batch in Redis
+// CacheBatchInfo records a batch in Redis along with its resources
 func (ctl BatchController) CacheBatchInfo(batchID string, resourceIDs []string) error {
 	if err := ctl.rdb.HSet("batch", batchID, time.Now().Format(time.RFC3339)).Err(); err != nil {
 		return err
