@@ -36,7 +36,7 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 		Handler: handlers.CORS(
 			handlers.AllowedHeaders([]string{"Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"}),
-			handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"}),
+			handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "OPTIONS"}),
 			handlers.AllowedOrigins([]string{"*"}),
 			handlers.AllowCredentials(),
 		)(router),
