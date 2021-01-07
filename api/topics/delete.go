@@ -17,5 +17,5 @@ func (ctl Controller) Delete(batchID string) error {
 		ctl.Load.GetName(batchID),
 	}
 	_, err := ctl.Kadmin.DeleteTopics(ctx, batchTopics, kafka.SetAdminOperationTimeout(60*time.Second))
-       return err
+	return err
 }

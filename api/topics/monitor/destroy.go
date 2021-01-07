@@ -20,7 +20,7 @@ func (ctl BatchController) Destroy(batchID string) error {
 	if _, err := ctl.rdb.HDel("batch", batchID).Result(); err != nil {
 		return err
 	}
-	if _, err := ctl.rdb.Del("batch:" + batchID + ":resources").Result(); err != nil {
+	if _, err := ctl.rdb.Del("batch:"+batchID+":resources").Result(); err != nil {
 		return err
 	}
 	if _, err := ctl.rdb.Expire("batch:"+batchID+":counter", twoWeeks).Result(); err != nil {
