@@ -50,7 +50,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 		}
 		batchID := batchUUID.String()
 
-		if err := ctl.SaveResourcesList(batchID, resourceIDs); err != nil {
+		if err := ctl.CacheBatchInfo(batchID, resourceIDs); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

@@ -26,6 +26,7 @@ func main() {
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()
 	router.HandleFunc("/preview", preview.Run).Methods("POST")
+	router.HandleFunc("/batch", batch.List(ctl)).Methods("GET")
 	router.HandleFunc("/batch", batch.Create(ctl)).Methods("POST")
 	router.HandleFunc("/batch/{id}", batch.Cancel(ctl)).Methods("DELETE")
 

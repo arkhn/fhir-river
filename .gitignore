@@ -132,6 +132,7 @@ dmypy.json
 
 # .idea
 .idea/
+**.iml
 
 # vscode
 .vscode
