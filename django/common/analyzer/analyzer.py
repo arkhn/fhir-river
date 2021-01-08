@@ -44,9 +44,11 @@ class Analyzer:
             serialized_mapping = self.redis.get(cache_key)
             # Raise error if mapping wasn't found
             if serialized_mapping is None:
-                logger.error(
-                    f"Mapping not found for batch {batch_id} and resource {resource_id}",
-                    extra={"resource_id": resource_id},
+                logger.exception(
+                    {
+                        "message": f"Mapping not found for batch {batch_id} and resource {resource_id}",
+                        "resource_id": resource_id,
+                    },
                 )
                 raise MappingUnavailable(resource_id)
 
@@ -99,8 +101,10 @@ class Analyzer:
 
     def analyze_attribute(self, attribute_mapping):
         logger.debug(
-            f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}",
-            extra={"resource_id": self._cur_analysis.resource_id},
+            {
+                "message": f"Analyze attribute {attribute_mapping['path']} {attribute_mapping['definitionId']}",
+                "resource_id": self._cur_analysis.resource_id,
+            },
         )
         attribute = Attribute(
             path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"]
@@ -111,8 +115,10 @@ class Analyzer:
             # For instance, we can use it if its children attributes represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
                 logger.debug(
-                    f"Analyze attribute reference",
-                    extra={"resource_id": self._cur_analysis.resource_id},
+                    {
+                        "message": f"Analyze attribute reference",
+                        "resource_id": self._cur_analysis.resource_id,
+                    },
                 )
                 # Remove trailing index
                 path = re.sub(r"\[\d+\]$", "", attribute.path)

@@ -36,15 +36,19 @@ def load(
     # Resolve existing and pending references (if the fhir_instance
     # references OR is referenced by other documents)
     logger.debug(
-        f"Resolving references {analysis.reference_paths}",
-        extra={"resource_id": resource_id},
+        {
+            "message": f"Resolving references {analysis.reference_paths}",
+            "resource_id": resource_id,
+        },
     )
     resolved_fhir_instance = binder.resolve_references(
         fhir_object, analysis.reference_paths
     )
 
     try:
-        logger.debug("Writing document to mongo", extra={"resource_id": resource_id})
+        logger.debug(
+            {"message": "Writing document to mongo", "resource_id": resource_id}
+        )
         loader.load(
             resolved_fhir_instance,
             resource_type=resolved_fhir_instance["resourceType"],

@@ -31,5 +31,5 @@ class Service:
                 try:
                     self.handler(event)
                 except Exception as err:
-                    logging.error(err)
+                    event_logger.exception("Failed to process event")
                     continue

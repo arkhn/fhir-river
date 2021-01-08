@@ -30,21 +30,17 @@ def transform_row(analysis, row, transformer: Transformer):
     }
 
     try:
-        logger.debug("Transform dataframe", extra=logging_extras)
+        logger.debug({"message": "Transform dataframe", **logging_extras})
         data = transformer.transform_data(row, analysis)
 
-        logger.debug("Create FHIR Doc", extra=logging_extras)
+        logger.debug({"message": "Create FHIR Doc", **logging_extras})
         fhir_document = transformer.create_fhir_document(data, analysis)
 
         return fhir_document
 
     except Exception as e:
-        logger.error(
-            e,
-            extra={
-                "resource_id": analysis.resource_id,
-                "primary_key_value": primary_key_value,
-            },
+        logger.exception(
+            {"message": str(e), **logging_extras},
         )
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 

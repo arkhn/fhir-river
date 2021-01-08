@@ -34,8 +34,7 @@ def broadcast_events(
         list_records_from_db = extractor.split_dataframe(dataframe, analysis)
         for record in list_records_from_db:
             logger.debug(
-                "One record from extract",
-                extra={"resource_id": resource_id},
+                {"message": "One record from extract", "resource_id": resource_id},
             )
             event = dict()
             event["batch_id"] = batch_id
@@ -47,15 +46,19 @@ def broadcast_events(
             )
             count += 1
     except EmptyResult as e:
-        logger.warn(e, extra={"resource_id": resource_id, "batch_id": batch_id})
+        logger.warn(
+            {"message": str(e), "resource_id": resource_id, "batch_id": batch_id}
+        )
     # Initialize a batch counter in Redis. For each resource_id, it records
     # the number of produced records
     counter_client.hset(
         f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count
     )
     logger.info(
-        f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
-        extra={"resource_id": resource_id},
+        {
+            "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
+            "resource_id": resource_id,
+        },
     )
 
 
@@ -77,13 +80,17 @@ def extract(
         credentials = analysis.source_credentials
         extractor.update_connection(credentials)
 
-        logger.info("Extracting rows", extra={"resource_id": analysis.resource_id})
+        logger.info(
+            {"message": "Extracting resources", "resource_id": analysis.resource_id}
+        )
         df = extractor.extract(analysis, primary_key_values)
 
         batch_size = extractor.batch_size(analysis)
         logger.info(
-            f"Batch size is {batch_size} for resource type {analysis.definition_id}",
-            extra={"resource_id": resource_id},
+            {
+                "message": f"Batch size is {batch_size} for resource type {analysis.definition_id}",
+                "resource_id": resource_id,
+            },
         )
 
         producer.produce_event(
@@ -93,7 +100,7 @@ def extract(
         broadcast_events(df, analysis, producer, extractor, counter_client, batch_id)
 
     except Exception as err:
-        logger.error(err, extra={"resource_id": resource_id}, exc_info=True)
+        logger.exception({"message": err, "resource_id": resource_id})
 
 
 class ExtractHandler(Handler):

@@ -39,9 +39,11 @@ class Loader:
                 resource_id=resource_id, resource_type=resource_type
             ).inc()
             # Log
-            logger.error(
-                f"Validation failed\n"
-                f"Diagnostics: {[issue.diagnostics for issue in resource.issue]}\n"
-                f"Document: {fhir_instance}",
-                extra={"resource_id": resource_id},
+            logger.exception(
+                {
+                    "message": f"Validation failed\n"
+                    f"Diagnostics: {[issue.diagnostics for issue in resource.issue]}\n"
+                    f"Document: {fhir_instance}",
+                    "resource_id": resource_id,
+                },
             )

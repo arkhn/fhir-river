@@ -64,8 +64,10 @@ class QueryBuilder:
         """ Builds an sql alchemy query which will be run in run_sql_query.
         """
         logger.info(
-            f"Start building query for resource {self.analysis.definition_id}",
-            extra={"resource_id": self.analysis.resource_id},
+            {
+                "message": f"Start building query for resource {self.analysis.definition_id}",
+                "resource_id": self.analysis.resource_id,
+            },
         )
 
         # We don't need to have columns duplicated in the dataframe
@@ -87,16 +89,20 @@ class QueryBuilder:
         query = self.apply_filters(query)
 
         logger.info(
-            f"Built query for resource {self.analysis.definition_id}: {query.statement}",
-            extra={"resource_id": self.analysis.resource_id},
+            {
+                "message": f"Built query for resource {self.analysis.definition_id}: {query.statement}",
+                "resource_id": self.analysis.resource_id,
+            },
         )
         return query
 
     @Timer("time_extractor_build_batch_size_query", "time to build vatch size sql query")
     def build_batch_size_query(self) -> Query:
         logger.info(
-            f"Start building batch size query for resource {self.analysis.definition_id}",
-            extra={"resource_id": self.analysis.resource_id},
+            {
+                "message": f"Start building batch size query for resource {self.analysis.definition_id}",
+                "resource_id": self.analysis.resource_id,
+            },
         )
 
         sqlalchemy_pk_column = self.get_column(
@@ -108,8 +114,10 @@ class QueryBuilder:
         query = self.apply_filters(query)
 
         logger.info(
-            f"Built batch size query for resource {self.analysis.definition_id}: {query.statement}",
-            extra={"resource_id": self.analysis.resource_id},
+            {
+                "message": f"Built batch size query for resource {self.analysis.definition_id}: {query.statement}",
+                "resource_id": self.analysis.resource_id,
+            },
         )
         return query
 

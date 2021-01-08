@@ -49,9 +49,11 @@ class ReferenceBinder:
         # iterate over the instance's references and try to resolve them
         for reference_path in dotty_paths(reference_paths):
             logger.debug(
-                f"Trying to resolve reference for resource {fhir_object['id']} "
-                f"at {reference_path}",
-                extra={"resource_id": resource_id},
+                {
+                    "message": f"Trying to resolve reference for resource {fhir_object['id']} "
+                    f"at {reference_path}",
+                    "resource_id": resource_id,
+                },
             )
             try:
                 bound_ref = self.bind_existing_reference(fhir_object, reference_path)
@@ -88,14 +90,18 @@ class ReferenceBinder:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
                 logger.debug(
-                    f"reference to {reference_type} {identifier} resolved",
-                    extra={"resource_id": resource_id},
+                    {
+                        "message": f"reference to {reference_type} {identifier} resolved",
+                        "resource_id": resource_id,
+                    },
                 )
                 ref["reference"] = f"{reference_type}/{referenced_resource['id']}"
             else:
                 logger.debug(
-                    f"caching reference to {reference_type} {identifier} at {reference_path}",
-                    extra={"resource_id": resource_id},
+                    {
+                        "message": f"caching reference to {reference_type} {identifier} at {reference_path}",
+                        "resource_id": resource_id,
+                    },
                 )
                 target_ref = self.identifier_to_key(reference_type, identifier)
                 source_ref = (fhir_object["resourceType"], reference_path, is_array)
@@ -122,9 +128,11 @@ class ReferenceBinder:
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
                 logger.debug(
-                    f"Updating {source_type} resources {', '.join(refs)} "
-                    f"on reference {reference_path}",
-                    extra={"resource_id": get_resource_id(fhir_object)},
+                    {
+                        "message": f"Updating {source_type} resources {', '.join(refs)} "
+                        f"on reference {reference_path}",
+                        "resource_id": get_resource_id(fhir_object),
+                    },
                 )
                 self.fhirstore.db[source_type].update_many(
                     self.unresolved_resources_filter(reference_path, identifier, refs, is_array),

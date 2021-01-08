@@ -61,19 +61,22 @@ class ResourceEndpoint(views.APIView):
         for resource in request.data["resources"]:
             resource_id = resource.get("resource_id")
             resource_type = resource.get("resource_type")
-            logger.info(
-                f"Deleting all documents of type {resource_type} with resource id {resource_id}",
-                extra={"resource_id": resource_id},
+            logger.debug(
+                {
+                    "message": f"Deleting all documents of type {resource_type} for given resource",
+                    "resource_id": resource_id,
+                },
             )
 
             fhirstore = get_fhirstore()
             try:
                 fhirstore.delete(resource_type, resource_id=resource_id)
             except NotFoundError:
-                logger.info(
-                    f"No documents for resource {resource_id} were found",
-                    extra={"resource_id": resource_id},
+                logger.debug(
+                    {
+                        "message": f"No documents for resource {resource_id} were found",
+                        "resource_id": resource_id,
+                    },
                 )
-                pass
 
         return Response(status=status.HTTP_200_OK)

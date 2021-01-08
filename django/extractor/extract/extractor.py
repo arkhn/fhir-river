@@ -102,8 +102,10 @@ class Extractor:
             )
 
         logger.info(
-            f"Start extracting resource: {analysis.definition_id}",
-            extra={"resource_id": analysis.resource_id},
+            {
+                "message": f"Start extracting resource: {analysis.definition_id}",
+                "resource_id": analysis.resource_id,
+            },
         )
 
         # Build sqlalchemy query
@@ -126,7 +128,12 @@ class Extractor:
         return:
             the result of the sql query
         """
-        logger.info(f"Executing query: {query.statement}", extra={"resource_id": resource_id})
+        logger.info(
+            {
+                "message": f"Executing query: {query.statement}",
+                "resource_id": resource_id,
+            }
+        )
 
         return query.yield_per(CHUNK_SIZE)
 
@@ -136,8 +143,10 @@ class Extractor:
         # TODO maybe this could be replaced by a group_by?
         # Find primary key column
         logger.info(
-            f"Splitting dataframe for resource {analysis.definition_id}",
-            extra={"resource_id": analysis.resource_id},
+            {
+                "message": f"Splitting dataframe for resource {analysis.definition_id}",
+                "resource_id": analysis.resource_id,
+            },
         )
 
         pk_col = analysis.primary_key_column.dataframe_column_name()
@@ -175,8 +184,10 @@ class Extractor:
 
     def batch_size(self, analysis) -> int:
         logger.info(
-            f"Start computing batch size for resource {analysis.definition_id}",
-            extra={"resource_id": analysis.resource_id},
+            {
+                "message": f"Start computing batch size for resource {analysis.definition_id}",
+                "resource_id": analysis.resource_id,
+            },
         )
 
         builder = QueryBuilder(
