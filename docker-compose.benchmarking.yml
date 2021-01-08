@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  mimic:
+    image: arkhn/mimic:latest
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=mimicuser
+      - POSTGRES_PASSWORD=mimicuser
+      - POSTGRES_DB=mimic
+      - POSTGRES_HOST=mimic
+      - POSTGRES_PORT=5432
+
+  benchmark:
+    image: benchmark
+    build: benchmark
+
+networks:
+  default:
+    external:
+      name: arkhn_network

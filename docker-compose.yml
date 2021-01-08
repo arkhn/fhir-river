@@ -100,38 +100,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
-  kafka-jmx-exporter:
-    image: sscaling/jmx-prometheus-exporter
-    volumes:
-      - ./monitoring/jmx_exporter.yml:/opt/jmx_exporter/config.yml
-
   river-redis:
     image: redis:6.0.7
     restart: on-failure
     command: --loglevel verbose
-
-  prometheus:
-    image: prom/prometheus:v2.23.0
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-
-  grafana:
-    image: grafana/grafana:7.3.6
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./monitoring/grafana:/etc/grafana
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.38.6
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
 
 networks:
   default:
