@@ -148,8 +148,14 @@ LOGGING = {
             "format": "{asctime} [{levelname:>8}] {filename:>15}:{lineno:3d} {message}",
             "style": "{",
         },
-        "river.events": {
-            "format": "{asctime} [{levelname:>8}] {filename:>15}:{lineno:3d} {message}",
+        "fluentd": {
+            "()": "utils.log.FluentFormatter",
+            "format": {
+                "logger": "{name}",
+                "where": "{module}.{funcName}",
+                "level": "{levelname}",
+                "host": "{hostname}",
+            },
             "style": "{",
         },
     },
@@ -158,25 +164,19 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "default",
         },
-        "river.events": {
-            "class": "logging.StreamHandler",
-            "formatter": "river.events",
-        }
-        # TODO: add fluentd handler ?
+        "fluentd": {
+            "class": "fluent.handler.FluentHandler",
+            "formatter": "fluentd",
+            "tag": "river",
+            "host": os.environ.get("FLUENTD_HOST", "fluentd"),
+            "port": os.environ.get("FLUENTD_PORT", 24224),
+        },
     },
     "root": {
-        "handlers": ["console"],
+        "handlers": ["console", "fluentd"],
         "level": os.environ.get("LOG_LEVEL", "INFO"),
     },
-    "loggers": {
-        "river.events": {
-            "propagate": False,
-            "handlers": ["river.events"],
-            "level": os.environ.get("LOG_LEVEL", "INFO"),
-        }
-    },
 }
-
 
 # CorsHeaders
 # Used to access api from third-party domain
