@@ -18,7 +18,7 @@ class MergingScript:
             args = data_columns + static_inputs
             return self.script(*args)
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"{self.name}: Error merging columns for attribute at path "
                 f"{attr_path} (at id={primary_key}): {e}"
             )

@@ -18,7 +18,7 @@ class ConceptMap:
         try:
             return [self.translate(val) for val in data_column]
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Error mapping {col_name} with concept map {self.id} (at id = {primary_key}): {e}"
             )
             return data_column

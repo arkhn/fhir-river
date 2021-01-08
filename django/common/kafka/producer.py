@@ -59,12 +59,12 @@ class Producer:
             )
             self.producer.poll(1)  # Callback function
         except ValueError as err:
-            logger.error(err)
+            logger.exception(err)
         except KafkaException as err:
             if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                 pass
             else:
-                logger.error(err)
+                logger.exception(err)
 
     @staticmethod
     def callback_fn(err, msg, obj):

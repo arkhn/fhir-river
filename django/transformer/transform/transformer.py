@@ -24,7 +24,7 @@ class Transformer:
         try:
             primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
         except KeyError as e:
-            logger.error(
+            logger.exception(
                 {
                     "message": f"Trying to access column not present in dataframe: {e}",
                     "resource_id": analysis.resource_id,

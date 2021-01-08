@@ -62,7 +62,7 @@ def load(
             event={"batch_id": batch_id},
         )
     except DuplicateKeyError as err:
-        logger.error(err)
+        logger.exception(err)
 
 
 class LoadHandler(Handler):
