@@ -7,7 +7,7 @@ from common.service.event import Event
 from common.service.handler import Handler
 
 
-logger = logging.getLogger(__name__)
+event_logger = logging.getLogger("river.event")
 
 
 class Service:

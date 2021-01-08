@@ -4,7 +4,7 @@ import decimal
 import logging
 from confluent_kafka import Producer as KafkaProducer, KafkaError, KafkaException
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("kafka.producer")
 
 
 class CustomJSONEncoder(json.JSONEncoder):

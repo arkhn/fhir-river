@@ -5,7 +5,7 @@ import time
 
 from confluent_kafka import Consumer as KafkaConsumer, KafkaError, KafkaException
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("kafka.consumer")
 
 
 class Consumer:
