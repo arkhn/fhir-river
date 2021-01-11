@@ -9,8 +9,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/arkhn/fhir-river/api/topics"
 )
 
 var (
@@ -18,7 +16,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	subscribedTopics, _ = newTopicsFromSlice([]string{topics.Batch, topics.Extract, topics.Transform, topics.Load})
+	subscribedTopics, _ = newTopicsFromSlice([]string{"^batch.*", "^extract.*", "^extract.*", "^load.*"})
 )
 
 type Topics map[string]struct{}

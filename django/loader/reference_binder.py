@@ -117,7 +117,14 @@ class ReferenceBinder:
 
     @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
-        for identifier in fhir_object["identifier"]:
+        # Identifiers can have cardinality 0..* (as in Patient),
+        # or 0..1 (as in QuestionaireResponse)
+        identifiers = (
+            fhir_object["identifier"]
+            if isinstance(fhir_object["identifier"], list)
+            else [fhir_object["identifier"]]
+        )
+        for identifier in identifiers:
             try:
                 target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
             except (KeyError, ValueError) as e:

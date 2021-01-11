@@ -7,15 +7,17 @@ import (
 )
 
 func PyrogServer() *httptest.Server {
-	pyrogResponse := fmt.Sprintf(`{"data": {"resource": %s}}`, patientMapping)
 	mockPyrogServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authorizationHeader := r.Header.Get("Authorization")
 		if authorizationHeader == "Bearer validToken" {
+			pyrogResponse := fmt.Sprintf(`{"data": {"resource": %s}}`, patientMapping)
 			_, _ = fmt.Fprint(w, pyrogResponse)
 		} else if authorizationHeader == "Bearer forbiddenToken" {
-			http.Error(w, "invalid token", http.StatusForbidden)
+			fmt.Fprint(w, `{"errors": [{"statusCode": 403, "message": "forbidden"}]}`)
+		} else if authorizationHeader == "Bearer unauthorizedToken" {
+			fmt.Fprint(w, `{"errors": [{"statusCode": 401, "message": "unauthorized"}]}`)
 		} else {
-			http.Error(w, "invalid token", http.StatusUnauthorized)
+			http.Error(w, "invalid token", http.StatusBadRequest)
 		}
 	}))
 	return mockPyrogServer

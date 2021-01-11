@@ -122,3 +122,24 @@ def test_organization():
             },
         ],
     }
+
+
+@fixture
+def test_reference_response():
+    return {
+        "id": "3242",
+        "resourceType": "ReferenceResponse",
+        "response": {
+            "type": "QuestionnaireResponse",
+            "identifier": {"value": "qresp", "system": "http://terminology.arkhn.org/identifier"},
+        },
+    }
+
+
+@fixture
+def test_questionnaire_response():
+    return {
+        "id": "3141",
+        "resourceType": "QuestionnaireResponse",
+        "identifier": {"system": "http://terminology.arkhn.org/identifier", "value": "qresp"},
+    }

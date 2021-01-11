@@ -37,7 +37,7 @@ func fetchConceptMap(conceptMapID string, authorizationHeader string) (map[strin
 		return nil, &errors.InvalidTokenError{Message: "Token is invalid", StatusCode: http.StatusUnauthorized}
 	case http.StatusForbidden:
 		return nil, &errors.InvalidTokenError{
-			Message: "You don't have rights to perform this action",
+			Message:    "You don't have rights to perform this action",
 			StatusCode: http.StatusForbidden,
 		}
 	default:

@@ -31,7 +31,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 		if !isExtracting {
 			return false, nil
 		}
-		extractCountInt, err := strconv.ParseInt(extractCountStr, 10, 32)
+		extractCountInt, err := strconv.Atoi(extractCountStr)
 		if err != nil {
 			return false, err
 		}
@@ -42,7 +42,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 		if !isLoading {
 			return false, nil
 		}
-		loadCountInt, err := strconv.ParseInt(loadCountStr, 10, 32)
+		loadCountInt, err := strconv.Atoi(loadCountStr)
 		if err != nil {
 			return false, err
 		}
@@ -64,7 +64,7 @@ func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
 // The list of resource types of a batch is in a Redis set "batch:{batch_id}:resources"
 func (ctl BatchController) ListenAndDestroy() {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers":  kafkaURL,
+		"bootstrap.servers":  topics.KafkaURL,
 		"group.id":           consumerGroupID,
 		"session.timeout.ms": 6000,
 		// topic.metadata.refresh.interval.ms (default 5 min) is the period of time
@@ -73,7 +73,7 @@ func (ctl BatchController) ListenAndDestroy() {
 		"topic.metadata.refresh.interval.ms": 5000,
 		"auto.offset.reset":                  "earliest"})
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer func() {
 		log.Println("Closing consumer")
@@ -81,7 +81,7 @@ func (ctl BatchController) ListenAndDestroy() {
 			panic(err)
 		}
 	}()
-	if err = c.Subscribe(topics.Load, nil); err != nil {
+	if err = c.Subscribe(ctl.Load.GetRegex(), nil); err != nil {
 		panic(err)
 	}
 
