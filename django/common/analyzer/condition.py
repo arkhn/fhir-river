@@ -97,3 +97,13 @@ class Condition:
             return True
         except ValueError:
             return False
+
+    def __eq__(self, other):
+        if not isinstance(other, Condition):
+            return False
+        return (
+            self.action == other.action
+            and self.sql_column == other.sql_column
+            and self.relation == other.relation
+            and self.value == other.value
+        )

@@ -30,7 +30,10 @@ class SqlColumn:
 
     def __eq__(self, other) -> bool:
         return (
-            self.table == other.table and self.column == other.column and self.owner == other.owner
+            self.table == other.table
+            and self.column == other.column
+            and self.owner == other.owner
+            and self.joins == other.joins
         )
 
     def __str__(self) -> str:

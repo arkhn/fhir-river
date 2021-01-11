@@ -49,4 +49,5 @@ class InputGroup:
             self.columns == other.columns
             and self.static_inputs == other.static_inputs
             and self.merging_script == other.merging_script
+            and self.conditions == other.conditions
         )
