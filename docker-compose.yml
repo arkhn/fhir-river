@@ -54,6 +54,15 @@ services:
       - REDIS_COUNTER_PORT=6379
       - REDIS_COUNTER_DB=2
 
+  etl-api:
+    image: river
+    build: .
+    restart: on-failure
+    environment:
+      - ENV=dev
+      - LOG_LEVEL=DEBUG
+      - SECRET_KEY=whatever
+
   api:
     build: api
     restart: on-failure
