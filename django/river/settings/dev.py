@@ -1,5 +1,7 @@
 from .base import *
 
+SECRET_KEY = "USE_IN_DEV_ONLY"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 

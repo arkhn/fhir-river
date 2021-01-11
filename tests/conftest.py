@@ -1,6 +1,4 @@
-import json
 import os
-from pathlib import Path
 
 import django
 from dotenv import find_dotenv, load_dotenv
