@@ -10,7 +10,6 @@ services:
     restart: on-failure
     environment:
       - ENV=dev
-      - SECRET_KEY=whatever
       - LOG_LEVEL=DEBUG
       - REDIS_MAPPINGS_HOST=river-redis
       - REDIS_MAPPINGS_PORT=6379
@@ -28,7 +27,6 @@ services:
     restart: on-failure
     environment:
       - ENV=dev
-      - SECRET_KEY=whatever
       - LOG_LEVEL=DEBUG
       - REDIS_MAPPINGS_HOST=river-redis
       - REDIS_MAPPINGS_PORT=6379
@@ -43,7 +41,6 @@ services:
     restart: on-failure
     environment:
       - ENV=dev
-      - SECRET_KEY=whatever
       - LOG_LEVEL=DEBUG
       - FHIRSTORE_USER=arkhn
       - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
