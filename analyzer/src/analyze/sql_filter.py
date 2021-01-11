@@ -2,7 +2,7 @@ from .sql_column import SqlColumn
 
 
 class SqlFilter:
-    def __init__(self, sql_column: "SqlColumn", relation: str, value: str):
+    def __init__(self, sql_column: SqlColumn, relation: str, value: str):
         self.sql_column = sql_column
         self.relation = relation
         self.value = value

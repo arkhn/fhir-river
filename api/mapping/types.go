@@ -13,6 +13,9 @@ type credentials struct {
 type column struct {
 	Table  string `json:"table"`
 	Column string `json:"column"`
+	Joins  []*struct {
+		Tables []*column `json:"tables"`
+	} `json:"joins"`
 }
 
 type filter struct {
@@ -36,13 +39,7 @@ type inputGroup struct {
 }
 
 type input struct {
-	SqlValue struct {
-		Table  string `json:"table"`
-		Column string `json:"column"`
-		Joins  []*struct {
-			Tables []*column `json:"tables"`
-		} `json:"joins"`
-	} `json:"sqlValue"`
+	SqlValue        column            `json:"sqlValue"`
 	Script          string            `json:"script"`
 	ConceptMapID    string            `json:"conceptMapId"`
 	ConceptMapTitle string            `json:"conceptMapTitle"`
