@@ -1,7 +1,7 @@
 ########
 # This image compile the dependencies
 ########
-FROM python:3.8-slim as compile-image
+FROM arkhn/python-db-drivers:0.3.0 as compile-image
 
 ENV VIRTUAL_ENV /srv/venv
 ENV PATH "${VIRTUAL_ENV}/bin:${PATH}"
@@ -33,7 +33,7 @@ RUN pip install --no-cache-dir -r requirements/prod.txt
 ########
 # This image is the runtime
 ########
-FROM python:3.8-slim as runtime-image
+FROM arkhn/python-db-drivers:0.3.0 as runtime-image
 
 ARG VERSION_SHA
 ARG VERSION_NAME
