@@ -7,6 +7,7 @@
 **/.tox/
 **/.pytest_cache/
 **/*.egg-info/
+**/db.sqlite3
 
 # VSCode
 **/.vscode/
