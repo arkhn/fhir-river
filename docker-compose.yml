@@ -54,7 +54,7 @@ services:
       - REDIS_COUNTER_PORT=6379
       - REDIS_COUNTER_DB=2
 
-  etl-api:
+  control-api:
     image: river
     build: .
     restart: on-failure
@@ -71,9 +71,7 @@ services:
     environment:
       - PORT=3000
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - EXTRACTOR_URL=http://extractor:3001
-      - TRANSFORMER_URL=http://transformer:3002
-      - LOADER_URL=http://loader:3003
+      - CONTROL_API_URL=http://control-api:8000
       - PYROG_API_URL=http://pyrog-server:1000
       - FHIR_API_URL=http://fhir-api:2000
       - REDIS_MAPPINGS_HOST=river-redis

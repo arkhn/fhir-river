@@ -32,17 +32,11 @@ func PreviewHandle(writer http.ResponseWriter, request *http.Request, _ httprout
 
 func TestPreview(t *testing.T) {
 
-	mockExtractor := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = fmt.Fprint(w, `{"rows": []}`)
-	}))
-	defer mockExtractor.Close()
-	mockTransformer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockControlAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprint(w, `{}`)
 	}))
-	defer mockTransformer.Close()
-
-	transformerURL = mockTransformer.URL
-	extractorURL = mockExtractor.URL
+	defer mockControlAPI.Close()
+	controlURL = mockControlAPI.URL
 
 	var mockRedis *miniredis.Miniredis
 	mockRedis, mapping.Rdb = newTestRedis()
