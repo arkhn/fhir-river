@@ -9,7 +9,7 @@ import (
 )
 
 type BatchController struct {
-	topics.Controller
+	Topics topics.Controller
 
 	rdb *redis.Client
 }
@@ -23,6 +23,6 @@ func NewBatchController() BatchController {
 	})
 	return BatchController{
 		rdb:        rdb,
-		Controller: topics.NewController(),
+		Topics: topics.NewController(),
 	}
 }
