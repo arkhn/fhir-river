@@ -89,7 +89,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 		}
 
 		// delete all the documents correspondng to the batch resources
-		deleteUrl := fmt.Sprintf("%s/api/delete-resources", controlURL)
+		deleteUrl := fmt.Sprintf("%s/api/delete-resources/", controlURL)
 		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: request.Resources})
 		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
 		if err != nil {
