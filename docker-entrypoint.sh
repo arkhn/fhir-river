@@ -12,14 +12,14 @@ if [[ "$1" == "extractor" ]] || [[ "$1" == "transformer" ]] || [[ "$1" == "loade
 fi
 
 export DJANGO_SETTINGS_MODULE=river.settings."${ENV:-prod}"
-export STATIC_ROOT=/var/www/static
+export STATIC_ROOT="${FILES_ROOT}/static"
 
 if [[ "$#" -gt 0 ]]; then
   python django/manage.py "$@"
 else
+  python django/manage.py migrate
+  python django/manage.py collectstatic --no-input
   if [[ "${ENV}" == "dev" ]]; then
-    python django/manage.py migrate
-    python django/manage.py collectstatic --no-input
     python django/manage.py createsuperuser --no-input || echo "Skipping."
     python django/manage.py runserver 0.0.0.0:8000
   else
