@@ -69,7 +69,4 @@ RUN chmod +x docker-entrypoint.sh
 USER uwsgi
 EXPOSE 8000
 
-HEALTHCHECK --start-period=1m \
-    CMD curl --silent --show-error --head --output /dev/null localhost:8000 || exit 1
-
 ENTRYPOINT ["/srv/docker-entrypoint.sh"]
