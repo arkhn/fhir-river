@@ -42,20 +42,23 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 			resourceIDs = append(resourceIDs, resource.ID)
 		}
 
-		// generate a new batch ID.
+		// generate a new batch ID and record the batch and its resource ids in Redis
 		batchUUID, err := uuid.NewRandom()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		batchID := batchUUID.String()
-
-		if err := ctl.CacheBatchInfo(batchID, resourceIDs); err != nil {
+		if err := ctl.BatchSet(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		if err = ctl.Controller.Create(batchID); err != nil {
+		if err := ctl.BatchResourcesSet(batchID, resourceIDs); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// create the batch topics in Kafka
+		if err = ctl.Topics.Create(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -114,7 +117,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := ctl.Batch.GetName(batchID)
+			topicName := ctl.Topics.Batch.GetName(batchID)
 			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},

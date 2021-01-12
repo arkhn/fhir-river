@@ -14,7 +14,7 @@ func Resources(ctl monitor.BatchController) func(http.ResponseWriter, *http.Requ
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		batchID := vars["id"]
-		resources, err := ctl.BatchResources(batchID)
+		resources, err := ctl.BatchResourcesList(batchID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
