@@ -168,7 +168,7 @@ LOGGING = {
             "formatter": "fluentd",
             "tag": "river",
             "host": os.environ.get("FLUENTD_HOST", "fluentd"),
-            "port": os.environ.get("FLUENTD_PORT", 24224),
+            "port": int(os.environ.get("FLUENTD_PORT", 24224)),
         },
     },
     "root": {
