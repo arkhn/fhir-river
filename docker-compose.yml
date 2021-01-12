@@ -61,6 +61,7 @@ services:
     environment:
       - ENV=dev
       - LOG_LEVEL=DEBUG
+      - DEBUG=True
       - SECRET_KEY=whatever
 
   api:

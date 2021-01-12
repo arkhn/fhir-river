@@ -17,7 +17,6 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # API versioning
-
 VERSION_NAME = os.environ.get("VERSION_NAME", None)
 VERSION_SHA = os.environ.get("VERSION_SHA", None)
 
@@ -25,6 +24,9 @@ VERSION_SHA = os.environ.get("VERSION_SHA", None)
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG modifies the app behaviour. For instance:
+#   * it enables detailed error pages.
+#   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
 DEBUG = os.environ.get("DEBUG", False) == "True"
 
 ALLOWED_HOSTS = []
