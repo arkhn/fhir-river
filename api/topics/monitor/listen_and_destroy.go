@@ -18,11 +18,11 @@ type message struct {
 }
 
 func (ctl BatchController) isEndOfBatch(batchID string) (bool, error) {
-	batchResources, err := ctl.rdb.SMembers("batch:" + batchID + ":resources").Result()
+	batchResources, err := ctl.rdb.SMembers("batch:"+batchID+":resources").Result()
 	if err != nil {
 		return false, err
 	}
-	counter, err := ctl.rdb.HGetAll("batch:" + batchID + ":counter").Result()
+	counter, err := ctl.rdb.HGetAll("batch:"+batchID+":counter").Result()
 	if err != nil {
 		return false, err
 	}
@@ -112,7 +112,7 @@ ConsumerLoop:
 					break
 				}
 				if eob {
-					log.Println("ending batch: " + msg.BatchID)
+					log.Println("ending batch: "+msg.BatchID)
 					if err := ctl.Destroy(msg.BatchID); err != nil {
 						log.Println(err)
 						break

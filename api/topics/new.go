@@ -14,7 +14,7 @@ type Topic struct {
 
 func New(title string) Topic {
 	var numParts int
-	numPartsEnv, isNumPartsEnv := os.LookupEnv("KAFKA_" + strings.ToUpper(title) + "_NUMBER_PARTITIONS")
+	numPartsEnv, isNumPartsEnv := os.LookupEnv("KAFKA_"+strings.ToUpper(title)+"_NUMBER_PARTITIONS")
 	if isNumPartsEnv {
 		var err error
 		numParts, err = strconv.Atoi(numPartsEnv)
@@ -25,14 +25,14 @@ func New(title string) Topic {
 		numParts = 1
 	}
 	return Topic{
-		prefix:   title + ".",
-		regex:    "^" + title + "\\..*",
+		prefix:   title+".",
+		regex:    "^"+title+"\\..*",
 		numParts: numParts,
 	}
 }
 
 func (t Topic) GetName(batchID string) string {
-	return t.prefix + batchID
+	return t.prefix+batchID
 }
 
 func (t Topic) GetRegex() string {

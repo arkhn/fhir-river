@@ -26,6 +26,6 @@ func (ctl BatchController) Destroy(batchID string) error {
 	if _, err := ctl.rdb.Expire("batch:"+batchID+":counter", twoWeeks).Result(); err != nil {
 		return err
 	}
-	log.Println("batch:" + batchID + " destroyed")
+	log.Println("batch:"+batchID+" destroyed")
 	return nil
 }

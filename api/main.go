@@ -33,7 +33,7 @@ func main() {
 
 	// Run River API server
 	s := &http.Server{
-		Addr:         ":" + port,
+		Addr:         ":"+port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 		Handler: handlers.CORS(
