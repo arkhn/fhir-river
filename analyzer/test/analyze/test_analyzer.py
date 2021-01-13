@@ -49,7 +49,7 @@ def test_get_primary_key():
     resource_mapping = {
         "primaryKeyTable": "table",
         "primaryKeyColumn": "col",
-        "source": {"credential": {"owner": "owner"}},
+        "primaryKeyOwner": {"name": "owner"},
     }
     primary_key = analyzer.get_primary_key(resource_mapping)
 
@@ -59,7 +59,7 @@ def test_get_primary_key():
     resource_mapping = {
         "primaryKeyTable": "table",
         "primaryKeyColumn": "col",
-        "source": {"credential": {"owner": ""}},
+        "primaryKeyOwner": {"name": "owner"},
     }
     primary_key = analyzer.get_primary_key(resource_mapping)
 
@@ -69,7 +69,7 @@ def test_get_primary_key():
     resource_mapping = {
         "primaryKeyTable": "",
         "primaryKeyColumn": "col",
-        "source": {"credential": {"owner": ""}},
+        "primaryKeyOwner": {"name": "owner"},
         "definitionId": "fhirtype",
     }
     with pytest.raises(

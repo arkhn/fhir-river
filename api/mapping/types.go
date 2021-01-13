@@ -5,12 +5,15 @@ type credentials struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	Database string `json:"database"`
-	Owner    string `json:"owner"`
 	Login    string `json:"login"`
 	Password string `json:"password"`
 }
 
+type owner struct {
+	Name string `json:"name"`
+}
 type column struct {
+	Owner  owner  `json:"owner"`
 	Table  string `json:"table"`
 	Column string `json:"column"`
 	Joins  []*struct {
@@ -56,6 +59,7 @@ type condition struct {
 
 type resource struct {
 	ID               string `json:"id"`
+	PrimaryKeyOwner  owner  `json:"primaryKeyOwner"`
 	PrimaryKeyTable  string `json:"primaryKeyTable"`
 	PrimaryKeyColumn string `json:"primaryKeyColumn"`
 	DefinitionId     string `json:"definitionId"`

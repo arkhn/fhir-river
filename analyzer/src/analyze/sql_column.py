@@ -9,14 +9,14 @@ class SqlColumn:
         self,
         table: str,
         column: str,
-        owner: str = None,
+        owner: str,
         cleaning_script: CleaningScript = None,
         concept_map: ConceptMap = None,
         joins=None,
     ):
         self.table = table.strip()
         self.column = column.strip()
-        self.owner = owner.strip() if owner else None
+        self.owner = owner.strip()
 
         if not self.table or not self.column:
             raise ValueError("Cannot create an SqlColumn with empty table or column.")
@@ -37,16 +37,10 @@ class SqlColumn:
         )
 
     def __str__(self) -> str:
-        if self.owner:
-            return f"{self.owner}.{self.table}.{self.column}"
-        else:
-            return f"{self.table}.{self.column}"
+        return f"{self.owner}.{self.table}.{self.column}"
 
     def table_name(self) -> str:
-        if self.owner:
-            return f"{self.owner}.{self.table}"
-        else:
-            return f"{self.table}"
+        return f"{self.owner}.{self.table}"
 
     def table_name_with_joins(self) -> str:
         return (
