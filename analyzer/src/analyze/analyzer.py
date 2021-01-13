@@ -62,7 +62,6 @@ class Analyzer:
 
         # Build squash rules
         self._cur_analysis.squash_rules = build_squash_rules(
-            self.get_analysis_columns(self._cur_analysis),
             self.get_analysis_joins(self._cur_analysis),
             self._cur_analysis.primary_key_column.table_name(),
         )

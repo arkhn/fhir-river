@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 
-def build_squash_rules(columns, joins, main_table):
+def build_squash_rules(joins, main_table):
     """
     Using the dependency graph of the joins on the tables (accessed through the
     head node), regroup (using the id) the columns which should be squashed (ie
