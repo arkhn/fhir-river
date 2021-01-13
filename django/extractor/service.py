@@ -62,47 +62,6 @@ def broadcast_events(
     )
 
 
-def extract(
-    producer: Producer,
-    counter_client: redis.Redis,
-    extractor: Extractor,
-    analyzer: Analyzer,
-    resource_id: str,
-    batch_id: Optional[str] = None,
-    primary_key_values: Optional[List[str]] = None,
-):
-    try:
-        analysis = analyzer.load_cached_analysis(batch_id, resource_id)
-
-        if not analysis.source_credentials:
-            raise MissingInformationError("credential is required to run fhir-river.")
-
-        credentials = analysis.source_credentials
-        extractor.update_connection(credentials)
-
-        logger.info(
-            {"message": "Extracting resources", "resource_id": analysis.resource_id}
-        )
-        df = extractor.extract(analysis, primary_key_values)
-
-        batch_size = extractor.batch_size(analysis)
-        logger.info(
-            {
-                "message": f"Batch size is {batch_size} for resource type {analysis.definition_id}",
-                "resource_id": resource_id,
-            },
-        )
-
-        producer.produce_event(
-            topic=conf.BATCH_SIZE_TOPIC,
-            event={"batch_id": batch_id, "size": batch_size},
-        )
-        broadcast_events(df, analysis, producer, extractor, counter_client, batch_id)
-
-    except Exception as err:
-        logger.exception({"message": err, "resource_id": resource_id})
-
-
 class ExtractHandler(Handler):
     def __init__(
         self,
@@ -125,12 +84,6 @@ class ExtractHandler(Handler):
         credentials = analysis.source_credentials
         self.extractor.update_connection(credentials)
         query = self.extractor.extract(analysis, primary_key_values)
-        batch_size = self.extractor.batch_size(analysis)
-
-        self.producer.produce_event(
-            topic=conf.BATCH_SIZE_TOPIC,
-            event={"batch_id": batch_id, "size": batch_size},
-        )
 
         broadcast_events(
             query, analysis, self.producer, self.extractor, self.counter_redis, batch_id

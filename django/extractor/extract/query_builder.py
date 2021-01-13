@@ -94,31 +94,6 @@ class QueryBuilder:
         )
         return query
 
-    @Timer("time_extractor_build_batch_size_query", "time to build vatch size sql query")
-    def build_batch_size_query(self) -> Query:
-        logger.info(
-            {
-                "message": f"Start building batch size query for resource {self.analysis.definition_id}",
-                "resource_id": self.analysis.resource_id,
-            },
-        )
-
-        sqlalchemy_pk_column = self.get_column(
-            self.analysis.primary_key_column, self._sqlalchemy_pk_table
-        )
-        query = self.session.query(func.count(distinct(sqlalchemy_pk_column)))
-
-        # Add filters to query
-        query = self.apply_filters(query)
-
-        logger.info(
-            {
-                "message": f"Built batch size query for resource {self.analysis.definition_id}: {query.statement}",
-                "resource_id": self.analysis.resource_id,
-            },
-        )
-        return query
-
     def add_attribute_to_query(self, query: Query, attribute: Attribute):
         for input_group in attribute.input_groups:
             for col in input_group.columns:

@@ -13,10 +13,6 @@ class Settings:
         return getattr(settings, "PRODUCED_TOPIC_PREFIX", "extract.")
 
     @property
-    def BATCH_SIZE_TOPIC(self):
-        return getattr(settings, "BATCH_SIZE_TOPIC", "batch_size")
-
-    @property
     def CONSUMED_TOPICS(self):
         return getattr(settings, "CONSUMED_TOPIC", "^batch\\..*")
 
