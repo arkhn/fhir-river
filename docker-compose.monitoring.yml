@@ -6,21 +6,21 @@ services:
     ports:
       - "5556:5556"
     volumes:
-      - /root/monitoring/jmx_exporter.yml:/opt/jmx_exporter/config.yml
+      - ./monitoring/jmx_exporter.yml:/opt/jmx_exporter/config.yml
 
   prometheus:
     image: prom/prometheus:v2.23.0
     ports:
       - "9090:9090"
     volumes:
-      - /root/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
 
   grafana:
     image: grafana/grafana:7.3.6
     ports:
       - "3000:3000"
     volumes:
-      - /root/monitoring/grafana:/etc/grafana
+      - ./monitoring/grafana:/etc/grafana
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.38.6
