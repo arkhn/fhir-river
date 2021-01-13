@@ -9,7 +9,12 @@ def test_build_squash_rules():
         "PATIENTS.DOD",
         "PATIENTS.SUBJECT_ID",
     ]  # NOTE: I use a list instead of a set to keep the order of elements
-    joins = {SqlJoin(SqlColumn("PATIENTS", "SUBJECT_ID"), SqlColumn("ADMISSIONS", "SUBJECT_ID"))}
+    joins = {
+        SqlJoin(
+            SqlColumn("PATIENTS", "SUBJECT_ID", "PUBLIC"),
+            SqlColumn("ADMISSIONS", "SUBJECT_ID", "PUBLIC"),
+        )
+    }
     table = "PATIENTS"
 
     actual = mapping.build_squash_rules(cols, joins, table)
