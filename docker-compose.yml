@@ -99,6 +99,8 @@ services:
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_DELETE_TOPIC_ENABLE=true
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      # The following option can be used in local, but should not be used in production.
+      # It constrains the initial/maximum virtual memory allocated for the JVM.
       # - KAFKA_HEAP_OPTS=-Xmx256M -Xms128M
       - KAFKA_JMX_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka -Dcom.sun.management.jmxremote.rmi.port=9993 -Dcom.sun.management.jmxremote.port=9993
       - JMX_PORT=9993
