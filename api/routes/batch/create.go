@@ -21,6 +21,7 @@ import (
 // It takes a kafka producer as argument in order to trigger batch events.
 func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var response Response
 		producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": topics.KafkaURL})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -139,7 +140,9 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 			}
 			close(deliveryChan)
 		}
-		// return the batch ID to the client immediately.
-		_, _ = fmt.Fprint(w, batchID)
+		response.Id = batchID
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }

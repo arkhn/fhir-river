@@ -21,3 +21,10 @@ type Event struct {
 	BatchID    string `json:"batch_id"`
 	ResourceID string `json:"resource_id"`
 }
+
+// Response describes a batch in request response payload
+type Response struct {
+	Id        string   `json:"id"`
+	Timestamp string   `json:"timestamp,omitempty"`
+	Resources []string `json:"resources,omitempty"`
+}

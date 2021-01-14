@@ -1,7 +1,7 @@
 package batch
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,12 +11,15 @@ import (
 
 func Cancel(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var response Response
 		vars := mux.Vars(r)
 		batchID := vars["id"]
 		if err := ctl.Destroy(batchID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
-		// return the batch ID to the client immediately.
-		_, _ = fmt.Fprint(w, batchID)
+		response.Id = batchID
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }
