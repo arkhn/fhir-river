@@ -8,10 +8,6 @@ from common.analyzer.input_group import InputGroup
 from common.analyzer.merging_script import MergingScript
 from common.analyzer.sql_column import SqlColumn
 
-import sys
-
-print(sys.path)
-
 from transformer.transform import dataframe
 
 

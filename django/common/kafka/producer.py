@@ -32,7 +32,6 @@ class Producer:
             callback_function if callback_function else self.callback_fn
         )
 
-        # Create consumer
         self.producer = KafkaProducer(self._generate_config())
 
     def _generate_config(self):

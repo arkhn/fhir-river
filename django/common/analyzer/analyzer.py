@@ -121,7 +121,7 @@ class Analyzer:
             if attribute_mapping["definitionId"] == "Reference":
                 logger.debug(
                     {
-                        "message": f"Analyze attribute reference",
+                        "message": "Analyze attribute reference",
                         "resource_id": self._cur_analysis.resource_id,
                     },
                 )

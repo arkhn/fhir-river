@@ -23,7 +23,7 @@ type Request struct {
 }
 
 // transform sends an HTTP request to the transformer service
-// using the PreviewRequest as JSON body. It returns the extrcted rows.
+// using the PreviewRequest as JSON body. It returns the extracted rows.
 func preview(previewRequest *Request) (rows []byte, err error) {
 	jBody, _ := json.Marshal(previewRequest)
 	url := fmt.Sprintf("%s/api/preview", controlURL)
