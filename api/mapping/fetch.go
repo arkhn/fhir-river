@@ -83,8 +83,8 @@ fragment cred on Credential {
     password: decryptedPassword
 }
 
-query resource($resourceId: ID!) {
-    resource(resourceId: $resourceId) {
+query resource($resourceId: String!) {
+    resource(where: {id: $resourceId}) {
         id
         primaryKeyOwner {
 			name
