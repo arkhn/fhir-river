@@ -1,5 +1,7 @@
 from .base import *
 
+ALLOWED_HOSTS = ["*"]
+
 SECRET_KEY = "USE_IN_DEV_ONLY"
 
 # Quick-start development settings - unsuitable for production

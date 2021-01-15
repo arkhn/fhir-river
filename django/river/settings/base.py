@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 #   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
 DEBUG = os.environ.get("DEBUG", False) == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
 
 # Application definition
