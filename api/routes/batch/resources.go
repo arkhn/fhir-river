@@ -14,12 +14,13 @@ func Resources(ctl monitor.BatchController) func(http.ResponseWriter, *http.Requ
 	return func(w http.ResponseWriter, r *http.Request) {
 		var response Response
 		vars := mux.Vars(r)
-		response.Id = vars["id"]
-		resources, err := ctl.BatchResourcesList(response.Id)
+		batchID := vars["id"]
+		resources, err := ctl.BatchResourcesList(batchID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		response.Id = batchID
 		response.Resources = resources
 		if err := json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
