@@ -63,6 +63,8 @@ services:
       - LOG_LEVEL=DEBUG
       - DEBUG=True
       - SECRET_KEY=whatever
+      - FHIRSTORE_USER=arkhn
+      - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
 
   api:
     build: api
