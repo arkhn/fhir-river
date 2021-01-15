@@ -20,5 +20,5 @@ type Event struct {
 // Batch describes a batch in request response payload
 type Batch struct {
 	ID        string `json:"id"`
-	Timestamp string `json:"timestamp"`
+	Timestamp string `json:"timestamp,omitempty"`
 }
