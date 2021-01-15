@@ -15,6 +15,9 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
 
+  node-exporter:
+    image: prom/node-exporter:v1.0.1
+
   grafana:
     image: grafana/grafana:7.3.6
     ports:
