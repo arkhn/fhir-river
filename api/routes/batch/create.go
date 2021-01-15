@@ -80,13 +80,11 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 				}
 				return
 			}
-
 			serializedMapping, err := json.Marshal(resourceMapping)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-
 			err = mapping.Store(serializedMapping, resourceID, batch.ID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
