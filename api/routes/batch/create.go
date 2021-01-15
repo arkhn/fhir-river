@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
+	"time"
 
 	"github.com/arkhn/fhir-river/api/errors"
 	"github.com/arkhn/fhir-river/api/mapping"
@@ -21,7 +21,6 @@ import (
 // It takes a kafka producer as argument in order to trigger batch events.
 func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var response Response
 		producer, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": topics.KafkaURL})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -29,7 +28,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 		}
 		defer producer.Close()
 
-		var request ResourceRequest
+		var request ResourceList
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -49,17 +48,20 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		batchID := batchUUID.String()
-		if err := ctl.BatchSet(batchID); err != nil {
+		batch := Batch{
+			ID:        batchUUID.String(),
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+		if err := ctl.BatchSet(batch.ID, batch.Timestamp); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if err := ctl.BatchResourcesSet(batchID, resourceIDs); err != nil {
+		if err := ctl.BatchResourcesSet(batch.ID, resourceIDs); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		// create the batch topics in Kafka
-		if err = ctl.Topics.Create(batchID); err != nil {
+		if err = ctl.Topics.Create(batch.ID); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -85,7 +87,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 				return
 			}
 
-			err = mapping.Store(serializedMapping, resourceID, batchID)
+			err = mapping.Store(serializedMapping, resourceID, batch.ID)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -94,13 +96,12 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 
 		// delete all the documents correspondng to the batch resources
 		deleteUrl := fmt.Sprintf("%s/delete-resources", loaderURL)
-		jBody, _ := json.Marshal(DeleteResourceRequest{Resources: request.Resources})
+		jBody, _ := json.Marshal(request)
 		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
 		if resp.StatusCode != 200 {
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
@@ -114,11 +115,11 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 		// produce a "batch" kafka event for each resource ID.
 		for _, resourceID := range resourceIDs {
 			event, _ := json.Marshal(Event{
-				BatchID:    batchID,
+				BatchID:    batch.ID,
 				ResourceID: resourceID,
 			})
 			log.WithField("event", string(event)).Info("produce event")
-			topicName := ctl.Topics.Batch.GetName(batchID)
+			topicName := ctl.Topics.Batch.GetName(batch.ID)
 			deliveryChan := make(chan kafka.Event)
 			err = producer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topicName, Partition: kafka.PartitionAny},
@@ -140,8 +141,8 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 			}
 			close(deliveryChan)
 		}
-		response.Id = batchID
-		if err := json.NewEncoder(w).Encode(response); err != nil {
+
+		if err := json.NewEncoder(w).Encode(batch); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
