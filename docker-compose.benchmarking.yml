@@ -13,10 +13,6 @@ services:
       - POSTGRES_HOST=mimic
       - POSTGRES_PORT=5432
 
-  benchmark:
-    image: benchmark
-    build: benchmark
-
 networks:
   default:
     external:
