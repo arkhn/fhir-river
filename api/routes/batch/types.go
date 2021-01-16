@@ -3,11 +3,11 @@ package batch
 // Resource descibes a resource of a batch
 type Resource struct {
 	ID           string `json:"resource_id"`
-	ResourceType string `json:"resource_type"`
+	ResourceType string `json:"resource_type,omitempty"`
 }
 
-// ResourceList describes a list of resources of a batch
-type ResourceList struct {
+// ResourceRequest describes a list of resources of a batch
+type ResourceRequest struct {
 	Resources []Resource `json:"resources"`
 }
 
@@ -19,6 +19,7 @@ type Event struct {
 
 // Batch describes a batch in request response payload
 type Batch struct {
-	ID        string `json:"id"`
-	Timestamp string `json:"timestamp,omitempty"`
+	ID        string     `json:"id"`
+	Timestamp string     `json:"timestamp,omitempty"`
+	Resources []Resource `json:"resources,omitempty"`
 }

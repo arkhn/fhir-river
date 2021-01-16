@@ -28,7 +28,7 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 		}
 		defer producer.Close()
 
-		var request ResourceList
+		var request ResourceRequest
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

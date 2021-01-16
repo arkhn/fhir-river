@@ -29,11 +29,10 @@ func main() {
 	router.HandleFunc("/batch", batch.List(ctl)).Methods("GET")
 	router.HandleFunc("/batch", batch.Create(ctl)).Methods("POST")
 	router.HandleFunc("/batch/{id}", batch.Cancel(ctl)).Methods("DELETE")
-	router.HandleFunc("/batch/{id}/resources", batch.Resources(ctl)).Methods("GET")
 
 	// Run River API server
 	s := &http.Server{
-		Addr:         ":"+port,
+		Addr:         ":" + port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 		Handler: handlers.CORS(
