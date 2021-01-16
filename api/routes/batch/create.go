@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/arkhn/fhir-river/api/errors"
 	"github.com/arkhn/fhir-river/api/mapping"
