@@ -11,7 +11,6 @@ from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
 from .condition import Condition
 from .input_group import InputGroup
-from .mapping import build_squash_rules
 from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
@@ -59,13 +58,6 @@ class Analyzer:
 
         # Analyze the mapping
         self.analyze_mapping(resource_mapping)
-
-        # Build squash rules
-        self._cur_analysis.squash_rules = build_squash_rules(
-            self.get_analysis_columns(self._cur_analysis),
-            self.get_analysis_joins(self._cur_analysis),
-            self._cur_analysis.primary_key_column.table_name(),
-        )
 
         return self._cur_analysis
 

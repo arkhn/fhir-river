@@ -7,6 +7,7 @@ from sqlalchemy.orm import (
     aliased,
     Query,
 )
+from sqlalchemy.sql.functions import array_agg
 from typing import Callable, Dict
 
 from analyzer.src.analyze.attribute import Attribute
@@ -64,16 +65,18 @@ class QueryBuilder:
             extra={"resource_id": self.analysis.resource_id},
         )
 
+        sql_alchemy_pk_column = self.get_column(
+            self.analysis.primary_key_column, self._sqlalchemy_pk_table
+        )
         # We don't need to have columns duplicated in the dataframe
         # so we keep the one we've already seen here.
         # Note that the primary key column is added at the query initialization.
-        self._cur_query_columns = {self.analysis.primary_key_column}
+        self._cur_query_columns = {sql_alchemy_pk_column}
+
+        query = self.session.query(sql_alchemy_pk_column)
+
         # To avoid duplicated joins, we keep them here
         self._cur_query_join_tables = {}
-
-        query = self.session.query(
-            self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table)
-        )
 
         # Add attributes to query
         for attribute in self.analysis.attributes:
@@ -81,6 +84,15 @@ class QueryBuilder:
 
         # Add filters to query
         query = self.apply_filters(query)
+
+        # Group along primary key table
+        query = query.group_by(
+            *(
+                c
+                for c in self._cur_query_columns
+                if c.table == self.analysis.primary_key_column.table_name
+            )
+        )
 
         logger.info(
             f"Built query for resource {self.analysis.definition_id}: {query.statement}",
@@ -125,15 +137,20 @@ class QueryBuilder:
         """ Helper function to add a column to the sqlalchemy query if it is not already present
         and to add the column to the set of columns already present in the query.
         """
-        if sql_column in self._cur_query_columns:
-            return query
-
         sqlalchemy_col = self.get_column(sql_column, sqlalchemy_table)
 
-        # Add the column to the _cur_query_columns attribute
-        self._cur_query_columns.add(sql_column)
+        if sqlalchemy_col in self._cur_query_columns:
+            return query
 
-        return query.add_columns(sqlalchemy_col)
+        # Add the column to the _cur_query_columns attribute
+        self._cur_query_columns.add(sqlalchemy_col)
+
+        # We aggregate the rows from foreign tables in arrays
+        return query.add_columns(
+            sqlalchemy_col
+            if sql_column.name == self.analysis.primary_key_column.dataframe_column_name()
+            else array_agg(sqlalchemy_col)
+        )
 
     def apply_filters(self, query: Query) -> Query:
         """ Augment the sql alchemy query with filters from the analysis.

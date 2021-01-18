@@ -15,7 +15,6 @@ class Analysis:
         self.attributes: List[Attribute] = []
         self.filters: List[SqlFilter] = []
         self.primary_key_column: SqlColumn = None
-        self.squash_rules = None
         self.reference_paths: Set[str] = set()
         self.is_static = False
 

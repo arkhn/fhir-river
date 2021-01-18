@@ -138,35 +138,19 @@ class Extractor:
             extra={"resource_id": analysis.resource_id},
         )
 
-        pk_col = analysis.primary_key_column.dataframe_column_name()
-
-        prev_pk_val = None
-        acc = defaultdict(list)
         for row in df:
+            counter_extract_instances.labels(
+                resource_id=analysis.resource_id, resource_type=analysis.definition_id
+            ).inc()
+
+            acc = defaultdict(list)
+
             # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy results)
             # that behaves like tuples and have a `keys` methods returning the
             # column names in the same order as they are in the tuple.
             # For instance a row could look like: ("bob", 34)
             # and its `keys` method could return: ["name", "age"]
-            pk_ind = row.keys().index(pk_col)
-            if acc and row[pk_ind] != prev_pk_val:
-                counter_extract_instances.labels(
-                    resource_id=analysis.resource_id, resource_type=analysis.definition_id
-                ).inc()
-                yield acc
-                acc = defaultdict(list)
             for key, value in zip(row.keys(), row):
                 acc[key].append(value)
-            prev_pk_val = row[pk_ind]
 
-        if not acc:
-            raise EmptyResult(
-                "The sql query returned nothing. Maybe the primary key values "
-                "you provided are not present in the database or the mapping "
-                "is erroneous."
-            )
-
-        counter_extract_instances.labels(
-            resource_id=analysis.resource_id, resource_type=analysis.definition_id
-        ).inc()
-        yield acc
+            yield acc
