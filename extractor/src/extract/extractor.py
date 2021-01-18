@@ -143,14 +143,9 @@ class Extractor:
                 resource_id=analysis.resource_id, resource_type=analysis.definition_id
             ).inc()
 
-            acc = defaultdict(list)
-
             # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy results)
             # that behaves like tuples and have a `keys` methods returning the
             # column names in the same order as they are in the tuple.
             # For instance a row could look like: ("bob", 34)
             # and its `keys` method could return: ["name", "age"]
-            for key, value in zip(row.keys(), row):
-                acc[key].append(value)
-
-            yield acc
+            yield {key: value for key, value in zip(row.keys(), row)}

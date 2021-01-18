@@ -20,7 +20,7 @@ class Transformer:
     def transform_data(self, data, analysis):
         # Get primary key value for logs
         try:
-            primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
+            primary_key = data[analysis.primary_key_column.dataframe_column_name()]
         except KeyError as e:
             logger.error(
                 f"Trying to access column not present in dataframe: {e}",

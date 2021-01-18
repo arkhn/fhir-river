@@ -125,7 +125,7 @@ def test_sqlalchemy_query(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "array_agg(patients.row_id) AS patients_row_id_hash, "
+        "patients.row_id AS patients_row_id_hash, "
         "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.patient_id = patients.patient_id \n"
@@ -377,7 +377,7 @@ def test_conditions_with_joins(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "array_agg(patients.row_id) AS patients_row_id_hash, "
+        "patients.row_id AS patients_row_id_hash, "
         "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.subject_id = patients.subject_id "

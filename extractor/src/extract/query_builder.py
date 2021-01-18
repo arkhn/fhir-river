@@ -149,8 +149,7 @@ class QueryBuilder:
         # We aggregate the rows from foreign tables in arrays
         return query.add_columns(
             sqlalchemy_col
-            if sql_column.dataframe_column_name()
-            == self.analysis.primary_key_column.dataframe_column_name()
+            if sql_column.table_name() == self.analysis.primary_key_column.table_name()
             else array_agg(sqlalchemy_col).label(sql_column.dataframe_column_name())
         )
 

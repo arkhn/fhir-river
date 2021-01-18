@@ -32,7 +32,7 @@ transformer = Transformer()
 
 
 def transform_row(analysis, row):
-    primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
+    primary_key_value = row[analysis.primary_key_column.dataframe_column_name()]
     logging_extras = {
         "resource_id": analysis.resource_id,
         "primary_key_value": primary_key_value,
