@@ -1,9 +1,10 @@
-from contextlib import contextmanager
-import logging
 import json
+import logging
 import time
+from contextlib import contextmanager
 
-from confluent_kafka import Consumer as KafkaConsumer, KafkaError, KafkaException
+from confluent_kafka import Consumer as KafkaConsumer
+from confluent_kafka import KafkaError, KafkaException
 
 logger = logging.getLogger("kafka.consumer")
 

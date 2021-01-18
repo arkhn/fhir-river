@@ -1,23 +1,17 @@
 import logging
 
-import redis
-
 from django.conf import settings
 
+import redis
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.service import Service
 from common.service.event import Event
 from common.service.handler import Handler
-
-from common.analyzer import Analyzer
-from common.kafka.consumer import Consumer
-from common.kafka.producer import Producer
-from transformer.transform import Transformer
-from transformer.errors import OperationOutcome
+from common.service.service import Service
 from transformer.conf import conf
-
+from transformer.errors import OperationOutcome
+from transformer.transform import Transformer
 
 logger = logging.getLogger(__name__)
 

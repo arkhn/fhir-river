@@ -6,7 +6,8 @@ class FluentFormatter(FluentRecordFormatter):
         """
         Format the record as dict.
 
-        If there is exception information, it is formatted using formatException() and added to the data.
+        If there is exception information, it is formatted using formatException() and
+        added to the data.
         """
         data = super().format(record)
 

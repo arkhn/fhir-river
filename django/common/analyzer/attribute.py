@@ -1,5 +1,5 @@
-from decimal import Decimal
 import logging
+from decimal import Decimal
 from typing import List
 
 from .input_group import InputGroup
@@ -23,7 +23,10 @@ def normalize_to_str(value):
 
 class Attribute:
     def __init__(
-        self, path, definition_id: str = None, input_groups: List[InputGroup] = None,
+        self,
+        path,
+        definition_id: str = None,
+        input_groups: List[InputGroup] = None,
     ):
         self.path = path
         self.input_groups = input_groups or []
@@ -52,8 +55,7 @@ class Attribute:
             return self.normalizer(value)
         except Exception as e:
             logger.warning(
-                f"Could not cast value {value} to type {self.type} "
-                f"on attribute at path = {self.path}): {e}"
+                f"Could not cast value {value} to type {self.type} " f"on attribute at path = {self.path}): {e}"
             )
 
         return value

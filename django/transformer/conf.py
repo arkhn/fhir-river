@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 # Set default configuration for transformer
 
 
@@ -16,5 +15,6 @@ class Settings:
     @property
     def PRODUCED_TOPIC_PREFIX(self):
         return getattr(settings, "PRODUCED_TOPIC_PREFIX", "transform.")
+
 
 conf = Settings()

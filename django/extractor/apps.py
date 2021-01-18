@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class ExtractorConfig(AppConfig):
-    name = 'extractor'
+    name = "extractor"

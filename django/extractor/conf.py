@@ -1,7 +1,7 @@
 from django.conf import settings
 
-
 # Set default configuration for extractor
+
 
 class Settings:
     @property
@@ -15,5 +15,6 @@ class Settings:
     @property
     def CONSUMED_TOPICS(self):
         return getattr(settings, "CONSUMED_TOPIC", "^batch\\..*")
+
 
 conf = Settings()

@@ -8,8 +8,4 @@ class SqlFilter:
         self.value = value
 
     def __eq__(self, other) -> bool:
-        return (
-            self.sql_column == other.sql_column
-            and self.relation == other.relation
-            and self.value == other.value
-        )
+        return self.sql_column == other.sql_column and self.relation == other.relation and self.value == other.value

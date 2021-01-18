@@ -1,17 +1,16 @@
+import json
 import logging
 import re
-import json
 from collections import defaultdict
 from typing import DefaultDict
-from dotty_dict import dotty
 
 from arkhn_monitoring import Timer
-
-from loader.load.utils import get_resource_id
+from dotty_dict import dotty
 from loader.cache import redis
-
+from loader.load.utils import get_resource_id
 
 logger = logging.getLogger(__name__)
+
 
 # dotty-dict does not handle brackets indices,
 # it uses dots instead (a.0.b instead of a[0].b)
@@ -50,8 +49,7 @@ class ReferenceBinder:
         for reference_path in dotty_paths(reference_paths):
             logger.debug(
                 {
-                    "message": f"Trying to resolve reference for resource {fhir_object['id']} "
-                    f"at {reference_path}",
+                    "message": f"Trying to resolve reference for resource {fhir_object['id']} " f"at {reference_path}",
                     "resource_id": resource_id,
                 },
             )
@@ -59,15 +57,16 @@ class ReferenceBinder:
                 bound_ref = self.bind_existing_reference(fhir_object, reference_path)
                 fhir_object[reference_path] = bound_ref
             except KeyError as e:
-                logger.warning(
-                    f"{reference_path} does not exist in resource {fhir_object['id']}: {e}"
-                )
+                logger.warning(f"{reference_path} does not exist in resource {fhir_object['id']}: {e}")
         if "identifier" in fhir_object:
             self.resolve_pending_references(fhir_object)
 
         return fhir_object.to_dict()
 
-    @Timer("time_bind_existing_reference", "time spent resolving the documents's references")
+    @Timer(
+        "time_bind_existing_reference",
+        "time spent resolving the documents's references",
+    )
     def bind_existing_reference(self, fhir_object, reference_path):
         reference_attribute = fhir_object[reference_path]
         resource_id = get_resource_id(fhir_object)
@@ -120,17 +119,13 @@ class ReferenceBinder:
         # Identifiers can have cardinality 0..* (as in Patient),
         # or 0..1 (as in QuestionaireResponse)
         identifiers = (
-            fhir_object["identifier"]
-            if isinstance(fhir_object["identifier"], list)
-            else [fhir_object["identifier"]]
+            fhir_object["identifier"] if isinstance(fhir_object["identifier"], list) else [fhir_object["identifier"]]
         )
         for identifier in identifiers:
             try:
                 target_ref = self.identifier_to_key(fhir_object["resourceType"], identifier)
             except (KeyError, ValueError) as e:
-                logger.warning(
-                    f"incomplete identifier on resource {fhir_object['id']}: {e}"
-                )
+                logger.warning(f"incomplete identifier on resource {fhir_object['id']}: {e}")
                 continue
             pending_refs = self.load_cached_references(target_ref)
             for (source_type, reference_path, is_array), refs in pending_refs.items():
@@ -143,7 +138,7 @@ class ReferenceBinder:
                 )
                 self.fhirstore.db[source_type].update_many(
                     self.unresolved_resources_filter(reference_path, identifier, refs, is_array),
-                    self.reference_update(reference_path, fhir_object, is_array)
+                    self.reference_update(reference_path, fhir_object, is_array),
                 )
             if pending_refs:
                 self.cache.delete(target_ref)
@@ -178,9 +173,7 @@ class ReferenceBinder:
     def unresolved_resources_filter(self, reference_path, identifier, refs, is_array):
         query = {"id": {"$in": refs}}
         if is_array:
-            query[reference_path] = {
-                "$elemMatch": self.partial_identifier(identifier)
-            }
+            query[reference_path] = {"$elemMatch": self.partial_identifier(identifier)}
         return query
 
     @staticmethod
@@ -189,11 +182,7 @@ class ReferenceBinder:
             target_path = f"{reference_path}.$.reference"
         else:
             target_path = f"{reference_path}.reference"
-        return {
-            "$set": {
-                target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"
-            }
-        }
+        return {"$set": {target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"}}
 
     @staticmethod
     def identifier_to_key(resource_type, identifier):
@@ -202,14 +191,14 @@ class ReferenceBinder:
         if not value or not system:
             raise ValueError
         # Default separators include whitespaces
-        key = json.dumps((value, system), separators=(',', ':'))
+        key = json.dumps((value, system), separators=(",", ":"))
         return f"{resource_type}:{key}"
 
     @staticmethod
     def partial_identifier(identifier):
         _id = {
             "identifier.value": identifier["value"],
-            "identifier.system": identifier["system"]
+            "identifier.system": identifier["system"],
         }
         if not identifier["value"] or not identifier["system"]:
             raise ValueError

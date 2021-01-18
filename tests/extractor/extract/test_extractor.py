@@ -1,18 +1,11 @@
-from pytest import raises
-from sqlalchemy import (
-    Column,
-    MetaData,
-    Table,
-)
-
 from extractor.extract import Extractor
+from pytest import raises
+from sqlalchemy import Column, MetaData, Table
 
 meta = MetaData()
 tables = {
     "patients": Table("patients", meta, Column("subject_id"), Column("row_id")),
-    "admissions": Table(
-        "admissions", meta, Column("subject_id"), Column("row_id"), Column("admittime")
-    ),
+    "admissions": Table("admissions", meta, Column("subject_id"), Column("row_id"), Column("admittime")),
     "prescriptions": Table("prescriptions", meta, Column("row_id")),
 }
 

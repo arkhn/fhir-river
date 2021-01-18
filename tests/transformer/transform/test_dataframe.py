@@ -1,13 +1,12 @@
-from unittest import mock, TestCase
+from unittest import TestCase, mock
 
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript
 from common.analyzer.concept_map import ConceptMap
-from common.analyzer.condition import Condition, CONDITION_FLAG
+from common.analyzer.condition import CONDITION_FLAG, Condition
 from common.analyzer.input_group import InputGroup
 from common.analyzer.merging_script import MergingScript
 from common.analyzer.sql_column import SqlColumn
-
 from transformer.transform import dataframe
 
 
@@ -184,7 +183,9 @@ def test_merge_by_attributes(_):
 
     attr_admid = Attribute("admid")
     group = InputGroup(
-        id_="id_admid", attribute=attr_admid, columns=[SqlColumn("ADMISSIONS", "ID")],
+        id_="id_admid",
+        attribute=attr_admid,
+        columns=[SqlColumn("ADMISSIONS", "ID")],
     )
     attr_admid.add_input_group(group)
 

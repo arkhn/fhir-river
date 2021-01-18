@@ -1,6 +1,7 @@
-from django.urls import reverse
+# flake8: noqa
 from rest_framework.test import APIClient
 
+from django.urls import reverse
 
 # TODO(vmttn): find actual data to use for these tests
 

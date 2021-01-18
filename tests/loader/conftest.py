@@ -53,7 +53,10 @@ def patient_code_identifier():
                         "value": "654",
                         "type": {
                             "coding": [
-                                {"code": "code_456", "system": "fhir_code_system_organization"}
+                                {
+                                    "code": "code_456",
+                                    "system": "fhir_code_system_organization",
+                                }
                             ]
                         },
                     },
@@ -66,7 +69,12 @@ def patient_code_identifier():
                 "identifier": {
                     "value": "222",
                     "type": {
-                        "coding": [{"code": "code_123", "system": "fhir_code_system_practitioner"}]
+                        "coding": [
+                            {
+                                "code": "code_123",
+                                "system": "fhir_code_system_practitioner",
+                            }
+                        ]
                     },
                 },
             }
@@ -75,9 +83,7 @@ def patient_code_identifier():
             "type": "Organization",
             "identifier": {
                 "value": "333",
-                "type": {
-                    "coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]
-                },
+                "type": {"coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]},
             },
         },
     }
@@ -89,12 +95,13 @@ def test_practitioner():
         "id": "practitioner1",
         "resourceType": "Practitioner",
         "identifier": [
-            {"system": "http://terminology.arkhn.org/mimic_id/practitioner_id", "value": "123"},
+            {
+                "system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                "value": "123",
+            },
             {
                 "value": "222",
-                "type": {
-                    "coding": [{"code": "code_123", "system": "fhir_code_system_practitioner"}]
-                },
+                "type": {"coding": [{"code": "code_123", "system": "fhir_code_system_practitioner"}]},
             },
         ],
     }
@@ -106,19 +113,21 @@ def test_organization():
         "id": "organization1",
         "resourceType": "Organization",
         "identifier": [
-            {"system": "http://terminology.arkhn.org/mimic_id/organization_id", "value": "456"},
-            {"system": "http://terminology.arkhn.org/mimic_id/organization_id", "value": "789"},
+            {
+                "system": "http://terminology.arkhn.org/mimic_id/organization_id",
+                "value": "456",
+            },
+            {
+                "system": "http://terminology.arkhn.org/mimic_id/organization_id",
+                "value": "789",
+            },
             {
                 "value": "654",
-                "type": {
-                    "coding": [{"code": "code_456", "system": "fhir_code_system_organization"}]
-                },
+                "type": {"coding": [{"code": "code_456", "system": "fhir_code_system_organization"}]},
             },
             {
                 "value": "333",
-                "type": {
-                    "coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]
-                },
+                "type": {"coding": [{"code": "code_789", "system": "fhir_code_system_organization"}]},
             },
         ],
     }
@@ -131,7 +140,10 @@ def test_reference_response():
         "resourceType": "ReferenceResponse",
         "response": {
             "type": "QuestionnaireResponse",
-            "identifier": {"value": "qresp", "system": "http://terminology.arkhn.org/identifier"},
+            "identifier": {
+                "value": "qresp",
+                "system": "http://terminology.arkhn.org/identifier",
+            },
         },
     }
 
@@ -141,5 +153,8 @@ def test_questionnaire_response():
     return {
         "id": "3141",
         "resourceType": "QuestionnaireResponse",
-        "identifier": {"system": "http://terminology.arkhn.org/identifier", "value": "qresp"},
+        "identifier": {
+            "system": "http://terminology.arkhn.org/identifier",
+            "value": "qresp",
+        },
     }

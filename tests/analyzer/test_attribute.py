@@ -15,7 +15,7 @@ def test_cast_type_string():
 def test_cast_type_no_scientific_notation():
     attr_int = Attribute("code", definition_id="code")
     group = InputGroup(id_="id", attribute=attr_int)
-    group.add_static_input(100.)
+    group.add_static_input(100.0)
 
     assert group.static_inputs == ["100"]
 

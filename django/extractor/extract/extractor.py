@@ -1,22 +1,14 @@
 import logging
 from collections import defaultdict
-from prometheus_client import Counter as PromCounter
-from sqlalchemy import (
-    create_engine,
-    MetaData,
-)
-from sqlalchemy.orm import (
-    sessionmaker,
-    Query,
-)
-from typing import List, Any, Optional
+from typing import Any, List, Optional
 
+from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
 from extractor.errors import EmptyResult
 from extractor.extract.query_builder import QueryBuilder
-
-from arkhn_monitoring import Timer
-
+from prometheus_client import Counter as PromCounter
+from sqlalchemy import MetaData, create_engine
+from sqlalchemy.orm import Query, sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +76,7 @@ class Extractor:
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
-        """ Main method of the Extractor class.
+        """Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
         source DB, run it and returns the result as an sqlalchemy ResultProxy.
 
@@ -94,12 +86,11 @@ class Extractor:
                 the primary key values are in pk_values.
 
         Returns:
-            a an sqlalchemy RestulProxy containing all the columns asked for in the mapping
+            a an sqlalchemy RestulProxy containing all the columns asked for in the
+            mapping
         """
         if self.session is None:
-            raise ValueError(
-                "You need to create a session for the Extractor before using extract()."
-            )
+            raise ValueError("You need to create a session for the Extractor before using extract().")
 
         logger.info(
             {
@@ -110,7 +101,10 @@ class Extractor:
 
         # Build sqlalchemy query
         builder = QueryBuilder(
-            session=self.session, metadata=self.metadata, analysis=analysis, pk_values=pk_values
+            session=self.session,
+            metadata=self.metadata,
+            analysis=analysis,
+            pk_values=pk_values,
         )
         query = builder.build_query()
 
@@ -123,7 +117,8 @@ class Extractor:
 
         args:
             query (str): a sql query to run
-            resource_id (str, optional): the id of the resource being processed, for logging
+            resource_id (str, optional): the id of the resource being processed, for
+            logging
 
         return:
             the result of the sql query
@@ -154,15 +149,16 @@ class Extractor:
         prev_pk_val = None
         acc = defaultdict(list)
         for row in df:
-            # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy results)
-            # that behaves like tuples and have a `keys` methods returning the
+            # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy
+            # results) that behaves like tuples and have a `keys` methods returning the
             # column names in the same order as they are in the tuple.
             # For instance a row could look like: ("bob", 34)
             # and its `keys` method could return: ["name", "age"]
             pk_ind = row.keys().index(pk_col)
             if acc and row[pk_ind] != prev_pk_val:
                 counter_extract_instances.labels(
-                    resource_id=analysis.resource_id, resource_type=analysis.definition_id
+                    resource_id=analysis.resource_id,
+                    resource_type=analysis.definition_id,
                 ).inc()
                 yield acc
                 acc = defaultdict(list)
@@ -177,7 +173,5 @@ class Extractor:
                 "is erroneous."
             )
 
-        counter_extract_instances.labels(
-            resource_id=analysis.resource_id, resource_type=analysis.definition_id
-        ).inc()
+        counter_extract_instances.labels(resource_id=analysis.resource_id, resource_type=analysis.definition_id).inc()
         yield acc

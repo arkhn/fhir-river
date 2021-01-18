@@ -1,7 +1,8 @@
-from unittest import mock
 import json
-from loader.reference_binder import ReferenceBinder
+from unittest import mock
+
 import fakeredis
+from loader.reference_binder import ReferenceBinder
 
 
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
@@ -17,7 +18,8 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
     ]
 
     res = ref_binder.resolve_references(
-        patient, ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
+        patient,
+        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
     )
 
     assert store.db["any"].find_one.call_count == 3
@@ -62,7 +64,8 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
-        patient, ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
+        patient,
+        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
     )
 
     # references must not have been resolved
@@ -91,9 +94,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
 
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
-def test_resolve_pending_references(
-    mock_fhirstore, mock_redis, patient, test_organization, test_practitioner
-):
+def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_organization, test_practitioner):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     r = fakeredis.FakeStrictRedis()
@@ -104,7 +105,8 @@ def test_resolve_pending_references(
     store.db["any"].find_one.side_effect = [None, None, None]
 
     ref_binder.resolve_references(
-        patient, ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
+        patient,
+        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
     )
 
     ref_binder.resolve_references(test_practitioner, [])
@@ -123,7 +125,8 @@ def test_resolve_pending_references(
                         }
                     },
                 },
-                # generalPractitioner is an array, therefore we use $ to update the right item
+                # generalPractitioner is an array, therefore we use $ to update the
+                # right item
                 {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
             )
         ]
@@ -155,7 +158,10 @@ def test_resolve_pending_references(
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references_single_identifier(
-    mock_fhirstore, mock_redis, test_reference_response, test_questionnaire_response,
+    mock_fhirstore,
+    mock_redis,
+    test_reference_response,
+    test_questionnaire_response,
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -168,7 +174,8 @@ def test_resolve_pending_references_single_identifier(
     store.db["any"].find_one.side_effect = [None]
 
     ref_binder.resolve_references(
-        test_reference_response, ["response"],
+        test_reference_response,
+        ["response"],
     )
     ref_binder.resolve_references(test_questionnaire_response, [])
 
@@ -188,11 +195,10 @@ def test_resolve_pending_references_single_identifier(
     assert ref_binder.cache.delete.called
     assert r.dbsize() == 0
 
+
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
-def test_resolve_batch_references(
-    mock_fhirstore, mock_redis, patient, test_organization, test_practitioner
-):
+def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_organization, test_practitioner):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
     r = fakeredis.FakeStrictRedis()
@@ -252,7 +258,8 @@ def test_resolve_batch_references(
                     }
                 },
             },
-            # generalPractitioner is an array, therefore we use $ to update the right item
+            # generalPractitioner is an array, therefore we use $ to update the right
+            # item
             {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
         )
     except AssertionError:

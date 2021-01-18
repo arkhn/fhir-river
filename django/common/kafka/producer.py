@@ -1,8 +1,10 @@
-import json
 import datetime
 import decimal
+import json
 import logging
-from confluent_kafka import Producer as KafkaProducer, KafkaError, KafkaException
+
+from confluent_kafka import KafkaError, KafkaException
+from confluent_kafka import Producer as KafkaProducer
 
 logger = logging.getLogger("kafka.producer")
 
@@ -28,9 +30,7 @@ class Producer:
             Default logs the error or success
         """
         self.broker = broker
-        self.callback_function = (
-            callback_function if callback_function else self.callback_fn
-        )
+        self.callback_function = callback_function if callback_function else self.callback_fn
 
         self.producer = KafkaProducer(self._generate_config())
 
@@ -59,9 +59,7 @@ class Producer:
             self.producer.produce(
                 topic=topic,
                 value=CustomJSONEncoder().encode(event),
-                callback=lambda err, msg, obj=event: self.callback_function(
-                    err, msg, obj
-                ),
+                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
             )
             self.producer.poll(1)  # Callback function
         except ValueError as err:
@@ -80,8 +78,6 @@ class Producer:
         This allows the original contents to be included for debugging purposes.
         """
         if err is not None:
-            logger.debug(
-                f"Message {obj} delivery failed with error {err} for topic {msg.topic()}"
-            )
+            logger.debug(f"Message {obj} delivery failed with error {err} for topic {msg.topic()}")
         else:
             logger.debug("Event Successfully created")

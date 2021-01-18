@@ -1,6 +1,5 @@
 from django.conf import settings
 
-
 # Set default configuration for loader
 
 

@@ -37,8 +37,7 @@ class InputGroup:
 
     def __str__(self):
         return (
-            f"columns: {self.columns}, static_inputs: {self.static_inputs}, "
-            f"merging_script: {self.merging_script}"
+            f"columns: {self.columns}, static_inputs: {self.static_inputs}, " f"merging_script: {self.merging_script}"
         )
 
     def __eq__(self, other):

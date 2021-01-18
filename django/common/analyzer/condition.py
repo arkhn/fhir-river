@@ -1,10 +1,8 @@
+from datetime import datetime
 from typing import Dict, List, NewType, Tuple, Union
 
-from datetime import datetime
-
-from common.analyzer.sql_column import SqlColumn
 from common.analyzer.errors import OperationOutcome
-
+from common.analyzer.sql_column import SqlColumn
 
 CONDITION_FLAG = "__condition__"
 
@@ -51,17 +49,14 @@ class Condition:
         # data_value is an array, all of its values should be similar
         if not all(el == data_value[0] for el in data_value[1:]):
             raise ValueError(
-                "Conditions can only be checked against arrays with identical values, "
-                f"got {data_value}."
+                "Conditions can only be checked against arrays with identical values, " f"got {data_value}."
             )
         data_value = data_value[0]
 
         try:
             cast_value = self.cast_value_type(data_value)
         except Exception as e:
-            raise OperationOutcome(
-                f"Could not cast condition value ({self.value}) to type {type(data_value)}: {e}"
-            )
+            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(data_value)}: {e}")
 
         # We first check if the relation between the condition's value and
         # the value fetched from the DB holds.
@@ -69,8 +64,8 @@ class Condition:
 
         # Then, to know if we need to include the input group or not, we need to XOR
         # is_relation_true with self.action == "EXCLUDE".
-        # For instance, if the relation holds but the action is "EXCLUDE", we want to return
-        # False (and to exclude the input group from the attribute).
+        # For instance, if the relation holds but the action is "EXCLUDE", we want to
+        # return False (and to exclude the input group from the attribute).
         return (self.action == "EXCLUDE") ^ is_relation_true
 
     def cast_value_type(self, data_value):

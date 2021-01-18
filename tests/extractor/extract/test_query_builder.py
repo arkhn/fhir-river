@@ -1,9 +1,3 @@
-from sqlalchemy import (
-    Column,
-    MetaData,
-    Table,
-)
-from sqlalchemy.orm.query import Query
 from unittest import mock
 
 from common.analyzer.analysis import Analysis
@@ -13,15 +7,14 @@ from common.analyzer.input_group import InputGroup
 from common.analyzer.sql_column import SqlColumn
 from common.analyzer.sql_filter import SqlFilter
 from common.analyzer.sql_join import SqlJoin
-
 from extractor.extract import Extractor
 from extractor.extract.query_builder import QueryBuilder
+from sqlalchemy import Column, MetaData, Table
+from sqlalchemy.orm.query import Query
 
 meta = MetaData()
 tables = {
-    "patients": Table(
-        "patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id")
-    ),
+    "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id")),
     "admissions": Table(
         "admissions",
         meta,
@@ -152,7 +145,8 @@ def test_2hop_joins(mock_sha1):
             None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "row_id", None), SqlColumn("join_table", "pat_id", None),
+                    SqlColumn("patients", "row_id", None),
+                    SqlColumn("join_table", "pat_id", None),
                 ),
                 SqlJoin(
                     SqlColumn("join_table", "adm_id", None),
@@ -228,7 +222,8 @@ def test_duplicated_joins(mock_sha1):
             None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "row_id", None), SqlColumn("admissions", "row_id", None),
+                    SqlColumn("patients", "row_id", None),
+                    SqlColumn("admissions", "row_id", None),
                 ),
             ],
         )
@@ -322,7 +317,8 @@ def test_filters_with_joins(mock_sha1):
                 "admittime",
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")
+                        SqlColumn("patients", "subject_id"),
+                        SqlColumn("admissions", "subject_id"),
                     )
                 ],
             ),
@@ -360,7 +356,10 @@ def test_conditions_with_joins(mock_sha1):
             "admissions",
             "admittime",
             joins=[
-                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+                SqlJoin(
+                    SqlColumn("patients", "subject_id"),
+                    SqlColumn("admissions", "subject_id"),
+                )
             ],
         ),
         relation="EQ",

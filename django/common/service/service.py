@@ -1,11 +1,9 @@
 import logging
 
-from confluent_kafka.error import ConsumeError
-
 from common.kafka.consumer import Consumer
 from common.service.event import Event
 from common.service.handler import Handler
-
+from confluent_kafka.error import ConsumeError
 
 event_logger = logging.getLogger("river.event")
 
@@ -30,6 +28,6 @@ class Service:
 
                 try:
                     self.handler(event)
-                except Exception as err:
+                except Exception:
                     event_logger.exception("Failed to process event")
                     continue

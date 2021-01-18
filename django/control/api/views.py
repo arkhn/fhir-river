@@ -2,17 +2,16 @@ import logging
 
 from rest_framework import status, views
 from rest_framework.response import Response
-from pydantic import ValidationError
 
 from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
 
 from common.analyzer import Analyzer
+from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
+from pydantic import ValidationError
 from transformer.transform.transformer import Transformer
-
-from control.api.serializers import PreviewSerializer
 
 logger = logging.getLogger(__name__)
 

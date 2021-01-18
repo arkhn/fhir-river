@@ -1,5 +1,5 @@
 from common.analyzer.attribute import Attribute
-from common.analyzer.condition import Condition, CONDITION_FLAG
+from common.analyzer.condition import CONDITION_FLAG, Condition
 from common.analyzer.input_group import InputGroup
 from common.analyzer.sql_column import SqlColumn
 

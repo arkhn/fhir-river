@@ -3,22 +3,19 @@ import logging
 from django.conf import settings
 
 import redis
-
-from common.service.service import Service
-from common.service.event import Event
-from common.service.handler import Handler
+from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.analyzer import Analyzer
-
+from common.service.event import Event
+from common.service.handler import Handler
+from common.service.service import Service
 from loader.conf import conf
 from loader.load import Loader
-from loader.reference_binder import ReferenceBinder
 from loader.load.fhirstore import get_fhirstore
+from loader.reference_binder import ReferenceBinder
+from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
-
-from pymongo.errors import DuplicateKeyError
 
 
 def load(
@@ -41,22 +38,16 @@ def load(
             "resource_id": resource_id,
         },
     )
-    resolved_fhir_instance = binder.resolve_references(
-        fhir_object, analysis.reference_paths
-    )
+    resolved_fhir_instance = binder.resolve_references(fhir_object, analysis.reference_paths)
 
     try:
-        logger.debug(
-            {"message": "Writing document to mongo", "resource_id": resource_id}
-        )
+        logger.debug({"message": "Writing document to mongo", "resource_id": resource_id})
         loader.load(
             resolved_fhir_instance,
             resource_type=resolved_fhir_instance["resourceType"],
         )
         # Increment loaded resources counter in Redis
-        counter_redis.hincrby(
-            f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1
-        )
+        counter_redis.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
         producer.produce_event(
             topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
             event={"batch_id": batch_id},

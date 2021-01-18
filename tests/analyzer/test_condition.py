@@ -1,16 +1,8 @@
 import pytest
-
-from common.analyzer.condition import (
-    Condition,
-    CONDITION_FLAG,
-    CONDITION_RELATION_TO_FUNCTION,
-    UNARY_RELATIONS,
-)
+from common.analyzer.condition import CONDITION_FLAG, CONDITION_RELATION_TO_FUNCTION, UNARY_RELATIONS, Condition
 from common.analyzer.sql_column import SqlColumn
 
-BINARY_RELATIONS = [
-    rel for rel in CONDITION_RELATION_TO_FUNCTION.keys() if rel not in UNARY_RELATIONS
-]
+BINARY_RELATIONS = [rel for rel in CONDITION_RELATION_TO_FUNCTION.keys() if rel not in UNARY_RELATIONS]
 
 
 def test_check():

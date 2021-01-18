@@ -1,20 +1,17 @@
 import logging
-from typing import List, Optional
 
 from django.conf import settings
 
 import redis
-
-from common.service.service import Service
-from common.service.event import Event
-from common.service.handler import Handler
+from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.analyzer import Analyzer
-
+from common.service.event import Event
+from common.service.handler import Handler
+from common.service.service import Service
 from extractor.conf import conf
+from extractor.errors import EmptyResult
 from extractor.extract import Extractor
-from extractor.errors import MissingInformationError, EmptyResult
 
 logger = logging.getLogger(__name__)
 
@@ -41,19 +38,13 @@ def broadcast_events(
             event["resource_type"] = resource_type
             event["resource_id"] = resource_id
             event["record"] = record
-            producer.produce_event(
-                topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event
-            )
+            producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
     except EmptyResult as e:
-        logger.warn(
-            {"message": str(e), "resource_id": resource_id, "batch_id": batch_id}
-        )
+        logger.warn({"message": str(e), "resource_id": resource_id, "batch_id": batch_id})
     # Initialize a batch counter in Redis. For each resource_id, it records
     # the number of produced records
-    counter_client.hset(
-        f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count
-    )
+    counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
     logger.info(
         {
             "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
@@ -85,9 +76,7 @@ class ExtractHandler(Handler):
         self.extractor.update_connection(credentials)
         query = self.extractor.extract(analysis, primary_key_values)
 
-        broadcast_events(
-            query, analysis, self.producer, self.extractor, self.counter_redis, batch_id
-        )
+        broadcast_events(query, analysis, self.producer, self.extractor, self.counter_redis, batch_id)
 
 
 class ExtractorService(Service):

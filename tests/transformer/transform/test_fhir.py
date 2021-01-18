@@ -1,10 +1,10 @@
 from unittest import mock
-from pytest import raises
 
 from fhirstore import ARKHN_CODE_SYSTEMS
 
-from transformer.transform import fhir
 from common.analyzer.attribute import Attribute
+from pytest import raises
+from transformer.transform import fhir
 
 
 class mockdatetime:
@@ -53,7 +53,11 @@ def test_build_metadata(mock_datetime):
     analysis = mock.MagicMock()
     analysis.source_id = "sourceId"
     analysis.resource_id = "resourceId"
-    analysis.definition = {"kind": "resource", "derivation": "specialization", "url": "u/r/l"}
+    analysis.definition = {
+        "kind": "resource",
+        "derivation": "specialization",
+        "url": "u/r/l",
+    }
 
     metadata = fhir.build_metadata(analysis)
     assert metadata == {
@@ -64,7 +68,11 @@ def test_build_metadata(mock_datetime):
         ],
     }
 
-    analysis.definition = {"kind": "resource", "derivation": "constraint", "url": "u/r/l"}
+    analysis.definition = {
+        "kind": "resource",
+        "derivation": "constraint",
+        "url": "u/r/l",
+    }
 
     metadata = fhir.build_metadata(analysis)
     assert metadata == {
@@ -111,7 +119,11 @@ def test_array_of_literals():
     attr_1 = Attribute("name[0].given[1]")
     attr_2 = Attribute("other_attr")
 
-    path_attributes_map = {attr_0.path: attr_0, attr_1.path: attr_1, attr_2.path: attr_2}
+    path_attributes_map = {
+        attr_0.path: attr_0,
+        attr_1.path: attr_1,
+        attr_2.path: attr_2,
+    }
 
     row = {
         attr_0.path: ("Bob",),

@@ -1,9 +1,9 @@
 import json
+import logging
 import os
 import re
-import redis
-import logging
 
+import redis
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -21,8 +21,10 @@ FHIR_API_URL = os.getenv("FHIR_API_URL")
 
 logger = logging.getLogger(__name__)
 
+
 class MappingUnavailable(Exception):
     pass
+
 
 class Analyzer:
     def __init__(self, redis_client: redis.Redis = None):
@@ -112,12 +114,14 @@ class Analyzer:
             },
         )
         attribute = Attribute(
-            path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"]
+            path=attribute_mapping["path"],
+            definition_id=attribute_mapping["definitionId"],
         )
         if not attribute_mapping["inputGroups"]:
-            # If there are no input groups for this attribute, it means that it is an intermediary
-            # attribute (ie not a leaf). It is here to give us some context information.
-            # For instance, we can use it if its children attributes represent a Reference.
+            # If there are no input groups for this attribute, it means that it is an
+            # intermediary attribute (ie not a leaf). It is here to give us some context
+            # information. For instance, we can use it if its children attributes
+            # represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
                 logger.debug(
                     {
@@ -190,8 +194,7 @@ class Analyzer:
         return input_group
 
     def get_primary_key(self, resource_mapping):
-        """ Get the primary key table and column of the provided resource.
-        """
+        """Get the primary key table and column of the provided resource."""
         if not resource_mapping["primaryKeyTable"] or not resource_mapping["primaryKeyColumn"]:
             raise ValueError(
                 "You need to provide a primary key table and column in the mapping for "

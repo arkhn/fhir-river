@@ -1,8 +1,8 @@
-from pymongo import MongoClient
+from django.conf import settings
 
 import fhirstore
 
-from django.conf import settings
+from pymongo import MongoClient
 
 
 def get_fhirstore():
@@ -12,7 +12,5 @@ def get_fhirstore():
         username=settings.FHIRSTORE_USER,
         password=settings.FHIRSTORE_PASSWORD,
     )
-    fhirstore_client = fhirstore.FHIRStore(
-        mongo_client, None, settings.FHIRSTORE_DATABASE
-    )
+    fhirstore_client = fhirstore.FHIRStore(mongo_client, None, settings.FHIRSTORE_DATABASE)
     return fhirstore_client

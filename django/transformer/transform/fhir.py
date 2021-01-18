@@ -1,6 +1,6 @@
+import re
 from collections import defaultdict
 from datetime import datetime
-import re
 
 
 def recursive_defaultdict():
@@ -17,7 +17,10 @@ def build_metadata(analysis):
     # TODO systems here are hardcoded from fhirstore.
     # Maybe the loader should tag the items?
     metadata["tag"] = [
-        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis.source_id},
+        {
+            "system": "http://terminology.arkhn.org/CodeSystem/source",
+            "code": analysis.source_id,
+        },
         {
             "system": "http://terminology.arkhn.org/CodeSystem/resource",
             "code": analysis.resource_id,
@@ -33,8 +36,8 @@ def build_metadata(analysis):
 
 
 def build_fhir_object(row, path_attributes_map, index=None):
-    """ Function that actually builds a nested object from the dataframe row and the mapping.
-    Note that it can be used to build only a subpart of a fhir instance.
+    """Function that actually builds a nested object from the dataframe row and the
+    mapping. Note that it can be used to build only a subpart of a fhir instance.
     """
     fhir_object = recursive_defaultdict()
     arrays_done = set()
@@ -61,8 +64,8 @@ def build_fhir_object(row, path_attributes_map, index=None):
             val = row[attr.path]
 
             if isinstance(val, (tuple, list)) and len(val) == 1:
-                # If we have a value with length 1, we simply extract the value and put it in
-                # the fhir object
+                # If we have a value with length 1, we simply extract the value and put
+                # it in the fhir object
                 insert_in_fhir_object(fhir_object, path, val[0])
             elif isinstance(val, (tuple, list)) and index is not None:
                 # If index is not None, we met an array before. Here, val will have
@@ -70,8 +73,8 @@ def build_fhir_object(row, path_attributes_map, index=None):
                 insert_in_fhir_object(fhir_object, path, val[index])
             else:
                 # Otherwise, we try to send it all to insert_in_fhir_object.
-                # We could have a literal value or an iterable but in this case, this function
-                # will check that all the values in the iterable are equal.
+                # We could have a literal value or an iterable but in this case, this
+                # function will check that all the values in the iterable are equal.
                 insert_in_fhir_object(fhir_object, path, val)
 
         else:
@@ -99,12 +102,27 @@ def build_fhir_object(row, path_attributes_map, index=None):
 
 def handle_array_attributes(attributes_in_array, row):
     # Check lengths
-    # We check that all the values with more than one element that we will put in the array
-    # have the same length. We could not, for instance, build an object from
+    # We check that all the values with more than one element that we will put in the
+    # array have the same length. We could not, for instance, build an object from
     # {"adress.city": ("Paris", "NY"), "adress.country": ("France", "USA", "Spain")}
     # Note that if one value has length 1, we can "factor" it:
-    # {"adress.city": ("Paris", "Lyon"), "adress.country": "France"} will give 2 elements:
-    # {"adress": [{"city": "Paris", "country": "France"}, {"city": "Lyon", "country": "France"}]}
+    # {
+    #    "adress.city" : ("Paris", "Lyon"),
+    #    "adress.country" : "France"
+    # }
+    # will give 2 elements:
+    # {
+    #    "adress" : [
+    #       {
+    #          "city" : "Paris",
+    #          "country" : "France"
+    #       },
+    #       {
+    #          "city" : "Lyon",
+    #          "country" : "France"
+    #       }
+    #    ]
+    # }
     length = 1
     for attr in attributes_in_array.values():
         val = row.get(attr.path)
@@ -128,17 +146,16 @@ def insert_in_fhir_object(fhir_object, path, value):
     if isinstance(value, tuple):
         # If we try to insert a tuple in the fhir object, we need to make sure that all
         # the values are identical and insert only one of them.
-        # This can happen after a join on a table for which the other values are different
-        # and have been squashed.
+        # This can happen after a join on a table for which the other values are
+        # different and have been squashed.
         if any([v != value[0] for v in value]):
             raise ValueError(
-                "Trying to insert several different values in a non-list attribute: "
-                f"{value} in {path}"
+                "Trying to insert several different values in a non-list attribute: " f"{value} in {path}"
             )
         val = value[0]
     # We return if value is "" because empty strings don't pass validation for some fhir
-    # attributes but it would be better to return None in the cleaning scripts if we don't want to
-    # add an empty string.
+    # attributes but it would be better to return None in the cleaning scripts if we
+    # don't want to add an empty string.
     else:
         val = value
 

@@ -1,12 +1,12 @@
-from typing import List
 from collections import defaultdict
+from typing import List
 
 from common.analyzer.attribute import Attribute
 from common.analyzer.condition import CONDITION_FLAG
 
 
 def clean_data(data, attributes: List[Attribute], primary_key):
-    """ Apply cleaning scripts and concept maps.
+    """Apply cleaning scripts and concept maps.
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
     {
@@ -36,9 +36,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                     )
 
                 # Cast the data to the right type
-                cleaned_data[attr_col_name] = [
-                    attribute.cast_type(row) for row in cleaned_data[attr_col_name]
-                ]
+                cleaned_data[attr_col_name] = [attribute.cast_type(row) for row in cleaned_data[attr_col_name]]
 
                 # Apply concept map
                 if col.concept_map:
@@ -85,9 +83,9 @@ def squash_rows(data, squash_rules, parent_cols=[]):
         Squash rule: ['GUY', ['ACCOUNT', []]
 
         Output:
-        GUY.NAME    ...     GUY.AGE   ACCOUNT.NAME                        ACCOUNT.AMOUNT
-        Robert              21        (Compte courant, Compte d'epargne)  (17654, 123456789)
-        David               51        Ibiza summer                        100
+        GUY.NAME  ...  GUY.AGE   ACCOUNT.NAME                        ACCOUNT.AMOUNT
+        Robert         21        (Compte courant, Compte d'epargne)  (17654, 123456789)
+        David          51        Ibiza summer                        100
     """
     table, child_rules = squash_rules
 
@@ -132,37 +130,37 @@ def squash_rows(data, squash_rules, parent_cols=[]):
 
 
 def merge_by_attributes(
-    data, attributes: List[Attribute], primary_key,
+    data,
+    attributes: List[Attribute],
+    primary_key,
 ):
-    """ Apply merging scripts.
-    Takes as input a dict of the form
-
-   {
-        (input_group1.id, (table1, column1)): val,
-        (input_group1.id, (table2, column2)): val,
-        (input_group2.id, (table3, column3)): val,
-        (CONDITION_FLAG, (table4, column4)): val,
-        ...
-    }
-
-    and outputs
+    """Apply merging scripts.
+     Takes as input a dict of the form
 
     {
-        attribute1.path: val,
-        attribute2.path: val,
-        ...
-    }
+         (input_group1.id, (table1, column1)): val,
+         (input_group1.id, (table2, column2)): val,
+         (input_group2.id, (table3, column3)): val,
+         (CONDITION_FLAG, (table4, column4)): val,
+         ...
+     }
 
-    where values are merged with the mergig scripts.
+     and outputs
+
+     {
+         attribute1.path: val,
+         attribute2.path: val,
+         ...
+     }
+
+     where values are merged with the mergig scripts.
     """
     merged_data = {}
     for attribute in attributes:
         for input_group in attribute.input_groups:
             # Check conditions
             if input_group.check_conditions(data):
-                cur_attr_columns = [
-                    value for key, value in data.items() if key[0] == input_group.id
-                ]
+                cur_attr_columns = [value for key, value in data.items() if key[0] == input_group.id]
 
                 if not cur_attr_columns:
                     if input_group.static_inputs:
@@ -175,10 +173,10 @@ def merge_by_attributes(
                             )
                         merged_data[attribute.path] = input_group.static_inputs[0]
                 elif input_group.merging_script:
-                    # TODO I don't think the order of pyrog inputs is preserved for merging scripts
-                    # When trying to merge several columns that each contain multiple values
-                    # (represented as a list), we want to merge corresponding items together
-                    # (first with first, etc.) as follows:
+                    # TODO I don't think the order of pyrog inputs is preserved for
+                    # merging scripts. When trying to merge several columns that each
+                    # contain multiple values (represented as a list), we want to merge
+                    # corresponding items together (first with first, etc.) as follows:
                     # col1: [a1, a2, a3]
                     #        |   |   |
                     # col2: [b1, b2, b3]
@@ -197,10 +195,7 @@ def merge_by_attributes(
                         for i in range(col_len)
                     )
                 elif len(cur_attr_columns) != 1:
-                    raise ValueError(
-                        "The mapping contains several unmerged columns "
-                        f"for attribute {attribute}"
-                    )
+                    raise ValueError("The mapping contains several unmerged columns " f"for attribute {attribute}")
                 else:
                     merged_data[attribute.path] = tuple(cur_attr_columns[0])
 

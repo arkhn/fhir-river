@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+
 from pytest import fixture
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"

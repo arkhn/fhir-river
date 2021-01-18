@@ -1,7 +1,7 @@
 import json
-import pytest
 from unittest import mock
 
+import pytest
 from common.analyzer import Analyzer
 from common.analyzer.attribute import Attribute
 from common.analyzer.condition import Condition
@@ -73,7 +73,8 @@ def test_get_primary_key():
         "definitionId": "fhirtype",
     }
     with pytest.raises(
-        ValueError, match="You need to provide a primary key table and column in the mapping"
+        ValueError,
+        match="You need to provide a primary key table and column in the mapping",
     ):
         analyzer.get_primary_key(resource_mapping)
 
@@ -96,21 +97,30 @@ def test_analyze_mapping(patient_mapping):
             "admissions",
             "admittime",
             joins=[
-                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+                SqlJoin(
+                    SqlColumn("patients", "subject_id"),
+                    SqlColumn("admissions", "subject_id"),
+                )
             ],
         ),
         SqlColumn(
             "admissions",
             "marital_status",
             joins=[
-                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+                SqlJoin(
+                    SqlColumn("patients", "subject_id"),
+                    SqlColumn("admissions", "subject_id"),
+                )
             ],
         ),
         SqlColumn(
             "admissions",
             "language",
             joins=[
-                SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))
+                SqlJoin(
+                    SqlColumn("patients", "subject_id"),
+                    SqlColumn("admissions", "subject_id"),
+                )
             ],
         ),
     }
@@ -121,7 +131,8 @@ def test_analyze_mapping(patient_mapping):
                 "adm_date",
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")
+                        SqlColumn("patients", "subject_id"),
+                        SqlColumn("admissions", "subject_id"),
                     )
                 ],
             ),
@@ -265,7 +276,8 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                             SqlColumn("join_table", "subject_id"),
                         ),
                         SqlJoin(
-                            SqlColumn("join_table", "adm_id"), SqlColumn("admissions", "adm_id"),
+                            SqlColumn("join_table", "adm_id"),
+                            SqlColumn("admissions", "adm_id"),
                         ),
                     ],
                 ),
@@ -279,7 +291,8 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                 "gender",
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")
+                        SqlColumn("patients", "subject_id"),
+                        SqlColumn("admissions", "subject_id"),
                     )
                 ],
             )

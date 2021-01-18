@@ -3,17 +3,13 @@ from uuid import uuid4
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
-
-from transformer.transform.dataframe import clean_data
-from transformer.transform.dataframe import squash_rows
-from transformer.transform.dataframe import merge_by_attributes
-from transformer.transform.fhir import build_fhir_object
-from transformer.transform.fhir import build_metadata
+from transformer.transform.dataframe import clean_data, merge_by_attributes, squash_rows
+from transformer.transform.fhir import build_fhir_object, build_metadata
 
 logger = logging.getLogger(__name__)
 
-class Transformer:
 
+class Transformer:
     @Timer(
         "time_transformer_transform_data",
         "time to perform transform_data method of Transformer",
@@ -57,8 +53,7 @@ class Transformer:
         buckets=FAST_FN_BUCKETS,
     )
     def create_fhir_document(self, data, analysis):
-        """ Function used to create a single FHIR instance.
-        """
+        """Function used to create a single FHIR instance."""
         # Modify the data structure so that it is easier to use
         path_attributes_map = {attr.path: attr for attr in analysis.attributes}
 

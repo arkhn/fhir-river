@@ -5,6 +5,7 @@ import scripts
 
 logger = logging.getLogger(__name__)
 
+
 class MergingScript:
     def __init__(self, name: str):
         self.name = name
@@ -19,7 +20,6 @@ class MergingScript:
             return self.script(*args)
         except Exception as e:
             logger.exception(
-                f"{self.name}: Error merging columns for attribute at path "
-                f"{attr_path} (at id={primary_key}): {e}"
+                f"{self.name}: Error merging columns for attribute at path " f"{attr_path} (at id={primary_key}): {e}"
             )
             return data_columns
