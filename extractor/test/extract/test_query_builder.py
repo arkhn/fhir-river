@@ -125,12 +125,11 @@ def test_sqlalchemy_query(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "patients.row_id AS patients_row_id_hash, "
-        "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM patients "
-        "LEFT OUTER JOIN admissions AS admissions_1 "
+        "array_agg(patients.row_id) AS patients_row_id_hash, "
+        "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
+        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.patient_id = patients.patient_id \n"
-        "WHERE admissions_1.admittime LIKE :param_1"
+        "WHERE admissions_1.admittime LIKE :param_1 GROUP BY patients.subject_id, patients.row_id"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
@@ -170,10 +169,11 @@ def test_2hop_joins(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "admissions_1.admittime AS admissions_admittime_hash \n"
+        "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
         "FROM patients "
         "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id "
+        "GROUP BY patients.subject_id"
     )
 
 
@@ -244,12 +244,13 @@ def test_duplicated_joins(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "admissions_1.subject_id AS admissions_subject_id_hash, "
-        "admissions_1.row_id AS admissions_row_id_hash, "
-        "admissions_2.admittime AS admissions_admittime_hash \n"
+        "array_agg(admissions_1.subject_id) AS admissions_subject_id_hash, "
+        "array_agg(admissions_1.row_id) AS admissions_row_id_hash, "
+        "array_agg(admissions_2.admittime) AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.subject_id = patients.subject_id "
-        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id"
+        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id "
+        "GROUP BY patients.subject_id"
     )
 
 
@@ -376,8 +377,9 @@ def test_conditions_with_joins(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "patients.row_id AS patients_row_id_hash, "
-        "admissions_1.admittime AS admissions_admittime_hash \n"
+        "array_agg(patients.row_id) AS patients_row_id_hash, "
+        "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.subject_id = patients.subject_id"
+        "ON admissions_1.subject_id = patients.subject_id "
+        "GROUP BY patients.subject_id, patients.row_id"
     )

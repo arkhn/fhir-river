@@ -71,7 +71,7 @@ class QueryBuilder:
         # We don't need to have columns duplicated in the dataframe
         # so we keep the one we've already seen here.
         # Note that the primary key column is added at the query initialization.
-        self._cur_query_columns = {sql_alchemy_pk_column}
+        self._cur_query_columns = {self.analysis.primary_key_column: sql_alchemy_pk_column}
 
         query = self.session.query(sql_alchemy_pk_column)
 
@@ -86,13 +86,14 @@ class QueryBuilder:
         query = self.apply_filters(query)
 
         # Group along primary key table
-        query = query.group_by(
-            *(
-                c
-                for c in self._cur_query_columns
-                if c.table == self.analysis.primary_key_column.table_name
+        if any(k.table != self.analysis.primary_key_column.table for k in self._cur_query_columns):
+            query = query.group_by(
+                *(
+                    c
+                    for k, c in self._cur_query_columns.items()
+                    if k.table == self.analysis.primary_key_column.table
+                )
             )
-        )
 
         logger.info(
             f"Built query for resource {self.analysis.definition_id}: {query.statement}",
@@ -137,19 +138,20 @@ class QueryBuilder:
         """ Helper function to add a column to the sqlalchemy query if it is not already present
         and to add the column to the set of columns already present in the query.
         """
-        sqlalchemy_col = self.get_column(sql_column, sqlalchemy_table)
-
-        if sqlalchemy_col in self._cur_query_columns:
+        if sql_column in self._cur_query_columns:
             return query
 
+        sqlalchemy_col = self.get_column(sql_column, sqlalchemy_table)
+
         # Add the column to the _cur_query_columns attribute
-        self._cur_query_columns.add(sqlalchemy_col)
+        self._cur_query_columns[sql_column] = sqlalchemy_col
 
         # We aggregate the rows from foreign tables in arrays
         return query.add_columns(
             sqlalchemy_col
-            if sql_column.name == self.analysis.primary_key_column.dataframe_column_name()
-            else array_agg(sqlalchemy_col)
+            if sql_column.dataframe_column_name()
+            == self.analysis.primary_key_column.dataframe_column_name()
+            else array_agg(sqlalchemy_col).label(sql_column.dataframe_column_name())
         )
 
     def apply_filters(self, query: Query) -> Query:
