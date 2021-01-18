@@ -35,9 +35,12 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                     )
 
                 # Cast the data to the right type
-                cleaned_data[attr_col_name] = [
-                    attribute.cast_type(row) for row in cleaned_data[attr_col_name]
-                ]
+                if isinstance(cleaned_data[attr_col_name], list):
+                    cleaned_data[attr_col_name] = [
+                        attribute.cast_type(row) for row in cleaned_data[attr_col_name]
+                    ]
+                else:
+                    cleaned_data[attr_col_name] = attribute.cast_type(cleaned_data[attr_col_name])
 
                 # Apply concept map
                 if col.concept_map:
@@ -131,7 +134,11 @@ def merge_by_attributes(
                         f"for attribute {attribute}"
                     )
                 else:
-                    merged_data[attribute.path] = tuple(cur_attr_columns[0])
+                    # cur_attr_columns has a single element
+                    group_input = cur_attr_columns[0]
+                    merged_data[attribute.path] = (
+                        tuple(group_input) if isinstance(group_input, list) else group_input
+                    )
 
                 break
 
