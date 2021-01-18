@@ -12,7 +12,7 @@ from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
 from transformer.transform.transformer import Transformer
 
-from preview.api.serializers import PreviewSerializer
+from control.api.serializers import PreviewSerializer
 
 logger = logging.getLogger(__name__)
 

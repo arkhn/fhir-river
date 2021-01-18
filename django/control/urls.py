@@ -1,7 +1,7 @@
 from django.urls import include, path
 
-from preview.api.router import router
-from preview.api import views
+from control.api.router import router
+from control.api import views
 
 urlpatterns = [
     path("", include(router.urls)),

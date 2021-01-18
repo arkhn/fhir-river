@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "extractor",
     "transformer",
     "loader",
-    "preview",
+    "control",
 ]
 
 MIDDLEWARE = [
