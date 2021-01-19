@@ -40,7 +40,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                         attribute.cast_type(row) for row in cleaned_data[attr_col_name]
                     ]
                 else:
-                    cleaned_data[attr_col_name] = attribute.cast_type(cleaned_data[attr_col_name])
+                    cleaned_data[attr_col_name] = [attribute.cast_type(cleaned_data[attr_col_name])]
 
                 # Apply concept map
                 if col.concept_map:

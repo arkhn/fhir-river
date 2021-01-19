@@ -91,7 +91,7 @@ class QueryBuilder:
                 *(
                     c
                     for k, c in self._cur_query_columns.items()
-                    if k.table == self.analysis.primary_key_column.table
+                    if k.table_name() == self.analysis.primary_key_column.table_name()
                 )
             )
 
