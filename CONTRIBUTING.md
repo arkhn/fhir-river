@@ -81,3 +81,9 @@ Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
 1. Install the hooks
 
     precommit install
+
+### Tests
+
+1. Run tests in dedicated virtual env.
+
+        tox
