@@ -23,15 +23,10 @@ type Request struct {
 }
 
 // transform sends an HTTP request to the transformer service
-// with the extracted rows and returns its response body.
-func transform(resourceID, previewID string, rows []interface{}) (res []byte, err error) {
-	jBody, _ := json.Marshal(map[string]interface{}{
-		"resource_id": resourceID,
-		"preview_id":  previewID,
-		"dataframe":   rows,
-	})
-
-	url := fmt.Sprintf("%s/transform", transformerURL)
+// using the PreviewRequest as JSON body. It returns the extracted rows.
+func preview(previewRequest *Request) (rows []byte, err error) {
+	jBody, _ := json.Marshal(previewRequest)
+	url := fmt.Sprintf("%s/api/preview/", controlURL)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jBody))
 	if err != nil {
@@ -56,46 +51,6 @@ func transform(resourceID, previewID string, rows []interface{}) (res []byte, er
 	}
 
 	return body, nil
-}
-
-// transform sends an HTTP request to the transformer service
-// using the PreviewRequest as JSON body. It returns the extrcted rows.
-func extract(preview *Request) (rows []interface{}, err error) {
-	jBody, _ := json.Marshal(preview)
-	url := fmt.Sprintf("%s/extract", extractorURL)
-
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jBody))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	switch resp.StatusCode {
-	case http.StatusOK:
-		// If everything went well, we go on
-	default:
-		// Return other errors
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
-		}
-		return nil, fmt.Errorf(string(body))
-	}
-
-	body := struct {
-		Rows []interface{}
-	}{}
-	err = json.NewDecoder(resp.Body).Decode(&body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body.Rows, nil
 }
 
 // Run is the HTTP handler for the POST /preview route.
@@ -147,15 +102,7 @@ func Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// extract the rows
-	rows, err := extract(&body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// transform rows
-	res, err := transform(body.ResourceID, body.PreviewID, rows)
+	res, err := preview(&body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

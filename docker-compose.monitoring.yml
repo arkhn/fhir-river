@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+  kafka-jmx-exporter:
+    image: sscaling/jmx-prometheus-exporter
+    ports:
+      - "5556:5556"
+    volumes:
+      - ./monitoring/jmx_exporter.yml:/opt/jmx_exporter/config.yml
+
+  prometheus:
+    image: prom/prometheus:v2.23.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  node-exporter:
+    image: prom/node-exporter:v1.0.1
+
+  grafana:
+    image: grafana/grafana:7.3.6
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana:/etc/grafana
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.38.6
+    ports:
+      - "8999:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+
+  elasticsearch:
+    image: elasticsearch:7.7.1
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+
+  fluentd:
+    image: arkhn/fluentd:latest
+    volumes:
+      - ./monitoring/fluentd:/fluentd/etc
+
+  kibana:
+    image: kibana:7.7.1
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+
+networks:
+  default:
+    external:
+      name: arkhn_network
