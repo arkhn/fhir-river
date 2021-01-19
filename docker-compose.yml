@@ -65,6 +65,9 @@ services:
       - SECRET_KEY=whatever
       - FHIRSTORE_USER=arkhn
       - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
+      - REDIS_MAPPINGS_HOST=river-redis
+      - REDIS_MAPPINGS_PORT=6379
+      - REDIS_MAPPINGS_DB=1
 
   api:
     build: api
