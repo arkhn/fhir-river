@@ -101,7 +101,9 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                                 f"The mapping contains an attribute ({attribute.path}) "
                                 "with several static inputs (and no sql input)"
                             )
-                        merged_data[attribute.path] = input_group.static_inputs[0]
+                        # TODO(jasopaum):
+                        # I don't think using tuples instead of lists should be needed anymore
+                        merged_data[attribute.path] = tuple(input_group.static_inputs)
                 elif input_group.merging_script:
                     # TODO I don't think the order of pyrog inputs is preserved for
                     # merging scripts. When trying to merge several columns that each
