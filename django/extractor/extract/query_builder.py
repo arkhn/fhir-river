@@ -1,5 +1,6 @@
 import logging
 from typing import Callable, Dict
+from sqlalchemy.sql.functions import array_agg
 
 from arkhn_monitoring import Timer
 from common.analyzer.attribute import Attribute
@@ -60,14 +61,16 @@ class QueryBuilder:
             },
         )
 
+        sql_alchemy_pk_column = self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table)
         # We don't need to have columns duplicated in the dataframe
         # so we keep the one we've already seen here.
         # Note that the primary key column is added at the query initialization.
-        self._cur_query_columns = {self.analysis.primary_key_column}
+        self._cur_query_columns = {self.analysis.primary_key_column: sql_alchemy_pk_column}
+
         # To avoid duplicated joins, we keep them here
         self._cur_query_join_tables = {}
 
-        query = self.session.query(self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table))
+        query = self.session.query(sql_alchemy_pk_column)
 
         # Add attributes to query
         for attribute in self.analysis.attributes:
@@ -75,6 +78,16 @@ class QueryBuilder:
 
         # Add filters to query
         query = self.apply_filters(query)
+
+        # Group along primary key table
+        if any(k.table != self.analysis.primary_key_column.table for k in self._cur_query_columns):
+            query = query.group_by(
+                *(
+                    c
+                    for k, c in self._cur_query_columns.items()
+                    if k.table_name() == self.analysis.primary_key_column.table_name()
+                )
+            )
 
         logger.info(
             {
@@ -130,9 +143,14 @@ class QueryBuilder:
         sqlalchemy_col = self.get_column(sql_column, sqlalchemy_table)
 
         # Add the column to the _cur_query_columns attribute
-        self._cur_query_columns.add(sql_column)
+        self._cur_query_columns[sql_column] = sqlalchemy_col
 
-        return query.add_columns(sqlalchemy_col)
+        # We aggregate the rows from foreign tables in arrays
+        return query.add_columns(
+            sqlalchemy_col
+            if sql_column.table_name() == self.analysis.primary_key_column.table_name()
+            else array_agg(sqlalchemy_col).label(sql_column.dataframe_column_name())
+        )
 
     def apply_filters(self, query: Query) -> Query:
         """Augment the sql alchemy query with filters from the analysis."""
@@ -212,11 +230,5 @@ class QueryBuilder:
         if self.analysis.primary_key_column.table == column.table:
             return self._sqlalchemy_pk_table
 
-        table = Table(
-            column.table,
-            self.metadata,
-            schema=column.owner,
-            keep_existing=True,
-            autoload=True,
-        )
+        table = Table(column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,)
         return aliased(table) if with_alias else table

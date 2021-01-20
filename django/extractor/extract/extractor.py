@@ -6,7 +6,6 @@ from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
 from extractor.errors import EmptyResult
 from extractor.extract.query_builder import QueryBuilder
-from prometheus_client import Counter as PromCounter
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import Query, sessionmaker
 
@@ -28,12 +27,6 @@ URL_SUFFIXES = {
 # Rows will be loaded by batches of length CHUNK_SIZE. This avoids
 # filling up all the RAM with huge tables.
 CHUNK_SIZE = 10_000
-
-counter_extract_instances = PromCounter(
-    "count_extracted_instances",
-    "Number of resource instances extracted",
-    labelnames=("resource_id", "resource_type"),
-)
 
 
 class Extractor:
@@ -93,19 +86,11 @@ class Extractor:
             raise ValueError("You need to create a session for the Extractor before using extract().")
 
         logger.info(
-            {
-                "message": f"Start extracting resource: {analysis.definition_id}",
-                "resource_id": analysis.resource_id,
-            },
+            {"message": f"Start extracting resource: {analysis.definition_id}", "resource_id": analysis.resource_id,},
         )
 
         # Build sqlalchemy query
-        builder = QueryBuilder(
-            session=self.session,
-            metadata=self.metadata,
-            analysis=analysis,
-            pk_values=pk_values,
-        )
+        builder = QueryBuilder(session=self.session, metadata=self.metadata, analysis=analysis, pk_values=pk_values,)
         query = builder.build_query()
 
         return self.run_sql_query(query)
@@ -124,54 +109,7 @@ class Extractor:
             the result of the sql query
         """
         logger.info(
-            {
-                "message": f"Executing query: {query.statement}",
-                "resource_id": resource_id,
-            }
+            {"message": f"Executing query: {query.statement}", "resource_id": resource_id,}
         )
 
         return query.yield_per(CHUNK_SIZE)
-
-    @staticmethod
-    @Timer("time_extractor_split", "time to split dataframe")
-    def split_dataframe(df: Query, analysis: Analysis):
-        # TODO maybe this could be replaced by a group_by?
-        # Find primary key column
-        logger.info(
-            {
-                "message": f"Splitting dataframe for resource {analysis.definition_id}",
-                "resource_id": analysis.resource_id,
-            },
-        )
-
-        pk_col = analysis.primary_key_column.dataframe_column_name()
-
-        prev_pk_val = None
-        acc = defaultdict(list)
-        for row in df:
-            # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy
-            # results) that behaves like tuples and have a `keys` methods returning the
-            # column names in the same order as they are in the tuple.
-            # For instance a row could look like: ("bob", 34)
-            # and its `keys` method could return: ["name", "age"]
-            pk_ind = row.keys().index(pk_col)
-            if acc and row[pk_ind] != prev_pk_val:
-                counter_extract_instances.labels(
-                    resource_id=analysis.resource_id,
-                    resource_type=analysis.definition_id,
-                ).inc()
-                yield acc
-                acc = defaultdict(list)
-            for key, value in zip(row.keys(), row):
-                acc[key].append(value)
-            prev_pk_val = row[pk_ind]
-
-        if not acc:
-            raise EmptyResult(
-                "The sql query returned nothing. Maybe the primary key values "
-                "you provided are not present in the database or the mapping "
-                "is erroneous."
-            )
-
-        counter_extract_instances.labels(resource_id=analysis.resource_id, resource_type=analysis.definition_id).inc()
-        yield acc

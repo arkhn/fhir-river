@@ -16,12 +16,7 @@ meta = MetaData()
 tables = {
     "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id")),
     "admissions": Table(
-        "admissions",
-        meta,
-        Column("subject_id"),
-        Column("row_id"),
-        Column("patient_id"),
-        Column("admittime"),
+        "admissions", meta, Column("subject_id"), Column("row_id"), Column("patient_id"), Column("admittime"),
     ),
     "prescriptions": Table("prescriptions", meta, Column("row_id")),
     "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id")),
@@ -60,10 +55,7 @@ def test_sqlalchemy_query(mock_sha1):
     attribute_b.add_input_group(input_group_b)
     input_group_b.add_column(SqlColumn("patients", "row_id", None))
     condition = Condition(
-        action="INCLUDE",
-        sql_column=SqlColumn("patients", "row_id", None),
-        relation="EQ",
-        value="333",
+        action="INCLUDE", sql_column=SqlColumn("patients", "row_id", None), relation="EQ", value="333",
     )
     input_group_b.add_condition(condition)
 
@@ -75,19 +67,11 @@ def test_sqlalchemy_query(mock_sha1):
             "admissions",
             "admittime",
             None,
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "patient_id", None),
-                    SqlColumn("admissions", "patient_id", None),
-                )
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "patient_id", None), SqlColumn("admissions", "patient_id", None))],
         )
     )
     condition = Condition(
-        action="INCLUDE",
-        sql_column=SqlColumn("patients", "row_id", None),
-        relation="EQ",
-        value="333",
+        action="INCLUDE", sql_column=SqlColumn("patients", "row_id", None), relation="EQ", value="333",
     )
     input_group_c.add_condition(condition)
 
@@ -99,10 +83,7 @@ def test_sqlalchemy_query(mock_sha1):
                 "admittime",
                 None,
                 joins=[
-                    SqlJoin(
-                        SqlColumn("patients", "patient_id", None),
-                        SqlColumn("admissions", "patient_id", None),
-                    )
+                    SqlJoin(SqlColumn("patients", "patient_id", None), SqlColumn("admissions", "patient_id", None))
                 ],
             ),
             "LIKE",
@@ -119,11 +100,10 @@ def test_sqlalchemy_query(mock_sha1):
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
         "patients.row_id AS patients_row_id_hash, "
-        "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM patients "
-        "LEFT OUTER JOIN admissions AS admissions_1 "
+        "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
+        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.patient_id = patients.patient_id \n"
-        "WHERE admissions_1.admittime LIKE :param_1"
+        "WHERE admissions_1.admittime LIKE :param_1 GROUP BY patients.subject_id, patients.row_id"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
@@ -144,14 +124,8 @@ def test_2hop_joins(mock_sha1):
             "admittime",
             None,
             joins=[
-                SqlJoin(
-                    SqlColumn("patients", "row_id", None),
-                    SqlColumn("join_table", "pat_id", None),
-                ),
-                SqlJoin(
-                    SqlColumn("join_table", "adm_id", None),
-                    SqlColumn("admissions", "row_id", None),
-                ),
+                SqlJoin(SqlColumn("patients", "row_id", None), SqlColumn("join_table", "pat_id", None)),
+                SqlJoin(SqlColumn("join_table", "adm_id", None), SqlColumn("admissions", "row_id", None)),
             ],
         )
     )
@@ -164,10 +138,11 @@ def test_2hop_joins(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "admissions_1.admittime AS admissions_admittime_hash \n"
+        "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
         "FROM patients "
         "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id "
+        "GROUP BY patients.subject_id"
     )
 
 
@@ -186,12 +161,7 @@ def test_duplicated_joins(mock_sha1):
             "admissions",
             "subject_id",
             None,
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "subject_id", None),
-                    SqlColumn("admissions", "subject_id", None),
-                ),
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "subject_id", None), SqlColumn("admissions", "subject_id", None))],
         )
     )
 
@@ -203,12 +173,7 @@ def test_duplicated_joins(mock_sha1):
             "admissions",
             "row_id",
             None,
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "subject_id", None),
-                    SqlColumn("admissions", "subject_id", None),
-                ),
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "subject_id", None), SqlColumn("admissions", "subject_id", None))],
         )
     )
 
@@ -220,12 +185,7 @@ def test_duplicated_joins(mock_sha1):
             "admissions",
             "admittime",
             None,
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "row_id", None),
-                    SqlColumn("admissions", "row_id", None),
-                ),
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "row_id", None), SqlColumn("admissions", "row_id", None))],
         )
     )
 
@@ -239,12 +199,13 @@ def test_duplicated_joins(mock_sha1):
 
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "admissions_1.subject_id AS admissions_subject_id_hash, "
-        "admissions_1.row_id AS admissions_row_id_hash, "
-        "admissions_2.admittime AS admissions_admittime_hash \n"
+        "array_agg(admissions_1.subject_id) AS admissions_subject_id_hash, "
+        "array_agg(admissions_1.row_id) AS admissions_row_id_hash, "
+        "array_agg(admissions_2.admittime) AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.subject_id = patients.subject_id "
-        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id"
+        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id "
+        "GROUP BY patients.subject_id"
     )
 
 
@@ -315,12 +276,7 @@ def test_filters_with_joins(mock_sha1):
             SqlColumn(
                 "admissions",
                 "admittime",
-                joins=[
-                    SqlJoin(
-                        SqlColumn("patients", "subject_id"),
-                        SqlColumn("admissions", "subject_id"),
-                    )
-                ],
+                joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
             ),
             "LIKE",
             "2150-08-29",
@@ -355,12 +311,7 @@ def test_conditions_with_joins(mock_sha1):
         sql_column=SqlColumn(
             "admissions",
             "admittime",
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
-                )
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
         ),
         relation="EQ",
         value="2013",
@@ -376,7 +327,8 @@ def test_conditions_with_joins(mock_sha1):
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash, "
         "patients.row_id AS patients_row_id_hash, "
-        "admissions_1.admittime AS admissions_admittime_hash \n"
+        "array_agg(admissions_1.admittime) AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.subject_id = patients.subject_id"
+        "ON admissions_1.subject_id = patients.subject_id "
+        "GROUP BY patients.subject_id, patients.row_id"
     )

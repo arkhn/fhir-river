@@ -20,7 +20,10 @@ class CleaningScript:
 
     def apply(self, data_column, col_name, primary_key):
         try:
-            return [self.script(val) for val in data_column]
+            if isinstance(data_column, list):
+                return [self.script(val) for val in data_column]
+            else:
+                return self.script(data_column)
         except Exception as e:
             logger.exception(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
             return data_column

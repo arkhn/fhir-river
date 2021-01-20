@@ -11,7 +11,6 @@ from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
 from .condition import Condition
 from .input_group import InputGroup
-from .mapping import build_squash_rules
 from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
@@ -69,13 +68,6 @@ class Analyzer:
         # Analyze the mapping
         self.analyze_mapping(resource_mapping)
 
-        # Build squash rules
-        self._cur_analysis.squash_rules = build_squash_rules(
-            self.get_analysis_columns(self._cur_analysis),
-            self.get_analysis_joins(self._cur_analysis),
-            self._cur_analysis.primary_key_column.table_name(),
-        )
-
         return self._cur_analysis
 
     def analyze_mapping(self, resource_mapping):
@@ -113,22 +105,14 @@ class Analyzer:
                 "resource_id": self._cur_analysis.resource_id,
             },
         )
-        attribute = Attribute(
-            path=attribute_mapping["path"],
-            definition_id=attribute_mapping["definitionId"],
-        )
+        attribute = Attribute(path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"])
         if not attribute_mapping["inputGroups"]:
             # If there are no input groups for this attribute, it means that it is an
             # intermediary attribute (ie not a leaf). It is here to give us some context
             # information. For instance, we can use it if its children attributes
             # represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
-                logger.debug(
-                    {
-                        "message": "Analyze attribute reference",
-                        "resource_id": self._cur_analysis.resource_id,
-                    },
-                )
+                logger.debug({"message": "Analyze attribute reference", "resource_id": self._cur_analysis.resource_id})
                 # Remove trailing index
                 path = re.sub(r"\[\d+\]$", "", attribute.path)
                 self._cur_analysis.reference_paths.add(path)
@@ -152,9 +136,7 @@ class Analyzer:
             elif input_["sqlValue"] and input_["sqlValue"]["table"]:
                 sqlValue = input_["sqlValue"]
                 cur_col = SqlColumn(
-                    sqlValue["table"],
-                    sqlValue["column"],
-                    self._cur_analysis.primary_key_column.owner,
+                    sqlValue["table"], sqlValue["column"], self._cur_analysis.primary_key_column.owner,
                 )
 
                 if input_["script"]:
@@ -211,16 +193,8 @@ class Analyzer:
         joins = []
         for join in joins_mapping:
             tables = join["tables"]
-            left = SqlColumn(
-                tables[0]["table"],
-                tables[0]["column"],
-                self._cur_analysis.primary_key_column.owner,
-            )
-            right = SqlColumn(
-                tables[1]["table"],
-                tables[1]["column"],
-                self._cur_analysis.primary_key_column.owner,
-            )
+            left = SqlColumn(tables[0]["table"], tables[0]["column"], self._cur_analysis.primary_key_column.owner,)
+            right = SqlColumn(tables[1]["table"], tables[1]["column"], self._cur_analysis.primary_key_column.owner,)
             joins.append(SqlJoin(left, right))
 
         return joins
