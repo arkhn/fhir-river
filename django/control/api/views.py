@@ -26,7 +26,9 @@ class PreviewEndpoint(views.APIView):
         data = serializer.validated_data
 
         mapping_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB,
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
         )
 
         analyzer = Analyzer(mapping_redis)
@@ -57,7 +59,10 @@ class PreviewEndpoint(views.APIView):
                     ]
                 )
 
-        return Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK,)
+        return Response(
+            {"instances": documents, "errors": errors},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ResourceEndpoint(views.APIView):
@@ -79,7 +84,10 @@ class ResourceEndpoint(views.APIView):
                 fhirstore.delete(resource_type, resource_id=resource_id)
             except NotFoundError:
                 logger.debug(
-                    {"message": f"No documents for resource {resource_id} were found", "resource_id": resource_id,},
+                    {
+                        "message": f"No documents for resource {resource_id} were found",
+                        "resource_id": resource_id,
+                    },
                 )
 
         return Response(status=status.HTTP_200_OK)

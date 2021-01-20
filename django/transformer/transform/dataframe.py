@@ -62,7 +62,9 @@ def clean_data(data, attributes: List[Attribute], primary_key):
 
 
 def merge_by_attributes(
-    data, attributes: List[Attribute], primary_key,
+    data,
+    attributes: List[Attribute],
+    primary_key,
 ):
     """Apply merging scripts.
      Takes as input a dict of the form

@@ -86,11 +86,19 @@ class Extractor:
             raise ValueError("You need to create a session for the Extractor before using extract().")
 
         logger.info(
-            {"message": f"Start extracting resource: {analysis.definition_id}", "resource_id": analysis.resource_id,},
+            {
+                "message": f"Start extracting resource: {analysis.definition_id}",
+                "resource_id": analysis.resource_id,
+            },
         )
 
         # Build sqlalchemy query
-        builder = QueryBuilder(session=self.session, metadata=self.metadata, analysis=analysis, pk_values=pk_values,)
+        builder = QueryBuilder(
+            session=self.session,
+            metadata=self.metadata,
+            analysis=analysis,
+            pk_values=pk_values,
+        )
         query = builder.build_query()
 
         return self.run_sql_query(query)
@@ -109,7 +117,10 @@ class Extractor:
             the result of the sql query
         """
         logger.info(
-            {"message": f"Executing query: {query.statement}", "resource_id": resource_id,}
+            {
+                "message": f"Executing query: {query.statement}",
+                "resource_id": resource_id,
+            }
         )
 
         return query.yield_per(CHUNK_SIZE)

@@ -1,6 +1,5 @@
 import logging
 from typing import Callable, Dict
-from sqlalchemy.sql.functions import array_agg
 
 from arkhn_monitoring import Timer
 from common.analyzer.attribute import Attribute
@@ -9,6 +8,7 @@ from extractor.errors import ImproperMappingError
 from sqlalchemy import Column as AlchemyColumn
 from sqlalchemy import Table, and_
 from sqlalchemy.orm import Query, aliased
+from sqlalchemy.sql.functions import array_agg
 
 logger = logging.getLogger(__name__)
 
@@ -230,5 +230,11 @@ class QueryBuilder:
         if self.analysis.primary_key_column.table == column.table:
             return self._sqlalchemy_pk_table
 
-        table = Table(column.table, self.metadata, schema=column.owner, keep_existing=True, autoload=True,)
+        table = Table(
+            column.table,
+            self.metadata,
+            schema=column.owner,
+            keep_existing=True,
+            autoload=True,
+        )
         return aliased(table) if with_alias else table

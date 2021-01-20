@@ -16,7 +16,12 @@ meta = MetaData()
 tables = {
     "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id")),
     "admissions": Table(
-        "admissions", meta, Column("subject_id"), Column("row_id"), Column("patient_id"), Column("admittime"),
+        "admissions",
+        meta,
+        Column("subject_id"),
+        Column("row_id"),
+        Column("patient_id"),
+        Column("admittime"),
     ),
     "prescriptions": Table("prescriptions", meta, Column("row_id")),
     "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id")),
@@ -55,7 +60,10 @@ def test_sqlalchemy_query(mock_sha1):
     attribute_b.add_input_group(input_group_b)
     input_group_b.add_column(SqlColumn("patients", "row_id", None))
     condition = Condition(
-        action="INCLUDE", sql_column=SqlColumn("patients", "row_id", None), relation="EQ", value="333",
+        action="INCLUDE",
+        sql_column=SqlColumn("patients", "row_id", None),
+        relation="EQ",
+        value="333",
     )
     input_group_b.add_condition(condition)
 
@@ -71,7 +79,10 @@ def test_sqlalchemy_query(mock_sha1):
         )
     )
     condition = Condition(
-        action="INCLUDE", sql_column=SqlColumn("patients", "row_id", None), relation="EQ", value="333",
+        action="INCLUDE",
+        sql_column=SqlColumn("patients", "row_id", None),
+        relation="EQ",
+        value="333",
     )
     input_group_c.add_condition(condition)
 

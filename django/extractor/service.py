@@ -1,7 +1,6 @@
 import logging
 
 from django.conf import settings
-from prometheus_client import Counter as PromCounter
 
 import redis
 from common.analyzer import Analyzer
@@ -13,15 +12,23 @@ from common.service.service import Service
 from extractor.conf import conf
 from extractor.errors import EmptyResult
 from extractor.extract import Extractor
+from prometheus_client import Counter as PromCounter
 
 logger = logging.getLogger(__name__)
 counter_extract_instances = PromCounter(
-    "count_extracted_instances", "Number of resource instances extracted", labelnames=("resource_id", "resource_type"),
+    "count_extracted_instances",
+    "Number of resource instances extracted",
+    labelnames=("resource_id", "resource_type"),
 )
 
 
 def broadcast_events(
-    dataframe, analysis, producer: Producer, extractor: Extractor, counter_client: redis.Redis, batch_id=None,
+    dataframe,
+    analysis,
+    producer: Producer,
+    extractor: Extractor,
+    counter_client: redis.Redis,
+    batch_id=None,
 ):
     resource_type = analysis.definition_id
     resource_id = analysis.resource_id
@@ -55,7 +62,11 @@ def broadcast_events(
 
 class ExtractHandler(Handler):
     def __init__(
-        self, producer: Producer, extractor: Extractor, counter_redis: redis.Redis, analyzer: Analyzer,
+        self,
+        producer: Producer,
+        extractor: Extractor,
+        counter_redis: redis.Redis,
+        analyzer: Analyzer,
     ) -> None:
         self.producer = producer
         self.extractor = extractor
@@ -79,13 +90,19 @@ class ExtractorService(Service):
     @classmethod
     def make_app(cls):
         consumer = Consumer(
-            broker=settings.KAFKA_BOOTSTRAP_SERVERS, topics=conf.CONSUMED_TOPICS, group_id=conf.CONSUMER_GROUP_ID,
+            broker=settings.KAFKA_BOOTSTRAP_SERVERS,
+            topics=conf.CONSUMED_TOPICS,
+            group_id=conf.CONSUMER_GROUP_ID,
         )
         mapping_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB,
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
         )
         counter_redis = redis.Redis(
-            host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB,
+            host=settings.REDIS_COUNTER_HOST,
+            port=settings.REDIS_COUNTER_PORT,
+            db=settings.REDIS_COUNTER_DB,
         )
         analyzer = Analyzer(redis_client=mapping_redis)
         handler = ExtractHandler(

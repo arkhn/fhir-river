@@ -135,9 +135,7 @@ class Analyzer:
 
             elif input_["sqlValue"] and input_["sqlValue"]["table"]:
                 sqlValue = input_["sqlValue"]
-                cur_col = SqlColumn(
-                    sqlValue["table"], sqlValue["column"], self._cur_analysis.primary_key_column.owner,
-                )
+                cur_col = SqlColumn(sqlValue["table"], sqlValue["column"], self._cur_analysis.primary_key_column.owner)
 
                 if input_["script"]:
                     cur_col.cleaning_script = CleaningScript(input_["script"])
@@ -193,8 +191,8 @@ class Analyzer:
         joins = []
         for join in joins_mapping:
             tables = join["tables"]
-            left = SqlColumn(tables[0]["table"], tables[0]["column"], self._cur_analysis.primary_key_column.owner,)
-            right = SqlColumn(tables[1]["table"], tables[1]["column"], self._cur_analysis.primary_key_column.owner,)
+            left = SqlColumn(tables[0]["table"], tables[0]["column"], self._cur_analysis.primary_key_column.owner)
+            right = SqlColumn(tables[1]["table"], tables[1]["column"], self._cur_analysis.primary_key_column.owner)
             joins.append(SqlJoin(left, right))
 
         return joins
