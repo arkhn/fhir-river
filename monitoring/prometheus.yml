@@ -15,3 +15,15 @@ scrape_configs:
     static_configs:
       - targets:
           - "node-exporter:9100"
+  - job_name: "collect-extractor"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["extractor:8001"]
+  - job_name: "collect-transformer"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["transformer:8001"]
+  - job_name: "collect-loader"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["loader:8001"]
