@@ -11,7 +11,6 @@ from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
 from .condition import Condition
 from .input_group import InputGroup
-from .mapping import build_squash_rules
 from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
@@ -69,13 +68,6 @@ class Analyzer:
         # Analyze the mapping
         self.analyze_mapping(resource_mapping)
 
-        # Build squash rules
-        self._cur_analysis.squash_rules = build_squash_rules(
-            self.get_analysis_columns(self._cur_analysis),
-            self.get_analysis_joins(self._cur_analysis),
-            self._cur_analysis.primary_key_column.table_name(),
-        )
-
         return self._cur_analysis
 
     def analyze_mapping(self, resource_mapping):
@@ -113,10 +105,7 @@ class Analyzer:
                 "resource_id": self._cur_analysis.resource_id,
             },
         )
-        attribute = Attribute(
-            path=attribute_mapping["path"],
-            definition_id=attribute_mapping["definitionId"],
-        )
+        attribute = Attribute(path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"])
         if not attribute_mapping["inputGroups"]:
             # If there are no input groups for this attribute, it means that it is an
             # intermediary attribute (ie not a leaf). It is here to give us some context

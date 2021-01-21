@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
-from transformer.transform.dataframe import clean_data, merge_by_attributes, squash_rows
+from transformer.transform.dataframe import clean_data, merge_by_attributes
 from transformer.transform.fhir import build_fhir_object, build_metadata
 
 logger = logging.getLogger(__name__)
@@ -35,10 +35,6 @@ class Transformer:
         # Apply cleaning scripts and concept map on data
         logger.debug({"message": f"Apply cleaning to {data}", **logging_extras})
         data = clean_data(data, analysis.attributes, primary_key)
-
-        # Apply join rule to merge some lines from the same resource
-        logger.debug({"message": f"Apply squash rows to {data}", **logging_extras})
-        data = squash_rows(data, analysis.squash_rules)
 
         # Apply merging scripts on data
         logger.debug({"message": f"Apply merging scripts to {data}", **logging_extras})
