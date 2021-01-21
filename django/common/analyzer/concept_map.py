@@ -16,10 +16,7 @@ class ConceptMap:
 
     def apply(self, data_column, col_name, primary_key):
         try:
-            if isinstance(data_column, list):
-                return [self.translate(val) for val in data_column]
-            else:
-                return self.translate(data_column)
+            return [self.translate(val) for val in data_column]
         except Exception as e:
             logger.exception(f"Error mapping {col_name} with concept map {self.id} (at id = {primary_key}): {e}")
             return data_column

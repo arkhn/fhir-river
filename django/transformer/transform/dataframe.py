@@ -26,7 +26,9 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 attr_col_name = (input_group.id, (col.table, col.column))
 
                 # cleaned_data will be modified several times
-                cleaned_data[attr_col_name] = data[dict_col_name]
+                cleaned_data[attr_col_name] = (
+                    data[dict_col_name] if isinstance(data[dict_col_name], list) else [data[dict_col_name]]
+                )
 
                 # Apply cleaning script
                 if col.cleaning_script:
@@ -35,10 +37,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                     )
 
                 # Cast the data to the right type
-                if isinstance(cleaned_data[attr_col_name], list):
-                    cleaned_data[attr_col_name] = [attribute.cast_type(row) for row in cleaned_data[attr_col_name]]
-                else:
-                    cleaned_data[attr_col_name] = [attribute.cast_type(cleaned_data[attr_col_name])]
+                cleaned_data[attr_col_name] = [attribute.cast_type(row) for row in cleaned_data[attr_col_name]]
 
                 # Apply concept map
                 if col.concept_map:
@@ -127,7 +126,7 @@ def merge_by_attributes(
                         for i in range(col_len)
                     )
                 elif len(cur_attr_columns) != 1:
-                    raise ValueError("The mapping contains several unmerged columns " f"for attribute {attribute}")
+                    raise ValueError(f"The mapping contains several unmerged columns for attribute {attribute}")
                 else:
                     # cur_attr_columns has a single element
                     merged_data[attribute.path] = tuple(cur_attr_columns[0])
