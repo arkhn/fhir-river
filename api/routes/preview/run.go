@@ -26,7 +26,7 @@ type Request struct {
 // using the PreviewRequest as JSON body. It returns the extracted rows.
 func preview(previewRequest *Request) (rows []byte, err error) {
 	jBody, _ := json.Marshal(previewRequest)
-	url := fmt.Sprintf("%s/api/preview", controlURL)
+	url := fmt.Sprintf("%s/api/preview/", controlURL)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jBody))
 	if err != nil {

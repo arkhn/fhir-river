@@ -4,10 +4,13 @@ import logging
 from rest_framework import status, views
 from rest_framework.response import Response
 
+from django.conf import settings
+
 from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
 import scripts
 
+import redis
 from common.analyzer import Analyzer
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
@@ -24,16 +27,24 @@ class PreviewEndpoint(views.APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        analyzer = Analyzer()
-        analysis = analyzer.analyze(data["mapping"])
+        mapping_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
+        )
+
+        analyzer = Analyzer(mapping_redis)
+        analysis = analyzer.load_cached_analysis(data["preview_id"], data["resource_id"])
 
         extractor = Extractor()
-        rows = extractor.extract(analysis, data["primary_key_values"])
+        credentials = analysis.source_credentials
+        extractor.update_connection(credentials)
+        df = extractor.extract(analysis, data["primary_key_values"])
 
         documents = []
         errors = []
         transformer = Transformer()
-        for row in rows:
+        for row in extractor.split_dataframe(df, analysis):
             transformed = transformer.transform_data(row, analysis)
             document = transformer.create_fhir_document(transformed, analysis)
             documents.append(document)
@@ -50,7 +61,7 @@ class PreviewEndpoint(views.APIView):
                 )
 
         return Response(
-            {"rows": rows, "instances": documents, "errors": errors},
+            {"instances": documents, "errors": errors},
             status=status.HTTP_200_OK,
         )
 
