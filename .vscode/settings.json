@@ -1,0 +1,20 @@
+{
+    "editor.rulers": [
+        88, // Max comment length
+        119, // Max line length
+    ],
+    "python.formatting.provider": "black",
+    "python.autoComplete.extraPaths": [
+        "./django"
+    ],
+    "python.pythonPath": ".venv/bin/python",
+    "python.analysis.extraPaths": [
+        "./django"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+}

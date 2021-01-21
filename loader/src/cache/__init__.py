@@ -1,5 +1,0 @@
-import os
-
-REDIS_HOST = os.getenv("REDIS_REFERENCES_HOST")
-REDIS_PORT = os.getenv("REDIS_REFERENCES_PORT")
-REDIS_DB = os.getenv("REDIS_REFERENCES_DB")

@@ -2,10 +2,10 @@ package batch
 
 import "os"
 
-var loaderURL, isLoaderURLDefined = os.LookupEnv("LOADER_URL")
+var controlURL, isControlURLDefined = os.LookupEnv("CONTROL_API_URL")
 
 func init() {
-	if !isLoaderURLDefined {
-		panic("LOADER_URL is required in environment")
+	if !isControlURLDefined {
+		panic("CONTROL_API_URL is required in environment")
 	}
 }

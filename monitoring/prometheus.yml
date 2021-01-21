@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "kafka"
+    static_configs:
+      - targets:
+          - "kafka-jmx-exporter:5556"
+  - job_name: "cadvisor"
+    static_configs:
+      - targets:
+          - "cadvisor:8080"
+  - job_name: "system"
+    static_configs:
+      - targets:
+          - "node-exporter:9100"

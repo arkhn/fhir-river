@@ -1,0 +1,6 @@
+---
+hostPort: kafka:9993
+rules:
+  - pattern: kafka.network<type=RequestMetrics, name=(.+)><>
+  - pattern: kafka.server<type=BrokerTopicMetrics, name=(.+), topic=(.+)><>
+  - pattern: kafka.server<type=RequestMetrics, name=(.+), request=(.+)><>
