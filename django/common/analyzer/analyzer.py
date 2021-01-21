@@ -93,9 +93,9 @@ class Analyzer:
 
     def analyze_filter(self, filter_):
         col = SqlColumn(
+            filter_["sqlColumn"]["owner"]["name"],
             filter_["sqlColumn"]["table"],
             filter_["sqlColumn"]["column"],
-            filter_["sqlColumn"]["owner"]["name"],
         )
 
         filter_joins = self.parse_joins_mapping(filter_["sqlColumn"]["joins"])
@@ -151,9 +151,9 @@ class Analyzer:
             elif input_["sqlValue"] and input_["sqlValue"]["table"]:
                 sqlValue = input_["sqlValue"]
                 cur_col = SqlColumn(
+                    sqlValue["owner"]["name"],
                     sqlValue["table"],
                     sqlValue["column"],
-                    sqlValue["owner"]["name"],
                 )
 
                 if input_["script"]:
@@ -170,9 +170,9 @@ class Analyzer:
 
         for mapping_condition in mapping_group["conditions"]:
             condition_column = SqlColumn(
+                mapping_condition["sqlValue"]["owner"]["name"],
                 mapping_condition["sqlValue"]["table"],
                 mapping_condition["sqlValue"]["column"],
-                mapping_condition["sqlValue"]["owner"]["name"],
             )
 
             condition_joins = self.parse_joins_mapping(mapping_condition["sqlValue"]["joins"])
@@ -205,17 +205,17 @@ class Analyzer:
             )
 
         return SqlColumn(
+            resource_mapping["primaryKeyOwner"]["name"],
             resource_mapping["primaryKeyTable"],
             resource_mapping["primaryKeyColumn"],
-            resource_mapping["primaryKeyOwner"]["name"],
         )
 
     def parse_joins_mapping(self, joins_mapping: dict):
         joins = []
         for join in joins_mapping:
             tables = join["tables"]
-            left = SqlColumn(tables[0]["table"], tables[0]["column"], tables[0]["owner"]["name"])
-            right = SqlColumn(tables[1]["table"], tables[1]["column"], tables[1]["owner"]["name"])
+            left = SqlColumn(tables[0]["owner"]["name"], tables[0]["table"], tables[0]["column"])
+            right = SqlColumn(tables[1]["owner"]["name"], tables[1]["table"], tables[1]["column"])
             joins.append(SqlJoin(left, right))
 
         return joins

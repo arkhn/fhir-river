@@ -7,9 +7,9 @@ from .concept_map import ConceptMap
 class SqlColumn:
     def __init__(
         self,
+        owner: str,
         table: str,
         column: str,
-        owner: str,
         cleaning_script: CleaningScript = None,
         concept_map: ConceptMap = None,
         joins=None,

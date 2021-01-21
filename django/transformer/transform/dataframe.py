@@ -24,7 +24,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 dict_col_name = col.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                attr_col_name = (input_group.id, (col.table, col.column))
+                attr_col_name = (input_group.id, (col.owner, col.table, col.column))
 
                 # cleaned_data will be modified several times
                 cleaned_data[attr_col_name] = data[dict_col_name]

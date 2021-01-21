@@ -36,7 +36,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
     )
     attr_name.add_input_group(group)
 
@@ -44,7 +44,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     group = InputGroup(
         id_="id_id",
         attribute=attr_id,
-        columns=[SqlColumn("PATIENTS", "ID"), SqlColumn("PATIENTS", "ID2")],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "ID"), SqlColumn("PUBLIC", "PATIENTS", "ID2")],
         static_inputs=["null"],
     )
     attr_id.add_input_group(group)
@@ -55,6 +55,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
         attribute=attr_name,
         columns=[
             SqlColumn(
+                "PUBLIC",
                 "ADMISSIONS",
                 "LANGUAGE",
                 cleaning_script=CleaningScript("clean1"),
@@ -71,6 +72,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
         attribute=attr_name,
         columns=[
             SqlColumn(
+                "PUBLIC",
                 "ADMISSIONS",
                 "ID",
                 cleaning_script=CleaningScript("clean2"),
@@ -81,16 +83,16 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     attr_admid.add_input_group(group)
 
     attributes = [attr_name, attr_id, attr_language, attr_admid]
-    primary_key_column = SqlColumn("PATIENTS", "ID")
+    primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
 
     cleaned_data = dataframe.clean_data(data, attributes, primary_key_column)
 
     columns = [
-        ("id_name", ("PATIENTS", "NAME")),
-        ("id_id", ("PATIENTS", "ID")),
-        ("id_id", ("PATIENTS", "ID2")),
-        ("id_language", ("ADMISSIONS", "LANGUAGE")),
-        ("id_code", ("ADMISSIONS", "ID")),
+        ("id_name", ("PUBLIC", "PATIENTS", "NAME")),
+        ("id_id", ("PUBLIC", "PATIENTS", "ID")),
+        ("id_id", ("PUBLIC", "PATIENTS", "ID2")),
+        ("id_language", ("PUBLIC", "ADMISSIONS", "LANGUAGE")),
+        ("id_code", ("PUBLIC", "ADMISSIONS", "ID")),
     ]
 
     expected = {
@@ -106,32 +108,32 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
 
 def test_squash_rows():
     data = {
-        ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
-        ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
-        ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
-        ("language", ("ADMISSIONS", "LANGUAGE")): ["lang1", "lang2", "lang3", "lang4"],
-        ("code", ("ADMISSIONS", "ID")): ["id1", "id2", "id3", "id4"],
+        ("name", ("PUBLIC.PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
+        ("id", ("PUBLIC.PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
+        ("id", ("PUBLIC.PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
+        ("language", ("PUBLIC.ADMISSIONS", "LANGUAGE")): ["lang1", "lang2", "lang3", "lang4"],
+        ("code", ("PUBLIC.ADMISSIONS", "ID")): ["id1", "id2", "id3", "id4"],
     }
-    squash_rules = ["PATIENTS", [["ADMISSIONS", [["dummy", []]]]]]
+    squash_rules = ["PUBLIC.PATIENTS", [["PUBLIC.ADMISSIONS", [["dummy", []]]]]]
 
     actual = dataframe.squash_rows(data, squash_rules)
 
-    assert actual[("name", ("PATIENTS", "NAME"))] == ["bob"]
-    assert actual[("id", ("PATIENTS", "ID"))] == ["id1"]
-    assert actual[("id", ("PATIENTS", "ID2"))] == ["id21"]
+    assert actual[("name", ("PUBLIC.PATIENTS", "NAME"))] == ["bob"]
+    assert actual[("id", ("PUBLIC.PATIENTS", "ID"))] == ["id1"]
+    assert actual[("id", ("PUBLIC.PATIENTS", "ID2"))] == ["id21"]
     TestCase().assertCountEqual(
         zip(
-            actual[("language", ("ADMISSIONS", "LANGUAGE"))][0],
-            actual[("code", ("ADMISSIONS", "ID"))][0],
+            actual[("language", ("PUBLIC.ADMISSIONS", "LANGUAGE"))][0],
+            actual[("code", ("PUBLIC.ADMISSIONS", "ID"))][0],
         ),
         (("lang1", "id1"), ("lang2", "id2"), ("lang3", "id3"), ("lang4", "id4")),
     )
 
     # Test without squash rules
     data = {
-        ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
-        ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
-        ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
+        ("name", ("PUBLIC.PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
+        ("id", ("PUBLIC.PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
+        ("id", ("PUBLIC.PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
     }
     squash_rules = ["PATIENTS", []]
 
@@ -143,14 +145,14 @@ def test_squash_rows():
 @mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
 def test_merge_by_attributes(_):
     attr_name = Attribute("name")
-    group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PATIENTS", "NAME")])
+    group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")])
     attr_name.add_input_group(group)
 
     attr_id = Attribute("id")
     group = InputGroup(
         id_="id_id",
         attribute=attr_id,
-        columns=[SqlColumn("PATIENTS", "ID"), SqlColumn("PATIENTS", "ID2")],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "ID"), SqlColumn("PUBLIC", "PATIENTS", "ID2")],
         static_inputs=["unknown"],
         merging_script=MergingScript("merge"),
     )
@@ -161,23 +163,23 @@ def test_merge_by_attributes(_):
         InputGroup(
             id_="id_language_1",
             attribute=attr_language,
-            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_1")],
-            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "EQ", "true")],
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_1")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "true")],
         )
     )
     attr_language.add_input_group(
         InputGroup(
             id_="id_language_2",
             attribute=attr_language,
-            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_2")],
-            conditions=[Condition("EXCLUDE", SqlColumn("ADMISSIONS", "COND_LANG"), "EQ", "true")],
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")],
+            conditions=[Condition("EXCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "true")],
         )
     )
     attr_language.add_input_group(
         InputGroup(
             id_="not_reached",
             attribute=attr_language,
-            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")],
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_3")],
         )
     )
 
@@ -185,19 +187,19 @@ def test_merge_by_attributes(_):
     group = InputGroup(
         id_="id_admid",
         attribute=attr_admid,
-        columns=[SqlColumn("ADMISSIONS", "ID")],
+        columns=[SqlColumn("PUBLIC", "ADMISSIONS", "ID")],
     )
     attr_admid.add_input_group(group)
 
     data = {
-        ("id_name", ("PATIENTS", "NAME")): ["bob"],
-        ("id_id", ("PATIENTS", "ID")): ["id1"],
-        ("id_id", ("PATIENTS", "ID2")): ["id21"],
-        ("id_language_1", ("ADMISSIONS", "LANGUAGE_1")): [("lang1", "lang2", "lang3", "lang4")],
-        ("id_language_2", ("ADMISSIONS", "LANGUAGE_2")): [("lang21", "lang22", "lang23", "lang24")],
-        ("id_language_3", ("ADMISSIONS", "LANGUAGE_3")): [("lang31", "lang32", "lang33", "lang34")],
-        ("id_admid", ("ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
-        (CONDITION_FLAG, ("ADMISSIONS", "COND_LANG")): ["false"],
+        ("id_name", ("PUBLIC", "PATIENTS", "NAME")): ["bob"],
+        ("id_id", ("PUBLIC", "PATIENTS", "ID")): ["id1"],
+        ("id_id", ("PUBLIC", "PATIENTS", "ID2")): ["id21"],
+        ("id_language_1", ("PUBLIC", "ADMISSIONS", "LANGUAGE_1")): [("lang1", "lang2", "lang3", "lang4")],
+        ("id_language_2", ("PUBLIC", "ADMISSIONS", "LANGUAGE_2")): [("lang21", "lang22", "lang23", "lang24")],
+        ("id_language_3", ("PUBLIC", "ADMISSIONS", "LANGUAGE_3")): [("lang31", "lang32", "lang33", "lang34")],
+        ("id_admid", ("PUBLIC", "ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        (CONDITION_FLAG, ("PUBLIC", "ADMISSIONS", "COND_LANG")): ["false"],
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid]
