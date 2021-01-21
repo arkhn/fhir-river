@@ -1,3 +1,4 @@
+from inspect import getmembers, getdoc, isfunction, ismodule
 import logging
 
 from rest_framework import status, views
@@ -5,6 +6,7 @@ from rest_framework.response import Response
 
 from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
+import scripts
 
 from common.analyzer import Analyzer
 from control.api.serializers import PreviewSerializer
@@ -79,3 +81,14 @@ class ResourceEndpoint(views.APIView):
                 )
 
         return Response(status=status.HTTP_200_OK)
+
+
+class ScriptsEndpoint(views.APIView):
+    def get(self, request):
+        res = []
+        for module in getmembers(scripts, ismodule):
+            for script in getmembers(module[1], isfunction):
+                name, func = script
+                doc = getdoc(func)
+                res.append({"name": name, "description": doc, "category": module[0]})
+        return Response(res, status=status.HTTP_200_OK)
