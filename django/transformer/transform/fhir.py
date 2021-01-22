@@ -123,12 +123,30 @@ def handle_array_attributes(attributes_in_array, row):
             raise ValueError("mismatch in array lengths")
         length = len(val)
 
-    # Now we can build the array
+    attributes_in_nested_arrays = {
+        k: v for k, v in attributes_in_array.items() if get_position_first_index(k.split(".")) is not None
+    }
+
     array = []
-    for index in range(length):
-        element = build_fhir_object(row, attributes_in_array, index=index)
-        if element is not None and element != {}:
-            array.append(element)
+    if attributes_in_nested_arrays and all(
+        path in attributes_in_nested_arrays or len(row.get(attr.path)) == 1
+        for path, attr in attributes_in_array.items()
+    ):
+        # If we have a nested array and all
+        # values outside of it come from the primary table
+        array.append(build_fhir_object(row, attributes_in_array))
+
+    else:
+        for index in range(length):
+            if attributes_in_nested_arrays:
+                # If we have a nested array and some values outside of it come from
+                # a joined table, we want to expand the outside array
+                indexed_row = {k: get_element_in_array(v, index) for k, v in row.items()}
+                element = build_fhir_object(indexed_row, attributes_in_array)
+            else:
+                element = build_fhir_object(row, attributes_in_array, index=index)
+            if element is not None and element != {}:
+                array.append(element)
 
     return array
 
@@ -188,3 +206,9 @@ def remove_index(path):
 def remove_root_path(path, index_end_root):
     split_path = path.split(".")[index_end_root:]
     return ".".join(split_path)
+
+
+def get_element_in_array(array, index):
+    if len(array) == 1:
+        return [array[0]]
+    return [array[index]]
