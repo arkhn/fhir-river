@@ -28,6 +28,7 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
 
                 # cleaned_data will be modified several times
                 if col.table_name() == primary_key_col.table_name():
+                    # squash rows of the primary table together (~ group_by)
                     cleaned_data[attr_col_name] = [data[dict_col_name][0]]
                 else:
                     cleaned_data[attr_col_name] = data[dict_col_name]
