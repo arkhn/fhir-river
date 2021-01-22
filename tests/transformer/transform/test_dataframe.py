@@ -104,42 +104,6 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     assert cleaned_data == expected
 
 
-def test_squash_rows():
-    data = {
-        ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
-        ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
-        ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
-        ("language", ("ADMISSIONS", "LANGUAGE")): ["lang1", "lang2", "lang3", "lang4"],
-        ("code", ("ADMISSIONS", "ID")): ["id1", "id2", "id3", "id4"],
-    }
-    squash_rules = ["PATIENTS", [["ADMISSIONS", [["dummy", []]]]]]
-
-    actual = dataframe.squash_rows(data, squash_rules)
-
-    assert actual[("name", ("PATIENTS", "NAME"))] == ["bob"]
-    assert actual[("id", ("PATIENTS", "ID"))] == ["id1"]
-    assert actual[("id", ("PATIENTS", "ID2"))] == ["id21"]
-    TestCase().assertCountEqual(
-        zip(
-            actual[("language", ("ADMISSIONS", "LANGUAGE"))][0],
-            actual[("code", ("ADMISSIONS", "ID"))][0],
-        ),
-        (("lang1", "id1"), ("lang2", "id2"), ("lang3", "id3"), ("lang4", "id4")),
-    )
-
-    # Test without squash rules
-    data = {
-        ("name", ("PATIENTS", "NAME")): ["bob", "bob", "bob", "bob"],
-        ("id", ("PATIENTS", "ID")): ["id1", "id1", "id1", "id1"],
-        ("id", ("PATIENTS", "ID2")): ["id21", "id21", "id21", "id21"],
-    }
-    squash_rules = ["PATIENTS", []]
-
-    actual = dataframe.squash_rows(data, squash_rules)
-
-    assert actual == data
-
-
 @mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
 def test_merge_by_attributes(_):
     attr_name = Attribute("name")

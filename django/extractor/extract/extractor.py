@@ -148,7 +148,7 @@ class Extractor:
         prev_pk_val = None
         acc = defaultdict(list)
 
-        def yield_acc(acc):
+        def prepare_yield(acc):
             counter_extract_instances.labels(
                 resource_id=analysis.resource_id,
                 resource_type=analysis.definition_id,
@@ -157,7 +157,6 @@ class Extractor:
             for key, values in acc.items():
                 if all(v == values[0] for v in values[1:]):
                     acc[key] = [values[0]]
-            yield acc
 
         for row in df:
             # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy
@@ -167,7 +166,8 @@ class Extractor:
             # and its `keys` method could return: ["name", "age"]
             pk_ind = row.keys().index(pk_col)
             if acc and row[pk_ind] != prev_pk_val:
-                yield_acc(acc)
+                prepare_yield(acc)
+                yield acc
                 acc = defaultdict(list)
             for key, value in zip(row.keys(), row):
                 acc[key].append(value)
@@ -181,4 +181,5 @@ class Extractor:
                 "is erroneous."
             )
 
-        yield_acc(acc)
+        prepare_yield(acc)
+        yield acc
