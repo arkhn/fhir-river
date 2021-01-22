@@ -55,7 +55,7 @@ class Attribute:
             return self.normalizer(value)
         except Exception as e:
             logger.warning(
-                f"Could not cast value {value} to type {self.type} " f"on attribute at path = {self.path}): {e}"
+                f"Could not cast value {value} to type {self.type} on attribute at path = {self.path}): {e}"
             )
 
         return value

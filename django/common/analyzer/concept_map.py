@@ -9,7 +9,7 @@ class ConceptMap:
         self.id = id_
 
     def __eq__(self, operand) -> bool:
-        return self.title == operand.title and self.mapping == operand.mapping
+        return self.mapping == operand.mapping
 
     def translate(self, source_code: str) -> str:
         return self.mapping[source_code]
