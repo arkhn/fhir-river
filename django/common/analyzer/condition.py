@@ -46,11 +46,10 @@ class Condition:
     def check(self, data: Dict[DataDictKey, DataDictValue]):
         data_value = data[(CONDITION_FLAG, (self.sql_column.table, self.sql_column.column))]
 
+        # TODO(jasopaum): fix conditions with lists (issue #227)
         # data_value is an array, all of its values should be similar
         if not all(el == data_value[0] for el in data_value[1:]):
-            raise ValueError(
-                "Conditions can only be checked against arrays with identical values, " f"got {data_value}."
-            )
+            raise ValueError(f"Conditions can only be checked against arrays with identical values, got {data_value}.")
         data_value = data_value[0]
 
         try:

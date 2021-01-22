@@ -36,9 +36,7 @@ class InputGroup:
         return all(condition.check(data) for condition in self.conditions)
 
     def __str__(self):
-        return (
-            f"columns: {self.columns}, static_inputs: {self.static_inputs}, " f"merging_script: {self.merging_script}"
-        )
+        return f"columns: {self.columns}, static_inputs: {self.static_inputs}, merging_script: {self.merging_script}"
 
     def __eq__(self, other):
         if not isinstance(other, InputGroup):
