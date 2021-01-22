@@ -1,5 +1,5 @@
-from inspect import getmembers, getdoc, isfunction, ismodule
 import logging
+from inspect import getdoc, getmembers, isfunction, ismodule
 
 from rest_framework import status, views
 from rest_framework.response import Response
@@ -8,9 +8,9 @@ from django.conf import settings
 
 from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
-import scripts
 
 import redis
+import scripts
 from common.analyzer import Analyzer
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
@@ -98,6 +98,7 @@ class ScriptsEndpoint(views.APIView):
     def get(self, request):
         res = []
         for module in getmembers(scripts, ismodule):
+            print(module)
             for script in getmembers(module[1], isfunction):
                 name, func = script
                 doc = getdoc(func)
