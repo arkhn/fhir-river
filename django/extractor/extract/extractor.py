@@ -135,7 +135,6 @@ class Extractor:
     @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")
     def split_dataframe(df: Query, analysis: Analysis):
-        # TODO maybe this could be replaced by a group_by?
         # Find primary key column
         logger.info(
             {
@@ -148,6 +147,18 @@ class Extractor:
 
         prev_pk_val = None
         acc = defaultdict(list)
+
+        def yield_acc(acc):
+            counter_extract_instances.labels(
+                resource_id=analysis.resource_id,
+                resource_type=analysis.definition_id,
+            ).inc()
+            # Remove duplicated values
+            for key, values in acc.items():
+                if all(v == values[0] for v in values[1:]):
+                    acc[key] = [values[0]]
+            yield acc
+
         for row in df:
             # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy
             # results) that behaves like tuples and have a `keys` methods returning the
@@ -156,14 +167,11 @@ class Extractor:
             # and its `keys` method could return: ["name", "age"]
             pk_ind = row.keys().index(pk_col)
             if acc and row[pk_ind] != prev_pk_val:
-                counter_extract_instances.labels(
-                    resource_id=analysis.resource_id,
-                    resource_type=analysis.definition_id,
-                ).inc()
-                yield acc
+                yield_acc(acc)
                 acc = defaultdict(list)
             for key, value in zip(row.keys(), row):
                 acc[key].append(value)
+
             prev_pk_val = row[pk_ind]
 
         if not acc:
@@ -173,5 +181,4 @@ class Extractor:
                 "is erroneous."
             )
 
-        counter_extract_instances.labels(resource_id=analysis.resource_id, resource_type=analysis.definition_id).inc()
-        yield acc
+        yield_acc(acc)
