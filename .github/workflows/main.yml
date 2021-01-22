@@ -159,5 +159,6 @@ jobs:
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
               "testy": "sv-multiple-owners",
-              "pyrog_server": "tr-feat-multiple_owners"
+              "pyrog_server": "tr-feat-multiple_owners",
+              "pagai": "pr-76"
             }
