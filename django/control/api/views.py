@@ -97,10 +97,8 @@ class ResourceEndpoint(views.APIView):
 class ScriptsEndpoint(views.APIView):
     def get(self, request):
         res = []
-        for module in getmembers(scripts, ismodule):
-            print(module)
-            for script in getmembers(module[1], isfunction):
-                name, func = script
-                doc = getdoc(func)
-                res.append({"name": name, "description": doc, "category": module[0]})
+        for module_name, module in getmembers(scripts, ismodule):
+            for script_name, script in getmembers(module, isfunction):
+                doc = getdoc(script)
+                res.append({"name": script_name, "description": doc, "category": module_name})
         return Response(res, status=status.HTTP_200_OK)
