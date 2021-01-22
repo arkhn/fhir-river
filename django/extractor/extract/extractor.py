@@ -148,16 +148,6 @@ class Extractor:
         prev_pk_val = None
         acc = defaultdict(list)
 
-        def prepare_yield(acc):
-            counter_extract_instances.labels(
-                resource_id=analysis.resource_id,
-                resource_type=analysis.definition_id,
-            ).inc()
-            # Remove duplicated values
-            for key, values in acc.items():
-                if all(v == values[0] for v in values[1:]):
-                    acc[key] = [values[0]]
-
         for row in df:
             # When iterating on a sqlalchemy Query, we get rows (actually sqlalchemy
             # results) that behaves like tuples and have a `keys` methods returning the
@@ -166,7 +156,10 @@ class Extractor:
             # and its `keys` method could return: ["name", "age"]
             pk_ind = row.keys().index(pk_col)
             if acc and row[pk_ind] != prev_pk_val:
-                prepare_yield(acc)
+                counter_extract_instances.labels(
+                    resource_id=analysis.resource_id,
+                    resource_type=analysis.definition_id,
+                ).inc()
                 yield acc
                 acc = defaultdict(list)
             for key, value in zip(row.keys(), row):
@@ -181,5 +174,8 @@ class Extractor:
                 "is erroneous."
             )
 
-        prepare_yield(acc)
+        counter_extract_instances.labels(
+            resource_id=analysis.resource_id,
+            resource_type=analysis.definition_id,
+        ).inc()
         yield acc

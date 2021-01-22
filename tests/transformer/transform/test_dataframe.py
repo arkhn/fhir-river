@@ -25,9 +25,9 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     data = {
-        "PATIENTS_NAME_hash": ["alicedirty", "bobdirty", "charliedirty"],
-        "PATIENTS_ID_hash": ["id1", "id2", "id3"],
-        "PATIENTS_ID2_hash": ["id21", "id22", "id23"],
+        "PATIENTS_NAME_hash": ["alicedirty", "alicedirty", "alicedirty"],
+        "PATIENTS_ID_hash": ["id1", "id1", "id1"],
+        "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
         "ADMISSIONS_LANGUAGE_hash": ["Mdirty", "Fdirty", "Fdirty"],
         "ADMISSIONS_ID_hash": ["ABCdirty", "DEFdirty", "GHIdirty"],
     }
@@ -83,7 +83,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     attributes = [attr_name, attr_id, attr_language, attr_admid]
     primary_key_column = SqlColumn("PATIENTS", "ID")
 
-    cleaned_data = dataframe.clean_data(data, attributes, primary_key_column)
+    cleaned_data = dataframe.clean_data(data, attributes, primary_key_column, "pk_val")
 
     columns = [
         ("id_name", ("PATIENTS", "NAME")),
@@ -94,9 +94,9 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     ]
 
     expected = {
-        columns[0]: ["alice", "bob", "charlie"],
-        columns[1]: ["id1", "id2", "id3"],
-        columns[2]: ["id21", "id22", "id23"],
+        columns[0]: ["alice"],
+        columns[1]: ["id1"],
+        columns[2]: ["id21"],
         columns[3]: ["male", "female", "female"],
         columns[4]: ["abc", "def", "ghi"],
     }

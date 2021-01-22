@@ -2,9 +2,10 @@ from typing import List
 
 from common.analyzer.attribute import Attribute
 from common.analyzer.condition import CONDITION_FLAG
+from common.analyzer.sql_column import SqlColumn
 
 
-def clean_data(data, attributes: List[Attribute], primary_key):
+def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, primary_key_value: str):
     """Apply cleaning scripts and concept maps.
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
@@ -26,12 +27,15 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 attr_col_name = (input_group.id, (col.table, col.column))
 
                 # cleaned_data will be modified several times
-                cleaned_data[attr_col_name] = data[dict_col_name]
+                if col.table_name() == primary_key_col.table_name():
+                    cleaned_data[attr_col_name] = [data[dict_col_name][0]]
+                else:
+                    cleaned_data[attr_col_name] = data[dict_col_name]
 
                 # Apply cleaning script
                 if col.cleaning_script:
                     cleaned_data[attr_col_name] = col.cleaning_script.apply(
-                        cleaned_data[attr_col_name], dict_col_name, primary_key
+                        cleaned_data[attr_col_name], dict_col_name, primary_key_value
                     )
 
                 # Cast the data to the right type
@@ -40,7 +44,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
                 # Apply concept map
                 if col.concept_map:
                     cleaned_data[attr_col_name] = col.concept_map.apply(
-                        cleaned_data[attr_col_name], dict_col_name, primary_key
+                        cleaned_data[attr_col_name], dict_col_name, primary_key_value
                     )
 
             for condition in input_group.conditions:
@@ -58,11 +62,7 @@ def clean_data(data, attributes: List[Attribute], primary_key):
     return cleaned_data
 
 
-def merge_by_attributes(
-    data,
-    attributes: List[Attribute],
-    primary_key: str,
-):
+def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: str):
     """Apply merging scripts.
      Takes as input a dict of the form
 
@@ -119,7 +119,7 @@ def merge_by_attributes(
                             [col[i] for col in cur_attr_columns],
                             input_group.static_inputs,
                             attribute.path,
-                            primary_key,
+                            primary_key_value,
                         )
                         for i in range(col_len)
                     )

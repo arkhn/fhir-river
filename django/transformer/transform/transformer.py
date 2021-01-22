@@ -34,7 +34,7 @@ class Transformer:
 
         # Apply cleaning scripts and concept map on data
         logger.debug({"message": f"Apply cleaning to {data}", **logging_extras})
-        data = clean_data(data, analysis.attributes, primary_key)
+        data = clean_data(data, analysis.attributes, analysis.primary_key_column, primary_key)
 
         # Apply merging scripts on data
         logger.debug({"message": f"Apply merging scripts to {data}", **logging_extras})
