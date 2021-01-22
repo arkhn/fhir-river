@@ -157,4 +157,5 @@ jobs:
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
+              "pyrog": "tr-feat-multiple_owners"
             }
