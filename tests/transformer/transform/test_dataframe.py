@@ -1,4 +1,4 @@
-from unittest import TestCase, mock
+from unittest import mock
 
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript
@@ -138,20 +138,16 @@ def test_merge_by_attributes(_):
         )
     )
     attr_language.add_input_group(
-        InputGroup(
-            id_="not_reached",
-            attribute=attr_language,
-            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")],
-        )
+        InputGroup(id_="not_reached", attribute=attr_language, columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")])
     )
 
     attr_admid = Attribute("admid")
-    group = InputGroup(
-        id_="id_admid",
-        attribute=attr_admid,
-        columns=[SqlColumn("ADMISSIONS", "ID")],
-    )
+    group = InputGroup(id_="id_admid", attribute=attr_admid, columns=[SqlColumn("ADMISSIONS", "ID")])
     attr_admid.add_input_group(group)
+
+    attr_static = Attribute("static")
+    group = InputGroup(id_="static", attribute=attr_static, static_inputs=["static"])
+    attr_static.add_input_group(group)
 
     data = {
         ("id_name", ("PATIENTS", "NAME")): ["bob"],
@@ -164,14 +160,15 @@ def test_merge_by_attributes(_):
         (CONDITION_FLAG, ("ADMISSIONS", "COND_LANG")): ["false"],
     }
 
-    attributes = [attr_name, attr_id, attr_language, attr_admid]
+    attributes = [attr_name, attr_id, attr_language, attr_admid, attr_static]
 
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
     expected = {
-        "name": ("bob",),
-        "id": ("id1id21merge",),
-        "language": (("lang21", "lang22", "lang23", "lang24"),),
-        "admid": (("hadmid1", "hadmid2", "hadmid3", "hadmid4"),),
+        "name": ["bob"],
+        "id": ["id1id21merge"],
+        "language": [("lang21", "lang22", "lang23", "lang24")],
+        "admid": [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        "static": ["static"],
     }
 
     assert actual == expected

@@ -17,19 +17,13 @@ def build_metadata(analysis):
     # TODO systems here are hardcoded from fhirstore.
     # Maybe the loader should tag the items?
     metadata["tag"] = [
-        {
-            "system": "http://terminology.arkhn.org/CodeSystem/source",
-            "code": analysis.source_id,
-        },
-        {
-            "system": "http://terminology.arkhn.org/CodeSystem/resource",
-            "code": analysis.resource_id,
-        },
+        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis.source_id},
+        {"system": "http://terminology.arkhn.org/CodeSystem/resource", "code": analysis.resource_id},
     ]
 
     # in case the definition is a profile, add the profile to the resource metadata
     definition = analysis.definition
-    if definition["kind"] == "resource" and definition["derivation"] == "constraint":
+    if definition.get("kind") == "resource" and definition.get("derivation") == "constraint":
         metadata["profile"] = [definition["url"]]
 
     return metadata
@@ -63,19 +57,16 @@ def build_fhir_object(row, path_attributes_map, index=None):
             # If we didn't find an index in the path, then we don't worry about arrays
             val = row[attr.path]
 
-            if isinstance(val, (tuple, list)) and len(val) == 1:
-                # If we have a value with length 1, we simply extract the value and put
-                # it in the fhir object
-                insert_in_fhir_object(fhir_object, path, val[0])
-            elif isinstance(val, (tuple, list)) and index is not None:
+            if isinstance(val, list) and index is not None:
                 # If index is not None, we met an array before. Here, val will have
                 # several elements but we know which one we need
-                insert_in_fhir_object(fhir_object, path, val[index])
+                data_value = val[0] if len(val) == 1 else val[index]
+                insert_in_fhir_object(fhir_object, path, data_value=data_value)
             else:
                 # Otherwise, we try to send it all to insert_in_fhir_object.
                 # We could have a literal value or an iterable but in this case, this
                 # function will check that all the values in the iterable are equal.
-                insert_in_fhir_object(fhir_object, path, val)
+                insert_in_fhir_object(fhir_object, path, data_value=val)
 
         else:
             # Handle array case
@@ -94,7 +85,7 @@ def build_fhir_object(row, path_attributes_map, index=None):
             array = handle_array_attributes(attributes_in_array, row)
             # Insert them a the right position
             if array:
-                insert_in_fhir_object(fhir_object, remove_index(array_path), array)
+                insert_in_fhir_object(fhir_object, remove_index(array_path), sub_fhir_object=array)
             arrays_done.add(array_path)
 
     return fhir_object
@@ -126,7 +117,7 @@ def handle_array_attributes(attributes_in_array, row):
     length = 1
     for attr in attributes_in_array.values():
         val = row.get(attr.path)
-        if not isinstance(val, tuple) or len(val) == 1:
+        if not isinstance(val, list) or len(val) == 1:
             continue
         if length != 1 and len(val) != length:
             raise ValueError("mismatch in array lengths")
@@ -142,25 +133,27 @@ def handle_array_attributes(attributes_in_array, row):
     return array
 
 
-def insert_in_fhir_object(fhir_object, path, value):
-    if isinstance(value, tuple):
-        # If we try to insert a tuple in the fhir object, we need to make sure that all
+def insert_in_fhir_object(fhir_object, path, data_value=None, sub_fhir_object=None):
+    if sub_fhir_object:
+        val = sub_fhir_object
+    elif isinstance(data_value, list):
+        # If we try to insert a list in the fhir object, we need to make sure that all
         # the values are identical and insert only one of them.
         # This can happen after a join on a table for which the other values are
         # different and have been squashed.
-        if any([v != value[0] for v in value]):
+        if any([v != data_value[0] for v in data_value]):
             raise ValueError(
-                "Trying to insert several different values in a non-list attribute: " f"{value} in {path}"
+                f"trying to insert several different values in a non-list attribute: {data_value} in {path}"
             )
-        val = value[0]
-    # We return if value is "" because empty strings don't pass validation for some fhir
-    # attributes but it would be better to return None in the cleaning scripts if we
-    # don't want to add an empty string.
+        val = data_value[0]
     else:
-        val = value
+        val = data_value
 
     if val is None or val == "" or val == {}:
         # If value is None, we don't want to do anything so we stop here.
+        # We return if value is "" because empty strings don't pass validation for
+        # some fhir attributes but it would be better to return None in the
+        # cleaning scripts if we don't want to add an empty string.
         return
 
     # Here we iterate through the path to go down the fhir object.

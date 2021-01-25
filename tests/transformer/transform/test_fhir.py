@@ -29,10 +29,10 @@ def test_create_instance(mock_datetime):
     }
 
     row = {
-        attr_maritalStatus.path: ("D",),
-        attr_birthDate.path: ("2000-10-10",),
-        attr_identifier.path: ("A",),
-        attr_generalPractitioner.path: ("Practitioner",),
+        attr_maritalStatus.path: ["D"],
+        attr_birthDate.path: ["2000-10-10"],
+        attr_identifier.path: ["A"],
+        attr_generalPractitioner.path: ["Practitioner"],
     }
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
@@ -89,8 +89,8 @@ def test_handle_array_attributes():
     attr1 = Attribute("attr1")
     attr2 = Attribute("attr2")
     row = {
-        attr1.path: ("A1", "A2", "A3"),
-        attr2.path: "B",
+        attr1.path: ["A1", "A2", "A3"],
+        attr2.path: ["B"],
     }
     attributes_in_array = {
         "path1": attr1,
@@ -107,8 +107,8 @@ def test_handle_array_attributes():
 
     # With mismatch in lengths
     row = {
-        attr1.path: ("A1", "A2", "A3"),
-        attr2.path: ("B1", "B2"),
+        attr1.path: ["A1", "A2", "A3"],
+        attr2.path: ["B1", "B2"],
     }
     with raises(ValueError, match="mismatch in array lengths"):
         fhir.handle_array_attributes(attributes_in_array, row)
@@ -126,9 +126,9 @@ def test_array_of_literals():
     }
 
     row = {
-        attr_0.path: ("Bob",),
-        attr_1.path: ("Dylan",),
-        attr_2.path: ("Ross",),
+        attr_0.path: ["Bob"],
+        attr_1.path: ["Dylan"],
+        attr_2.path: ["Ross"],
     }
 
     fhir_object = fhir.build_fhir_object(row, path_attributes_map)
