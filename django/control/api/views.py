@@ -1,4 +1,5 @@
 import logging
+from inspect import getdoc, getmembers, isfunction, ismodule
 
 from rest_framework import status, views
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
 
 import redis
+import scripts
 from common.analyzer import Analyzer
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
@@ -90,3 +92,13 @@ class ResourceEndpoint(views.APIView):
                 )
 
         return Response(status=status.HTTP_200_OK)
+
+
+class ScriptsEndpoint(views.APIView):
+    def get(self, request):
+        res = []
+        for module_name, module in getmembers(scripts, ismodule):
+            for script_name, script in getmembers(module, isfunction):
+                doc = getdoc(script)
+                res.append({"name": script_name, "description": doc, "category": module_name})
+        return Response(res, status=status.HTTP_200_OK)
