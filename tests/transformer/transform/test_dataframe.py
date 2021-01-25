@@ -138,27 +138,15 @@ def test_merge_by_attributes(_):
         )
     )
     attr_language.add_input_group(
-        InputGroup(
-            id_="not_reached",
-            attribute=attr_language,
-            columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")],
-        )
+        InputGroup(id_="not_reached", attribute=attr_language, columns=[SqlColumn("ADMISSIONS", "LANGUAGE_3")])
     )
 
     attr_admid = Attribute("admid")
-    group = InputGroup(
-        id_="id_admid",
-        attribute=attr_admid,
-        columns=[SqlColumn("ADMISSIONS", "ID")],
-    )
+    group = InputGroup(id_="id_admid", attribute=attr_admid, columns=[SqlColumn("ADMISSIONS", "ID")])
     attr_admid.add_input_group(group)
 
     attr_static = Attribute("static")
-    group = InputGroup(
-        id_="static",
-        attribute=attr_static,
-        static_inputs=["static"],
-    )
+    group = InputGroup(id_="static", attribute=attr_static, static_inputs=["static"])
     attr_static.add_input_group(group)
 
     data = {
@@ -176,11 +164,11 @@ def test_merge_by_attributes(_):
 
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
     expected = {
-        "name": ("bob",),
-        "id": ("id1id21merge",),
-        "language": (("lang21", "lang22", "lang23", "lang24"),),
-        "admid": (("hadmid1", "hadmid2", "hadmid3", "hadmid4"),),
-        "static": ("static",),
+        "name": ["bob"],
+        "id": ["id1id21merge"],
+        "language": [("lang21", "lang22", "lang23", "lang24")],
+        "admid": [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        "static": ["static"],
     }
 
     assert actual == expected

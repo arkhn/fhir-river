@@ -101,7 +101,7 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                                 f"The mapping contains an attribute ({attribute.path}) "
                                 "with several static inputs (and no sql input)"
                             )
-                        merged_data[attribute.path] = [input_group.static_inputs]
+                        merged_data[attribute.path] = input_group.static_inputs
                 elif input_group.merging_script:
                     # TODO I don't think the order of pyrog inputs is preserved for
                     # merging scripts. When trying to merge several columns that each
@@ -127,7 +127,7 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                 elif len(cur_attr_columns) != 1:
                     raise ValueError(f"The mapping contains several unmerged columns for attribute {attribute}")
                 else:
-                    merged_data[attribute.path] = [cur_attr_columns[0]]
+                    merged_data[attribute.path] = cur_attr_columns[0]
 
                 break
 

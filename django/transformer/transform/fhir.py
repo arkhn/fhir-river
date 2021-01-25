@@ -60,7 +60,8 @@ def build_fhir_object(row, path_attributes_map, index=None):
             if isinstance(val, list) and index is not None:
                 # If index is not None, we met an array before. Here, val will have
                 # several elements but we know which one we need
-                insert_in_fhir_object(fhir_object, path, data_value=val[index])
+                data_value = val[0] if len(val) == 1 else val[index]
+                insert_in_fhir_object(fhir_object, path, data_value=data_value)
             else:
                 # Otherwise, we try to send it all to insert_in_fhir_object.
                 # We could have a literal value or an iterable but in this case, this
@@ -135,7 +136,7 @@ def handle_array_attributes(attributes_in_array, row):
 def insert_in_fhir_object(fhir_object, path, data_value=None, sub_fhir_object=None):
     if sub_fhir_object:
         val = sub_fhir_object
-    else:
+    elif isinstance(data_value, list):
         # If we try to insert a list in the fhir object, we need to make sure that all
         # the values are identical and insert only one of them.
         # This can happen after a join on a table for which the other values are
@@ -145,6 +146,8 @@ def insert_in_fhir_object(fhir_object, path, data_value=None, sub_fhir_object=No
                 f"trying to insert several different values in a non-list attribute: {data_value} in {path}"
             )
         val = data_value[0]
+    else:
+        val = data_value
 
     if val is None or val == "" or val == {}:
         # If value is None, we don't want to do anything so we stop here.
