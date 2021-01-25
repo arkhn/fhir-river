@@ -123,9 +123,7 @@ def handle_array_attributes(attributes_in_array, row):
             raise ValueError("mismatch in array lengths")
         length = len(val)
 
-    attributes_in_nested_arrays = {
-        k: v for k, v in attributes_in_array.items() if get_position_first_index(k.split(".")) is not None
-    }
+    attributes_in_nested_arrays = {k: v for k, v in attributes_in_array.items() if has_index(k)}
 
     array = []
     if attributes_in_nested_arrays and all(
@@ -190,6 +188,10 @@ def insert_in_fhir_object(fhir_object, path, data_value=None, sub_fhir_object=No
     else:
         # Else, we are inserting a literal
         cur_location[path[-1]] = val
+
+
+def has_index(path):
+    return re.search(r"\[\d+\]", path)
 
 
 def get_position_first_index(path):
