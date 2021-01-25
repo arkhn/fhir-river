@@ -57,15 +57,15 @@ def test_check_conditions():
     group.add_condition(Condition("EXCLUDE", SqlColumn("public", "patients", "subject_id"), "GT", "123"))
 
     row = {
-        (CONDITION_FLAG, ("public", "patients", "gender")): ["M"],
-        (CONDITION_FLAG, ("public", "patients", "subject_id")): [123],
+        (CONDITION_FLAG, ("public.patients", "gender")): ["M"],
+        (CONDITION_FLAG, ("public.patients", "subject_id")): [123],
     }
 
     assert group.check_conditions(row)
 
     row = {
-        (CONDITION_FLAG, ("public", "patients", "gender")): ["M"],
-        (CONDITION_FLAG, ("public", "patients", "subject_id")): [124],
+        (CONDITION_FLAG, ("public.patients", "gender")): ["M"],
+        (CONDITION_FLAG, ("public.patients", "subject_id")): [124],
     }
 
     assert not group.check_conditions(row)
