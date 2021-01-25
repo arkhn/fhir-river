@@ -155,6 +155,7 @@ jobs:
           contextName: river-ci-${{ github.sha }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           deploymentRef: sv/pyrog-multiple-owners
+          debug: true
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
