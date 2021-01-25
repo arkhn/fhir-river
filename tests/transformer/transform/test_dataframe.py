@@ -153,6 +153,14 @@ def test_merge_by_attributes(_):
     )
     attr_admid.add_input_group(group)
 
+    attr_static = Attribute("static")
+    group = InputGroup(
+        id_="static",
+        attribute=attr_static,
+        static_inputs=["static"],
+    )
+    attr_static.add_input_group(group)
+
     data = {
         ("id_name", ("PATIENTS", "NAME")): ["bob"],
         ("id_id", ("PATIENTS", "ID")): ["id1"],
@@ -164,7 +172,7 @@ def test_merge_by_attributes(_):
         (CONDITION_FLAG, ("ADMISSIONS", "COND_LANG")): ["false"],
     }
 
-    attributes = [attr_name, attr_id, attr_language, attr_admid]
+    attributes = [attr_name, attr_id, attr_language, attr_admid, attr_static]
 
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
     expected = {
@@ -172,6 +180,7 @@ def test_merge_by_attributes(_):
         "id": ("id1id21merge",),
         "language": (("lang21", "lang22", "lang23", "lang24"),),
         "admid": (("hadmid1", "hadmid2", "hadmid3", "hadmid4"),),
+        "static": ("static",),
     }
 
     assert actual == expected
