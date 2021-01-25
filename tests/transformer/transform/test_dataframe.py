@@ -1,4 +1,4 @@
-from unittest import TestCase, mock
+from unittest import mock
 
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript

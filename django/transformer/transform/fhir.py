@@ -17,19 +17,13 @@ def build_metadata(analysis):
     # TODO systems here are hardcoded from fhirstore.
     # Maybe the loader should tag the items?
     metadata["tag"] = [
-        {
-            "system": "http://terminology.arkhn.org/CodeSystem/source",
-            "code": analysis.source_id,
-        },
-        {
-            "system": "http://terminology.arkhn.org/CodeSystem/resource",
-            "code": analysis.resource_id,
-        },
+        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis.source_id},
+        {"system": "http://terminology.arkhn.org/CodeSystem/resource", "code": analysis.resource_id},
     ]
 
     # in case the definition is a profile, add the profile to the resource metadata
     definition = analysis.definition
-    if definition["kind"] == "resource" and definition["derivation"] == "constraint":
+    if definition.get("kind") == "resource" and definition.get("derivation") == "constraint":
         metadata["profile"] = [definition["url"]]
 
     return metadata
