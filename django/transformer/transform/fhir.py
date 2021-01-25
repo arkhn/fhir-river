@@ -2,6 +2,8 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
+from common.analyzer.attribute import Attribute
+
 
 def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)
@@ -119,15 +121,15 @@ def handle_array_attributes(attributes_in_array, row):
         val = row.get(attr.path)
         if not isinstance(val, list) or len(val) == 1:
             continue
-        if length != 1 and len(val) != length:
+        if length not in (1, len(val)):
             raise ValueError("mismatch in array lengths")
         length = len(val)
 
-    attributes_in_nested_arrays = {k: v for k, v in attributes_in_array.items() if has_index(k)}
+    attributes_in_nested_arrays = {path: attr for path, attr in attributes_in_array.items() if has_index(path)}
 
     array = []
     if attributes_in_nested_arrays and all(
-        path in attributes_in_nested_arrays or len(row.get(attr.path)) == 1
+        path in attributes_in_nested_arrays or has_single_value(attr, row)
         for path, attr in attributes_in_array.items()
     ):
         # If we have a nested array and all
@@ -214,3 +216,8 @@ def get_element_in_array(array, index):
     if len(array) == 1:
         return [array[0]]
     return [array[index]]
+
+
+def has_single_value(attribute: Attribute, row):
+    # Helper function to check if attr is attribute comes from the primary table or not
+    return len(row[attribute.path]) == 1

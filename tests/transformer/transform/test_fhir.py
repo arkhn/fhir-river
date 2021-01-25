@@ -66,10 +66,10 @@ def test_build_nested_arrays(mock_datetime):
     }
 
     row = {
-        attr_identifier.path: ("123",),
-        attr_status.path: ("active",),
-        attr_price_component_f.path: ("F1", "F2"),
-        attr_price_component_t.path: ("T1", "T2"),
+        attr_identifier.path: ["123"],
+        attr_status.path: ["active"],
+        attr_price_component_f.path: ["F1", "F2"],
+        attr_price_component_t.path: ["T1", "T2"],
     }
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
@@ -91,11 +91,11 @@ def test_build_nested_arrays(mock_datetime):
     }
 
     row = {
-        attr_identifier.path: ("123",),
-        attr_status.path: ("active",),
-        attr_sequence.path: ("seq",),
-        attr_price_component_f.path: ("F1", "F2"),
-        attr_price_component_t.path: ("T1", "T2"),
+        attr_identifier.path: ["123"],
+        attr_status.path: ["active"],
+        attr_sequence.path: ["seq"],
+        attr_price_component_f.path: ["F1", "F2"],
+        attr_price_component_t.path: ["T1", "T2"],
     }
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
@@ -111,11 +111,11 @@ def test_build_nested_arrays(mock_datetime):
 
     # Nested with joined value in outside array
     row = {
-        attr_identifier.path: ("123",),
-        attr_status.path: ("active",),
-        attr_sequence.path: ("seq1", "seq2"),
-        attr_price_component_f.path: ("F1", "F2"),
-        attr_price_component_t.path: ("T1", "T2"),
+        attr_identifier.path: ["123"],
+        attr_status.path: ["active"],
+        attr_sequence.path: ["seq1", "seq2"],
+        attr_price_component_f.path: ["F1", "F2"],
+        attr_price_component_t.path: ["T1", "T2"],
     }
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
@@ -141,12 +141,12 @@ def test_build_nested_arrays(mock_datetime):
     }
 
     row = {
-        attr_identifier.path: ("123",),
-        attr_status.path: ("active",),
-        attr_reference.path: ("ref",),
-        attr_sequence.path: ("seq1", "seq2"),
-        attr_price_component_f.path: ("F1", "F2"),
-        attr_price_component_t.path: ("T1", "T2"),
+        attr_identifier.path: ["123"],
+        attr_status.path: ["active"],
+        attr_reference.path: ["ref"],
+        attr_sequence.path: ["seq1", "seq2"],
+        attr_price_component_f.path: ["F1", "F2"],
+        attr_price_component_t.path: ["T1", "T2"],
     }
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
