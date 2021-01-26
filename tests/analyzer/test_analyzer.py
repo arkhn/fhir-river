@@ -47,29 +47,19 @@ def test_get_primary_key():
 
     # With owner
     resource_mapping = {
+        "primaryKeyOwner": {"name": "owner"},
         "primaryKeyTable": "table",
         "primaryKeyColumn": "col",
-        "source": {"credential": {"owner": "owner"}},
     }
     primary_key = analyzer.get_primary_key(resource_mapping)
 
-    assert primary_key == SqlColumn("table", "col", "owner")
-
-    # Without owner
-    resource_mapping = {
-        "primaryKeyTable": "table",
-        "primaryKeyColumn": "col",
-        "source": {"credential": {"owner": ""}},
-    }
-    primary_key = analyzer.get_primary_key(resource_mapping)
-
-    assert primary_key == SqlColumn("table", "col")
+    assert primary_key == SqlColumn("owner", "table", "col")
 
     # Raising error
     resource_mapping = {
         "primaryKeyTable": "",
         "primaryKeyColumn": "col",
-        "source": {"credential": {"owner": ""}},
+        "primaryKeyOwner": {"name": "owner"},
         "definitionId": "fhirtype",
     }
     with pytest.raises(
@@ -87,39 +77,42 @@ def test_analyze_mapping(patient_mapping):
     assert len(analysis.attributes) == 18
 
     assert analyzer.get_analysis_columns(analysis) == {
-        SqlColumn("patients", "row_id"),
-        SqlColumn("patients", "subject_id"),
-        SqlColumn("patients", "dob"),
-        SqlColumn("patients", "dod"),
-        SqlColumn("patients", "expire_flag"),
-        SqlColumn("patients", "gender"),
+        SqlColumn("mimiciii", "patients", "row_id"),
+        SqlColumn("mimiciii", "patients", "subject_id"),
+        SqlColumn("mimiciii", "patients", "dob"),
+        SqlColumn("mimiciii", "patients", "dod"),
+        SqlColumn("mimiciii", "patients", "expire_flag"),
+        SqlColumn("mimiciii", "patients", "gender"),
         SqlColumn(
+            "mimiciii",
             "admissions",
             "admittime",
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
+                    SqlColumn("mimiciii", "patients", "subject_id"),
+                    SqlColumn("mimiciii", "admissions", "subject_id"),
                 )
             ],
         ),
         SqlColumn(
+            "mimiciii",
             "admissions",
             "marital_status",
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
+                    SqlColumn("mimiciii", "patients", "subject_id"),
+                    SqlColumn("mimiciii", "admissions", "subject_id"),
                 )
             ],
         ),
         SqlColumn(
+            "mimiciii",
             "admissions",
             "language",
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
+                    SqlColumn("mimiciii", "patients", "subject_id"),
+                    SqlColumn("mimiciii", "admissions", "subject_id"),
                 )
             ],
         ),
@@ -127,12 +120,13 @@ def test_analyze_mapping(patient_mapping):
     assert analysis.filters == [
         SqlFilter(
             SqlColumn(
+                "mimiciii",
                 "admissions",
                 "adm_date",
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "subject_id"),
-                        SqlColumn("admissions", "subject_id"),
+                        SqlColumn("mimiciii", "patients", "subject_id"),
+                        SqlColumn("mimiciii", "admissions", "subject_id"),
                     )
                 ],
             ),
@@ -141,14 +135,17 @@ def test_analyze_mapping(patient_mapping):
         ),
     ]
     assert analyzer.get_analysis_joins(analysis) == {
-        SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
+        SqlJoin(
+            SqlColumn("mimiciii", "patients", "subject_id"),
+            SqlColumn("mimiciii", "admissions", "subject_id"),
+        ),
     }
     assert analysis.reference_paths == {"generalPractitioner"}
 
 
 def test_analyze_attribute(patient_mapping, dict_map_gender):
     analyzer = Analyzer()
-    analyzer._cur_analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analyzer._cur_analysis.primary_key_column = SqlColumn("mimiciii", "patients", "subject_id")
 
     attribute_mapping = {
         "id": "ck8ooenpu26984kp4wyiz4yc2",
@@ -173,6 +170,7 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                         "inputGroupId": "ckdom8lgq0045m29ksz6vudvc",
                         "sqlValue": {
                             "id": "ck8ooenw827004kp41nv3kcmq",
+                            "owner": {"name": "mimiciii"},
                             "table": "patients",
                             "column": "gender",
                             "joinId": None,
@@ -183,12 +181,14 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                                     "tables": [
                                         {
                                             "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                                            "owner": {"name": "mimiciii"},
                                             "table": "patients",
                                             "column": "subject_id",
                                             "joinId": "ckdyl65kj0195gu9k43qei6xp",
                                         },
                                         {
                                             "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                                            "owner": {"name": "mimiciii"},
                                             "table": "admissions",
                                             "column": "subject_id",
                                             "joinId": "ckdyl65kj0195gu9k43qei6xp",
@@ -209,6 +209,7 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                         "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
                         "sqlValue": {
                             "id": "ckdyl65kl0335gu9kup0hwhe0",
+                            "owner": {"name": "mimiciii"},
                             "table": "admissions",
                             "column": "expire_flag",
                             "joinId": "ckdyl65kj0195gu9k43qei6xq",
@@ -219,12 +220,14 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                                     "tables": [
                                         {
                                             "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                                            "owner": {"name": "mimiciii"},
                                             "table": "patients",
                                             "column": "subject_id",
                                             "joinId": "ckdyl65kj0195gu9k43qei6xp",
                                         },
                                         {
                                             "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                                            "owner": {"name": "mimiciii"},
                                             "table": "join_table",
                                             "column": "subject_id",
                                             "joinId": "ckdyl65kj0195gu9k43qei6xp",
@@ -237,12 +240,14 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                                     "tables": [
                                         {
                                             "id": "ckdyl65kj0196gu9ku2dy0ygg",
+                                            "owner": {"name": "mimiciii"},
                                             "table": "join_table",
                                             "column": "adm_id",
                                             "joinId": "ckdyl65kj0195gu9k43qei6xp",
                                         },
                                         {
                                             "id": "ckdyl65kj0197gu9k1lrvx3bl",
+                                            "owner": {"name": "mimiciii"},
                                             "table": "admissions",
                                             "column": "adm_id",
                                             "joinId": "ckdyl65kj0195gu9k43qei6xp",
@@ -268,16 +273,17 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
             Condition(
                 "EXCLUDE",
                 SqlColumn(
+                    "mimiciii",
                     "admissions",
                     "expire_flag",
                     joins=[
                         SqlJoin(
-                            SqlColumn("patients", "subject_id"),
-                            SqlColumn("join_table", "subject_id"),
+                            SqlColumn("mimiciii", "patients", "subject_id"),
+                            SqlColumn("mimiciii", "join_table", "subject_id"),
                         ),
                         SqlJoin(
-                            SqlColumn("join_table", "adm_id"),
-                            SqlColumn("admissions", "adm_id"),
+                            SqlColumn("mimiciii", "join_table", "adm_id"),
+                            SqlColumn("mimiciii", "admissions", "adm_id"),
                         ),
                     ],
                 ),
@@ -287,12 +293,13 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
         ],
         columns=[
             SqlColumn(
+                "mimiciii",
                 "patients",
                 "gender",
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "subject_id"),
-                        SqlColumn("admissions", "subject_id"),
+                        SqlColumn("mimiciii", "patients", "subject_id"),
+                        SqlColumn("mimiciii", "admissions", "subject_id"),
                     )
                 ],
             )

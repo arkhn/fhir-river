@@ -14,7 +14,7 @@ from sqlalchemy.orm.query import Query
 
 meta = MetaData()
 tables = {
-    "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id")),
+    "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id"), schema="public"),
     "admissions": Table(
         "admissions",
         meta,
@@ -22,9 +22,10 @@ tables = {
         Column("row_id"),
         Column("patient_id"),
         Column("admittime"),
+        schema="public",
     ),
-    "prescriptions": Table("prescriptions", meta, Column("row_id")),
-    "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id")),
+    "prescriptions": Table("prescriptions", meta, Column("row_id"), schema="public"),
+    "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id"), schema="public"),
 }
 
 
@@ -53,15 +54,15 @@ def test_sqlalchemy_query(mock_sha1):
     attribute_a = Attribute(path="path", definition_id="string")
     input_group_a = InputGroup(id_="group", attribute=attribute_a)
     attribute_a.add_input_group(input_group_a)
-    input_group_a.add_column(SqlColumn("patients", "subject_id", None))
+    input_group_a.add_column(SqlColumn("public", "patients", "subject_id"))
 
     attribute_b = Attribute(path="path", definition_id="string")
     input_group_b = InputGroup(id_="group", attribute=attribute_b)
     attribute_b.add_input_group(input_group_b)
-    input_group_b.add_column(SqlColumn("patients", "row_id", None))
+    input_group_b.add_column(SqlColumn("public", "patients", "row_id"))
     condition = Condition(
         action="INCLUDE",
-        sql_column=SqlColumn("patients", "row_id", None),
+        sql_column=SqlColumn("public", "patients", "row_id"),
         relation="EQ",
         value="333",
     )
@@ -72,36 +73,36 @@ def test_sqlalchemy_query(mock_sha1):
     attribute_c.add_input_group(input_group_c)
     input_group_c.add_column(
         SqlColumn(
+            "public",
             "admissions",
             "admittime",
-            None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "patient_id", None),
-                    SqlColumn("admissions", "patient_id", None),
+                    SqlColumn("public", "patients", "patient_id"),
+                    SqlColumn("public", "admissions", "patient_id"),
                 )
             ],
         )
     )
     condition = Condition(
         action="INCLUDE",
-        sql_column=SqlColumn("patients", "row_id", None),
+        sql_column=SqlColumn("public", "patients", "row_id"),
         relation="EQ",
         value="333",
     )
     input_group_c.add_condition(condition)
 
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.add_filter(
         SqlFilter(
             SqlColumn(
+                "public",
                 "admissions",
                 "admittime",
-                None,
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "patient_id", None),
-                        SqlColumn("admissions", "patient_id", None),
+                        SqlColumn("public", "patients", "patient_id"),
+                        SqlColumn("public", "admissions", "patient_id"),
                     )
                 ],
             ),
@@ -117,12 +118,12 @@ def test_sqlalchemy_query(mock_sha1):
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "patients.row_id AS patients_row_id_hash, "
+        "SELECT public.patients.subject_id AS patients_subject_id_hash, "
+        "public.patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM patients "
-        "LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.patient_id = patients.patient_id \n"
+        "FROM public.patients "
+        "LEFT OUTER JOIN public.admissions AS admissions_1 "
+        "ON admissions_1.patient_id = public.patients.patient_id \n"
         "WHERE admissions_1.admittime LIKE :param_1"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
@@ -140,34 +141,34 @@ def test_2hop_joins(mock_sha1):
     attribute.add_input_group(input_group)
     input_group.add_column(
         SqlColumn(
+            "public",
             "admissions",
             "admittime",
-            None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "row_id", None),
-                    SqlColumn("join_table", "pat_id", None),
+                    SqlColumn("public", "patients", "row_id"),
+                    SqlColumn("public", "join_table", "pat_id"),
                 ),
                 SqlJoin(
-                    SqlColumn("join_table", "adm_id", None),
-                    SqlColumn("admissions", "row_id", None),
+                    SqlColumn("public", "join_table", "adm_id"),
+                    SqlColumn("public", "admissions", "row_id"),
                 ),
             ],
         )
     )
 
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.attributes.append(attribute)
 
     query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash, "
+        "SELECT public.patients.subject_id AS patients_subject_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM patients "
-        "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+        "FROM public.patients "
+        "LEFT OUTER JOIN public.join_table AS join_table_1 ON join_table_1.pat_id = public.patients.row_id "
+        "LEFT OUTER JOIN public.admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
     )
 
 
@@ -183,13 +184,13 @@ def test_duplicated_joins(mock_sha1):
     attribute_a.add_input_group(input_group_a)
     input_group_a.add_column(
         SqlColumn(
+            "public",
             "admissions",
             "subject_id",
-            None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "subject_id", None),
-                    SqlColumn("admissions", "subject_id", None),
+                    SqlColumn("public", "patients", "subject_id"),
+                    SqlColumn("public", "admissions", "subject_id"),
                 ),
             ],
         )
@@ -200,13 +201,13 @@ def test_duplicated_joins(mock_sha1):
     attribute_b.add_input_group(input_group_b)
     input_group_b.add_column(
         SqlColumn(
+            "public",
             "admissions",
             "row_id",
-            None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "subject_id", None),
-                    SqlColumn("admissions", "subject_id", None),
+                    SqlColumn("public", "patients", "subject_id"),
+                    SqlColumn("public", "admissions", "subject_id"),
                 ),
             ],
         )
@@ -217,19 +218,20 @@ def test_duplicated_joins(mock_sha1):
     attribute_c.add_input_group(input_group_c)
     input_group_c.add_column(
         SqlColumn(
+            "public",
             "admissions",
             "admittime",
             None,
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "row_id", None),
-                    SqlColumn("admissions", "row_id", None),
+                    SqlColumn("public", "patients", "row_id"),
+                    SqlColumn("public", "admissions", "row_id"),
                 ),
             ],
         )
     )
 
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.attributes.append(attribute_a)
     analysis.attributes.append(attribute_b)
     analysis.attributes.append(attribute_c)
@@ -238,13 +240,13 @@ def test_duplicated_joins(mock_sha1):
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash, "
+        "SELECT public.patients.subject_id AS patients_subject_id_hash, "
         "admissions_1.subject_id AS admissions_subject_id_hash, "
         "admissions_1.row_id AS admissions_row_id_hash, "
         "admissions_2.admittime AS admissions_admittime_hash \n"
-        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.subject_id = patients.subject_id "
-        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id"
+        "FROM public.patients LEFT OUTER JOIN public.admissions AS admissions_1 "
+        "ON admissions_1.subject_id = public.patients.subject_id "
+        "LEFT OUTER JOIN public.admissions AS admissions_2 ON admissions_2.row_id = public.patients.row_id"
     )
 
 
@@ -254,10 +256,10 @@ def test_apply_filters(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
     analysis = Analysis()
 
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
-    analysis.add_filter(SqlFilter(SqlColumn("admissions", "admittime"), "LIKE", "2150-08-29"))
-    analysis.add_filter(SqlFilter(SqlColumn("patients", "row_id"), "<=", "1000"))
-    analysis.add_filter(SqlFilter(SqlColumn("patients", "row_id"), "BETWEEN", "500,800"))
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
+    analysis.add_filter(SqlFilter(SqlColumn("public", "admissions", "admittime"), "LIKE", "2150-08-29"))
+    analysis.add_filter(SqlFilter(SqlColumn("public", "patients", "row_id"), "<=", "1000"))
+    analysis.add_filter(SqlFilter(SqlColumn("public", "patients", "row_id"), "BETWEEN", "500,800"))
 
     pk_values = [123, 456]
 
@@ -265,12 +267,12 @@ def test_apply_filters(mock_sha1):
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash \n"
-        "FROM patients, admissions \n"
-        "WHERE patients.subject_id IN (:param_1, :param_2) "
-        "AND admissions.admittime LIKE :param_3 "
-        "AND patients.row_id <= :param_4 "
-        "AND patients.row_id >= :param_5 AND patients.row_id <= :param_6"
+        "SELECT public.patients.subject_id AS patients_subject_id_hash \n"
+        "FROM public.patients, public.admissions \n"
+        "WHERE public.patients.subject_id IN (:param_1, :param_2) "
+        "AND public.admissions.admittime LIKE :param_3 "
+        "AND public.patients.row_id <= :param_4 "
+        "AND public.patients.row_id >= :param_5 AND public.patients.row_id <= :param_6"
     )
     assert query.statement.compile().params == {
         "param_1": 123,
@@ -287,7 +289,7 @@ def test_apply_filters(mock_sha1):
 def test_apply_filters_single_value(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
     analysis = Analysis()
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
 
     primary_key = 123
     filter_values = [primary_key]
@@ -296,9 +298,9 @@ def test_apply_filters_single_value(mock_sha1):
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash \n"
-        "FROM patients \n"
-        "WHERE patients.subject_id = :param_1"
+        "SELECT public.patients.subject_id AS patients_subject_id_hash \n"
+        "FROM public.patients \n"
+        "WHERE public.patients.subject_id = :param_1"
     )
     assert query.statement.compile().params == {"param_1": 123}
 
@@ -309,16 +311,17 @@ def test_filters_with_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
     analysis = Analysis()
 
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.add_filter(
         SqlFilter(
             SqlColumn(
+                "public",
                 "admissions",
                 "admittime",
                 joins=[
                     SqlJoin(
-                        SqlColumn("patients", "subject_id"),
-                        SqlColumn("admissions", "subject_id"),
+                        SqlColumn("public", "patients", "subject_id"),
+                        SqlColumn("public", "admissions", "subject_id"),
                     )
                 ],
             ),
@@ -331,9 +334,9 @@ def test_filters_with_joins(mock_sha1):
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash \n"
-        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.subject_id = patients.subject_id \n"
+        "SELECT public.patients.subject_id AS patients_subject_id_hash \n"
+        "FROM public.patients LEFT OUTER JOIN public.admissions AS admissions_1 "
+        "ON admissions_1.subject_id = public.patients.subject_id \n"
         "WHERE admissions_1.admittime LIKE :param_1"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
@@ -349,16 +352,17 @@ def test_conditions_with_joins(mock_sha1):
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)
     attribute.add_input_group(input_group)
-    input_group.add_column(SqlColumn("patients", "row_id"))
+    input_group.add_column(SqlColumn("public", "patients", "row_id"))
     condition = Condition(
         action="INCLUDE",
         sql_column=SqlColumn(
+            "public",
             "admissions",
             "admittime",
             joins=[
                 SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
+                    SqlColumn("public", "patients", "subject_id"),
+                    SqlColumn("public", "admissions", "subject_id"),
                 )
             ],
         ),
@@ -367,16 +371,16 @@ def test_conditions_with_joins(mock_sha1):
     )
     input_group.add_condition(condition)
 
-    analysis.primary_key_column = SqlColumn("patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.attributes.append(attribute)
 
     query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT patients.subject_id AS patients_subject_id_hash, "
-        "patients.row_id AS patients_row_id_hash, "
+        "SELECT public.patients.subject_id AS patients_subject_id_hash, "
+        "public.patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.subject_id = patients.subject_id"
+        "FROM public.patients LEFT OUTER JOIN public.admissions AS admissions_1 "
+        "ON admissions_1.subject_id = public.patients.subject_id"
     )

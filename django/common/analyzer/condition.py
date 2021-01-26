@@ -44,7 +44,7 @@ class Condition:
         self.value = value
 
     def check(self, data: Dict[DataDictKey, DataDictValue]):
-        data_value = data[(CONDITION_FLAG, (self.sql_column.table, self.sql_column.column))]
+        data_value = data[(CONDITION_FLAG, (self.sql_column.table_name(), self.sql_column.column))]
 
         # TODO(jasopaum): fix conditions with lists (issue #227)
         # data_value is an array, all of its values should be similar

@@ -27,8 +27,8 @@ The services are deployed as the same docker `arkhn/river` image, but are run wi
 
 ### OS Prerequisites
 
-* `docker`
-* `docker-compose >= 3.7`
+- `docker`
+- `docker-compose >= 3.7`
 
 ### Available compose files
 
@@ -52,11 +52,11 @@ Optional test services.
 
 ### Notes on environment
 
-* Environment variables can be stored in a `.env` file in the root directory.
-* The `.env` file is loaded by:
-  * Django's `manage.py` script, in development,
-  * Vscode's integrated terminal and launch commands,
-  * Docker-compose's cli.
+- Environment variables can be stored in a `.env` file in the root directory.
+- The `.env` file is loaded by:
+  - Django's `manage.py` script, in development,
+  - Vscode's integrated terminal and launch commands,
+  - Docker-compose's cli.
 
 ## Local development
 
@@ -64,15 +64,15 @@ Optional test services.
 
 1. Create a virtual env
 
-    python3.8 -m venv --prompt "(river) " .venv
+   python3.8 -m venv --prompt "(river) " .venv
 
 2. Activate the virtual env
 
-    source .venv/bin/activate
+   source .venv/bin/activate
 
 3. Install dev requirements
 
-    pip install -r requirements/dev.txt
+   pip install -r requirements/dev.txt
 
 ### Code quality
 
@@ -80,10 +80,10 @@ Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
 
 1. Install the hooks
 
-    precommit install
+   pre-commit install
 
 ### Tests
 
-1. Run tests in dedicated virtual env.
+1.  Run tests in dedicated virtual env.
 
         tox
