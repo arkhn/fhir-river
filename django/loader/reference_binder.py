@@ -59,7 +59,7 @@ class ReferenceBinder:
     def bind_existing_reference(self, fhir_object, reference_path: List[str]):
         resource_id = get_resource_id(fhir_object)
 
-        def bind(ref, path, is_array=False):
+        def bind(ref, path):
             # extract the type and itentifier of the reference
             reference_type = ref["type"]
             identifier = ref["identifier"]
@@ -89,7 +89,7 @@ class ReferenceBinder:
                     },
                 )
                 target_ref = self.identifier_to_key(reference_type, identifier)
-                source_ref = (fhir_object["resourceType"], path, is_array)
+                source_ref = (fhir_object["resourceType"], path)
                 self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
 
         def rec_bind_existing_reference(fhir_object, reference_path, sub_path=""):
@@ -100,9 +100,10 @@ class ReferenceBinder:
                 # If we have a list of references, we want to bind all of them.
                 # Thus, we loop on all the items in reference_attribute.
                 if isinstance(sub_fhir_object, list):
-                    return [bind(ref, f"{sub_path}{reference_path[0]}", is_array=True) for ref in sub_fhir_object]
+                    for ind, ref in enumerate(sub_fhir_object):
+                        bind(ref, f"{sub_path}{reference_path[0]}.{ind}")
                 else:
-                    return bind(sub_fhir_object, f"{sub_path}{reference_path[0]}")
+                    bind(sub_fhir_object, f"{sub_path}{reference_path[0]}")
             else:
                 for ind, sub_fhir_el in enumerate(sub_fhir_object):
                     rec_bind_existing_reference(
@@ -125,7 +126,7 @@ class ReferenceBinder:
                 logger.warning(f"incomplete identifier on resource {fhir_object['id']}: {e}")
                 continue
             pending_refs = self.load_cached_references(target_ref)
-            for (source_type, reference_path, is_array), refs in pending_refs.items():
+            for (source_type, reference_path), refs in pending_refs.items():
                 logger.debug(
                     {
                         "message": f"Updating {source_type} resources {', '.join(refs)} on reference {reference_path}",
@@ -133,8 +134,8 @@ class ReferenceBinder:
                     },
                 )
                 self.fhirstore.db[source_type].update_many(
-                    self.unresolved_resources_filter(reference_path, identifier, refs, is_array),
-                    self.reference_update(reference_path, fhir_object, is_array),
+                    self.unresolved_resources_filter(reference_path, identifier, refs),
+                    self.reference_update(reference_path, fhir_object),
                 )
             if pending_refs:
                 self.cache.delete(target_ref)
@@ -166,18 +167,13 @@ class ReferenceBinder:
             pending_refs[tuple(source_ref)].append(ref)
         return pending_refs
 
-    def unresolved_resources_filter(self, reference_path, identifier, refs, is_array):
+    def unresolved_resources_filter(self, reference_path, identifier, refs):
         query = {"id": {"$in": refs}}
-        if is_array:
-            query[reference_path] = {"$elemMatch": self.partial_identifier(identifier)}
         return query
 
     @staticmethod
-    def reference_update(reference_path, fhir_object, is_array):
-        if is_array:
-            target_path = f"{reference_path}.$.reference"
-        else:
-            target_path = f"{reference_path}.reference"
+    def reference_update(reference_path, fhir_object):
+        target_path = f"{reference_path}.reference"
         return {"$set": {target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"}}
 
     @staticmethod

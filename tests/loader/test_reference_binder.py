@@ -75,15 +75,15 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
     calls = [
         mock.call(
             f"Practitioner:{json.dumps(('123', 'http://terminology.arkhn.org/mimic_id/practitioner_id'), separators=(',', ':'))}",  # noqa
-            json.dumps((("Patient", "generalPractitioner", True), patient["id"])),
+            json.dumps((("Patient", "generalPractitioner.0"), patient["id"])),
         ),
         mock.call(
             f"Organization:{json.dumps(('789', 'http://terminology.arkhn.org/mimic_id/organization_id'), separators=(',', ':'))}",  # noqa
-            json.dumps((("Patient", "managingOrganization", False), patient["id"])),
+            json.dumps((("Patient", "managingOrganization"), patient["id"])),
         ),
         mock.call(
             f"Organization:{json.dumps(('456', 'http://terminology.arkhn.org/mimic_id/organization_id'), separators=(',', ':'))}",  # noqa
-            json.dumps((("Patient", "identifier.0.assigner", False), patient["id"])),
+            json.dumps((("Patient", "identifier.0.assigner"), patient["id"])),
         ),
     ]
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
@@ -113,18 +113,7 @@ def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_or
     store.db["Patient"].update_many.assert_has_calls(
         [
             mock.call(
-                {
-                    "id": {"$in": ["pat1"]},
-                    "generalPractitioner": {
-                        "$elemMatch": {
-                            "identifier.value": "123",
-                            "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                        }
-                    },
-                },
-                # generalPractitioner is an array, therefore we use $ to update the
-                # right item
-                {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
+                {"id": {"$in": ["pat1"]}}, {"$set": {"generalPractitioner.0.reference": "Practitioner/practitioner1"}}
             )
         ]
     )
@@ -204,7 +193,7 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
     assert res["generalPractitioner"][0].get("reference") is None
 
     target_ref = f"Practitioner:{json.dumps(('123', 'http://terminology.arkhn.org/mimic_id/practitioner_id'), separators=(',', ':'))}"  # noqa
-    source_ref = ("Patient", "generalPractitioner", True)
+    source_ref = ("Patient", "generalPractitioner.0")
     calls = [
         mock.call(target_ref, json.dumps((source_ref, patient["id"]))),
         mock.call(target_ref, json.dumps((source_ref, patient_2["id"]))),
@@ -220,44 +209,17 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
     # the Patient.generalPractitioner.reference must have been updated
     assert store.db["Patient"].update_many.call_count == 2
     store.db["Patient"].update_many.assert_any_call(
-        {
-            "id": {"$in": ["pat2"]},
-            "link": {
-                "$elemMatch": {
-                    "identifier.value": "123",
-                    "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                }
-            },
-        },
-        {"$set": {"link.$.reference": "Practitioner/practitioner1"}},
+        {"id": {"$in": ["pat2"]}}, {"$set": {"link.0.reference": "Practitioner/practitioner1"}}
     )
     try:
         store.db["Patient"].update_many.assert_any_call(
-            {
-                "id": {"$in": ["pat1", "pat2"]},
-                "generalPractitioner": {
-                    "$elemMatch": {
-                        "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                    }
-                },
-            },
-            # generalPractitioner is an array, therefore we use $ to update the right
-            # item
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
+            {"id": {"$in": ["pat1", "pat2"]}},
+            {"$set": {"generalPractitioner.0.reference": "Practitioner/practitioner1"}},
         )
     except AssertionError:
         store.db["Patient"].update_many.assert_any_call(
-            {
-                "id": {"$in": ["pat2", "pat1"]},
-                "generalPractitioner": {
-                    "$elemMatch": {
-                        "identifier.value": "123",
-                        "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",  # noqa
-                    }
-                },
-            },
-            {"$set": {"generalPractitioner.$.reference": "Practitioner/practitioner1"}},
+            {"id": {"$in": ["pat2", "pat1"]}},
+            {"$set": {"generalPractitioner.0.reference": "Practitioner/practitioner1"}},
         )
     assert store.db["Patient"].update_many.call_count == 2
 
