@@ -31,7 +31,7 @@ def build_metadata(analysis):
     return metadata
 
 
-def build_fhir_object(row, path_attributes_map, index=None):
+def build_fhir_object(row, path_attributes_map):
     """Function that actually builds a nested object from the dataframe row and the
     mapping. Note that it can be used to build only a subpart of a fhir instance.
     """
@@ -49,7 +49,10 @@ def build_fhir_object(row, path_attributes_map, index=None):
         # will try to create fhir objects with an empty path (remove_root_path removes
         # what's before the [...] included).
         if path == "":
-            return row[attr.path][index]
+            val = row[attr.path]
+            if len(val) > 1:
+                raise ValueError("can't build non-list attribute from list")
+            return val[0]
 
         # Find if there is an index in the path
         split_path = path.split(".")
@@ -59,16 +62,11 @@ def build_fhir_object(row, path_attributes_map, index=None):
             # If we didn't find an index in the path, then we don't worry about arrays
             val = row[attr.path]
 
-            if isinstance(val, list) and index is not None:
-                # If index is not None, we met an array before. Here, val will have
-                # several elements but we know which one we need
-                data_value = val[0] if len(val) == 1 else val[index]
-                insert_in_fhir_object(fhir_object, path, data_value=data_value)
-            else:
-                # Otherwise, we try to send it all to insert_in_fhir_object.
-                # We could have a literal value or an iterable but in this case, this
-                # function will check that all the values in the iterable are equal.
-                insert_in_fhir_object(fhir_object, path, data_value=val)
+            if len(val) > 1:
+                raise ValueError("can't build non-list attribute from list")
+            # If index is not None, we met an array before. Here, val will have
+            # several elements but we know which one we need
+            insert_in_fhir_object(fhir_object, path, data_value=val[0])
 
         else:
             # Handle array case
@@ -98,9 +96,9 @@ def handle_array_attributes(attributes_in_array, row):
     # We check that all the values with more than one element that we will put in the
     # array have the same length. We could not, for instance, build an object from
     # {"adress.city": ("Paris", "NY"), "adress.country": ("France", "USA", "Spain")}
-    # Note that if one value has length 1, we can "factor" it:
+    # Note that if one value has length 1, we can "develop" it:
     # {
-    #    "adress.city" : ("Paris", "Lyon"),
+    #    "adress.city" : ["Paris", "Lyon"],
     #    "adress.country" : "France"
     # }
     # will give 2 elements:
@@ -116,15 +114,17 @@ def handle_array_attributes(attributes_in_array, row):
     #       }
     #    ]
     # }
-    length = 1
+    max_df_col_length = 1
     for attr in attributes_in_array.values():
         val = row.get(attr.path)
-        if not isinstance(val, list) or len(val) == 1:
+        if not val or len(val) == 1:
             continue
-        if length not in (1, len(val)):
+        if max_df_col_length not in (1, len(val)):
             raise ValueError("mismatch in array lengths")
-        length = len(val)
+        max_df_col_length = len(val)
 
+    # Build a dict with the same structure as attributes_in_array but containing only
+    # attributes that are in a nested array
     attributes_in_nested_arrays = {path: attr for path, attr in attributes_in_array.items() if has_index(path)}
 
     array = []
@@ -132,19 +132,17 @@ def handle_array_attributes(attributes_in_array, row):
         path in attributes_in_nested_arrays or has_single_value(attr, row)
         for path, attr in attributes_in_array.items()
     ):
-        # If we have a nested array and all
-        # values outside of it come from the primary table
+        # If we have a nested array and all values outside of it
+        # come from the primary table or are 1:1 joins
         array.append(build_fhir_object(row, attributes_in_array))
 
     else:
-        for index in range(length):
-            if attributes_in_nested_arrays:
-                # If we have a nested array and some values outside of it come from
-                # a joined table, we want to expand the outside array
-                indexed_row = {k: get_element_in_array(v, index) for k, v in row.items()}
-                element = build_fhir_object(indexed_row, attributes_in_array)
-            else:
-                element = build_fhir_object(row, attributes_in_array, index=index)
+        for index in range(max_df_col_length):
+            indexed_row = {k: get_element_in_array(v, index) for k, v in row.items()}
+            # If we have a nested array and some values outside of it come from
+            # a joined table or if we don't have a nested array,
+            # we want to expand the outside array
+            element = build_fhir_object(indexed_row, attributes_in_array)
             if element is not None and element != {}:
                 array.append(element)
 
@@ -213,11 +211,10 @@ def remove_root_path(path, index_end_root):
 
 
 def get_element_in_array(array, index):
-    if len(array) == 1:
-        return [array[0]]
-    return [array[index]]
+    return [array[index if len(array) > 1 else 0]]
 
 
 def has_single_value(attribute: Attribute, row):
-    # Helper function to check if attr is attribute comes from the primary table or not
+    # Helper function to check if attribute comes from the primary table
+    # or is a 1:1 join
     return len(row[attribute.path]) == 1

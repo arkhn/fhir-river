@@ -49,7 +49,7 @@ class ReferenceBinder:
         for reference_path in dotty_paths(reference_paths):
             logger.debug(
                 {
-                    "message": f"Trying to resolve reference for resource {fhir_object['id']} " f"at {reference_path}",
+                    "message": f"Trying to resolve reference for resource {fhir_object['id']} at {reference_path}",
                     "resource_id": resource_id,
                 },
             )
@@ -65,7 +65,7 @@ class ReferenceBinder:
 
     @Timer(
         "time_bind_existing_reference",
-        "time spent resolving the documents's references",
+        "time spent resolving the document's references",
     )
     def bind_existing_reference(self, fhir_object, reference_path):
         reference_attribute = fhir_object[reference_path]
@@ -89,10 +89,7 @@ class ReferenceBinder:
                 # if found, add the ID as the "literal reference"
                 # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
                 logger.debug(
-                    {
-                        "message": f"reference to {reference_type} {identifier} resolved",
-                        "resource_id": resource_id,
-                    },
+                    {"message": f"reference to {reference_type} {identifier} resolved", "resource_id": resource_id},
                 )
                 ref["reference"] = f"{reference_type}/{referenced_resource['id']}"
             else:
@@ -131,8 +128,7 @@ class ReferenceBinder:
             for (source_type, reference_path, is_array), refs in pending_refs.items():
                 logger.debug(
                     {
-                        "message": f"Updating {source_type} resources {', '.join(refs)} "
-                        f"on reference {reference_path}",
+                        "message": f"Updating {source_type} resources {', '.join(refs)} on reference {reference_path}",
                         "resource_id": get_resource_id(fhir_object),
                     },
                 )
