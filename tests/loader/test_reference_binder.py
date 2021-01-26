@@ -13,6 +13,7 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
 
     store.db["any"].find_one.side_effect = [
         {"id": "practitioner1"},
+        {"id": "practitioner2"},
         {"id": "organization1"},
         {"id": "organization2"},
     ]
@@ -21,12 +22,19 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
         patient, [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
     )
 
-    assert store.db["any"].find_one.call_count == 3
+    assert store.db["any"].find_one.call_count == 4
     store.db["any"].find_one.assert_has_calls(
         [
             mock.call(
                 {
                     "identifier.value": "123",
+                    "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                },
+                ["id"],
+            ),
+            mock.call(
+                {
+                    "identifier.value": "321",
                     "identifier.system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
                 },
                 ["id"],
@@ -50,6 +58,7 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
 
     # literal references must have been resolved
     assert res["generalPractitioner"][0]["reference"] == "Practitioner/practitioner1"
+    assert res["generalPractitioner"][1]["reference"] == "Practitioner/practitioner2"
     assert res["managingOrganization"]["reference"] == "Organization/organization1"
     assert res["identifier"][0]["assigner"]["reference"] == "Organization/organization2"
 
@@ -60,7 +69,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
 
-    store.db["any"].find_one.side_effect = [None, None, None]
+    store.db["any"].find_one.side_effect = [None, None, None, None]
 
     res = ref_binder.resolve_references(
         patient, [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
@@ -78,6 +87,10 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
             json.dumps((("Patient", "generalPractitioner.0"), patient["id"])),
         ),
         mock.call(
+            f"Practitioner:{json.dumps(('321', 'http://terminology.arkhn.org/mimic_id/practitioner_id'), separators=(',', ':'))}",  # noqa
+            json.dumps((("Patient", "generalPractitioner.1"), patient["id"])),
+        ),
+        mock.call(
             f"Organization:{json.dumps(('789', 'http://terminology.arkhn.org/mimic_id/organization_id'), separators=(',', ':'))}",  # noqa
             json.dumps((("Patient", "managingOrganization"), patient["id"])),
         ),
@@ -87,7 +100,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
         ),
     ]
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
-    assert ref_binder.cache.sadd.call_count == 3
+    assert ref_binder.cache.sadd.call_count == 4
 
 
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
@@ -100,7 +113,7 @@ def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_or
     ref_binder.cache.smembers.side_effect = r.smembers
     ref_binder.cache.delete.side_effect = r.delete
 
-    store.db["any"].find_one.side_effect = [None, None, None]
+    store.db["any"].find_one.side_effect = [None, None, None, None]
 
     ref_binder.resolve_references(
         patient, [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
@@ -136,7 +149,8 @@ def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_or
 
     # cache must have been emptied
     assert ref_binder.cache.delete.called
-    assert r.dbsize() == 0
+    # there should still be a pending reference to the another practitioner
+    assert r.dbsize() == 1
 
 
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
@@ -165,7 +179,7 @@ def test_resolve_pending_references_single_identifier(
     )
 
     # cache must have been emptied
-    assert ref_binder.cache.delete.called
+    ref_binder.cache.delete.assert_called_once()
     assert r.dbsize() == 0
 
 
@@ -185,7 +199,7 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
         "generalPractitioner": patient["generalPractitioner"],
         "link": patient["generalPractitioner"],
     }
-    store.db["any"].find_one.side_effect = [None, None, None]
+    store.db["any"].find_one.side_effect = [None, None, None, None, None, None]
 
     res = ref_binder.resolve_references(patient, [["generalPractitioner"], ["link"]])
     assert res["generalPractitioner"][0].get("reference") is None
@@ -201,7 +215,7 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
     # both references must have been cached using the same key.
     # Accordingly, in Redis, there is only one set.
-    assert r.dbsize() == 1
+    assert r.dbsize() == 2
     # In the set, we have three items (2 related to pat_2 and 1 related to pat_1)
     assert len(r.smembers(target_ref)) == 3
 
@@ -225,4 +239,5 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
 
     # cache must have been emptied
     ref_binder.cache.delete.assert_called_once()
-    assert r.dbsize() == 0
+    # there should still be a pending reference to the another practitioner
+    assert r.dbsize() == 1
