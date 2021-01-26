@@ -18,8 +18,7 @@ def test_resolve_existing_reference(mock_fhirstore, mock_redis, patient):
     ]
 
     res = ref_binder.resolve_references(
-        patient,
-        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
+        patient, [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
     )
 
     assert store.db["any"].find_one.call_count == 3
@@ -64,8 +63,7 @@ def test_resolve_existing_reference_not_found(mock_fhirstore, mock_redis, patien
     store.db["any"].find_one.side_effect = [None, None, None]
 
     res = ref_binder.resolve_references(
-        patient,
-        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
+        patient, [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
     )
 
     # references must not have been resolved
@@ -105,8 +103,7 @@ def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_or
     store.db["any"].find_one.side_effect = [None, None, None]
 
     ref_binder.resolve_references(
-        patient,
-        ["generalPractitioner", "managingOrganization", "identifier[0].assigner"],
+        patient, [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
     )
 
     ref_binder.resolve_references(test_practitioner, [])
@@ -139,13 +136,11 @@ def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_or
         [
             # the Patient.identifier[0].assigner.reference must have been updated
             mock.call(
-                {"id": {"$in": ["pat1"]}},
-                {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}},
+                {"id": {"$in": ["pat1"]}}, {"$set": {"identifier.0.assigner.reference": "Organization/organization1"}}
             ),
             # the Patient.managingOrganization must have been updated
             mock.call(
-                {"id": {"$in": ["pat1"]}},
-                {"$set": {"managingOrganization.reference": "Organization/organization1"}},
+                {"id": {"$in": ["pat1"]}}, {"$set": {"managingOrganization.reference": "Organization/organization1"}}
             ),
         ]
     )
@@ -158,10 +153,7 @@ def test_resolve_pending_references(mock_fhirstore, mock_redis, patient, test_or
 @mock.patch("loader.cache.redis.conn", return_value=mock.MagicMock())
 @mock.patch("loader.load.fhirstore.get_fhirstore", return_value=mock.MagicMock())
 def test_resolve_pending_references_single_identifier(
-    mock_fhirstore,
-    mock_redis,
-    test_reference_response,
-    test_questionnaire_response,
+    mock_fhirstore, mock_redis, test_reference_response, test_questionnaire_response
 ):
     store = mock_fhirstore()
     ref_binder = ReferenceBinder(store)
@@ -173,22 +165,14 @@ def test_resolve_pending_references_single_identifier(
 
     store.db["any"].find_one.side_effect = [None]
 
-    ref_binder.resolve_references(
-        test_reference_response,
-        ["response"],
-    )
+    ref_binder.resolve_references(test_reference_response, [["response"]])
     ref_binder.resolve_references(test_questionnaire_response, [])
 
     ref_binder.cache.smembers.assert_called_with(
         'QuestionnaireResponse:["qresp","http://terminology.arkhn.org/identifier"]'
     )
     store.db["ReferenceResponse"].update_many.assert_has_calls(
-        [
-            mock.call(
-                {"id": {"$in": ["3242"]}},
-                {"$set": {"response.reference": "QuestionnaireResponse/3141"}},
-            )
-        ]
+        [mock.call({"id": {"$in": ["3242"]}}, {"$set": {"response.reference": "QuestionnaireResponse/3141"}})]
     )
 
     # cache must have been emptied
@@ -214,9 +198,9 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
     }
     store.db["any"].find_one.side_effect = [None, None, None]
 
-    res = ref_binder.resolve_references(patient, ["generalPractitioner", "link"])
+    res = ref_binder.resolve_references(patient, [["generalPractitioner"], ["link"]])
     assert res["generalPractitioner"][0].get("reference") is None
-    res = ref_binder.resolve_references(patient_2, ["generalPractitioner", "link"])
+    res = ref_binder.resolve_references(patient_2, [["generalPractitioner"], ["link"]])
     assert res["generalPractitioner"][0].get("reference") is None
 
     target_ref = f"Practitioner:{json.dumps(('123', 'http://terminology.arkhn.org/mimic_id/practitioner_id'), separators=(',', ':'))}"  # noqa

@@ -1,4 +1,4 @@
-from typing import Dict, List, Set
+from typing import Dict, List
 
 from common.analyzer.attribute import Attribute
 from common.analyzer.sql_column import SqlColumn
@@ -15,7 +15,7 @@ class Analysis:
         self.attributes: List[Attribute] = []
         self.filters: List[SqlFilter] = []
         self.primary_key_column: SqlColumn = None
-        self.reference_paths: Set[str] = set()
+        self.reference_paths: List[List[str]] = []
         self.is_static = False
 
     def add_filter(self, filter_):

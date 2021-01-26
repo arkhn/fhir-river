@@ -72,10 +72,7 @@ def test_get_primary_key():
         "source": {"credential": {"owner": ""}},
         "definitionId": "fhirtype",
     }
-    with pytest.raises(
-        ValueError,
-        match="You need to provide a primary key table and column in the mapping",
-    ):
+    with pytest.raises(ValueError, match="You need to provide a primary key table and column in the mapping"):
         analyzer.get_primary_key(resource_mapping)
 
 
@@ -96,32 +93,17 @@ def test_analyze_mapping(patient_mapping):
         SqlColumn(
             "admissions",
             "admittime",
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
-                )
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
         ),
         SqlColumn(
             "admissions",
             "marital_status",
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
-                )
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
         ),
         SqlColumn(
             "admissions",
             "language",
-            joins=[
-                SqlJoin(
-                    SqlColumn("patients", "subject_id"),
-                    SqlColumn("admissions", "subject_id"),
-                )
-            ],
+            joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
         ),
     }
     assert analysis.filters == [
@@ -129,12 +111,7 @@ def test_analyze_mapping(patient_mapping):
             SqlColumn(
                 "admissions",
                 "adm_date",
-                joins=[
-                    SqlJoin(
-                        SqlColumn("patients", "subject_id"),
-                        SqlColumn("admissions", "subject_id"),
-                    )
-                ],
+                joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
             ),
             ">=",
             "2012",
@@ -143,7 +120,7 @@ def test_analyze_mapping(patient_mapping):
     assert analyzer.get_analysis_joins(analysis) == {
         SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id")),
     }
-    assert analysis.reference_paths == {"generalPractitioner"}
+    assert analysis.reference_paths == [["generalPractitioner"]]
 
 
 def test_analyze_attribute(patient_mapping, dict_map_gender):
@@ -271,14 +248,8 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
                     "admissions",
                     "expire_flag",
                     joins=[
-                        SqlJoin(
-                            SqlColumn("patients", "subject_id"),
-                            SqlColumn("join_table", "subject_id"),
-                        ),
-                        SqlJoin(
-                            SqlColumn("join_table", "adm_id"),
-                            SqlColumn("admissions", "adm_id"),
-                        ),
+                        SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("join_table", "subject_id")),
+                        SqlJoin(SqlColumn("join_table", "adm_id"), SqlColumn("admissions", "adm_id")),
                     ],
                 ),
                 "EQ",
@@ -289,12 +260,7 @@ def test_analyze_attribute(patient_mapping, dict_map_gender):
             SqlColumn(
                 "patients",
                 "gender",
-                joins=[
-                    SqlJoin(
-                        SqlColumn("patients", "subject_id"),
-                        SqlColumn("admissions", "subject_id"),
-                    )
-                ],
+                joins=[SqlJoin(SqlColumn("patients", "subject_id"), SqlColumn("admissions", "subject_id"))],
             )
         ],
         static_inputs=[],
