@@ -35,7 +35,7 @@ def test_transform(_, mock_sha1, dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
     )
     attr_name.add_input_group(group)
 
@@ -45,6 +45,7 @@ def test_transform(_, mock_sha1, dict_map_code):
         attribute=attr_name,
         columns=[
             SqlColumn(
+                "PUBLIC",
                 "ADMISSIONS",
                 "CODE",
                 cleaning_script=CleaningScript("clean1"),
@@ -66,7 +67,7 @@ def test_transform(_, mock_sha1, dict_map_code):
 
     analysis = Analysis()
     analysis.attributes = [attr_name, attr_language, attr_static, attr_static_list]
-    analysis.primary_key_column = SqlColumn("PATIENTS", "ID")
+    analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
     analysis.definition = {"type": "Patient"}
 
     transformer = Transformer()

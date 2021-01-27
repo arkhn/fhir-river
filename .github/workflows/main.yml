@@ -147,7 +147,7 @@ jobs:
         run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
 
       - name: Provision, deploy and test
-        uses: arkhn/testy-action@v0.5.1
+        uses: arkhn/testy-action@v0.5.2
         with:
           cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
           cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}

@@ -12,10 +12,16 @@ import (
 
 const resourceFromIDQuery = `
 fragment entireColumn on Column {
+	owner {
+		name
+	}
 	table
     column
     joins {
 		tables {
+			owner {
+				name
+			}
 			table
             column
         }
@@ -73,14 +79,16 @@ fragment cred on Credential {
     host
     port
     database
-    owner
     login
     password: decryptedPassword
 }
 
-query resource($resourceId: ID!) {
-    resource(resourceId: $resourceId) {
+query resource($resourceId: String!) {
+    resource(where: {id: $resourceId}) {
         id
+        primaryKeyOwner {
+			name
+		}
         primaryKeyTable
         primaryKeyColumn
         definitionId
