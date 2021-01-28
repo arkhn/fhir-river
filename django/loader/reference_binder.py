@@ -134,8 +134,8 @@ class ReferenceBinder:
                     },
                 )
                 self.fhirstore.db[source_type].update_many(
-                    self.unresolved_resources_filter(reference_path, identifier, refs),
-                    self.reference_update(reference_path, fhir_object),
+                    {"id": {"$in": refs}},
+                    {"$set": {f"{reference_path}.reference": f"{fhir_object['resourceType']}/{fhir_object['id']}"}},
                 )
             if pending_refs:
                 self.cache.delete(target_ref)
@@ -166,15 +166,6 @@ class ReferenceBinder:
             (source_ref, ref) = json.loads(element)
             pending_refs[tuple(source_ref)].append(ref)
         return pending_refs
-
-    def unresolved_resources_filter(self, reference_path, identifier, refs):
-        query = {"id": {"$in": refs}}
-        return query
-
-    @staticmethod
-    def reference_update(reference_path, fhir_object):
-        target_path = f"{reference_path}.reference"
-        return {"$set": {target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"}}
 
     @staticmethod
     def identifier_to_key(resource_type, identifier):
