@@ -131,7 +131,7 @@ def test_analyze_mapping(patient_mapping):
     assert analyzer.get_analysis_joins(analysis) == {
         SqlJoin(SqlColumn("mimiciii", "patients", "subject_id"), SqlColumn("mimiciii", "admissions", "subject_id")),
     }
-    assert analysis.reference_paths == [["generalPractitioner"]]
+    assert analysis.reference_paths == [["generalPractitioner"], ["link", "other"]]
 
 
 def test_analyze_attribute(patient_mapping, dict_map_gender):
