@@ -32,9 +32,6 @@ class InputGroup:
     def add_static_input(self, value):
         self.static_inputs.append(self.attribute.cast_type(value))
 
-    def check_conditions(self, data):
-        return all(condition.check(data) for condition in self.conditions)
-
     def __str__(self):
         return f"columns: {self.columns}, static_inputs: {self.static_inputs}, merging_script: {self.merging_script}"
 

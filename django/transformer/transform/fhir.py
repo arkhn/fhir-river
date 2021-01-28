@@ -50,7 +50,7 @@ def build_fhir_object(row, path_attributes_map):
         # what's before the [...] included).
         if path == "":
             val = row[attr.path]
-            if len(val) > 1:
+            if any(v != val[0] for v in val[1:]):
                 raise ValueError("can't build non-list attribute from list")
             return val[0]
 
@@ -62,7 +62,7 @@ def build_fhir_object(row, path_attributes_map):
             # If we didn't find an index in the path, then we don't worry about arrays
             val = row[attr.path]
 
-            if len(val) > 1:
+            if any(v != val[0] for v in val[1:]):
                 raise ValueError("can't build non-list attribute from list")
             # If index is not None, we met an array before. Here, val will have
             # several elements but we know which one we need
@@ -217,4 +217,4 @@ def get_element_in_array(array, index):
 def has_single_value(attribute: Attribute, row):
     # Helper function to check if attribute comes from the primary table
     # or is a 1:1 join
-    return len(row[attribute.path]) == 1
+    return attribute.path not in row or len(row[attribute.path]) == 1

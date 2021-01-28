@@ -30,13 +30,7 @@ DataDictValue = NewType("DataDictValue", Union[str, List[str]])
 
 
 class Condition:
-    def __init__(
-        self,
-        action: str = None,
-        sql_column: SqlColumn = None,
-        relation: str = None,
-        value: str = None,
-    ):
+    def __init__(self, action: str = None, sql_column: SqlColumn = None, relation: str = None, value: str = None):
         self.action = action
         self.sql_column = sql_column
         self.relation = relation
@@ -46,26 +40,24 @@ class Condition:
     def check(self, data: Dict[DataDictKey, DataDictValue]):
         data_value = data[(CONDITION_FLAG, (self.sql_column.table_name(), self.sql_column.column))]
 
-        # TODO(jasopaum): fix conditions with lists (issue #227)
-        # data_value is an array, all of its values should be similar
-        if not all(el == data_value[0] for el in data_value[1:]):
-            raise ValueError(f"Conditions can only be checked against arrays with identical values, got {data_value}.")
-        data_value = data_value[0]
-
         try:
-            cast_value = self.cast_value_type(data_value)
+            cast_value = self.cast_value_type(data_value[0])
         except Exception as e:
-            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(data_value)}: {e}")
+            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(data_value[0])}: {e}")
 
-        # We first check if the relation between the condition's value and
-        # the value fetched from the DB holds.
-        is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](data_value, cast_value)
+        results = []
+        for value in data_value:
+            # We first check if the relation between the condition's value and
+            # the value fetched from the DB holds.
+            is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](value, cast_value)
 
-        # Then, to know if we need to include the input group or not, we need to XOR
-        # is_relation_true with self.action == "EXCLUDE".
-        # For instance, if the relation holds but the action is "EXCLUDE", we want to
-        # return False (and to exclude the input group from the attribute).
-        return (self.action == "EXCLUDE") ^ is_relation_true
+            # Then, to know if we need to include the input group or not, we need to XOR
+            # is_relation_true with self.action == "EXCLUDE".
+            # For instance, if the relation holds but the action is "EXCLUDE", we want
+            # to return False (and to exclude the input group from the attribute).
+            results.append((self.action == "EXCLUDE") ^ is_relation_true)
+
+        return results
 
     def cast_value_type(self, data_value):
         if self.relation in UNARY_RELATIONS or data_value is None:
