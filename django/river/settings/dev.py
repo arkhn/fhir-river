@@ -11,3 +11,7 @@ SECRET_KEY = "USE_IN_DEV_ONLY"
 # Intended for headless frontend development
 
 CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+
+# Rest Framework
+
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += ["rest_framework.renderers.BrowsableAPIRenderer"]
