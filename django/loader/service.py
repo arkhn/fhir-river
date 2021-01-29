@@ -9,13 +9,13 @@ from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
 from common.service.event import Event
+from common.service.errors import BatchCancelled
 from common.service.handler import Handler
 from common.service.service import Service
 from loader.conf import conf
 from loader.load import Loader
 from loader.load.fhirstore import get_fhirstore
 from loader.reference_binder import ReferenceBinder
-from loader.errors import BatchCancelled
 
 
 logger = logging.getLogger(__name__)

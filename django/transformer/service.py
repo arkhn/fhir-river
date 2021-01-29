@@ -7,10 +7,11 @@ from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
 from common.service.event import Event
+from common.service.errors import BatchCancelled
 from common.service.handler import Handler
 from common.service.service import Service
 from transformer.conf import conf
-from transformer.errors import OperationOutcome, BatchCancelled
+from transformer.errors import OperationOutcome
 from transformer.transform import Transformer
 
 logger = logging.getLogger(__name__)
