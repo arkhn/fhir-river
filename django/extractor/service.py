@@ -1,8 +1,8 @@
 import logging
 
-from django.conf import settings
-
 import redis
+
+from django.conf import settings
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
@@ -10,7 +10,7 @@ from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
 from extractor.conf import conf
-from extractor.errors import EmptyResult
+from extractor.errors import EmptyResult, BatchCancelled
 from extractor.extract import Extractor
 
 logger = logging.getLogger(__name__)
@@ -28,29 +28,32 @@ def broadcast_events(
     resource_id = analysis.resource_id
     count = 0
     try:
-        list_records_from_db = extractor.split_dataframe(dataframe, analysis)
-        for record in list_records_from_db:
-            logger.debug(
-                {"message": "One record from extract", "resource_id": resource_id},
-            )
-            event = dict()
-            event["batch_id"] = batch_id
-            event["resource_type"] = resource_type
-            event["resource_id"] = resource_id
-            event["record"] = record
-            producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
-            count += 1
-    except EmptyResult as e:
-        logger.warn({"message": str(e), "resource_id": resource_id, "batch_id": batch_id})
-    # Initialize a batch counter in Redis. For each resource_id, it records
-    # the number of produced records
-    counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
-    logger.info(
-        {
-            "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
-            "resource_id": resource_id,
-        },
-    )
+        try:
+            list_records_from_db = extractor.split_dataframe(dataframe, analysis)
+            for record in list_records_from_db:
+                logger.debug(
+                    {"message": "One record from extract", "resource_id": resource_id},
+                )
+                event = dict()
+                event["batch_id"] = batch_id
+                event["resource_type"] = resource_type
+                event["resource_id"] = resource_id
+                event["record"] = record
+                producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
+                count += 1
+        except EmptyResult as e:
+            logger.warning({"message": str(e), "resource_id": resource_id, "batch_id": batch_id})
+        # Initialize a batch counter in Redis. For each resource_id, it records
+        # the number of produced records
+        counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+        logger.info(
+            {
+                "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
+                "resource_id": resource_id,
+            },
+        )
+    except BatchCancelled as err:
+        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
 
 class ExtractHandler(Handler):

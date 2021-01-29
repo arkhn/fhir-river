@@ -1,8 +1,10 @@
 import logging
 
+from pymongo.errors import DuplicateKeyError
+import redis
+
 from django.conf import settings
 
-import redis
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
@@ -13,7 +15,8 @@ from loader.conf import conf
 from loader.load import Loader
 from loader.load.fhirstore import get_fhirstore
 from loader.reference_binder import ReferenceBinder
-from pymongo.errors import DuplicateKeyError
+from loader.errors import BatchCancelled
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +57,8 @@ def load(
         )
     except DuplicateKeyError as err:
         logger.exception(err)
+    except BatchCancelled as err:
+        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
 
 class LoadHandler(Handler):
