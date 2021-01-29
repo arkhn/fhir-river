@@ -93,13 +93,14 @@ class ReferenceBinder:
                 self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
 
         def rec_bind_existing_reference(fhir_object, reference_path: List[str], sub_path=""):
-            if not reference_path:
-                if isinstance(fhir_object, list):
-                    for ind, sub_fhir_el in enumerate(fhir_object):
-                        bind(sub_fhir_el, f"{sub_path}.{ind}")
-                else:
-                    bind(fhir_object, sub_path)
-            else:
+            if reference_path:
+                # We need to go down the document to find the reference.
+                # reference_path is a list of string so that at the end of each element,
+                # we have an array in the fhir document. For instance, if reference_path
+                # is ["item", "answer.valueReference"], the fhir doc will look like
+                # { item: [ { answer: { valueReference: ... } } ] }.
+                # We want to traverse all the elements of each array that could have
+                # a reference at a leaf.
                 sub_fhir_object = fhir_object[reference_path[0]]
                 sub_path = f"{sub_path}.{reference_path[0]}" if sub_path else reference_path[0]
                 if isinstance(sub_fhir_object, list):
@@ -107,6 +108,15 @@ class ReferenceBinder:
                         rec_bind_existing_reference(sub_fhir_el, reference_path[1:], f"{sub_path}.{ind}")
                 else:
                     rec_bind_existing_reference(sub_fhir_object, reference_path[1:], sub_path)
+            else:
+                # We have isolated the reference so we can now bind it.
+                # If it's an array, we want to perform the binding for all the
+                # elements.
+                if isinstance(fhir_object, list):
+                    for ind, sub_fhir_el in enumerate(fhir_object):
+                        bind(sub_fhir_el, f"{sub_path}.{ind}")
+                else:
+                    bind(fhir_object, sub_path)
 
         rec_bind_existing_reference(fhir_object, reference_path)
 
