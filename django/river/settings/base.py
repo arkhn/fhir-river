@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "transformer",
     "loader",
     "control",
+    "pyrog",
 ]
 
 MIDDLEWARE = [
