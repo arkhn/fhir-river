@@ -92,23 +92,21 @@ class ReferenceBinder:
                 source_ref = (fhir_object["resourceType"], path)
                 self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
 
-        def rec_bind_existing_reference(fhir_object, reference_path, sub_path=""):
-            sub_fhir_object = fhir_object[reference_path[0]]
-            if sub_path:
-                sub_path = f"{sub_path}."
-            if len(reference_path) == 1:
-                # If we have a list of references, we want to bind all of them.
-                # Thus, we loop on all the items in reference_attribute.
-                if isinstance(sub_fhir_object, list):
-                    for ind, ref in enumerate(sub_fhir_object):
-                        bind(ref, f"{sub_path}{reference_path[0]}.{ind}")
+        def rec_bind_existing_reference(fhir_object, reference_path: List[str], sub_path=""):
+            if not reference_path:
+                if isinstance(fhir_object, list):
+                    for ind, sub_fhir_el in enumerate(fhir_object):
+                        bind(sub_fhir_el, f"{sub_path}.{ind}")
                 else:
-                    bind(sub_fhir_object, f"{sub_path}{reference_path[0]}")
+                    bind(fhir_object, sub_path)
             else:
-                for ind, sub_fhir_el in enumerate(sub_fhir_object):
-                    rec_bind_existing_reference(
-                        sub_fhir_el, reference_path[1:], f"{sub_path}{reference_path[0]}.{ind}"
-                    )
+                sub_fhir_object = fhir_object[reference_path[0]]
+                sub_path = f"{sub_path}.{reference_path[0]}" if sub_path else reference_path[0]
+                if isinstance(sub_fhir_object, list):
+                    for ind, sub_fhir_el in enumerate(sub_fhir_object):
+                        rec_bind_existing_reference(sub_fhir_el, reference_path[1:], f"{sub_path}.{ind}")
+                else:
+                    rec_bind_existing_reference(sub_fhir_object, reference_path[1:], sub_path)
 
         rec_bind_existing_reference(fhir_object, reference_path)
 

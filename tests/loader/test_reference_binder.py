@@ -213,8 +213,8 @@ def test_resolve_batch_references(mock_fhirstore, mock_redis, patient, test_orga
         mock.call(target_ref, json.dumps((source_ref, patient_2["id"]))),
     ]
     ref_binder.cache.sadd.assert_has_calls(calls, any_order=True)
-    # both references must have been cached using the same key.
-    # Accordingly, in Redis, there is only one set.
+    # The references for both patients must have been cached using the same key.
+    # Accordingly, in Redis, there are only 2 sets and not 4.
     assert r.dbsize() == 2
     # In the set, we have three items (2 related to pat_2 and 1 related to pat_1)
     assert len(r.smembers(target_ref)) == 3
