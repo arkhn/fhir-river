@@ -6,7 +6,7 @@ import logging
 from confluent_kafka import KafkaError, KafkaException
 from confluent_kafka import Producer as KafkaProducer
 
-from extractor.errors import BatchCancelled
+from common.service.errors import BatchCancelled
 
 
 logger = logging.getLogger("kafka.producer")
