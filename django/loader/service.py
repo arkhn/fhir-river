@@ -1,9 +1,8 @@
 import logging
 
+from django.conf import settings
 from pymongo.errors import DuplicateKeyError
 import redis
-
-from django.conf import settings
 
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer

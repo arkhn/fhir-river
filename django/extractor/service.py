@@ -1,8 +1,8 @@
 import logging
 
+from django.conf import settings
 import redis
 
-from django.conf import settings
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
@@ -47,7 +47,7 @@ def broadcast_events(
     except EmptyResult as err:
         logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
-    # Initialize a batch counter in Redis. For each resource_id, it records
+    # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
     counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
     logger.info(

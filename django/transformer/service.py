@@ -1,8 +1,8 @@
 import logging
 
 from django.conf import settings
-
 import redis
+
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
