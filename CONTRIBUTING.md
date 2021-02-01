@@ -64,7 +64,7 @@ Optional test services.
 
 1. Create a virtual env
 
-   python3.8 -m venv --prompt "(river) " .venv
+   python3.8 -m venv --prompt "river" .venv
 
 2. Activate the virtual env
 

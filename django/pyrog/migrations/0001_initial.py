@@ -3,6 +3,8 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
+import cuid
+
 
 class Migration(migrations.Migration):
 
@@ -14,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Attribute",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("path", models.TextField()),
                 ("slice_name", models.TextField(blank=True, default="")),
                 ("definition_id", models.TextField()),
@@ -25,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Column",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("table", models.TextField()),
                 ("column", models.TextField()),
                 ("updated_at", models.DateTimeField(auto_now=True)),
@@ -35,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Credential",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("host", models.TextField()),
                 ("port", models.IntegerField()),
                 ("database", models.TextField()),
@@ -59,7 +61,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Owner",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("name", models.TextField()),
                 ("schema", models.JSONField(blank=True, null=True)),
                 ("credential", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="pyrog.credential")),
@@ -71,7 +73,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Template",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("name", models.TextField(unique=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
@@ -80,7 +82,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Source",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("name", models.TextField()),
                 ("version", models.TextField(blank=True, default="")),
                 ("updated_at", models.DateTimeField(auto_now=True)),
@@ -99,7 +101,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Resource",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("label", models.TextField(blank=True, default="")),
                 ("primary_key_table", models.TextField()),
                 ("primary_key_column", models.TextField()),
@@ -124,7 +126,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Join",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 (
@@ -142,7 +144,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="InputGroup",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("merging_script", models.TextField(blank=True, default="")),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
@@ -161,7 +163,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Input",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("script", models.TextField(blank=True, default="")),
                 ("concept_map_id", models.TextField(blank=True, default="")),
                 ("static_value", models.TextField(blank=True, default="")),
@@ -181,7 +183,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Filter",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 (
                     "relation",
                     models.TextField(
@@ -214,7 +216,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Condition",
             fields=[
-                ("id", models.TextField(primary_key=True, serialize=False)),
+                ("id", models.TextField(default=cuid.cuid, editable=False, primary_key=True, serialize=False)),
                 ("action", models.TextField(choices=[("INCLUDE", "Include"), ("EXCLUDE", "Exclude")])),
                 ("value", models.TextField(blank=True, default="")),
                 (

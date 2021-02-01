@@ -1,5 +1,7 @@
 from django.db import models
 
+from cuid import cuid
+
 # NOTE:
 # * Some FK fields are expected to be sometimes null in the previous DB schema.
 # * User, Comment and AccessControl tables will be added. The User table should be
@@ -8,7 +10,7 @@ from django.db import models
 
 
 class Template(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField(unique=True)
 
     updated_at = models.DateTimeField(auto_now=True)
@@ -19,7 +21,7 @@ class Source(models.Model):
     class Meta:
         unique_together = (("name", "template"),)
 
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     template = models.ForeignKey(Template, related_name="sources", on_delete=models.CASCADE)
     name = models.TextField()
     version = models.TextField(blank=True, default="")
@@ -29,7 +31,7 @@ class Source(models.Model):
 
 
 class Resource(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     source = models.ForeignKey(Source, related_name="resources", on_delete=models.CASCADE)
     label = models.TextField(blank=True, default="")
     primary_key_table = models.TextField()  # Expected to sometimes be null in prod
@@ -51,7 +53,7 @@ class Credential(models.Model):
         ORACLE = "ORACLE"
         SQLLITE = "SQLLITE"
 
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     source = models.OneToOneField(Source, on_delete=models.CASCADE)
     host = models.TextField()
     port = models.IntegerField()
@@ -65,7 +67,7 @@ class Credential(models.Model):
 
 
 class Attribute(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     path = models.TextField()
     slice_name = models.TextField(blank=True, default="")
     definition_id = models.TextField()
@@ -78,7 +80,7 @@ class Attribute(models.Model):
 
 
 class InputGroup(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     merging_script = models.TextField(blank=True, default="")
     attribute = models.ForeignKey(
         Attribute, related_name="input_groups", blank=True, null=True, on_delete=models.CASCADE
@@ -89,7 +91,7 @@ class InputGroup(models.Model):
 
 
 class Input(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     input_group = models.ForeignKey(
         InputGroup, related_name="inputs", null=True, on_delete=models.CASCADE
     )  # TODO: why nullable ?
@@ -102,7 +104,7 @@ class Input(models.Model):
 
 
 class Column(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     table = models.TextField()  # Expected to sometimes be null in prod
     column = models.TextField()  # Expected to sometimes be null in prod
     join = models.ForeignKey(
@@ -120,7 +122,7 @@ class Column(models.Model):
 
 
 class Join(models.Model):
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     column = models.ForeignKey(
         Column, related_name="joins", blank=True, null=True, on_delete=models.CASCADE
     )  # TODO: Why nullable ?
@@ -143,7 +145,7 @@ class Condition(models.Model):
         NOTNULL = "NOTNULL"
         NULL = "NULL"
 
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     action = models.TextField(choices=Action.choices)
     column = models.OneToOneField(Column, blank=True, null=True, on_delete=models.CASCADE)  # TODO: Why nullable ?
     value = models.TextField(blank=True, default="")
@@ -161,7 +163,7 @@ class Filter(models.Model):
         LESSER = "<"
         LESSER_OR_EQUAL = "<="
 
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     relation = models.TextField(choices=Relation.choices)
     value = models.TextField(blank=True, default="")  # TODO: Can be "" ?
     resource = models.ForeignKey(Resource, blank=True, null=True, on_delete=models.CASCADE)  # TODO: Why nullable ?
@@ -172,7 +174,7 @@ class Owner(models.Model):
     class Meta:
         unique_together = (("name", "credential"),)
 
-    id_ = models.TextField(name="id", primary_key=True)
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField()
     schema = models.JSONField(blank=True, null=True)
     credential = models.ForeignKey(Credential, on_delete=models.CASCADE)
