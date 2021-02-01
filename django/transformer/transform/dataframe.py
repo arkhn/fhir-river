@@ -11,8 +11,8 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
     {
-        (input_group.id, (table, column)): [val, val, ...],
-        (input_group.id, (table, column)): [val, val, ...],
+        (attribute.path, input_group.id, (table, column)): [val, val, ...],
+        (attribute.path, input_group.id, (table, column)): [val, val, ...],
         (CONDITION_FLAG, (table, column)): [val, val, ...],
         ...
     }
@@ -67,16 +67,16 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
 def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: str):
     """Takes as input a dict of the form
     {
-        (input_group1.id, (table1, column1)): val,
-        (input_group1.id, (table2, column2)): val,
-        (input_group2.id, (table3, column3)): val,
-        (CONDITION_FLAG, (table4, column4)): val,
+        (attribute.path, input_group1.id, (table1, column1)): values,
+        (attribute.path, input_group1.id, (table2, column2)): values,
+        (attribute.path, input_group2.id, (table3, column3)): values,
+        (CONDITION_FLAG, (table4, column4)): values,
         ...
     }
     and outputs
     {
-        attribute1.path: val,
-        attribute2.path: val,
+        attribute1.path: values,
+        attribute2.path: values,
         ...
     }
     where values are merged with the mergig scripts.
@@ -84,14 +84,14 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
     merged_data = defaultdict(list)
     for attribute in attributes:
         data_for_attribute = {key: value for key, value in data.items() if key[0] == attribute.path}
-        nb_rows_for_attribute = max(len(col) for col in data_for_attribute.values())
+        nb_rows_for_attribute = max(len(col) for col in data_for_attribute.values()) if data_for_attribute else 1
 
         for row_ind in range(nb_rows_for_attribute):
             row_data = {col_key: get_element_in_array(col, row_ind) for col_key, col in data.items()}
 
             for input_group in attribute.input_groups:
-                if all(condition.check(row_data) for condition in input_group.conditions):
 
+                if all(condition.check(row_data) for condition in input_group.conditions):
                     cur_group_columns = [value for key, value in row_data.items() if key[1] == input_group.id]
 
                     if not cur_group_columns:
@@ -103,15 +103,12 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                                     f"the mapping contains an attribute ({attribute.path}) "
                                     "with several static inputs (and no sql input)"
                                 )
-                            merged_data[attribute.path].append(input_group.static_inputs)
+                            merged_data[attribute.path].append(input_group.static_inputs[0])
                     elif input_group.merging_script:
                         # TODO issue #148: static inputs could be before sql inputs
                         merged_data[attribute.path].append(
                             input_group.merging_script.apply(
-                                cur_group_columns,
-                                input_group.static_inputs,
-                                attribute.path,
-                                primary_key_value,
+                                cur_group_columns, input_group.static_inputs, attribute.path, primary_key_value
                             )
                         )
                     elif len(cur_group_columns) != 1:
@@ -119,7 +116,8 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                     else:
                         merged_data[attribute.path].append(cur_group_columns[0])
 
-                    break
+                else:
+                    merged_data[attribute.path].append(None)
 
     return merged_data
 

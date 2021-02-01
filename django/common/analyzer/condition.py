@@ -41,23 +41,19 @@ class Condition:
         data_value = data[(CONDITION_FLAG, (self.sql_column.table_name(), self.sql_column.column))]
 
         try:
-            cast_value = self.cast_value_type(data_value[0])
+            cast_value = self.cast_value_type(data_value)
         except Exception as e:
-            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(data_value[0])}: {e}")
+            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(data_value)}: {e}")
 
-        results = []
-        for value in data_value:
-            # We first check if the relation between the condition's value and
-            # the value fetched from the DB holds.
-            is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](value, cast_value)
+        # We first check if the relation between the condition's value and
+        # the value fetched from the DB holds.
+        is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](data_value, cast_value)
 
-            # Then, to know if we need to include the input group or not, we need to XOR
-            # is_relation_true with self.action == "EXCLUDE".
-            # For instance, if the relation holds but the action is "EXCLUDE", we want
-            # to return False (and to exclude the input group from the attribute).
-            results.append((self.action == "EXCLUDE") ^ is_relation_true)
-
-        return results
+        # Then, to know if we need to include the input group or not, we need to XOR
+        # is_relation_true with self.action == "EXCLUDE".
+        # For instance, if the relation holds but the action is "EXCLUDE", we want
+        # to return False (and to exclude the input group from the attribute).
+        return (self.action == "EXCLUDE") ^ is_relation_true
 
     def cast_value_type(self, data_value):
         if self.relation in UNARY_RELATIONS or data_value is None:
