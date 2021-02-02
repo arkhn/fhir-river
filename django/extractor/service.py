@@ -43,7 +43,8 @@ def broadcast_events(
             count += 1
     except BatchCancelled as err:
         logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
-        return
+          # return early to avoid setting the counter in redis
+          return
     except EmptyResult as err:
         logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
