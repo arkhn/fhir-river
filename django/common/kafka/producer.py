@@ -6,6 +6,9 @@ import logging
 from confluent_kafka import KafkaError, KafkaException
 from confluent_kafka import Producer as KafkaProducer
 
+from common.service.errors import BatchCancelled
+
+
 logger = logging.getLogger("kafka.producer")
 
 
@@ -66,7 +69,7 @@ class Producer:
             logger.exception(err)
         except KafkaException as err:
             if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                pass
+                raise BatchCancelled("The current batch has been cancelled")
             else:
                 logger.exception(err)
 
