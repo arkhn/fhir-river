@@ -117,11 +117,11 @@ class Analyzer:
                 clean_path = re.sub(r"\[\d+\]$", "", attribute.path)
                 # Anlysis.reference_paths is a list of lists of strings.
                 # We chose to represent paths to references as list of strings to handle
-                # the case case of arrays of references. For instance, if we find a
-                # reference at item[0].answer[0].valueReference in the mapping, we want
-                # to bind all the references at item[*].answer[*].valueReference. To
-                # make this task easier in the ReferenceBinder, we represent this path
-                # as ["item", "answer", "valueReference"].
+                # arrays of references. For instance, if we find a reference at
+                # item[0].answer[0].valueReference in the mapping, we want to bind all
+                # the references at item[*].answer[*].valueReference. To make this task
+                # easier in the ReferenceBinder, we represent this path as
+                # ["item", "answer", "valueReference"].
                 path = re.split(r"\[\d+\].", clean_path)
                 self._cur_analysis.reference_paths.append(path)
 

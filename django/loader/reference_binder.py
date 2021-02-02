@@ -58,6 +58,8 @@ class ReferenceBinder:
     @Timer("time_bind_existing_reference", "time spent resolving the document's references")
     def bind_existing_reference(self, fhir_object, reference_path: List[str]):
         resource_id = get_resource_id(fhir_object)
+        object_id = fhir_object["id"]
+        resource_type = fhir_object["resourceType"]
 
         def bind(ref, path):
             # extract the type and itentifier of the reference
@@ -69,7 +71,7 @@ class ReferenceBinder:
             except (ValueError, KeyError) as e:
                 logger.warning(
                     f"incomplete identifier on reference of type "
-                    f"{reference_type} at path {ref} of resource {fhir_object['id']}: {e}"
+                    f"{reference_type} at path {ref} of resource {object_id}: {e}"
                 )
                 return
 
@@ -89,8 +91,8 @@ class ReferenceBinder:
                     },
                 )
                 target_ref = self.identifier_to_key(reference_type, identifier)
-                source_ref = (fhir_object["resourceType"], path)
-                self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
+                source_ref = (resource_type, path)
+                self.cache.sadd(target_ref, json.dumps((source_ref, object_id)))
 
         def rec_bind_existing_reference(fhir_object, reference_path: List[str], sub_path=""):
             if reference_path:
