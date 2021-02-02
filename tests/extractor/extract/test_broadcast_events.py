@@ -11,7 +11,10 @@ class BroadCastEventsTestCase(unittest.TestCase):
         extractor = mock.MagicMock()
         extractor.split_dataframe.return_value = [1, 2, 3]
         producer = mock.MagicMock()
-        producer.produce_event.side_effect = BatchCancelled
+        producer.produce_event.side_effect = [None, BatchCancelled]
+        ...
+        assert producer.produce_event.call_count == 2
+        redis.hset.assert_not_called()
         analysis = mock.Mock(definition_id='definition_id', resource_id='resource_id')
         redis = mock.MagicMock()
 
