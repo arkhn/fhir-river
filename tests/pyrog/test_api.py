@@ -1,7 +1,7 @@
-from django.urls import reverse
-
 import pytest
 from faker import Faker
+
+from django.urls import reverse
 
 faker = Faker()
 
