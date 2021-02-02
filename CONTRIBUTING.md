@@ -87,3 +87,11 @@ Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
 1.  Run tests in dedicated virtual env.
 
         tox
+
+## OpenAPI schema generation
+
+Generation only concerns the `pyrog` application at this point. To generate the schema (no virtual env required):
+
+      tox -e openapi
+
+This produces a `pyrog-schema.yml` file in the root project directory.
