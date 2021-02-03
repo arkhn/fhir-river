@@ -1,7 +1,7 @@
 import json
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from inspect import getdoc, getmembers, isfunction, ismodule
 
 from rest_framework import status, views
@@ -107,6 +107,27 @@ class BatchEndpoint(views.APIView):
             producer.produce_event(topic=f"batch.{batch_id}", event=event)
 
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
+
+
+class DeleteBatchEndpoint(views.APIView):
+    def delete(self, request, batch_id):
+        # Delete kafka topics
+        admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
+        admin_client.delete_topics(
+            [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+        )
+
+        # Delete keys from redis
+        batch_counter_redis = redis.Redis(
+            host=settings.REDIS_COUNTER_HOST,
+            port=settings.REDIS_COUNTER_PORT,
+            db=settings.REDIS_COUNTER_DB,
+        )
+        batch_counter_redis.hdel("batch", batch_id)
+        batch_counter_redis.delete(f"batch:{batch_id}:resources")
+        batch_counter_redis.expire(f"batch:{batch_id}:counter", timedelta(weeks=2))
+
+        return Response({"id": batch_id}, status=status.HTTP_200_OK)
 
 
 class PreviewEndpoint(views.APIView):
