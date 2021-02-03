@@ -207,6 +207,11 @@ REDIS_REFERENCES_DB = os.environ.get("REDIS_REFERENCES_DB", 0)
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 
+# API URLs
+
+PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
+FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
+
 # MongoDB
 
 FHIRSTORE_HOST = os.environ.get("FHIRSTORE_HOST", "mongo")

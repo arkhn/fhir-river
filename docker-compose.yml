@@ -65,19 +65,6 @@ services:
       - SECRET_KEY=whatever
       - FHIRSTORE_USER=arkhn
       - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-
-  api:
-    build: api
-    restart: on-failure
-    depends_on:
-      - kafka
-    environment:
-      - PORT=3000
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - CONTROL_API_URL=http://control-api:8000
       - PYROG_API_URL=http://pyrog-server:1000
       - FHIR_API_URL=http://fhir-api:2000
       - REDIS_MAPPINGS_HOST=river-redis
@@ -114,10 +101,7 @@ services:
 
   river-redis:
     image: redis:6.0.7
+    ports:
+      - "6379:6379"
     restart: on-failure
     command: --loglevel verbose
-
-networks:
-  default:
-    external:
-      name: arkhn_network

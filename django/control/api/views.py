@@ -1,4 +1,7 @@
+import json
 import logging
+import uuid
+from datetime import datetime
 from inspect import getdoc, getmembers, isfunction, ismodule
 
 from rest_framework import status, views
@@ -12,6 +15,10 @@ from fhirstore import NotFoundError
 import redis
 import scripts
 from common.analyzer import Analyzer
+from confluent_kafka.admin import NewTopic
+from control.api.fetch_mapping import fetch_resource_mapping
+from control.api.kafka import admin_client, producer
+from control.api.redis import batch_counter_redis, mappings_redis
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
@@ -19,6 +26,68 @@ from pydantic import ValidationError
 from transformer.transform.transformer import Transformer
 
 logger = logging.getLogger(__name__)
+
+
+class BatchEndpoint(views.APIView):
+    def get(self, request):
+        batches = batch_counter_redis.hgetall("batch")
+        batch_list = [{"id": batch_id, "timestamp": batch_timestamp} for batch_id, batch_timestamp in batches.items()]
+
+        return Response(batch_list, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        # TODO check errors when writing to redis?
+        resource_ids = [resource.get("resource_id") for resource in request.data["resources"]]
+
+        authoriation_header = request.META.get("HTTP_AUTHORIZATION")
+
+        batch_id = str(uuid.uuid4())
+        batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
+        # Add batch info to redis
+        batch_counter_redis.hset("batch", batch_id, batch_timestamp)
+        batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
+
+        # Create kafka topics for batch
+        # TODO num parts, etc. in env
+        new_topics = [
+            NewTopic(f"batch.{batch_id}", 1, 1),
+            NewTopic(f"extract.{batch_id}", 1, 1),
+            NewTopic(f"transform.{batch_id}", 1, 1),
+            NewTopic(f"load.{batch_id}", 1, 1),
+        ]
+        admin_client.create_topics(new_topics)
+
+        # Fetch mapping
+        for resource_id in resource_ids:
+            resource_mapping = fetch_resource_mapping(resource_id, authoriation_header)
+            mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
+
+        # Delete documents from previous batch
+        for resource in request.data["resources"]:
+            resource_id = resource.get("resource_id")
+            resource_type = resource.get("resource_type")
+            logger.debug(
+                {
+                    "message": f"Deleting all documents of type {resource_type} for given resource",
+                    "resource_id": resource_id,
+                },
+            )
+
+            fhirstore = get_fhirstore()
+            try:
+                fhirstore.delete(resource_type, resource_id=resource_id)
+            except NotFoundError:
+                logger.debug(
+                    {"message": f"No documents for resource {resource_id} were found", "resource_id": resource_id},
+                )
+
+        # Send event to the extractor
+        for resource_id in resource_ids:
+            event = {"batch_id": batch_id, "resource_id": resource_id}
+            producer.produce_event(topic=f"batch.{batch_id}", event=event)
+
+        return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
 
 class PreviewEndpoint(views.APIView):
@@ -60,38 +129,7 @@ class PreviewEndpoint(views.APIView):
                     ]
                 )
 
-        return Response(
-            {"instances": documents, "errors": errors},
-            status=status.HTTP_200_OK,
-        )
-
-
-class ResourceEndpoint(views.APIView):
-    def post(self, request):
-        # TODO: add validation
-
-        for resource in request.data["resources"]:
-            resource_id = resource.get("resource_id")
-            resource_type = resource.get("resource_type")
-            logger.debug(
-                {
-                    "message": f"Deleting all documents of type {resource_type} for given resource",
-                    "resource_id": resource_id,
-                },
-            )
-
-            fhirstore = get_fhirstore()
-            try:
-                fhirstore.delete(resource_type, resource_id=resource_id)
-            except NotFoundError:
-                logger.debug(
-                    {
-                        "message": f"No documents for resource {resource_id} were found",
-                        "resource_id": resource_id,
-                    },
-                )
-
-        return Response(status=status.HTTP_200_OK)
+        return Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
 
 class ScriptsEndpoint(views.APIView):
