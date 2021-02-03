@@ -14,6 +14,7 @@ import (
 
 	"github.com/arkhn/fhir-river/api/routes/batch"
 	"github.com/arkhn/fhir-river/api/routes/preview"
+	"github.com/arkhn/fhir-river/api/routes/scripts"
 	"github.com/arkhn/fhir-river/api/topics/monitor"
 )
 
@@ -26,6 +27,7 @@ func main() {
 	// define the HTTP routes and handlers
 	router := mux.NewRouter()
 	router.HandleFunc("/preview", preview.Run).Methods("POST")
+	router.HandleFunc("/scripts/", scripts.Run).Methods("GET")
 	router.HandleFunc("/batch", batch.List(ctl)).Methods("GET")
 	router.HandleFunc("/batch", batch.Create(ctl)).Methods("POST")
 	router.HandleFunc("/batch/{id}", batch.Cancel(ctl)).Methods("DELETE")
