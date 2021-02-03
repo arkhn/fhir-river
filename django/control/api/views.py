@@ -7,15 +7,17 @@ from inspect import getdoc, getmembers, isfunction, ismodule
 from rest_framework import status, views
 from rest_framework.response import Response
 
+from django.conf import settings
+
 from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
 
+import redis
 import scripts
 from common.analyzer import Analyzer
 from confluent_kafka.admin import NewTopic
 from control.api.fetch_mapping import fetch_resource_mapping
 from control.api.kafka import admin_client, producer
-from control.api.redis import batch_counter_redis, mappings_redis
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
@@ -27,6 +29,13 @@ logger = logging.getLogger(__name__)
 
 class BatchEndpoint(views.APIView):
     def get(self, request):
+        batch_counter_redis = redis.Redis(
+            host=settings.REDIS_COUNTER_HOST,
+            port=settings.REDIS_COUNTER_PORT,
+            db=settings.REDIS_COUNTER_DB,
+            decode_responses=True,
+        )
+
         batches = batch_counter_redis.hgetall("batch")
         batch_list = [{"id": batch_id, "timestamp": batch_timestamp} for batch_id, batch_timestamp in batches.items()]
 
@@ -43,6 +52,12 @@ class BatchEndpoint(views.APIView):
         batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
         # Add batch info to redis
+        batch_counter_redis = redis.Redis(
+            host=settings.REDIS_COUNTER_HOST,
+            port=settings.REDIS_COUNTER_PORT,
+            db=settings.REDIS_COUNTER_DB,
+        )
+
         batch_counter_redis.hset("batch", batch_id, batch_timestamp)
         batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
 
@@ -57,6 +72,10 @@ class BatchEndpoint(views.APIView):
         admin_client.create_topics(new_topics)
 
         # Fetch mapping
+        mappings_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+        )
+
         for resource_id in resource_ids:
             resource_mapping = fetch_resource_mapping(resource_id, authoriation_header)
             mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
