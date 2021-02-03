@@ -16,6 +16,7 @@ func Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(remote)
+	// We need to change the HOST header in order to pass control-api ALLOWED_HOSTS.
 	r.Host = remote.Hostname()
 	proxy.ServeHTTP(w, r)
 }
