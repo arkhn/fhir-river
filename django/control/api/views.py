@@ -7,12 +7,9 @@ from inspect import getdoc, getmembers, isfunction, ismodule
 from rest_framework import status, views
 from rest_framework.response import Response
 
-from django.conf import settings
-
 from fhir.resources import construct_fhir_element
 from fhirstore import NotFoundError
 
-import redis
 import scripts
 from common.analyzer import Analyzer
 from confluent_kafka.admin import NewTopic
@@ -37,6 +34,7 @@ class BatchEndpoint(views.APIView):
 
     def post(self, request):
         # TODO check errors when writing to redis?
+        # TODO use serializer to read data?
         resource_ids = [resource.get("resource_id") for resource in request.data["resources"]]
 
         authoriation_header = request.META.get("HTTP_AUTHORIZATION")
@@ -96,19 +94,20 @@ class PreviewEndpoint(views.APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        mapping_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST,
-            port=settings.REDIS_MAPPINGS_PORT,
-            db=settings.REDIS_MAPPINGS_DB,
-        )
+        resource_id = data["resource_id"]
+        primary_key_values = data["primary_key_values"]
 
-        analyzer = Analyzer(mapping_redis)
-        analysis = analyzer.load_cached_analysis(data["preview_id"], data["resource_id"])
+        authoriation_header = request.META.get("HTTP_AUTHORIZATION")
+
+        resource_mapping = fetch_resource_mapping(resource_id, authoriation_header)
+
+        analyzer = Analyzer()
+        analysis = analyzer.analyze(resource_mapping)
 
         extractor = Extractor()
         credentials = analysis.source_credentials
         extractor.update_connection(credentials)
-        df = extractor.extract(analysis, data["primary_key_values"])
+        df = extractor.extract(analysis, primary_key_values)
 
         documents = []
         errors = []
