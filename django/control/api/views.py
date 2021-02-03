@@ -37,7 +37,17 @@ class BatchEndpoint(views.APIView):
         )
 
         batches = batch_counter_redis.hgetall("batch")
-        batch_list = [{"id": batch_id, "timestamp": batch_timestamp} for batch_id, batch_timestamp in batches.items()]
+
+        batch_list = []
+        for batch_id, batch_timestamp in batches.items():
+            batch_resource_ids = batch_counter_redis.smembers(f"batch:{batch_id}:resources")
+            batch_list.append(
+                {
+                    "id": batch_id,
+                    "timestamp": batch_timestamp,
+                    "resources": [{"resource_id": resource_id for resource_id in batch_resource_ids}],
+                }
+            )
 
         return Response(batch_list, status=status.HTTP_200_OK)
 
