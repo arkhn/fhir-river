@@ -15,9 +15,9 @@ from fhirstore import NotFoundError
 import redis
 import scripts
 from common.analyzer import Analyzer
-from confluent_kafka.admin import NewTopic
+from common.kafka.producer import Producer
+from confluent_kafka.admin import AdminClient, NewTopic
 from control.api.fetch_mapping import fetch_resource_mapping
-from control.api.kafka import admin_client, producer
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
@@ -69,6 +69,7 @@ class BatchEndpoint(views.APIView):
             NewTopic(f"transform.{batch_id}", 1, 1),
             NewTopic(f"load.{batch_id}", 1, 1),
         ]
+        admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
         admin_client.create_topics(new_topics)
 
         # Fetch mapping
@@ -100,6 +101,7 @@ class BatchEndpoint(views.APIView):
                 )
 
         # Send event to the extractor
+        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
         for resource_id in resource_ids:
             event = {"batch_id": batch_id, "resource_id": resource_id}
             producer.produce_event(topic=f"batch.{batch_id}", event=event)
