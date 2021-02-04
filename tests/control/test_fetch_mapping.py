@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 from unittest import mock
 
-from common.errors import AuthenticationError, AuthorizationError
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+
 from control.api import fetch_mapping
 from pytest import raises
 
@@ -63,13 +64,13 @@ def test_fetch_concept_map(_):
 
 @mock.patch("control.api.fetch_mapping.requests.get", side_effect=mocked_fhir_api_get)
 def test_fetch_concept_map_invalid(_):
-    with raises(AuthenticationError):
+    with raises(NotAuthenticated):
         fetch_mapping.fetch_concept_map("id", "Bearer invalidToken")
 
 
 @mock.patch("control.api.fetch_mapping.requests.get", side_effect=mocked_fhir_api_get)
 def test_fetch_concept_map_forbidden(_):
-    with raises(AuthorizationError):
+    with raises(PermissionDenied):
         fetch_mapping.fetch_concept_map("id", "Bearer forbiddenToken")
 
 

@@ -1,7 +1,9 @@
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+
 from django.conf import settings
 
 import requests
-from common.errors import AuthenticationError, AuthorizationError, OperationOutcome
+from common.errors import OperationOutcome
 
 resource_from_id_query = """
 fragment entireColumn on Column {
@@ -124,9 +126,9 @@ def fetch_resource_mapping(resource_id: str, authorization_header: str):
     body = response.json()
     if "errors" in body:
         if body["errors"][0]["statusCode"] == 401:
-            raise AuthenticationError("error while fetching mapping: Token is invalid")
+            raise NotAuthenticated("error while fetching mapping: Token is invalid")
         elif body["errors"][0]["statusCode"] == 403:
-            raise AuthorizationError("error while fetching mapping: You don't have rights to perform this action")
+            raise PermissionDenied("error while fetching mapping: You don't have rights to perform this action")
         else:
             raise OperationOutcome(f"error while fetching mapping: {body['errors']}")
 
@@ -157,9 +159,9 @@ def fetch_concept_map(concept_map_id: str, authorization_header: str):
         raise OperationOutcome("could not connect to fhir-api")
 
     if response.status_code == 401:
-        raise AuthenticationError("error while fetching concept map: Token is invalid")
+        raise NotAuthenticated("error while fetching concept map: Token is invalid")
     elif response.status_code == 403:
-        raise AuthorizationError("error while fetching concept map: You don't have rights to perform this action")
+        raise PermissionDenied("error while fetching concept map: You don't have rights to perform this action")
     elif response.status_code != 200:
         raise OperationOutcome(f"error while fetching concept map: {response.json()}")
 
