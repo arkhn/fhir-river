@@ -20,13 +20,6 @@ def test_preview_endpoint(api_client: APIClient):
     # assert response.status_code == 200
 
 
-def test_delete_batch_endpoint(api_client: APIClient):
-    url = reverse("delete-resources")
-    data = {"resources": []}
-    response = api_client.post(url, data=data, format="json")
-    # assert response.status_code == 200
-
-
 @mock.patch("control.api.views.getmembers")
 @mock.patch("control.api.views.getdoc")
 def test_list_scripts_endpoint(mock_getdoc, mock_getmembers, api_client: APIClient):
