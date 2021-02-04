@@ -34,13 +34,11 @@ class Resource(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     source = models.ForeignKey(Source, related_name="resources", on_delete=models.CASCADE)
     label = models.TextField(blank=True, default="")
-    primary_key_table = models.TextField()  # Expected to sometimes be null in prod
-    primary_key_column = models.TextField()  # Expected to sometimes be null in prod
+    primary_key_table = models.TextField()
+    primary_key_column = models.TextField()
     definition_id = models.TextField()
     logical_reference = models.TextField()
-    primary_key_owner = models.ForeignKey(
-        "Owner", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: Why nullable ?
+    primary_key_owner = models.ForeignKey("Owner", related_name="resources", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -71,9 +69,7 @@ class Attribute(models.Model):
     path = models.TextField()
     slice_name = models.TextField(blank=True, default="")
     definition_id = models.TextField()
-    resource = models.ForeignKey(
-        Resource, related_name="attributes", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: why nullable ?
+    resource = models.ForeignKey(Resource, related_name="attributes", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -82,9 +78,7 @@ class Attribute(models.Model):
 class InputGroup(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     merging_script = models.TextField(blank=True, default="")
-    attribute = models.ForeignKey(
-        Attribute, related_name="input_groups", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: why nullable ?
+    attribute = models.ForeignKey(Attribute, related_name="input_groups", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -92,9 +86,7 @@ class InputGroup(models.Model):
 
 class Input(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    input_group = models.ForeignKey(
-        InputGroup, related_name="inputs", null=True, on_delete=models.CASCADE
-    )  # TODO: why nullable ?
+    input_group = models.ForeignKey(InputGroup, related_name="inputs", on_delete=models.CASCADE)
     script = models.TextField(blank=True, default="")
     concept_map_id = models.TextField(blank=True, default="")
     static_value = models.TextField(blank=True, default="")
@@ -105,17 +97,11 @@ class Input(models.Model):
 
 class Column(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    table = models.TextField()  # Expected to sometimes be null in prod
-    column = models.TextField()  # Expected to sometimes be null in prod
-    join = models.ForeignKey(
-        "Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: Why nullable ?
-    input_ = models.OneToOneField(
-        Input, name="input", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: Why nullable ?
-    owner = models.ForeignKey(
-        "Owner", related_name="owners", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: Why nullable ?
+    table = models.TextField()
+    column = models.TextField()
+    join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
+    input_ = models.OneToOneField(Input, name="input", blank=True, null=True, on_delete=models.CASCADE)
+    owner = models.ForeignKey("Owner", related_name="owners", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -123,9 +109,7 @@ class Column(models.Model):
 
 class Join(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    column = models.ForeignKey(
-        Column, related_name="joins", blank=True, null=True, on_delete=models.CASCADE
-    )  # TODO: Why nullable ?
+    column = models.ForeignKey(Column, related_name="joins", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -147,7 +131,7 @@ class Condition(models.Model):
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     action = models.TextField(choices=Action.choices)
-    column = models.OneToOneField(Column, blank=True, null=True, on_delete=models.CASCADE)  # TODO: Why nullable ?
+    column = models.OneToOneField(Column, on_delete=models.CASCADE)
     value = models.TextField(blank=True, default="")
     input_group = models.ForeignKey(InputGroup, on_delete=models.CASCADE)
     relation = models.TextField(choices=Relation.choices, default=Relation.EQUAL)
@@ -165,8 +149,8 @@ class Filter(models.Model):
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     relation = models.TextField(choices=Relation.choices)
-    value = models.TextField(blank=True, default="")  # TODO: Can be "" ?
-    resource = models.ForeignKey(Resource, blank=True, null=True, on_delete=models.CASCADE)  # TODO: Why nullable ?
+    value = models.TextField(blank=True, default="")
+    resource = models.ForeignKey(Resource, related_name="filters", on_delete=models.CASCADE)
     sql_column = models.OneToOneField(Column, on_delete=models.CASCADE)
 
 

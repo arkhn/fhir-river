@@ -63,7 +63,9 @@ SELECT
     "primaryKeyOwner",
     "source"
 FROM
-    pyrog."Resource";
+    pyrog."Resource"
+WHERE
+    "primaryKeyOwner" IS NOT NULL;
 
 INSERT INTO
     pyrog_attribute
@@ -76,7 +78,15 @@ SELECT
     "createdAt",
     "resource"
 FROM
-    pyrog."Attribute";
+    pyrog."Attribute"
+WHERE
+    "resource" IS NOT NULL
+    AND "resource" IN (
+        SELECT
+            id
+        FROM
+            pyrog_resource
+    );
 
 INSERT INTO
     pyrog_inputgroup
@@ -87,7 +97,15 @@ SELECT
     "createdAt",
     "attributeId"
 FROM
-    pyrog."InputGroup";
+    pyrog."InputGroup"
+WHERE
+    "attributeId" IS NOT NULL
+    AND "attributeId" IN (
+        SELECT
+            id
+        FROM
+            pyrog_attribute
+    );
 
 INSERT INTO
     pyrog_input
@@ -100,7 +118,15 @@ SELECT
     "createdAt",
     "inputGroupId"
 FROM
-    pyrog."Input";
+    pyrog."Input"
+WHERE
+    "inputGroupId" IS NOT NULL
+    AND "inputGroupId" IN (
+        SELECT
+            id
+        FROM
+            pyrog_inputgroup
+    );
 
 INSERT INTO
     pyrog_column
@@ -114,7 +140,15 @@ SELECT
     "join",
     "owner"
 FROM
-    pyrog."Column";
+    pyrog."Column"
+WHERE
+    "owner" IS NOT NULL
+    AND "owner" IN (
+        SELECT
+            id
+        FROM
+            pyrog_owner
+    );
 
 INSERT INTO
     pyrog_join
@@ -124,7 +158,25 @@ SELECT
     "createdAt",
     "column"
 FROM
-    pyrog."Join";
+    pyrog."Join"
+WHERE
+    "column" IS NOT NULL
+    AND "column" IN (
+        SELECT
+            id
+        FROM
+            pyrog_column
+    );
+
+DELETE FROM
+    pyrog_column
+WHERE
+    "join_id" NOT IN (
+        SELECT
+            id
+        FROM
+            pyrog_join
+    );
 
 INSERT INTO
     pyrog_condition
@@ -139,7 +191,13 @@ FROM
     pyrog."Condition"
 WHERE
     "relation" IS NOT NULL
-    AND "action" IS NOT NULL;
+    AND "action" IS NOT NULL
+    AND "column" IN (
+        SELECT
+            id
+        FROM
+            pyrog_column
+    );
 
 INSERT INTO
     pyrog_filter
@@ -150,6 +208,20 @@ SELECT
     "resource",
     "sqlColumn"
 FROM
-    pyrog."Filter";
+    pyrog."Filter"
+WHERE
+    "resource" IS NOT NULL
+    AND "resource" IN (
+        SELECT
+            id
+        FROM
+            pyrog_resource
+    )
+    AND "sqlColumn" IN (
+        SELECT
+            id
+        FROM
+            pyrog_column
+    );
 
 COMMIT;
