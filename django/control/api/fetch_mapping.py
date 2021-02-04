@@ -1,6 +1,7 @@
 from django.conf import settings
 
 import requests
+from common.errors import AuthenticationError, AuthorizationError, OperationOutcome
 
 resource_from_id_query = """
 fragment entireColumn on Column {
@@ -115,20 +116,26 @@ def fetch_resource_mapping(resource_id: str, authorization_header: str):
             json={"query": resource_from_id_query, "variables": {"resourceId": resource_id}},
         )
     except requests.exceptions.ConnectionError:
-        raise Exception("Could not connect to the Pyrog service")
+        raise OperationOutcome("Could not connect to the Pyrog service")
 
     if response.status_code != 200:
-        raise Exception(f"graphql query failed with returning code {response.status_code}\n{response.json()}")
+        raise OperationOutcome(f"graphql query failed with returning code {response.status_code}\n{response.json()}")
+
     body = response.json()
     if "errors" in body:
-        raise Exception(f"graphql query failed with errors: {body['errors']}")
+        if body["errors"][0]["statusCode"] == 401:
+            raise AuthenticationError("error while fetching mapping: Token is invalid")
+        elif body["errors"][0]["statusCode"] == 403:
+            raise AuthorizationError("error while fetching mapping: You don't have rights to perform this action")
+        else:
+            raise OperationOutcome(f"error while fetching mapping: {body['errors']}")
 
     resource = body["data"]["resource"]
 
     dereference_concept_map(resource, authorization_header)
 
     if not resource:
-        raise Exception(f"resource with id {resource_id} does not exist")
+        raise OperationOutcome(f"resource with id {resource_id} does not exist")
     return resource
 
 
@@ -147,10 +154,14 @@ def fetch_concept_map(concept_map_id: str, authorization_header: str):
             f"{settings.FHIR_API_URL}/{concept_map_id}", headers={"Authorization": authorization_header}
         )
     except requests.exceptions.ConnectionError:
-        raise Exception("could not connect to fhir-api")
+        raise OperationOutcome("could not connect to fhir-api")
 
-    if response.status_code != 200:
-        raise Exception(f"error while fetching concept map\n{response.json()}")
+    if response.status_code == 401:
+        raise AuthenticationError("error while fetching concept map: Token is invalid")
+    elif response.status_code == 403:
+        raise AuthorizationError("error while fetching concept map: You don't have rights to perform this action")
+    elif response.status_code != 200:
+        raise OperationOutcome(f"error while fetching concept map: {response.json()}")
 
     body = response.json()
 
