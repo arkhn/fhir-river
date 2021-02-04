@@ -224,4 +224,49 @@ WHERE
             pyrog_column
     );
 
+INSERT INTO
+    users_user
+SELECT
+    '',
+    null,
+    FALSE,
+    '',
+    '',
+    CASE
+        WHEN "role" = 'ADMIN' THEN TRUE
+        ELSE FALSE
+    END,
+    TRUE,
+    "createdAt",
+    "id",
+    "email",
+    "name"
+FROM
+    pyrog."User";
+
+INSERT INTO
+    pyrog_sourceuser
+SELECT
+    "id",
+    "role",
+    "source",
+    "user"
+FROM
+    pyrog."AccessControl";
+
+INSERT INTO
+    pyrog_comment
+SELECT
+    "id",
+    "content",
+    "validation",
+    "updatedAt",
+    "createdAt",
+    "attribute",
+    "author"
+FROM
+    pyrog."Comment"
+WHERE
+    "attribute" is NOT NULL;
+
 COMMIT;
