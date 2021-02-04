@@ -56,7 +56,7 @@ class BatchEndpoint(views.APIView):
         # TODO use serializer to read data?
         resource_ids = [resource.get("resource_id") for resource in request.data["resources"]]
 
-        authoriation_header = request.META.get("HTTP_AUTHORIZATION")
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
         batch_id = str(uuid.uuid4())
         batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -88,7 +88,7 @@ class BatchEndpoint(views.APIView):
         )
 
         for resource_id in resource_ids:
-            resource_mapping = fetch_resource_mapping(resource_id, authoriation_header)
+            resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
             mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
 
         # Delete documents from previous batch
@@ -155,9 +155,9 @@ class PreviewEndpoint(views.APIView):
         resource_id = data["resource_id"]
         primary_key_values = data["primary_key_values"]
 
-        authoriation_header = request.META.get("HTTP_AUTHORIZATION")
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        resource_mapping = fetch_resource_mapping(resource_id, authoriation_header)
+        resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
 
         analyzer = Analyzer()
         analysis = analyzer.analyze(resource_mapping)
