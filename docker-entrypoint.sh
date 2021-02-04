@@ -7,7 +7,7 @@ set -e
 [[ "${DEBUG}" ]] && set -x
 
 # Set default key (not actually used)
-if [[ "$1" == "extractor" ]] || [[ "$1" == "transformer" ]] || [[ "$1" == "loader" ]]; then
+if [[ "$1" == "extractor" ]] || [[ "$1" == "transformer" ]] || [[ "$1" == "loader" ]] || [[ "$1" == "topicleaner" ]]; then
   export SECRET_KEY="whatever"
 fi
 

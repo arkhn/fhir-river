@@ -54,6 +54,22 @@ services:
       - REDIS_COUNTER_PORT=6379
       - REDIS_COUNTER_DB=2
 
+  topicleaner:
+    image: arkhn/river:rm-double-api
+    build: .
+    command: topicleaner
+    depends_on:
+      - kafka
+      - river-redis
+    restart: on-failure
+    environment:
+      - ENV=prod
+      - LOG_LEVEL=INFO
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - REDIS_COUNTER_HOST=river-redis
+      - REDIS_COUNTER_PORT=6379
+      - REDIS_COUNTER_DB=2
+
   control-api:
     image: river
     build: .
