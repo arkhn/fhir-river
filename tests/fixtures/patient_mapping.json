@@ -2,7 +2,7 @@
   "id": "ckdyl65kh0125gu9kpvjbja6j",
   "logicalReference": "",
   "label": "",
-  "primaryKeyOwner": {"name": "mimiciii"},
+  "primaryKeyOwner": { "name": "mimiciii" },
   "primaryKeyTable": "patients",
   "primaryKeyColumn": "row_id",
   "definitionId": "Patient",
@@ -30,7 +30,7 @@
       "sqlColumn": {
         "id": "ckdu1t41o1172iepju4j8od0x",
         "table": "admissions",
-        "owner": {"name": "mimiciii"},
+        "owner": { "name": "mimiciii" },
         "column": "adm_date",
         "joinId": null,
         "updatedAt": "2020-08-14T09:47:55.452Z",
@@ -45,7 +45,7 @@
               {
                 "id": "ckdyl65ki0140gu9kno8jumsr",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "subject_id",
                 "joinId": "ckdyl65ki0139gu9km494twhn",
                 "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -54,7 +54,7 @@
               {
                 "id": "ckdyl65ki0141gu9klt9e790b",
                 "table": "admissions",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "subject_id",
                 "joinId": "ckdyl65ki0139gu9km494twhn",
                 "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -107,7 +107,7 @@
               "sqlValue": {
                 "id": "ckdyl6i2f0115gz9k4z7aecfc",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "dob",
                 "joinId": null,
                 "joins": [],
@@ -148,7 +148,7 @@
               "sqlValue": {
                 "id": "ckdyl65kh0129gu9kdqxrzzr3",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "dob",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -168,7 +168,7 @@
               "sqlValue": {
                 "id": "ckdyl6i2f0115gz9k4z7aecfc",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "dob",
                 "joinId": null,
                 "joins": [],
@@ -209,7 +209,7 @@
               "sqlValue": {
                 "id": "ckdyl65kh0133gu9kp4umizkr",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "expire_flag",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -262,7 +262,7 @@
               "sqlValue": {
                 "id": "ckdyl65ki0138gu9kb1g4xfat",
                 "table": "admissions",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "marital_status",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -277,7 +277,7 @@
                       {
                         "id": "ckdyl65ki0140gu9kno8jumsr",
                         "table": "patients",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65ki0139gu9km494twhn",
                         "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -286,7 +286,7 @@
                       {
                         "id": "ckdyl65ki0141gu9klt9e790b",
                         "table": "admissions",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65ki0139gu9km494twhn",
                         "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -342,7 +342,7 @@
               "sqlValue": {
                 "id": "ckdyl65ki0162gu9kd4duet1w",
                 "table": "admissions",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "admittime",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -357,7 +357,7 @@
                       {
                         "id": "ckdyl65ki0164gu9kwv9nzan4",
                         "table": "patients",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65ki0163gu9kxozsk9f5",
                         "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -366,7 +366,7 @@
                       {
                         "id": "ckdyl65ki0165gu9kq6n7amie",
                         "table": "admissions",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65ki0163gu9kxozsk9f5",
                         "updatedAt": "2020-08-17T14:01:01.366Z",
@@ -543,7 +543,7 @@
               "sqlValue": {
                 "id": "ckdyl65ki0181gu9k67d69xpq",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "expire_flag",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -563,7 +563,7 @@
               "sqlValue": {
                 "id": "ckdyl65ki0183gu9ktqia3dvk",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "expire_flag",
                 "joinId": null,
                 "joins": [],
@@ -592,7 +592,7 @@
               "sqlValue": {
                 "id": "ckdyl65ki0186gu9kqd8gyj0l",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "expire_flag",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -612,7 +612,7 @@
               "sqlValue": {
                 "id": "ckdyl65kj0188gu9k87u9vwv6",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "expire_flag",
                 "joinId": null,
                 "joins": [],
@@ -630,7 +630,7 @@
               "sqlValue": {
                 "id": "ckdyl65kj0190gu9kwv4kj0mj",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "row_id",
                 "joinId": null,
                 "joins": [],
@@ -671,7 +671,7 @@
               "sqlValue": {
                 "id": "ckdyl65kj0194gu9k6ez7yirb",
                 "table": "admissions",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "marital_status",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -686,7 +686,7 @@
                       {
                         "id": "ckdyl65kj0196gu9ku2dy0ygg",
                         "table": "patients",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65kj0195gu9k43qei6xp",
                         "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -695,7 +695,7 @@
                       {
                         "id": "ckdyl65kj0197gu9k1lrvx3bl",
                         "table": "admissions",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65kj0195gu9k43qei6xp",
                         "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -740,7 +740,7 @@
               "sqlValue": {
                 "id": "ckdyl65kj0201gu9k991p2071",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "subject_id",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -936,7 +936,7 @@
               "sqlValue": {
                 "id": "ckdyl65kj0219gu9k250llw77",
                 "table": "admissions",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "language",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -951,7 +951,7 @@
                       {
                         "id": "ckdyl65kj0221gu9ko0mokuf2",
                         "table": "patients",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65kj0220gu9k3o1rdpx7",
                         "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -960,7 +960,7 @@
                       {
                         "id": "ckdyl65kj0222gu9kghzy2876",
                         "table": "admissions",
-                        "owner": {"name": "mimiciii"},
+                        "owner": { "name": "mimiciii" },
                         "column": "subject_id",
                         "joinId": "ckdyl65kj0220gu9k3o1rdpx7",
                         "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -1042,7 +1042,7 @@
               "sqlValue": {
                 "id": "ckdyl65kj0229gu9krs3zwuph",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "gender",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -1100,6 +1100,28 @@
       "inputGroups": []
     },
     {
+      "id": "ckdyl65kl0329gu9k3t8fwf7p",
+      "path": "link[0]",
+      "sliceName": null,
+      "definitionId": "BackboneElement",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.365Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65kl0329gu9k3t8fwf7p",
+      "path": "link[0].other",
+      "sliceName": null,
+      "definitionId": "Reference",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.367Z",
+      "createdAt": "2020-08-17T14:01:01.365Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
       "id": "ckdyl65kl0330gu9kg0g9kl08",
       "path": "deceasedDateTime",
       "sliceName": null,
@@ -1128,7 +1150,7 @@
               "sqlValue": {
                 "id": "ckdyl65kl0333gu9kf9udz7lz",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "dod",
                 "joinId": null,
                 "updatedAt": "2020-08-17T14:01:01.367Z",
@@ -1148,7 +1170,7 @@
               "sqlValue": {
                 "id": "ckdyl65kl0335gu9kup0hwhe0",
                 "table": "patients",
-                "owner": {"name": "mimiciii"},
+                "owner": { "name": "mimiciii" },
                 "column": "expire_flag",
                 "joinId": null,
                 "joins": [],
