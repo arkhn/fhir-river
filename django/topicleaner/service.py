@@ -25,6 +25,9 @@ class TopicleanerHandler(Handler):
             db=settings.REDIS_COUNTER_DB,
             decode_responses=True,
         )
+        self.mappings_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+        )
 
     def is_end_of_batch(self, batch_id: str):
         batch_resources = self.batch_counter_redis.smembers(f"batch:{batch_id}:resources")
@@ -60,6 +63,8 @@ class TopicleanerHandler(Handler):
             self.batch_counter_redis.hdel("batch", batch_id)
             self.batch_counter_redis.delete(f"batch:{batch_id}:resources")
             self.batch_counter_redis.expire(f"batch:{batch_id}:counter", timedelta(weeks=2))
+            for key in self.mappings_redis.scan_iter(f"{batch_id}:*"):
+                self.mappings_redis.delete(key)
 
 
 class TopicleanerService(Service):

@@ -137,6 +137,12 @@ class DeleteBatchEndpoint(views.APIView):
         batch_counter_redis.delete(f"batch:{batch_id}:resources")
         batch_counter_redis.expire(f"batch:{batch_id}:counter", timedelta(weeks=2))
 
+        mappings_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+        )
+        for key in mappings_redis.scan_iter(f"{batch_id}:*"):
+            mappings_redis.delete(key)
+
         return Response({"id": batch_id}, status=status.HTTP_200_OK)
 
 
