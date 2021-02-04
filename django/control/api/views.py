@@ -18,7 +18,7 @@ from common.analyzer import Analyzer
 from common.kafka.producer import Producer
 from confluent_kafka.admin import AdminClient, NewTopic
 from control.api.fetch_mapping import fetch_resource_mapping
-from control.api.serializers import PreviewSerializer
+from control.api.serializers import CreateBatchSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
 from pydantic import ValidationError
@@ -53,8 +53,11 @@ class BatchEndpoint(views.APIView):
 
     def post(self, request):
         # TODO check errors when writing to redis?
-        # TODO use serializer to read data?
-        resource_ids = [resource.get("resource_id") for resource in request.data["resources"]]
+        serializer = CreateBatchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        resource_ids = [resource.get("resource_id") for resource in data["resources"]]
 
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
@@ -91,7 +94,7 @@ class BatchEndpoint(views.APIView):
             mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
 
         # Delete documents from previous batch
-        for resource in request.data["resources"]:
+        for resource in data["resources"]:
             resource_id = resource.get("resource_id")
             resource_type = resource.get("resource_type")
             logger.debug(
