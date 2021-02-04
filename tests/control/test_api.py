@@ -1,9 +1,12 @@
+from datetime import timedelta
 from unittest import mock
 
 # flake8: noqa
 from rest_framework.test import APIClient
 
 from django.urls import reverse
+
+import fakeredis
 
 # TODO(vmttn): find actual data to use for these tests
 
@@ -18,6 +21,32 @@ def test_preview_endpoint(api_client: APIClient):
     }
     # response = api_client.post(url, data=data, format="json")
     # assert response.status_code == 200
+
+
+@mock.patch("control.api.views.redis.Redis")
+@mock.patch("control.api.views.AdminClient")
+def test_delete_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClient):
+    batch_counter_redis = mock.MagicMock()
+    mappings_redis = mock.MagicMock()
+    mappings_redis.scan_iter.return_value = ["id:r_1", "id:r_2", "id:r_3"]
+    mock_redis.side_effect = [batch_counter_redis, mappings_redis]
+
+    admin_client = mock.MagicMock()
+    mock_kafka_admin.return_value = admin_client
+
+    url = reverse("delete-batch", kwargs={"batch_id": "id"})
+
+    response = api_client.delete(url)
+
+    assert response.data == {"id": "id"}
+    assert response.status_code == 200
+
+    admin_client.delete_topics.assert_has_calls([mock.call(["batch.id", "extract.id", "transform.id", "load.id"])])
+
+    batch_counter_redis.hdel.assert_has_calls([mock.call("batch", "id")])
+    batch_counter_redis.delete.assert_has_calls([mock.call("batch:id:resources")])
+    batch_counter_redis.expire.assert_has_calls([mock.call("batch:id:counter", timedelta(weeks=2))])
+    mappings_redis.delete.assert_has_calls([mock.call("id:r_1"), mock.call("id:r_2"), mock.call("id:r_3")])
 
 
 @mock.patch("control.api.views.getmembers")
