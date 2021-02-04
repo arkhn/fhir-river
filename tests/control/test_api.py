@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from unittest import mock
 
 # flake8: noqa
@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 import fakeredis
+from confluent_kafka.admin import NewTopic
 
 # TODO(vmttn): find actual data to use for these tests
 
@@ -24,8 +25,7 @@ def test_preview_endpoint(api_client: APIClient):
 
 
 @mock.patch("control.api.views.redis.Redis")
-@mock.patch("control.api.views.AdminClient")
-def test_get_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClient):
+def test_get_batch_endpoint(mock_redis, api_client: APIClient):
     batch_counter_redis = mock.MagicMock()
     batch_counter_redis.hgetall.return_value = {
         "batch_id_1": "batch_timestamp_1",
@@ -54,6 +54,83 @@ def test_get_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClient)
             "resources": [{"resource_id": "r31"}, {"resource_id": "r32"}, {"resource_id": "r33"}],
         },
     ]
+
+
+@mock.patch("control.api.views.redis.Redis")
+@mock.patch("control.api.views.AdminClient")
+@mock.patch("control.api.views.get_fhirstore")
+@mock.patch("control.api.views.Producer")
+@mock.patch("control.api.views.uuid.uuid4", return_value="batch_id")
+@mock.patch(
+    "control.api.views.fetch_resource_mapping",
+    side_effect=[{"resource": "mapping_1"}, {"resource": "mapping_2"}, {"resource": "mapping_3"}],
+)
+def test_get_batch_endpoint(_, __, mock_producer, mock_fhirstore, mock_kafka_admin, mock_redis, api_client: APIClient):
+    batch_counter_redis = mock.MagicMock()
+    mappings_redis = mock.MagicMock()
+    mock_redis.side_effect = [batch_counter_redis, mappings_redis]
+
+    admin_client = mock.MagicMock()
+    mock_kafka_admin.return_value = admin_client
+
+    fhirstore = mock.MagicMock()
+    mock_fhirstore.return_value = fhirstore
+
+    producer = mock.MagicMock()
+    mock_producer.return_value = producer
+
+    url = reverse("batch")
+    response = api_client.post(
+        url,
+        data={
+            "resources": [
+                {"resource_id": "id_a", "resource_type": "type_a"},
+                {"resource_id": "id_b", "resource_type": "type_b"},
+                {"resource_id": "id_c", "resource_type": "type_c"},
+            ]
+        },
+        format="json",
+    )
+
+    # get timestamp in response
+    batch_timestamp = response.data["timestamp"]
+
+    batch_counter_redis.hset.assert_has_calls([mock.call("batch", "batch_id", batch_timestamp)])
+    batch_counter_redis.sadd.assert_has_calls([mock.call("batch:batch_id:resources", "id_a", "id_b", "id_c")])
+
+    new_topics = [
+        NewTopic("batch.batch_id", 1, 1),
+        NewTopic("extract.batch_id", 1, 1),
+        NewTopic("transform.batch_id", 1, 1),
+        NewTopic("load.batch_id", 1, 1),
+    ]
+    admin_client.create_topics.assert_has_calls([mock.call(new_topics)])
+
+    mappings_redis.set.assert_has_calls(
+        [
+            mock.call("batch_id:id_a", '{"resource": "mapping_1"}'),
+            mock.call("batch_id:id_b", '{"resource": "mapping_2"}'),
+            mock.call("batch_id:id_c", '{"resource": "mapping_3"}'),
+        ]
+    )
+
+    fhirstore.delete.assert_has_calls(
+        [
+            mock.call("type_a", resource_id="id_a"),
+            mock.call("type_b", resource_id="id_b"),
+            mock.call("type_c", resource_id="id_c"),
+        ]
+    )
+
+    producer.produce_event.assert_has_calls(
+        [
+            mock.call(topic="batch.batch_id", event={"batch_id": "batch_id", "resource_id": "id_a"}),
+            mock.call(topic="batch.batch_id", event={"batch_id": "batch_id", "resource_id": "id_b"}),
+            mock.call(topic="batch.batch_id", event={"batch_id": "batch_id", "resource_id": "id_c"}),
+        ]
+    )
+
+    assert response.status_code == 200
 
 
 @mock.patch("control.api.views.redis.Redis")

@@ -67,7 +67,6 @@ class BatchEndpoint(views.APIView):
             port=settings.REDIS_COUNTER_PORT,
             db=settings.REDIS_COUNTER_DB,
         )
-
         batch_counter_redis.hset("batch", batch_id, batch_timestamp)
         batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
 
