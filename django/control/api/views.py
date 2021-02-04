@@ -45,7 +45,7 @@ class BatchEndpoint(views.APIView):
                 {
                     "id": batch_id,
                     "timestamp": batch_timestamp,
-                    "resources": [{"resource_id": resource_id for resource_id in batch_resource_ids}],
+                    "resources": [{"resource_id": resource_id} for resource_id in batch_resource_ids],
                 }
             )
 
