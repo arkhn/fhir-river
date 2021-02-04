@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "topicleaner",
     "pagai",
     "pyrog",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -102,6 +103,12 @@ DATABASES = {
         "PORT": int(os.environ.get("POSTGRES_PORT", 5432)),
     }
 }
+
+
+# Custom User model
+# https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#substituting-a-custom-user-model
+
+AUTH_USER_MODEL = "users.User"
 
 
 # Password validation
