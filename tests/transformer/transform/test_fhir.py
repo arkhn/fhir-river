@@ -3,7 +3,7 @@ from unittest import mock
 from fhirstore import ARKHN_CODE_SYSTEMS
 
 from common.analyzer.attribute import Attribute
-from pytest import raises
+from pytest import mark, raises
 from transformer.transform import fhir
 
 
@@ -44,6 +44,18 @@ def test_create_instance(mock_datetime):
         "maritalStatus": {"coding": [{"code": "D"}]},
         "generalPractitioner": [{"type": "Practitioner"}],
     }
+
+
+@mark.parametrize("path", ["birthDate", ""])
+def test_non_list_from_list(path):
+    attr_birthDate = Attribute("birthDate")
+
+    path_attributes_map = {path: attr_birthDate}
+
+    row = {attr_birthDate.path: ["2000-10-10", "2000-10-11"]}
+
+    with raises(ValueError, match="can't build non-list attribute from list"):
+        fhir.build_fhir_object(row, path_attributes_map)
 
 
 @mock.patch("transformer.transform.fhir.datetime", autospec=True)
