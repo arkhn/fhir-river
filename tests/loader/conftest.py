@@ -26,7 +26,14 @@ def patient():
                     "system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
                     "value": "123",
                 },
-            }
+            },
+            {
+                "type": "Practitioner",
+                "identifier": {
+                    "system": "http://terminology.arkhn.org/mimic_id/practitioner_id",
+                    "value": "321",
+                },
+            },
         ],
         "managingOrganization": {
             "type": "Organization",
