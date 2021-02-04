@@ -7,6 +7,7 @@ from common.analyzer import Analyzer
 from common.errors import OperationOutcome
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
+from common.service.errors import BatchCancelled
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
@@ -57,14 +58,17 @@ class TransformHandler(Handler):
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
         fhir_object = transform_row(analysis, record, transformer=self.transformer)
-        self.producer.produce_event(
-            topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
-            event={
-                "fhir_object": fhir_object,
-                "batch_id": batch_id,
-                "resource_id": resource_id,
-            },
-        )
+        try:
+            self.producer.produce_event(
+                topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
+                event={
+                    "fhir_object": fhir_object,
+                    "batch_id": batch_id,
+                    "resource_id": resource_id,
+                },
+            )
+        except BatchCancelled as err:
+            logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
 
 class TransformerService(Service):
