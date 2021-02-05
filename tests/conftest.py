@@ -1,10 +1,9 @@
 import os
 
+import pytest
 from dotenv import find_dotenv, load_dotenv
 
 import django
-
-import pytest
 
 
 def pytest_configure():
