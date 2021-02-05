@@ -31,6 +31,37 @@ DEBUG = os.environ.get("DEBUG", False) == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
+# CORS
+# https://pypi.org/project/django-cors-headers/
+
+CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL_ORIGINS", True)
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = os.environ \
+    .get('CORS_ALLOWED_ORIGINS', 'http://localhost:8000 http://localhost:3000') \
+    .split(' ')
+CSRF_TRUSTED_ORIGINS = os.environ \
+    .get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000 http://localhost:3000') \
+    .split(' ')
+
+# OpenID Connect
+# https://mozilla-django-oidc.readthedocs.io/en/stable/drf.html
+
+OIDC_DRF_AUTH_BACKEND = 'mozilla_django_oidc.auth.OIDCAuthenticationBackend'
+OIDC_RP_CLIENT_ID = os.environ.get("OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = os.environ.get("OIDC_RP_CLIENT_SECRET")
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get("OIDC_OP_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = os.environ.get("OIDC_OP_USER_ENDPOINT")
+OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT")
+OIDC_TOKEN_USE_BASIC_AUTH = True
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_CREATE_USER = False
+LOGIN_REDIRECT_URL = os.environ.get("OIDC_LOGIN_REDIRECT_URL")
+LOGOUT_REDIRECT_URL = os.environ.get("OIDC_LOGOUT_REDIRECT_URL")
+
+AUTHENTICATION_BACKENDS = [
+    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+]
 
 # Application definition
 
@@ -44,6 +75,7 @@ INSTALLED_APPS = [
     # 3rd parties
     "rest_framework",
     "corsheaders",
+    'mozilla_django_oidc',
     # 1st parties
     "core",
     "extractor",
@@ -55,11 +87,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -192,7 +225,17 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    'DEFAULT_PAGINATION_CLASS': None,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+    )
 }
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Redis
 
