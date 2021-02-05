@@ -1,10 +1,7 @@
 package batch
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -94,22 +91,22 @@ func Create(ctl monitor.BatchController) func(http.ResponseWriter, *http.Request
 		}
 
 		// delete all the documents correspondng to the batch resources
-		deleteUrl := fmt.Sprintf("%s/api/delete-resources/", controlURL)
-		jBody, _ := json.Marshal(request)
-		resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		if resp.StatusCode != 200 {
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			http.Error(w, string(body), http.StatusBadRequest)
-			return
-		}
+		// deleteUrl := fmt.Sprintf("%s/api/delete-resources/", controlURL)
+		// jBody, _ := json.Marshal(request)
+		// resp, err := http.Post(deleteUrl, "application/json", bytes.NewBuffer(jBody))
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusBadRequest)
+		// 	return
+		// }
+		// if resp.StatusCode != 200 {
+		// 	body, err := ioutil.ReadAll(resp.Body)
+		// 	if err != nil {
+		// 		http.Error(w, err.Error(), http.StatusBadRequest)
+		// 		return
+		// 	}
+		// 	http.Error(w, string(body), http.StatusBadRequest)
+		// 	return
+		// }
 
 		// produce a "batch" kafka event for each resource ID.
 		for _, resourceID := range resourceIDs {

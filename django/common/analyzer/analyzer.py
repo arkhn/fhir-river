@@ -77,6 +77,8 @@ class Analyzer:
         self._cur_analysis.resource_id = resource_mapping["id"]
         self._cur_analysis.definition_id = resource_mapping["definitionId"]
         self._cur_analysis.definition = resource_mapping["definition"]
+        self.get_reference_attributes(resource_mapping["attributes"])
+        logger.info(f"References found at: {self._cur_analysis.reference_paths}")
         for filter_ in resource_mapping["filters"]:
             self.analyze_filter(filter_)
         for attribute_mapping in resource_mapping["attributes"]:
@@ -111,17 +113,6 @@ class Analyzer:
             # intermediary attribute (ie not a leaf). It is here to give us some context
             # information. For instance, we can use it if its children attributes
             # represent a Reference.
-            if attribute_mapping["definitionId"] == "Reference":
-                logger.debug(
-                    {
-                        "message": "Analyze attribute reference",
-                        "resource_id": self._cur_analysis.resource_id,
-                    },
-                )
-                # Remove trailing index
-                path = re.sub(r"\[\d+\]$", "", attribute.path)
-                self._cur_analysis.reference_paths.add(path)
-
             return
 
         for mapping_group in attribute_mapping["inputGroups"]:
@@ -181,6 +172,38 @@ class Analyzer:
             input_group.merging_script = MergingScript(mapping_group["mergingScript"])
 
         return input_group
+
+    def get_reference_attributes(self, attributes_mapping):
+        def is_reference_complete(path):
+            if not any(
+                attr["path"].startswith(path) and attr["path"].endswith("identifier.value")
+                for attr in attributes_mapping
+            ):
+                return False
+            if not any(
+                attr["path"].startswith(path) and attr["path"].endswith("identifier.system")
+                for attr in attributes_mapping
+            ):
+                return False
+            if not any(attr["path"].startswith(path) and attr["path"].endswith("type") for attr in attributes_mapping):
+                return False
+            return True
+
+        for attribute_mapping in attributes_mapping:
+            if (
+                not attribute_mapping["inputGroups"]
+                and attribute_mapping["definitionId"] == "Reference"
+                and is_reference_complete(attribute_mapping["path"])
+            ):
+                logger.debug(
+                    {
+                        "message": "Analyze attribute reference",
+                        "resource_id": self._cur_analysis.resource_id,
+                    },
+                )
+                # Remove trailing index
+                path = re.sub(r"\[\d+\]$", "", attribute_mapping["path"])
+                self._cur_analysis.reference_paths.add(path)
 
     def get_primary_key(self, resource_mapping):
         """Get the primary key table and column of the provided resource."""

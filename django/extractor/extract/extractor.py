@@ -2,11 +2,14 @@ import logging
 from collections import defaultdict
 from typing import Any, List, Optional
 
+from django.conf import settings
+
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
 from extractor.errors import EmptyResult
 from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
+from pymongo import MongoClient
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import Query, sessionmaker
 
@@ -42,6 +45,7 @@ class Extractor:
         self.engine = None
         self.metadata = None
         self.session = None
+        self.present_primary_keys = {}
 
     @staticmethod
     def build_db_url(credentials):
@@ -73,6 +77,19 @@ class Extractor:
             self.engine = create_engine(self.db_string, pool_pre_ping=True)
             self.metadata = MetaData(bind=self.engine)
             self.session = sessionmaker(self.engine)()
+
+    def check_existing_documents(self, resource_id, resource_type):
+        mongo_client = MongoClient(
+            host=settings.FHIRSTORE_HOST,
+            port=settings.FHIRSTORE_PORT,
+            username=settings.FHIRSTORE_USER,
+            password=settings.FHIRSTORE_PASSWORD,
+        )
+        present_documents = mongo_client[settings.FHIRSTORE_DATABASE][resource_type].find(
+            {"meta.tag.code": resource_id}, projection={"_id": False, "identifier.value": True}
+        )
+        self.present_primary_keys = {doc["identifier"][0]["value"] for doc in present_documents}
+        logger.info(f"there are {len(self.present_primary_keys)} keys already present in mongo")
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
@@ -132,9 +149,8 @@ class Extractor:
 
         return query.yield_per(CHUNK_SIZE)
 
-    @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")
-    def split_dataframe(df: Query, analysis: Analysis):
+    def split_dataframe(self, df: Query, analysis: Analysis):
         # Find primary key column
         logger.info(
             {
@@ -162,10 +178,14 @@ class Extractor:
                 ).inc()
                 yield acc
                 acc = defaultdict(list)
-            for key, value in zip(row.keys(), row):
-                acc[key].append(value)
 
             prev_pk_val = row[pk_ind]
+            check_val = str(int(prev_pk_val)) if prev_pk_val.is_integer() else str(prev_pk_val)
+            if check_val in self.present_primary_keys:
+                continue
+
+            for key, value in zip(row.keys(), row):
+                acc[key].append(value)
 
         if not acc:
             raise EmptyResult(
