@@ -16,7 +16,7 @@ jobs:
       - run: |
           echo "noop"
 
-  unit-tests-services:
+  unit-tests:
     runs-on: ubuntu-18.04
 
     # TODO(vmttn): Run tests in previously built container instead
@@ -32,7 +32,7 @@ jobs:
         env:
           PYROG_API_URL: http://test.com
 
-  build-and-publish-services:
+  build-and-publish:
     runs-on: ubuntu-18.04
 
     steps:
@@ -71,7 +71,7 @@ jobs:
   integration:
     runs-on: ubuntu-18.04
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
-    needs: [build-and-publish-services, unit-tests-services]
+    needs: [build-and-publish, unit-tests]
     steps:
       # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
       # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}

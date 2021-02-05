@@ -73,7 +73,7 @@ services:
       - REDIS_COUNTER_PORT=6379
       - REDIS_COUNTER_DB=2
 
-  control-api:
+  river-api:
     image: river
     build: .
     restart: on-failure
@@ -124,3 +124,8 @@ services:
       - "6379:6379"
     restart: on-failure
     command: --loglevel verbose
+
+networks:
+  default:
+    external:
+      name: arkhn_network
