@@ -6,11 +6,6 @@ set -e
 # Trace execution
 [[ "${DEBUG}" ]] && set -x
 
-# Set default key (not actually used)
-if [[ "$1" == "extractor" ]] || [[ "$1" == "transformer" ]] || [[ "$1" == "loader" ]]; then
-  export SECRET_KEY="whatever"
-fi
-
 export DJANGO_SETTINGS_MODULE=river.settings."${ENV:-prod}"
 export STATIC_ROOT="${FILES_ROOT}/static"
 
