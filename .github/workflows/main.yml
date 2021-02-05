@@ -88,6 +88,7 @@ jobs:
           cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
           contextName: river-ci-${{ github.sha }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
+          deploymentRef: jason/rm-api-go
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
