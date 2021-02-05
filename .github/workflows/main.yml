@@ -91,5 +91,6 @@ jobs:
           deploymentRef: jason/rm-api-go
           versions: |
             {
-              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
+              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
+              "testy": "jason-rm-api-go"
             }
