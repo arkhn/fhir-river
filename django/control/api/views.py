@@ -94,6 +94,7 @@ class BatchEndpoint(views.APIView):
             mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
 
         # Delete documents from previous batch
+        # TODO: make this operation asynchronous
         for resource in data["resources"]:
             resource_id = resource.get("resource_id")
             resource_type = resource.get("resource_type")

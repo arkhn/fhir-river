@@ -110,7 +110,6 @@ query resource($resourceId: String!) {
 
 
 def fetch_resource_mapping(resource_id: str, authorization_header: str):
-    # TODO exceptions
     try:
         response = requests.post(
             settings.PYROG_API_URL,

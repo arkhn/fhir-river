@@ -134,7 +134,7 @@ def test_analyze_mapping(patient_mapping):
     assert analysis.reference_paths == [["generalPractitioner"], ["link", "other"]]
 
 
-def test_analyze_attribute(patient_mapping, dict_map_gender):
+def test_analyze_attribute(dict_map_gender):
     analyzer = Analyzer()
     analyzer._cur_analysis.primary_key_column = SqlColumn("mimiciii", "patients", "subject_id")
 

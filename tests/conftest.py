@@ -1,7 +1,9 @@
 import os
 
-import django
 from dotenv import find_dotenv, load_dotenv
+
+import django
+
 import pytest
 
 

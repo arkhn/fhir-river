@@ -9,19 +9,103 @@ from django.urls import reverse
 import fakeredis
 from confluent_kafka.admin import NewTopic
 
-# TODO(vmttn): find actual data to use for these tests
 
+@mock.patch("control.api.views.redis.Redis", return_value=fakeredis.FakeStrictRedis())
+@mock.patch("control.api.views.Extractor")
+@mock.patch("control.api.views.fetch_resource_mapping")
+def test_preview_endpoint(mock_fetch_mapping, mock_extractor, mock_redis, api_client: APIClient, preview_mapping):
+    extractor = mock.MagicMock()
+    extractor.split_dataframe.return_value = [
+        {
+            "patients_row_id_02edb49e": ["PK"],
+            "patients_dob_4e3cd18c": ["2000-01-01"],
+            "patients_expire_flag_5364901b": [True],
+        }
+    ]
+    mock_extractor.return_value = extractor
+    mock_fetch_mapping.return_value = preview_mapping
 
-def test_preview_endpoint(api_client: APIClient):
     url = reverse("preview")
     data = {
-        "preview_id": "foo",
         "resource_id": "foo",
-        "primary_key_values": [],
-        "mapping": {},
+        "primary_key_values": ["PK"],
     }
-    # response = api_client.post(url, data=data, format="json")
-    # assert response.status_code == 200
+    response = api_client.post(url, data=data, format="json")
+    assert response.status_code == 200
+    assert response.data == {
+        "instances": [
+            {
+                "active": "true",
+                "birthDate": "2000-01-01",
+                "deceasedBoolean": "True",
+                "id": response.data["instances"][0]["id"],
+                "resourceType": "Patient",
+                "meta": {
+                    "lastUpdated": response.data["instances"][0]["meta"]["lastUpdated"],
+                    "tag": [
+                        {
+                            "system": "http://terminology.arkhn.org/CodeSystem/source",
+                            "code": "ckdyl65ip0010gu9k22w8kvc1",
+                        },
+                        {
+                            "system": "http://terminology.arkhn.org/CodeSystem/resource",
+                            "code": "ckdyl65kh0125gu9kpvjbja6j",
+                        },
+                    ],
+                },
+            }
+        ],
+        "errors": [],
+    }
+
+
+@mock.patch("control.api.views.redis.Redis", return_value=fakeredis.FakeStrictRedis())
+@mock.patch("control.api.views.Extractor")
+@mock.patch("control.api.views.fetch_resource_mapping")
+def test_preview_endpoint_with_error(
+    mock_fetch_mapping, mock_extractor, mock_redis, api_client: APIClient, erroneous_mapping
+):
+    extractor = mock.MagicMock()
+    extractor.split_dataframe.return_value = [
+        {
+            "patients_row_id_02edb49e": ["PK"],
+            "patients_dob_4e3cd18c": ["01 01 2000"],
+        }
+    ]
+    mock_extractor.return_value = extractor
+    mock_fetch_mapping.return_value = erroneous_mapping
+
+    url = reverse("preview")
+    data = {
+        "resource_id": "foo",
+        "primary_key_values": ["PK"],
+    }
+    response = api_client.post(url, data=data, format="json")
+    assert response.status_code == 200
+    assert response.data == {
+        "instances": [
+            {
+                "active": "active",
+                "birthDate": "01 01 2000",
+                "id": response.data["instances"][0]["id"],
+                "resourceType": "Patient",
+                "meta": {
+                    "lastUpdated": response.data["instances"][0]["meta"]["lastUpdated"],
+                    "tag": [
+                        {
+                            "system": "http://terminology.arkhn.org/CodeSystem/source",
+                            "code": "ckdyl65ip0010gu9k22w8kvc1",
+                        },
+                        {
+                            "system": "http://terminology.arkhn.org/CodeSystem/resource",
+                            "code": "ckdyl65kh0125gu9kpvjbja6j",
+                        },
+                    ],
+                },
+            }
+        ],
+        "errors": ["value could not be parsed to a boolean: Patient.active", "invalid date format: Patient.birthDate"],
+    }
 
 
 @mock.patch("control.api.views.redis.Redis")
@@ -63,7 +147,7 @@ def test_get_batch_endpoint(mock_redis, api_client: APIClient):
 @mock.patch("control.api.views.uuid.uuid4", return_value="batch_id")
 @mock.patch(
     "control.api.views.fetch_resource_mapping",
-    side_effect=[{"resource": "mapping_1"}, {"resource": "mapping_2"}, {"resource": "mapping_3"}],
+    side_effect=[{"mapping_1": "mapping_1"}, {"mapping_2": "mapping_2"}, {"mapping_3": "mapping_3"}],
 )
 def test_get_batch_endpoint(_, __, mock_producer, mock_fhirstore, mock_kafka_admin, mock_redis, api_client: APIClient):
     batch_counter_redis = mock.MagicMock()
@@ -108,9 +192,9 @@ def test_get_batch_endpoint(_, __, mock_producer, mock_fhirstore, mock_kafka_adm
 
     mappings_redis.set.assert_has_calls(
         [
-            mock.call("batch_id:id_a", '{"resource": "mapping_1"}'),
-            mock.call("batch_id:id_b", '{"resource": "mapping_2"}'),
-            mock.call("batch_id:id_c", '{"resource": "mapping_3"}'),
+            mock.call("batch_id:id_a", '{"mapping_1": "mapping_1"}'),
+            mock.call("batch_id:id_b", '{"mapping_2": "mapping_2"}'),
+            mock.call("batch_id:id_c", '{"mapping_3": "mapping_3"}'),
         ]
     )
 
