@@ -35,9 +35,9 @@ def test_preview_endpoint(mock_fetch_mapping, mock_extractor, mock_redis, api_cl
     assert response.data == {
         "instances": [
             {
-                "active": "true",
+                "active": True,
                 "birthDate": "2000-01-01",
-                "deceasedBoolean": "True",
+                "deceasedBoolean": True,
                 "id": response.data["instances"][0]["id"],
                 "resourceType": "Patient",
                 "meta": {
