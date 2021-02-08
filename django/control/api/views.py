@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timedelta
 from inspect import getdoc, getmembers, isfunction, ismodule
 
-from rest_framework import status, views
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from django.conf import settings
@@ -27,8 +27,8 @@ from transformer.transform.transformer import Transformer
 logger = logging.getLogger(__name__)
 
 
-class BatchEndpoint(views.APIView):
-    def get(self, request):
+class BatchEndpoint(viewsets.ViewSet):
+    def list(self, request):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST,
             port=settings.REDIS_COUNTER_PORT,
@@ -51,7 +51,7 @@ class BatchEndpoint(views.APIView):
 
         return Response(batch_list, status=status.HTTP_200_OK)
 
-    def post(self, request):
+    def create(self, request):
         # TODO check errors when writing to redis?
         serializer = CreateBatchSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -121,14 +121,10 @@ class BatchEndpoint(views.APIView):
 
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
-
-class DeleteBatchEndpoint(views.APIView):
-    def delete(self, request, batch_id):
+    def destroy(self, request, pk=None):
         # Delete kafka topics
         admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
-        admin_client.delete_topics(
-            [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
-        )
+        admin_client.delete_topics([f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"])
 
         # Delete keys from redis
         batch_counter_redis = redis.Redis(
@@ -136,21 +132,21 @@ class DeleteBatchEndpoint(views.APIView):
             port=settings.REDIS_COUNTER_PORT,
             db=settings.REDIS_COUNTER_DB,
         )
-        batch_counter_redis.hdel("batch", batch_id)
-        batch_counter_redis.delete(f"batch:{batch_id}:resources")
-        batch_counter_redis.expire(f"batch:{batch_id}:counter", timedelta(weeks=2))
+        batch_counter_redis.hdel("batch", pk)
+        batch_counter_redis.delete(f"batch:{pk}:resources")
+        batch_counter_redis.expire(f"batch:{pk}:counter", timedelta(weeks=2))
 
         mappings_redis = redis.Redis(
             host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
         )
-        for key in mappings_redis.scan_iter(f"{batch_id}:*"):
+        for key in mappings_redis.scan_iter(f"{pk}:*"):
             mappings_redis.delete(key)
 
-        return Response({"id": batch_id}, status=status.HTTP_200_OK)
+        return Response({"id": pk}, status=status.HTTP_200_OK)
 
 
-class PreviewEndpoint(views.APIView):
-    def post(self, request):
+class PreviewEndpoint(viewsets.ViewSet):
+    def create(self, request):
         serializer = PreviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -192,8 +188,8 @@ class PreviewEndpoint(views.APIView):
         return Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
 
-class ScriptsEndpoint(views.APIView):
-    def get(self, request):
+class ScriptsEndpoint(viewsets.ViewSet):
+    def list(self, request):
         res = []
         for module_name, module in getmembers(scripts, ismodule):
             for script_name, script in getmembers(module, isfunction):

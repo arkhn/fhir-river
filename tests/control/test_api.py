@@ -25,7 +25,7 @@ def test_preview_endpoint(mock_fetch_mapping, mock_extractor, mock_redis, api_cl
     mock_extractor.return_value = extractor
     mock_fetch_mapping.return_value = preview_mapping
 
-    url = reverse("preview")
+    url = reverse("preview-list")
     data = {
         "resource_id": "foo",
         "primary_key_values": ["PK"],
@@ -75,7 +75,7 @@ def test_preview_endpoint_with_error(
     mock_extractor.return_value = extractor
     mock_fetch_mapping.return_value = erroneous_mapping
 
-    url = reverse("preview")
+    url = reverse("preview-list")
     data = {
         "resource_id": "foo",
         "primary_key_values": ["PK"],
@@ -119,7 +119,7 @@ def test_get_batch_endpoint(mock_redis, api_client: APIClient):
     batch_counter_redis.smembers.side_effect = [["r11", "r12"], ["r21"], ["r31", "r32", "r33"]]
     mock_redis.return_value = batch_counter_redis
 
-    url = reverse("batch")
+    url = reverse("batch-list")
     response = api_client.get(url)
 
     batch_counter_redis.hgetall.assert_has_calls([mock.call("batch")])
@@ -149,7 +149,9 @@ def test_get_batch_endpoint(mock_redis, api_client: APIClient):
     "control.api.views.fetch_resource_mapping",
     side_effect=[{"mapping_1": "mapping_1"}, {"mapping_2": "mapping_2"}, {"mapping_3": "mapping_3"}],
 )
-def test_get_batch_endpoint(_, __, mock_producer, mock_fhirstore, mock_kafka_admin, mock_redis, api_client: APIClient):
+def test_create_batch_endpoint(
+    _, __, mock_producer, mock_fhirstore, mock_kafka_admin, mock_redis, api_client: APIClient
+):
     batch_counter_redis = mock.MagicMock()
     mappings_redis = mock.MagicMock()
     mock_redis.side_effect = [batch_counter_redis, mappings_redis]
@@ -163,7 +165,7 @@ def test_get_batch_endpoint(_, __, mock_producer, mock_fhirstore, mock_kafka_adm
     producer = mock.MagicMock()
     mock_producer.return_value = producer
 
-    url = reverse("batch")
+    url = reverse("batch-list")
     response = api_client.post(
         url,
         data={
@@ -228,7 +230,7 @@ def test_delete_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClie
     admin_client = mock.MagicMock()
     mock_kafka_admin.return_value = admin_client
 
-    url = reverse("delete-batch", kwargs={"batch_id": "id"})
+    url = reverse("batch-detail", kwargs={"pk": "id"})
     response = api_client.delete(url)
 
     assert response.data == {"id": "id"}
@@ -252,7 +254,7 @@ def test_list_scripts_endpoint(mock_getdoc, mock_getmembers, api_client: APIClie
     ]
     mock_getdoc.return_value = "description"
 
-    url = reverse("scripts")
+    url = reverse("scripts-list")
     response = api_client.get(url)
     assert response.status_code == 200
 
