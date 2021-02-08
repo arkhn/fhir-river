@@ -74,12 +74,11 @@ class BatchEndpoint(viewsets.ViewSet):
         batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
-        # TODO num parts, etc. in env
         new_topics = [
-            NewTopic(f"batch.{batch_id}", 1, 1),
-            NewTopic(f"extract.{batch_id}", 1, 1),
-            NewTopic(f"transform.{batch_id}", 1, 1),
-            NewTopic(f"load.{batch_id}", 1, 1),
+            NewTopic(f"batch.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
+            NewTopic(f"extract.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
+            NewTopic(f"transform.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
+            NewTopic(f"load.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
         ]
         admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
         admin_client.create_topics(new_topics)
