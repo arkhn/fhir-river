@@ -9,20 +9,8 @@ from cuid import cuid
 # * Everything is now snake-cased. Other cases could be provided through serialization.
 
 
-class Template(models.Model):
-    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    name = models.TextField(unique=True)
-
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
 class Source(models.Model):
-    class Meta:
-        unique_together = (("name", "template"),)
-
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    template = models.ForeignKey(Template, related_name="sources", on_delete=models.CASCADE)
     name = models.TextField()
     version = models.TextField(blank=True, default="")
 
