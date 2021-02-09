@@ -77,7 +77,7 @@ jobs:
         run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
 
       - name: Provision, deploy and test
-        uses: arkhn/testy-action@v0.5.2
+        uses: arkhn/testy-action@v0.5.3
         with:
           cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
           cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
@@ -85,6 +85,7 @@ jobs:
           contextName: river-ci-${{ github.sha }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           deploymentRef: jason/rm-api-go
+          debug: true
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
