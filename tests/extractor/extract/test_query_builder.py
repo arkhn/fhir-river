@@ -174,6 +174,63 @@ def test_2hop_joins(mock_sha1):
 
 @mock.patch("common.analyzer.sql_column.hashlib.sha1")
 @mock.patch("extractor.extract.query_builder.Table", mock_table)
+def test_1and2hop_joins(mock_sha1):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
+    analysis = Analysis()
+
+    attribute = Attribute(path="path", definition_id="string")
+    input_group = InputGroup(id_="group", attribute=attribute)
+    attribute.add_input_group(input_group)
+    input_group.add_column(
+        SqlColumn(
+            "public",
+            "join_table",
+            "adm_id",
+            joins=[
+                SqlJoin(
+                    SqlColumn("public", "patients", "row_id"),
+                    SqlColumn("public", "join_table", "pat_id"),
+                ),
+            ],
+        )
+    )
+    input_group.add_column(
+        SqlColumn(
+            "public",
+            "admissions",
+            "admittime",
+            joins=[
+                SqlJoin(
+                    SqlColumn("public", "patients", "row_id"),
+                    SqlColumn("public", "join_table", "pat_id"),
+                ),
+                SqlJoin(
+                    SqlColumn("public", "join_table", "adm_id"),
+                    SqlColumn("public", "admissions", "row_id"),
+                ),
+            ],
+        )
+    )
+
+    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
+    analysis.attributes.append(attribute)
+
+    query_builder = make_query_builder(analysis)
+    query = query_builder.build_query()
+
+    assert str(query) == (
+        "SELECT public.patients.subject_id AS patients_subject_id_hash, "
+        "join_table_1.adm_id AS join_table_adm_id_hash, "
+        "admissions_1.admittime AS admissions_admittime_hash \n"
+        "FROM public.patients "
+        "LEFT OUTER JOIN public.join_table AS join_table_1 ON join_table_1.pat_id = public.patients.row_id "
+        "LEFT OUTER JOIN public.admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+    )
+
+
+@mock.patch("common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("extractor.extract.query_builder.Table", mock_table)
 def test_duplicated_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
