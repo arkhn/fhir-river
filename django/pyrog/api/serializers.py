@@ -19,3 +19,9 @@ class CredentialSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Credential
         fields = "__all__"
+
+
+class AttributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Attribute
+        fields = "__all__"
