@@ -27,3 +27,8 @@ class AttributeViewSet(viewsets.ModelViewSet):
 class InputGroupViewSet(viewsets.ModelViewSet):
     queryset = models.InputGroup.objects.all()
     serializer_class = serializers.InputGroupSerializer
+
+
+class InputViewSet(viewsets.ModelViewSet):
+    queryset = models.Input.objects.all()
+    serializer_class = serializers.InputSerializer
