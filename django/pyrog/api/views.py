@@ -12,3 +12,8 @@ class SourceViewSet(viewsets.ModelViewSet):
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = models.Resource.objects.all()
     serializer_class = serializers.ResourceSerializer
+
+
+class CredentialViewSet(viewsets.ModelViewSet):
+    queryset = models.Credential.objects.all()
+    serializer_class = serializers.CredentialSerializer
