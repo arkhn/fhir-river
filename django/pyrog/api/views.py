@@ -22,3 +22,8 @@ class CredentialViewSet(viewsets.ModelViewSet):
 class AttributeViewSet(viewsets.ModelViewSet):
     queryset = models.Attribute.objects.all()
     serializer_class = serializers.AttributeSerializer
+
+
+class InputGroupViewSet(viewsets.ModelViewSet):
+    queryset = models.InputGroup.objects.all()
+    serializer_class = serializers.InputGroupSerializer

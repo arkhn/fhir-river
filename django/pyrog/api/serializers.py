@@ -25,3 +25,9 @@ class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Attribute
         fields = "__all__"
+
+
+class InputGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.InputGroup
+        fields = "__all__"
