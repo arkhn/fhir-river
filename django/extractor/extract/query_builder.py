@@ -165,17 +165,20 @@ class QueryBuilder:
         return query
 
     def augment_query_with_joins(self, query, analysis_joins):
-        join_tables = {}
+        # If we have a multi-hop join, the tables for all the joins should look like
+        # A-B, B-C, C-D where B and C are "link tables".
+        last_link = None
         for join in analysis_joins:
             if join in self._cur_query_join_tables:
                 # This join was already added to the query
+                # but we still store it in last_link in case we have a multi-hop join
+                last_link = self._cur_query_join_tables[join]
                 continue
 
             # Get tables
-            right_table = join_tables.get(join.right.table, self.get_table(join.right))
-            left_table = join_tables.get(join.left.table, self.get_table(join.left))
-            join_tables[join.right.table] = right_table
-            join_tables[join.left.table] = left_table
+            left_table = last_link if last_link is not None else self.get_table(join.left)
+            right_table = self.get_table(join.right)
+            last_link = right_table
 
             # Add the join to the temp join dict
             self._cur_query_join_tables[join] = right_table
