@@ -24,6 +24,13 @@ class CredentialFactory(factory.django.DjangoModelFactory):
     port = 5432
 
 
+class AttributeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Attribute"
+
+    resource = factory.SubFactory(ResourceFactory)
+
+
 class OwnerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Owner"
