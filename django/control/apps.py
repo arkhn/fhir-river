@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class PreviewConfig(AppConfig):
-    name = "preview"
+class ControlConfig(AppConfig):
+    name = "control"

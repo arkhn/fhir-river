@@ -152,7 +152,7 @@ def dereference_concept_map(mapping, authorization_header: str):
 def fetch_concept_map(concept_map_id: str, authorization_header: str):
     try:
         response = requests.get(
-            f"{settings.FHIR_API_URL}/{concept_map_id}", headers={"Authorization": authorization_header}
+            f"{settings.FHIR_API_URL}/ConceptMap/{concept_map_id}", headers={"Authorization": authorization_header}
         )
     except requests.exceptions.ConnectionError:
         raise OperationOutcome("could not connect to fhir-api")
@@ -167,8 +167,7 @@ def fetch_concept_map(concept_map_id: str, authorization_header: str):
     body = response.json()
 
     concept_map = {}
-    resource = body["data"]
-    for group in resource["group"]:
+    for group in body["group"]:
         for element in group["element"]:
             # NOTE we only handle a single target for each source
             concept_map[element["code"]] = element["target"][0]["code"]

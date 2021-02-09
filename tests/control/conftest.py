@@ -1,8 +1,9 @@
 import json
 from pathlib import Path
 
-import requests
 from pytest import fixture
+
+import requests
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 PATIENT_MAPPING_FILE = Path(__file__).resolve().parent.parent / "fixtures/patient_mapping.json"
@@ -62,7 +63,7 @@ fhirConceptMap = {
 def mock_fhir_api_response(monkeypatch):
     def mock_get(*args, headers):
         if headers["Authorization"] == "Bearer validToken":
-            return MockResponse({"data": fhirConceptMap}, 200)
+            return MockResponse(fhirConceptMap, 200)
         elif headers["Authorization"] == "Bearer forbiddenToken":
             return MockResponse("invalid token", 403)
         else:
