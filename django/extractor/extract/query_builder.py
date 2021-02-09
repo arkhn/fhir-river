@@ -165,13 +165,15 @@ class QueryBuilder:
         for join in analysis_joins:
             if join in self._cur_query_join_tables:
                 # This join was already added to the query
+                # but we still add it to join_tables in case we have a multi-hop join
+                join_tables[join.right.table_name()] = self._cur_query_join_tables[join]
                 continue
 
             # Get tables
-            right_table = join_tables.get(join.right.table, self.get_table(join.right))
-            left_table = join_tables.get(join.left.table, self.get_table(join.left))
-            join_tables[join.right.table] = right_table
-            join_tables[join.left.table] = left_table
+            right_table = join_tables.get(join.right.table_name(), self.get_table(join.right))
+            left_table = join_tables.get(join.left.table_name(), self.get_table(join.left))
+            join_tables[join.right.table_name()] = right_table
+            join_tables[join.left.table_name()] = left_table
 
             # Add the join to the temp join dict
             self._cur_query_join_tables[join] = right_table
