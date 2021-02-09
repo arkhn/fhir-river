@@ -129,7 +129,7 @@ def handle_array_attributes(attributes_in_array, row):
 
     array = []
     if attributes_in_nested_arrays and all(
-        path in attributes_in_nested_arrays or has_single_value(attr, row)
+        path in attributes_in_nested_arrays or has_zero_or_one_value(attr, row)
         for path, attr in attributes_in_array.items()
     ):
         # If we have a nested array and all values outside of it
@@ -214,7 +214,7 @@ def get_element_in_array(array, index):
     return [array[index if len(array) > 1 else 0]]
 
 
-def has_single_value(attribute: Attribute, row):
-    # Helper function to check if attribute comes from the primary table
-    # or is a 1:1 join
+def has_zero_or_one_value(attribute: Attribute, row):
+    # Helper function to check if the attribute has no data
+    # or if it comes from the primary table or is a 1:1 join
     return attribute.path not in row or len(row[attribute.path]) == 1

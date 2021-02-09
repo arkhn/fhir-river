@@ -1,12 +1,13 @@
 import logging
 
 from django.conf import settings
-
 import redis
+
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
 from common.service.event import Event
+from common.service.errors import BatchCancelled
 from common.service.handler import Handler
 from common.service.service import Service
 from extractor.conf import conf
@@ -40,9 +41,14 @@ def broadcast_events(
             event["record"] = record
             producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
-    except EmptyResult as e:
-        logger.warn({"message": str(e), "resource_id": resource_id, "batch_id": batch_id})
-    # Initialize a batch counter in Redis. For each resource_id, it records
+    except BatchCancelled as err:
+        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
+        # return early to avoid setting the counter in redis
+        return
+    except EmptyResult as err:
+        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
+
+    # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
     counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
     logger.info(

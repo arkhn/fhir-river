@@ -86,9 +86,7 @@ class Analyzer:
 
     def analyze_filter(self, filter_):
         col = SqlColumn(
-            filter_["sqlColumn"]["owner"]["name"],
-            filter_["sqlColumn"]["table"],
-            filter_["sqlColumn"]["column"],
+            filter_["sqlColumn"]["owner"]["name"], filter_["sqlColumn"]["table"], filter_["sqlColumn"]["column"]
         )
 
         filter_joins = self.parse_joins_mapping(filter_["sqlColumn"]["joins"])
@@ -113,14 +111,19 @@ class Analyzer:
             # represent a Reference.
             if attribute_mapping["definitionId"] == "Reference":
                 logger.debug(
-                    {
-                        "message": "Analyze attribute reference",
-                        "resource_id": self._cur_analysis.resource_id,
-                    },
+                    {"message": "Analyze attribute reference", "resource_id": self._cur_analysis.resource_id},
                 )
                 # Remove trailing index
-                path = re.sub(r"\[\d+\]$", "", attribute.path)
-                self._cur_analysis.reference_paths.add(path)
+                clean_path = re.sub(r"\[\d+\]$", "", attribute.path)
+                # Anlysis.reference_paths is a list of lists of strings.
+                # We chose to represent paths to references as list of strings to handle
+                # arrays of references. For instance, if we find a reference at
+                # item[0].answer[0].valueReference in the mapping, we want to bind all
+                # the references at item[*].answer[*].valueReference. To make this task
+                # easier in the ReferenceBinder, we represent this path as
+                # ["item", "answer", "valueReference"].
+                path = re.split(r"\[\d+\].", clean_path)
+                self._cur_analysis.reference_paths.append(path)
 
             return
 
@@ -140,11 +143,7 @@ class Analyzer:
 
             elif input_["sqlValue"] and input_["sqlValue"]["table"]:
                 sqlValue = input_["sqlValue"]
-                cur_col = SqlColumn(
-                    sqlValue["owner"]["name"],
-                    sqlValue["table"],
-                    sqlValue["column"],
-                )
+                cur_col = SqlColumn(sqlValue["owner"]["name"], sqlValue["table"], sqlValue["column"])
 
                 if input_["script"]:
                     cur_col.cleaning_script = CleaningScript(input_["script"])

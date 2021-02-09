@@ -4,6 +4,6 @@ from core.api import views
 from core.api.router import router
 
 urlpatterns = [
-    path("", include(router.urls)),
-    path("version/", views.VersionEndpoint.as_view()),
+    path("api/core/", include(router.urls)),
+    path("api/core/version/", views.VersionEndpoint.as_view()),
 ]

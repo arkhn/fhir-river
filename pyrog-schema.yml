@@ -1,0 +1,166 @@
+openapi: 3.0.2
+info:
+  title: Pyrog API
+  version: ''
+  description: Arkhn's Pyrog API
+paths:
+  /api/sources/:
+    get:
+      operationId: listSources
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Source'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createSource
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Source'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Source'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Source'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+          description: ''
+      tags:
+      - api
+  /api/sources/{id}/:
+    get:
+      operationId: retrieveSource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this source.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateSource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this source.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Source'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Source'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Source'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateSource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this source.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Source'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Source'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Source'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Source'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroySource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this source.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+components:
+  schemas:
+    Source:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        version:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        template:
+          type: string
+      required:
+      - name
+      - template

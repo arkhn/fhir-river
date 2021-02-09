@@ -1,8 +1,7 @@
 import json
 import logging
-import re
 from collections import defaultdict
-from typing import DefaultDict
+from typing import DefaultDict, List
 
 from arkhn_monitoring import Timer
 from dotty_dict import dotty
@@ -10,13 +9,6 @@ from loader.cache import redis
 from loader.load.utils import get_resource_id
 
 logger = logging.getLogger(__name__)
-
-
-# dotty-dict does not handle brackets indices,
-# it uses dots instead (a.0.b instead of a[0].b)
-def dotty_paths(paths):
-    for path in paths:
-        yield re.sub(r"\[(\d+)]", r".\1", path)
 
 
 class ReferenceBinder:
@@ -41,21 +33,21 @@ class ReferenceBinder:
         self.cache = redis.conn()
 
     @Timer("time_resolve_references", "time spent resolving references")
-    def resolve_references(self, unresolved_fhir_object, reference_paths):
+    def resolve_references(self, unresolved_fhir_object, reference_paths: List[List[str]]):
         fhir_object = dotty(unresolved_fhir_object)
         resource_id = get_resource_id(unresolved_fhir_object)
 
         # iterate over the instance's references and try to resolve them
-        for reference_path in dotty_paths(reference_paths):
+        for reference_path in reference_paths:
             logger.debug(
                 {
-                    "message": f"Trying to resolve reference for resource {fhir_object['id']} at {reference_path}",
+                    "message": f"Trying to resolve reference for resource {fhir_object['id']} "
+                    f"at {'[*]'.join(reference_path)}",
                     "resource_id": resource_id,
                 },
             )
             try:
-                bound_ref = self.bind_existing_reference(fhir_object, reference_path)
-                fhir_object[reference_path] = bound_ref
+                self.bind_existing_reference(fhir_object, reference_path)
             except KeyError as e:
                 logger.warning(f"{reference_path} does not exist in resource {fhir_object['id']}: {e}")
         if "identifier" in fhir_object:
@@ -63,15 +55,13 @@ class ReferenceBinder:
 
         return fhir_object.to_dict()
 
-    @Timer(
-        "time_bind_existing_reference",
-        "time spent resolving the document's references",
-    )
-    def bind_existing_reference(self, fhir_object, reference_path):
-        reference_attribute = fhir_object[reference_path]
+    @Timer("time_bind_existing_reference", "time spent resolving the document's references")
+    def bind_existing_reference(self, fhir_object, reference_path: List[str]):
         resource_id = get_resource_id(fhir_object)
+        object_id = fhir_object["id"]
+        resource_type = fhir_object["resourceType"]
 
-        def bind(ref, is_array=False):
+        def bind(ref, path):
             # extract the type and itentifier of the reference
             reference_type = ref["type"]
             identifier = ref["identifier"]
@@ -81,9 +71,10 @@ class ReferenceBinder:
             except (ValueError, KeyError) as e:
                 logger.warning(
                     f"incomplete identifier on reference of type "
-                    f"{reference_type} at path {ref} of resource {fhir_object['id']}: {e}"
+                    f"{reference_type} at path {ref} of resource {object_id}: {e}"
                 )
-                return ref
+                return
+
             referenced_resource = self.fhirstore.db[reference_type].find_one(_identifier, ["id"])
             if referenced_resource:
                 # if found, add the ID as the "literal reference"
@@ -100,16 +91,36 @@ class ReferenceBinder:
                     },
                 )
                 target_ref = self.identifier_to_key(reference_type, identifier)
-                source_ref = (fhir_object["resourceType"], reference_path, is_array)
-                self.cache.sadd(target_ref, json.dumps((source_ref, fhir_object["id"])))
-            return ref
+                source_ref = (resource_type, path)
+                self.cache.sadd(target_ref, json.dumps((source_ref, object_id)))
 
-        # If we have a list of references, we want to bind all of them.
-        # Thus, we loop on all the items in reference_attribute.
-        if isinstance(reference_attribute, list):
-            return [bind(ref, is_array=True) for ref in reference_attribute]
-        else:
-            return bind(reference_attribute)
+        def rec_bind_existing_reference(fhir_object, reference_path: List[str], sub_path=""):
+            if reference_path:
+                # We need to go down the document to find the reference.
+                # reference_path is a list of string so that at the end of each element,
+                # we have an array in the fhir document. For instance, if reference_path
+                # is ["item", "answer.valueReference"], the fhir doc will look like
+                # { item: [ { answer: { valueReference: ... } } ] }.
+                # We want to traverse all the elements of each array that could have
+                # a reference at a leaf.
+                sub_fhir_object = fhir_object[reference_path[0]]
+                sub_path = f"{sub_path}.{reference_path[0]}" if sub_path else reference_path[0]
+                if isinstance(sub_fhir_object, list):
+                    for ind, sub_fhir_el in enumerate(sub_fhir_object):
+                        rec_bind_existing_reference(sub_fhir_el, reference_path[1:], f"{sub_path}.{ind}")
+                else:
+                    rec_bind_existing_reference(sub_fhir_object, reference_path[1:], sub_path)
+            else:
+                # We have isolated the reference so we can now bind it.
+                # If it's an array, we want to perform the binding for all the
+                # elements.
+                if isinstance(fhir_object, list):
+                    for ind, sub_fhir_el in enumerate(fhir_object):
+                        bind(sub_fhir_el, f"{sub_path}.{ind}")
+                else:
+                    bind(fhir_object, sub_path)
+
+        rec_bind_existing_reference(fhir_object, reference_path)
 
     @Timer("time_resolve_pending_references", "time spent resolving pending references")
     def resolve_pending_references(self, fhir_object):
@@ -125,7 +136,7 @@ class ReferenceBinder:
                 logger.warning(f"incomplete identifier on resource {fhir_object['id']}: {e}")
                 continue
             pending_refs = self.load_cached_references(target_ref)
-            for (source_type, reference_path, is_array), refs in pending_refs.items():
+            for (source_type, reference_path), refs in pending_refs.items():
                 logger.debug(
                     {
                         "message": f"Updating {source_type} resources {', '.join(refs)} on reference {reference_path}",
@@ -133,8 +144,8 @@ class ReferenceBinder:
                     },
                 )
                 self.fhirstore.db[source_type].update_many(
-                    self.unresolved_resources_filter(reference_path, identifier, refs, is_array),
-                    self.reference_update(reference_path, fhir_object, is_array),
+                    {"id": {"$in": refs}},
+                    {"$set": {f"{reference_path}.reference": f"{fhir_object['resourceType']}/{fhir_object['id']}"}},
                 )
             if pending_refs:
                 self.cache.delete(target_ref)
@@ -165,20 +176,6 @@ class ReferenceBinder:
             (source_ref, ref) = json.loads(element)
             pending_refs[tuple(source_ref)].append(ref)
         return pending_refs
-
-    def unresolved_resources_filter(self, reference_path, identifier, refs, is_array):
-        query = {"id": {"$in": refs}}
-        if is_array:
-            query[reference_path] = {"$elemMatch": self.partial_identifier(identifier)}
-        return query
-
-    @staticmethod
-    def reference_update(reference_path, fhir_object, is_array):
-        if is_array:
-            target_path = f"{reference_path}.$.reference"
-        else:
-            target_path = f"{reference_path}.reference"
-        return {"$set": {target_path: f"{fhir_object['resourceType']}/{fhir_object['id']}"}}
 
     @staticmethod
     def identifier_to_key(resource_type, identifier):
