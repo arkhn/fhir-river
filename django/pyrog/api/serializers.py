@@ -37,3 +37,9 @@ class InputSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Input
         fields = "__all__"
+
+
+class ColumnSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Column
+        fields = "__all__"

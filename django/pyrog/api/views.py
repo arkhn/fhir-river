@@ -32,3 +32,8 @@ class InputGroupViewSet(viewsets.ModelViewSet):
 class InputViewSet(viewsets.ModelViewSet):
     queryset = models.Input.objects.all()
     serializer_class = serializers.InputSerializer
+
+
+class ColumnViewSet(viewsets.ModelViewSet):
+    queryset = models.Column.objects.all()
+    serializer_class = serializers.ColumnSerializer
