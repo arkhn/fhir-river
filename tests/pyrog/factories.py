@@ -38,6 +38,13 @@ class InputGroupFactory(factory.django.DjangoModelFactory):
     attribute = factory.SubFactory(AttributeFactory)
 
 
+class InputFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Input"
+
+    input_group = factory.SubFactory(InputGroupFactory)
+
+
 class OwnerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Owner"
