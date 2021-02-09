@@ -45,6 +45,24 @@ class InputFactory(factory.django.DjangoModelFactory):
     input_group = factory.SubFactory(InputGroupFactory)
 
 
+class ColumnFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Column"
+
+    class Params:
+        with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
+
+    input = factory.SubFactory(InputFactory)
+    owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
+
+
+class JoinFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Join"
+
+    column = factory.SubFactory(ColumnFactory)
+
+
 class OwnerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Owner"
