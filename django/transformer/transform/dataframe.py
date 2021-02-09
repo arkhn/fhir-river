@@ -89,6 +89,7 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
         for row_ind in range(nb_rows_for_attribute):
             row_data = {col_key: get_element_in_array(col, row_ind) for col_key, col in data.items()}
 
+            no_group_matched = True
             for input_group in attribute.input_groups:
 
                 if all(condition.check(row_data) for condition in input_group.conditions):
@@ -116,8 +117,11 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                     else:
                         merged_data[attribute.path].append(cur_group_columns[0])
 
-                else:
-                    merged_data[attribute.path].append(None)
+                    no_group_matched = False
+                    break
+
+            if no_group_matched:
+                merged_data[attribute.path].append(None)
 
     return merged_data
 
