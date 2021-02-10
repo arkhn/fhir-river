@@ -52,3 +52,8 @@ class ConditionViewSet(viewsets.ModelViewSet):
 class FilterViewSet(viewsets.ModelViewSet):
     queryset = models.Filter.objects.all()
     serializer_class = serializers.FilterSerializer
+
+
+class OwnerViewSet(viewsets.ModelViewSet):
+    queryset = models.Owner.objects.all()
+    serializer_class = serializers.OwnerSerializer

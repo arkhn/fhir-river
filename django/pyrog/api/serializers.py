@@ -61,3 +61,9 @@ class FilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Filter
         fields = "__all__"
+
+
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Owner
+        fields = "__all__"
