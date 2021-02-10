@@ -63,6 +63,14 @@ class JoinFactory(factory.django.DjangoModelFactory):
     column = factory.SubFactory(ColumnFactory)
 
 
+class ConditionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Condition"
+
+    column = factory.SubFactory(ColumnFactory)
+    input_group = factory.SubFactory(InputGroupFactory)
+
+
 class OwnerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Owner"
