@@ -71,6 +71,14 @@ class ConditionFactory(factory.django.DjangoModelFactory):
     input_group = factory.SubFactory(InputGroupFactory)
 
 
+class FilterFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Filter"
+
+    resource = factory.SubFactory(ResourceFactory)
+    sql_column = factory.SubFactory(ColumnFactory)
+
+
 class OwnerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Owner"
