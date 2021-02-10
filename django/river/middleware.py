@@ -2,9 +2,13 @@ import json
 import logging
 import time
 
+from django.contrib import auth
+from django.http import JsonResponse
 from mozilla_django_oidc.utils import import_from_settings
 from mozilla_django_oidc.middleware import SessionRefresh
 import requests
+from requests.auth import HTTPBasicAuth
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +35,6 @@ class RefreshOIDCAccessToken(SessionRefresh):
     def process_request(self, request):
         if not self.is_expired(request):
             return
-
         LOGGER.debug('id token has expired')
         token_url = import_from_settings('OIDC_OP_TOKEN_ENDPOINT')
         client_id = import_from_settings('OIDC_RP_CLIENT_ID')
@@ -40,18 +43,25 @@ class RefreshOIDCAccessToken(SessionRefresh):
         if not refresh_token:
             LOGGER.debug('no refresh token stored')
             return
-
         token_payload = {
             'grant_type': 'refresh_token',
             'client_id': client_id,
             'client_secret': client_secret,
             'refresh_token': refresh_token,
         }
+        basic_auth = None
+        if self.get_settings('OIDC_TOKEN_USE_BASIC_AUTH', False):
+            # When Basic auth is defined, create the Auth Header and remove secret from payload.
+            user = token_payload.get('client_id')
+            pw = token_payload.get('client_secret')
 
+            basic_auth = HTTPBasicAuth(user, pw)
+            del token_payload['client_secret']
         try:
             response = requests.post(
                 token_url,
                 data=token_payload,
+                auth=basic_auth,
                 verify=import_from_settings('OIDC_VERIFY_SSL', True)
             )
             response.raise_for_status()
@@ -62,6 +72,10 @@ class RefreshOIDCAccessToken(SessionRefresh):
         except requests.exceptions.HTTPError as exc:
             LOGGER.debug('http error %s when refreshing access token',
                          exc.response.status_code)
+            if exc.response.status_code == 401:
+                if request.user.is_authenticated:
+                    auth.logout(request)
+                return JsonResponse({}, status=401)
             return
         except json.JSONDecodeError:
             LOGGER.debug('malformed response when refreshing access token')
@@ -69,7 +83,6 @@ class RefreshOIDCAccessToken(SessionRefresh):
         except Exception as exc:
             LOGGER.debug('unknown error occurred when refreshing access token: %s', exc)
             return
-
         # Until we can properly validate an ID token on the refresh response
         # per the spec[1], we intentionally drop the id_token.
         # [1]: https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokenResponse
