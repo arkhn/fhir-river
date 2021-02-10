@@ -60,6 +60,7 @@ class RefreshOIDCAccessToken(SessionRefresh):
             basic_auth = HTTPBasicAuth(user, pw)
             del token_payload["client_secret"]
 
+        # Request an access token refresh
         try:
             response = requests.post(
                 token_url, data=token_payload, auth=basic_auth, verify=self.get_settings("OIDC_VERIFY_SSL", True)
@@ -71,9 +72,9 @@ class RefreshOIDCAccessToken(SessionRefresh):
             return
         except requests.exceptions.HTTPError as exc:
             LOGGER.debug("http error %s when refreshing access token", exc.response.status_code)
+            # Logout the user when the refresh token is invalid
             if exc.response.status_code == 401:
-                if request.user.is_authenticated:
-                    auth.logout(request)
+                auth.logout(request)
                 return JsonResponse({}, status=401)
             return
         except json.JSONDecodeError:

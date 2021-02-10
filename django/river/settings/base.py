@@ -35,7 +35,9 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOST
 # https://pypi.org/project/django-cors-headers/
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS") and os.environ.get("CORS_ALLOWED_ORIGINS").split(",") or []
+CORS_ALLOWED_ORIGINS = (
+    os.environ.get("CORS_ALLOWED_ORIGINS") and os.environ.get("CORS_ALLOWED_ORIGINS").split(",") or []
+)
 
 # OpenID Connect
 # https://mozilla-django-oidc.readthedocs.io/en/stable/drf.html
@@ -219,13 +221,10 @@ CORS_URLS_REGEX = r"^/api/.*$"
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PAGINATION_CLASS": None,
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "mozilla_django_oidc.contrib.drf.OIDCAuthentication",
-        "rest_framework.authentication.SessionAuthentication"
-    )
+        "rest_framework.authentication.SessionAuthentication",
+    ),
 }
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
