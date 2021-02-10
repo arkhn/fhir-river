@@ -55,3 +55,9 @@ class ConditionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Condition
         fields = "__all__"
+
+
+class FilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Filter
+        fields = "__all__"
