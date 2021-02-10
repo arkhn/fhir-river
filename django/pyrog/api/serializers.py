@@ -43,3 +43,9 @@ class ColumnSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Column
         fields = "__all__"
+
+
+class JoinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Join
+        fields = "__all__"
