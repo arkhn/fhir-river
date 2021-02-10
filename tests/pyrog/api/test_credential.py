@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
@@ -48,7 +49,6 @@ def test_create_credential(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_credential(api_client, credential):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
@@ -57,7 +57,6 @@ def test_retrieve_credential(api_client, credential):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_credentials(api_client, credential_factory):
     url = reverse("credentials-list")
     credential_factory.create_batch(3)
@@ -68,7 +67,6 @@ def test_list_credentials(api_client, credential_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
@@ -95,7 +93,6 @@ def test_update_credential(api_client, credential, host, port, database, login, 
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_credential(api_client, credential):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 

@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize("name, schema, status_code", [(faker.word(), faker.json(), 201)])
 def test_create_owner(
     api_client,
@@ -27,7 +28,6 @@ def test_create_owner(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_owner(api_client, owner):
     url = reverse("owners-detail", kwargs={"pk": owner.id})
 
@@ -36,7 +36,6 @@ def test_retrieve_owner(api_client, owner):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_owners(api_client, owner_factory):
     url = reverse("owners-list")
     owner_factory.create_batch(3)
@@ -47,7 +46,6 @@ def test_list_owners(api_client, owner_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize("name, schema, status_code", [(faker.word(), faker.json(), 200)])
 def test_update_owner(
     api_client,
@@ -67,7 +65,6 @@ def test_update_owner(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_owner(api_client, owner):
     url = reverse("owners-detail", kwargs={"pk": owner.id})
 

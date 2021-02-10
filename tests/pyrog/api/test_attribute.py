@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize(
     "path, slice_name, definition_id, status_code",
     [
@@ -34,7 +35,6 @@ def test_create_attribute(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_attribute(api_client, attribute):
     url = reverse("attributes-detail", kwargs={"pk": attribute.id})
 
@@ -43,7 +43,6 @@ def test_retrieve_attribute(api_client, attribute):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_attributes(api_client, attribute_factory):
     url = reverse("attributes-list")
     attribute_factory.create_batch(3)
@@ -54,7 +53,6 @@ def test_list_attributes(api_client, attribute_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     "path, slice_name, definition_id, status_code", [(faker.word(), faker.word(), faker.word(), 200)]
 )
@@ -70,7 +68,6 @@ def test_update_attribute(api_client, attribute, path, slice_name, definition_id
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_attribute(api_client, attribute):
     url = reverse("attributes-detail", kwargs={"pk": attribute.id})
 

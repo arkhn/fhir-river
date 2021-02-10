@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize("action, value, relation, status_code", [("INCLUDE", faker.word(), "EQ", 201)])
 def test_create_condition(
     api_client,
@@ -31,7 +32,6 @@ def test_create_condition(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_condition(api_client, condition):
     url = reverse("conditions-detail", kwargs={"pk": condition.id})
 
@@ -40,7 +40,6 @@ def test_retrieve_condition(api_client, condition):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_conditions(api_client, condition_factory):
     url = reverse("conditions-list")
     condition_factory.create_batch(3)
@@ -51,7 +50,6 @@ def test_list_conditions(api_client, condition_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize("action, value, relation, status_code", [("EXCLUDE", faker.word(), "GT", 200)])
 def test_update_condition(
     api_client,
@@ -72,7 +70,6 @@ def test_update_condition(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_condition(api_client, condition):
     url = reverse("conditions-detail", kwargs={"pk": condition.id})
 

@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize(
     "label, primary_key_table, primary_key_column, definition_id, logical_reference, status_code",
     [
@@ -41,7 +42,6 @@ def test_create_resource(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_resource(api_client, resource):
     url = reverse("resources-detail", kwargs={"pk": resource.id})
 
@@ -50,7 +50,6 @@ def test_retrieve_resource(api_client, resource):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_resources(api_client, resource_factory):
     url = reverse("resources-list")
     resource_factory.create_batch(3)
@@ -61,7 +60,6 @@ def test_list_resources(api_client, resource_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize("label, status_code", [(faker.word(), 200)])
 def test_update_resource(api_client, resource, label, status_code):
     url = reverse("resources-detail", kwargs={"pk": resource.id})
@@ -74,7 +72,6 @@ def test_update_resource(api_client, resource, label, status_code):
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_resource(api_client, resource):
     url = reverse("resources-detail", kwargs={"pk": resource.id})
 

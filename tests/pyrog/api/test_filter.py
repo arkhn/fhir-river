@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize("relation, value, status_code", [("<>", faker.word(), 201)])
 def test_create_filter(
     api_client,
@@ -29,7 +30,6 @@ def test_create_filter(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_filter(api_client, filter):
     url = reverse("filters-detail", kwargs={"pk": filter.id})
 
@@ -38,7 +38,6 @@ def test_retrieve_filter(api_client, filter):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_filters(api_client, filter_factory):
     url = reverse("filters-list")
     filter_factory.create_batch(3)
@@ -49,7 +48,6 @@ def test_list_filters(api_client, filter_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize("relation, value, status_code", [("=", faker.word(), 200)])
 def test_update_filter(
     api_client,
@@ -69,7 +67,6 @@ def test_update_filter(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_filter(api_client, filter):
     url = reverse("filters-detail", kwargs={"pk": filter.id})
 

@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize("table, column_field, status_code", [(faker.word(), faker.word(), 201)])
 def test_create_column(
     api_client,
@@ -36,7 +37,6 @@ def x_column(request, column_factory):
     return column_factory(with_join=request.param)
 
 
-@pytest.mark.django_db
 def test_retrieve_column(api_client, x_column):
     url = reverse("columns-detail", kwargs={"pk": x_column.id})
 
@@ -45,7 +45,6 @@ def test_retrieve_column(api_client, x_column):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_columns(api_client, column_factory):
     url = reverse("columns-list")
     column_factory.create_batch(3, with_join=False)
@@ -56,7 +55,6 @@ def test_list_columns(api_client, column_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize("table, column_field, status_code", [(faker.word(), faker.word(), 200)])
 def test_update_column(api_client, column, table, column_field, status_code):
     url = reverse("columns-detail", kwargs={"pk": column.id})
@@ -72,7 +70,6 @@ def test_update_column(api_client, column, table, column_field, status_code):
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_column(api_client, column):
     url = reverse("columns-detail", kwargs={"pk": column.id})
 

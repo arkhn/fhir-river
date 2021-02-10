@@ -5,8 +5,9 @@ from django.urls import reverse
 
 faker = Faker()
 
+pytestmark = pytest.mark.django_db
 
-@pytest.mark.django_db
+
 @pytest.mark.parametrize(
     "script, concept_map_id, static_value, status_code", [(faker.word(), faker.word(), faker.word(), 201)]
 )
@@ -31,7 +32,6 @@ def test_create_input(
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_retrieve_input(api_client, input):
     url = reverse("inputs-detail", kwargs={"pk": input.id})
 
@@ -40,7 +40,6 @@ def test_retrieve_input(api_client, input):
     assert response.status_code == 200
 
 
-@pytest.mark.django_db
 def test_list_inputs(api_client, input_factory):
     url = reverse("inputs-list")
     input_factory.create_batch(3)
@@ -51,7 +50,6 @@ def test_list_inputs(api_client, input_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.django_db
 @pytest.mark.parametrize(
     "script, concept_map_id, static_value, status_code", [(faker.word(), faker.word(), faker.word(), 200)]
 )
@@ -67,7 +65,6 @@ def test_update_input(api_client, input, script, concept_map_id, static_value, s
     assert response.status_code == status_code
 
 
-@pytest.mark.django_db
 def test_delete_input(api_client, input):
     url = reverse("inputs-detail", kwargs={"pk": input.id})
 
