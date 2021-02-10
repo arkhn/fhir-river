@@ -1,0 +1,76 @@
+{
+  "id": "ckdyl65kh0125gu9kpvjbja6j",
+  "definitionId": "Patient",
+  "filters": [],
+  "primaryKeyOwner": { "name": "mimiciii" },
+  "primaryKeyTable": "patients",
+  "primaryKeyColumn": "row_id",
+  "source": {
+    "id": "ckdyl65ip0010gu9k22w8kvc1",
+    "credential": {
+      "owner": null,
+      "model": "POSTGRES",
+      "login": "login",
+      "password": "password",
+      "host": "host",
+      "port": "10",
+      "database": "database"
+    }
+  },
+  "attributes": [
+    {
+      "path": "active",
+      "sliceName": null,
+      "definitionId": "boolean",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65kh0127gu9kqdxatrks",
+          "mergingScript": null,
+          "attributeId": "ckdyl65kh0126gu9ka6svbibj",
+          "inputs": [
+            {
+              "script": null,
+              "conceptMapId": null,
+              "staticValue": "active",
+              "sqlValue": null
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    },
+    {
+      "path": "birthDate",
+      "sliceName": null,
+      "definitionId": "date",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "comments": [],
+      "inputGroups": [
+        {
+          "id": "ckdyl65kh0127gu9kqdxatrkr",
+          "mergingScript": null,
+          "inputs": [
+            {
+              "script": "clean_date",
+              "conceptMapId": null,
+              "staticValue": null,
+              "sqlValue": {
+                "table": "patients",
+                "owner": { "name": "mimiciii" },
+                "column": "dob",
+                "joins": []
+              }
+            }
+          ],
+          "conditions": []
+        }
+      ]
+    }
+  ],
+  "definition": {
+    "id": "Patient",
+    "type": "Patient"
+  }
+}

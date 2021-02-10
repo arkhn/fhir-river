@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Dict, List, NewType, Tuple, Union
 
-from common.analyzer.errors import OperationOutcome
 from common.analyzer.sql_column import SqlColumn
+from common.errors import OperationOutcome
 
 CONDITION_FLAG = "__condition__"
 

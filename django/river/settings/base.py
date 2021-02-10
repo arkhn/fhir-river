@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "transformer",
     "loader",
     "control",
+    "topicleaner",
     "pyrog",
 ]
 
@@ -210,6 +211,13 @@ REDIS_REFERENCES_DB = os.environ.get("REDIS_REFERENCES_DB", 0)
 # Kafka
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+KAFKA_NUM_PARTITIONS = os.environ.get("KAFKA_NUM_PARTITIONS", 1)
+KAFKA_REPLICATION_FACTOR = os.environ.get("KAFKA_REPLICATION_FACTOR", 1)
+
+# API URLs
+
+PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
+FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
 
 # MongoDB
 

@@ -72,25 +72,24 @@ services:
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
 
-  control-api:
+  topicleaner:
     image: river
     build: .
+    command: topicleaner
+    depends_on:
+      - kafka
+      - river-redis
     restart: on-failure
     environment:
-      - ENV=dev
-      - LOG_LEVEL=DEBUG
-      - DEBUG=True
-      - SECRET_KEY=whatever
-      - FHIRSTORE_USER=arkhn
-      - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
+      - ENV=prod
+      - LOG_LEVEL=INFO
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - REDIS_MAPPINGS_HOST=river-redis
       - REDIS_MAPPINGS_PORT=6379
       - REDIS_MAPPINGS_DB=1
-      - POSTGRES_DB=river
-      - POSTGRES_USER=river
-      - POSTGRES_PASSWORD=USE_IN_DEVELOPMENT_ONLY
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
+      - REDIS_COUNTER_HOST=river-redis
+      - REDIS_COUNTER_PORT=6379
+      - REDIS_COUNTER_DB=2
 
   db:
     image: postgres:12
@@ -104,15 +103,17 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
-  api:
-    build: api
+  river-api:
+    image: river
+    build: .
     restart: on-failure
-    depends_on:
-      - kafka
     environment:
-      - PORT=3000
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - CONTROL_API_URL=http://control-api:8000
+      - ENV=dev
+      - LOG_LEVEL=DEBUG
+      - DEBUG=True
+      - SECRET_KEY=whatever
+      - FHIRSTORE_USER=arkhn
+      - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
       - PYROG_API_URL=http://pyrog-server:1000
       - FHIR_API_URL=http://fhir-api:2000
       - REDIS_MAPPINGS_HOST=river-redis
@@ -155,6 +156,8 @@ services:
 
   river-redis:
     image: redis:6.0.7
+    ports:
+      - "6379:6379"
     restart: on-failure
     command: --loglevel verbose
 

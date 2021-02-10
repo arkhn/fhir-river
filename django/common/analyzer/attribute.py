@@ -6,12 +6,13 @@ from .input_group import InputGroup
 
 logger = logging.getLogger(__name__)
 
-numerical_types_map = {
-    "integer": int,
-    "decimal": float,
-    "unsignedInt": int,
-    "positiveInt": int,
-}
+
+def normalize_to_bool(value):
+    if value.lower() in ("true", "1"):
+        return True
+    elif value.lower() in ("false", "0"):
+        return False
+    raise ValueError(f"cannot cast {value} to boolean")
 
 
 def normalize_to_str(value):
@@ -19,6 +20,15 @@ def normalize_to_str(value):
         value = Decimal(value).normalize()
         return format(value, "f")
     return str(value)
+
+
+type_to_normalizer = {
+    "integer": int,
+    "decimal": float,
+    "unsignedInt": int,
+    "positiveInt": int,
+    "boolean": normalize_to_bool,
+}
 
 
 class Attribute:
@@ -30,8 +40,8 @@ class Attribute:
     ):
         self.path = path
         self.input_groups = input_groups or []
-        self.type = numerical_types_map.get(definition_id, str)
-        self.normalizer = numerical_types_map.get(definition_id, normalize_to_str)
+        self.type = definition_id
+        self.normalizer = type_to_normalizer.get(definition_id, normalize_to_str)
 
     def __eq__(self, other):
         if not isinstance(other, Attribute):

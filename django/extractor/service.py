@@ -1,13 +1,13 @@
 import logging
 
 from django.conf import settings
-import redis
 
+import redis
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.event import Event
 from common.service.errors import BatchCancelled
+from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
 from extractor.conf import conf

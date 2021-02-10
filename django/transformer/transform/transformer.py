@@ -17,15 +17,7 @@ class Transformer:
     )
     def transform_data(self, data, analysis):
         # Get primary key value for logs
-        try:
-            primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
-        except KeyError as e:
-            logger.exception(
-                {
-                    "message": f"Trying to access column not present in dataframe: {e}",
-                    "resource_id": analysis.resource_id,
-                },
-            )
+        primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
 
         logging_extras = {
             "resource_id": analysis.resource_id,

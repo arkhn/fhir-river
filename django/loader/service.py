@@ -1,21 +1,20 @@
 import logging
 
 from django.conf import settings
-from pymongo.errors import DuplicateKeyError
-import redis
 
+import redis
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.event import Event
 from common.service.errors import BatchCancelled
+from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
 from loader.conf import conf
 from loader.load import Loader
 from loader.load.fhirstore import get_fhirstore
 from loader.reference_binder import ReferenceBinder
-
+from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 
