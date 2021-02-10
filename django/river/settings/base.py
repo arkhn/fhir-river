@@ -48,12 +48,11 @@ OIDC_OP_USER_ENDPOINT = os.environ.get("OIDC_OP_USER_ENDPOINT")
 OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT")
 OIDC_TOKEN_USE_BASIC_AUTH = True
 OIDC_RP_SIGN_ALGO = "RS256"
-OIDC_CREATE_USER = False
 LOGIN_REDIRECT_URL = os.environ.get("OIDC_LOGIN_REDIRECT_URL")
 LOGOUT_REDIRECT_URL = os.environ.get("OIDC_LOGOUT_REDIRECT_URL")
 
 AUTHENTICATION_BACKENDS = [
-    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
+    "river.auth.ApiOIDCAuthenticationBackend",
 ]
 
 # Application definition
@@ -88,7 +87,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "mozilla_django_oidc.middleware.SessionRefresh",
+    "river.middleware.RefreshOIDCAccessToken",
 ]
 
 ROOT_URLCONF = "river.urls"
