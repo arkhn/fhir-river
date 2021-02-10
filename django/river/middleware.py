@@ -7,7 +7,6 @@ from django.http import JsonResponse
 
 import requests
 from mozilla_django_oidc.middleware import SessionRefresh
-from mozilla_django_oidc.utils import import_from_settings
 from requests.auth import HTTPBasicAuth
 
 LOGGER = logging.getLogger(__name__)
@@ -38,9 +37,9 @@ class RefreshOIDCAccessToken(SessionRefresh):
             return
 
         LOGGER.debug("id token has expired")
-        token_url = import_from_settings("OIDC_OP_TOKEN_ENDPOINT")
-        client_id = import_from_settings("OIDC_RP_CLIENT_ID")
-        client_secret = import_from_settings("OIDC_RP_CLIENT_SECRET")
+        token_url = self.get_settings("OIDC_OP_TOKEN_ENDPOINT")
+        client_id = self.get_settings("OIDC_RP_CLIENT_ID")
+        client_secret = self.get_settings("OIDC_RP_CLIENT_SECRET")
         refresh_token = request.session.get("oidc_refresh_token")
         if not refresh_token:
             LOGGER.debug("no refresh token stored")
@@ -63,7 +62,7 @@ class RefreshOIDCAccessToken(SessionRefresh):
 
         try:
             response = requests.post(
-                token_url, data=token_payload, auth=basic_auth, verify=import_from_settings("OIDC_VERIFY_SSL", True)
+                token_url, data=token_payload, auth=basic_auth, verify=self.get_settings("OIDC_VERIFY_SSL", True)
             )
             response.raise_for_status()
             token_info = response.json()
