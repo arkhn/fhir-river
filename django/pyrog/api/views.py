@@ -42,3 +42,8 @@ class ColumnViewSet(viewsets.ModelViewSet):
 class JoinViewSet(viewsets.ModelViewSet):
     queryset = models.Join.objects.all()
     serializer_class = serializers.JoinSerializer
+
+
+class ConditionViewSet(viewsets.ModelViewSet):
+    queryset = models.Condition.objects.all()
+    serializer_class = serializers.ConditionSerializer

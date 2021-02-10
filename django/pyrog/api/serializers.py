@@ -49,3 +49,9 @@ class JoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Join
         fields = "__all__"
+
+
+class ConditionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Condition
+        fields = "__all__"

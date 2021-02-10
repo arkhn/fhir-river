@@ -12,3 +12,4 @@ router.register(r"input-groups", views.InputGroupViewSet, basename="input-groups
 router.register(r"inputs", views.InputViewSet, basename="inputs")
 router.register(r"columns", views.ColumnViewSet, basename="columns")
 router.register(r"joins", views.JoinViewSet, basename="joins")
+router.register(r"conditions", views.ConditionViewSet, basename="conditions")
