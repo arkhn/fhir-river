@@ -139,6 +139,1356 @@ paths:
           description: ''
       tags:
       - api
+  /api/resources/:
+    get:
+      operationId: listResources
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createResource
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Resource'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Resource'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: ''
+      tags:
+      - api
+  /api/resources/{id}/:
+    get:
+      operationId: retrieveResource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this resource.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateResource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this resource.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Resource'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Resource'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateResource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this resource.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Resource'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Resource'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Resource'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyResource
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this resource.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/credentials/:
+    get:
+      operationId: listCredentials
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Credential'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createCredential
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credential'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Credential'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Credential'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+          description: ''
+      tags:
+      - api
+  /api/credentials/{id}/:
+    get:
+      operationId: retrieveCredential
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this credential.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateCredential
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this credential.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credential'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Credential'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Credential'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateCredential
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this credential.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credential'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Credential'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Credential'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Credential'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyCredential
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this credential.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/attributes/:
+    get:
+      operationId: listAttributes
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attribute'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createAttribute
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+          description: ''
+      tags:
+      - api
+  /api/attributes/{id}/:
+    get:
+      operationId: retrieveAttribute
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this attribute.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateAttribute
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this attribute.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateAttribute
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this attribute.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Attribute'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attribute'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyAttribute
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this attribute.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/input-groups/:
+    get:
+      operationId: listInputGroups
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InputGroup'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createInputGroup
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputGroup'
+          description: ''
+      tags:
+      - api
+  /api/input-groups/{id}/:
+    get:
+      operationId: retrieveInputGroup
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input group.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputGroup'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateInputGroup
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputGroup'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateInputGroup
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input group.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InputGroup'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InputGroup'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyInputGroup
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input group.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/inputs/:
+    get:
+      operationId: listInputs
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Input'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createInput
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Input'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Input'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Input'
+          description: ''
+      tags:
+      - api
+  /api/inputs/{id}/:
+    get:
+      operationId: retrieveInput
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Input'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateInput
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Input'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Input'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Input'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateInput
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Input'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Input'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Input'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyInput
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this input.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/columns/:
+    get:
+      operationId: listColumns
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Column'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createColumn
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Column'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Column'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Column'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+          description: ''
+      tags:
+      - api
+  /api/columns/{id}/:
+    get:
+      operationId: retrieveColumn
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this column.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateColumn
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this column.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Column'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Column'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Column'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateColumn
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this column.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Column'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Column'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Column'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Column'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyColumn
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this column.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/joins/:
+    get:
+      operationId: listJoins
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Join'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createJoin
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Join'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Join'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Join'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Join'
+          description: ''
+      tags:
+      - api
+  /api/joins/{id}/:
+    get:
+      operationId: retrieveJoin
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this join.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Join'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateJoin
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this join.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Join'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Join'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Join'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Join'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateJoin
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this join.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Join'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Join'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Join'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Join'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyJoin
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this join.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/conditions/:
+    get:
+      operationId: listConditions
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Condition'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createCondition
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Condition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Condition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Condition'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Condition'
+          description: ''
+      tags:
+      - api
+  /api/conditions/{id}/:
+    get:
+      operationId: retrieveCondition
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this condition.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Condition'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateCondition
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this condition.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Condition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Condition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Condition'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Condition'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateCondition
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this condition.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Condition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Condition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Condition'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Condition'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyCondition
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this condition.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/filters/:
+    get:
+      operationId: listFilters
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Filter'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createFilter
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Filter'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Filter'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filter'
+          description: ''
+      tags:
+      - api
+  /api/filters/{id}/:
+    get:
+      operationId: retrieveFilter
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this filter.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filter'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateFilter
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this filter.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Filter'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Filter'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filter'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateFilter
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this filter.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Filter'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Filter'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Filter'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Filter'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyFilter
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this filter.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
+  /api/owners/:
+    get:
+      operationId: listOwners
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Owner'
+          description: ''
+      tags:
+      - api
+    post:
+      operationId: createOwner
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Owner'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Owner'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Owner'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+          description: ''
+      tags:
+      - api
+  /api/owners/{id}/:
+    get:
+      operationId: retrieveOwner
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this owner.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+          description: ''
+      tags:
+      - api
+    put:
+      operationId: updateOwner
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this owner.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Owner'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Owner'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Owner'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+          description: ''
+      tags:
+      - api
+    patch:
+      operationId: partialUpdateOwner
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this owner.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Owner'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Owner'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Owner'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+          description: ''
+      tags:
+      - api
+    delete:
+      operationId: destroyOwner
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique value identifying this owner.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - api
 components:
   schemas:
     Source:
@@ -159,8 +1509,274 @@ components:
           type: string
           format: date-time
           readOnly: true
-        template:
+      required:
+      - name
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        source:
+          type: string
+        primary_key_owner:
+          type: string
+      required:
+      - primary_key_table
+      - primary_key_column
+      - definition_id
+      - logical_reference
+      - source
+      - primary_key_owner
+    Credential:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        login:
+          type: string
+        password:
+          type: string
+        model:
+          enum:
+          - MSSQL
+          - POSTGRES
+          - ORACLE
+          - SQLLITE
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        source:
+          type: string
+      required:
+      - host
+      - port
+      - database
+      - login
+      - password
+      - model
+      - source
+    Attribute:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resource:
+          type: string
+      required:
+      - path
+      - definition_id
+      - resource
+    InputGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        merging_script:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        attribute:
+          type: string
+      required:
+      - attribute
+    Input:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        static_value:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        input_group:
+          type: string
+      required:
+      - input_group
+    Column:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        table:
+          type: string
+        column:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        join:
+          type: string
+          nullable: true
+        input:
+          type: string
+          nullable: true
+        owner:
+          type: string
+      required:
+      - table
+      - column
+      - owner
+    Join:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        column:
+          type: string
+      required:
+      - column
+    Condition:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        action:
+          enum:
+          - INCLUDE
+          - EXCLUDE
+          type: string
+        value:
+          type: string
+        relation:
+          enum:
+          - EQ
+          - GT
+          - GE
+          - LT
+          - LE
+          - NOTNULL
+          - 'NULL'
+          type: string
+        column:
+          type: string
+        input_group:
+          type: string
+      required:
+      - action
+      - column
+      - input_group
+    Filter:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        relation:
+          enum:
+          - '='
+          - <>
+          - IN
+          - '>'
+          - '>='
+          - <
+          - <=
+          type: string
+        value:
+          type: string
+        resource:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - resource
+      - sql_column
+    Owner:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        schema:
+          type: object
+          nullable: true
+        credential:
           type: string
       required:
       - name
-      - template
+      - credential
