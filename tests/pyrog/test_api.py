@@ -8,10 +8,10 @@ faker = Faker()
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("name, version, status_code", [(faker.word(), faker.word(), 201), ("", faker.word(), 400)])
-def test_create_source(api_client, template, name, version, status_code):
+def test_create_source(api_client, name, version, status_code):
     url = reverse("sources-list")
 
-    data = {"template": template.id, "name": name, "version": version}
+    data = {"name": name, "version": version}
     response = api_client.post(url, data)
 
     assert response.status_code == status_code
