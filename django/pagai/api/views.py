@@ -1,16 +1,17 @@
 from rest_framework import status, views
 from rest_framework.response import Response
 
+from pagai.api.serializers import CredentialsSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pagai.database_explorer.pyrog import PyrogClient
 from sqlalchemy.exc import OperationalError
 
-# from pagai.api import serializers
-
 
 class OwnersListView(views.APIView):
     def post(self, request):
-        credentials = request.data
+        serializer = CredentialsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        credentials = serializer.validated_data
 
         try:
             explorer = DatabaseExplorer(credentials)
@@ -31,8 +32,9 @@ class OwnersListView(views.APIView):
 
 class OwnerSchemaView(views.APIView):
     def post(self, request, owner):
-        # TODO credentials serializer
-        credentials = request.data
+        serializer = CredentialsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        credentials = serializer.validated_data
 
         try:
             explorer = DatabaseExplorer(credentials)
@@ -63,7 +65,7 @@ class ExploreView(views.APIView):
 
         # Get credentials
         if not resource["source"]["credential"]:
-            raise Exception("credentialId is required to explore the DB.")
+            return Response("credentialId is required to explore the DB", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         credentials = resource["source"]["credential"]
 
