@@ -11,7 +11,7 @@ from cuid import cuid
 
 class Source(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    name = models.TextField()
+    name = models.TextField(unique=True)
     version = models.TextField(blank=True, default="")
 
     updated_at = models.DateTimeField(auto_now=True)
