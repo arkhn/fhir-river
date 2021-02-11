@@ -33,3 +33,25 @@ class OwnersListView(views.APIView):
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(db_owners, status=status.HTTP_200_OK)
+
+
+class OwnerSchemaView(views.APIView):
+    def post(self, request, owner=None):
+        # TODO credentials serializer
+        credentials = request.data
+
+        try:
+            explorer = DatabaseExplorer(credentials)
+            db_schema = explorer.get_owner_schema("mimiciii")
+        except OperationalError as e:
+            if "could not connect to server" in str(e):
+                # TODO errors?
+                return Response(
+                    f"Could not connect to the database: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            else:
+                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(db_schema, status=status.HTTP_200_OK)
