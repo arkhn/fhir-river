@@ -87,18 +87,21 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
         nb_rows_for_attribute = max(len(col) for col in data_for_attribute.values()) if data_for_attribute else 1
 
         for row_ind in range(nb_rows_for_attribute):
-            row_data = {col_key: get_element_in_array(col, row_ind) for col_key, col in data.items()}
+            # We process the data row by row
+            row_data = {col_key: col[row_ind if len(col) > 1 else 0] for col_key, col in data.items()}
 
             no_group_matched = True
             for input_group in attribute.input_groups:
 
                 if all(condition.check(row_data) for condition in input_group.conditions):
+                    # cur_group_columns is a list containing all the sql inputs for the
+                    # current input group
                     cur_group_columns = [value for key, value in row_data.items() if key[1] == input_group.id]
 
                     if not cur_group_columns:
+                        # If the input group has no data in the dataframe, we check if
+                        # it has any static input
                         if input_group.static_inputs:
-                            # If attribute is static, use static input
-                            # Otherwise, attribute is not a leaf or has no inputs
                             if len(input_group.static_inputs) != 1:
                                 raise ValueError(
                                     f"the mapping contains an attribute ({attribute.path}) "
@@ -121,10 +124,9 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
                     break
 
             if no_group_matched:
+                # If no input group has all its conditions verified for the current row,
+                # we fill the output dict with a None so that the leaf doesn't appear
+                # in the created fhir document.
                 merged_data[attribute.path].append(None)
 
     return merged_data
-
-
-def get_element_in_array(array, index):
-    return array[index if len(array) > 1 else 0]
