@@ -1,7 +1,6 @@
 import logging
 
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework import status, views
 from rest_framework.response import Response
 
 from pagai.database_explorer.database_explorer import DatabaseExplorer
@@ -15,9 +14,8 @@ from sqlalchemy.exc import OperationalError
 logger = logging.getLogger(__name__)
 
 
-class OwnersViewSet(viewsets.ViewSet):
-    @action(methods=["POST"], detail=False, url_path="list", url_name="owners_list")
-    def get_owners(self, request):
+class OwnersListView(views.APIView):
+    def post(self, request):
         credentials = request.data
 
         try:
