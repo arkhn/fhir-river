@@ -1,11 +1,9 @@
-from django.urls import include, path
+from django.urls import path
 
 from pagai.api import views
-from pagai.api.router import router
 
 urlpatterns = [
-    # TODO routes?
-    path("pagai/", include(router.urls)),
     path("pagai/list-owners/", views.OwnersListView.as_view(), name="list-owners"),
     path("pagai/owner-schema/<owner>/", views.OwnerSchemaView.as_view(), name="owner-schema"),
+    path("pagai/explore/<resource_id>/<owner>/<table>/", views.ExploreView.as_view(), name="explore"),
 ]

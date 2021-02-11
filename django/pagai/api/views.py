@@ -1,17 +1,11 @@
-import logging
-
 from rest_framework import status, views
 from rest_framework.response import Response
 
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.database_explorer.pyrog import PyrogClient
 from sqlalchemy.exc import OperationalError
 
-# from django.conf import settings
-
-# from extractor.extract import Extractor
 # from pagai.api import serializers
-
-logger = logging.getLogger(__name__)
 
 
 class OwnersListView(views.APIView):
@@ -36,7 +30,7 @@ class OwnersListView(views.APIView):
 
 
 class OwnerSchemaView(views.APIView):
-    def post(self, request, owner=None):
+    def post(self, request, owner):
         # TODO credentials serializer
         credentials = request.data
 
@@ -55,3 +49,37 @@ class OwnerSchemaView(views.APIView):
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(db_schema, status=status.HTTP_200_OK)
+
+
+class ExploreView(views.APIView):
+    def get(self, request, resource_id, owner, table):
+        limit = int(request.GET.get("first", 10))
+
+        # Get authorization header
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
+
+        pyrog_client = PyrogClient(authorization_header)
+        resource = pyrog_client.get_resource(resource_id)
+
+        # Get credentials
+        if not resource["source"]["credential"]:
+            raise Exception("credentialId is required to explore the DB.")
+
+        credentials = resource["source"]["credential"]
+
+        # Get filters
+        filters = resource["filters"]
+
+        try:
+            explorer = DatabaseExplorer(credentials)
+            exploration = explorer.explore(owner, table, limit=limit, filters=filters)
+            return Response(exploration, status=status.HTTP_200_OK)
+        except OperationalError as e:
+            if "could not connect to server" in str(e):
+                return Response(
+                    f"Could not connect to the database: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            else:
+                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
