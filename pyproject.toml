@@ -35,3 +35,6 @@ target-version = ["py38"]
 DJANGO_SETTINGS_MODULE = "river.settings.test"
 testpaths = "tests"
 python_paths = "django"
+markers = '''
+    migration(app_label=..., migration_name=...): mark a test as requiring the given migration state
+'''

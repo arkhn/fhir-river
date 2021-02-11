@@ -1,5 +1,6 @@
 -r base.txt
 
+django-test-migrations==1.1.0
 factory-boy==3.2.0
 fakeredis==1.4.3
 psycopg2-binary==2.8.6
