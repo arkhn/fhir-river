@@ -2,6 +2,7 @@
 
 factory-boy==3.2.0
 fakeredis==1.4.3
+pandas==1.0.1
 psycopg2-binary==2.8.6
 pytest==6.1.2
 pytest-django==4.1.0
