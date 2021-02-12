@@ -8,4 +8,3 @@ class CredentialsSerializer(serializers.Serializer):
     database = serializers.CharField()
     login = serializers.CharField()
     password = serializers.CharField()
-    owner = serializers.CharField()

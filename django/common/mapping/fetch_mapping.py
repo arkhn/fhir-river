@@ -5,7 +5,7 @@ from django.conf import settings
 import requests
 from common.errors import OperationOutcome
 
-fragments = """
+filter_fragments = """
 fragment entireColumn on Column {
     owner {
         name
@@ -32,6 +32,20 @@ fragment entireFilter on Filter {
     value
 }
 
+fragment cred on Credential {
+    model
+    host
+    port
+    database
+    login
+    password: decryptedPassword
+}
+
+"""
+
+fragments = (
+    filter_fragments
+    + """
 fragment entireInput on Input {
     sqlValue {
         ...entireColumn
@@ -69,17 +83,33 @@ fragment a on Attribute {
     }
 }
 
-fragment cred on Credential {
-    model
-    host
-    port
-    database
-    login
-    password: decryptedPassword
+"""
+)
+
+
+resource_with_filters_query = (
+    filter_fragments
+    + """
+query resource($resourceId: String!) {
+    resource(where: {id: $resourceId}) {
+        id
+        filters {
+            ...entireFilter
+        }
+        source {
+            id
+            credential {
+                ...cred
+            }
+        }
+    }
 }
 """
+)
 
-resource_from_id_query = """
+resource_from_id_query = (
+    fragments
+    + """
 query resource($resourceId: String!) {
     resource(where: {id: $resourceId}) {
         id
@@ -109,23 +139,7 @@ query resource($resourceId: String!) {
         }
     }
 }"""
-
-resource_with_filters_query = """
-query resource($resourceId: String!) {
-    resource(where: {id: $resourceId}) {
-        id
-        filters {
-            ...entireFilter
-        }
-        source {
-            id
-            credential {
-                ...cred
-            }
-        }
-    }
-}
-"""
+)
 
 
 def run_graphql_query(graphql_query: str, resource_id: str, authorization_header: str):
@@ -143,9 +157,9 @@ def run_graphql_query(graphql_query: str, resource_id: str, authorization_header
 
     body = response.json()
     if "errors" in body:
-        if body["errors"][0]["statusCode"] == 401:
+        if body["errors"][0].get("statusCode") == 401:
             raise NotAuthenticated("error while fetching mapping: Token is invalid")
-        elif body["errors"][0]["statusCode"] == 403:
+        elif body["errors"][0].get("statusCode") == 403:
             raise PermissionDenied("error while fetching mapping: You don't have rights to perform this action")
         else:
             raise OperationOutcome(f"error while fetching mapping: {body['errors']}")
@@ -154,7 +168,7 @@ def run_graphql_query(graphql_query: str, resource_id: str, authorization_header
 
 
 def fetch_resource_mapping(resource_id: str, authorization_header: str):
-    response = run_graphql_query(f"{fragments}\n{resource_from_id_query}", resource_id, authorization_header)
+    response = run_graphql_query(resource_from_id_query, resource_id, authorization_header)
     resource = response["data"]["resource"]
 
     dereference_concept_map(resource, authorization_header)
@@ -165,7 +179,7 @@ def fetch_resource_mapping(resource_id: str, authorization_header: str):
 
 
 def fetch_resource_with_filters(resource_id: str, authorization_header: str):
-    response = run_graphql_query(f"{fragments}\n{resource_with_filters_query}", resource_id, authorization_header)
+    response = run_graphql_query(resource_with_filters_query, resource_id, authorization_header)
     resource = response["data"]["resource"]
 
     if not resource:

@@ -90,16 +90,16 @@ WSGI_APPLICATION = "river.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql_psycopg2",
-#         "NAME": os.environ.get("POSTGRES_DB", "river"),
-#         "USER": os.environ.get("POSTGRES_USER", "river"),
-#         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-#         "HOST": os.environ.get("POSTGRES_HOST"),
-#         "PORT": int(os.environ.get("POSTGRES_PORT", 5432)),
-#     }
-# }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.environ.get("POSTGRES_DB", "river"),
+        "USER": os.environ.get("POSTGRES_USER", "river"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": int(os.environ.get("POSTGRES_PORT", 5432)),
+    }
+}
 
 
 # Password validation

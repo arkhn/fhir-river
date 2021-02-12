@@ -1,6 +1,7 @@
 from rest_framework import status, views
 from rest_framework.response import Response
 
+from common.analyzer import Analyzer
 from common.mapping.fetch_mapping import fetch_resource_with_filters
 from pagai.api.serializers import CredentialsSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
@@ -60,20 +61,16 @@ class ExploreView(views.APIView):
         # Get authorization header
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        resource = fetch_resource_with_filters(resource_id, authorization_header)
+        resource_mapping = fetch_resource_with_filters(resource_id, authorization_header)
 
-        # Get credentials
-        if not resource["source"]["credential"]:
-            return Response("credentialId is required to explore the DB", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        analyzer = Analyzer()
+        analysis = analyzer.analyze(resource_mapping)
 
-        credentials = resource["source"]["credential"]
-
-        # Get filters
-        filters = resource["filters"]
+        credentials = analysis.source_credentials
 
         try:
             explorer = DatabaseExplorer(credentials)
-            exploration = explorer.explore(owner, table, limit=limit, filters=filters)
+            exploration = explorer.explore(owner, table, limit=limit, filters=analysis.filters)
             return Response(exploration, status=status.HTTP_200_OK)
         except OperationalError as e:
             if "could not connect to server" in str(e):
