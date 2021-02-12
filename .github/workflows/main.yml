@@ -26,7 +26,19 @@ jobs:
         with:
           python-version: 3.8
       - run: pip install -U pip tox
-      - run: tox -e ci
+      - id: tests
+        env:
+          TEST_ORACLE_HOST: ${{ secrets.TEST_ORACLE_HOST }}
+          TEST_ORACLE_PORT: ${{ secrets.TEST_ORACLE_PORT }}
+          TEST_ORACLE_DB: ${{ secrets.TEST_ORACLE_DB }}
+          TEST_ORACLE_LOGIN: ${{ secrets.TEST_ORACLE_LOGIN }}
+          TEST_ORACLE_PASSWORD: ${{ secrets.TEST_ORACLE_PASSWORD }}
+          TEST_MSSQL_HOST: ${{ secrets.TEST_MSSQL_HOST }}
+          TEST_MSSQL_PORT: ${{ secrets.TEST_MSSQL_PORT }}
+          TEST_MSSQL_DB: ${{ secrets.TEST_MSSQL_DB }}
+          TEST_MSSQL_LOGIN: ${{ secrets.TEST_MSSQL_LOGIN }}
+          TEST_MSSQL_PASSWORD: ${{ secrets.TEST_MSSQL_PASSWORD }}
+        run: tox -e ci
 
   build-and-publish:
     runs-on: ubuntu-18.04
