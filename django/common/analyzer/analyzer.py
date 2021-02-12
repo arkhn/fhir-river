@@ -191,9 +191,9 @@ class Analyzer:
             return None
 
         return SqlColumn(
-            resource_mapping.get("primaryKeyOwner")["name"],
-            resource_mapping.get("primaryKeyTable"),
-            resource_mapping.get("primaryKeyColumn"),
+            resource_mapping["primaryKeyOwner"]["name"],
+            resource_mapping["primaryKeyTable"],
+            resource_mapping["primaryKeyColumn"],
         )
 
     def parse_joins_mapping(self, joins_mapping: dict):

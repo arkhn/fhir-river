@@ -7,7 +7,6 @@ from common.analyzer.input_group import InputGroup
 from common.analyzer.sql_column import SqlColumn
 from common.analyzer.sql_filter import SqlFilter
 from common.analyzer.sql_join import SqlJoin
-from extractor.extract import Extractor
 from extractor.extract.query_builder import QueryBuilder
 from sqlalchemy import Column, MetaData, Table
 from sqlalchemy.orm.query import Query
@@ -38,10 +37,9 @@ def mock_alchemy_query(*columns):
 
 
 def make_query_builder(analysis, pk_values=None):
-    extractor = Extractor()
-    extractor.session = mock.MagicMock()
-    extractor.session.query = mock_alchemy_query
-    return QueryBuilder(extractor.session, extractor.metadata, analysis, pk_values)
+    session = mock.MagicMock()
+    session.query = mock_alchemy_query
+    return QueryBuilder(session, None, analysis, pk_values)
 
 
 @mock.patch("common.analyzer.sql_column.hashlib.sha1")
