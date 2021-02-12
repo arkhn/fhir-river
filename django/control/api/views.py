@@ -16,8 +16,8 @@ import redis
 import scripts
 from common.analyzer import Analyzer
 from common.kafka.producer import Producer
+from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka.admin import AdminClient, NewTopic
-from control.api.fetch_mapping import fetch_resource_mapping
 from control.api.serializers import CreateBatchSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore

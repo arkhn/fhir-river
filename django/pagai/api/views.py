@@ -1,9 +1,9 @@
 from rest_framework import status, views
 from rest_framework.response import Response
 
+from common.mapping.fetch_mapping import fetch_resource_with_filters
 from pagai.api.serializers import CredentialsSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
-from pagai.database_explorer.pyrog import PyrogClient
 from sqlalchemy.exc import OperationalError
 
 
@@ -38,7 +38,7 @@ class OwnerSchemaView(views.APIView):
 
         try:
             explorer = DatabaseExplorer(credentials)
-            db_schema = explorer.get_owner_schema("mimiciii")
+            db_schema = explorer.get_owner_schema(owner)
         except OperationalError as e:
             if "could not connect to server" in str(e):
                 # TODO errors?
@@ -60,8 +60,7 @@ class ExploreView(views.APIView):
         # Get authorization header
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        pyrog_client = PyrogClient(authorization_header)
-        resource = pyrog_client.get_resource(resource_id)
+        resource = fetch_resource_with_filters(resource_id, authorization_header)
 
         # Get credentials
         if not resource["source"]["credential"]:

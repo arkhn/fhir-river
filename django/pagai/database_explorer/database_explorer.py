@@ -210,7 +210,7 @@ class DatabaseExplorer:
             sql_query = text(f"select table_name, column_name from all_tab_columns where owner='{owner}'")
         else:  # POSTGRES AND MSSQL
             sql_query = text(
-                f"select table_name, column_name from information_schema.columns " f"where table_schema='{owner}';"
+                f"select table_name, column_name from information_schema.columns where table_schema='{owner}';"
             )
 
         with self._sql_engine.connect() as connection:
