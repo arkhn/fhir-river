@@ -21,7 +21,6 @@ def broadcast_events(
     dataframe,
     analysis,
     producer: Producer,
-    extractor: Extractor,
     counter_client: redis.Redis,
     batch_id=None,
 ):
@@ -29,7 +28,7 @@ def broadcast_events(
     resource_id = analysis.resource_id
     count = 0
     try:
-        list_records_from_db = extractor.split_dataframe(dataframe, analysis)
+        list_records_from_db = Extractor.split_dataframe(dataframe, analysis)
         for record in list_records_from_db:
             logger.debug(
                 {"message": "One record from extract", "resource_id": resource_id},
@@ -63,12 +62,10 @@ class ExtractHandler(Handler):
     def __init__(
         self,
         producer: Producer,
-        extractor: Extractor,
         counter_redis: redis.Redis,
         analyzer: Analyzer,
     ) -> None:
         self.producer = producer
-        self.extractor = extractor
         self.counter_redis = counter_redis
         self.analyzer = analyzer
 
@@ -79,10 +76,10 @@ class ExtractHandler(Handler):
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
         credentials = analysis.source_credentials
-        self.extractor.update_connection(credentials)
-        query = self.extractor.extract(analysis, primary_key_values)
+        extractor = Extractor(credentials)
+        query = extractor.extract(analysis, primary_key_values)
 
-        broadcast_events(query, analysis, self.producer, self.extractor, self.counter_redis, batch_id)
+        broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
 
 
 class ExtractorService(Service):
@@ -106,7 +103,6 @@ class ExtractorService(Service):
         analyzer = Analyzer(redis_client=mapping_redis)
         handler = ExtractHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
-            extractor=Extractor(),
             counter_redis=counter_redis,
             analyzer=analyzer,
         )

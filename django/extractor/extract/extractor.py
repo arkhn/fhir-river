@@ -4,25 +4,13 @@ from typing import Any, List, Optional
 
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
+from common.database_connection.db_connection import DBConnection
 from extractor.errors import EmptyResult
 from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
-from sqlalchemy import MetaData, create_engine
-from sqlalchemy.orm import Query, sessionmaker
+from sqlalchemy.orm import Query
 
 logger = logging.getLogger(__name__)
-
-MSSQL = "MSSQL"
-ORACLE = "ORACLE"
-POSTGRES = "POSTGRES"
-DB_DRIVERS = {POSTGRES: "postgresql", ORACLE: "oracle+cx_oracle", MSSQL: "mssql+pyodbc"}
-URL_SUFFIXES = {
-    POSTGRES: "",
-    ORACLE: "",
-    # the param MARS_Connection=Yes solves the following issue:
-    # https://github.com/catherinedevlin/ipython-sql/issues/54
-    MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server&MARS_Connection=Yes",
-}
 
 # CHUNK_SIZE is the argument we give to sqlalchemy's Query.yield_per
 # Rows will be loaded by batches of length CHUNK_SIZE. This avoids
@@ -36,43 +24,9 @@ counter_extract_instances = PromCounter(
 )
 
 
-class Extractor:
-    def __init__(self):
-        self.db_string = None
-        self.engine = None
-        self.metadata = None
-        self.session = None
-
-    @staticmethod
-    def build_db_url(credentials):
-        model = credentials["model"]
-        login = credentials["login"]
-        password = credentials["password"]
-        host = credentials["host"]
-        port = credentials["port"]
-        database = credentials["database"]
-
-        try:
-            db_handler = DB_DRIVERS[model]
-            url_suffix = URL_SUFFIXES[model]
-        except KeyError:
-            raise ValueError(
-                "credentials specifies the wrong database model. "
-                "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
-            )
-
-        return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
-
-    def update_connection(self, credentials):
-        new_db_string = self.build_db_url(credentials)
-        logger.info(f"Updating connection to database {credentials['database']}")
-
-        if new_db_string != self.db_string:
-            self.db_string = new_db_string
-            # Setting pool_pre_ping to True avoids random connection closing
-            self.engine = create_engine(self.db_string, pool_pre_ping=True)
-            self.metadata = MetaData(bind=self.engine)
-            self.session = sessionmaker(self.engine)()
+class Extractor(DBConnection):
+    def __init__(self, db_config):
+        super().__init__(db_config)
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
@@ -89,26 +43,24 @@ class Extractor:
             a an sqlalchemy RestulProxy containing all the columns asked for in the
             mapping
         """
-        if self.session is None:
-            raise ValueError("You need to create a session for the Extractor before using extract().")
+        with self.session_scope() as session:
+            logger.info(
+                {
+                    "message": f"Start extracting resource: {analysis.definition_id}",
+                    "resource_id": analysis.resource_id,
+                },
+            )
 
-        logger.info(
-            {
-                "message": f"Start extracting resource: {analysis.definition_id}",
-                "resource_id": analysis.resource_id,
-            },
-        )
+            # Build sqlalchemy query
+            builder = QueryBuilder(
+                session=session,
+                metadata=self.metadata,
+                analysis=analysis,
+                pk_values=pk_values,
+            )
+            query = builder.build_query()
 
-        # Build sqlalchemy query
-        builder = QueryBuilder(
-            session=self.session,
-            metadata=self.metadata,
-            analysis=analysis,
-            pk_values=pk_values,
-        )
-        query = builder.build_query()
-
-        return self.run_sql_query(query)
+            return self.run_sql_query(query)
 
     @Timer("time_extractor_run_query", "time to run sql query")
     def run_sql_query(self, query: Query, resource_id: Optional[str] = None):

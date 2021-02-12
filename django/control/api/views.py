@@ -160,9 +160,8 @@ class PreviewEndpoint(viewsets.ViewSet):
         analyzer = Analyzer()
         analysis = analyzer.analyze(resource_mapping)
 
-        extractor = Extractor()
         credentials = analysis.source_credentials
-        extractor.update_connection(credentials)
+        extractor = Extractor(credentials)
         df = extractor.extract(analysis, primary_key_values)
 
         documents = []
