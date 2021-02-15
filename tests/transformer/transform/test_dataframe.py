@@ -88,11 +88,11 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     cleaned_data = dataframe.clean_data(data, attributes, primary_key_column, "pk_val")
 
     columns = [
-        ("id_name", ("PUBLIC.PATIENTS", "NAME")),
-        ("id_id", ("PUBLIC.PATIENTS", "ID")),
-        ("id_id", ("PUBLIC.PATIENTS", "ID2")),
-        ("id_language", ("PUBLIC.ADMISSIONS", "LANGUAGE")),
-        ("id_code", ("PUBLIC.ADMISSIONS", "ID")),
+        ("name", "id_name", ("PUBLIC.PATIENTS", "NAME")),
+        ("id", "id_id", ("PUBLIC.PATIENTS", "ID")),
+        ("id", "id_id", ("PUBLIC.PATIENTS", "ID2")),
+        ("language", "id_language", ("PUBLIC.ADMISSIONS", "LANGUAGE")),
+        ("code", "id_code", ("PUBLIC.ADMISSIONS", "ID")),
     ]
 
     expected = {
@@ -154,13 +154,13 @@ def test_merge_by_attributes(_):
     attr_static.add_input_group(group)
 
     data = {
-        ("id_name", ("PUBLIC.PATIENTS", "NAME")): ["bob"],
-        ("id_id", ("PUBLIC.PATIENTS", "ID")): ["id1"],
-        ("id_id", ("PUBLIC.PATIENTS", "ID2")): ["id21"],
-        ("id_language_1", ("PUBLIC.ADMISSIONS", "LANGUAGE_1")): [("lang1", "lang2", "lang3", "lang4")],
-        ("id_language_2", ("PUBLIC.ADMISSIONS", "LANGUAGE_2")): [("lang21", "lang22", "lang23", "lang24")],
-        ("id_language_3", ("PUBLIC.ADMISSIONS", "LANGUAGE_3")): [("lang31", "lang32", "lang33", "lang34")],
-        ("id_admid", ("PUBLIC.ADMISSIONS", "ID")): [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        ("name", "id_name", ("PUBLIC.PATIENTS", "NAME")): ["bob"],
+        ("id", "id_id", ("PUBLIC.PATIENTS", "ID")): ["id1"],
+        ("id", "id_id", ("PUBLIC.PATIENTS", "ID2")): ["id21"],
+        ("language", "id_language_1", ("PUBLIC.ADMISSIONS", "LANGUAGE_1")): ["lang1", "lang2", "lang3", "lang4"],
+        ("language", "id_language_2", ("PUBLIC.ADMISSIONS", "LANGUAGE_2")): ["lang21", "lang22", "lang23", "lang24"],
+        ("language", "id_language_3", ("PUBLIC.ADMISSIONS", "LANGUAGE_3")): ["lang31", "lang32", "lang33", "lang34"],
+        ("admid", "id_admid", ("PUBLIC.ADMISSIONS", "ID")): ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
         (CONDITION_FLAG, ("PUBLIC.ADMISSIONS", "COND_LANG")): ["false"],
     }
 
@@ -170,9 +170,45 @@ def test_merge_by_attributes(_):
     expected = {
         "name": ["bob"],
         "id": ["id1id21merge"],
-        "language": [("lang21", "lang22", "lang23", "lang24")],
-        "admid": [("hadmid1", "hadmid2", "hadmid3", "hadmid4")],
+        "language": ["lang21", "lang22", "lang23", "lang24"],
+        "admid": ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
         "static": ["static"],
+    }
+
+    assert actual == expected
+
+
+@mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
+def test_merge_by_attributes_with_condition_arrays(_):
+    attr_language = Attribute("language")
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_1",
+            attribute=attr_language,
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_1")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "1")],
+        ),
+    )
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_2",
+            attribute=attr_language,
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "2")],
+        )
+    )
+
+    data = {
+        ("language", "id_language_1", ("PUBLIC.ADMISSIONS", "LANGUAGE_1")): ["lang1", "lang2", "lang3", "lang4"],
+        ("language", "id_language_2", ("PUBLIC.ADMISSIONS", "LANGUAGE_2")): ["lang21", "lang22", "lang23", "lang24"],
+        (CONDITION_FLAG, ("PUBLIC.ADMISSIONS", "COND_LANG")): ["2", "1", "1", "0"],
+    }
+
+    attributes = [attr_language]
+
+    actual = dataframe.merge_by_attributes(data, attributes, "pk")
+    expected = {
+        "language": ["lang21", "lang2", "lang3", None],
     }
 
     assert actual == expected

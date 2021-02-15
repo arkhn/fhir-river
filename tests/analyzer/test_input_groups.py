@@ -1,5 +1,5 @@
 from common.analyzer.attribute import Attribute
-from common.analyzer.condition import CONDITION_FLAG, Condition
+from common.analyzer.condition import Condition
 from common.analyzer.input_group import InputGroup
 from common.analyzer.sql_column import SqlColumn
 
@@ -47,25 +47,3 @@ def test_add_static_input():
     group.add_static_input(i2)
     assert len(group.static_inputs) == 2
     assert group.static_inputs[1] == i2
-
-
-def test_check_conditions():
-    attr = Attribute("name", definition_id="code")
-    group = InputGroup(id_="id", attribute=attr)
-
-    group.add_condition(Condition("INCLUDE", SqlColumn("public", "patients", "gender"), "EQ", "M"))
-    group.add_condition(Condition("EXCLUDE", SqlColumn("public", "patients", "subject_id"), "GT", "123"))
-
-    row = {
-        (CONDITION_FLAG, ("public.patients", "gender")): ["M"],
-        (CONDITION_FLAG, ("public.patients", "subject_id")): [123],
-    }
-
-    assert group.check_conditions(row)
-
-    row = {
-        (CONDITION_FLAG, ("public.patients", "gender")): ["M"],
-        (CONDITION_FLAG, ("public.patients", "subject_id")): [124],
-    }
-
-    assert not group.check_conditions(row)
