@@ -1,32 +1,36 @@
 import pytest
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 
 @pytest.fixture(scope="session")
-def session_factory():
-    return scoped_session(sessionmaker())
+def engine():
+    from .session import Session
 
-
-@pytest.fixture(scope="session")
-def engine(session_factory):
     engine = create_engine("sqlite://")
     # Configure the session factory
-    session_factory.configure(bind=engine)
+    Session.configure(bind=engine)
     return engine
 
 
 @pytest.fixture
-def session(session_factory, engine):
-    s = session_factory()
+def session(engine):
+    from .session import Session
+
+    s = Session()
     yield s
     s.rollback()
-    session_factory.remove()
+    Session.remove()
 
 
-@pytest.fixture
-def base(engine):
-    Base = declarative_base(bind=engine)
-    return Base
+@pytest.fixture(scope="module", autouse=True)
+def _create_table(request, engine):
+    """Create tables automatically.
+
+    This fixture introspects the current test module for a declarative base
+    class named `Base` and if there is one, creates the associated tables.
+    """
+    Base = getattr(request.module, "Base", None)
+    if Base and isinstance(Base, DeclarativeMeta):
+        Base.metadata.create_all(bind=engine)

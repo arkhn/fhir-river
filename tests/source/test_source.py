@@ -1,38 +1,34 @@
+import factory
 import pytest
+from pytest_factoryboy import register
 
 import sqlalchemy
+from sqlalchemy.ext.declarative import declarative_base
+
+from .session import Session
+
+Base = declarative_base()
 
 
-@pytest.fixture
-def patient_model(base):
-    Patient = type(
-        "Patient",
-        (base,),
-        dict(
-            __tablename__="patients",
-            id=sqlalchemy.Column(sqlalchemy.Integer, primary_key=True),
-            name=sqlalchemy.Column(sqlalchemy.String),
-        ),
-    )
-    return Patient
+class Patient(Base):
+    __tablename__ = "patients"
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    name = sqlalchemy.Column(sqlalchemy.String)
 
 
-@pytest.fixture
-def create_tables(base, patient_model):
-    """Create tables from declared models.
+class PatientFactory(factory.alchemy.SQLAlchemyModelFactory):
+    class Meta:
+        model = Patient
+        sqlalchemy_session = Session
 
-    Any desired model fixture should be requested, so that create_tables
-    will be called after model fixture in the instantiation order.
-    """
-    base.metadata.create_all()
+    name = factory.Sequence(lambda n: f"patient_{n}")
 
 
-@pytest.fixture
-def patient(create_tables, patient_model, patient_name):
-    return patient_model(name=patient_name)
+register(PatientFactory)
 
 
-@pytest.mark.parametrize("patient_name", ["johny"])
-def test_foo(session, patient, patient_model):
-    session.add(patient)
-    assert len(session.query(patient_model).all()) == 1
+@pytest.mark.parametrize("patient__name", ["foo"])
+def test_foo(session, patient):
+    assert patient.name == "foo"
+    assert len(session.query(Patient).all()) == 1
