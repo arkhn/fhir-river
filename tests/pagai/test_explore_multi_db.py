@@ -6,7 +6,7 @@ from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, PO
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 
 ALL_OWNERS_FOR_DBTYPE = {
-    POSTGRES: ["pg_toast", "pg_catalog", "public", "information_schema"],
+    POSTGRES: ["pg_temp_1", "pg_toast_temp_1", "pg_toast", "pg_catalog", "public", "information_schema"],
     MSSQL: [
         "dbo",
         "guest",
