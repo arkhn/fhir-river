@@ -54,10 +54,10 @@ class RefreshOIDCAccessToken(SessionRefresh):
 
         basic_auth = None
         if self.get_settings("OIDC_TOKEN_USE_BASIC_AUTH", False):
-            user = token_payload.get("client_id")
-            pw = token_payload.get("client_secret")
+            username = token_payload.get("client_id")
+            password = token_payload.get("client_secret")
 
-            basic_auth = HTTPBasicAuth(user, pw)
+            basic_auth = HTTPBasicAuth(username, password)
             del token_payload["client_secret"]
 
         # Request an access token refresh
