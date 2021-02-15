@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  ora11:
+    image: wnameless/oracle-xe-11g-r2
+    ports:
+      - 1521
+    environment:
+      - ORACLE_ALLOW_REMOTE=true
+
+  river:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    entrypoint: ""
+    # keep container alive for test commands with `docker-compose exec`
+    command: tail -F anything
+    environment:
+      - TEST_ORACLE_11_HOST=ora11
+      - TEST_ORACLE_11_PORT=1521
+      - TEST_ORACLE_11_DB=xe
+      - TEST_ORACLE_11_LOGIN=system
+      - TEST_ORACLE_11_PASSWORD=oracle
+
+      - TEST_POSTGRES_HOST=postgres
+      - TEST_POSTGRES_PORT=5432
+      - TEST_POSTGRES_DB=test
+      - TEST_POSTGRES_LOGIN=test
+      - TEST_POSTGRES_PASSWORD=test
+
+      - TEST_ORACLE_HOST
+      - TEST_ORACLE_PORT
+      - TEST_ORACLE_DB
+      - TEST_ORACLE_LOGIN
+      - TEST_ORACLE_PASSWORD
+
+      - TEST_MSSQL_HOST
+      - TEST_MSSQL_PORT
+      - TEST_MSSQL_DB
+      - TEST_MSSQL_LOGIN
+      - TEST_MSSQL_PASSWORD
+
+volumes:
+  postgres-data:

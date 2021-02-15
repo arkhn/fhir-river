@@ -19,13 +19,16 @@ jobs:
   unit-tests:
     runs-on: ubuntu-18.04
 
-    # TODO(vmttn): Run tests in previously built container instead
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - run: pip install -U pip tox
+      - uses: docker/login-action@v1
+        name: login to arkhn registry
+        with:
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - id: tests
         env:
           TEST_ORACLE_HOST: ${{ secrets.TEST_ORACLE_HOST }}
@@ -38,7 +41,9 @@ jobs:
           TEST_MSSQL_DB: ${{ secrets.TEST_MSSQL_DB }}
           TEST_MSSQL_LOGIN: ${{ secrets.TEST_MSSQL_LOGIN }}
           TEST_MSSQL_PASSWORD: ${{ secrets.TEST_MSSQL_PASSWORD }}
-        run: tox -e ci
+        run: |
+          docker-compose -f ./docker-compose.test.yml up -d
+          docker-compose -f ./docker-compose.test.yml exec -T river tox -e ci
 
   build-and-publish:
     runs-on: ubuntu-18.04

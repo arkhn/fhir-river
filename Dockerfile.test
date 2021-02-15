@@ -1,0 +1,26 @@
+########
+# This image compile the dependencies
+########
+FROM arkhn/python-db-drivers:0.3.0 as compile-image
+
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
+
+WORKDIR /srv
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    binutils \
+    build-essential \
+    libpq-dev \
+    # git is unfortunately required for company packages
+    # that have not been published on pypi (yet)
+    git \
+    && apt-get autoremove --purge -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+RUN pip install --no-cache-dir -r requirements/prod.txt
+RUN pip install --no-cache-dir -r requirements/tests.txt
