@@ -4,6 +4,7 @@ from common.analyzer.analysis import Analysis
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript
 from common.analyzer.concept_map import ConceptMap
+from common.analyzer.condition import Condition
 from common.analyzer.input_group import InputGroup
 from common.analyzer.merging_script import MergingScript
 from common.analyzer.sql_column import SqlColumn
@@ -80,5 +81,84 @@ def test_transform(_, mock_sha1, dict_map_code):
         "language": [{"code": "abc"}, {"code": "abc"}, {"code": "def"}],
         "static": "static",
         "static_list": ["static_list"],
+        "resourceType": "Patient",
+    }
+
+
+@mock.patch("common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
+def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
+    data = {
+        "PATIENTS_NAME_hash": ["alicedirty", "alicedirty", "alicedirty"],
+        "PATIENTS_ID_hash": ["id1", "id1", "id1"],
+        "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
+        "ADMISSIONS_SYSTEM_hash": ["SYS", "SYS", "SYS"],
+        "ADMISSIONS_CODE_1_hash": ["abc", "abc", "def"],
+        "ADMISSIONS_CODE_2_hash": ["cba", "cba", "fed"],
+        "ADMISSIONS_COND_hash": [1, 0, 2],
+    }
+
+    attr_name = Attribute("name")
+    group = InputGroup(
+        id_="id_name",
+        attribute=attr_name,
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+    )
+    attr_name.add_input_group(group)
+
+    attr_language = Attribute("language[0].code")
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_1",
+            attribute=attr_language,
+            columns=[
+                SqlColumn(
+                    "PUBLIC",
+                    "ADMISSIONS",
+                    "CODE_1",
+                )
+            ],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND"), "EQ", "1")],
+        )
+    )
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_2",
+            attribute=attr_language,
+            columns=[
+                SqlColumn(
+                    "PUBLIC",
+                    "ADMISSIONS",
+                    "CODE_2",
+                )
+            ],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND"), "EQ", "2")],
+        )
+    )
+
+    attr_language_sys = Attribute("language[0].system")
+    group = InputGroup(
+        id_="id_language_sys",
+        attribute=attr_language_sys,
+        columns=[SqlColumn("PUBLIC", "ADMISSIONS", "SYSTEM")],
+    )
+    attr_language_sys.add_input_group(group)
+
+    analysis = Analysis()
+    analysis.attributes = [attr_name, attr_language, attr_language_sys]
+    analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
+    analysis.definition = {"type": "Patient"}
+
+    transformer = Transformer()
+    transformed = transformer.transform_data(data, analysis)
+    actual = transformer.create_fhir_document(transformed, analysis)
+
+    assert actual == {
+        "id": actual["id"],
+        "meta": actual["meta"],
+        "name": "alice",
+        "language": [{"code": "abc", "system": "SYS"}, {"system": "SYS"}, {"code": "fed", "system": "SYS"}],
         "resourceType": "Patient",
     }
