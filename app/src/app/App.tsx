@@ -1,4 +1,12 @@
 import React from "react";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/300-italic.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/400-italic.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/500-italic.css";
+import "@fontsource/roboto/700.css";
+import "@fontsource/roboto/700-italic.css";
 import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { ThemeProvider } from "@material-ui/core";
