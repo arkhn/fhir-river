@@ -14,6 +14,7 @@ fluent-logger==0.9.6
 hiredis==1.1.0
 jsonschema==3.0.2
 msgpack==0.6.2
+mozilla-django-oidc==1.2.4
 prometheus-client==0.8.0
 pyodbc==4.0.30
 pydantic==1.7.3
