@@ -1,5 +1,7 @@
 from .base import *
 
+ADMIN_ENABLED = True
+
 ALLOWED_HOSTS = ["*"]
 
 SECRET_KEY = "USE_IN_DEV_ONLY"
