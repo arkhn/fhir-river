@@ -17,6 +17,9 @@ class Source(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Resource(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
