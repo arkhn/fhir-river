@@ -9,6 +9,6 @@ npx @rtk-incubator/rtk-query-codegen-openapi \
 pyrog-schema.yml
 ```
 
-### Style guide
+## Style guide
 This React-Redux project follows the ["ducks" pattern](https://github.com/erikras/ducks-modular-redux)
-and the overall [Redux style guide](https://redux.js.org/style-guide/style-guide) recommendations
+and the overall [Redux style guide](https://redux.js.org/style-guide/style-guide) recommended patterns
