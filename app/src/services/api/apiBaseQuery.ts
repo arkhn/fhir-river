@@ -12,6 +12,15 @@ export const { REACT_APP_API_URL: API_URL } = process.env;
  */
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
+  // TODO: handle authentication
+  // credentials: "include",
+  // prepareHeaders: (headers) => {
+  //   const token = Cookies.get("csrftoken");
+  //   if (token) {
+  //     headers.set("X-CSRFToken", token);
+  //   }
+  //   return headers;
+  // },
 });
 
 /**
@@ -27,7 +36,7 @@ export const apiBaseQuery: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
-    //TODO: To plug later (Auth)
+    // TODO: handle authentication errors
     // api.dispatch(logout());
   }
   return result;
