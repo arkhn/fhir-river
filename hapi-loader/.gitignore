@@ -1,2 +1,7 @@
 fhirdata/
-target
+
+# java files
+target/
+.settings/
+.project
+.classpath
