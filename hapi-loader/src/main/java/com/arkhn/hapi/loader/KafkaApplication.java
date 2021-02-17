@@ -66,6 +66,56 @@ public class KafkaApplication {
         @KafkaHandler
         public void listen(String message) {
             System.out.println("Received Message in group 'loader': " + message);
+            IParser parser = myFhirContext.newJsonParser();
+            BufferedReader reader;
+            Stream<String> lines;
+            List<IBaseResource> resources;
+            try {
+                reader = new BufferedReader(new FileReader(message));
+                lines = reader.lines().filter(Objects::nonNull);
+                resources = lines.map(line -> parser.parseResource(line)).collect(Collectors.toList());
+            } catch (FileNotFoundException e) {
+                log.error(e.getMessage());
+                return;
+            }
+
+            long start = System.currentTimeMillis();
+            final AtomicInteger total = new AtomicInteger(0);
+
+            /* TRANSACTION STUFF */
+            final TransactionDetails transactionDetails = new TransactionDetails();
+            transactionDetails.beginAcceptingDeferredInterceptorBroadcasts(Pointcut.STORAGE_PRECOMMIT_RESOURCE_CREATED,
+                    Pointcut.STORAGE_PRECOMMIT_RESOURCE_UPDATED, Pointcut.STORAGE_PRECOMMIT_RESOURCE_DELETED);
+
+            @SuppressWarnings("unchecked")
+            TransactionCallback<Object> txCallback = status -> {
+                resources.forEach(r -> {
+                    IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
+                    try {
+                        dao.update(r);
+                    } catch (ResourceNotFoundException e) {
+                        log.debug(e.getMessage());
+                    } catch (InvalidRequestException e) {
+                        log.warn(e.getMessage());
+                    } catch (Exception e) {
+                        log.warn("GENERIC" + e.getMessage());
+                    }
+                    total.incrementAndGet();
+                });
+                return null;
+            };
+
+            log.info("Begin transaction with {} resources", resources.size());
+            myHapiTransactionService.execute(null, txCallback);
+            long took = System.currentTimeMillis() - start;
+            log.info("Inserted {} resources. Took {}ms", resources.size(), took);
+
+            try {
+                reader.close();
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                return;
+            }
         }
     }
 }
