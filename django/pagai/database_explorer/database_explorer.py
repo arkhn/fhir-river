@@ -3,7 +3,7 @@ from typing import Callable, Dict, List, Optional
 
 from common.analyzer.sql_filter import SqlFilter
 from common.database_connection.db_connection import ORACLE, ORACLE11, DBConnection
-from pagai.errors import OperationOutcome
+from pagai.errors import ExplorationError
 from sqlalchemy import Column, Table, and_, text
 from sqlalchemy.exc import InvalidRequestError
 
@@ -89,11 +89,11 @@ class DatabaseExplorer(DBConnection):
                 )
             except InvalidRequestError as e:
                 if "requested table(s) not available" in str(e):
-                    raise OperationOutcome(f"Table {table_name} does not exist in database")
+                    raise ExplorationError(f"Table {table_name} does not exist in database")
                 else:
-                    raise OperationOutcome(e)
+                    raise ExplorationError(e)
             except Exception as e:
-                raise OperationOutcome(e)
+                raise ExplorationError(e)
 
     def get_owners(self):
         """
