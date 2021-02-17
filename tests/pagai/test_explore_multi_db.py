@@ -2,7 +2,7 @@ from collections import Counter
 from datetime import datetime
 from unittest import TestCase
 
-from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES
+from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES, DBConnection
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 
 ALL_OWNERS_FOR_DBTYPE = {
@@ -77,66 +77,73 @@ ALL_OWNERS_FOR_DBTYPE = {
 }
 
 
-class TestExploration:
-    def test_explore(self, db_config):
-        explorer = DatabaseExplorer(db_config)
+@staticmethod
+def verify_schema_structure(db_schema):
+    assert isinstance(db_schema, dict)
+    assert len(db_schema) > 0
+    for table, rows in db_schema.items():
+        assert isinstance(table, str)
+        assert isinstance(rows, list)
+        assert len(rows) > 0
+        for row in rows:
+            assert isinstance(row, str)
 
-        if db_config["model"] in [ORACLE11, ORACLE]:
-            exploration = explorer.explore(owner=db_config["owner"], table_name="PATIENTS", limit=2)
-            TestCase().assertCountEqual(exploration["fields"], ["index", "PATIENT_ID", "GENDER", "date"])
-        else:
-            exploration = explorer.explore(owner=db_config["owner"], table_name="patients", limit=2)
-            TestCase().assertCountEqual(exploration["fields"], ["index", "patient_id", "gender", "date"])
 
-        expected_rows = (
-            ["F", datetime(1974, 3, 5, 0, 0), 0, 1],
-            ["M", datetime(1969, 12, 21, 0, 0), 1, 2],
-        )
-        # Check that both expected rows are present in the result
-        for expected_row in expected_rows:
-            assert any(Counter(expected_row) == Counter(actual_row) for actual_row in exploration["rows"])
+def test_explore(db_config):
+    db_connection = DBConnection(db_config)
+    explorer = DatabaseExplorer(db_connection)
 
-    def test_owners(self, db_config):
-        explorer = DatabaseExplorer(db_config)
-        owners = explorer.get_owners()
-        TestCase().assertCountEqual(owners, ALL_OWNERS_FOR_DBTYPE[db_config["model"]])
+    if db_config["model"] in [ORACLE11, ORACLE]:
+        exploration = explorer.explore(owner=db_config["owner"], table_name="PATIENTS", limit=2)
+        TestCase().assertCountEqual(exploration["fields"], ["index", "PATIENT_ID", "GENDER", "date"])
+    else:
+        exploration = explorer.explore(owner=db_config["owner"], table_name="patients", limit=2)
+        TestCase().assertCountEqual(exploration["fields"], ["index", "patient_id", "gender", "date"])
 
-    def test_get_owner_schema(self, db_config):
-        explorer = DatabaseExplorer(db_config)
-        db_schema = explorer.get_owner_schema(db_config["owner"])
-        self.verify_schema_structure(db_schema)
+    expected_rows = (
+        ["F", datetime(1974, 3, 5, 0, 0), 0, 1],
+        ["M", datetime(1969, 12, 21, 0, 0), 1, 2],
+    )
+    # Check that both expected rows are present in the result
+    for expected_row in expected_rows:
+        assert any(Counter(expected_row) == Counter(actual_row) for actual_row in exploration["rows"])
 
-    def test_case_sensitivity(self, db_config):
-        explorer = DatabaseExplorer(db_config)
-        db_schema = explorer.get_owner_schema(db_config["owner"])
 
-        all_tables = list(db_schema.keys())
+def test_owners(db_config):
+    db_connection = DBConnection(db_config)
+    explorer = DatabaseExplorer(db_connection)
+    owners = explorer.get_owners()
+    TestCase().assertCountEqual(owners, ALL_OWNERS_FOR_DBTYPE[db_config["model"]])
 
-        if db_config["model"] in [ORACLE11, ORACLE]:
-            # In the case of ORACLE, the table name "patients"
-            # was turned into "PATIENTS"
-            test_tables = ["PATIENTS", "UPPERCASE", "CaseSensitive"]
-        else:
-            test_tables = ["patients", "UPPERCASE", "CaseSensitive"]
 
-        for table in test_tables:
-            assert table in all_tables
+def test_get_owner_schema(db_config):
+    db_connection = DBConnection(db_config)
+    explorer = DatabaseExplorer(db_connection)
+    db_schema = explorer.get_owner_schema(db_config["owner"])
+    verify_schema_structure(db_schema)
 
-        for table in test_tables:
-            exploration = explorer.explore(owner=db_config["owner"], table_name=table, limit=2)
 
-            TestCase().assertCountEqual(exploration["fields"], db_schema[table])
-            assert len(exploration["rows"]) == 2
-            for row in exploration["rows"]:
-                assert row
+def test_case_sensitivity(db_config):
+    db_connection = DBConnection(db_config)
+    explorer = DatabaseExplorer(db_connection)
+    db_schema = explorer.get_owner_schema(db_config["owner"])
 
-    @staticmethod
-    def verify_schema_structure(db_schema):
-        assert isinstance(db_schema, dict)
-        assert len(db_schema) > 0
-        for table, rows in db_schema.items():
-            assert isinstance(table, str)
-            assert isinstance(rows, list)
-            assert len(rows) > 0
-            for row in rows:
-                assert isinstance(row, str)
+    all_tables = list(db_schema.keys())
+
+    if db_config["model"] in [ORACLE11, ORACLE]:
+        # In the case of ORACLE, the table name "patients"
+        # was turned into "PATIENTS"
+        test_tables = ["PATIENTS", "UPPERCASE", "CaseSensitive"]
+    else:
+        test_tables = ["patients", "UPPERCASE", "CaseSensitive"]
+
+    for table in test_tables:
+        assert table in all_tables
+
+    for table in test_tables:
+        exploration = explorer.explore(owner=db_config["owner"], table_name=table, limit=2)
+
+        TestCase().assertCountEqual(exploration["fields"], db_schema[table])
+        assert len(exploration["rows"]) == 2
+        for row in exploration["rows"]:
+            assert row
