@@ -24,9 +24,9 @@ counter_extract_instances = PromCounter(
 )
 
 
-class Extractor(DBConnection):
-    def __init__(self, db_config):
-        super().__init__(db_config)
+class Extractor:
+    def __init__(self, db_connection: DBConnection):
+        self.db_connection = db_connection
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
@@ -43,7 +43,7 @@ class Extractor(DBConnection):
             a an sqlalchemy RestulProxy containing all the columns asked for in the
             mapping
         """
-        with self.session_scope() as session:
+        with self.db_connection.session_scope() as session:
             logger.info(
                 {
                     "message": f"Start extracting resource: {analysis.definition_id}",

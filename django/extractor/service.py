@@ -4,6 +4,7 @@ from django.conf import settings
 
 import redis
 from common.analyzer import Analyzer
+from common.database_connection.db_connection import DBConnection
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
 from common.service.errors import BatchCancelled
@@ -75,8 +76,8 @@ class ExtractHandler(Handler):
         primary_key_values = event.data.get("primary_key_values", None)
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
-        credentials = analysis.source_credentials
-        extractor = Extractor(credentials)
+        db_connection = DBConnection(analysis.source_credentials)
+        extractor = Extractor(db_connection)
         query = extractor.extract(analysis, primary_key_values)
 
         broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
