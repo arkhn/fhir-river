@@ -18,13 +18,7 @@ class OwnersListView(views.APIView):
             explorer = DatabaseExplorer(credentials)
             db_owners = explorer.get_owners()
         except OperationalError as e:
-            if "could not connect to server" in str(e):
-                # TODO errors?
-                return Response(
-                    f"Could not connect to the database: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-            else:
-                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -41,13 +35,7 @@ class OwnerSchemaView(views.APIView):
             explorer = DatabaseExplorer(credentials)
             db_schema = explorer.get_owner_schema(owner)
         except OperationalError as e:
-            if "could not connect to server" in str(e):
-                # TODO errors?
-                return Response(
-                    f"Could not connect to the database: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-            else:
-                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -71,13 +59,9 @@ class ExploreView(views.APIView):
         try:
             explorer = DatabaseExplorer(credentials)
             exploration = explorer.explore(owner, table, limit=limit, filters=analysis.filters)
-            return Response(exploration, status=status.HTTP_200_OK)
         except OperationalError as e:
-            if "could not connect to server" in str(e):
-                return Response(
-                    f"Could not connect to the database: {e}", status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-            else:
-                return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(exploration, status=status.HTTP_200_OK)
