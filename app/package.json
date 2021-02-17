@@ -38,7 +38,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../pyrog-schema.yml && sed -i '' '4s#({ baseUrl: \"https://example.com\" })##' ./src/services/api/generated/api.generated.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
