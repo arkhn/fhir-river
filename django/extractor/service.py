@@ -5,6 +5,7 @@ from django.conf import settings
 import redis
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
+from common.dialects import register_custom_types
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
 from common.service.event import Event
@@ -92,8 +93,10 @@ class ExtractHandler(Handler):
 class ExtractorService(Service):
     @classmethod
     def make_app(cls):
-        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+        # we need to manually define custom types for some SQL dialects (eg: Oracle)
+        register_custom_types()
 
+        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
         consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
