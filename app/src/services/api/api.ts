@@ -4,11 +4,13 @@ export const api = generatedApi.enhanceEndpoints({
   addEntityTypes: ["Sources"],
   endpoints: {
     listSources: {
-      provides: (response) =>
-        response.map(({ id }) => ({ type: "Sources", id })),
+      provides: (response) => [
+        ...response.map(({ id }) => ({ type: "Sources" as "Sources", id })),
+        { type: "Sources", id: "LIST" },
+      ],
     },
     createSource: {
-      invalidates: ["Sources"],
+      invalidates: [{ type: "Sources", id: "LIST" }],
     },
     retrieveSource: {
       provides: (_, { id }) => [{ type: "Sources", id }],
