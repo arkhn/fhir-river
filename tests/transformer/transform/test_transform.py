@@ -1,5 +1,4 @@
 from unittest import mock
-from uuid import UUID, uuid5
 
 from common.analyzer.analysis import Analysis
 from common.analyzer.attribute import Attribute
@@ -21,16 +20,16 @@ def mock_get_script(*args):
         return args[0] + args[1] + "merge"
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
+# @mock.patch("common.analyzer.sql_column.hashlib.sha1")
 @mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_transform(_, mock_sha1, dict_map_code):
-    mock_sha1.return_value.hexdigest.return_value = "hash"
+def test_transform(_, dict_map_code):
+    # mock_sha1.return_value.hexdigest.return_value = "hash"
 
     data = {
-        "PATIENTS_NAME_hash": ["alicedirty", "alicedirty", "alicedirty"],
-        "PATIENTS_ID_hash": ["id1", "id1", "id1"],
+        "PATIENTS_NAME_f055e60c": ["alicedirty", "alicedirty", "alicedirty"],
+        "PATIENTS_ID_40840214": ["id1", "id1", "id1"],
         "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
-        "ADMISSIONS_CODE_hash": ["ABCdirty", "ABCdirty", "DEFdirty"],
+        "ADMISSIONS_CODE_14824047": ["ABCdirty", "ABCdirty", "DEFdirty"],
     }
 
     attr_name = Attribute("name")
@@ -71,10 +70,13 @@ def test_transform(_, mock_sha1, dict_map_code):
     analysis.attributes = [attr_name, attr_language, attr_static, attr_static_list]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
     analysis.definition = {"type": "Patient"}
+    analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
+
+    primary_key_value = data[analysis.primary_key_column.dataframe_column_name()][0]
 
     transformer = Transformer()
-    transformed = transformer.transform_data(data, analysis)
-    actual = transformer.create_fhir_document(transformed, analysis)
+    transformed = transformer.transform_data(data, analysis, primary_key_value)
+    actual = transformer.create_fhir_document(transformed, analysis, primary_key_value)
 
     assert actual == {
         "id": actual["id"],
@@ -87,19 +89,16 @@ def test_transform(_, mock_sha1, dict_map_code):
     }
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
 @mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
-    mock_sha1.return_value.hexdigest.return_value = "hash"
-
+def test_transform_with_condition_arrays(_, dict_map_code):
     data = {
-        "PATIENTS_NAME_hash": ["alicedirty", "alicedirty", "alicedirty"],
-        "PATIENTS_ID_hash": ["id1", "id1", "id1"],
+        "PATIENTS_NAME_f055e60c": ["alicedirty", "alicedirty", "alicedirty"],
+        "PATIENTS_ID_40840214": ["id1", "id1", "id1"],
         "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
-        "ADMISSIONS_SYSTEM_hash": ["SYS", "SYS", "SYS"],
-        "ADMISSIONS_CODE_1_hash": ["abc", "abc", "def"],
-        "ADMISSIONS_CODE_2_hash": ["cba", "cba", "fed"],
-        "ADMISSIONS_COND_hash": [1, 0, 2],
+        "ADMISSIONS_SYSTEM_a3030ac5": ["SYS", "SYS", "SYS"],
+        "ADMISSIONS_CODE_1_8b2318cd": ["abc", "abc", "def"],
+        "ADMISSIONS_CODE_2_2411de10": ["cba", "cba", "fed"],
+        "ADMISSIONS_COND_64b3742b": [1, 0, 2],
     }
 
     attr_name = Attribute("name")
@@ -154,13 +153,12 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
     analysis.definition = {"type": "Patient"}
     analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
 
-    transformer = Transformer()
-    transformed = transformer.transform_data(data, analysis)
-    actual = transformer.create_fhir_document(transformed, analysis)
+    primary_key_value = data[analysis.primary_key_column.dataframe_column_name()][0]
 
-    assert actual["id"] == str(
-        uuid5(UUID(analysis.logical_reference), data[analysis.primary_key_column.dataframe_column_name()][0])
-    )
+    transformer = Transformer()
+    transformed = transformer.transform_data(data, analysis, primary_key_value)
+    actual = transformer.create_fhir_document(transformed, analysis, primary_key_value)
+
     assert actual == {
         "id": actual["id"],
         "meta": actual["meta"],

@@ -27,10 +27,10 @@ def transform_row(analysis, row, transformer: Transformer):
 
     try:
         logger.debug({"message": "Transform dataframe", **logging_extras})
-        data = transformer.transform_data(row, analysis)
+        data = transformer.transform_data(row, analysis, primary_key_value)
 
         logger.debug({"message": "Create FHIR Doc", **logging_extras})
-        fhir_document = transformer.create_fhir_document(data, analysis)
+        fhir_document = transformer.create_fhir_document(data, analysis, primary_key_value)
 
         return fhir_document
 
