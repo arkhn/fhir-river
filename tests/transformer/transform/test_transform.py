@@ -20,10 +20,8 @@ def mock_get_script(*args):
         return args[0] + args[1] + "merge"
 
 
-# @mock.patch("common.analyzer.sql_column.hashlib.sha1")
 @mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
 def test_transform(_, dict_map_code):
-    # mock_sha1.return_value.hexdigest.return_value = "hash"
 
     data = {
         "PATIENTS_NAME_f055e60c": ["alicedirty", "alicedirty", "alicedirty"],
