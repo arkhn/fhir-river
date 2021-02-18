@@ -90,7 +90,7 @@ class LoaderService(Service):
     def make_app(cls):
         fhirstore_client = get_fhirstore()
         loader = Loader(fhirstore_client)
-        binder = ReferenceBinder(fhirstore_client)
+        binder = ReferenceBinder()
 
         consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
