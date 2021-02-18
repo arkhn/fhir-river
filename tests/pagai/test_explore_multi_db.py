@@ -77,7 +77,6 @@ ALL_OWNERS_FOR_DBTYPE = {
 }
 
 
-@staticmethod
 def verify_schema_structure(db_schema):
     assert isinstance(db_schema, dict)
     assert len(db_schema) > 0

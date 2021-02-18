@@ -20,9 +20,7 @@ services:
       - ORACLE_ALLOW_REMOTE=true
 
   river:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
+    image: arkhn/river:${IMAGE_TAG}
     entrypoint: ""
     # keep container alive for test commands with `docker-compose exec`
     command: tail -F anything

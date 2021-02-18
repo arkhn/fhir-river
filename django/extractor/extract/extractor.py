@@ -54,7 +54,7 @@ class Extractor:
             # Build sqlalchemy query
             builder = QueryBuilder(
                 session=session,
-                metadata=self.metadata,
+                metadata=self.db_connection.metadata,
                 analysis=analysis,
                 pk_values=pk_values,
             )

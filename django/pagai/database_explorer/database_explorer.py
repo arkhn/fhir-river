@@ -117,7 +117,7 @@ class DatabaseExplorer:
 
         schema = defaultdict(list)
 
-        if self._db_model in [ORACLE, ORACLE11]:
+        if self.db_connection._db_model in [ORACLE, ORACLE11]:
             sql_query = text(f"select table_name, column_name from all_tab_columns where owner='{owner}'")
         else:  # POSTGRES AND MSSQL
             sql_query = text(
