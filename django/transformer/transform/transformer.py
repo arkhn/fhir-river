@@ -1,5 +1,5 @@
 import logging
-from uuid import uuid4
+from uuid import UUID, uuid5
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
@@ -7,6 +7,15 @@ from transformer.transform.dataframe import clean_data, merge_by_attributes
 from transformer.transform.fhir import build_fhir_object, build_metadata
 
 logger = logging.getLogger(__name__)
+
+
+def primary_key_value(data, analysis) -> str:
+    return str(data[analysis.primary_key_column.dataframe_column_name()][0])
+
+
+def compute_fhir_object_id(data, analysis) -> str:
+    logical_reference = UUID(analysis.logical_reference)
+    return str(uuid5(logical_reference, primary_key_value(data, analysis)))
 
 
 class Transformer:
@@ -17,7 +26,7 @@ class Transformer:
     )
     def transform_data(self, data, analysis):
         # Get primary key value for logs
-        primary_key = data[analysis.primary_key_column.dataframe_column_name()][0]
+        primary_key = primary_key_value(data, analysis)
 
         logging_extras = {
             "resource_id": analysis.resource_id,
@@ -49,7 +58,7 @@ class Transformer:
         fhir_object = build_fhir_object(data, path_attributes_map)
 
         # Identify the fhir object
-        fhir_object["id"] = str(uuid4())
+        fhir_object["id"] = compute_fhir_object_id(data, analysis)
         fhir_object["resourceType"] = analysis.definition["type"]
         fhir_object["meta"] = build_metadata(analysis)
 
