@@ -1,7 +1,7 @@
 import logging
 
 from fhir.resources.operationoutcome import OperationOutcome
-from fhirstore import DuplicateError
+from fhirstore import DuplicateError, ValidationError
 
 from arkhn_monitoring import Counter, Timer
 from loader.load.utils import get_resource_id
@@ -41,15 +41,17 @@ class Loader:
             # A bit ugly, DuplicateError should have had code as a class attribute
             if resource.issue[0].code == DuplicateError("").code:
                 message = "Document already present"
-            else:
+            elif resource.issue[0].code == ValidationError("").code:
                 # Increment counter for failed validations
                 counter_failed_validations.labels(resource_id=resource_id, resource_type=resource_type).inc()
                 message = "Validation failed"
+            else:
+                message = "Error while loading the fhir document"
 
             # Log
             logger.exception(
                 {
-                    "message": f"{message}",
+                    "message": message,
                     "diagnostics": "\n".join(issue.diagnostics for issue in resource.issue),
                     "document": fhir_instance,
                     "resource_id": resource_id,
