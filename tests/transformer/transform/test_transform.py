@@ -1,4 +1,5 @@
 from unittest import mock
+from uuid import UUID, uuid5
 
 from common.analyzer.analysis import Analysis
 from common.analyzer.attribute import Attribute
@@ -151,11 +152,15 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
     analysis.attributes = [attr_name, attr_language, attr_language_sys]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
     analysis.definition = {"type": "Patient"}
+    analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
 
     transformer = Transformer()
     transformed = transformer.transform_data(data, analysis)
     actual = transformer.create_fhir_document(transformed, analysis)
 
+    assert actual["id"] == str(
+        uuid5(UUID(analysis.logical_reference), data[analysis.primary_key_column.dataframe_column_name()][0])
+    )
     assert actual == {
         "id": actual["id"],
         "meta": actual["meta"],
