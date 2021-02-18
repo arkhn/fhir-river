@@ -12,6 +12,7 @@ from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
 from transformer.conf import conf
+from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
 
 logger = logging.getLogger(__name__)
@@ -45,10 +46,12 @@ class TransformHandler(Handler):
         self,
         producer: Producer,
         transformer: Transformer,
+        binder: ReferenceBinder,
         analyzer: Analyzer,
     ) -> None:
         self.producer = producer
         self.transformer = transformer
+        self.binder = binder
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
@@ -57,12 +60,23 @@ class TransformHandler(Handler):
         record = event.data["record"]
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
+
         fhir_object = transform_row(analysis, record, transformer=self.transformer)
+
+        # Resolve references
+        logger.debug(
+            {
+                "message": f"Resolving references {analysis.reference_paths}",
+                "resource_id": resource_id,
+            },
+        )
+        resolved_fhir_instance = self.binder.resolve_references(fhir_object, analysis.reference_paths)
+
         try:
             self.producer.produce_event(
                 topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
                 event={
-                    "fhir_object": fhir_object,
+                    "fhir_object": resolved_fhir_instance,
                     "batch_id": batch_id,
                     "resource_id": resource_id,
                 },
@@ -88,6 +102,7 @@ class TransformerService(Service):
         handler = TransformHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
             transformer=Transformer(),
+            binder=ReferenceBinder(),
             analyzer=analyzer,
         )
         return Service(consumer, handler)

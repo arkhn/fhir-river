@@ -2,7 +2,6 @@ import logging
 from typing import List
 from uuid import UUID, uuid5
 
-from arkhn_monitoring import Timer
 from dotty_dict import dotty
 from loader.load.utils import get_resource_id
 
@@ -10,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 class ReferenceBinder:
-    @Timer("time_resolve_references", "time spent resolving references")
     def resolve_references(self, unresolved_fhir_object, reference_paths: List[List[str]]):
         fhir_object = dotty(unresolved_fhir_object)
         resource_id = get_resource_id(unresolved_fhir_object)
@@ -31,7 +29,6 @@ class ReferenceBinder:
 
         return fhir_object.to_dict()
 
-    @Timer("time_bind_existing_reference", "time spent resolving the document's references")
     def bind_existing_reference(self, fhir_object, reference_path: List[str]):
         resource_id = get_resource_id(fhir_object)
         object_id = fhir_object["id"]
