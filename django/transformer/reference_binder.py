@@ -82,8 +82,10 @@ class ReferenceBinder:
     @staticmethod
     def identifier_to_reference(identifier, reference_type) -> str:
         system_prefix = "http://terminology.arkhn.org/"
-        if not identifier["system"].startswith(system_prefix):
+        system: str = identifier.get("system")
+        value: str = str(identifier.get("value"))
+        if not system.startswith(system_prefix):
             raise ValueError
-        namespace = UUID(identifier["system"][len(system_prefix) :])
-        resource_id = str(uuid5(namespace, str(identifier["value"])))
+        namespace = UUID(system[len(system_prefix) :])
+        resource_id = str(uuid5(namespace, value))
         return f"{reference_type}/{resource_id}"
