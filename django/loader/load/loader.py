@@ -57,5 +57,3 @@ class Loader:
                     "resource_id": resource_id,
                 }
             )
-
-        return resource

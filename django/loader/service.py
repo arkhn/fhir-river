@@ -2,9 +2,6 @@ import logging
 
 from django.conf import settings
 
-from fhir.resources.operationoutcome import OperationOutcome
-from fhirstore import DuplicateError
-
 import redis
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
@@ -44,18 +41,10 @@ def load(
     resolved_fhir_instance = binder.resolve_references(fhir_object, analysis.reference_paths)
 
     logger.debug({"message": "Writing document to mongo", "resource_id": resource_id})
-    load_response = loader.load(
+    loader.load(
         resolved_fhir_instance,
         resource_type=resolved_fhir_instance["resourceType"],
     )
-
-    # A bit ugly, DuplicateError should have had code as a class attribute
-    if isinstance(load_response, OperationOutcome) and load_response.issue[0].code == DuplicateError("").code:
-        # We can have duplicates error if some kafka events are processed
-        # several times (this can happen if a consumer takes too much time to
-        # process the event for instance). We want to avoid deleting all the
-        # kafka topics too soon if this happens.
-        return
 
     # Increment loaded resources counter in Redis
     counter_redis.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
@@ -102,10 +91,13 @@ class LoaderService(Service):
         loader = Loader(fhirstore_client)
         binder = ReferenceBinder(fhirstore_client)
 
+        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+
         consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,
+            config=config,
         )
         mapping_redis = redis.Redis(
             host=settings.REDIS_MAPPINGS_HOST,
