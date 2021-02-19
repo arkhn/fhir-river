@@ -43,7 +43,10 @@ class ReferenceBinder:
             try:
                 ref["reference"] = self.identifier_to_reference(identifier, reference_type)
                 logger.debug(
-                    {"message": f"reference {ref['reference']} resolved", "resource_id": resource_id},
+                    {
+                        "message": f"reference {ref['reference']} of resource {object_id} resolved",
+                        "resource_id": resource_id,
+                    },
                 )
             except (ValueError, KeyError) as e:
                 logger.warning(
