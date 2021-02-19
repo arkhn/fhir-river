@@ -85,5 +85,5 @@ class ReferenceBinder:
         if not identifier["system"].startwith(system_prefix):
             raise ValueError
         namespace = UUID(identifier["system"][len(system_prefix) :])
-        resource_id = str(uuid5(namespace, identifier["value"]))
+        resource_id = str(uuid5(namespace, str(identifier["value"])))
         return f"{reference_type}/{resource_id}"

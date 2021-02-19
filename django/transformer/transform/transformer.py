@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def compute_fhir_object_id(logical_reference, primary_key_value) -> str:
     logical_reference = UUID(logical_reference, version=4)
-    return str(uuid5(logical_reference, primary_key_value))
+    return str(uuid5(logical_reference, str(primary_key_value)))
 
 
 class Transformer:
