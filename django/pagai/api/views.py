@@ -6,7 +6,6 @@ from common.database_connection.db_connection import DBConnection
 from common.mapping.fetch_mapping import fetch_resource_with_filters
 from pagai.api.serializers import CredentialsSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
-from sqlalchemy.exc import OperationalError
 
 
 class OwnersListView(views.APIView):
@@ -19,8 +18,6 @@ class OwnersListView(views.APIView):
             db_connection = DBConnection(credentials)
             explorer = DatabaseExplorer(db_connection)
             db_owners = explorer.get_owners()
-        except OperationalError as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -37,8 +34,6 @@ class OwnerSchemaView(views.APIView):
             db_connection = DBConnection(credentials)
             explorer = DatabaseExplorer(db_connection)
             db_schema = explorer.get_owner_schema(owner)
-        except OperationalError as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -63,8 +58,6 @@ class ExploreView(views.APIView):
             db_connection = DBConnection(credentials)
             explorer = DatabaseExplorer(db_connection)
             exploration = explorer.explore(owner, table, limit=limit, filters=analysis.filters)
-        except OperationalError as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
