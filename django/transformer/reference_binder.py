@@ -40,11 +40,11 @@ class ReferenceBinder:
 
             # add the "literal reference"
             # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
-            logger.debug(
-                {"message": f"reference to {reference_type} {identifier} resolved", "resource_id": resource_id},
-            )
             try:
                 ref["reference"] = self.identifier_to_reference(identifier, reference_type)
+                logger.debug(
+                    {"message": f"reference {ref['reference']} resolved", "resource_id": resource_id},
+                )
             except (ValueError, KeyError) as e:
                 logger.warning(
                     f"incomplete identifier on reference of type "
