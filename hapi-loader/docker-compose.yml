@@ -1,6 +1,15 @@
 version: "3.7"
 
 services:
+
+  hapi-loader:
+    image: arkhn/hapi-loader:latest
+    restart: on-failure
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./application.docker.yaml:/app/application.yaml
+
   zookeeper:
     image: zookeeper:3.4.10
     restart: on-failure
@@ -65,6 +74,7 @@ services:
       - ELASTICSEARCH_PASSWORD=SomePassword
     depends_on:
       - elasticsearch
+
 
 volumes:
   hapi-pgdata:
