@@ -26,7 +26,7 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 900000);
+        props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, 30000);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 

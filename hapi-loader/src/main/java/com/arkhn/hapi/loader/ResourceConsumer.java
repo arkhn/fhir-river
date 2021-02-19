@@ -29,7 +29,11 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 public class ResourceConsumer {
 
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(ResourceConsumer.class, args);
+        try {
+            SpringApplication.run(ResourceConsumer.class, args);
+        } catch (Exception e) {
+            System.exit(1);
+        }
     }
 
     @Bean
