@@ -35,8 +35,12 @@ class ReferenceBinder:
 
         def bind(ref):
             # extract the type and itentifier of the reference
-            reference_type = ref["type"]
-            identifier = ref["identifier"]
+            if not (reference_type := ref.get("type")):
+                logger.debug(f"reference at path {ref} has no type")
+                return
+            if not (identifier := ref.get("identifier")):
+                logger.debug(f"reference at path {ref} has no identifier")
+                return
 
             # add the "literal reference"
             # (https://www.hl7.org/fhir/references-definitions.html#Reference.reference)
