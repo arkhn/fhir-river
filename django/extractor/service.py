@@ -6,10 +6,10 @@ import redis
 from common.analyzer import Analyzer
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.errors import BatchCancelled
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
+from confluent_kafka import KafkaError, KafkaException
 from extractor.conf import conf
 from extractor.errors import EmptyResult
 from extractor.extract import Extractor
@@ -41,12 +41,19 @@ def broadcast_events(
             event["record"] = record
             producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
-    except BatchCancelled as err:
-        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
-        # return early to avoid setting the counter in redis
-        return
+    except KafkaException as err:
+        if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+            logger.warning(
+                {"message": "The current batch has been cancelled", "resource_id": resource_id, "batch_id": batch_id}
+            )
+            # return early to avoid setting the counter in redis
+            return
+        else:
+            logger.exception(err)
     except EmptyResult as err:
         logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
+    except ValueError as err:
+        logger.exception(err)
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
