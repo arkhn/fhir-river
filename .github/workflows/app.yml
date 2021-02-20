@@ -20,7 +20,7 @@ jobs:
       - name: Install modules
         run: yarn
       - name: Run ESLint
-        run: yarn run eslint ./src --ext .js,.jsx,.ts,.tsx
+        run: yarn run eslint ./src --ext .js,.jsx,.ts,.tsx --cwd ./app
   build-and-publish:
     needs: lint
     runs-on: ubuntu-18.04
