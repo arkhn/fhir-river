@@ -11,6 +11,14 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+      - name: Run ESLint
+        run: eslint ./src --ext .js,.jsx,.ts,.tsx
   build-and-publish:
     runs-on: ubuntu-18.04
     steps:
