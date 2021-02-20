@@ -18,8 +18,9 @@ jobs:
       - name: Install modules
         run: yarn
       - name: Run ESLint
-        run: eslint ./src --ext .js,.jsx,.ts,.tsx
+        run: yarn run eslint ./src --ext .js,.jsx,.ts,.tsx
   build-and-publish:
+    needs: lint
     runs-on: ubuntu-18.04
     steps:
       - id: docker_meta
