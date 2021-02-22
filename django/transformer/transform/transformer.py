@@ -14,7 +14,7 @@ def compute_fhir_object_id(mapping_id, primary_key_value) -> str:
 
     :param mapping_id: UUIDv4 identifying the mapping of the resource
     :param primary_key_value: source database id of the resource instance
-    :return:
+    :return: UUIDv5
     """
     logical_reference = UUID(mapping_id, version=4)
     return str(uuid5(logical_reference, str(primary_key_value)))
