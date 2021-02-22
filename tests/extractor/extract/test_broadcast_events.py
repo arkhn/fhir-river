@@ -1,12 +1,11 @@
 from unittest import mock
 
-from extractor.errors import EmptyResult
 from extractor.service import broadcast_events
 
 
 def test_redis_counter_when_batch_empty():
     extractor = mock.MagicMock()
-    extractor.split_dataframe.side_effect = EmptyResult
+    extractor.split_dataframe.return_value = []
     producer = mock.MagicMock()
     analysis = mock.Mock(definition_id="definition_id", resource_id="resource_id")
     redis = mock.MagicMock()

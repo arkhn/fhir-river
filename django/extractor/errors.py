@@ -28,11 +28,3 @@ class BadRequestError(Exception):
     """
 
     pass
-
-
-class EmptyResult(Exception):
-    """
-    Error used when the query did not return any row.
-    """
-
-    pass

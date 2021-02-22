@@ -4,7 +4,6 @@ from typing import Any, List, Optional
 
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
-from extractor.errors import EmptyResult
 from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
 from sqlalchemy import MetaData, create_engine
@@ -168,14 +167,15 @@ class Extractor:
             prev_pk_val = row[pk_ind]
 
         if not acc:
-            raise EmptyResult(
+            logger.warning(
                 "The sql query returned nothing. Maybe the primary key values "
                 "you provided are not present in the database or the mapping "
                 "is erroneous."
             )
-
-        counter_extract_instances.labels(
-            resource_id=analysis.resource_id,
-            resource_type=analysis.definition_id,
-        ).inc()
-        yield acc
+            return []
+        else:
+            counter_extract_instances.labels(
+                resource_id=analysis.resource_id,
+                resource_type=analysis.definition_id,
+            ).inc()
+            yield acc

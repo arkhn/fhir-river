@@ -11,7 +11,6 @@ from common.service.handler import Handler
 from common.service.service import Service
 from confluent_kafka import KafkaError, KafkaException
 from extractor.conf import conf
-from extractor.errors import EmptyResult
 from extractor.extract import Extractor
 
 logger = logging.getLogger(__name__)
@@ -54,8 +53,6 @@ def broadcast_events(
                 return
             else:
                 logger.exception(err)
-        except EmptyResult as err:
-            logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
         except ValueError as err:
             logger.exception(err)
 
