@@ -74,10 +74,13 @@ class TransformHandler(Handler):
 class TransformerService(Service):
     @classmethod
     def make_app(cls):
+        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+
         consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,
+            config=config,
         )
         mapping_redis = redis.Redis(
             host=settings.REDIS_MAPPINGS_HOST,

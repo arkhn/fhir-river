@@ -15,7 +15,7 @@ class Consumer:
         broker=None,
         topics=None,
         group_id=None,
-        config=None,
+        config={},
     ):
         """
         Instantiate the class and create the consumer object
@@ -41,7 +41,6 @@ class Consumer:
         Generate configuration dictionary for consumer
         :return:
         """
-        config = config or {}
         return {
             "bootstrap.servers": self.broker,
             "group.id": self.group_id,
