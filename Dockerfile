@@ -28,6 +28,7 @@ RUN python -m venv ${VIRTUAL_ENV}
 COPY requirements requirements
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel
 RUN pip install --no-cache-dir -r requirements/prod.txt
+RUN pip install --no-cache-dir -r requirements/tests.txt
 
 
 ########
@@ -61,9 +62,10 @@ RUN useradd --no-log-init -g uwsgi uwsgi
 # Copy venv with compiled dependencies
 COPY --chown=uwsgi:uwsgi --from=compile-image /srv/venv /srv/venv
 
-COPY --chown=uwsgi:uwsgi ["docker-entrypoint.sh", "uwsgi.ini", "/srv/"]
+COPY --chown=uwsgi:uwsgi ["pyproject.toml", "docker-entrypoint.sh", "uwsgi.ini", "/srv/"]
 COPY --chown=uwsgi:uwsgi django /srv/django
 COPY --chown=uwsgi:uwsgi tests /srv/tests
+COPY --chown=uwsgi:uwsgi tox.ini /srv/tox.ini
 RUN chmod +x docker-entrypoint.sh
 
 ENV FILES_ROOT /var/www
