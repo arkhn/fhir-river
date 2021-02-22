@@ -9,6 +9,9 @@ import { ExitToApp } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles((theme) => ({
+  appBar: {
+    backgroundColor: "#444444",
+  },
   logo: {
     height: 27,
     width: 21,
@@ -34,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   logoutIcon: {
     marginRight: theme.spacing(1),
+    fill: theme.palette.text.secondary,
   },
   verticalDivider: {
     height: 25,
@@ -49,6 +53,7 @@ const AppBar = (): JSX.Element => {
 
   return (
     <AppBarArkhnUI
+      appBarProps={{ className: classes.appBar }}
       title={
         <>
           <div className={classes.titleContainer}>
@@ -61,21 +66,21 @@ const AppBar = (): JSX.Element => {
               >
                 Pyrog
               </Typography>
-              <Typography variant="h6" color="textPrimary">
+              <Typography variant="h6" color="textSecondary">
                 · Arkhn
               </Typography>
             </Link>
           </div>
           {user && (
             <>
-              <Typography>{user.mail}</Typography>
+              <Typography color="textSecondary">{user.mail}</Typography>
               <Divider
                 orientation="vertical"
                 className={classes.verticalDivider}
               />
               <Button className={classes.logoutButton}>
                 <ExitToApp className={classes.logoutIcon} />
-                <Typography>{t("logOut")}</Typography>
+                <Typography color="textSecondary">{t("logOut")}</Typography>
               </Button>
             </>
           )}
