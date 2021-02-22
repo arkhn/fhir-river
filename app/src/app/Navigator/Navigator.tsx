@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AppBar from "app/AppBar/AppBar";
 import PageNotFound from "app/PageNotFound/PageNotFound";
+import Sources from "app/Sources/Sources";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -19,6 +20,9 @@ const Navigator = () => {
       <AppBar />
       <Box className={classes.body}>
         <Switch>
+          <Route exact path="/">
+            <Sources />
+          </Route>
           <Route>
             <PageNotFound />
           </Route>
