@@ -129,7 +129,7 @@ const SourceCard = ({
                 horizontal: "left",
               }}
             >
-              <MenuItem onClick={_managePermissions}>
+              <MenuItem onClick={_managePermissions} disabled>
                 <ListItemIcon className={classes.listItemIcon}>
                   <ManagePermissions />
                 </ListItemIcon>
