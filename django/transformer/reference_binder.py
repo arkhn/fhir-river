@@ -7,6 +7,7 @@ from transformer.errors import IncompleteIdentifierError
 from transformer.transform.transformer import compute_fhir_object_id
 
 logger = logging.getLogger(__name__)
+UUID_LENGTH = 36
 
 
 class ReferenceBinder:
@@ -94,10 +95,20 @@ class ReferenceBinder:
 
     @staticmethod
     def identifier_to_reference(identifier, reference_type: str) -> str:
+        """Converts a logical reference to a literal reference
+
+        :param identifier: logical reference of type Identifier containing two keys:
+        system and value.
+        The system is an url formatted as http://terminology.arkhn.org/{UUIDv4}.
+        The UUIDv4 is the id of the mapping of the referenced resource.
+        The value is the source database id of the referenced resource.
+        :param reference_type:
+        :return: a literal reference formatted as ResourceType/ResourceId
+        """
         if not (system := identifier.get("system")):
             raise IncompleteIdentifierError
         if not (value := identifier.get("value")):
             raise IncompleteIdentifierError
-        logical_reference = system[-36:]
-        resource_id = compute_fhir_object_id(logical_reference, value)
+        mapping_id = system[-UUID_LENGTH:]
+        resource_id = compute_fhir_object_id(mapping_id, value)
         return f"{reference_type}/{resource_id}"

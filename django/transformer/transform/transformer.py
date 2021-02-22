@@ -9,8 +9,14 @@ from transformer.transform.fhir import build_fhir_object, build_metadata
 logger = logging.getLogger(__name__)
 
 
-def compute_fhir_object_id(logical_reference, primary_key_value) -> str:
-    logical_reference = UUID(logical_reference, version=4)
+def compute_fhir_object_id(mapping_id, primary_key_value) -> str:
+    """Compute a unique id of a resource instance
+
+    :param mapping_id: UUIDv4 identifying the mapping of the resource
+    :param primary_key_value: source database id of the resource instance
+    :return:
+    """
+    logical_reference = UUID(mapping_id, version=4)
     return str(uuid5(logical_reference, str(primary_key_value)))
 
 
