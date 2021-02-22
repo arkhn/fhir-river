@@ -1,9 +1,9 @@
 import logging
 from typing import List
-from uuid import UUID, uuid5
 
 from dotty_dict import dotty
 from loader.load.utils import get_resource_id
+from transformer.transform.transformer import compute_fhir_object_id
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +52,14 @@ class ReferenceBinder:
                         "resource_id": resource_id,
                     },
                 )
-            except (ValueError, KeyError) as e:
+            except KeyError as e:
                 logger.warning(
                     f"incomplete identifier on reference of type "
+                    f"{reference_type} at path {ref} of resource {object_id}: {e}"
+                )
+            except ValueError as e:
+                logger.warning(
+                    f"no valid uuid in identifier on reference of type "
                     f"{reference_type} at path {ref} of resource {object_id}: {e}"
                 )
 
@@ -92,6 +97,6 @@ class ReferenceBinder:
             raise KeyError
         if not (value := identifier.get("value")):
             raise KeyError
-        namespace = UUID(system[-36:])
-        resource_id = str(uuid5(namespace, str(value)))
+        logical_reference = system[-36:]
+        resource_id = compute_fhir_object_id(logical_reference, value)
         return f"{reference_type}/{resource_id}"

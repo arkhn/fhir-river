@@ -32,11 +32,23 @@ def test_resolve_references(patient):
     patient_reference_paths = [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
     resolved_patient = binder.resolve_references(patient, patient_reference_paths)
     # literal references must have been resolved
-    assert resolved_patient["generalPractitioner"][0]["reference"].startswith("Practitioner/")
-    UUID(resolved_patient["generalPractitioner"][0]["reference"][-36:], version=5)
-    assert resolved_patient["generalPractitioner"][1]["reference"].startswith("Practitioner/")
-    UUID(resolved_patient["generalPractitioner"][1]["reference"][-36:], version=5)
-    assert resolved_patient["managingOrganization"]["reference"].startswith("Organization/")
-    UUID(resolved_patient["managingOrganization"]["reference"][-36:], version=5)
-    assert resolved_patient["identifier"][0]["assigner"]["reference"].startswith("Organization/")
-    UUID(resolved_patient["identifier"][0]["assigner"]["reference"][-36:], version=5)
+
+    reference = resolved_patient["generalPractitioner"][0]["reference"].split("/")
+
+    assert reference[0] == "Practitioner"
+    UUID(reference[1], version=5)
+
+    reference = resolved_patient["generalPractitioner"][1]["reference"].split("/")
+
+    assert reference[0] == "Practitioner"
+    UUID(reference[1], version=5)
+
+    reference = resolved_patient["managingOrganization"]["reference"].split("/")
+
+    assert reference[0] == "Organization"
+    UUID(reference[1], version=5)
+
+    reference = resolved_patient["identifier"][0]["assigner"]["reference"].split("/")
+
+    assert reference[0] == "Organization"
+    UUID(reference[1], version=5)
