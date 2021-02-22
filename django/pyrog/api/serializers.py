@@ -4,12 +4,16 @@ from pyrog import models
 
 
 class SourceSerializer(serializers.ModelSerializer):
+    resources = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = models.Source
         fields = "__all__"
 
 
 class ResourceSerializer(serializers.ModelSerializer):
+    attributes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = models.Resource
         fields = "__all__"
