@@ -87,14 +87,11 @@ class ReferenceBinder:
         rec_bind_existing_reference(fhir_object, reference_path)
 
     @staticmethod
-    def identifier_to_reference(identifier, reference_type) -> str:
+    def identifier_to_reference(identifier, reference_type: str) -> str:
         if not (system := identifier.get("system")):
             raise KeyError
         if not (value := identifier.get("value")):
             raise KeyError
-        system_prefix = "http://terminology.arkhn.org/"
-        if not system.startswith(system_prefix):
-            raise ValueError
-        namespace = UUID(system[len(system_prefix) :])
+        namespace = UUID(system[-36:])
         resource_id = str(uuid5(namespace, str(value)))
         return f"{reference_type}/{resource_id}"
