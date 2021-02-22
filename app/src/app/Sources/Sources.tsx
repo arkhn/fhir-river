@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Button,
   Container,
@@ -8,7 +9,8 @@ import {
 } from "@material-ui/core";
 import SourceForm from "features/sources/SourceForm";
 import SourceGrid from "features/sources/SourceGrid";
-import React, { useState } from "react";
+
+import { Source } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -23,6 +25,19 @@ const useStyles = makeStyles((theme) => ({
 const Sources = (): JSX.Element => {
   const classes = useStyles();
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [sourceToEdit, setSourceToEdit] = useState<Source | undefined>(
+    undefined
+  );
+
+  const _editSource = (source: Source) => {
+    setSourceToEdit(source);
+    _toggleDrawer();
+  };
+
+  const _onClickCreateSource = () => {
+    setSourceToEdit(undefined);
+    _toggleDrawer();
+  };
 
   const _toggleDrawer = () => {
     setOpenDrawer(!openDrawer);
@@ -36,15 +51,15 @@ const Sources = (): JSX.Element => {
             className={classes.button}
             color="primary"
             variant="contained"
-            onClick={_toggleDrawer}
+            onClick={_onClickCreateSource}
           >
             <Typography>New Source</Typography>
           </Button>
         </Grid>
       </Grid>
-      <SourceGrid />
+      <SourceGrid editSource={_editSource} />
       <Drawer open={openDrawer} onClose={_toggleDrawer} anchor="right">
-        <SourceForm submit={_toggleDrawer} />
+        <SourceForm submit={_toggleDrawer} source={sourceToEdit} />
       </Drawer>
     </Container>
   );

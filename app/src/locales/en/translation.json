@@ -10,5 +10,6 @@
   "createSource": "Create source",
   "sourceName": "Source name",
   "pageNotFound": "Woops... Seems like this page doesn't exist.",
-  "logout": "Log out"
+  "logout": "Log out",
+  "editSource": "Edit source"
 }

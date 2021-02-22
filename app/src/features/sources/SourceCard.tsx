@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Source } from "services/api/generated/api.generated";
 import { useTranslation } from "react-i18next";
 import { useDestroySourceMutation } from "services/api/api";
@@ -65,6 +65,7 @@ type SourceCardProps = {
   mappingCount?: number;
   attributesCount?: number;
   onClick?: (id?: string) => void;
+  editSource?: (source: Source) => void;
 };
 
 const SourceCard = ({
@@ -72,11 +73,12 @@ const SourceCard = ({
   mappingCount,
   attributesCount,
   onClick,
+  editSource,
 }: SourceCardProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [deleteSource] = useDestroySourceMutation();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const _handleClick = () => {
     onClick && onClick(source.id);
@@ -91,6 +93,7 @@ const SourceCard = ({
     _handleClose();
   };
   const _rename = () => {
+    editSource && editSource(source);
     _handleClose();
   };
   const _delete = () => {
@@ -158,7 +161,7 @@ const SourceCard = ({
         {mappingCount !== undefined && (
           <div className={classes.sourceDetail}>
             <Mapping className={classes.icon} />
-            <Typography>
+            <Typography color="textSecondary">
               {t("mappingCount", { count: mappingCount })}
             </Typography>
           </div>
@@ -166,7 +169,7 @@ const SourceCard = ({
         {attributesCount !== undefined && (
           <div className={classes.sourceDetail}>
             <Attribute className={classes.icon} />
-            <Typography>
+            <Typography color="textSecondary">
               {t("attributesCount", { count: attributesCount })}
             </Typography>
           </div>

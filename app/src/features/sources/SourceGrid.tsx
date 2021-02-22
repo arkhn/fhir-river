@@ -17,7 +17,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceGrid = () => {
+type SourceGridProps = {
+  editSource: (source: Source) => void;
+};
+
+const SourceGrid = ({ editSource }: SourceGridProps) => {
   const classes = useStyles();
   const { isLoading, data } = useListSourcesQuery({});
   const resourcesQuery = useListResourcesQuery({});
@@ -57,6 +61,7 @@ const SourceGrid = () => {
                 source={source}
                 mappingCount={resourceCount}
                 attributesCount={attributeCount}
+                editSource={editSource}
               />
             </Grid>
           );

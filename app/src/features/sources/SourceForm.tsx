@@ -13,13 +13,17 @@ import {
 import { Source } from "services/api/generated/api.generated";
 import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import { TFunction } from "i18next";
-import { useCreateSourceMutation } from "services/api/api";
+import {
+  useCreateSourceMutation,
+  useUpdateSourceMutation,
+} from "services/api/api";
 
 type SourceFormData = {
   name: string;
 };
 
 type SourceFormProps = {
+  source?: Source;
   submit?: (source: Source) => void;
 };
 
@@ -50,20 +54,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceForm = ({ submit }: SourceFormProps) => {
+const SourceForm = ({ source, submit }: SourceFormProps) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const [createSource, { isLoading }] = useCreateSourceMutation();
+  const [createSource, createSourceData] = useCreateSourceMutation();
+  const [updateSource, updateSourceData] = useUpdateSourceMutation();
+
+  const isLoading = createSourceData.isLoading || updateSourceData.isLoading;
 
   const _submit = (data: SourceFormData) => {
-    createSource({ source: data })
-      .unwrap()
-      .then(() => {
-        submit && submit(data);
-      })
-      // Display error in snackbar notification (?)
-      .catch();
+    if (source && source.id) {
+      updateSource({ id: source.id, source: data })
+        .unwrap()
+        .then(() => {
+          submit && submit(data);
+        })
+        // Display error in snackbar notification (?)
+        .catch();
+    } else {
+      createSource({ source: data })
+        .unwrap()
+        .then(() => {
+          submit && submit(data);
+        })
+        // Display error in snackbar notification (?)
+        .catch();
+    }
   };
 
   return (
@@ -72,9 +89,10 @@ const SourceForm = ({ submit }: SourceFormProps) => {
         properties={inputs(t)}
         submit={_submit}
         formStyle={{ display: "block" }}
+        defaultValues={{ name: source?.name ?? "" }}
         formHeader={
           <Typography className={classes.title} variant="h5">
-            {t("newSource")}
+            {source ? t("editSource") : t("newSource")}
           </Typography>
         }
         formFooter={
@@ -88,7 +106,9 @@ const SourceForm = ({ submit }: SourceFormProps) => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : (
-              <Typography>{t("createSource")}</Typography>
+              <Typography>
+                {source ? t("editSource") : t("createSource")}
+              </Typography>
             )}
           </Button>
         }
