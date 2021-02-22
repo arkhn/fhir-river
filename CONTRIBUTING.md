@@ -3,25 +3,15 @@
 ## Project structure
 
     .
-    ├── api/                            # River-api
-    ├── django/
-    |   ├── common/                     # Common modules
-    |   ├── control/                    # Control-api app
-    |   ├── core/                       # App for framework level endpoints (e.g. version)
-    |   ├── extractor/                  # Extractor app
-    |   ├── loader/                     # Loader app
-    |   ├── river/                      # Django project config
-    |   ├── transformer/                # Transformer app
-    |   ├── utils/                      # Utility class/functions
-    |   └── manage.py                   # Django management script
-    ├── monitoring/                     # Configs for monitoring services
-    └── .template.env                   # Template env file
+    ├── django/            # Backend (api, ETL services, etc.)
+    ├── monitoring/        # Configs for monitoring services
+    ├── tests/             # Backend tests
+    ├── pyrog-schema.yml   # OpenAPI spec for the pyrog api
+    └── .template.env      # Template env file
 
-The project is mainly structured as a django project (except for the `river-api`) : The codebase is shared between all ETL services (`extractor`, `transformer`, `loader`).
+The project is structured as a django project. The codebase is shared between the API and the ETL services (`extractor`, `transformer`, `loader`).
 
 The services are deployed as the same docker `arkhn/river` image, but are run with different arguments (See the `docker-compose.yml` file).
-
-`control-api` acts as an interface for the ETL services and will progressively replace the `river-api`.
 
 ## Deployment
 
@@ -34,64 +24,95 @@ The services are deployed as the same docker `arkhn/river` image, but are run wi
 
 This repository contains 3 compose files that can be used for development.
 
-#### `docker-compose.yml`
-
-Contains the main services of the ETL. This is the minimal functional configuration.
-
-You must provide `fhir-api` and `pyrog-api` URLs (which means you have them deployed somewhere)
-
-#### `docker-compose.monitoring.yml`
-
-Contains optional monitoring services.
-
-The services config files are in the root `monitoring` directory.
-
-#### `docker-compose.test.yml`
-
-Optional test services.
+|                                 |                                                                                         |
+|---------------------------------|-----------------------------------------------------------------------------------------|
+| `docker-compose.yml`            | The minimal functional configuration. `fhir-api` and `pyrog-api` URLs must be provided. |
+| `docker-compose.monitoring.yml` | Optional monitoring services. Configuration is store in the root `monitoring` directory |
+| `docker-compose.test.yml`       | Optional services for testing (e.g. `mimic`)                                            |
 
 ### Notes on environment
 
 - Environment variables can be stored in a `.env` file in the root directory.
-- The `.env` file is loaded by:
-  - Django's `manage.py` script, in development,
-  - Vscode's integrated terminal and launch commands,
-  - Docker-compose's cli.
+- The `.env` file is shared and loaded by:
+  - `docker-compose`,
+  - Django's `manage.py` script,
+  - Vscode's integrated terminal and launch commands.
 
-## Local development
+## Backend development
 
 ### Local prerequisites
 
-1. Create a virtual env
+```bash
+# 1. Create a virtual env
+python3.8 -m venv --prompt "river" .venv
 
-   python3.8 -m venv --prompt "river" .venv
+# 2. Activate the virtual env
+source .venv/bin/activate
 
-2. Activate the virtual env
+# 3. Install dev requirements
+pip install -r requirements/dev.txt
+```
 
-   source .venv/bin/activate
+### Developing with the development server
 
-3. Install dev requirements
+This concerns the API. Not the ETL services (which are not web applications).
 
-   pip install -r requirements/dev.txt
+First, you'll need to provide configuration by creating a dotenv file (`.env`).
+
+```bash
+# 1. Copy the dotenv file. The template should be enough to get you started.
+cp .template.env .env
+
+# 2. Bring the db up
+docker-compose up -d db
+
+# 3. Migrate
+python django/manage.py migrate
+
+# 4. Run the development server
+python django/manage.py runserver
+```
 
 ### Code quality
 
 Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
 
-1. Install the hooks
-
-   pre-commit install
-
+```bash
+# Install the hooks
+pre-commit install
+```
 ### Tests
 
-1.  Run tests in dedicated virtual env.
+```bash
+# Run tests in dedicated virtual env
+tox
+```
 
-        tox
-
-## OpenAPI schema generation
+### OpenAPI schema generation
 
 Generation only concerns the `pyrog` application at this point. To generate the schema (no virtual env required):
 
       tox -e openapi
 
 This produces a `pyrog-schema.yml` file in the root project directory.
+
+## Frontend development
+
+### Backend setup
+
+First, you'll need to provide configuration by creating a dotenv file (`.env`).
+
+```bash
+# 1. Copy the dotenv file. The template should be enough to get you started.
+cp .template.env .env
+
+# 2. Bring the db up
+docker-compose up -d db
+
+# 3. Bring the backend up
+docker-compose up river-api
+
+# 4. (Optionally) To quickly create resources, visit the admin panel
+# at http://localhost:8000/admin/
+# username: admin
+# password: admin

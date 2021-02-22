@@ -31,6 +31,7 @@ DEBUG = os.environ.get("DEBUG", False) == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
+ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", False)
 
 # Application definition
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "loader",
     "control",
     "topicleaner",
+    "pagai",
     "pyrog",
 ]
 

@@ -1,7 +1,6 @@
 import json
 from unittest import mock
 
-import pytest
 from common.analyzer import Analyzer
 from common.analyzer.attribute import Attribute
 from common.analyzer.condition import Condition
@@ -55,15 +54,14 @@ def test_get_primary_key():
 
     assert primary_key == SqlColumn("owner", "table", "col")
 
-    # Raising error
+    # With missing field
     resource_mapping = {
         "primaryKeyTable": "",
         "primaryKeyColumn": "col",
         "primaryKeyOwner": {"name": "owner"},
         "definitionId": "fhirtype",
     }
-    with pytest.raises(ValueError, match="You need to provide a primary key table and column in the mapping"):
-        analyzer.get_primary_key(resource_mapping)
+    assert analyzer.get_primary_key(resource_mapping) is None
 
 
 def test_analyze_mapping(patient_mapping):

@@ -95,11 +95,11 @@ services:
     image: postgres:12
     restart: on-failure
     ports:
-      - ${POSTGRES_PORT}:5432
+      - 5432:5432
     environment:
       - POSTGRES_DB=river
       - POSTGRES_USER=river
-      - POSTGRES_PASSWORD=USE_IN_DEVELOPMENT_ONLY
+      - POSTGRES_PASSWORD=river
     volumes:
       - db-data:/var/lib/postgresql/data
 
@@ -107,6 +107,8 @@ services:
     image: river
     build: .
     restart: on-failure
+    ports:
+      - "8000:8000"
     environment:
       - ENV=dev
       - LOG_LEVEL=DEBUG
@@ -125,9 +127,12 @@ services:
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river
-      - POSTGRES_PASSWORD=USE_IN_DEVELOPMENT_ONLY
+      - POSTGRES_PASSWORD=river
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@admin.admin
+      - DJANGO_SUPERUSER_PASSWORD=admin
 
   zookeeper:
     image: zookeeper:3.4.10
