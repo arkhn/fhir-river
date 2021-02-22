@@ -28,9 +28,9 @@ def broadcast_events(
     resource_type = analysis.definition_id
     resource_id = analysis.resource_id
     count = 0
-    try:
-        list_records_from_db = extractor.split_dataframe(dataframe, analysis)
-        for record in list_records_from_db:
+    list_records_from_db = extractor.split_dataframe(dataframe, analysis)
+    for record in list_records_from_db:
+        try:
             logger.debug(
                 {"message": "One record from extract", "resource_id": resource_id},
             )
@@ -41,19 +41,23 @@ def broadcast_events(
             event["record"] = record
             producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
-    except KafkaException as err:
-        if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-            logger.warning(
-                {"message": "The current batch has been cancelled", "resource_id": resource_id, "batch_id": batch_id}
-            )
-            # return early to avoid setting the counter in redis
-            return
-        else:
+        except KafkaException as err:
+            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                logger.warning(
+                    {
+                        "message": "The current batch has been cancelled",
+                        "resource_id": resource_id,
+                        "batch_id": batch_id,
+                    }
+                )
+                # return early to avoid setting the counter in redis
+                return
+            else:
+                logger.exception(err)
+        except EmptyResult as err:
+            logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
+        except ValueError as err:
             logger.exception(err)
-    except EmptyResult as err:
-        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
-    except ValueError as err:
-        logger.exception(err)
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
