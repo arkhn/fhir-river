@@ -9,5 +9,6 @@
   "newSource": "New source",
   "createSource": "Create source",
   "sourceName": "Source name",
-  "pageNotFound": "Woops... Seems like this page doesn't exist."
+  "pageNotFound": "Woops... Seems like this page doesn't exist.",
+  "logOut": "Log out"
 }

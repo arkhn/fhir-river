@@ -1,12 +1,12 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import counterReducer from "../features/counter/counterSlice";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import user from "features/auth/user";
 import { api } from "../services/api/api";
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
-    counter: counterReducer,
+    user,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware),
@@ -16,6 +16,7 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = (): AppDispatch => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,

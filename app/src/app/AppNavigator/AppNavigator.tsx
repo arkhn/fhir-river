@@ -1,7 +1,8 @@
 import React from "react";
-import NavBar from "common/NavBar/NavBar";
+import AppBar from "common/AppBar/AppBar";
 import { Box, makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+
 import PageNotFound from "app/PageNotFound/PageNotFound";
 
 const useStyles = makeStyles((theme) => ({
@@ -14,7 +15,7 @@ const AppNavigator = () => {
   const classes = useStyles();
   return (
     <BrowserRouter>
-      <NavBar />
+      <AppBar />
       <Box className={classes.body}>
         <Switch>
           <Route>
