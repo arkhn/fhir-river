@@ -15,7 +15,7 @@ import { Source } from "services/api/generated/api.generated";
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
     flexGrow: 1,
-    paddingBlock: theme.spacing(3),
+    paddingTop: theme.spacing(5),
   },
   button: {
     textTransform: "none",
