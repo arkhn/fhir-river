@@ -111,6 +111,7 @@ const SourceCard = ({
               onClick={_handleMenuClick}
               className={classes.actionButton}
               size="small"
+              data-testid="more-button"
             >
               <More />
             </IconButton>
