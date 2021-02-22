@@ -75,11 +75,11 @@ class Analyzer:
         self._cur_analysis.source_id = resource_mapping["source"]["id"]
         self._cur_analysis.source_credentials = resource_mapping["source"]["credential"]
         self._cur_analysis.resource_id = resource_mapping["id"]
-        self._cur_analysis.definition_id = resource_mapping["definitionId"]
-        self._cur_analysis.definition = resource_mapping["definition"]
+        self._cur_analysis.definition_id = resource_mapping.get("definitionId")
+        self._cur_analysis.definition = resource_mapping.get("definition")
         for filter_ in resource_mapping["filters"]:
             self.analyze_filter(filter_)
-        for attribute_mapping in resource_mapping["attributes"]:
+        for attribute_mapping in resource_mapping.get("attributes", []):
             self.analyze_attribute(attribute_mapping)
 
         return self._cur_analysis
@@ -184,14 +184,11 @@ class Analyzer:
     def get_primary_key(self, resource_mapping):
         """Get the primary key table and column of the provided resource."""
         if (
-            not resource_mapping["primaryKeyOwner"]
-            or not resource_mapping["primaryKeyTable"]
-            or not resource_mapping["primaryKeyColumn"]
+            not resource_mapping.get("primaryKeyOwner")
+            or not resource_mapping.get("primaryKeyTable")
+            or not resource_mapping.get("primaryKeyColumn")
         ):
-            raise ValueError(
-                "You need to provide a primary key table and column in the mapping for "
-                f"resource {resource_mapping['definitionId']}."
-            )
+            return None
 
         return SqlColumn(
             resource_mapping["primaryKeyOwner"]["name"],

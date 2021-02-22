@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "loader",
     "control",
     "topicleaner",
+    "pagai",
     "pyrog",
 ]
 

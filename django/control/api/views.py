@@ -15,9 +15,10 @@ from fhirstore import NotFoundError
 import redis
 import scripts
 from common.analyzer import Analyzer
+from common.database_connection.db_connection import DBConnection
 from common.kafka.producer import Producer
+from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka.admin import AdminClient, NewTopic
-from control.api.fetch_mapping import fetch_resource_mapping
 from control.api.serializers import CreateBatchSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
@@ -160,9 +161,8 @@ class PreviewEndpoint(viewsets.ViewSet):
         analyzer = Analyzer()
         analysis = analyzer.analyze(resource_mapping)
 
-        extractor = Extractor()
-        credentials = analysis.source_credentials
-        extractor.update_connection(credentials)
+        db_connection = DBConnection(analysis.source_credentials)
+        extractor = Extractor(db_connection)
         df = extractor.extract(analysis, primary_key_values)
 
         documents = []
