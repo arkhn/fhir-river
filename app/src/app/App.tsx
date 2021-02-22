@@ -11,8 +11,7 @@ import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { ThemeProvider } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-
-import HomePage from "./HomePage/HomePage";
+import AppNavigator from "./AppNavigator/AppNavigator";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -28,6 +27,12 @@ const App = () => {
       createMuiTheme({
         palette: {
           type: prefersDarkMode ? "dark" : "light",
+          primary: {
+            main: "#60b2a2",
+            light: "#92e4d3",
+            dark: "#2d8273",
+            contrastText: "#FFFFFF",
+          },
         },
       }),
     [prefersDarkMode]
@@ -37,7 +42,7 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className={classes.root}>
-        <HomePage />
+        <AppNavigator />
       </div>
     </ThemeProvider>
   );

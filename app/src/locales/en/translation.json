@@ -1,1 +1,13 @@
-{}
+{
+  "managePermissions": "Manage permissions",
+  "rename": "Rename",
+  "delete": "Delete",
+  "mappingCount": "{{count}} mapping",
+  "mappingCount_plural": "{{count}} mappings",
+  "attributesCount": "{{count}} atribute",
+  "attributesCount_plural": "{{count}} atributes",
+  "newSource": "New source",
+  "createSource": "Create source",
+  "sourceName": "Source name",
+  "pageNotFound": "Woops... Seems like this page doesn't exist."
+}
