@@ -21,7 +21,7 @@ jobs:
         run: yarn
         working-directory: app
       - name: Run ESLint
-        run: yarn run eslint ./src --ext .js,.jsx,.ts,.tsx
+        run: yarn lint
         working-directory: app
   build-and-publish:
     needs: lint
@@ -35,7 +35,7 @@ jobs:
         # - always tag with the branch same (replacing '/' with '-')
         # - when a tag follows semver (eg: v1.2.3), tag with 'latest' and '1.2.3'
         with:
-          images: arkhn/river-app
+          images: arkhn/pyrog-app
           tag-sha: true
           tag-semver: |
             {{version}}
