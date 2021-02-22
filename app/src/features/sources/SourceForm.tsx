@@ -92,7 +92,7 @@ const SourceForm = ({ source, submit }: SourceFormProps) => {
         defaultValues={{ name: source?.name ?? "" }}
         formHeader={
           <Typography className={classes.title} variant="h5">
-            {source ? t("editSource") : t("newSource")}
+            {source ? t("renameSource") : t("newSource")}
           </Typography>
         }
         formFooter={
@@ -107,7 +107,7 @@ const SourceForm = ({ source, submit }: SourceFormProps) => {
               <CircularProgress color="inherit" size={23} />
             ) : (
               <Typography>
-                {source ? t("editSource") : t("createSource")}
+                {source ? t("renameSource") : t("createSource")}
               </Typography>
             )}
           </Button>
