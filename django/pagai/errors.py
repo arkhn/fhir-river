@@ -1,0 +1,2 @@
+class ExplorationError(Exception):
+    pass
