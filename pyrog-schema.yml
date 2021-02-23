@@ -1497,6 +1497,11 @@ components:
         id:
           type: string
           readOnly: true
+        resources:
+          type: array
+          items:
+            type: string
+          readOnly: true
         name:
           type: string
         version:
@@ -1516,6 +1521,11 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
+        attributes:
+          type: array
+          items:
+            type: string
           readOnly: true
         label:
           type: string
