@@ -77,6 +77,8 @@ class Analyzer:
         self._cur_analysis.resource_id = resource_mapping["id"]
         self._cur_analysis.definition_id = resource_mapping.get("definitionId")
         self._cur_analysis.definition = resource_mapping.get("definition")
+        self._cur_analysis.logical_reference = resource_mapping["logicalReference"]
+
         for filter_ in resource_mapping["filters"]:
             self.analyze_filter(filter_)
         for attribute_mapping in resource_mapping.get("attributes", []):

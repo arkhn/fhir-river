@@ -1,5 +1,6 @@
 {
   "id": "ckdyl65kh0125gu9kpvjbja6j",
+  "logicalReference": "415e76f4-44f4-4a19-942d-7550ea9f4161",
   "definitionId": "Patient",
   "filters": [],
   "primaryKeyOwner": { "name": "mimiciii" },
