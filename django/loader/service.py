@@ -14,7 +14,6 @@ from loader.conf import conf
 from loader.load import Loader
 from loader.load.fhirstore import get_fhirstore
 from loader.reference_binder import ReferenceBinder
-from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 
@@ -41,20 +40,20 @@ def load(
     )
     resolved_fhir_instance = binder.resolve_references(fhir_object, analysis.reference_paths)
 
+    logger.debug({"message": "Writing document to mongo", "resource_id": resource_id})
+    loader.load(
+        resolved_fhir_instance,
+        resource_type=resolved_fhir_instance["resourceType"],
+    )
+
+    # Increment loaded resources counter in Redis
+    counter_redis.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
+
     try:
-        logger.debug({"message": "Writing document to mongo", "resource_id": resource_id})
-        loader.load(
-            resolved_fhir_instance,
-            resource_type=resolved_fhir_instance["resourceType"],
-        )
-        # Increment loaded resources counter in Redis
-        counter_redis.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
         producer.produce_event(
             topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
             event={"batch_id": batch_id},
         )
-    except DuplicateKeyError as err:
-        logger.exception(err)
     except BatchCancelled as err:
         logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
@@ -92,10 +91,13 @@ class LoaderService(Service):
         loader = Loader(fhirstore_client)
         binder = ReferenceBinder(fhirstore_client)
 
+        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+
         consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,
+            config=config,
         )
         mapping_redis = redis.Redis(
             host=settings.REDIS_MAPPINGS_HOST,
