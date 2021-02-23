@@ -1,12 +1,16 @@
-name: main
+name: django
 
 on:
   push:
+    paths-ignore:
+      - 'app/**'
     branches:
       - "master"
     tags:
       - "v*"
   pull_request:
+    paths-ignore:
+      - 'app/**'
 
 jobs:
   lint:
