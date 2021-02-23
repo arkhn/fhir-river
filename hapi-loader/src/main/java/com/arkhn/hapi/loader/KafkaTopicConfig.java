@@ -13,11 +13,14 @@ import org.springframework.kafka.core.KafkaAdmin;
 @Configuration
 public class KafkaTopicConfig {
 
-    @Value(value = "${kafka.bootstrapAddress}")
+    @Value(value = "${hapi.loader.kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
-    @Value(value = "${message.topic.name}")
+    @Value(value = "${hapi.loader.kafka.topic}")
     private String topicName;
+
+    @Value(value = "${hapi.loader.concurrency}")
+    private Integer partitions;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -27,7 +30,7 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic topic1() {
-        return new NewTopic(topicName, 1, (short) 1);
+    public NewTopic topic() {
+        return new NewTopic(topicName, partitions, (short) 1);
     }
 }

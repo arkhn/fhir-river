@@ -17,8 +17,11 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value(value = "${kafka.bootstrapAddress}")
+    @Value(value = "${hapi.loader.kafka.bootstrapAddress}")
     private String bootstrapAddress;
+
+    @Value(value = "${hapi.loader.kafka.groupId}")
+    private String groupId;
 
     public ConsumerFactory<String, String> consumerFactory(String groupId) {
         Map<String, Object> props = new HashMap<>();
@@ -38,7 +41,7 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
-        return kafkaListenerContainerFactory("loader");
+        return kafkaListenerContainerFactory(groupId);
     }
 
 }
