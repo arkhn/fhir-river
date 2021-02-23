@@ -1500,7 +1500,45 @@ components:
         resources:
           type: array
           items:
-            type: string
+            type: object
+            properties:
+              id:
+                type: string
+                readOnly: true
+              attributes:
+                type: array
+                items:
+                  type: string
+                readOnly: true
+              label:
+                type: string
+              primary_key_table:
+                type: string
+              primary_key_column:
+                type: string
+              definition_id:
+                type: string
+              logical_reference:
+                type: string
+              updated_at:
+                type: string
+                format: date-time
+                readOnly: true
+              created_at:
+                type: string
+                format: date-time
+                readOnly: true
+              source:
+                type: string
+              primary_key_owner:
+                type: string
+            required:
+            - primary_key_table
+            - primary_key_column
+            - definition_id
+            - logical_reference
+            - source
+            - primary_key_owner
           readOnly: true
         name:
           type: string
