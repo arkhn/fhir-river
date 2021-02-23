@@ -40,8 +40,8 @@ def broadcast_events(
             event["record"] = record
             producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
-        except KafkaException as err:
-            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+        except (KafkaException, ValueError) as err:
+            if isinstance(err, KafkaException) and err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                 logger.warning(
                     {
                         "message": "The current batch has been cancelled",
@@ -49,12 +49,10 @@ def broadcast_events(
                         "batch_id": batch_id,
                     }
                 )
-                # return early to avoid setting the counter in redis
-                return
             else:
                 logger.exception(err)
-        except ValueError as err:
-            logger.exception(err)
+            # return early to avoid setting the counter in redis
+            return
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
