@@ -104,6 +104,5 @@ jobs:
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           versions: |
             {
-              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}",
-              "testy": "fix-mapping"
+              "fhir_river": "${{ steps.docker-tag.outputs.river-version }}"
             }
