@@ -15,6 +15,7 @@ class Analysis:
         self.attributes: List[Attribute] = []
         self.filters: List[SqlFilter] = []
         self.primary_key_column: SqlColumn = None
+        self.logical_reference: str = None
         self.reference_paths: List[List[str]] = []
         self.is_static = False
 

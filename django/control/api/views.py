@@ -180,8 +180,9 @@ class PreviewEndpoint(viewsets.ViewSet):
         errors = []
         transformer = Transformer()
         for row in extractor.split_dataframe(df, analysis):
-            transformed = transformer.transform_data(row, analysis)
-            document = transformer.create_fhir_document(transformed, analysis)
+            primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
+            transformed_data = transformer.transform_data(row, analysis, primary_key_value)
+            document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)
             documents.append(document)
             resource_type = document.get("resourceType")
             try:

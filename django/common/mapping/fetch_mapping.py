@@ -119,6 +119,7 @@ query resource($resourceId: String!) {
         primaryKeyTable
         primaryKeyColumn
         definitionId
+        logicalReference
         definition {
             type
             kind
