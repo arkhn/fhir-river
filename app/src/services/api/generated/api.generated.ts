@@ -802,19 +802,7 @@ export type DestroyOwnerApiArg = {
 };
 export type Source = {
   id?: string;
-  resources?: {
-    id?: string;
-    attributes?: string[];
-    label?: string;
-    primary_key_table: string;
-    primary_key_column: string;
-    definition_id: string;
-    logical_reference: string;
-    updated_at?: string;
-    created_at?: string;
-    source: string;
-    primary_key_owner: string;
-  }[];
+  resources?: string[];
   name: string;
   version?: string;
   updated_at?: string;

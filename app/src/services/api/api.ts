@@ -1,41 +1,19 @@
 import { api as generatedApi } from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
-  addEntityTypes: ["Sources", "Resources"],
+  addEntityTypes: ["Sources", "Resources", "Attributes"],
   endpoints: {
     listSources: {
       provides: (response) => [
         ...response.map(({ id }) => ({ type: "Sources" as "Sources", id })),
         { type: "Sources", id: "LIST" },
-        ...response.reduce(
-          (acc, source) =>
-            source.resources
-              ? [
-                  ...acc,
-                  ...source.resources.map(({ id }) => ({
-                    type: "Resources" as "Resources",
-                    id,
-                  })),
-                ]
-              : acc,
-          [] as { type: "Resources"; id: string | undefined }[]
-        ),
       ],
     },
     createSource: {
       invalidates: [{ type: "Sources", id: "LIST" }],
     },
     retrieveSource: {
-      provides: (response, { id }) =>
-        response.resources
-          ? [
-              { type: "Sources", id },
-              ...response.resources.map(({ id }) => ({
-                type: "Resources" as "Resources",
-                id,
-              })),
-            ]
-          : [{ type: "Sources", id }],
+      provides: (_, { id }) => [{ type: "Sources", id }],
     },
     updateSource: {
       invalidates: (_, { id }) => [{ type: "Sources", id }],
@@ -59,7 +37,7 @@ export const api = generatedApi.enhanceEndpoints({
       ],
     },
     retrieveResource: {
-      provides: (_, { id }) => [{ type: "Resources", id }],
+      provides: (response, { id }) => [{ type: "Resources", id }],
     },
     updateResource: {
       invalidates: (_, { id }) => [{ type: "Resources", id }],
@@ -68,7 +46,40 @@ export const api = generatedApi.enhanceEndpoints({
       invalidates: (_, { id }) => [{ type: "Resources", id }],
     },
     destroyResource: {
-      invalidates: (_, { id }) => [{ type: "Resources", id }],
+      invalidates: (_, { id }) => [
+        { type: "Resources", id },
+        { type: "Sources", id: "LIST" },
+      ],
+    },
+    listAttributes: {
+      provides: (response) => [
+        ...response.map(({ id }) => ({
+          type: "Attributes" as "Attributes",
+          id,
+        })),
+        { type: "Attributes", id: "LIST" },
+      ],
+    },
+    createAttribute: {
+      invalidates: (_, { attribute }) => [
+        { type: "Attributes", id: "LIST" },
+        { type: "Resources", id: attribute.resource },
+      ],
+    },
+    retrieveAttribute: {
+      provides: (_, { id }) => [{ type: "Attributes", id }],
+    },
+    updateAttribute: {
+      invalidates: (_, { id }) => [{ type: "Attributes", id }],
+    },
+    partialUpdateAttribute: {
+      invalidates: (_, { id }) => [{ type: "Attributes", id }],
+    },
+    destroyAttribute: {
+      invalidates: (_, { id }) => [
+        { type: "Attributes", id },
+        { type: "Resources", id: "LIST" },
+      ],
     },
   },
 });
@@ -80,4 +91,16 @@ export const {
   useUpdateSourceMutation,
   usePartialUpdateSourceMutation,
   useDestroySourceMutation,
+  useListResourcesQuery,
+  useCreateResourceMutation,
+  useRetrieveResourceQuery,
+  useUpdateResourceMutation,
+  usePartialUpdateResourceMutation,
+  useDestroyResourceMutation,
+  useListAttributesQuery,
+  useCreateAttributeMutation,
+  useRetrieveAttributeQuery,
+  useUpdateAttributeMutation,
+  usePartialUpdateAttributeMutation,
+  useDestroyAttributeMutation,
 } = api;
