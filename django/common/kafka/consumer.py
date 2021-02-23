@@ -15,6 +15,7 @@ class Consumer:
         broker=None,
         topics=None,
         group_id=None,
+        config={},
     ):
         """
         Instantiate the class and create the consumer object
@@ -30,17 +31,17 @@ class Consumer:
         self.topics = topics
         self.group_id = group_id
 
-        self.consumer = KafkaConsumer(self._generate_config())
+        self.consumer = KafkaConsumer(self._generate_config(config))
 
         if isinstance(self.topics, str):
             self.topics = [self.topics]
 
-    def _generate_config(self):
+    def _generate_config(self, config):
         """
         Generate configuration dictionary for consumer
         :return:
         """
-        config = {
+        return {
             "bootstrap.servers": self.broker,
             "group.id": self.group_id,
             "session.timeout.ms": 6000,
@@ -49,8 +50,8 @@ class Consumer:
             # Here we refresh the list of consumed topics every 5s.
             "topic.metadata.refresh.interval.ms": 5000,
             "auto.offset.reset": "earliest",
+            **config,
         }
-        return config
 
     @contextmanager
     def subscribe(self):

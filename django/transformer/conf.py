@@ -16,5 +16,9 @@ class Settings:
     def PRODUCED_TOPIC_PREFIX(self):
         return getattr(settings, "PRODUCED_TOPIC_PREFIX", "transform.")
 
+    @property
+    def MAX_POLL_INTERVAL_MS(self):
+        return getattr(settings, "MAX_POLL_INTERVAL_MS", 900_000)
+
 
 conf = Settings()

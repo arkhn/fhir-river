@@ -12,7 +12,6 @@ from common.service.service import Service
 from loader.conf import conf
 from loader.load import Loader
 from loader.load.fhirstore import get_fhirstore
-from pymongo.errors import DuplicateKeyError
 
 logger = logging.getLogger(__name__)
 
@@ -31,14 +30,14 @@ def load(
             fhir_object,
             resource_type=fhir_object["resourceType"],
         )
+
         # Increment loaded resources counter in Redis
         counter_redis.hincrby(f"batch:{batch_id}:counter", f"resource:{resource_id}:loaded", 1)
+
         producer.produce_event(
             topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
             event={"batch_id": batch_id},
         )
-    except DuplicateKeyError as err:
-        logger.exception(err)
     except BatchCancelled as err:
         logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
 
@@ -69,10 +68,13 @@ class LoaderService(Service):
         fhirstore_client = get_fhirstore()
         loader = Loader(fhirstore_client)
 
+        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+
         consumer = Consumer(
             broker=settings.KAFKA_BOOTSTRAP_SERVERS,
             topics=conf.CONSUMED_TOPICS,
             group_id=conf.CONSUMER_GROUP_ID,
+            config=config,
         )
         counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST,
