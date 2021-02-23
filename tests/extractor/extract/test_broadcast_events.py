@@ -4,21 +4,23 @@ from confluent_kafka import KafkaError, KafkaException
 from extractor.service import broadcast_events
 
 
-def mock_kafka_exception(error):
-    class MockKafkaExceptionArg:
-        def code(self):
-            return error
+class MockKafkaExceptionArg:
+    def __init__(self, error):
+        self.error = error
 
-    class MockKafkaException(KafkaException):
-        args = [MockKafkaExceptionArg()]
+    def code(self):
+        return self.error
 
-    return MockKafkaException
+
+class MockKafkaException(KafkaException):
+    def __init__(self, error):
+        self.args = [MockKafkaExceptionArg(error)]
 
 
 @mock.patch("extractor.extract.extractor.Extractor.split_dataframe", return_value=[1, 2, 3])
 def test_skipping_redis_call_when_batch_cancelled(_):
     producer = mock.MagicMock()
-    producer.produce_event.side_effect = [None, mock_kafka_exception(KafkaError.UNKNOWN_TOPIC_OR_PART)]
+    producer.produce_event.side_effect = [None, MockKafkaException(KafkaError.UNKNOWN_TOPIC_OR_PART)]
     analysis = mock.Mock(definition_id="definition_id", resource_id="resource_id")
     redis = mock.MagicMock()
 
