@@ -7,12 +7,11 @@ from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.errors import BatchCancelled
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
+from confluent_kafka import KafkaError, KafkaException
 from extractor.conf import conf
-from extractor.errors import EmptyResult
 from extractor.extract import Extractor
 
 logger = logging.getLogger(__name__)
@@ -28,9 +27,9 @@ def broadcast_events(
     resource_type = analysis.definition_id
     resource_id = analysis.resource_id
     count = 0
-    try:
-        list_records_from_db = Extractor.split_dataframe(dataframe, analysis)
-        for record in list_records_from_db:
+    list_records_from_db = Extractor.split_dataframe(dataframe, analysis)
+    for record in list_records_from_db:
+        try:
             logger.debug(
                 {"message": "One record from extract", "resource_id": resource_id},
             )
@@ -41,12 +40,19 @@ def broadcast_events(
             event["record"] = record
             producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
-    except BatchCancelled as err:
-        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
-        # return early to avoid setting the counter in redis
-        return
-    except EmptyResult as err:
-        logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
+        except (KafkaException, ValueError) as err:
+            if isinstance(err, KafkaException) and err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                logger.warning(
+                    {
+                        "message": "The current batch has been cancelled",
+                        "resource_id": resource_id,
+                        "batch_id": batch_id,
+                    }
+                )
+            else:
+                logger.exception(err)
+            # return early to avoid setting the counter in redis
+            return
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records

@@ -3,8 +3,6 @@ import decimal
 import json
 import logging
 
-from common.service.errors import BatchCancelled
-from confluent_kafka import KafkaError, KafkaException
 from confluent_kafka import Producer as KafkaProducer
 
 logger = logging.getLogger("kafka.producer")
@@ -56,20 +54,12 @@ class Producer:
         :param event: dict
         :return:
         """
-        try:
-            self.producer.produce(
-                topic=topic,
-                value=CustomJSONEncoder().encode(event),
-                callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
-            )
-            self.producer.poll(1)  # Callback function
-        except ValueError as err:
-            logger.exception(err)
-        except KafkaException as err:
-            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                raise BatchCancelled("The current batch has been cancelled")
-            else:
-                logger.exception(err)
+        self.producer.produce(
+            topic=topic,
+            value=CustomJSONEncoder().encode(event),
+            callback=lambda err, msg, obj=event: self.callback_function(err, msg, obj),
+        )
+        self.producer.poll(1)  # Callback function
 
     @staticmethod
     def callback_fn(err, msg, obj):

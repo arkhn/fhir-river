@@ -154,7 +154,7 @@ def test_create_batch_endpoint(
 ):
     batch_counter_redis = mock.MagicMock()
     mappings_redis = mock.MagicMock()
-    mock_redis.side_effect = [batch_counter_redis, mappings_redis]
+    mock_redis.side_effect = [mappings_redis, batch_counter_redis]
 
     admin_client = mock.MagicMock()
     mock_kafka_admin.return_value = admin_client

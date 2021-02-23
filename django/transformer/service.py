@@ -7,10 +7,10 @@ from common.analyzer import Analyzer
 from common.errors import OperationOutcome
 from common.kafka.consumer import Consumer
 from common.kafka.producer import Producer
-from common.service.errors import BatchCancelled
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
+from confluent_kafka import KafkaError, KafkaException
 from transformer.conf import conf
 from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
@@ -81,8 +81,19 @@ class TransformHandler(Handler):
                     "resource_id": resource_id,
                 },
             )
-        except BatchCancelled as err:
-            logger.warning({"message": str(err), "resource_id": resource_id, "batch_id": batch_id})
+        except KafkaException as err:
+            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                logger.warning(
+                    {
+                        "message": "The current batch has been cancelled",
+                        "resource_id": resource_id,
+                        "batch_id": batch_id,
+                    }
+                )
+            else:
+                logger.exception(err)
+        except ValueError as err:
+            logger.exception(err)
 
 
 class TransformerService(Service):

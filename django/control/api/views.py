@@ -18,11 +18,13 @@ from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.producer import Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
+from confluent_kafka import KafkaException
 from confluent_kafka.admin import AdminClient, NewTopic
 from control.api.serializers import CreateBatchSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from loader.load.fhirstore import get_fhirstore
 from pydantic import ValidationError
+from topicleaner.service import TopicleanerHandler
 from transformer.transform.transformer import Transformer
 
 logger = logging.getLogger(__name__)
@@ -65,6 +67,15 @@ class BatchEndpoint(viewsets.ViewSet):
         batch_id = str(uuid.uuid4())
         batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
+        # Fetch mapping
+        mappings_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+        )
+
+        for resource_id in resource_ids:
+            resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
+            mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
+
         # Add batch info to redis
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST,
@@ -83,15 +94,6 @@ class BatchEndpoint(viewsets.ViewSet):
         ]
         admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
         admin_client.create_topics(new_topics)
-
-        # Fetch mapping
-        mappings_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
-        )
-
-        for resource_id in resource_ids:
-            resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
-            mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
 
         # Delete documents from previous batch
         # TODO: make this operation asynchronous
@@ -117,7 +119,16 @@ class BatchEndpoint(viewsets.ViewSet):
         producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
         for resource_id in resource_ids:
             event = {"batch_id": batch_id, "resource_id": resource_id}
-            producer.produce_event(topic=f"batch.{batch_id}", event=event)
+            try:
+                producer.produce_event(topic=f"batch.{batch_id}", event=event)
+            except (KafkaException, ValueError) as err:
+                logger.exception(err)
+                # Clean the batch
+                TopicleanerHandler().delete_batch(batch_id)
+                return Response(
+                    {"id": batch_id, "error": "error while producing extract events"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
