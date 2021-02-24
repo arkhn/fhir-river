@@ -1,7 +1,7 @@
 import { api as generatedApi, Source } from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
-  addEntityTypes: ["Sources", "Resources", "Attributes"],
+  addEntityTypes: ["Sources"],
   endpoints: {
     listSources: {
       provides: (response) => [
@@ -23,51 +23,6 @@ export const api = generatedApi.enhanceEndpoints({
     },
     destroySource: {
       invalidates: (_, { id }) => [{ type: "Sources", id }],
-    },
-    listResources: {
-      provides: (response) => [
-        ...response.map(({ id }) => ({ type: "Resources" as "Resources", id })),
-        { type: "Resources", id: "LIST" },
-      ],
-    },
-    createResource: {
-      invalidates: [{ type: "Resources", id: "LIST" }],
-    },
-    retrieveResource: {
-      provides: (_, { id }) => [{ type: "Resources", id }],
-    },
-    updateResource: {
-      invalidates: (_, { id }) => [{ type: "Resources", id }],
-    },
-    partialUpdateResource: {
-      invalidates: (_, { id }) => [{ type: "Resources", id }],
-    },
-    destroyResource: {
-      invalidates: (_, { id }) => [{ type: "Resources", id }],
-    },
-    listAttributes: {
-      provides: (response) => [
-        ...response.map(({ id }) => ({
-          type: "Attributes" as "Attributes",
-          id,
-        })),
-        { type: "Attributes", id: "LIST" },
-      ],
-    },
-    createAttribute: {
-      invalidates: [{ type: "Attributes", id: "LIST" }],
-    },
-    retrieveAttribute: {
-      provides: (_, { id }) => [{ type: "Attributes", id }],
-    },
-    updateAttribute: {
-      invalidates: (_, { id }) => [{ type: "Attributes", id }],
-    },
-    partialUpdateAttribute: {
-      invalidates: (_, { id }) => [{ type: "Attributes", id }],
-    },
-    destroyAttribute: {
-      invalidates: (_, { id }) => [{ type: "Attributes", id }],
     },
   },
 });
