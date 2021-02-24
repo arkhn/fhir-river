@@ -3,7 +3,6 @@ import React from "react";
 import { CircularProgress, Grid, makeStyles } from "@material-ui/core";
 
 import { useListSourcesQuery } from "services/api/api";
-import { Source } from "services/api/generated/api.generated";
 
 import SourceCard from "./SourceCard";
 
@@ -14,11 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type SourceGridProps = {
-  editSource: (source: Source) => void;
-};
-
-const SourceGrid = ({ editSource }: SourceGridProps) => {
+const SourceGrid = () => {
   const classes = useStyles();
   const { isLoading, data: sources } = useListSourcesQuery({});
 
@@ -29,7 +24,7 @@ const SourceGrid = ({ editSource }: SourceGridProps) => {
       ) : (
         sources?.map((source) => (
           <Grid item key={source.id}>
-            <SourceCard source={source} editSource={editSource} />
+            <SourceCard source={source} />
           </Grid>
         ))
       )}

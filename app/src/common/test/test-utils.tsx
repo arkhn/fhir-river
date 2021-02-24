@@ -5,7 +5,7 @@ import { Provider } from "react-redux";
 
 import { store } from "app/store";
 
-import "services/internationalization/i18n";
+import "locales/i18n";
 
 const AllTheProviders: FC = ({ children }) => {
   return <Provider store={store}>{children}</Provider>;

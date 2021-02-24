@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cleanup, fireEvent, render, screen } from "app/test/test-utils";
+import { cleanup, fireEvent, render, screen } from "common/test/test-utils";
 import { Source } from "services/api/generated/api.generated";
 
 import SourceCard from "./SourceCard";

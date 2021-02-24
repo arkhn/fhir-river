@@ -28,7 +28,7 @@ export const api = generatedApi.enhanceEndpoints({
 });
 
 const useListSourceResources = (source: Source) => {
-  const response = api.useListResourcesQuery(
+  return api.useListResourcesQuery(
     {},
     {
       selectFromResult: ({ data, ...props }) => ({
@@ -37,13 +37,12 @@ const useListSourceResources = (source: Source) => {
       }),
     }
   );
-  return response;
 };
 
 const useListSourceAttributes = (source: Source) => {
   const { data: resources } = useListSourceResources(source);
   const resourceIds = resources?.map(({ id }) => id);
-  const response = api.useListAttributesQuery(
+  return api.useListAttributesQuery(
     {},
     {
       selectFromResult: ({ data, ...props }) => ({
@@ -54,7 +53,6 @@ const useListSourceAttributes = (source: Source) => {
       }),
     }
   );
-  return response;
 };
 
 export const {

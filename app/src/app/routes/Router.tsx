@@ -3,9 +3,9 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import AppBar from "app/AppBar/AppBar";
-import PageNotFound from "app/PageNotFound/PageNotFound";
-import Sources from "app/Sources/Sources";
+import AppBar from "./AppBar";
+import PageNotFound from "./PageNotFound";
+import Sources from "./Sources";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Navigator = () => {
+const Router = () => {
   const classes = useStyles();
   return (
     <BrowserRouter>
@@ -32,4 +32,4 @@ const Navigator = () => {
   );
 };
 
-export default Navigator;
+export default Router;

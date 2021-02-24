@@ -5,6 +5,7 @@ import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
+  Drawer,
   makeStyles,
   Typography,
 } from "@material-ui/core";
@@ -15,15 +16,12 @@ import {
   useCreateSourceMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
-import { Source } from "services/api/generated/api.generated";
+
+import { useAppDispatch, useAppSelector } from "../../app/store";
+import { selectSourceToEdit, editSource } from "./sourceSlice";
 
 type SourceFormData = {
   name: string;
-};
-
-type SourceFormProps = {
-  source?: Source;
-  submitSuccess?: (source: Source) => void;
 };
 
 const inputs: (t: TFunction) => FormInputProperty<SourceFormData>[] = (t) => [
@@ -53,9 +51,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
+const SourceForm = () => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+
+  const source = useAppSelector(selectSourceToEdit);
+
+  const openDrawer = !!source;
+  const handleCloseDrawer = () => dispatch(editSource(null));
 
   const [
     createSource,
@@ -69,56 +73,54 @@ const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
   const handleSubmit = (data: SourceFormData) => {
-    if (source && source.id) {
+    if (source?.id) {
       updateSource({ id: source.id, source: data })
         .unwrap()
-        .then(() => {
-          submitSuccess && submitSuccess(data);
-        })
+        .then(() => handleCloseDrawer())
         // Display error in snackbar notification (?)
         .catch();
     } else {
       createSource({ source: data })
         .unwrap()
-        .then(() => {
-          submitSuccess && submitSuccess(data);
-        })
+        .then(() => handleCloseDrawer())
         // Display error in snackbar notification (?)
         .catch();
     }
   };
 
   return (
-    <div className={classes.formContainer}>
-      <Form<SourceFormData>
-        properties={inputs(t)}
-        submit={handleSubmit}
-        formStyle={{ display: "block" }}
-        defaultValues={{ name: source?.name ?? "" }}
-        formHeader={
-          <Typography className={classes.title} variant="h5">
-            {source ? t("renameSource") : t("newSource")}
-          </Typography>
-        }
-        formFooter={
-          <Button
-            className={classes.button}
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth={false}
-          >
-            {isLoading ? (
-              <CircularProgress color="inherit" size={23} />
-            ) : (
-              <Typography>
-                {source ? t("renameSource") : t("createSource")}
-              </Typography>
-            )}
-          </Button>
-        }
-      />
-    </div>
+    <Drawer open={openDrawer} onClose={handleCloseDrawer} anchor="right">
+      <div className={classes.formContainer}>
+        <Form<SourceFormData>
+          properties={inputs(t)}
+          submit={handleSubmit}
+          formStyle={{ display: "block" }}
+          defaultValues={{ name: source?.name ?? "" }}
+          formHeader={
+            <Typography className={classes.title} variant="h5">
+              {source?.id ? t("renameSource") : t("newSource")}
+            </Typography>
+          }
+          formFooter={
+            <Button
+              className={classes.button}
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth={false}
+            >
+              {isLoading ? (
+                <CircularProgress color="inherit" size={23} />
+              ) : (
+                <Typography>
+                  {source ? t("renameSource") : t("createSource")}
+                </Typography>
+              )}
+            </Button>
+          }
+        />
+      </div>
+    </Drawer>
   );
 };
 
