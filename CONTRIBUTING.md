@@ -116,3 +116,4 @@ docker-compose up river-api
 # at http://localhost:8000/admin/
 # username: admin
 # password: admin
+```
