@@ -1,12 +1,13 @@
 import React from "react";
-import AppBarArkhnUI from "@arkhn/ui/lib/NavBar/NavBar";
-import { Link } from "react-router-dom";
 
-import { ReactComponent as Logo } from "assets/icons/arkhn-logo.svg";
+import AppBarArkhnUI from "@arkhn/ui/lib/NavBar/NavBar";
 import { Button, Divider, makeStyles, Typography } from "@material-ui/core";
-import { useAppSelector } from "app/store";
 import { ExitToApp } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { useAppSelector } from "app/store";
+import { ReactComponent as Logo } from "assets/icons/arkhn-logo.svg";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

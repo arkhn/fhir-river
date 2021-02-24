@@ -1,9 +1,11 @@
 import React from "react";
+
 import ReactDOM from "react-dom";
 import "./index.css";
+import { Provider } from "react-redux";
+
 import App from "./app/App";
 import { store } from "./app/store";
-import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 
 import "./services/internationalization/i18n";
