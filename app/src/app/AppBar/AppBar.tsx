@@ -81,7 +81,7 @@ const AppBar = (): JSX.Element => {
               />
               <Button className={classes.logoutButton}>
                 <ExitToApp className={classes.logoutIcon} />
-                <Typography color="textSecondary">{t("logOut")}</Typography>
+                <Typography color="textSecondary">{t("logout")}</Typography>
               </Button>
             </>
           )}
