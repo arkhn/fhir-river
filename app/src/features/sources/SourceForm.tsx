@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import {
-  Box,
   Button,
   CircularProgress,
   makeStyles,
@@ -90,7 +89,7 @@ const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
   };
 
   return (
-    <Box className={classes.formContainer}>
+    <div className={classes.formContainer}>
       <Form<SourceFormData>
         properties={inputs(t)}
         submit={handleSubmit}
@@ -119,7 +118,7 @@ const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
           </Button>
         }
       />
-    </Box>
+    </div>
   );
 };
 
