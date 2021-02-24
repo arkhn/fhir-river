@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 
+from django_filters import rest_framework as django_filters
 from pyrog import models
-from pyrog.api import serializers
+from pyrog.api import filters, serializers
 
 
 class SourceViewSet(viewsets.ModelViewSet):
@@ -12,6 +13,8 @@ class SourceViewSet(viewsets.ModelViewSet):
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = models.Resource.objects.all()
     serializer_class = serializers.ResourceSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = filters.ResourceFilterSet
 
 
 class CredentialViewSet(viewsets.ModelViewSet):
