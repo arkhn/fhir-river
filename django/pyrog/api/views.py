@@ -11,7 +11,7 @@ class SourceViewSet(viewsets.ModelViewSet):
     queryset = models.Source.objects.all()
 
     def get_serializer_class(self):
-        if self.request.query_params.get("full", False):
+        if self.request is not None and self.request.query_params.get("full", False):
             return SourceSerializer
         return resources_serializers.SourceSerializer
 
