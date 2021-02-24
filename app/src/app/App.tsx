@@ -30,7 +30,7 @@ const App = () => {
       createMuiTheme({
         palette: {
           text: {
-            secondary: "#C5C5C5",
+            secondary: "#a0a0a0",
           },
           type: prefersDarkMode ? "dark" : "light",
           primary: {

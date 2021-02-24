@@ -4,11 +4,13 @@
   "delete": "Delete",
   "mappingCount": "{{count}} mapping",
   "mappingCount_plural": "{{count}} mappings",
-  "attributesCount": "{{count}} atribute",
-  "attributesCount_plural": "{{count}} atributes",
+  "attributesCount": "{{count}} attribute",
+  "attributesCount_plural": "{{count}} attributes",
   "newSource": "New source",
   "createSource": "Create source",
   "sourceName": "Source name",
   "pageNotFound": "Woops... Seems like this page doesn't exist.",
-  "logout": "Log out"
+  "logout": "Log out",
+  "editSource": "Edit source",
+  "renameSource": "Rename source"
 }

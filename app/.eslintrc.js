@@ -28,6 +28,7 @@ module.exports = {
     "eslint-plugin-react-hooks",
   ],
   rules: {
+    "react/prop-types": [2, { ignore: ["children"] }],
     "import/order": [
       "error",
       {
