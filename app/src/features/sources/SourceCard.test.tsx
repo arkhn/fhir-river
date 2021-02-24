@@ -35,11 +35,11 @@ describe("SourceCard tests", () => {
   });
 
   it("should call edit source callback", () => {
-    const _editSource = jest.fn();
-    render(<SourceCard source={source} editSource={_editSource} />);
+    const editSource = jest.fn();
+    render(<SourceCard source={source} editSource={editSource} />);
     fireEvent.click(screen.getByTestId("more-button"));
     fireEvent.click(screen.getByText("Rename"));
 
-    expect(_editSource).toHaveBeenCalledTimes(1);
+    expect(editSource).toHaveBeenCalledTimes(1);
   });
 });

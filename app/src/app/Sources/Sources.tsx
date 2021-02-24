@@ -29,17 +29,17 @@ const Sources = (): JSX.Element => {
     undefined
   );
 
-  const _editSource = (source: Source) => {
+  const editSource = (source: Source) => {
     setSourceToEdit(source);
-    _toggleDrawer();
+    handleToggleDrawer();
   };
 
-  const _onClickCreateSource = () => {
+  const onClickCreateSource = () => {
     setSourceToEdit(undefined);
-    _toggleDrawer();
+    handleToggleDrawer();
   };
 
-  const _toggleDrawer = () => {
+  const handleToggleDrawer = () => {
     setOpenDrawer(!openDrawer);
   };
 
@@ -51,15 +51,15 @@ const Sources = (): JSX.Element => {
             className={classes.button}
             color="primary"
             variant="contained"
-            onClick={_onClickCreateSource}
+            onClick={onClickCreateSource}
           >
             <Typography>New Source</Typography>
           </Button>
         </Grid>
       </Grid>
-      <SourceGrid editSource={_editSource} />
-      <Drawer open={openDrawer} onClose={_toggleDrawer} anchor="right">
-        <SourceForm submit={_toggleDrawer} source={sourceToEdit} />
+      <SourceGrid editSource={editSource} />
+      <Drawer open={openDrawer} onClose={handleToggleDrawer} anchor="right">
+        <SourceForm submitSuccess={handleToggleDrawer} source={sourceToEdit} />
       </Drawer>
     </Container>
   );

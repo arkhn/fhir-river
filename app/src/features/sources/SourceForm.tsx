@@ -24,7 +24,7 @@ type SourceFormData = {
 
 type SourceFormProps = {
   source?: Source;
-  submit?: (source: Source) => void;
+  submitSuccess?: (source: Source) => void;
 };
 
 const inputs: (t: TFunction) => FormInputProperty<SourceFormData>[] = (t) => [
@@ -54,21 +54,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceForm = ({ source, submit }: SourceFormProps) => {
+const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const [createSource, createSourceData] = useCreateSourceMutation();
-  const [updateSource, updateSourceData] = useUpdateSourceMutation();
+  const [
+    createSource,
+    { isLoading: isCreateSourceLoading },
+  ] = useCreateSourceMutation();
+  const [
+    updateSource,
+    { isLoading: isUpdateSourceLoading },
+  ] = useUpdateSourceMutation();
 
-  const isLoading = createSourceData.isLoading || updateSourceData.isLoading;
+  const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const _submit = (data: SourceFormData) => {
+  const handleSubmit = (data: SourceFormData) => {
     if (source && source.id) {
       updateSource({ id: source.id, source: data })
         .unwrap()
         .then(() => {
-          submit && submit(data);
+          submitSuccess && submitSuccess(data);
         })
         // Display error in snackbar notification (?)
         .catch();
@@ -76,7 +82,7 @@ const SourceForm = ({ source, submit }: SourceFormProps) => {
       createSource({ source: data })
         .unwrap()
         .then(() => {
-          submit && submit(data);
+          submitSuccess && submitSuccess(data);
         })
         // Display error in snackbar notification (?)
         .catch();
@@ -87,7 +93,7 @@ const SourceForm = ({ source, submit }: SourceFormProps) => {
     <Box className={classes.formContainer}>
       <Form<SourceFormData>
         properties={inputs(t)}
-        submit={_submit}
+        submit={handleSubmit}
         formStyle={{ display: "block" }}
         defaultValues={{ name: source?.name ?? "" }}
         formHeader={
