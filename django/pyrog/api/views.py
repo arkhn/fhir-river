@@ -25,6 +25,8 @@ class CredentialViewSet(viewsets.ModelViewSet):
 class AttributeViewSet(viewsets.ModelViewSet):
     queryset = models.Attribute.objects.all()
     serializer_class = serializers.AttributeSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = filters.AttributeFilterSet
 
 
 class InputGroupViewSet(viewsets.ModelViewSet):
