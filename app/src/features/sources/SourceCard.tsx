@@ -66,10 +66,6 @@ const useStyles = makeStyles((theme) => ({
 
 type SourceCardProps = {
   source: Source;
-  mappingCount?: number;
-  attributesCount?: number;
-  onClick?: (id?: string) => void;
-  editSource?: (source: Source) => void;
 };
 
 const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
