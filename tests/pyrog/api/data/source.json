@@ -5,7 +5,7 @@
         {
             "label": "2-hop join",
             "primary_key_table": "DMR_Memo_Nomenclature",
-            "primary_key_column": "",
+            "primary_key_column": "foo",
             "definition_id": "Observation",
             "logical_reference": "59fc0d9d-9009-45ae-bda5-f441e84a6a06",
             "primary_key_owner": "135f16e0-ccaf-4c42-b986-a7c25851192a",
@@ -634,8 +634,8 @@
                     },
                     {
                         "id": "ckiye97pa07069ft80fuo961c",
-                        "table": "",
-                        "column": "",
+                        "table": "foo",
+                        "column": "foo",
                         "joins": []
                     },
                     {
