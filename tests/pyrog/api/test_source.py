@@ -45,26 +45,15 @@ def test_create_full_source(api_client, exported_source):
     assert Join.objects.count() == 7
 
 
-def test_retrieve_full_source(api_client, source, resource, attribute, input_group, input, column, condition):
+def test_retrieve_full_source(
+    snapshot, api_client, source, resource, attribute, input_group, input, column, condition
+):
     url = reverse("sources-detail", kwargs={"pk": source.id})
 
     response = api_client.get(url, {"full": True})
 
     assert response.status_code == 200
-    assert "resources" in response.data
-    assert "credential" in response.data
-    assert "owners" in response.data["credential"]
-    assert "id" in response.data["credential"]["owners"][0]
-    assert "columns" in response.data["credential"]["owners"][0]
-    assert "joins" in response.data["credential"]["owners"][0]["columns"][0]
-    assert "id" in response.data["credential"]["owners"][0]["columns"][0]
-    assert "primary_key_owner" in response.data["resources"][0]
-    assert "filters" in response.data["resources"][0]
-    assert "attributes" in response.data["resources"][0]
-    assert "input_groups" in response.data["resources"][0]["attributes"][0]
-    assert "inputs" in response.data["resources"][0]["attributes"][0]["input_groups"][0]
-    assert "column" in response.data["resources"][0]["attributes"][0]["input_groups"][0]["inputs"][0]
-    assert "conditions" in response.data["resources"][0]["attributes"][0]["input_groups"][0]
+    assert response.json() == snapshot
 
 
 def test_list_sources(api_client, source_factory):
