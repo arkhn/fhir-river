@@ -1,10 +1,11 @@
 import React from "react";
 
 import { CircularProgress, Grid, makeStyles } from "@material-ui/core";
-import SourceCard from "./SourceCard";
 
 import { useListSourcesQuery } from "services/api/api";
 import { Source } from "services/api/generated/api.generated";
+
+import SourceCard from "./SourceCard";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {

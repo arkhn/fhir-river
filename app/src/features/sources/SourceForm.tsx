@@ -1,21 +1,21 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import Form from "@arkhn/ui/lib/Form/Form";
+import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
   makeStyles,
   Typography,
 } from "@material-ui/core";
-
-import { Source } from "services/api/generated/api.generated";
-import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import { TFunction } from "i18next";
+import { useTranslation } from "react-i18next";
+
 import {
   useCreateSourceMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
+import { Source } from "services/api/generated/api.generated";
 
 type SourceFormData = {
   name: string;

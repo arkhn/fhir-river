@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import { Source } from "services/api/generated/api.generated";
-import { useTranslation } from "react-i18next";
-import {
-  useDestroySourceMutation,
-  useListSourceAttributes,
-  useListSourceResources,
-} from "services/api/api";
-import clsx from "clsx";
 
-import CardContentItem from "common/CardContentItem/CardContentItem";
 import {
   Card,
   CardContent,
@@ -22,13 +13,22 @@ import {
   Menu,
   MenuItem,
 } from "@material-ui/core";
-
-import { ReactComponent as Mapping } from "assets/icons/mapping_icon.svg";
-import More from "@material-ui/icons/MoreHoriz";
-import ManagePermissions from "@material-ui/icons/Person";
 import Delete from "@material-ui/icons/Delete";
 import Edit from "@material-ui/icons/Edit";
 import Attribute from "@material-ui/icons/LocalOffer";
+import More from "@material-ui/icons/MoreHoriz";
+import ManagePermissions from "@material-ui/icons/Person";
+import clsx from "clsx";
+import { useTranslation } from "react-i18next";
+
+import { ReactComponent as Mapping } from "assets/icons/mapping_icon.svg";
+import CardContentItem from "common/CardContentItem/CardContentItem";
+import {
+  useDestroySourceMutation,
+  useListSourceAttributes,
+  useListSourceResources,
+} from "services/api/api";
+import { Source } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
