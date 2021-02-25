@@ -1,12 +1,15 @@
 import logging
 from collections import defaultdict
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Set
+
+from django.conf import settings
 
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
 from common.database_connection.db_connection import DBConnection
 from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
+from pymongo import MongoClient
 from sqlalchemy.orm import Query
 
 logger = logging.getLogger(__name__)
@@ -83,9 +86,27 @@ class Extractor:
 
         return query.yield_per(CHUNK_SIZE)
 
+    def check_existing_documents(self, resource_id, resource_type):
+        mongo_client = MongoClient(
+            host=settings.FHIRSTORE_HOST,
+            port=settings.FHIRSTORE_PORT,
+            username=settings.FHIRSTORE_USER,
+            password=settings.FHIRSTORE_PASSWORD,
+        )
+        existing_documents = mongo_client[settings.FHIRSTORE_DATABASE][resource_type].find(
+            {"meta.tag.code": resource_id}, projection={"_id": False, "identifier.value": True}
+        )
+        # FIXME: here we consider that the primary will be stored at identifier.0.value
+        # in the fhir document. This isn't always the case. Maybe the primary key value
+        # should be kept in a meta field.
+        existing_documents_keys = {doc["identifier"][0]["value"] for doc in existing_documents}
+        logger.info(f"There are {len(existing_documents_keys)} keys already present in mongo.")
+
+        return existing_documents_keys
+
     @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")
-    def split_dataframe(df: Query, analysis: Analysis):
+    def split_dataframe(df: Query, analysis: Analysis, existing_documents_keys: Set[str] = None):
         # Find primary key column
         logger.info(
             {
@@ -113,10 +134,15 @@ class Extractor:
                 ).inc()
                 yield acc
                 acc = defaultdict(list)
-            for key, value in zip(row.keys(), row):
-                acc[key].append(value)
 
             prev_pk_val = row[pk_ind]
+            # Avoid a trailing .0 if pk values are numbers
+            check_val = str(int(prev_pk_val) if prev_pk_val.is_integer() else prev_pk_val)
+            if existing_documents_keys and check_val in existing_documents_keys:
+                continue
+
+            for key, value in zip(row.keys(), row):
+                acc[key].append(value)
 
         if not acc:
             logger.warning(

@@ -1,4 +1,5 @@
 import logging
+from typing import Set
 
 from django.conf import settings
 
@@ -23,11 +24,12 @@ def broadcast_events(
     producer: Producer,
     counter_client: redis.Redis,
     batch_id=None,
+    existing_documents_keys: Set[str] = None,
 ):
     resource_type = analysis.definition_id
     resource_id = analysis.resource_id
     count = 0
-    list_records_from_db = Extractor.split_dataframe(dataframe, analysis)
+    list_records_from_db = Extractor.split_dataframe(dataframe, analysis, existing_documents_keys)
     for record in list_records_from_db:
         try:
             logger.debug(
@@ -80,13 +82,17 @@ class ExtractHandler(Handler):
         batch_id = event.data["batch_id"]
         resource_id = event.data["resource_id"]
         primary_key_values = event.data.get("primary_key_values", None)
+        resume_batch = event.data.get("resume_batch", False)
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
         db_connection = DBConnection(analysis.source_credentials)
         extractor = Extractor(db_connection)
+        existing_documents_keys = (
+            extractor.check_existing_documents(resource_id, analysis.definition["type"]) if resume_batch else None
+        )
         query = extractor.extract(analysis, primary_key_values)
 
-        broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
+        broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id, existing_documents_keys)
 
 
 class ExtractorService(Service):

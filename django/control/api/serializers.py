@@ -8,6 +8,7 @@ class ResourceSerializer(serializers.Serializer):
 
 class CreateBatchSerializer(serializers.Serializer):
     resources = serializers.ListField(child=ResourceSerializer())
+    resume_batch = serializers.BooleanField(default=False)
 
 
 class PreviewSerializer(serializers.Serializer):

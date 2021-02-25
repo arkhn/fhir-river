@@ -97,28 +97,31 @@ class BatchEndpoint(viewsets.ViewSet):
 
         # Delete documents from previous batch
         # TODO: make this operation asynchronous
-        for resource in data["resources"]:
-            resource_id = resource.get("resource_id")
-            resource_type = resource.get("resource_type")
-            logger.debug(
-                {
-                    "message": f"Deleting all documents of type {resource_type} for given resource",
-                    "resource_id": resource_id,
-                },
-            )
-
-            fhirstore = get_fhirstore()
-            try:
-                fhirstore.delete(resource_type, resource_id=resource_id)
-            except NotFoundError:
+        if not data["resume_batch"]:
+            for resource in data["resources"]:
+                resource_id = resource.get("resource_id")
+                resource_type = resource.get("resource_type")
                 logger.debug(
-                    {"message": f"No documents for resource {resource_id} were found", "resource_id": resource_id},
+                    {
+                        "message": f"Deleting all documents of type {resource_type} for given resource",
+                        "resource_id": resource_id,
+                    },
                 )
+
+                fhirstore = get_fhirstore()
+                try:
+                    fhirstore.delete(resource_type, resource_id=resource_id)
+                except NotFoundError:
+                    logger.debug(
+                        {"message": f"No documents for resource {resource_id} were found", "resource_id": resource_id},
+                    )
 
         # Send event to the extractor
         producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
         for resource_id in resource_ids:
             event = {"batch_id": batch_id, "resource_id": resource_id}
+            if data["resume_batch"]:
+                event["resume_batch"] = True
             try:
                 producer.produce_event(topic=f"batch.{batch_id}", event=event)
             except (KafkaException, ValueError) as err:
