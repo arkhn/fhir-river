@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Button, makeStyles, Typography } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "../../app/store";
 import { Source } from "../../services/api/generated/api.generated";
@@ -14,6 +15,7 @@ const useStyles = makeStyles(() => ({
 
 const SourceCreate = (): JSX.Element => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const handleClick = () => dispatch(editSource({ name: "" } as Source));
@@ -25,7 +27,7 @@ const SourceCreate = (): JSX.Element => {
       variant="contained"
       onClick={handleClick}
     >
-      <Typography>New Source</Typography>
+      <Typography>{t("newSource")}</Typography>
     </Button>
   );
 };

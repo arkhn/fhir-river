@@ -23,7 +23,7 @@ jobs:
       - name: Run ESLint
         run: yarn lint
         working-directory: app
-      - name: Run test
+      - name: Run tests
         run: yarn test
         working-directory: app
   build-and-publish:
