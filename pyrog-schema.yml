@@ -143,7 +143,13 @@ paths:
     get:
       operationId: listResources
       description: ''
-      parameters: []
+      parameters:
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -190,6 +196,12 @@ paths:
         description: A unique value identifying this resource.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -207,6 +219,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this resource.
+        schema:
+          type: string
+      - name: source
+        required: false
+        in: query
+        description: source
         schema:
           type: string
       requestBody:
@@ -239,6 +257,12 @@ paths:
         description: A unique value identifying this resource.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -267,6 +291,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this resource.
+        schema:
+          type: string
+      - name: source
+        required: false
+        in: query
+        description: source
         schema:
           type: string
       responses:
@@ -413,7 +443,13 @@ paths:
     get:
       operationId: listAttributes
       description: ''
-      parameters: []
+      parameters:
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -460,6 +496,12 @@ paths:
         description: A unique value identifying this attribute.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -477,6 +519,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this attribute.
+        schema:
+          type: string
+      - name: source
+        required: false
+        in: query
+        description: source
         schema:
           type: string
       requestBody:
@@ -509,6 +557,12 @@ paths:
         description: A unique value identifying this attribute.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -537,6 +591,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this attribute.
+        schema:
+          type: string
+      - name: source
+        required: false
+        in: query
+        description: source
         schema:
           type: string
       responses:
