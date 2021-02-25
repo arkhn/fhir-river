@@ -3,11 +3,14 @@ import React from "react";
 import { cleanup, fireEvent, render, screen } from "common/test/test-utils";
 import { Source } from "services/api/generated/api.generated";
 
-import SourceCard from "./SourceCard";
+import SourceCard from "../SourceCard";
 
 const source: Source = {
+  id: "source_1",
   name: "source",
 };
+
+jest.mock("services/api/api");
 
 beforeEach(cleanup);
 
@@ -15,16 +18,6 @@ describe("SourceCard tests", () => {
   it("should render basic source", () => {
     render(<SourceCard source={source} />);
     screen.getByText("source");
-  });
-
-  it("should render mappings count", () => {
-    render(<SourceCard source={source} mappingCount={0} />);
-    screen.getByText("0 mappings");
-  });
-
-  it("should render attributes count", () => {
-    render(<SourceCard source={source} attributesCount={0} />);
-    screen.getByText("0 attributes");
   });
 
   it("should open card menu", () => {
@@ -36,12 +29,13 @@ describe("SourceCard tests", () => {
     screen.getByText("Delete");
   });
 
-  it("should call edit source callback", () => {
-    const editSource = jest.fn();
-    render(<SourceCard source={source} editSource={editSource} />);
-    fireEvent.click(screen.getByTestId("more-button"));
-    fireEvent.click(screen.getByText("Rename"));
+  it("should render mappings count", () => {
+    render(<SourceCard source={source} />);
+    screen.getByText("2 mappings");
+  });
 
-    expect(editSource).toHaveBeenCalledTimes(1);
+  it("should render attributes count", () => {
+    render(<SourceCard source={source} />);
+    screen.getByText("2 attributes");
   });
 });

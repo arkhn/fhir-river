@@ -7,14 +7,14 @@ import { store } from "app/store";
 
 import "locales/i18n";
 
-const AllTheProviders: FC = ({ children }) => {
+const wrapper: FC = ({ children }) => {
   return <Provider store={store}>{children}</Provider>;
 };
 
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, "queries">
-) => render(ui, { wrapper: AllTheProviders, ...options });
+) => render(ui, { wrapper, ...options });
 
 export * from "@testing-library/react";
 

@@ -16,7 +16,7 @@ const SourceCreate = (): JSX.Element => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const handleClick = () => dispatch(editSource({} as Source));
+  const handleClick = () => dispatch(editSource({ name: "" } as Source));
 
   return (
     <Button

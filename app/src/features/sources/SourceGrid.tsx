@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceGrid = () => {
+const SourceGrid = (): JSX.Element => {
   const classes = useStyles();
   const { isLoading, data: sources } = useListSourcesQuery({});
 
