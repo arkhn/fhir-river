@@ -1,9 +1,10 @@
 from unittest import mock
 
+from pytest import mark, raises
+
 from fhirstore import ARKHN_CODE_SYSTEMS
 
 from common.analyzer.attribute import Attribute
-from pytest import mark, raises
 from transformer.transform import fhir
 
 
