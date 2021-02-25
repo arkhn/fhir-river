@@ -114,7 +114,6 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
               onClick={handleMenuClick}
               className={classes.actionButton}
               size="small"
-              data-testid="more-button"
             >
               <MoreIcon />
             </IconButton>
