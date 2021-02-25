@@ -168,7 +168,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
           <>
             {undefined !== mappingsCount && (
               <CardContentItem
-                label={t("mappingsCount", { count: mappingsCount })}
+                label={t("mappingCount", { count: mappingsCount })}
                 startAdornment={<MappingIcon className={classes.icon} />}
               />
             )}

@@ -2,7 +2,7 @@
   "managePermissions": "Manage permissions",
   "rename": "Rename",
   "delete": "Delete",
-  "mappingsCount": "{{count}} mapping",
+  "mappingCount": "{{count}} mapping",
   "mappingCount_plural": "{{count}} mappings",
   "attributesCount": "{{count}} attribute",
   "attributesCount_plural": "{{count}} attributes",
