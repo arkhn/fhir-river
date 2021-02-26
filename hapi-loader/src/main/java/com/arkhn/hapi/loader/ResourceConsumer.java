@@ -53,6 +53,7 @@ public class ResourceConsumer {
             // TODO: produce "load" events
 
             // // THE FOLLOWING CODE IS THE "BATCH UPDATE" VERSION
+            // // I CHOSE TO DISABLE THIS FOR NOW BECAUSE IT SEEMS TO BE LESS EFFICIENT
             // private List<IBaseResource> bufferedResources;
             // this.bufferedResources = Collections.synchronizedList(new ArrayList<>());
             // bufferedResources.add(r);
