@@ -1,4 +1,5 @@
 import pytest
+
 from common.analyzer.condition import CONDITION_FLAG, CONDITION_RELATION_TO_FUNCTION, UNARY_RELATIONS, Condition
 from common.analyzer.sql_column import SqlColumn
 
