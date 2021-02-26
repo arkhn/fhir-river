@@ -39,7 +39,7 @@ jobs:
         # - always tag with the branch same (replacing '/' with '-')
         # - when a tag follows semver (eg: v1.2.3), tag with 'latest' and '1.2.3'
         with:
-          images: arkhn/
+          images: arkhn/hapi-river
           tag-sha: true
           tag-semver: |
             {{version}}
