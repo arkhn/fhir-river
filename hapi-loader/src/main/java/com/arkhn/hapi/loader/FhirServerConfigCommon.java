@@ -11,6 +11,7 @@ import ca.uhn.fhir.jpa.subscription.channel.subscription.SubscriptionDeliveryHan
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.JavaMailEmailSender;
 import com.google.common.base.Strings;
+
 import org.hl7.fhir.dstu2.model.Subscription;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.env.YamlPropertySourceLoader;

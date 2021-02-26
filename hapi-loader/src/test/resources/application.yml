@@ -1,0 +1,44 @@
+test:
+  topic: load
+
+spring:
+  kafka:
+    consumer:
+      group-id: loader
+
+hapi:
+  loader:
+    concurrency: 1
+    kafka:
+      bootstrapAddress: localhost:9092
+      topic: load
+      groupId: loader
+
+  fhir:
+    fhir_version: R4
+    daoconfig_client_id_strategy: null
+    bulk_export_enabled: false
+    enforce_referential_integrity_on_delete: false
+    enforce_referential_integrity_on_write: false
+    allow_cascading_deletes: false
+    allow_external_references: false
+    allow_multiple_delete: false
+    allow_inline_match_url_references: true
+    tester:
+      home:
+        name: Local Tester
+        server_address: "http://localhost:8080/fhir"
+        refuse_to_fetch_third_party_urls: false
+        fhir_version: R4
+
+elasticsearch:
+  debug:
+    pretty_print_json_log: false
+    refresh_after_write: false
+  enabled: true
+  username: elastic
+  password: SomePassword
+  required_index_status: YELLOW
+  rest_url: "localhost:9200"
+  protocol: http
+  schema_management_strategy: CREATE

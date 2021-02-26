@@ -40,7 +40,6 @@ public class ResourceConsumer {
 
         @KafkaHandler
         public void listen(String message) {
-
             IParser parser = myFhirContext.newJsonParser();
             IBaseResource r = parser.parseResource(message);
 
@@ -48,6 +47,10 @@ public class ResourceConsumer {
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
 
             dao.update(r);
+
+            // TODO: error handling
+
+            // TODO: produce "load" events
 
             // // THE FOLLOWING CODE IS THE "BATCH UPDATE" VERSION
             // private List<IBaseResource> bufferedResources;
