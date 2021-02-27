@@ -58,7 +58,7 @@ const SourceForm = (): JSX.Element => {
 
   const source = useAppSelector(selectSourceToEdit);
 
-  const openDrawer = !!source;
+  const isDrawerOpen = !!source;
   const handleCloseDrawer = () => dispatch(editSource(null));
 
   const [
@@ -89,7 +89,7 @@ const SourceForm = (): JSX.Element => {
   };
 
   return (
-    <Drawer open={openDrawer} onClose={handleCloseDrawer} anchor="right">
+    <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
       <div className={classes.formContainer}>
         <Form<SourceFormData>
           properties={inputs(t)}
@@ -113,7 +113,7 @@ const SourceForm = (): JSX.Element => {
                 <CircularProgress color="inherit" size={23} />
               ) : (
                 <Typography>
-                  {source ? t("renameSource") : t("createSource")}
+                  {source?.id ? t("renameSource") : t("createSource")}
                 </Typography>
               )}
             </Button>

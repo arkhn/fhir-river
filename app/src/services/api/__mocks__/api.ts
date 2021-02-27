@@ -6,6 +6,17 @@ import {
 
 const api = jest.requireActual("../api");
 
+const sources: Source[] = [
+  {
+    id: "source_1",
+    name: "source_name_1",
+  },
+  {
+    id: "source_2",
+    name: "source_name_2",
+  },
+];
+
 const mappings: Resource[] = [
   {
     id: "mapping_1",
@@ -54,6 +65,28 @@ api.useListSourceAttributes = (_: Source) => {
     data: attributes,
     isLoading: false,
   };
+};
+
+api.useListSourcesQuery = ({}) => {
+  return {
+    data: sources,
+    isLoading: false,
+  };
+};
+
+api.deleteSourceMock = jest.fn();
+api.useDestroySourceMutation = () => {
+  return [api.deleteSourceMock];
+};
+
+api.createSourceMock = jest.fn();
+api.useCreateSourceMutation = () => {
+  return [api.createSourceMock, { isLoading: false }];
+};
+
+api.updateSourceMock = jest.fn();
+api.useUpdateSourceMutation = () => {
+  return [api.updateSourceMock, { isLoading: false }];
 };
 
 module.exports = api;

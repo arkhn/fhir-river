@@ -76,6 +76,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [deleteSource] = useDestroySourceMutation();
+
   const {
     data: mappings,
     isLoading: isMappingLoading,
