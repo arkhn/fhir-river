@@ -19,9 +19,7 @@ const Sources = (): JSX.Element => {
   return (
     <Container maxWidth="xl">
       <Grid className={classes.gridContainer} spacing={3} container>
-        <Grid item>
-          <SourceCreate />
-        </Grid>
+        <SourceCreate />
       </Grid>
       <SourceGrid />
       <SourceForm />
