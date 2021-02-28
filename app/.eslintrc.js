@@ -31,25 +31,12 @@ module.exports = {
     // TypeScript
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-    // v4 changes
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
-    "no-shadow": "off",
-    "@typescript-eslint/no-shadow": ["error"],
     // React
     "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
     "react/prop-types": [2, { ignore: ["children"] }],
     // import
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        js: "never",
-        jsx: "never",
-        ts: "never",
-        tsx: "never",
-      },
-    ],
     "import/order": [
       "error",
       {
