@@ -6,6 +6,7 @@ yarn generate:api
 
 ## Style guide
 This React-Redux project follows the overall [Redux style guide](https://redux.js.org/style-guide/style-guide) recommended patterns
+
 ### Structure Files as Feature Folders with Single-File Logic
 ```
     .
@@ -39,3 +40,6 @@ This React-Redux project follows the overall [Redux style guide](https://redux.j
   In this example, todosSlice.ts is a "duck"-style file that contains a call to
   RTK's createSlice() function, and exports the slice reducer and action creators. Those folders
   shouldn't be deeply nested.
+
+### Testing guiding principles
+[The more your tests resemble the way your software is used, the more confidence they can give you.](https://testing-library.com/docs/guiding-principles)
