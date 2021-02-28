@@ -20,7 +20,7 @@ const Router = (): JSX.Element => {
       <AppBar />
       <div className={classes.body}>
         <Switch>
-          <Route exact path="/">
+          <Route exact path={["/", "/sources"]}>
             <Sources />
           </Route>
           <Route>
