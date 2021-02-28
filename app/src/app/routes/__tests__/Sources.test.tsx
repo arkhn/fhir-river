@@ -3,8 +3,8 @@ import React from "react";
 import userEvent from "@testing-library/user-event";
 
 import { cleanup, render, screen } from "common/test/test-utils";
+import { Source } from "services/api/generated/api.generated";
 
-import { Source } from "../../../services/api/generated/api.generated";
 import Sources from "../Sources";
 
 jest.mock("services/api/api");
