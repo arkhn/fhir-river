@@ -79,12 +79,17 @@ api.useDestroySourceMutation = () => {
   return [api.deleteSourceMock];
 };
 
-api.createSourceMock = jest.fn();
+api.createSourceMock = jest.fn((source: Source) => ({
+  unwrap: jest.fn().mockResolvedValue(source),
+}));
+
 api.useCreateSourceMutation = () => {
   return [api.createSourceMock, { isLoading: false }];
 };
 
-api.updateSourceMock = jest.fn();
+api.updateSourceMock = jest.fn((source: Source) => ({
+  unwrap: jest.fn().mockResolvedValue(source),
+}));
 api.useUpdateSourceMutation = () => {
   return [api.updateSourceMock, { isLoading: false }];
 };

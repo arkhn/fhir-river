@@ -115,6 +115,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
               onClick={handleMenuClick}
               className={classes.actionButton}
               size="small"
+              aria-label={`${source.name} menu`}
             >
               <MoreIcon />
             </IconButton>

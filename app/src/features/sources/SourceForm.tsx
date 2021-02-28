@@ -1,15 +1,13 @@
 import React from "react";
 
-import Form from "@arkhn/ui/lib/Form/Form";
-import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
   Drawer,
   makeStyles,
+  TextField,
   Typography,
 } from "@material-ui/core";
-import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -20,31 +18,22 @@ import {
 import { useAppDispatch, useAppSelector } from "../../app/store";
 import { selectSourceToEdit, editSource } from "./sourceSlice";
 
-type SourceFormData = {
-  name: string;
-};
-
-const inputs: (t: TFunction) => FormInputProperty<SourceFormData>[] = (t) => [
-  {
-    type: "text",
-    name: "name",
-    label: t("sourceName"),
-    variant: "outlined",
-    validationRules: { required: true },
-  },
-];
-
 const useStyles = makeStyles((theme) => ({
   formContainer: {
-    marginBlock: theme.spacing(3),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "baseline",
     minWidth: 400,
   },
+  formField: {
+    margin: theme.spacing(1),
+  },
   title: {
-    marginLeft: theme.spacing(3),
+    margin: theme.spacing(1),
     fontWeight: "bold",
   },
   button: {
-    marginLeft: theme.spacing(3),
+    margin: theme.spacing(1),
     textTransform: "none",
     width: "auto",
     minWidth: 150,
@@ -57,7 +46,6 @@ const SourceForm = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const source = useAppSelector(selectSourceToEdit);
-
   const isDrawerOpen = !!source;
   const handleCloseDrawer = () => dispatch(editSource(null));
 
@@ -72,54 +60,67 @@ const SourceForm = (): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmit = (data: SourceFormData) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (source?.id) {
-      updateSource({ id: source.id, source: data })
+      updateSource({ id: source.id, source })
         .unwrap()
         .then(() => handleCloseDrawer())
-        // Display error in snackbar notification (?)
+        // TODO: display error in snackbar notification (?)
         .catch();
-    } else {
-      createSource({ source: data })
+    } else if (source) {
+      createSource({ source })
         .unwrap()
         .then(() => handleCloseDrawer())
-        // Display error in snackbar notification (?)
+        // TODO: display error in snackbar notification (?)
         .catch();
     }
   };
 
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(
+      editSource({
+        ...source,
+        name: e.target.value,
+      })
+    );
+  };
+
   return (
     <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
-      <div className={classes.formContainer}>
-        <Form<SourceFormData>
-          properties={inputs(t)}
-          submit={handleSubmit}
-          formStyle={{ display: "block" }}
-          defaultValues={{ name: source?.name ?? "" }}
-          formHeader={
-            <Typography className={classes.title} variant="h5">
-              {source?.id ? t("renameSource") : t("newSource")}
-            </Typography>
-          }
-          formFooter={
-            <Button
-              className={classes.button}
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth={false}
-            >
-              {isLoading ? (
-                <CircularProgress color="inherit" size={23} />
-              ) : (
-                <Typography>
-                  {source?.id ? t("renameSource") : t("createSource")}
-                </Typography>
-              )}
-            </Button>
-          }
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        autoComplete="off"
+        className={classes.formContainer}
+      >
+        <Typography className={classes.title} variant="h5">
+          {source?.id ? t("renameSource") : t("newSource")}
+        </Typography>
+        <TextField
+          id="standard-basic"
+          label="Name"
+          onChange={handleChangeName}
+          value={source?.name ?? ""}
+          variant="outlined"
+          className={classes.formField}
         />
-      </div>
+        <Button
+          className={classes.button}
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth={false}
+        >
+          {isLoading ? (
+            <CircularProgress color="inherit" size={23} />
+          ) : (
+            <Typography>
+              {source?.id ? t("renameSource") : t("createSource")}
+            </Typography>
+          )}
+        </Button>
+      </form>
     </Drawer>
   );
 };

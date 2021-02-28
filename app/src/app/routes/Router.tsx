@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Router = () => {
+const Router = (): JSX.Element => {
   const classes = useStyles();
   return (
     <BrowserRouter>

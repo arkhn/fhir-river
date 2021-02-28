@@ -15,7 +15,10 @@ type CardContentItemProps = {
   label?: React.ReactNode;
 };
 
-const CardContentItem = ({ label, startAdornment }: CardContentItemProps) => {
+const CardContentItem = ({
+  label,
+  startAdornment,
+}: CardContentItemProps): JSX.Element => {
   const classes = useStyles();
   return (
     <div className={classes.sourceDetail}>

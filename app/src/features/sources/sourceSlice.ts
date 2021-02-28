@@ -18,6 +18,7 @@ const sourceSlice = createSlice({
   },
 });
 
-export const selectSourceToEdit = (state: RootState) => state.source;
+export const selectSourceToEdit = (state: RootState): Source | null =>
+  state.source;
 
 export default sourceSlice.reducer;
