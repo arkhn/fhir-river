@@ -31,10 +31,7 @@ describe("Sources page", () => {
     render(<Sources />);
 
     userEvent.click(screen.getByRole("button", { name: /new source/i }));
-    userEvent.type(
-      screen.getByRole("textbox", { name: /name/i }),
-      "new_source_name"
-    );
+    userEvent.type(screen.getByRole("textbox"), "new_source_name");
     userEvent.click(screen.getByRole("button", { name: /create source/i }));
 
     const source: Source = { name: "new_source_name" };
@@ -48,7 +45,7 @@ describe("Sources page", () => {
       screen.getByRole("button", { name: /source_name_1 menu/i })
     );
     userEvent.click(screen.getByRole("menuitem", { name: /rename/i }));
-    userEvent.clear(screen.getByRole("textbox", { name: /name/i }));
+    userEvent.clear(screen.getByRole("textbox"));
     userEvent.type(
       screen.getByRole("textbox", { name: /name/i }),
       "new_source_name"
