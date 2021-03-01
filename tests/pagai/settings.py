@@ -5,7 +5,7 @@ from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, PO
 DATABASES = {
     MSSQL: {
         "host": getenv("TEST_MSSQL_HOST"),
-        "port": int(getenv("TEST_MSSQL_PORT")),
+        "port": int(getenv("TEST_MSSQL_PORT", 1433)),
         "database": getenv("TEST_MSSQL_DB"),
         "login": getenv("TEST_MSSQL_LOGIN"),
         "password": getenv("TEST_MSSQL_PASSWORD"),

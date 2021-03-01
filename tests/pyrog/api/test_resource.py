@@ -60,6 +60,20 @@ def test_list_resources(api_client, resource_factory):
     assert len(response.data) == 3
 
 
+def test_filter_resources_by_source(api_client, source_factory, resource_factory):
+    url = reverse("resources-list")
+    first_source, second_source = source_factory.create_batch(2)
+    first_source_resources = resource_factory.create_batch(2, source=first_source)
+    resource_factory.create_batch(2, source=second_source)
+
+    response = api_client.get(url, {"source": first_source.id})
+
+    assert response.status_code == 200
+    assert {resource_data["id"] for resource_data in response.json()} == {
+        resource.id for resource in first_source_resources
+    }
+
+
 @pytest.mark.parametrize("label, status_code", [(faker.word(), 200)])
 def test_update_resource(api_client, resource, label, status_code):
     url = reverse("resources-detail", kwargs={"pk": resource.id})

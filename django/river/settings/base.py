@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # 3rd parties
     "rest_framework",
     "corsheaders",
+    "django_filters",
     # 1st parties
     "core",
     "extractor",

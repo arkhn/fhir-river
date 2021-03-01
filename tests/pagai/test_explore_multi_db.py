@@ -2,8 +2,12 @@ from collections import Counter
 from datetime import datetime
 from unittest import TestCase
 
+import pytest
+
 from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES, DBConnection
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+
+pytestmark = pytest.mark.pagai
 
 ALL_OWNERS_FOR_DBTYPE = {
     POSTGRES: ["pg_temp_1", "pg_toast_temp_1", "pg_toast", "pg_catalog", "public", "information_schema"],
