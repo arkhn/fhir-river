@@ -3,7 +3,13 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ["plugin:react/recommended", "plugin:import/typescript"],
+  extends: [
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/typescript",
+    "prettier",
+  ],
+  plugins: ["react", "jsx-a11y", "import", "prettier", "@typescript-eslint"],
   settings: {
     "import/resolver": {
       node: {
@@ -19,16 +25,18 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: "module",
   },
-  plugins: [
-    "react",
-    "@typescript-eslint",
-    "eslint-plugin-import",
-    "eslint-plugin-jsx-a11y",
-    "eslint-plugin-react",
-    "eslint-plugin-react-hooks",
-  ],
   rules: {
+    // prettier
+    "prettier/prettier": ["error"],
+    // TypeScript
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    // React
+    "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
     "react/prop-types": [2, { ignore: ["children"] }],
+    // import
     "import/order": [
       "error",
       {
@@ -49,4 +57,12 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ["*.test.tsx"],
+      rules: {
+        "@typescript-eslint/no-var-requires": "off",
+      },
+    },
+  ],
 };

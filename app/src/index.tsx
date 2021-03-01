@@ -8,7 +8,7 @@ import App from "./app/App";
 import { store } from "./app/store";
 import * as serviceWorker from "./serviceWorker";
 
-import "./services/internationalization/i18n";
+import "./locales/i18n";
 
 ReactDOM.render(
   <React.StrictMode>
