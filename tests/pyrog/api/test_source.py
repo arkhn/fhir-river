@@ -3,8 +3,6 @@ from faker import Faker
 
 from django.urls import reverse
 
-from pyrog.models import Attribute, Column, Condition, Filter, Input, InputGroup, Join, Resource, Source
-
 faker = Faker()
 
 pytestmark = pytest.mark.django_db
@@ -28,21 +26,13 @@ def test_retrieve_source(api_client, source):
     assert response.status_code == 200
 
 
-def test_create_full_source(api_client, exported_source):
+@pytest.mark.export_data("valid/0003.json")
+def test_create_full_source(api_client, export_data):
     url = reverse("sources-list")
 
-    response = api_client.post(url + "?full=True", exported_source, format="json")
+    response = api_client.post(url + "?full=True", export_data, format="json")
 
     assert response.status_code == 201
-    assert Source.objects.count() == 1
-    assert Resource.objects.count() == 5
-    assert Attribute.objects.count() == 35
-    assert InputGroup.objects.count() == 15
-    assert Input.objects.count() == 16
-    assert Column.objects.count() == 27
-    assert Condition.objects.count() == 3
-    assert Filter.objects.count() == 1
-    assert Join.objects.count() == 7
 
 
 def test_retrieve_full_source(

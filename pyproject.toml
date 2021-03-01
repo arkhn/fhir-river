@@ -37,5 +37,6 @@ testpaths = "tests"
 python_paths = "django"
 markers = '''
     migration(app_label=..., migration_name=...): mark a test as requiring the given migration state
+    export_data(path): mark a test as requiring the given export data
     pagai: mark test that requires access to tests databases
 '''

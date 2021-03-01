@@ -1,0 +1,722 @@
+# Test - mimic source
+{
+    "name": "Test - mimic",
+    "version": "",
+    "resources": [
+        {
+            "label": "2-hop join",
+            "primary_key_table": "DMR_Memo_Nomenclature",
+            "primary_key_column": "foo",
+            "definition_id": "Observation",
+            "logical_reference": "59fc0d9d-9009-45ae-bda5-f441e84a6a06",
+            "primary_key_owner": "135f16e0-ccaf-4c42-b986-a7c25851192a",
+            "attributes": [
+                {
+                    "path": "category[0].coding[0].code",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckhemovne307061phek46ek2t"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "category[0].coding[0]",
+                    "slice_name": "",
+                    "definition_id": "Coding",
+                    "input_groups": []
+                },
+                {
+                    "path": "category[0]",
+                    "slice_name": "",
+                    "definition_id": "CodeableConcept",
+                    "input_groups": []
+                },
+                {
+                    "path": "category[0].coding[0].display",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": []
+                }
+            ],
+            "filters": []
+        },
+        {
+            "label": "2 joins same table",
+            "primary_key_table": "services",
+            "primary_key_column": "row_id",
+            "definition_id": "Encounter",
+            "logical_reference": "69d6d06f-eff3-48a6-918c-d89973dd4d15",
+            "primary_key_owner": "135f16e0-ccaf-4c42-b986-a7c25851192a",
+            "attributes": [
+                {
+                    "path": "type[0].coding[0].display",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "current",
+                                    "column": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "type[0].coding[0]",
+                    "slice_name": "",
+                    "definition_id": "Coding",
+                    "input_groups": []
+                },
+                {
+                    "path": "type[0]",
+                    "slice_name": "",
+                    "definition_id": "CodeableConcept",
+                    "input_groups": []
+                },
+                {
+                    "path": "type[0].coding[0].code",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckheu4c5o726961phnc8kc8ix"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "type[0].coding[1]",
+                    "slice_name": "",
+                    "definition_id": "Coding",
+                    "input_groups": []
+                },
+                {
+                    "path": "type[0].coding[1].display",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "previous",
+                                    "column": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "type[0].coding[1].code",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckhemytfu419161phhwmt6djh"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "status",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": []
+                },
+                {
+                    "path": "identifier[0].system",
+                    "slice_name": "",
+                    "definition_id": "uri",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "identifier[0]",
+                    "slice_name": "",
+                    "definition_id": "Identifier",
+                    "input_groups": []
+                }
+            ],
+            "filters": []
+        },
+        {
+            "label": "",
+            "primary_key_table": "services",
+            "primary_key_column": "row_id",
+            "definition_id": "HealthcareService",
+            "logical_reference": "cc06fee3-39e6-4884-8497-cacc22638acf",
+            "primary_key_owner": "135f16e0-ccaf-4c42-b986-a7c25851192a",
+            "attributes": [
+                {
+                    "path": "name",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckhaotzu6049961phihr6cuwc"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "comment",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckhaov4p9073661ph01phx2lk"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "providedBy.type",
+                    "slice_name": "",
+                    "definition_id": "uri",
+                    "input_groups": []
+                },
+                {
+                    "path": "providedBy",
+                    "slice_name": "",
+                    "definition_id": "Reference",
+                    "input_groups": []
+                }
+            ],
+            "filters": []
+        },
+        {
+            "label": "labevents_test",
+            "primary_key_table": "labevents",
+            "primary_key_column": "row_id",
+            "definition_id": "Observation",
+            "logical_reference": "3d74e5d7-f6f6-48f5-a433-ec0493b30442",
+            "primary_key_owner": "135f16e0-ccaf-4c42-b986-a7c25851192a",
+            "attributes": [
+                {
+                    "path": "category[0].coding[0].code",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": []
+                },
+                {
+                    "path": "category[0].coding[0]",
+                    "slice_name": "",
+                    "definition_id": "Coding",
+                    "input_groups": []
+                },
+                {
+                    "path": "category[0]",
+                    "slice_name": "",
+                    "definition_id": "CodeableConcept",
+                    "input_groups": []
+                },
+                {
+                    "path": "code.coding[0].code",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckh37e4i227875qpn62mu8ou6"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "code.coding[0]",
+                    "slice_name": "",
+                    "definition_id": "Coding",
+                    "input_groups": []
+                },
+                {
+                    "path": "code",
+                    "slice_name": "",
+                    "definition_id": "CodeableConcept",
+                    "input_groups": []
+                },
+                {
+                    "path": "status",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "final",
+                                    "column": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "valueQuantity.value",
+                    "slice_name": "",
+                    "definition_id": "decimal",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckh37fgb832585qpnxd9lvxxf"
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "action": "EXCLUDE",
+                                    "column": "ckh37fgxy33285qpn1e71henv",
+                                    "value": "IU/L",
+                                    "relation": "EQ"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "path": "valueQuantity",
+                    "slice_name": "",
+                    "definition_id": "Quantity",
+                    "input_groups": []
+                }
+            ],
+            "filters": []
+        },
+        {
+            "label": "",
+            "primary_key_table": "patients",
+            "primary_key_column": "row_id",
+            "definition_id": "Patient",
+            "logical_reference": "45ad00fd-af12-4cb2-bd24-3c301b9e6a37",
+            "primary_key_owner": "135f16e0-ccaf-4c42-b986-a7c25851192a",
+            "attributes": [
+                {
+                    "path": "gender",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "clean_codes",
+                            "inputs": [
+                                {
+                                    "script": "map_gender",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckg0nbpic033455qm71l1o4ni"
+                                },
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckiye97pa07069ft80fuo961c"
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "action": "INCLUDE",
+                                    "column": "ckiye9c3g07689ft8k617j7lx",
+                                    "value": "",
+                                    "relation": "EQ"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "path": "communication[0].language.coding[0].code",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckgi3r8kf566155p9752bsjip"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "communication[0].language.coding[0]",
+                    "slice_name": "",
+                    "definition_id": "Coding",
+                    "input_groups": []
+                },
+                {
+                    "path": "communication[0].language",
+                    "slice_name": "",
+                    "definition_id": "CodeableConcept",
+                    "input_groups": []
+                },
+                {
+                    "path": "communication[0]",
+                    "slice_name": "",
+                    "definition_id": "BackboneElement",
+                    "input_groups": []
+                },
+                {
+                    "path": "name[0].given[0]",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckhkkju542390760phdawvs4i8"
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "path": "name[0]",
+                    "slice_name": "",
+                    "definition_id": "HumanName",
+                    "input_groups": []
+                },
+                {
+                    "path": "name[0].given[1]",
+                    "slice_name": "",
+                    "definition_id": "string",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "inputs": [
+                                {
+                                    "script": "",
+                                    "concept_map_id": "",
+                                    "static_value": "",
+                                    "column": "ckhkkjzuz2401260phb1d7esvg"
+                                }
+                            ],
+                            "conditions": [
+                                {
+                                    "action": "EXCLUDE",
+                                    "column": "ckhkm6aqj2741460ph7459frqy",
+                                    "value": "",
+                                    "relation": "NOTNULL"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "filters": [
+                {
+                    "relation": "=",
+                    "value": "whatever",
+                    "sql_column": "ckg0nbpic033455qm71l1o4ni"
+                }
+            ]
+        }
+    ],
+    "credential": {
+        "host": "212.47.241.153",
+        "port": 1433,
+        "database": "EhpadRecette",
+        "model": "MSSQL",
+        "owners": [
+            {
+                "id": "135f16e0-ccaf-4c42-b986-a7c25851192a",
+                "name": "dbo",
+                "schema": "whatever",
+                "columns": [
+                    {
+                        "id": "ckh37e4i227875qpn62mu8ou6",
+                        "table": "ActionPrescripGRC",
+                        "column": "DateModification",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckheu4c5o726961phnc8kc8ix",
+                        "table": "hospit_services",
+                        "column": "description",
+                        "joins": [
+                            {
+                                "columns": [
+                                    "ckheu4d5v731161phvrw1x6na",
+                                    "ckheu4d5v731261phnjv2z4nb"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "ckhf01pfn729860phzgld6vz7",
+                        "table": "admissions",
+                        "column": "subject_id",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhf01oyr727760ph4nj4r8zv",
+                        "table": "chartevents",
+                        "column": "hadm_id",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhf01oyr727860phvkhnyeuf",
+                        "table": "admissions",
+                        "column": "hadm_id",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckg0nbpic033455qm71l1o4ni",
+                        "table": "patients",
+                        "column": "gender",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhaotzu6049961phihr6cuwc",
+                        "table": "hospit_services",
+                        "column": "careunit",
+                        "joins": [
+                            {
+                                "columns": [
+                                    "ckhaou19z056761phx79yeiid",
+                                    "ckhaou19z056861ph8ndrkj72"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "ckhaov4p9073661ph01phx2lk",
+                        "table": "hospit_services",
+                        "column": "careunit",
+                        "joins": [
+                            {
+                                "columns": [
+                                    "ckhaov68g080461phjqrvzte0",
+                                    "ckhaov68g080561ph79vhmm0t"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "ckhemovne307061phek46ek2t",
+                        "table": "patients",
+                        "column": "city",
+                        "joins": [
+                            {
+                                "columns": [
+                                    "ckhf01pfn729860phzgld6vz7",
+                                    "ckhf01pfn729960phwdltn9bf"
+                                ]
+                            },
+                            {
+                                "columns": [
+                                    "ckhf01oyr727760ph4nj4r8zv",
+                                    "ckhf01oyr727860phvkhnyeuf"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "ckgi3r8kf566155p9752bsjip",
+                        "table": "patients",
+                        "column": "weight",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhemytfu419161phhwmt6djh",
+                        "table": "hospit_services",
+                        "column": "description",
+                        "joins": [
+                            {
+                                "columns": [
+                                    "ckhemyuu0423661ph7wjpmks4",
+                                    "ckhemyuu0423761phgxco4cgy"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "ckh37fgb832585qpnxd9lvxxf",
+                        "table": "labevents",
+                        "column": "valueuom",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhkkju542390760phdawvs4i8",
+                        "table": "patients",
+                        "column": "last_name",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhkkjzuz2401260phb1d7esvg",
+                        "table": "patients",
+                        "column": "first_name",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckiye97pa07069ft80fuo961c",
+                        "table": "foo",
+                        "column": "foo",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhaou19z056761phx79yeiid",
+                        "table": "services",
+                        "column": "prev_service",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhaou19z056861ph8ndrkj72",
+                        "table": "hospit_services",
+                        "column": "careunit",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhemyuu0423661ph7wjpmks4",
+                        "table": "services",
+                        "column": "prev_service",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhemyuu0423761phgxco4cgy",
+                        "table": "hospit_services",
+                        "column": "careunit",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhaov68g080461phjqrvzte0",
+                        "table": "services",
+                        "column": "curr_service",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhaov68g080561ph79vhmm0t",
+                        "table": "hospit_services",
+                        "column": "careunit",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckheu4d5v731161phvrw1x6na",
+                        "table": "services",
+                        "column": "curr_service",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckheu4d5v731261phnjv2z4nb",
+                        "table": "hospit_services",
+                        "column": "careunit",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckhf01pfn729960phwdltn9bf",
+                        "table": "patients",
+                        "column": "subject_id",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckiye9c3g07689ft8k617j7lx",
+                        "table": "ANI_OB",
+                        "column": "IDTitan",
+                        "joins": [
+                            {
+                                "columns": []
+                            }
+                        ]
+                    },
+                    {
+                        "id": "ckhkm6aqj2741460ph7459frqy",
+                        "table": "patients",
+                        "column": "first_name",
+                        "joins": []
+                    },
+                    {
+                        "id": "ckh37fgxy33285qpn1e71henv",
+                        "table": "labevents",
+                        "column": "valueuom",
+                        "joins": []
+                    }
+                ]
+            }
+        ]
+    }
+}
