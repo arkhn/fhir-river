@@ -10,12 +10,12 @@ import {
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
+import { useAppDispatch, useAppSelector } from "app/store";
 import {
   useCreateSourceMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
 
-import { useAppDispatch, useAppSelector } from "../../app/store";
 import { selectSourceToEdit, editSource } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
