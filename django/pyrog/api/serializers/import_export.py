@@ -29,6 +29,13 @@ from pyrog.models import (
 
 
 class _ColumnField(serializers.PrimaryKeyRelatedField):
+    """PKRelatedField with default deserialization overriden.
+
+    The default deserialization looks for an object with given id (the ``data``) in DB.
+    But here the id refers to another object, that lives elsewhere in the submitted data
+    hierarchy (accessible from ``self.root.initial_data``).
+    """
+
     queryset = Column.objects.all()
 
     def to_internal_value(self, data):
@@ -42,6 +49,11 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
 
 
 class _OwnerField(serializers.PrimaryKeyRelatedField):
+    """PKRelatedField with default deserialization overriden.
+
+    Cf ``_ColumField``.
+    """
+
     queryset = Owner.objects.all()
 
     def to_internal_value(self, data):
