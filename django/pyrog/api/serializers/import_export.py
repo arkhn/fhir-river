@@ -249,12 +249,15 @@ class SourceSerializer(serializers.ModelSerializer):
                     for input_data in inputs_data:
                         column_data = input_data.pop("column")
 
-                        column = column_by_id[column_data] if column_data is not None else None
-                        Input.objects.create(
+                        input_ = Input.objects.create(
                             input_group=input_group,
-                            column=column,
                             **input_data,
                         )
+
+                        if column_data is not None:
+                            column = column_by_id[column_data]
+                            column.input = input_
+                            column.save(update_fields=["input"])
 
                     for condition_data in conditions_data:
                         column_data = condition_data.pop("column")
