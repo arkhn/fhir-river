@@ -33,6 +33,7 @@ hapi:
       bootstrapAddress: kafka:9093
       topic: load
       groupId: loader
+      replicationFactor: 1
   fhir:
     ### enable to set the Server URL
     #    server_address: http://hapi.fhir.org/baseR4

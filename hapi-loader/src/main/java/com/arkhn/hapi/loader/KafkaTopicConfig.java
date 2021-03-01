@@ -19,6 +19,9 @@ public class KafkaTopicConfig {
     @Value(value = "${hapi.loader.kafka.topic}")
     private String topicName;
 
+    @Value(value = "${hapi.loader.kafka.replicationFactor}")
+    private short replicationFactor;
+
     @Value(value = "${hapi.loader.concurrency}")
     private Integer partitions;
 
@@ -31,6 +34,6 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic topic() {
-        return new NewTopic(topicName, partitions, (short) 1);
+        return new NewTopic(topicName, partitions, replicationFactor);
     }
 }
