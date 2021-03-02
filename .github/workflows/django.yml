@@ -4,6 +4,7 @@ on:
   push:
     paths-ignore:
       - 'app/**'
+      - 'hapi-loader/**'
     branches:
       - "master"
     tags:
@@ -11,6 +12,7 @@ on:
   pull_request:
     paths-ignore:
       - 'app/**'
+      - 'hapi-loader/**'
 
 jobs:
   lint:
