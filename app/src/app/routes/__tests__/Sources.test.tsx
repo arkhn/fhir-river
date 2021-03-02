@@ -11,13 +11,6 @@ jest.mock("services/api/api");
 const api = require("services/api/api");
 
 describe("Sources page", () => {
-  beforeAll(() => {
-    // JSDom does not implement this and an error was being
-    // thrown from jest.
-    const { getComputedStyle } = window;
-    window.getComputedStyle = (elt) => getComputedStyle(elt);
-  });
-
   beforeEach(cleanup);
 
   it("should display the existing sources", () => {
