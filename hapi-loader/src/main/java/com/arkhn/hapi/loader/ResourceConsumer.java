@@ -13,6 +13,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
+import io.prometheus.client.Histogram;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,8 @@ public class ResourceConsumer {
     @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
     public static class ResourceListener {
 
+        private Logger logger = LoggerFactory.getLogger(ResourceListener.class);
+
         @Autowired
         DaoRegistry daoRegistry;
 
@@ -43,7 +47,9 @@ public class ResourceConsumer {
 
         @Autowired
         private KafkaProducer producer;
-        private Logger LOGGER = LoggerFactory.getLogger(KafkaProducer.class);
+
+        static final Histogram loadMetrics = Histogram.build().name("time_load").help("time to perform load")
+                .register();
 
         @KafkaHandler
         public void listen(String message) {
@@ -55,7 +61,7 @@ public class ResourceConsumer {
                 fhirObject = jsonObject.getString("fhir_object");
                 batchId = jsonObject.getString("batch_id");
             } catch (Exception e) {
-                LOGGER.info(String.format("Could not process message: %s", e.toString()));
+                logger.info(String.format("Could not process message: %s", e.toString()));
                 return;
             }
 
@@ -65,12 +71,15 @@ public class ResourceConsumer {
             @SuppressWarnings("unchecked")
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
 
-            dao.update(r);
+            Histogram.Timer loadTimer = loadMetrics.startTimer();
+            try {
+                dao.update(r);
+            } finally {
+                loadTimer.observeDuration();
+            }
 
             producer.sendMessage(batchId, String.format("load.%s", batchId));
             // TODO: error handling
-
-            // TODO: produce "load" events
 
             // // THE FOLLOWING CODE IS THE "BATCH UPDATE" VERSION
             // // I CHOSE TO DISABLE THIS FOR NOW BECAUSE IT SEEMS TO BE LESS EFFICIENT
