@@ -1,5 +1,6 @@
 package com.arkhn.hapi.loader;
 
+import org.codehaus.jettison.json.JSONObject;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +13,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
 public class ResourceConsumer {
@@ -29,7 +32,7 @@ public class ResourceConsumer {
         return new ResourceListener();
     }
 
-    @KafkaListener(id = "resource-loader", topics = "${hapi.loader.kafka.topic}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
+    @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
     public static class ResourceListener {
 
         @Autowired
@@ -38,16 +41,33 @@ public class ResourceConsumer {
         @Autowired
         FhirContext myFhirContext;
 
+        @Autowired
+        private KafkaProducer producer;
+        private Logger LOGGER = LoggerFactory.getLogger(KafkaProducer.class);
+
         @KafkaHandler
         public void listen(String message) {
+            String fhirObject;
+            String batchId;
+            try {
+                // TODO I think we could find a better way to do that. With classes? With kafka?
+                JSONObject jsonObject = new JSONObject(message);
+                fhirObject = jsonObject.getString("fhir_object");
+                batchId = jsonObject.getString("batch_id");
+            } catch (Exception e) {
+                LOGGER.info(String.format("Could not process message: %s", e.toString()));
+                return;
+            }
+
             IParser parser = myFhirContext.newJsonParser();
-            IBaseResource r = parser.parseResource(message);
+            IBaseResource r = parser.parseResource(fhirObject);
 
             @SuppressWarnings("unchecked")
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
 
             dao.update(r);
 
+            producer.sendMessage(batchId, String.format("load.%s", batchId));
             // TODO: error handling
 
             // TODO: produce "load" events
