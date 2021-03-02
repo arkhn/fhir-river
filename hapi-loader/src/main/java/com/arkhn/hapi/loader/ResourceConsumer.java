@@ -13,6 +13,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
+import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 
 import org.slf4j.Logger;
@@ -48,8 +49,12 @@ public class ResourceConsumer {
         @Autowired
         private KafkaProducer producer;
 
-        static final Histogram loadMetrics = Histogram.build().name("time_load").help("time to perform load")
+        static final Histogram loadMetrics = Histogram.build().name("time_load").help("Time to perform load.")
                 .register();
+        static final Counter failedInsertions = Counter.build().name("count_failed_insertions")
+                .help("Number of failed insertions.").register();
+        static final Counter successfulInsertions = Counter.build().name("count_successful_insertions")
+                .help("Number of successful insertions.").register();
 
         @KafkaHandler
         public void listen(String message) {
@@ -62,6 +67,7 @@ public class ResourceConsumer {
                 batchId = jsonObject.getString("batch_id");
             } catch (Exception e) {
                 logger.info(String.format("Could not process message: %s", e.toString()));
+                failedInsertions.inc();
                 return;
             }
 
@@ -73,7 +79,12 @@ public class ResourceConsumer {
 
             Histogram.Timer loadTimer = loadMetrics.startTimer();
             try {
+                // TODO how does the following method tells us that something wrong happened
                 dao.update(r);
+                successfulInsertions.inc();
+            } catch (Exception e) {
+                logger.info(String.format("Could not insert resource: %s", e.toString()));
+                failedInsertions.inc();
             } finally {
                 loadTimer.observeDuration();
             }
