@@ -70,7 +70,7 @@ const SourceForm = (): JSX.Element => {
 
   const handleSubmit = (data: Source) => {
     if (source?.id) {
-      updateSource({ id: source.id, source: data })
+      updateSource({ id: source.id, source: { ...source, ...data } })
         .unwrap()
         .then(() => handleCloseDrawer())
         // TODO: display error in snackbar notification (?)
@@ -92,6 +92,7 @@ const SourceForm = (): JSX.Element => {
           submit={handleSubmit}
           formStyle={{ display: "block" }}
           defaultValues={{ name: source?.name ?? "" }}
+          displaySubmitButton={false}
           formHeader={
             <Typography className={classes.title} variant="h5">
               {source?.id ? t("renameSource") : t("newSource")}

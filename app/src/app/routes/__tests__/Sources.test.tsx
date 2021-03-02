@@ -2,7 +2,7 @@ import React from "react";
 
 import userEvent from "@testing-library/user-event";
 
-import { cleanup, render, screen } from "common/test/test-utils";
+import { render, screen, waitFor } from "common/test/test-utils";
 import { Source } from "services/api/generated/api.generated";
 
 import Sources from "../Sources";
@@ -11,15 +11,6 @@ jest.mock("services/api/api");
 const api = require("services/api/api");
 
 describe("Sources page", () => {
-  beforeAll(() => {
-    // JSDom does not implement this and an error was being
-    // thrown from jest.
-    const { getComputedStyle } = window;
-    window.getComputedStyle = (elt) => getComputedStyle(elt);
-  });
-
-  beforeEach(cleanup);
-
   it("should display the existing sources", () => {
     render(<Sources />);
 
@@ -27,32 +18,43 @@ describe("Sources page", () => {
     screen.getByText("source_name_2");
   });
 
-  it("should call the api when creating a new source", () => {
+  it("should call the api when creating a new source", async () => {
     render(<Sources />);
 
     userEvent.click(screen.getByRole("button", { name: /new source/i }));
     userEvent.type(screen.getByRole("textbox"), "new_source_name");
-    userEvent.click(screen.getByRole("button", { name: /create source/i }));
+    userEvent.click(
+      screen.getByRole("button", {
+        name: /create source/i,
+      })
+    );
 
     const source: Source = { name: "new_source_name" };
-    expect(api.createSourceMock).toHaveBeenNthCalledWith(1, { source });
+    await waitFor(() => {
+      expect(api.createSourceMock).toHaveBeenNthCalledWith(1, { source });
+    });
   });
 
-  it("should call the api when renaming a source", () => {
+  it("should call the api when renaming a source", async () => {
     render(<Sources />);
 
     userEvent.click(
       screen.getByRole("button", { name: /source_name_1 menu/i })
     );
-    userEvent.click(screen.getByRole("menuitem", { name: /rename/i }));
+    const renameMenuItem = await screen.findByRole("menuitem", {
+      name: /rename/i,
+    });
+    userEvent.click(renameMenuItem);
     userEvent.clear(screen.getByRole("textbox"));
     userEvent.type(screen.getByRole("textbox"), "new_source_name");
     userEvent.click(screen.getByRole("button", { name: /rename source/i }));
 
     const source: Source = { id: "source_1", name: "new_source_name" };
-    expect(api.updateSourceMock).toHaveBeenNthCalledWith(1, {
-      id: source.id,
-      source,
+    await waitFor(() => {
+      expect(api.updateSourceMock).toHaveBeenNthCalledWith(1, {
+        id: source.id,
+        source,
+      });
     });
   });
 });

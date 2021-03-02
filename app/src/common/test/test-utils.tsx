@@ -8,6 +8,8 @@ import { store } from "app/store";
 import "locales/i18n";
 
 const wrapper: FC = ({ children }) => {
+  const { getComputedStyle } = window;
+  window.getComputedStyle = (elt) => getComputedStyle(elt);
   return <Provider store={store}>{children}</Provider>;
 };
 
