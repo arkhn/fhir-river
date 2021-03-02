@@ -2,7 +2,7 @@ import React from "react";
 
 import userEvent from "@testing-library/user-event";
 
-import { cleanup, render, screen } from "common/test/test-utils";
+import { render, screen } from "common/test/test-utils";
 import type { Source } from "services/api/generated/api.generated";
 
 import SourceCard from "../SourceCard";
@@ -16,15 +16,6 @@ jest.mock("services/api/api");
 const api = require("services/api/api");
 
 describe("SourceCard with source", () => {
-  beforeAll(() => {
-    // JSDom does not implement this and an error was being
-    // thrown from jest.
-    const { getComputedStyle } = window;
-    window.getComputedStyle = (elt) => getComputedStyle(elt);
-  });
-
-  beforeEach(cleanup);
-
   it("should display the source mappings count", () => {
     render(<SourceCard source={source} />);
 
