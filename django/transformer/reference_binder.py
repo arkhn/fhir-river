@@ -27,7 +27,12 @@ class ReferenceBinder:
             try:
                 self.bind_existing_reference(fhir_object, reference_path)
             except KeyError as e:
-                logger.warning(f"{reference_path} does not exist in resource {fhir_object['id']}: {e}")
+                logger.warning(
+                    {
+                        "message": f"{reference_path} does not exist in resource {fhir_object['id']}:" f"{e}",
+                        "resource_id": resource_id,
+                    }
+                )
 
         return fhir_object.to_dict()
 
@@ -38,10 +43,20 @@ class ReferenceBinder:
         def bind(ref):
             # extract the type and itentifier of the reference
             if not (reference_type := ref.get("type")):
-                logger.debug(f"reference at path {ref} has no type")
+                logger.debug(
+                    {
+                        "message": f"reference at path {ref} has no type",
+                        "resource_id": resource_id,
+                    }
+                )
                 return
             if not (identifier := ref.get("identifier")):
-                logger.debug(f"reference at path {ref} has no identifier")
+                logger.debug(
+                    {
+                        "message": f"reference at path {ref} has no identifier",
+                        "resource_id": resource_id,
+                    }
+                )
                 return
 
             # add the "literal reference"
@@ -56,13 +71,19 @@ class ReferenceBinder:
                 )
             except IncompleteIdentifierError as e:
                 logger.warning(
-                    f"incomplete identifier on reference of type "
-                    f"{reference_type} at path {ref} of resource {object_id}: {e}"
+                    {
+                        "message": f"incomplete identifier on reference of type "
+                        f"{reference_type} at path {ref} of resource {object_id}: {e}",
+                        "resource_id": resource_id,
+                    }
                 )
             except ValueError as e:
                 logger.warning(
-                    f"no valid uuid in identifier on reference of type "
-                    f"{reference_type} at path {ref} of resource {object_id}: {e}"
+                    {
+                        "message": f"no valid uuid in identifier on reference of type "
+                        f"{reference_type} at path {ref} of resource {object_id}: {e}",
+                        "resource_id": resource_id,
+                    }
                 )
 
         def rec_bind_existing_reference(fhir_object, reference_path: List[str], sub_path=""):

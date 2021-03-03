@@ -11,6 +11,7 @@ class Analysis:
         self.source_credentials: Dict = None
         self.resource_id: str = None
         self.definition_id: str = None
+        self.label: str = None
         self.definition: Dict = None
         self.attributes: List[Attribute] = []
         self.filters: List[SqlFilter] = []

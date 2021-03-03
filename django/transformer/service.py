@@ -68,6 +68,8 @@ class TransformHandler(Handler):
             {
                 "message": f"Resolving references {analysis.reference_paths}",
                 "resource_id": resource_id,
+                "label": analysis.label,
+                "definition_id": analysis.definition_id,
             },
         )
         resolved_fhir_instance = self.binder.resolve_references(fhir_object, analysis.reference_paths)
