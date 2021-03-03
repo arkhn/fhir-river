@@ -38,7 +38,7 @@ public class ResourceConsumer {
     @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
     public static class ResourceListener {
 
-        private Logger logger = LoggerFactory.getLogger(ResourceListener.class);
+        private static final Logger logger = LoggerFactory.getLogger(ResourceListener.class);
 
         @Autowired
         DaoRegistry daoRegistry;
@@ -66,7 +66,7 @@ public class ResourceConsumer {
                 fhirObject = jsonObject.getString("fhir_object");
                 batchId = jsonObject.getString("batch_id");
             } catch (Exception e) {
-                logger.info(String.format("Could not process message: %s", e.toString()));
+                logger.error(String.format("Could not process message: %s", e.toString()));
                 failedInsertions.inc();
                 return;
             }
@@ -83,7 +83,7 @@ public class ResourceConsumer {
                 dao.update(r);
                 successfulInsertions.inc();
             } catch (Exception e) {
-                logger.info(String.format("Could not insert resource: %s", e.toString()));
+                logger.error(String.format("Could not insert resource: %s", e.toString()));
                 failedInsertions.inc();
             } finally {
                 loadTimer.observeDuration();
