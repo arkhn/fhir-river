@@ -6,8 +6,15 @@ spring:
     username: hapi
     password: deadbeefdeadbeef
     driverClassName: org.postgresql.Driver
-  #  jpa:
-  #    properties:
+  jpa:
+    properties:
+      hibernate:
+        search:
+          enabled: true
+          backend:
+            type: elasticsearch
+            analysis:
+              configurer: ca.uhn.fhir.jpa.search.elastic.HapiElasticsearchAnalysisConfigurer
   #      hibernate.dialect: org.hibernate.dialect.h2dialect
   #      hibernate.search.model_mapping: ca.uhn.fhir.jpa.search.lucenesearchmappingfactory
   #      hibernate.format_sql: false
