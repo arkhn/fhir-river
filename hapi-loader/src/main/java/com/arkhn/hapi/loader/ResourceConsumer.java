@@ -76,7 +76,9 @@ public class ResourceConsumer {
                 loadTimer.observeDuration();
             }
 
-            producer.sendMessage(message.getBatchId(), String.format("load.%s", message.getBatchId()));
+            KafkaMessage loadMessage = new KafkaMessage();
+            loadMessage.setBatchId(message.getBatchId());
+            producer.sendMessage(loadMessage, String.format("load.%s", message.getBatchId()));
             // TODO: error handling
 
             // // THE FOLLOWING CODE IS THE "BATCH UPDATE" VERSION

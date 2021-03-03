@@ -23,4 +23,8 @@ public class KafkaMessage {
     public String getFhirObject() {
         return fhirObject;
     }
+
+    public void setBatchId(String batchId) {
+        this.batchId = batchId;
+    }
 }

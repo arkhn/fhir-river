@@ -13,13 +13,13 @@ public class KafkaProducer {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducer.class);
 
     @Autowired
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, KafkaMessage> kafkaTemplate;
 
-    KafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    KafkaProducer(KafkaTemplate<String, KafkaMessage> kafkaTemplate) {
       this.kafkaTemplate = kafkaTemplate;
     }
 
-    void sendMessage(String message, String topicName) {
+    void sendMessage(KafkaMessage message, String topicName) {
         LOGGER.debug("sending payload='{}' to topic='{}'", message, topicName);
         kafkaTemplate.send(topicName, message);
     }
