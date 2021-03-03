@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   hapi-loader:
-    image: arkhn/hapi-loader:latest
+    image: arkhn/hapi-river:latest
     restart: on-failure
     depends_on:
       - elasticsearch
@@ -52,7 +52,7 @@ services:
       - ./postgresql.conf:/etc/postgresql.conf
 
   elasticsearch:
-    image: elasticsearch:7.9.3
+    image: elasticsearch:7.10.1
     restart: always
     environment:
       - discovery.type=single-node
@@ -65,7 +65,7 @@ services:
 
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.9.3
+    image: docker.elastic.co/kibana/kibana:7.10.1
     ports:
       - 5601:5601
     environment:
