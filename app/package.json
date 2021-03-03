@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@arkhn/ui": "^1.9.13",
+    "@arkhn/ui": "^1.10.2",
     "@fontsource/roboto": "^4.2.1",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -11,13 +11,14 @@
     "@rtk-incubator/rtk-query": "^0.2.0",
     "@testing-library/dom": "^7.29.4",
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.7.3",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
+    "@types/react-router-dom": "^5.1.7",
     "i18next": "^19.8.8",
     "i18next-browser-languagedetector": "^6.0.1",
     "react": "^17.0.1",
@@ -33,6 +34,9 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
+  },
+  "jest": {
+    "resetMocks": false
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
@@ -63,12 +67,13 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.20.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "4.3.6",

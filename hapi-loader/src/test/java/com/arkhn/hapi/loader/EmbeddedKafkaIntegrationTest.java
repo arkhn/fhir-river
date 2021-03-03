@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.annotation.PreDestroy;
 
+import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.junit.jupiter.api.BeforeAll;
@@ -84,6 +87,7 @@ class EmbeddedKafkaIntegrationTest {
         Patient p = new Patient();
         p.setId("loadNewResource");
         p.setGender(AdministrativeGender.FEMALE);
+        p.setName(Arrays.asList(new HumanName().addGiven("Julia")));
 
         // serialize it and send it to the loader
         IParser parser = myFhirContext.newJsonParser();
@@ -97,6 +101,8 @@ class EmbeddedKafkaIntegrationTest {
         IFhirResourceDao<Patient> dao = daoRegistry.getResourceDao("Patient");
         Patient result = dao.read(p.getIdElement());
         assertNotNull(result);
+        assertEquals(AdministrativeGender.FEMALE, result.getGender());
+        assertEquals("Julia", result.getName().get(0).getGiven().get(0).asStringValue());
     }
 
     @Test
@@ -106,16 +112,15 @@ class EmbeddedKafkaIntegrationTest {
         // create initial patient
         Patient p = new Patient();
         p.setGender(AdministrativeGender.FEMALE);
+        p.setName(Arrays.asList(new HumanName().addGiven("Julia")));
         DaoMethodOutcome outcome = dao.create(p);
         Patient created = (Patient) outcome.getResource();
 
         // modify it and send it to the loader
-        Patient updated = new Patient();
-        updated.setId(created.getIdElement());
-        updated.setGender(AdministrativeGender.MALE);
-
+        created.getName().get(0).addGiven("Jude");
+        created.setGender(AdministrativeGender.MALE);
         IParser parser = myFhirContext.newJsonParser();
-        String serialized = parser.encodeResourceToString(updated);
+        String serialized = parser.encodeResourceToString(created);
         producer.send(topic, serialized);
 
         // wait a bit (could use a refactor)
@@ -124,9 +129,11 @@ class EmbeddedKafkaIntegrationTest {
         // assert it has been modified in the db
         // NB: make sure we remove the "version" part of the ID, otherwise a specific
         // version of the resource is read
-        Patient result = dao.read(updated.getIdElement().toVersionless());
+        Patient result = dao.read(created.getIdElement().toVersionless());
         assertNotNull(result);
         assertEquals(AdministrativeGender.MALE, result.getGender());
+        assertEquals("Julia", result.getName().get(0).getGiven().get(0).asStringValue());
+        assertEquals("Jude", result.getName().get(0).getGiven().get(1).asStringValue());
     }
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {

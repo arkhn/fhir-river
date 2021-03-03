@@ -13,6 +13,7 @@ hapi:
       bootstrapAddress: localhost:9092
       topic: load
       groupId: loader
+      replicationFactor: 1
 
   fhir:
     fhir_version: R4

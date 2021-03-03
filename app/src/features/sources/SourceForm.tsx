@@ -5,28 +5,23 @@ import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
+  Drawer,
   makeStyles,
   Typography,
 } from "@material-ui/core";
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
+import { useAppDispatch, useAppSelector } from "app/store";
 import {
   useCreateSourceMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
 import { Source } from "services/api/generated/api.generated";
 
-type SourceFormData = {
-  name: string;
-};
+import { editSource, selectSourceToEdit } from "./sourceSlice";
 
-type SourceFormProps = {
-  source?: Source;
-  submitSuccess?: (source: Source) => void;
-};
-
-const inputs: (t: TFunction) => FormInputProperty<SourceFormData>[] = (t) => [
+const inputs: (t: TFunction) => FormInputProperty<Source>[] = (t) => [
   {
     type: "text",
     name: "name",
@@ -53,9 +48,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
+const SourceForm = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+
+  const source = useAppSelector(selectSourceToEdit);
+  const isDrawerOpen = !!source;
+  const handleCloseDrawer = () => dispatch(editSource(null));
 
   const [
     createSource,
@@ -68,57 +68,56 @@ const SourceForm = ({ source, submitSuccess }: SourceFormProps) => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmit = (data: SourceFormData) => {
-    if (source && source.id) {
-      updateSource({ id: source.id, source: data })
+  const handleSubmit = (data: Source) => {
+    if (source?.id) {
+      updateSource({ id: source.id, source: { ...source, ...data } })
         .unwrap()
-        .then(() => {
-          submitSuccess && submitSuccess(data);
-        })
-        // Display error in snackbar notification (?)
+        .then(() => handleCloseDrawer())
+        // TODO: display error in snackbar notification (?)
         .catch();
-    } else {
+    } else if (source) {
       createSource({ source: data })
         .unwrap()
-        .then(() => {
-          submitSuccess && submitSuccess(data);
-        })
-        // Display error in snackbar notification (?)
+        .then(() => handleCloseDrawer())
+        // TODO: display error in snackbar notification (?)
         .catch();
     }
   };
 
   return (
-    <div className={classes.formContainer}>
-      <Form<SourceFormData>
-        properties={inputs(t)}
-        submit={handleSubmit}
-        formStyle={{ display: "block" }}
-        defaultValues={{ name: source?.name ?? "" }}
-        formHeader={
-          <Typography className={classes.title} variant="h5">
-            {source ? t("renameSource") : t("newSource")}
-          </Typography>
-        }
-        formFooter={
-          <Button
-            className={classes.button}
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth={false}
-          >
-            {isLoading ? (
-              <CircularProgress color="inherit" size={23} />
-            ) : (
-              <Typography>
-                {source ? t("renameSource") : t("createSource")}
-              </Typography>
-            )}
-          </Button>
-        }
-      />
-    </div>
+    <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
+      <div className={classes.formContainer}>
+        <Form<Source>
+          properties={inputs(t)}
+          submit={handleSubmit}
+          formStyle={{ display: "block" }}
+          defaultValues={{ name: source?.name ?? "" }}
+          displaySubmitButton={false}
+          formHeader={
+            <Typography className={classes.title} variant="h5">
+              {source?.id ? t("renameSource") : t("newSource")}
+            </Typography>
+          }
+          formFooter={
+            <Button
+              className={classes.button}
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth={false}
+            >
+              {isLoading ? (
+                <CircularProgress color="inherit" size={23} />
+              ) : (
+                <Typography>
+                  {source?.id ? t("renameSource") : t("createSource")}
+                </Typography>
+              )}
+            </Button>
+          }
+        />
+      </div>
+    </Drawer>
   );
 };
 
