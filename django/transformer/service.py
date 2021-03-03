@@ -66,7 +66,7 @@ class TransformHandler(Handler):
         # Resolve references
         logger.debug(
             {
-                "message": f"Resolving references {analysis.reference_paths}",
+                "message": f"Resolving references {analysis.reference_paths} for resource {fhir_object['id']}",
                 "resource_id": resource_id,
                 "label": analysis.label,
                 "definition_id": analysis.definition_id,
