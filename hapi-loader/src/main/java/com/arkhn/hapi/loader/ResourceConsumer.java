@@ -57,22 +57,9 @@ public class ResourceConsumer {
                 .help("Number of successful insertions.").register();
 
         @KafkaHandler
-        public void listen(String message) {
-            String fhirObject;
-            String batchId;
-            try {
-                // TODO I think we could find a better way to do that. With classes? With kafka?
-                JSONObject jsonObject = new JSONObject(message);
-                fhirObject = jsonObject.getString("fhir_object");
-                batchId = jsonObject.getString("batch_id");
-            } catch (Exception e) {
-                logger.error(String.format("Could not process message: %s", e.toString()));
-                failedInsertions.inc();
-                return;
-            }
-
+        public void listen(KafkaMessage message) {
             IParser parser = myFhirContext.newJsonParser();
-            IBaseResource r = parser.parseResource(fhirObject);
+            IBaseResource r = parser.parseResource(message.getFhirObject());
 
             @SuppressWarnings("unchecked")
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
@@ -89,7 +76,7 @@ public class ResourceConsumer {
                 loadTimer.observeDuration();
             }
 
-            producer.sendMessage(batchId, String.format("load.%s", batchId));
+            producer.sendMessage(message.getBatchId(), String.format("load.%s", message.getBatchId()));
             // TODO: error handling
 
             // // THE FOLLOWING CODE IS THE "BATCH UPDATE" VERSION
