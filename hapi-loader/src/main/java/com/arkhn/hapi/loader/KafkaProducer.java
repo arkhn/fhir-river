@@ -10,17 +10,17 @@ import org.slf4j.LoggerFactory;
 @Component
 public class KafkaProducer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducer.class);
 
-    @Autowired
-    private KafkaTemplate<String, KafkaMessage> kafkaTemplate;
+  @Autowired
+  private KafkaTemplate<String, KafkaMessage> kafkaTemplate;
 
-    KafkaProducer(KafkaTemplate<String, KafkaMessage> kafkaTemplate) {
-      this.kafkaTemplate = kafkaTemplate;
-    }
+  KafkaProducer(KafkaTemplate<String, KafkaMessage> kafkaTemplate) {
+    this.kafkaTemplate = kafkaTemplate;
+  }
 
-    void sendMessage(KafkaMessage message, String topicName) {
-        LOGGER.debug("sending payload='{}' to topic='{}'", message, topicName);
-        kafkaTemplate.send(topicName, message);
-    }
+  void sendMessage(KafkaMessage message, String topicName) {
+    LOGGER.info("sending payload='{}' to topic='{}'", message, topicName);
+    kafkaTemplate.send(topicName, message);
+  }
 }
