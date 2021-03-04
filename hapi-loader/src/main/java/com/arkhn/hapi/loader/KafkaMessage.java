@@ -1,6 +1,7 @@
 package com.arkhn.hapi.loader;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class KafkaMessage {
     @JsonProperty("batch_id")
@@ -10,7 +11,7 @@ public class KafkaMessage {
     private String resourceId;
 
     @JsonProperty("fhir_object")
-    private String fhirObject;
+    private JsonNode fhirObject;
 
     public String getBatchId() {
         return batchId;
@@ -20,7 +21,7 @@ public class KafkaMessage {
         return resourceId;
     }
 
-    public String getFhirObject() {
+    public JsonNode getFhirObject() {
         return fhirObject;
     }
 
@@ -28,7 +29,7 @@ public class KafkaMessage {
         this.batchId = batchId;
     }
 
-    public void setFhirObject(String fhirObject) {
+    public void setFhirObject(JsonNode fhirObject) {
         this.fhirObject = fhirObject;
     }
 

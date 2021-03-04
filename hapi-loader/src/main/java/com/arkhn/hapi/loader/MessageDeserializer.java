@@ -1,7 +1,5 @@
 package com.arkhn.hapi.loader;
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.kafka.common.serialization.Deserializer;
@@ -15,14 +13,14 @@ public class MessageDeserializer implements Deserializer<KafkaMessage> {
     @Override
     public KafkaMessage deserialize(String topic, byte[] bytes) {
 
-        logger.info(bytes.toString());
+        logger.debug(bytes.toString());
 
         ObjectMapper mapper = new ObjectMapper();
         KafkaMessage message = null;
         try {
             message = mapper.readValue(bytes, KafkaMessage.class);
         } catch (Exception e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage());
         }
         return message;
     }

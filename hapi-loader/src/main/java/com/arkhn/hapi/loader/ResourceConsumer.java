@@ -58,7 +58,7 @@ public class ResourceConsumer {
         @KafkaHandler
         public void listen(KafkaMessage message) {
             IParser parser = myFhirContext.newJsonParser();
-            IBaseResource r = parser.parseResource(message.getFhirObject());
+            IBaseResource r = parser.parseResource(message.getFhirObject().toString());
 
             @SuppressWarnings("unchecked")
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());

@@ -1,7 +1,5 @@
 package com.arkhn.hapi.loader;
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.kafka.common.serialization.Serializer;
@@ -19,7 +17,7 @@ public class MessageSerializer implements Serializer<KafkaMessage> {
         try {
             retVal = objectMapper.writeValueAsString(message).getBytes();
         } catch (Exception e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage());
         }
         return retVal;
     }

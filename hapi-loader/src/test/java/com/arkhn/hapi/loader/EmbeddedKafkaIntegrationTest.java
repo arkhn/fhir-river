@@ -10,6 +10,9 @@ import java.util.Arrays;
 
 import javax.annotation.PreDestroy;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -86,7 +89,7 @@ class EmbeddedKafkaIntegrationTest {
 
         // serialize it and send it to the loader
         IParser parser = myFhirContext.newJsonParser();
-        String serialized = parser.encodeResourceToString(p);
+        JsonNode serialized = new ObjectMapper().readTree(parser.encodeResourceToString(p));
         KafkaMessage msg = new KafkaMessage();
         msg.setBatchId("batchId");
         msg.setResourceId("resourceId");
@@ -119,7 +122,7 @@ class EmbeddedKafkaIntegrationTest {
         created.getName().get(0).addGiven("Jude");
         created.setGender(AdministrativeGender.MALE);
         IParser parser = myFhirContext.newJsonParser();
-        String serialized = parser.encodeResourceToString(created);
+        JsonNode serialized = new ObjectMapper().readTree(parser.encodeResourceToString(p));
         KafkaMessage msg = new KafkaMessage();
         msg.setBatchId("batchId");
         msg.setResourceId("resourceId");

@@ -20,7 +20,8 @@ public class KafkaProducer {
   }
 
   void sendMessage(KafkaMessage message, String topicName) {
-    LOGGER.info("sending payload='{}' to topic='{}'", message, topicName);
+
+    LOGGER.debug("sending payload='{}' to topic='{}'", message, topicName);
     kafkaTemplate.send(topicName, message);
   }
 }
