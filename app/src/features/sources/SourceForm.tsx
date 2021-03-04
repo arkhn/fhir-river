@@ -1,13 +1,15 @@
 import React from "react";
 
+import Form from "@arkhn/ui/lib/Form/Form";
+import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
   Drawer,
   makeStyles,
-  TextField,
   Typography,
 } from "@material-ui/core";
+import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -15,25 +17,31 @@ import {
   useCreateSourceMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
+import { Source } from "services/api/generated/api.generated";
 
-import { selectSourceToEdit, editSource } from "./sourceSlice";
+import { editSource, selectSourceToEdit } from "./sourceSlice";
+
+const inputs: (t: TFunction) => FormInputProperty<Source>[] = (t) => [
+  {
+    type: "text",
+    name: "name",
+    label: t("sourceName"),
+    variant: "outlined",
+    validationRules: { required: true },
+  },
+];
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "baseline",
+    marginBlock: theme.spacing(3),
     minWidth: 400,
   },
-  formField: {
-    margin: theme.spacing(1),
-  },
   title: {
-    margin: theme.spacing(1),
+    marginLeft: theme.spacing(3),
     fontWeight: "bold",
   },
   button: {
-    margin: theme.spacing(1),
+    marginLeft: theme.spacing(3),
     textTransform: "none",
     width: "auto",
     minWidth: 150,
@@ -60,16 +68,15 @@ const SourceForm = (): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (data: Source) => {
     if (source?.id) {
-      updateSource({ id: source.id, source })
+      updateSource({ id: source.id, source: { ...source, ...data } })
         .unwrap()
         .then(() => handleCloseDrawer())
         // TODO: display error in snackbar notification (?)
         .catch();
     } else if (source) {
-      createSource({ source })
+      createSource({ source: data })
         .unwrap()
         .then(() => handleCloseDrawer())
         // TODO: display error in snackbar notification (?)
@@ -77,50 +84,39 @@ const SourceForm = (): JSX.Element => {
     }
   };
 
-  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      editSource({
-        ...source,
-        name: e.target.value,
-      })
-    );
-  };
-
   return (
     <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        autoComplete="off"
-        className={classes.formContainer}
-      >
-        <Typography className={classes.title} variant="h5">
-          {source?.id ? t("renameSource") : t("newSource")}
-        </Typography>
-        <TextField
-          id="standard-basic"
-          label="Name"
-          onChange={handleChangeName}
-          value={source?.name ?? ""}
-          variant="outlined"
-          className={classes.formField}
-        />
-        <Button
-          className={classes.button}
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth={false}
-        >
-          {isLoading ? (
-            <CircularProgress color="inherit" size={23} />
-          ) : (
-            <Typography>
-              {source?.id ? t("renameSource") : t("createSource")}
+      <div className={classes.formContainer}>
+        <Form<Source>
+          properties={inputs(t)}
+          submit={handleSubmit}
+          formStyle={{ display: "block" }}
+          defaultValues={{ name: source?.name ?? "" }}
+          displaySubmitButton={false}
+          formHeader={
+            <Typography className={classes.title} variant="h5">
+              {source?.id ? t("renameSource") : t("newSource")}
             </Typography>
-          )}
-        </Button>
-      </form>
+          }
+          formFooter={
+            <Button
+              className={classes.button}
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth={false}
+            >
+              {isLoading ? (
+                <CircularProgress color="inherit" size={23} />
+              ) : (
+                <Typography>
+                  {source?.id ? t("renameSource") : t("createSource")}
+                </Typography>
+              )}
+            </Button>
+          }
+        />
+      </div>
     </Drawer>
   );
 };

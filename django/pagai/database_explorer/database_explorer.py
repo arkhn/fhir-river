@@ -65,8 +65,8 @@ class DatabaseExplorer:
 
                 select = select.join(
                     right_table,
-                    self.get_sql_alchemy_column(join.left.column, right_table)
-                    == self.get_sql_alchemy_column(join.right.column, left_table),
+                    self.get_sql_alchemy_column(join.right.column, right_table)
+                    == self.get_sql_alchemy_column(join.left.column, left_table),
                     isouter=True,
                 )
 
