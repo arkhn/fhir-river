@@ -13,7 +13,10 @@ public class MessageDeserializer implements Deserializer<KafkaMessage> {
     private static final Logger logger = LoggerFactory.getLogger(MessageDeserializer.class);
 
     @Override
-    public KafkaMessage deserialize(String s, byte[] bytes) {
+    public KafkaMessage deserialize(String topic, byte[] bytes) {
+
+        logger.info(bytes.toString());
+
         ObjectMapper mapper = new ObjectMapper();
         KafkaMessage message = null;
         try {
