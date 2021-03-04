@@ -5,46 +5,66 @@ from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog import models
 
 
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Owner
+        fields = "__all__"
+        extra_kwargs = {
+            "schema": {
+                "required": False,
+                "read_only": True,
+            },
+        }
+
+    def update(self, instance, validated_data):
+        if not instance.schema:
+            credential = CredentialSerializer(validated_data["credential"]).data
+            try:
+                db_connection = DBConnection(credential)
+                explorer = DatabaseExplorer(db_connection)
+                validated_data["schema"] = explorer.get_owner_schema(instance.name)
+            except Exception as e:
+                raise serializers.ValidationError(detail=e)
+        return super(OwnerSerializer, self).update(instance, validated_data)
+
+
+class CredentialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Credential
+        fields = "__all__"
+        extra_kwargs = {
+            "source": {
+                "required": False,
+                "read_only": True,
+            },
+        }
+
+
 class SourceSerializer(serializers.ModelSerializer):
+    credential = CredentialSerializer()
+
     class Meta:
         model = models.Source
-        fields = "__all__"
+        fields = ["name", "version", "credential"]
+
+    def create(self, validated_data):
+        try:
+            db_connection = DBConnection(validated_data["credential"])
+            explorer = DatabaseExplorer(db_connection)
+            owners = explorer.get_owners()
+        except Exception as e:
+            raise serializers.ValidationError(detail=e)
+        source = models.Source.objects.create(name=validated_data["name"], version=validated_data.get("version"))
+        credential = models.Credential.objects.create(source=source, **validated_data["credential"])
+        for owner in owners:
+            models.Owner.objects.create(credential=credential, name=owner)
+        return source
 
 
 class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Resource
         fields = "__all__"
-
-
-class OwnerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Owner
-        fields = "__all__"
-
-    def update(self, instance, validated_data):
-        if not instance.schema:
-            db_connection = DBConnection(validated_data)
-            explorer = DatabaseExplorer(db_connection)
-            instance.schema = explorer.get_owner_schema(instance.name)
-        return super(OwnerSerializer, self).update(instance, validated_data)
-
-
-class CredentialSerializer(serializers.ModelSerializer):
-    owners = OwnerSerializer(many=True)
-
-    class Meta:
-        model = models.Credential
-        fields = "__all__"
-
-    def create(self, validated_data):
-        db_connection = DBConnection(validated_data)
-        explorer = DatabaseExplorer(db_connection)
-        owners = explorer.get_owners()
-        credential = models.Credential.objects.create(**validated_data)
-        for owner in owners:
-            models.Owner.objects.create(credential=credential, name=owner)
-        return credential
 
 
 class AttributeSerializer(serializers.ModelSerializer):

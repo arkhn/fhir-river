@@ -47,7 +47,10 @@ export const api = createApi({
       }),
     }),
     listResources: build.query<ListResourcesApiResponse, ListResourcesApiArg>({
-      query: () => ({ url: `/api/resources/` }),
+      query: (queryArg) => ({
+        url: `/api/resources/`,
+        params: { source: queryArg.source },
+      }),
     }),
     createResource: build.mutation<
       CreateResourceApiResponse,
@@ -63,7 +66,10 @@ export const api = createApi({
       RetrieveResourceApiResponse,
       RetrieveResourceApiArg
     >({
-      query: (queryArg) => ({ url: `/api/resources/${queryArg.id}/` }),
+      query: (queryArg) => ({
+        url: `/api/resources/${queryArg.id}/`,
+        params: { source: queryArg.source },
+      }),
     }),
     updateResource: build.mutation<
       UpdateResourceApiResponse,
@@ -73,6 +79,7 @@ export const api = createApi({
         url: `/api/resources/${queryArg.id}/`,
         method: "PUT",
         body: queryArg.resource,
+        params: { source: queryArg.source },
       }),
     }),
     partialUpdateResource: build.mutation<
@@ -83,6 +90,7 @@ export const api = createApi({
         url: `/api/resources/${queryArg.id}/`,
         method: "PATCH",
         body: queryArg.resource,
+        params: { source: queryArg.source },
       }),
     }),
     destroyResource: build.mutation<
@@ -92,6 +100,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/resources/${queryArg.id}/`,
         method: "DELETE",
+        params: { source: queryArg.source },
       }),
     }),
     listCredentials: build.query<
@@ -149,7 +158,10 @@ export const api = createApi({
       ListAttributesApiResponse,
       ListAttributesApiArg
     >({
-      query: () => ({ url: `/api/attributes/` }),
+      query: (queryArg) => ({
+        url: `/api/attributes/`,
+        params: { source: queryArg.source },
+      }),
     }),
     createAttribute: build.mutation<
       CreateAttributeApiResponse,
@@ -165,7 +177,10 @@ export const api = createApi({
       RetrieveAttributeApiResponse,
       RetrieveAttributeApiArg
     >({
-      query: (queryArg) => ({ url: `/api/attributes/${queryArg.id}/` }),
+      query: (queryArg) => ({
+        url: `/api/attributes/${queryArg.id}/`,
+        params: { source: queryArg.source },
+      }),
     }),
     updateAttribute: build.mutation<
       UpdateAttributeApiResponse,
@@ -175,6 +190,7 @@ export const api = createApi({
         url: `/api/attributes/${queryArg.id}/`,
         method: "PUT",
         body: queryArg.attribute,
+        params: { source: queryArg.source },
       }),
     }),
     partialUpdateAttribute: build.mutation<
@@ -185,6 +201,7 @@ export const api = createApi({
         url: `/api/attributes/${queryArg.id}/`,
         method: "PATCH",
         body: queryArg.attribute,
+        params: { source: queryArg.source },
       }),
     }),
     destroyAttribute: build.mutation<
@@ -194,6 +211,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/attributes/${queryArg.id}/`,
         method: "DELETE",
+        params: { source: queryArg.source },
       }),
     }),
     listInputGroups: build.query<
@@ -455,7 +473,10 @@ export const api = createApi({
       }),
     }),
     listOwners: build.query<ListOwnersApiResponse, ListOwnersApiArg>({
-      query: () => ({ url: `/api/owners/` }),
+      query: (queryArg) => ({
+        url: `/api/owners/`,
+        params: { source: queryArg.source },
+      }),
     }),
     createOwner: build.mutation<CreateOwnerApiResponse, CreateOwnerApiArg>({
       query: (queryArg) => ({
@@ -465,13 +486,17 @@ export const api = createApi({
       }),
     }),
     retrieveOwner: build.query<RetrieveOwnerApiResponse, RetrieveOwnerApiArg>({
-      query: (queryArg) => ({ url: `/api/owners/${queryArg.id}/` }),
+      query: (queryArg) => ({
+        url: `/api/owners/${queryArg.id}/`,
+        params: { source: queryArg.source },
+      }),
     }),
     updateOwner: build.mutation<UpdateOwnerApiResponse, UpdateOwnerApiArg>({
       query: (queryArg) => ({
         url: `/api/owners/${queryArg.id}/`,
         method: "PUT",
         body: queryArg.owner,
+        params: { source: queryArg.source },
       }),
     }),
     partialUpdateOwner: build.mutation<
@@ -482,12 +507,14 @@ export const api = createApi({
         url: `/api/owners/${queryArg.id}/`,
         method: "PATCH",
         body: queryArg.owner,
+        params: { source: queryArg.source },
       }),
     }),
     destroyOwner: build.mutation<DestroyOwnerApiResponse, DestroyOwnerApiArg>({
       query: (queryArg) => ({
         url: `/api/owners/${queryArg.id}/`,
         method: "DELETE",
+        params: { source: queryArg.source },
       }),
     }),
   }),
@@ -521,7 +548,10 @@ export type DestroySourceApiArg = {
   id: string;
 };
 export type ListResourcesApiResponse = /** status 200  */ Resource[];
-export type ListResourcesApiArg = {};
+export type ListResourcesApiArg = {
+  /** source */
+  source?: string;
+};
 export type CreateResourceApiResponse = /** status 201  */ Resource;
 export type CreateResourceApiArg = {
   resource: Resource;
@@ -530,23 +560,31 @@ export type RetrieveResourceApiResponse = /** status 200  */ Resource;
 export type RetrieveResourceApiArg = {
   /** A unique value identifying this resource. */
   id: string;
+  /** source */
+  source?: string;
 };
 export type UpdateResourceApiResponse = /** status 200  */ Resource;
 export type UpdateResourceApiArg = {
   /** A unique value identifying this resource. */
   id: string;
+  /** source */
+  source?: string;
   resource: Resource;
 };
 export type PartialUpdateResourceApiResponse = /** status 200  */ Resource;
 export type PartialUpdateResourceApiArg = {
   /** A unique value identifying this resource. */
   id: string;
+  /** source */
+  source?: string;
   resource: Resource;
 };
 export type DestroyResourceApiResponse = unknown;
 export type DestroyResourceApiArg = {
   /** A unique value identifying this resource. */
   id: string;
+  /** source */
+  source?: string;
 };
 export type ListCredentialsApiResponse = /** status 200  */ Credential[];
 export type ListCredentialsApiArg = {};
@@ -577,7 +615,10 @@ export type DestroyCredentialApiArg = {
   id: string;
 };
 export type ListAttributesApiResponse = /** status 200  */ Attribute[];
-export type ListAttributesApiArg = {};
+export type ListAttributesApiArg = {
+  /** source */
+  source?: string;
+};
 export type CreateAttributeApiResponse = /** status 201  */ Attribute;
 export type CreateAttributeApiArg = {
   attribute: Attribute;
@@ -586,23 +627,31 @@ export type RetrieveAttributeApiResponse = /** status 200  */ Attribute;
 export type RetrieveAttributeApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
+  /** source */
+  source?: string;
 };
 export type UpdateAttributeApiResponse = /** status 200  */ Attribute;
 export type UpdateAttributeApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
+  /** source */
+  source?: string;
   attribute: Attribute;
 };
 export type PartialUpdateAttributeApiResponse = /** status 200  */ Attribute;
 export type PartialUpdateAttributeApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
+  /** source */
+  source?: string;
   attribute: Attribute;
 };
 export type DestroyAttributeApiResponse = unknown;
 export type DestroyAttributeApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
+  /** source */
+  source?: string;
 };
 export type ListInputGroupsApiResponse = /** status 200  */ InputGroup[];
 export type ListInputGroupsApiArg = {};
@@ -773,7 +822,10 @@ export type DestroyFilterApiArg = {
   id: string;
 };
 export type ListOwnersApiResponse = /** status 200  */ Owner[];
-export type ListOwnersApiArg = {};
+export type ListOwnersApiArg = {
+  /** source */
+  source?: string;
+};
 export type CreateOwnerApiResponse = /** status 201  */ Owner;
 export type CreateOwnerApiArg = {
   owner: Owner;
@@ -782,30 +834,47 @@ export type RetrieveOwnerApiResponse = /** status 200  */ Owner;
 export type RetrieveOwnerApiArg = {
   /** A unique value identifying this owner. */
   id: string;
+  /** source */
+  source?: string;
 };
 export type UpdateOwnerApiResponse = /** status 200  */ Owner;
 export type UpdateOwnerApiArg = {
   /** A unique value identifying this owner. */
   id: string;
+  /** source */
+  source?: string;
   owner: Owner;
 };
 export type PartialUpdateOwnerApiResponse = /** status 200  */ Owner;
 export type PartialUpdateOwnerApiArg = {
   /** A unique value identifying this owner. */
   id: string;
+  /** source */
+  source?: string;
   owner: Owner;
 };
 export type DestroyOwnerApiResponse = unknown;
 export type DestroyOwnerApiArg = {
   /** A unique value identifying this owner. */
   id: string;
+  /** source */
+  source?: string;
 };
 export type Source = {
-  id?: string;
   name: string;
   version?: string;
-  updated_at?: string;
-  created_at?: string;
+  credential: {
+    id?: string;
+    host: string;
+    port: number;
+    database: string;
+    login: string;
+    password: string;
+    model: "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
+    updated_at?: string;
+    created_at?: string;
+    source?: string;
+  };
 };
 export type Resource = {
   id?: string;
@@ -829,7 +898,7 @@ export type Credential = {
   model: "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
   updated_at?: string;
   created_at?: string;
-  source: string;
+  source?: string;
 };
 export type Attribute = {
   id?: string;
@@ -890,7 +959,7 @@ export type Filter = {
 export type Owner = {
   id?: string;
   name: string;
-  schema?: object | null;
+  schema?: object;
   credential: string;
 };
 export const {

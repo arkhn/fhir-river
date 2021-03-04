@@ -62,3 +62,5 @@ class FilterViewSet(viewsets.ModelViewSet):
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = models.Owner.objects.all()
     serializer_class = serializers.OwnerSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = filters.OwnerFilterSet

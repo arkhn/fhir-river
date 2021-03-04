@@ -1418,7 +1418,13 @@ paths:
     get:
       operationId: listOwners
       description: ''
-      parameters: []
+      parameters:
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1465,6 +1471,12 @@ paths:
         description: A unique value identifying this owner.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1482,6 +1494,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this owner.
+        schema:
+          type: string
+      - name: source
+        required: false
+        in: query
+        description: source
         schema:
           type: string
       requestBody:
@@ -1514,6 +1532,12 @@ paths:
         description: A unique value identifying this owner.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1544,6 +1568,12 @@ paths:
         description: A unique value identifying this owner.
         schema:
           type: string
+      - name: source
+        required: false
+        in: query
+        description: source
+        schema:
+          type: string
       responses:
         '204':
           description: ''
@@ -1554,23 +1584,56 @@ components:
     Source:
       type: object
       properties:
-        id:
-          type: string
-          readOnly: true
         name:
           type: string
         version:
           type: string
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
+        credential:
+          type: object
+          properties:
+            id:
+              type: string
+              readOnly: true
+            host:
+              type: string
+            port:
+              type: integer
+              maximum: 2147483647
+              minimum: -2147483648
+            database:
+              type: string
+            login:
+              type: string
+            password:
+              type: string
+            model:
+              enum:
+              - MSSQL
+              - POSTGRES
+              - ORACLE
+              - SQLLITE
+              type: string
+            updated_at:
+              type: string
+              format: date-time
+              readOnly: true
+            created_at:
+              type: string
+              format: date-time
+              readOnly: true
+            source:
+              type: string
+              readOnly: true
+          required:
+          - host
+          - port
+          - database
+          - login
+          - password
+          - model
       required:
       - name
+      - credential
     Resource:
       type: object
       properties:
@@ -1641,6 +1704,7 @@ components:
           readOnly: true
         source:
           type: string
+          readOnly: true
       required:
       - host
       - port
@@ -1648,7 +1712,6 @@ components:
       - login
       - password
       - model
-      - source
     Attribute:
       type: object
       properties:
@@ -1834,7 +1897,7 @@ components:
           type: string
         schema:
           type: object
-          nullable: true
+          readOnly: true
         credential:
           type: string
       required:
