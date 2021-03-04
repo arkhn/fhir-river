@@ -14,8 +14,8 @@ def test_validation(valid_export_data):
         pytest.fail(json.dumps(serializer.errors))
 
 
-def test_validation_error(unvalid_export_data):
-    serializer = SourceSerializer(data=unvalid_export_data)
+def test_validation_error(invalid_export_data):
+    serializer = SourceSerializer(data=invalid_export_data)
     if serializer.is_valid() is True:
         pytest.fail()
 

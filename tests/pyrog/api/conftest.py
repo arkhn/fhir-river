@@ -24,6 +24,6 @@ def valid_export_data(request):
     return load_export_data(request.param)
 
 
-@pytest.fixture(params=(DATA_DIR / "exports" / "unvalid").glob("*.json"))
-def unvalid_export_data(request):
+@pytest.fixture(params=(DATA_DIR / "exports" / "invalid").glob("*.json"))
+def invalid_export_data(request):
     return load_export_data(request.param)
