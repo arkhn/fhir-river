@@ -22,6 +22,13 @@ class OwnerSerializer(serializers.ModelSerializer):
         model = models.Owner
         fields = "__all__"
 
+    def update(self, instance, validated_data):
+        if not instance.schema:
+            db_connection = DBConnection(validated_data)
+            explorer = DatabaseExplorer(db_connection)
+            instance.schema = explorer.get_owner_schema(instance.name)
+        return super(OwnerSerializer, self).update(instance, validated_data)
+
 
 class CredentialSerializer(serializers.ModelSerializer):
     owners = OwnerSerializer(many=True)
@@ -34,10 +41,9 @@ class CredentialSerializer(serializers.ModelSerializer):
         db_connection = DBConnection(validated_data)
         explorer = DatabaseExplorer(db_connection)
         owners = explorer.get_owners()
-        schemas = [explorer.get_owner_schema(owner) for owner in owners]
         credential = models.Credential.objects.create(**validated_data)
-        for owner, schema in zip(owners, schemas):
-            models.Owner.objects.create(credential=credential, name=owner, schema=schema)
+        for owner in owners:
+            models.Owner.objects.create(credential=credential, name=owner)
         return credential
 
 
