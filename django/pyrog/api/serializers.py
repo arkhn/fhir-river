@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from common.database_connection.db_connection import DBConnection
+from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog import models
 
 
@@ -15,10 +17,28 @@ class ResourceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Owner
+        fields = "__all__"
+
+
 class CredentialSerializer(serializers.ModelSerializer):
+    owners = OwnerSerializer(many=True)
+
     class Meta:
         model = models.Credential
         fields = "__all__"
+
+    def create(self, validated_data):
+        db_connection = DBConnection(validated_data)
+        explorer = DatabaseExplorer(db_connection)
+        owners = explorer.get_owners()
+        schemas = [explorer.get_owner_schema(owner) for owner in owners]
+        credential = models.Credential.objects.create(**validated_data)
+        for owner, schema in zip(owners, schemas):
+            models.Owner.objects.create(credential=credential, name=owner, schema=schema)
+        return credential
 
 
 class AttributeSerializer(serializers.ModelSerializer):
@@ -60,10 +80,4 @@ class ConditionSerializer(serializers.ModelSerializer):
 class FilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Filter
-        fields = "__all__"
-
-
-class OwnerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Owner
         fields = "__all__"
