@@ -5,7 +5,7 @@ from common.analyzer import Analyzer
 from common.database_connection.db_connection import create_engine
 from common.mapping.fetch_mapping import fetch_resource_with_filters
 from pagai.api.serializers import CredentialsSerializer
-from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.explorer import DatabaseExplorer
 
 
 class OwnersListView(views.APIView):

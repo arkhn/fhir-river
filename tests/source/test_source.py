@@ -3,7 +3,7 @@ import pytest
 from pytest_factoryboy import register
 
 import sqlalchemy
-from pagai.database_explorer.database_explorer import SimpleExplorer
+from pagai.explorer import SimpleExplorer
 from sqlalchemy.ext.declarative import declarative_base
 from utils.session import Session
 

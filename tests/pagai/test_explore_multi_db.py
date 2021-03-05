@@ -5,7 +5,7 @@ from unittest import TestCase
 import pytest
 
 from common.database_connection.db_connection import Dialect, create_engine
-from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.explorer import DatabaseExplorer
 
 pytestmark = pytest.mark.pagai
 
