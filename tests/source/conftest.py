@@ -2,25 +2,31 @@ import pytest
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import DeclarativeMeta
+from utils.session import Session
 
 
 @pytest.fixture(scope="session")
 def engine():
-    from .session import Session
+    return create_engine("sqlite://")
 
-    engine = create_engine("sqlite://")
-    # Configure the session factory
-    Session.configure(bind=engine)
-    return engine
+
+@pytest.fixture(autouse=True)
+def external_transaction(request, engine):
+    """Create a transaction to be joined by sessions."""
+
+    connection = engine.connect()
+    transaction = connection.begin()
+    Session.configure(bind=connection)
+    yield transaction
+    transaction.rollback()
+    connection.close()
 
 
 @pytest.fixture
-def session(engine):
-    from .session import Session
-
+def session(request):
     s = Session()
     yield s
-    s.rollback()
+    s.close()
     Session.remove()
 
 
