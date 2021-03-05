@@ -26,6 +26,26 @@ def test_retrieve_source(api_client, source):
     assert response.status_code == 200
 
 
+@pytest.mark.export_data("valid/0003.json")
+def test_create_full_source(api_client, export_data):
+    url = reverse("sources-list")
+
+    response = api_client.post(url + "?full=True", export_data, format="json")
+
+    assert response.status_code == 201
+
+
+def test_retrieve_full_source(
+    snapshot, api_client, source, resource, attribute, input_group, input, column, condition
+):
+    url = reverse("sources-detail", kwargs={"pk": source.id})
+
+    response = api_client.get(url, {"full": True})
+
+    assert response.status_code == 200
+    assert response.json() == snapshot
+
+
 def test_list_sources(api_client, source_factory):
     url = reverse("sources-list")
     source_factory.create_batch(3)
