@@ -58,6 +58,10 @@ class SourceSerializer(serializers.ModelSerializer):
         credential = instance.credential
         credential_serializer = self.fields["credential"]
         credential_data = validated_data.pop("credential")
+        try:
+            DBConnection(credential_data)
+        except Exception as e:
+            raise serializers.ValidationError(detail=e)
         credential_serializer.update(instance=credential, validated_data=credential_data)
         return super(SourceSerializer, self).update(instance, validated_data)
 
