@@ -4,14 +4,14 @@ from unittest import TestCase
 
 import pytest
 
-from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES, DBConnection
+from common.database_connection.db_connection import Dialect, create_engine
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 
 pytestmark = pytest.mark.pagai
 
 ALL_OWNERS_FOR_DBTYPE = {
-    POSTGRES: ["pg_temp_1", "pg_toast_temp_1", "pg_toast", "pg_catalog", "public", "information_schema"],
-    MSSQL: [
+    "POSTGRES": ["pg_temp_1", "pg_toast_temp_1", "pg_toast", "pg_catalog", "public", "information_schema"],
+    "MSSQL": [
         "dbo",
         "guest",
         "INFORMATION_SCHEMA",
@@ -26,7 +26,7 @@ ALL_OWNERS_FOR_DBTYPE = {
         "db_denydatareader",
         "db_denydatawriter",
     ],
-    ORACLE11: [
+    "ORACLE11": [
         "XS$NULL",
         "APEX_040000",
         "APEX_PUBLIC_USER",
@@ -40,7 +40,7 @@ ALL_OWNERS_FOR_DBTYPE = {
         "SYSTEM",
         "SYS",
     ],
-    ORACLE: [
+    "ORACLE": [
         "SYS",
         "AUDSYS",
         "SYSTEM",
@@ -93,10 +93,10 @@ def verify_schema_structure(db_schema):
 
 
 def test_explore(db_config):
-    db_connection = DBConnection(db_config)
-    explorer = DatabaseExplorer(db_connection)
+    engine = create_engine(**db_config)
+    explorer = DatabaseExplorer(engine)
 
-    if db_config["model"] in [ORACLE11, ORACLE]:
+    if db_config["model"] is Dialect.ORACLE:
         exploration = explorer.explore(owner=db_config["owner"], table_name="PATIENTS", limit=2)
         TestCase().assertCountEqual(exploration["fields"], ["index", "PATIENT_ID", "GENDER", "date"])
     else:
@@ -113,27 +113,27 @@ def test_explore(db_config):
 
 
 def test_owners(db_config):
-    db_connection = DBConnection(db_config)
-    explorer = DatabaseExplorer(db_connection)
+    engine = create_engine(**db_config)
+    explorer = DatabaseExplorer(engine)
     owners = explorer.get_owners()
     TestCase().assertCountEqual(owners, ALL_OWNERS_FOR_DBTYPE[db_config["model"]])
 
 
 def test_get_owner_schema(db_config):
-    db_connection = DBConnection(db_config)
-    explorer = DatabaseExplorer(db_connection)
+    engine = create_engine(**db_config)
+    explorer = DatabaseExplorer(engine)
     db_schema = explorer.get_owner_schema(db_config["owner"])
     verify_schema_structure(db_schema)
 
 
 def test_case_sensitivity(db_config):
-    db_connection = DBConnection(db_config)
-    explorer = DatabaseExplorer(db_connection)
+    engine = create_engine(**db_config)
+    explorer = DatabaseExplorer(engine)
     db_schema = explorer.get_owner_schema(db_config["owner"])
 
     all_tables = list(db_schema.keys())
 
-    if db_config["model"] in [ORACLE11, ORACLE]:
+    if db_config["model"] is Dialect.ORACLE:
         # In the case of ORACLE, the table name "patients"
         # was turned into "PATIENTS"
         test_tables = ["PATIENTS", "UPPERCASE", "CaseSensitive"]

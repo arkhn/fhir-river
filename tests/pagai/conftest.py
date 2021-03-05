@@ -3,7 +3,7 @@ import os.path as osp
 import pytest
 
 import pandas as pd
-from common.database_connection.db_connection import DB_DRIVERS, URL_SUFFIXES
+from common.database_connection import db_connection as db
 from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy.exc import NoSuchTableError
 
@@ -13,14 +13,6 @@ from .settings import DATABASES
 def get_test_data_path(filename: str) -> str:
     this_directory = osp.dirname(osp.realpath(__file__))
     return osp.join(this_directory, "data", filename)
-
-
-def get_sql_url(db_model: str, sql_config: dict) -> str:
-    return (
-        f"{DB_DRIVERS[db_model]}://{sql_config['login']}:{sql_config['password']}"
-        f"@{sql_config['host']}:{sql_config['port']}"
-        f"/{sql_config['database']}{URL_SUFFIXES[db_model]}"
-    )
 
 
 def table_exists(sql_engine, table_name):
@@ -35,17 +27,23 @@ def table_exists(sql_engine, table_name):
 
 @pytest.fixture(scope="session", params=list(DATABASES.keys()))
 def db_config(request):
-    db_driver = request.param
-    db_config = DATABASES[db_driver]
+    database = request.param
+    db_config = DATABASES[database]
 
-    sql_engine = create_engine(get_sql_url(db_driver, db_config))
+    sql_engine = create_engine(
+        db.BUILDERS[db_config["model"]],
+        username=db_config["login"],
+        password=db_config["password"],
+        host=db_config["host"],
+        port=db_config["port"],
+        database=db_config["database"],
+    )
 
     # Load (or reload) test data into db.
     load_table(sql_engine, "patients", "patients.csv")
     load_table(sql_engine, "UPPERCASE", "patients-uppercase.csv")
     load_table(sql_engine, "CaseSensitive", "patients-case-sensitive.csv")
 
-    db_config["model"] = db_driver
     return db_config
 
 

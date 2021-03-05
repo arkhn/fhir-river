@@ -2,7 +2,7 @@ from rest_framework import status, views
 from rest_framework.response import Response
 
 from common.analyzer import Analyzer
-from common.database_connection.db_connection import DBConnection
+from common.database_connection.db_connection import create_engine
 from common.mapping.fetch_mapping import fetch_resource_with_filters
 from pagai.api.serializers import CredentialsSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
@@ -15,8 +15,8 @@ class OwnersListView(views.APIView):
         credentials = serializer.validated_data
 
         try:
-            db_connection = DBConnection(credentials)
-            explorer = DatabaseExplorer(db_connection)
+            engine = create_engine(**credentials)
+            explorer = DatabaseExplorer(engine)
             db_owners = explorer.get_owners()
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -31,8 +31,8 @@ class OwnerSchemaView(views.APIView):
         credentials = serializer.validated_data
 
         try:
-            db_connection = DBConnection(credentials)
-            explorer = DatabaseExplorer(db_connection)
+            engine = create_engine(**credentials)
+            explorer = DatabaseExplorer(engine)
             db_schema = explorer.get_owner_schema(owner)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -55,8 +55,8 @@ class ExploreView(views.APIView):
         credentials = analysis.source_credentials
 
         try:
-            db_connection = DBConnection(credentials)
-            explorer = DatabaseExplorer(db_connection)
+            engine = create_engine(**credentials)
+            explorer = DatabaseExplorer(engine)
             exploration = explorer.explore(owner, table, limit=limit, filters=analysis.filters)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)

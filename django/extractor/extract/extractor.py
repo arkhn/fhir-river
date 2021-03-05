@@ -4,10 +4,11 @@ from typing import Any, List, Optional
 
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
-from common.database_connection.db_connection import DBConnection
 from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
-from sqlalchemy.orm import Query
+from sqlalchemy import MetaData
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Query, sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +25,8 @@ counter_extract_instances = PromCounter(
 
 
 class Extractor:
-    def __init__(self, db_connection: DBConnection):
-        self.db_connection = db_connection
+    def __init__(self, engine: Engine):
+        self.engine = engine
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
@@ -42,24 +43,29 @@ class Extractor:
             a an sqlalchemy RestulProxy containing all the columns asked for in the
             mapping
         """
-        with self.db_connection.session_scope() as session:
-            logger.info(
-                {
-                    "message": f"Start extracting resource: {analysis.definition_id}",
-                    "resource_id": analysis.resource_id,
-                },
-            )
+        session = sessionmaker(self.engine)()
+        metadata = MetaData()
 
+        logger.info(
+            {
+                "message": f"Start extracting resource: {analysis.definition_id}",
+                "resource_id": analysis.resource_id,
+            },
+        )
+
+        try:
             # Build sqlalchemy query
             builder = QueryBuilder(
                 session=session,
-                metadata=self.db_connection.metadata,
+                metadata=metadata,
                 analysis=analysis,
                 pk_values=pk_values,
             )
             query = builder.build_query()
+        finally:
+            session.close()
 
-            return self.run_sql_query(query)
+        return self.run_sql_query(query)
 
     @Timer("time_extractor_run_query", "time to run sql query")
     def run_sql_query(self, query: Query, resource_id: Optional[str] = None):

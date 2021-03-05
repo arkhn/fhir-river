@@ -1,60 +1,72 @@
+import enum
 import logging
-from contextlib import contextmanager
 
-from sqlalchemy import MetaData, create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine as _create_engine
+from sqlalchemy.engine.url import URL
 
 logger = logging.getLogger(__name__)
 
-MSSQL = "MSSQL"
-ORACLE = "ORACLE"
-ORACLE11 = "ORACLE11"
-POSTGRES = "POSTGRES"
-DB_DRIVERS = {POSTGRES: "postgresql", ORACLE: "oracle+cx_oracle", ORACLE11: "oracle+cx_oracle", MSSQL: "mssql+pyodbc"}
-URL_SUFFIXES = {
-    POSTGRES: "",
-    ORACLE: "",
-    ORACLE11: "",
-    # the param MARS_Connection=Yes solves the following issue:
-    # https://github.com/catherinedevlin/ipython-sql/issues/54
-    MSSQL: "?driver=ODBC+Driver+17+for+SQL+Server&MARS_Connection=Yes",
+
+class URLBuilder:
+    dialect = None
+    driver = None
+    query_params = None
+
+    @property
+    def drivername(self):
+        return f"{self.dialect}+{self.driver}" if self.driver else self.dialect
+
+    def build(self, **kwargs):
+        return URL(drivername=self.drivername, query=self.query_params, **kwargs)
+
+
+class SQLiteURLBuilder(URLBuilder):
+    dialect = "sqlite"
+
+    def build(self, **kwargs):
+        return URL(drivername=self.drivername, database=kwargs.get("database", None))
+
+
+class MSSQLURLBuilder(URLBuilder):
+    dialect = "mssql"
+    driver = "pyodbc"
+    query_params = {"driver": "ODBC+Driver+17+for+SQL+Server", "MARS_Connection": "Yes"}
+
+
+class OracleURLBuilder(URLBuilder):
+    dialect = "oracle"
+    driver = "cx_oracle"
+
+
+class PostgreSQLURLBuilder(URLBuilder):
+    dialect = "postgres"
+    driver = "psycopg2"
+
+
+class Dialect(enum.Enum):
+    MSSQL = "MSSQL"
+    ORACLE = "ORACLE"
+    POSTGRES = "POSTGRES"
+    SQLLITE = "SQLLITE"
+
+
+BUILDERS = {
+    Dialect.MSSQL.value: MSSQLURLBuilder(),
+    Dialect.ORACLE.value: OracleURLBuilder(),
+    Dialect.POSTGRES.value: PostgreSQLURLBuilder(),
+    Dialect.SQLLITE.value: SQLiteURLBuilder(),
 }
 
 
-class DBConnection:
-    def __init__(self, db_config):
-        db_string = self.build_db_url(db_config)
-
+def create_engine(model: str, **kwargs):
+    return _create_engine(
+        BUILDERS[model].build(
+            username=kwargs["login"],
+            password=kwargs["password"],
+            host=kwargs["host"],
+            port=kwargs["port"],
+            database=kwargs["database"],
+        ),
         # Setting pool_pre_ping to True avoids random connection closing
-        self._db_model = db_config["model"]
-        self.engine = create_engine(db_string, pool_pre_ping=True)
-        self.metadata = MetaData(bind=self.engine)
-
-    @staticmethod
-    def build_db_url(db_config):
-        model = db_config["model"]
-        login = db_config["login"]
-        password = db_config["password"]
-        host = db_config["host"]
-        port = db_config["port"]
-        database = db_config["database"]
-
-        try:
-            db_handler = DB_DRIVERS[model]
-            url_suffix = URL_SUFFIXES[model]
-        except KeyError:
-            raise ValueError(
-                "db_config specifies the wrong database model. "
-                "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
-            )
-
-        return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
-
-    @contextmanager
-    def session_scope(self):
-        """Provide a scope for sqlalchemy sessions."""
-        session = sessionmaker(self.engine)()
-        try:
-            yield session
-        finally:
-            session.close()
+        pool_pre_ping=True,
+    )

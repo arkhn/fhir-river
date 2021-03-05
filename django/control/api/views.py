@@ -15,7 +15,7 @@ from fhirstore import NotFoundError
 import redis
 import scripts
 from common.analyzer import Analyzer
-from common.database_connection.db_connection import DBConnection
+from common.database_connection.db_connection import create_engine
 from common.kafka.producer import Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
@@ -172,8 +172,8 @@ class PreviewEndpoint(viewsets.ViewSet):
         analyzer = Analyzer()
         analysis = analyzer.analyze(resource_mapping)
 
-        db_connection = DBConnection(analysis.source_credentials)
-        extractor = Extractor(db_connection)
+        engine = create_engine(**analysis.source_credentials)
+        extractor = Extractor(engine)
         df = extractor.extract(analysis, primary_key_values)
 
         documents = []

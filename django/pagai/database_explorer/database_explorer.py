@@ -2,10 +2,11 @@ from collections import defaultdict
 from typing import Callable, Dict, List
 
 from common.analyzer.sql_filter import SqlFilter
-from common.database_connection.db_connection import ORACLE, ORACLE11, DBConnection
 from pagai.errors import ExplorationError
-from sqlalchemy import Column, Table, and_, text
+from sqlalchemy import Column, MetaData, Table, and_, text
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import InvalidRequestError
+from utils.session import Session
 
 
 def handle_between_filter(col, value):
@@ -31,8 +32,9 @@ SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[Column, str], Callable]] = {
 
 
 class DatabaseExplorer:
-    def __init__(self, db_connection: DBConnection):
-        self.db_connection = db_connection
+    def __init__(self, engine: Engine) -> None:
+        self.engine = engine
+        self.metadata = MetaData(bind=engine)
         self.db_schema = {}
 
     def get_table_rows(self, session, owner: str, table_name: str, limit: int = 100, filters: List[SqlFilter] = []):
@@ -77,33 +79,35 @@ class DatabaseExplorer:
         """
         Returns the first rows of a table alongside the column names.
         """
-        with self.db_connection.session_scope() as session:
-            try:
-                return self.get_table_rows(
-                    session=session,
-                    owner=owner,
-                    table_name=table_name,
-                    limit=limit,
-                    filters=filters,
-                )
-            except InvalidRequestError as e:
-                if "requested table(s) not available" in str(e):
-                    raise ExplorationError(f"Table {table_name} does not exist in database")
-                else:
-                    raise ExplorationError(e)
-            except Exception as e:
+        session = Session()
+        try:
+            return self.get_table_rows(
+                session=session,
+                owner=owner,
+                table_name=table_name,
+                limit=limit,
+                filters=filters,
+            )
+        except InvalidRequestError as e:
+            if "requested table(s) not available" in str(e):
+                raise ExplorationError(f"Table {table_name} does not exist in database")
+            else:
                 raise ExplorationError(e)
+        except Exception as e:
+            raise ExplorationError(e)
+        finally:
+            session.close()
 
     def get_owners(self):
         """
         Returns all owners of a database.
         """
-        if self.db_connection._db_model in [ORACLE, ORACLE11]:
+        if self.engine.name == "oracle":
             sql_query = text("select username as owners from all_users")
-        else:  # POSTGRES AND MSSQL
+        else:
             sql_query = text("select schema_name as owners from information_schema.schemata;")
 
-        with self.db_connection.engine.connect() as connection:
+        with self.engine.connect() as connection:
             result = connection.execute(sql_query).fetchall()
             return [r["owners"] for r in result]
 
@@ -117,14 +121,14 @@ class DatabaseExplorer:
 
         schema = defaultdict(list)
 
-        if self.db_connection._db_model in [ORACLE, ORACLE11]:
+        if self.engine.name == "oracle":
             sql_query = text(f"select table_name, column_name from all_tab_columns where owner='{owner}'")
-        else:  # POSTGRES AND MSSQL
+        else:
             sql_query = text(
                 f"select table_name, column_name from information_schema.columns where table_schema='{owner}';"
             )
 
-        with self.db_connection.engine.connect() as connection:
+        with self.engine.connect() as connection:
             result = connection.execute(sql_query).fetchall()
             for row in result:
                 schema[row["table_name"]].append(row["column_name"])
@@ -133,7 +137,7 @@ class DatabaseExplorer:
         return schema
 
     def get_sql_alchemy_table(self, owner: str, table: str):
-        return Table(table.strip(), self.db_connection.metadata, schema=owner, autoload=True)
+        return Table(table.strip(), self.metadata, schema=owner, autoload=True)
 
     def get_sql_alchemy_column(self, column: str, sqlalchemy_table: Table):
         """
