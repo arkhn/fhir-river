@@ -25,8 +25,8 @@ import { ReactComponent as MappingIcon } from "assets/icons/mapping_icon.svg";
 import CardContentItem from "common/CardContentItem/CardContentItem";
 import {
   useDestroySourceMutation,
-  useListSourceAttributes,
-  useListSourceResources,
+  useListResourcesQuery,
+  useListAttributesQuery,
 } from "services/api/api";
 import { Source } from "services/api/generated/api.generated";
 
@@ -79,17 +79,17 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
 
   const {
     data: mappings,
-    isLoading: isMappingLoading,
-  } = useListSourceResources(source);
+    isLoading: isMappingsLoading,
+  } = useListResourcesQuery({ source: source.id });
   const {
     data: attributes,
     isLoading: isAttributesLoading,
-  } = useListSourceAttributes(source);
+  } = useListAttributesQuery({ source: source.id });
 
   const attributesCount = attributes?.length;
   const mappingsCount = mappings?.length;
 
-  const isSourceInfosLoading = isMappingLoading || isAttributesLoading;
+  const isSourceInfosLoading = isMappingsLoading || isAttributesLoading;
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);

@@ -19,7 +19,20 @@ const SourceCreate = (): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const handleClick = () => dispatch(editSource({ name: "" } as Source));
+  const handleClick = () =>
+    dispatch(
+      editSource({
+        name: "",
+        credential: {
+          host: "",
+          // port: 5432,
+          database: "",
+          login: "",
+          password: "",
+          model: "POSTGRES",
+        },
+      } as Source)
+    );
 
   return (
     <Button

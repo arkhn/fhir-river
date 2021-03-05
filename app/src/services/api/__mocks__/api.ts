@@ -10,10 +10,30 @@ const sources: Source[] = [
   {
     id: "source_1",
     name: "source_name_1",
+    credential: {
+      id: "source_1_credential",
+      host: "localhost",
+      port: 5432,
+      database: "postgres",
+      login: "username",
+      password: "password",
+      model: "POSTGRES",
+      source: "source_1",
+    },
   },
   {
     id: "source_2",
     name: "source_name_2",
+    credential: {
+      id: "source_2_credential",
+      host: "localhost",
+      port: 5432,
+      database: "postgres",
+      login: "username",
+      password: "password",
+      model: "POSTGRES",
+      source: "source_2",
+    },
   },
 ];
 

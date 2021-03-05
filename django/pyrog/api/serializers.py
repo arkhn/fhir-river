@@ -9,12 +9,6 @@ class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Owner
         fields = "__all__"
-        extra_kwargs = {
-            "schema": {
-                "required": False,
-                "read_only": True,
-            },
-        }
 
     def update(self, instance, validated_data):
         if not instance.schema:
@@ -45,7 +39,7 @@ class SourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Source
-        fields = ["name", "version", "credential"]
+        fields = "__all__"
 
     def create(self, validated_data):
         try:
@@ -54,7 +48,7 @@ class SourceSerializer(serializers.ModelSerializer):
             owners = explorer.get_owners()
         except Exception as e:
             raise serializers.ValidationError(detail=e)
-        source = models.Source.objects.create(name=validated_data["name"], version=validated_data.get("version"))
+        source = models.Source.objects.create(name=validated_data["name"], version=validated_data["version"])
         credential = models.Credential.objects.create(source=source, **validated_data["credential"])
         for owner in owners:
             models.Owner.objects.create(credential=credential, name=owner)

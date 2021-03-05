@@ -861,8 +861,7 @@ export type DestroyOwnerApiArg = {
   source?: string;
 };
 export type Source = {
-  name: string;
-  version?: string;
+  id?: string;
   credential: {
     id?: string;
     host: string;
@@ -875,6 +874,10 @@ export type Source = {
     created_at?: string;
     source?: string;
   };
+  name: string;
+  version?: string;
+  updated_at?: string;
+  created_at?: string;
 };
 export type Resource = {
   id?: string;

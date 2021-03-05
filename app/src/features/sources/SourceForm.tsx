@@ -7,6 +7,7 @@ import {
   CircularProgress,
   Drawer,
   makeStyles,
+  TextField,
   Typography,
 } from "@material-ui/core";
 import { TFunction } from "i18next";
@@ -17,15 +18,71 @@ import {
   useCreateSourceMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
-import { Source } from "services/api/generated/api.generated";
+import { Source, Credential } from "services/api/generated/api.generated";
 
 import { editSource, selectSourceToEdit } from "./sourceSlice";
 
-const inputs: (t: TFunction) => FormInputProperty<Source>[] = (t) => [
+const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
+  t
+) => [
   {
     type: "text",
-    name: "name",
-    label: t("sourceName"),
+    name: "host",
+    label: t("host"),
+    variant: "outlined",
+    validationRules: { required: true },
+  },
+  {
+    type: "number",
+    name: "port",
+    label: t("port"),
+    variant: "outlined",
+    validationRules: { required: true },
+  },
+  {
+    type: "text",
+    name: "database",
+    label: t("database"),
+    variant: "outlined",
+    validationRules: { required: true },
+  },
+  {
+    type: "text",
+    name: "login",
+    label: t("username"),
+    variant: "outlined",
+    validationRules: { required: true },
+  },
+  {
+    type: "text",
+    password: true,
+    name: "password",
+    label: t("password"),
+    variant: "outlined",
+    validationRules: { required: true },
+  },
+  {
+    type: "select",
+    selectOptions: [
+      {
+        id: "MSSQL",
+        label: "MSSQL",
+      },
+      {
+        id: "POSTGRES",
+        label: "POSTGRESQL",
+      },
+      {
+        id: "ORACLE",
+        label: "ORACLE",
+      },
+      {
+        id: "SQLLITE",
+        label: "SQLITE",
+      },
+    ],
+    name: "model",
+    label: t("vendor"),
     variant: "outlined",
     validationRules: { required: true },
   },
@@ -68,15 +125,35 @@ const SourceForm = (): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmit = (data: Source) => {
+  const handleChangeSource = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(
+      editSource({
+        ...source,
+        name: e.target.value,
+      } as Source)
+    );
+  };
+
+  const handleSubmitSource = (data: Credential) => {
+    const _source: Source = {
+      name: source?.name ?? "",
+      credential: {
+        host: data.host,
+        port: data.port,
+        database: data.database,
+        login: data.login,
+        password: data.password,
+        model: data.model,
+      },
+    };
     if (source?.id) {
-      updateSource({ id: source.id, source: { ...source, ...data } })
+      updateSource({ id: source.id, source: _source })
         .unwrap()
         .then(() => handleCloseDrawer())
         // TODO: display error in snackbar notification (?)
         .catch();
     } else if (source) {
-      createSource({ source: data })
+      createSource({ source: _source })
         .unwrap()
         .then(() => handleCloseDrawer())
         // TODO: display error in snackbar notification (?)
@@ -87,11 +164,18 @@ const SourceForm = (): JSX.Element => {
   return (
     <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
       <div className={classes.formContainer}>
-        <Form<Source>
-          properties={inputs(t)}
-          submit={handleSubmit}
+        <TextField
+          id="outlined-basic"
+          label="Outlined"
+          variant="outlined"
+          onChange={handleChangeSource}
+          value={source?.name ?? ""}
+        />
+        <Form<Credential>
+          properties={credentialInputs(t)}
+          submit={handleSubmitSource}
           formStyle={{ display: "block" }}
-          defaultValues={{ name: source?.name ?? "" }}
+          defaultValues={{ ...source, ...source?.credential }}
           displaySubmitButton={false}
           formHeader={
             <Typography className={classes.title} variant="h5">

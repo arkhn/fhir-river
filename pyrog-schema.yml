@@ -1584,10 +1584,9 @@ components:
     Source:
       type: object
       properties:
-        name:
+        id:
           type: string
-        version:
-          type: string
+          readOnly: true
         credential:
           type: object
           properties:
@@ -1631,9 +1630,21 @@ components:
           - login
           - password
           - model
+        name:
+          type: string
+        version:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
-      - name
       - credential
+      - name
     Resource:
       type: object
       properties:

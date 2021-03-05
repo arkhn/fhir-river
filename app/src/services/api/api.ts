@@ -1,4 +1,4 @@
-import { api as generatedApi, Source } from "./generated/api.generated";
+import { api as generatedApi } from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
   addEntityTypes: ["Sources"],
@@ -18,50 +18,18 @@ export const api = generatedApi.enhanceEndpoints({
     updateSource: {
       invalidates: (_, { id }) => [{ type: "Sources", id }],
     },
-    partialUpdateSource: {
-      invalidates: (_, { id }) => [{ type: "Sources", id }],
-    },
     destroySource: {
       invalidates: (_, { id }) => [{ type: "Sources", id }],
     },
   },
 });
 
-const useListSourceResources = (source: Source) => {
-  return api.useListResourcesQuery(
-    {},
-    {
-      selectFromResult: ({ data, ...props }) => ({
-        data: data?.filter((resource) => resource.source === source.id),
-        ...props,
-      }),
-    }
-  );
-};
-
-const useListSourceAttributes = (source: Source) => {
-  const { data: resources } = useListSourceResources(source);
-  const resourceIds = resources?.map(({ id }) => id);
-  return api.useListAttributesQuery(
-    {},
-    {
-      selectFromResult: ({ data, ...props }) => ({
-        data: data?.filter((attribute) =>
-          resourceIds?.includes(attribute.resource)
-        ),
-        ...props,
-      }),
-    }
-  );
-};
-
 export const {
   useListSourcesQuery,
   useCreateSourceMutation,
   useRetrieveSourceQuery,
   useUpdateSourceMutation,
-  usePartialUpdateSourceMutation,
   useDestroySourceMutation,
+  useListResourcesQuery,
+  useListAttributesQuery,
 } = api;
-
-export { useListSourceResources, useListSourceAttributes };
