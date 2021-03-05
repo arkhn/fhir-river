@@ -27,19 +27,19 @@ export const api = generatedApi.enhanceEndpoints({
   },
 });
 
-const useListSourceResources = (source: Source) => {
+const useListSourceResources = (source?: Source) => {
   return api.useListResourcesQuery(
     {},
     {
       selectFromResult: ({ data, ...props }) => ({
-        data: data?.filter((resource) => resource.source === source.id),
+        data: data?.filter((resource) => resource.source === source?.id),
         ...props,
       }),
     }
   );
 };
 
-const useListSourceAttributes = (source: Source) => {
+const useListSourceAttributes = (source?: Source) => {
   const { data: resources } = useListSourceResources(source);
   const resourceIds = resources?.map(({ id }) => id);
   return api.useListAttributesQuery(

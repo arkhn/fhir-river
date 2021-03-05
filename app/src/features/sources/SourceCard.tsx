@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import {
   Card,
   CardContent,
@@ -20,8 +22,8 @@ import MoreIcon from "@material-ui/icons/MoreHoriz";
 import ManagePermissionsIcon from "@material-ui/icons/Person";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router";
 
-import { ReactComponent as MappingIcon } from "assets/icons/mapping_icon.svg";
 import CardContentItem from "common/CardContentItem/CardContentItem";
 import {
   useDestroySourceMutation,
@@ -72,6 +74,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const history = useHistory();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -88,10 +91,13 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
 
   const attributesCount = attributes?.length;
   const mappingsCount = mappings?.length;
-
   const isSourceInfosLoading = isMappingLoading || isAttributesLoading;
 
+  const handleCardClick = () => {
+    history.push(`/source/${source.id}`);
+  };
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => setAnchorEl(null);
@@ -105,12 +111,16 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   };
 
   return (
-    <Card className={classes.root} variant="outlined">
-      <CardHeader
-        title={source.name}
-        titleTypographyProps={{ variant: "h6" }}
-        action={
-          <>
+    <>
+      <Card
+        className={classes.root}
+        variant="outlined"
+        onClick={handleCardClick}
+      >
+        <CardHeader
+          title={source.name}
+          titleTypographyProps={{ variant: "h6" }}
+          action={
             <IconButton
               onClick={handleMenuClick}
               className={classes.actionButton}
@@ -119,70 +129,72 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
             >
               <MoreIcon />
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-              getContentAnchorEl={null}
-              variant="menu"
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-            >
-              <MenuItem onClick={handleManagePermissions} disabled>
-                <ListItemIcon className={classes.listItemIcon}>
-                  <ManagePermissionsIcon />
-                </ListItemIcon>
-                <ListItemText primary={t("managePermissions")} />
-              </MenuItem>
-              <MenuItem onClick={handleRenameSource}>
-                <ListItemIcon className={classes.listItemIcon}>
-                  <EditIcon />
-                </ListItemIcon>
-                <ListItemText primary={t("rename")} />
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={handleDeleteSource}>
-                <ListItemIcon
-                  className={clsx(classes.listItemIcon, classes.delete)}
-                >
-                  <DeleteIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={t("delete")}
-                  className={classes.delete}
+          }
+        />
+        <CardContent>
+          {isSourceInfosLoading ? (
+            <CircularProgress />
+          ) : (
+            <>
+              {undefined !== mappingsCount && (
+                <CardContentItem
+                  label={t("mappingCount", { count: mappingsCount })}
+                  startAdornment={
+                    <Icon
+                      icon={IconNames.DIAGRAM_TREE}
+                      className={classes.icon}
+                      iconSize={12}
+                    />
+                  }
                 />
-              </MenuItem>
-            </Menu>
-          </>
-        }
-      />
-      <CardContent>
-        {isSourceInfosLoading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {undefined !== mappingsCount && (
-              <CardContentItem
-                label={t("mappingCount", { count: mappingsCount })}
-                startAdornment={<MappingIcon className={classes.icon} />}
-              />
-            )}
-            {undefined !== attributesCount && (
-              <CardContentItem
-                label={t("attributesCount", { count: attributesCount })}
-                startAdornment={<AttributeIcon className={classes.icon} />}
-              />
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+              )}
+              {undefined !== attributesCount && (
+                <CardContentItem
+                  label={t("attributesCount", { count: attributesCount })}
+                  startAdornment={<AttributeIcon className={classes.icon} />}
+                />
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+      <Menu
+        anchorEl={anchorEl}
+        autoFocus
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        getContentAnchorEl={null}
+        variant="menu"
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem onClick={handleManagePermissions} disabled>
+          <ListItemIcon className={classes.listItemIcon}>
+            <ManagePermissionsIcon />
+          </ListItemIcon>
+          <ListItemText primary={t("managePermissions")} />
+        </MenuItem>
+        <MenuItem onClick={handleRenameSource}>
+          <ListItemIcon className={classes.listItemIcon}>
+            <EditIcon />
+          </ListItemIcon>
+          <ListItemText primary={t("rename")} />
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleDeleteSource}>
+          <ListItemIcon className={clsx(classes.listItemIcon, classes.delete)}>
+            <DeleteIcon />
+          </ListItemIcon>
+          <ListItemText primary={t("delete")} className={classes.delete} />
+        </MenuItem>
+      </Menu>
+    </>
   );
 };
 

@@ -1,19 +1,16 @@
 import React from "react";
 
 import { Container } from "@material-ui/core";
-import { useParams } from "react-router";
 
 import MappingsTable from "features/mappings/MappingsTable";
-import SourceBreadcrumbs from "features/sources/SourceBreadcrumbs";
+import NavigationBreadcrumbs from "features/navigationBreadcrumbs/NavigationBreadcrumbs";
 
-const SourceMappings = () => {
-  const { sourceId } = useParams<{ sourceId: string }>();
-
+const SourceMappings = (): JSX.Element => {
   return (
     <Container maxWidth="xl">
-      <SourceBreadcrumbs source={source} />
+      <NavigationBreadcrumbs />
       <Container maxWidth="xl">
-        <MappingsTable source={source} />
+        <MappingsTable />
       </Container>
     </Container>
   );

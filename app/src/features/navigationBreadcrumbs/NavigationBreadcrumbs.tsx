@@ -7,9 +7,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useParams } from "react-router-dom";
 
-import { Source } from "services/api/generated/api.generated";
+import { useRetrieveSourceQuery } from "services/api/api";
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -20,10 +20,6 @@ const Link = (props: LinkRouterProps) => (
   <MuiLink {...props} component={RouterLink} />
 );
 
-type SourceBreadcrumbsProps = {
-  source: Source;
-};
-
 const useStyles = makeStyles((theme) => ({
   separator: {
     fontSize: theme.typography.h5.fontSize,
@@ -33,22 +29,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceBreadcrumbs = ({ source }: SourceBreadcrumbsProps) => {
+const SourceBreadcrumbs = (): JSX.Element => {
   const { t } = useTranslation();
+  const { sourceId } = useParams<{ sourceId?: string }>();
+
+  const { data: source } = useRetrieveSourceQuery({
+    id: sourceId ?? "",
+  });
+
   const classes = useStyles();
   return (
     <Breadcrumbs separator=">" classes={{ separator: classes.separator }}>
       <Link variant="h5" color="textSecondary" to="/">
         {t("sources")}
       </Link>
-      <Link
-        className={classes.mainCrumb}
-        variant="h5"
-        color="textPrimary"
-        to={`/source/${source.id}`}
-      >
-        {source.name}
-      </Link>
+      {source && (
+        <Link
+          className={classes.mainCrumb}
+          variant="h5"
+          color="textPrimary"
+          to={`/source/${source.id}`}
+        >
+          {source.name}
+        </Link>
+      )}
     </Breadcrumbs>
   );
 };

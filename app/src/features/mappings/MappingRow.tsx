@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconButton, makeStyles, TableCell, TableRow } from "@material-ui/core";
+import { makeStyles, TableCell, TableRow } from "@material-ui/core";
 import { Whatshot } from "@material-ui/icons";
 
 import { Resource } from "services/api/generated/api.generated";

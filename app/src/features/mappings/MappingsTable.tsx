@@ -4,26 +4,29 @@ import {
   CircularProgress,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableRow,
 } from "@material-ui/core";
+import { useParams } from "react-router";
 
-import { useListSourceResources } from "services/api/api";
-import { Source } from "services/api/generated/api.generated";
+import {
+  useListSourceResources,
+  useRetrieveSourceQuery,
+} from "services/api/api";
 
 import MappingRow from "./MappingRow";
 
-type MappingsTableProps = {
-  source: Source;
-};
+const MappingsTable = (): JSX.Element => {
+  const { sourceId } = useParams<{ sourceId?: string }>();
 
-const MappingsTable = ({ source }: MappingsTableProps) => {
+  if (!sourceId) {
+    return <></>;
+  }
+
+  const { data: source } = useRetrieveSourceQuery({ id: sourceId ?? "" });
   const {
     data: mappings,
     isLoading: isMappingLoading,
   } = useListSourceResources(source);
-  console.log(mappings);
   return isMappingLoading ? (
     <CircularProgress />
   ) : (
