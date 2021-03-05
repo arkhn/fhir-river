@@ -17,7 +17,7 @@ class OwnersListView(views.APIView):
         try:
             engine = create_engine(**credentials)
             explorer = DatabaseExplorer(engine)
-            db_owners = explorer.get_owners()
+            db_owners = explorer.list_available_schema()
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -33,7 +33,7 @@ class OwnerSchemaView(views.APIView):
         try:
             engine = create_engine(**credentials)
             explorer = DatabaseExplorer(engine)
-            db_schema = explorer.get_owner_schema(owner)
+            db_schema = explorer.get_schema(owner=owner)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

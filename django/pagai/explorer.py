@@ -1,7 +1,8 @@
 from collections import defaultdict
-from typing import Callable, Dict, List, Mapping
+from typing import Callable, Dict, List, Mapping, Type
 
 from common.analyzer.sql_filter import SqlFilter
+from common.database_connection.db_connection import Dialect
 from pagai.errors import ExplorationError
 from sqlalchemy import Column, MetaData, Table, and_, inspect, text
 from sqlalchemy.engine import Engine
@@ -41,7 +42,9 @@ class ExplorerBase:
     def get_schema(self, schema: str) -> Mapping[str, List[str]]:
         raise NotImplementedError
 
-    def list_rows(self, session: Session, schema: str, table_name: str, limit: int = 100) -> List:
+    def list_rows(
+        self, session: Session, schema: str, table_name: str, limit: int = 100, filters: List[SqlFilter] = []
+    ) -> List:
         raise NotImplementedError
 
 
@@ -99,17 +102,17 @@ class SimpleExplorer(ExplorerBase):
         }
 
 
-class DatabaseExplorer:
+class DatabaseExplorer(ExplorerBase):
     def __init__(self, engine: Engine) -> None:
-        self.engine = engine
+        super().__init__(engine=engine)
         self.metadata = MetaData(bind=engine)
         self.db_schema = {}
 
-    def get_table_rows(self, session, owner: str, table_name: str, limit: int = 100, filters: List[SqlFilter] = []):
+    def list_rows(self, session, owner: str, table_name: str, limit: int = 100, filters: List[SqlFilter] = []):
         """
         Return content of a table with a limit
         """
-        columns_names = self.get_owner_schema(owner)[table_name]
+        columns_names = self.get_schema(owner)[table_name]
 
         table = self.get_sql_alchemy_table(owner, table_name)
         columns = [self.get_sql_alchemy_column(col, table) for col in columns_names]
@@ -149,7 +152,7 @@ class DatabaseExplorer:
         """
         session = Session()
         try:
-            return self.get_table_rows(
+            return self.list_rows(
                 session=session,
                 owner=owner,
                 table_name=table_name,
@@ -166,7 +169,7 @@ class DatabaseExplorer:
         finally:
             session.close()
 
-    def get_owners(self):
+    def list_available_schema(self):
         """
         Returns all owners of a database.
         """
@@ -179,7 +182,7 @@ class DatabaseExplorer:
             result = connection.execute(sql_query).fetchall()
             return [r["owners"] for r in result]
 
-    def get_owner_schema(self, owner: str):
+    def get_schema(self, owner: str):
         """
         Returns the database schema for one owner of a database,
         as required by Pyrog.
@@ -220,3 +223,11 @@ class DatabaseExplorer:
             # in table.c are in lower case (what sqlalchemy considers
             # as case insensitive).
             return sqlalchemy_table.c[column.lower()]
+
+
+EXPLORER_CLASSES: Mapping[str, Type[ExplorerBase]] = {
+    Dialect.MSSQL.value: DatabaseExplorer,
+    Dialect.ORACLE.value: DatabaseExplorer,
+    Dialect.POSTGRES.value: DatabaseExplorer,
+    Dialect.SQLLITE.value: SimpleExplorer,
+}
