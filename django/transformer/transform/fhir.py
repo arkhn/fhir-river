@@ -62,7 +62,12 @@ def build_fhir_object(row, path_attributes_map):
             # If we didn't find an index in the path, then we don't worry about arrays
             val = row[attr.path]
 
-            if any(v != val[0] for v in val[1:]):
+            # Filter out None values that can be here because of joins
+            val = [v for v in val if v is not None]
+
+            if len(val) == 0:
+                continue
+            elif any(v != val[0] for v in val[1:]):
                 raise ValueError("can't build non-list attribute from list")
             # If index is not None, we met an array before. Here, val will have
             # several elements but we know which one we need
