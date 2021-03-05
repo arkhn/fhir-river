@@ -1,9 +1,9 @@
 from collections import defaultdict
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Mapping
 
 from common.analyzer.sql_filter import SqlFilter
 from pagai.errors import ExplorationError
-from sqlalchemy import Column, MetaData, Table, and_, text
+from sqlalchemy import Column, MetaData, Table, and_, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import InvalidRequestError
 from utils.session import Session
@@ -29,6 +29,74 @@ SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[Column, str], Callable]] = {
     "IN": lambda col, value: col.in_(value.split(",")),
     "LIKE": lambda col, value: col.like(value),
 }
+
+
+class ExplorerBase:
+    def __init__(self, engine: Engine) -> None:
+        self.engine = engine
+
+    def list_available_schema(self) -> List[str]:
+        raise NotImplementedError
+
+    def get_schema(self, schema: str) -> Mapping[str, List[str]]:
+        raise NotImplementedError
+
+    def list_rows(self, session: Session, schema: str, table_name: str, limit: int = 100) -> List:
+        raise NotImplementedError
+
+
+class SimpleExplorer(ExplorerBase):
+    def list_available_schema(self) -> List[str]:
+        inspector = inspect(self.engine)
+        return inspector.get_schema_names()
+
+    def get_metadata(self, schema: str) -> MetaData:
+        metadata = MetaData()
+        metadata.reflect(bind=self.engine, schema=schema)
+        return metadata
+
+    def get_table(self, schema: str, name: str) -> Table:
+        metadata = MetaData()
+        return Table(name, metadata, schema=schema, autoload=True, autoload_with=self.engine)
+
+    def get_schema(self, schema: str) -> Mapping[str, List[str]]:
+        metadata = self.get_metadata(schema=schema)
+        return {name: [column.name for column in table.columns] for name, table in metadata.tables.items()}
+
+    def list_rows(
+        self, session: Session, schema: str, table_name: str, limit: int = 100, filters: List[SqlFilter] = []
+    ) -> dict:
+        table = self.get_table(schema=schema, name=table_name)
+        query = session.query(table)
+
+        # Add filtering if any
+        for filter_ in filters:
+            table = self.get_table(schema=filter_.sql_column.owner, name=filter_.sql_column.table)
+            column = table.columns[filter_.sql_column.column]
+            filter_clause = SQL_RELATIONS_TO_METHOD[filter_.relation](column, filter_.value)
+            query = query.filter(filter_clause)
+
+            # Add joins if any
+            last_link = None
+            for join in filter_.sql_column.joins:
+                left_table = (
+                    last_link
+                    if last_link is not None
+                    else self.get_table(schema=join.left.owner, name=join.left.table)
+                )
+                right_table = self.get_table(schema=join.right.owner, name=join.right.table)
+                last_link = right_table
+
+                query = query.join(
+                    right_table,
+                    right_table.columns[join.left.column] == left_table.columns[join.right.column],
+                    isouter=True,
+                )
+
+        return {
+            "fields": [column_desc["name"] for column_desc in query.column_descriptions],
+            "rows": [list(row) for row in query.limit(limit).all()],
+        }
 
 
 class DatabaseExplorer:
