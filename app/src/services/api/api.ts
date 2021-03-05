@@ -1,7 +1,7 @@
 import { api as generatedApi } from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
-  addEntityTypes: ["Sources"],
+  addEntityTypes: ["Sources", "Resources", "Attributes"],
   endpoints: {
     listSources: {
       provides: (response) => [
@@ -20,6 +20,18 @@ export const api = generatedApi.enhanceEndpoints({
     },
     destroySource: {
       invalidates: (_, { id }) => [{ type: "Sources", id }],
+    },
+    listResources: {
+      provides: (response) => [
+        ...response.map(({ id }) => ({ type: "Resources" as const, id })),
+        { type: "Resources", id: "LIST" },
+      ],
+    },
+    listAttributes: {
+      provides: (response) => [
+        ...response.map(({ id }) => ({ type: "Attributes" as const, id })),
+        { type: "Attributes", id: "LIST" },
+      ],
     },
   },
 });

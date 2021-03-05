@@ -1,6 +1,6 @@
 {
   "managePermissions": "Manage permissions",
-  "rename": "Rename",
+  "edit": "Edit",
   "delete": "Delete",
   "mappingCount": "{{count}} mapping",
   "mappingCount_plural": "{{count}} mappings",
@@ -8,6 +8,7 @@
   "attributesCount_plural": "{{count}} attributes",
   "newSource": "New source",
   "createSource": "Create source",
+  "editSource": "Edit source",
   "name": "Name",
   "host": "Host",
   "port": "Port",
@@ -16,7 +17,5 @@
   "password": "Password",
   "vendor": "Vendor",
   "pageNotFound": "Woops... Seems like this page doesn't exist.",
-  "logout": "Log out",
-  "editSource": "Edit source",
-  "renameSource": "Rename source"
+  "logout": "Log out"
 }

@@ -96,7 +96,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   };
   const handleClose = () => setAnchorEl(null);
   const handleManagePermissions = () => handleClose();
-  const handleRenameSource = () => {
+  const handleEditSource = () => {
     dispatch(editSource(source));
     handleClose();
   };
@@ -140,11 +140,11 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
                 </ListItemIcon>
                 <ListItemText primary={t("managePermissions")} />
               </MenuItem>
-              <MenuItem onClick={handleRenameSource}>
+              <MenuItem onClick={handleEditSource}>
                 <ListItemIcon className={classes.listItemIcon}>
                   <EditIcon />
                 </ListItemIcon>
-                <ListItemText primary={t("rename")} />
+                <ListItemText primary={t("edit")} />
               </MenuItem>
               <Divider />
               <MenuItem onClick={handleDeleteSource}>

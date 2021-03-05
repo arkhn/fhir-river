@@ -23,9 +23,10 @@ const SourceCreate = (): JSX.Element => {
     dispatch(
       editSource({
         name: "",
+        version: "",
         credential: {
           host: "",
-          // port: 5432,
+          port: 5432,
           database: "",
           login: "",
           password: "",

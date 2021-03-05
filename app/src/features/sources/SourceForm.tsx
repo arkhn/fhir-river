@@ -135,24 +135,20 @@ const SourceForm = (): JSX.Element => {
   };
 
   const handleSubmitSource = (data: Credential) => {
+    if (!source) return;
     const _source: Source = {
-      name: source?.name ?? "",
+      ...source,
       credential: {
-        host: data.host,
-        port: data.port,
-        database: data.database,
-        login: data.login,
-        password: data.password,
-        model: data.model,
+        ...data,
       },
     };
-    if (source?.id) {
+    if (source.id) {
       updateSource({ id: source.id, source: _source })
         .unwrap()
         .then(() => handleCloseDrawer())
         // TODO: display error in snackbar notification (?)
         .catch();
-    } else if (source) {
+    } else {
       createSource({ source: _source })
         .unwrap()
         .then(() => handleCloseDrawer())
@@ -164,13 +160,6 @@ const SourceForm = (): JSX.Element => {
   return (
     <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
       <div className={classes.formContainer}>
-        <TextField
-          id="outlined-basic"
-          label="Outlined"
-          variant="outlined"
-          onChange={handleChangeSource}
-          value={source?.name ?? ""}
-        />
         <Form<Credential>
           properties={credentialInputs(t)}
           submit={handleSubmitSource}
@@ -178,9 +167,18 @@ const SourceForm = (): JSX.Element => {
           defaultValues={{ ...source, ...source?.credential }}
           displaySubmitButton={false}
           formHeader={
-            <Typography className={classes.title} variant="h5">
-              {source?.id ? t("renameSource") : t("newSource")}
-            </Typography>
+            <>
+              <Typography className={classes.title} variant="h5">
+                {source?.id ? t("editSource") : t("newSource")}
+              </Typography>
+              <TextField
+                id="outlined-basic"
+                label="Name"
+                variant="outlined"
+                onChange={handleChangeSource}
+                value={source?.name ?? ""}
+              />
+            </>
           }
           formFooter={
             <Button
@@ -194,7 +192,7 @@ const SourceForm = (): JSX.Element => {
                 <CircularProgress color="inherit" size={23} />
               ) : (
                 <Typography>
-                  {source?.id ? t("renameSource") : t("createSource")}
+                  {source?.id ? t("editSource") : t("createSource")}
                 </Typography>
               )}
             </Button>

@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@arkhn/ui@^1.10.4":
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/@arkhn/ui/-/ui-1.10.4.tgz#3ad0ea352b0468ebb23b5b54e1ffb9287a621258"
-  integrity sha512-gZxIjphHR7lGmp4dR2D/ripHtqrOlOaiyoByMo96r/9UPUephK3fqcQDulYPHYB0IP6DWer5lGDOn/f/rRv8RQ==
+"@arkhn/ui@^1.10.5":
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/@arkhn/ui/-/ui-1.10.5.tgz#afae5004dfdffd71d062bbf73cf2db8de9b25bfc"
+  integrity sha512-Z2xAC2/BPnQCc+mtV+2s6XRBI9G3Te4MnCS8WzujPqsfncOTfVAf6E5zD8UdSuBhChzB2BQuvDiYp0Yh1KDI2A==
   dependencies:
     "@date-io/core" "^1.3.6"
     "@date-io/date-fns" "1.x"
