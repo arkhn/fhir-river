@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AppBar from "./AppBar";
 import PageNotFound from "./PageNotFound";
+import SourceMappings from "./SourceMappings";
 import Sources from "./Sources";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,6 +23,9 @@ const Router = (): JSX.Element => {
         <Switch>
           <Route exact path={["/", "/sources"]}>
             <Sources />
+          </Route>
+          <Route exact path="/source/:sourceId">
+            <SourceMappings />
           </Route>
           <Route>
             <PageNotFound />

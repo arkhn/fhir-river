@@ -12,5 +12,6 @@
   "pageNotFound": "Woops... Seems like this page doesn't exist.",
   "logout": "Log out",
   "editSource": "Edit source",
-  "renameSource": "Rename source"
+  "renameSource": "Rename source",
+  "sources": "Sources"
 }
