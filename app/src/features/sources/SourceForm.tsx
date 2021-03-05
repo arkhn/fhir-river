@@ -125,7 +125,7 @@ const SourceForm = (): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleChangeSource = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSourceRename = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(
       editSource({
         ...source,
@@ -139,6 +139,7 @@ const SourceForm = (): JSX.Element => {
     const _source: Source = {
       ...source,
       credential: {
+        ...source.credential,
         ...data,
       },
     };
@@ -164,7 +165,7 @@ const SourceForm = (): JSX.Element => {
           properties={credentialInputs(t)}
           submit={handleSubmitSource}
           formStyle={{ display: "block" }}
-          defaultValues={{ ...source, ...source?.credential }}
+          defaultValues={{ ...source?.credential }}
           displaySubmitButton={false}
           formHeader={
             <>
@@ -175,7 +176,7 @@ const SourceForm = (): JSX.Element => {
                 id="outlined-basic"
                 label="Name"
                 variant="outlined"
-                onChange={handleChangeSource}
+                onChange={handleSourceRename}
                 value={source?.name ?? ""}
               />
             </>

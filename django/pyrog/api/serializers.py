@@ -48,11 +48,18 @@ class SourceSerializer(serializers.ModelSerializer):
             owners = explorer.get_owners()
         except Exception as e:
             raise serializers.ValidationError(detail=e)
-        source = models.Source.objects.create(name=validated_data["name"], version=validated_data["version"])
+        source = models.Source.objects.create(name=validated_data["name"])
         credential = models.Credential.objects.create(source=source, **validated_data["credential"])
         for owner in owners:
             models.Owner.objects.create(credential=credential, name=owner)
         return source
+
+    def update(self, instance, validated_data):
+        credential = instance.credential
+        credential_serializer = self.fields["credential"]
+        credential_data = validated_data.pop("credential")
+        credential_serializer.update(instance=credential, validated_data=credential_data)
+        return super(SourceSerializer, self).update(instance, validated_data)
 
 
 class ResourceSerializer(serializers.ModelSerializer):
