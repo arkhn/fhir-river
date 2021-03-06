@@ -20,6 +20,7 @@ import {
 } from "services/api/api";
 import { Source, Credential } from "services/api/generated/api.generated";
 
+import SourceOwnerSelect from "./SourceOwnerSelect";
 import { editSource, selectSourceToEdit } from "./sourceSlice";
 
 const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
@@ -182,21 +183,24 @@ const SourceForm = (): JSX.Element => {
             </>
           }
           formFooter={
-            <Button
-              className={classes.button}
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth={false}
-            >
-              {isLoading ? (
-                <CircularProgress color="inherit" size={23} />
-              ) : (
-                <Typography>
-                  {source?.id ? t("editSource") : t("createSource")}
-                </Typography>
-              )}
-            </Button>
+            <>
+              <Button
+                className={classes.button}
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth={false}
+              >
+                {isLoading ? (
+                  <CircularProgress color="inherit" size={23} />
+                ) : (
+                  <Typography>
+                    {source?.id ? t("editSource") : t("createSource")}
+                  </Typography>
+                )}
+              </Button>
+              {source && <SourceOwnerSelect source={source} />}
+            </>
           }
         />
       </div>

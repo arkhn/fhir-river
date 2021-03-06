@@ -1,7 +1,7 @@
 import { api as generatedApi } from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
-  addEntityTypes: ["Sources", "Resources", "Attributes"],
+  addEntityTypes: ["Sources", "Resources", "Attributes", "Owners"],
   endpoints: {
     listSources: {
       provides: (response) => [
@@ -10,7 +10,10 @@ export const api = generatedApi.enhanceEndpoints({
       ],
     },
     createSource: {
-      invalidates: [{ type: "Sources", id: "LIST" }],
+      invalidates: [
+        { type: "Sources", id: "LIST" },
+        { type: "Owners", id: "LIST" },
+      ],
     },
     retrieveSource: {
       provides: (_, { id }) => [{ type: "Sources", id }],
@@ -33,6 +36,15 @@ export const api = generatedApi.enhanceEndpoints({
         { type: "Attributes", id: "LIST" },
       ],
     },
+    listOwners: {
+      provides: (response) => [
+        ...response.map(({ id }) => ({ type: "Owners" as const, id })),
+        { type: "Owners", id: "LIST" },
+      ],
+    },
+    updateOwner: {
+      invalidates: (_, { id }) => [{ type: "Owners", id }],
+    },
   },
 });
 
@@ -44,4 +56,6 @@ export const {
   useDestroySourceMutation,
   useListResourcesQuery,
   useListAttributesQuery,
+  useListOwnersQuery,
+  useUpdateOwnerMutation,
 } = api;
