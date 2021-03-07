@@ -4,7 +4,9 @@ import {
   FetchArgs,
   FetchBaseQueryError,
 } from "@rtk-incubator/rtk-query";
+import { omitBy, isUndefined } from "lodash";
 
+// import { logApiError } from "../../features/logger/loggerSlice";
 import { API_URL } from "./constants";
 
 /**
@@ -34,10 +36,22 @@ export const apiBaseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
+  // TODO: Remove this condition after the next rtk-query > 0.2.0 release
+  // Undefined query params should be excluded.
+  // Fixed by https://github.com/rtk-incubator/rtk-query/pull/146
+  if (typeof args !== "string" && args.params) {
+    args = {
+      ...args,
+      params: omitBy({ ...args.params }, isUndefined),
+    };
+  }
   const result = await baseQuery(args, api, extraOptions);
-  if (result.error && result.error.status === 401) {
-    // TODO: handle authentication errors
-    // api.dispatch(logout());
+  if (result.error) {
+    if (result.error.status === 401) {
+      // TODO: handle authentication errors
+      // api.dispatch(logout());
+    }
+    // api.dispatch(logApiError(result.error));
   }
   return result;
 };

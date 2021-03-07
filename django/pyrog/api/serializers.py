@@ -11,14 +11,14 @@ class OwnerSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def update(self, instance, validated_data):
-        if not instance.schema:
+        if not instance.schema and "schema" not in validated_data:
             credential = CredentialSerializer(validated_data["credential"]).data
             try:
                 db_connection = DBConnection(credential)
                 explorer = DatabaseExplorer(db_connection)
                 validated_data["schema"] = explorer.get_owner_schema(instance.name)
             except Exception as e:
-                raise serializers.ValidationError(detail=e)
+                raise serializers.ValidationError({"credential": [e]})
         return super(OwnerSerializer, self).update(instance, validated_data)
 
 
@@ -47,7 +47,7 @@ class SourceSerializer(serializers.ModelSerializer):
             explorer = DatabaseExplorer(db_connection)
             owners = explorer.get_owners()
         except Exception as e:
-            raise serializers.ValidationError(detail=e)
+            raise serializers.ValidationError({"credential": [e]})
         source = models.Source.objects.create(name=validated_data["name"])
         credential = models.Credential.objects.create(source=source, **validated_data["credential"])
         for owner in owners:
@@ -62,7 +62,7 @@ class SourceSerializer(serializers.ModelSerializer):
             db_connection = DBConnection(credential_data).engine.connect()
             db_connection.close()
         except Exception as e:
-            raise serializers.ValidationError(detail=e)
+            raise serializers.ValidationError({"credential": [e]})
         credential_serializer.update(instance=credential, validated_data=credential_data)
         return super(SourceSerializer, self).update(instance, validated_data)
 

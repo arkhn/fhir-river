@@ -12,19 +12,17 @@ import type { Source, Owner } from "services/api/generated/api.generated";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: 500,
-      "& > * + *": {
-        marginTop: theme.spacing(3),
-      },
+      margin: theme.spacing(3),
+      minWidth: 400,
     },
   })
 );
 
-type OwnerSelectProps = {
+type SourceOwnerSelectProps = {
   source: Source;
 };
 
-const SourceOwnerSelect = ({ source }: OwnerSelectProps): JSX.Element => {
+const SourceOwnerSelect = ({ source }: SourceOwnerSelectProps): JSX.Element => {
   const classes = useStyles();
 
   const { owners, selectedOwners, isOwnersLoading } = useListOwnersQuery(
@@ -37,7 +35,6 @@ const SourceOwnerSelect = ({ source }: OwnerSelectProps): JSX.Element => {
       }),
     }
   );
-
   const [updateOwner] = useUpdateOwnerMutation();
 
   const handleChange = (
@@ -46,22 +43,40 @@ const SourceOwnerSelect = ({ source }: OwnerSelectProps): JSX.Element => {
     reason: string
   ) => {
     if (!selectedOwners) return;
-    const owner = first(differenceBy(value, selectedOwners, "id"));
-    if (owner?.id && reason === "select-option") {
-      updateOwner({
-        id: owner.id,
-        owner: owner,
-      });
+    switch (reason) {
+      case "select-option":
+        const selectedOwner = first(differenceBy(value, selectedOwners, "id"));
+        if (selectedOwner?.id) {
+          updateOwner({
+            id: selectedOwner.id,
+            owner: {
+              ...selectedOwner,
+              schema: undefined,
+            },
+          });
+        }
+        return;
+      case "remove-option":
+        const removedOwner = first(differenceBy(selectedOwners, value, "id"));
+        if (removedOwner?.id) {
+          updateOwner({
+            id: removedOwner.id,
+            owner: {
+              ...removedOwner,
+              schema: null,
+            },
+          });
+        }
+        return;
     }
   };
 
-  if (!owners) return <>No owners available</>;
   if (isOwnersLoading) return <CircularProgress />;
   return (
     <div className={classes.root}>
       <Autocomplete
         multiple
-        options={owners}
+        options={owners || []}
         getOptionLabel={(owner) => owner.name}
         renderInput={(params) => (
           <TextField {...params} variant="outlined" label="Owners" />

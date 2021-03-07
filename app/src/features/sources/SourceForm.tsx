@@ -23,6 +23,32 @@ import { Source, Credential } from "services/api/generated/api.generated";
 import SourceOwnerSelect from "./SourceOwnerSelect";
 import { editSource, selectSourceToEdit } from "./sourceSlice";
 
+const useStyles = makeStyles((theme) => ({
+  formContainer: {
+    minWidth: 400,
+  },
+  sourceName: {
+    minWidth: 400,
+    padding: "1em",
+    display: "flex",
+    flexDirection: "column",
+  },
+  sourceNameInput: {
+    margin: theme.spacing(2),
+  },
+  title: {
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(3),
+    fontWeight: "bold",
+  },
+  button: {
+    marginLeft: theme.spacing(3),
+    textTransform: "none",
+    width: "auto",
+    minWidth: 150,
+  },
+}));
+
 const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
   t
 ) => [
@@ -60,7 +86,6 @@ const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
     name: "password",
     label: t("password"),
     variant: "outlined",
-    validationRules: { required: true },
   },
   {
     type: "select",
@@ -88,23 +113,6 @@ const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
     validationRules: { required: true },
   },
 ];
-
-const useStyles = makeStyles((theme) => ({
-  formContainer: {
-    marginBlock: theme.spacing(3),
-    minWidth: 400,
-  },
-  title: {
-    marginLeft: theme.spacing(3),
-    fontWeight: "bold",
-  },
-  button: {
-    marginLeft: theme.spacing(3),
-    textTransform: "none",
-    width: "auto",
-    minWidth: 150,
-  },
-}));
 
 const SourceForm = (): JSX.Element => {
   const { t } = useTranslation();
@@ -147,63 +155,59 @@ const SourceForm = (): JSX.Element => {
     if (source.id) {
       updateSource({ id: source.id, source: _source })
         .unwrap()
-        .then(() => handleCloseDrawer())
-        // TODO: display error in snackbar notification (?)
+        .then((source) => dispatch(editSource(source)))
         .catch();
     } else {
       createSource({ source: _source })
         .unwrap()
-        .then(() => handleCloseDrawer())
-        // TODO: display error in snackbar notification (?)
+        .then((source) => dispatch(editSource(source)))
         .catch();
     }
   };
 
   return (
     <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
+      <Typography className={classes.title} variant="h5">
+        {source?.id ? t("editSource") : t("newSource")}
+      </Typography>
       <div className={classes.formContainer}>
+        <div className={classes.sourceName}>
+          <TextField
+            id="outlined-basic"
+            label="Name"
+            variant="outlined"
+            required={true}
+            onChange={handleSourceRename}
+            value={source?.name ?? ""}
+            className={classes.sourceNameInput}
+          />
+        </div>
         <Form<Credential>
           properties={credentialInputs(t)}
           submit={handleSubmitSource}
           formStyle={{ display: "block" }}
           defaultValues={{ ...source?.credential }}
           displaySubmitButton={false}
-          formHeader={
-            <>
-              <Typography className={classes.title} variant="h5">
-                {source?.id ? t("editSource") : t("newSource")}
-              </Typography>
-              <TextField
-                id="outlined-basic"
-                label="Name"
-                variant="outlined"
-                onChange={handleSourceRename}
-                value={source?.name ?? ""}
-              />
-            </>
-          }
           formFooter={
-            <>
-              <Button
-                className={classes.button}
-                type="submit"
-                variant="contained"
-                color="primary"
-                fullWidth={false}
-              >
-                {isLoading ? (
-                  <CircularProgress color="inherit" size={23} />
-                ) : (
-                  <Typography>
-                    {source?.id ? t("editSource") : t("createSource")}
-                  </Typography>
-                )}
-              </Button>
-              {source && <SourceOwnerSelect source={source} />}
-            </>
+            <Button
+              className={classes.button}
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth={false}
+            >
+              {isLoading ? (
+                <CircularProgress color="inherit" size={23} />
+              ) : (
+                <Typography>
+                  {source?.id ? t("editSource") : t("createSource")}
+                </Typography>
+              )}
+            </Button>
           }
         />
       </div>
+      {source?.id && <SourceOwnerSelect source={source} />}
     </Drawer>
   );
 };

@@ -962,7 +962,7 @@ export type Filter = {
 export type Owner = {
   id?: string;
   name: string;
-  schema?: object;
+  schema?: object | null;
   credential: string;
 };
 export const {

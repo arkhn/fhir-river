@@ -1908,7 +1908,7 @@ components:
           type: string
         schema:
           type: object
-          readOnly: true
+          nullable: true
         credential:
           type: string
       required:

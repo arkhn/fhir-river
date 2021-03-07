@@ -22,7 +22,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { ReactComponent as MappingIcon } from "assets/icons/mapping_icon.svg";
-import CardContentItem from "common/CardContentItem/CardContentItem";
+import CardContentItem from "common/components/CardContentItem";
 import {
   useDestroySourceMutation,
   useListResourcesQuery,
