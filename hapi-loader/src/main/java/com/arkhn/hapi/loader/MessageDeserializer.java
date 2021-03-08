@@ -13,8 +13,6 @@ public class MessageDeserializer implements Deserializer<KafkaMessage> {
     @Override
     public KafkaMessage deserialize(String topic, byte[] bytes) {
 
-        logger.debug(bytes.toString());
-
         ObjectMapper mapper = new ObjectMapper();
         KafkaMessage message = null;
         try {
