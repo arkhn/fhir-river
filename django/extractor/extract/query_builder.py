@@ -67,7 +67,8 @@ class QueryBuilder:
         # To avoid duplicated joins, we keep them here
         self._cur_query_join_tables = {}
 
-        query = self.session.query(self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table))
+        sql_alchemy_pk_column = self.get_column(self.analysis.primary_key_column, self._sqlalchemy_pk_table)
+        query = self.session.query(sql_alchemy_pk_column)
 
         # Add attributes to query
         for attribute in self.analysis.attributes:
@@ -75,6 +76,9 @@ class QueryBuilder:
 
         # Add filters to query
         query = self.apply_filters(query)
+
+        # Order query to be sure that rows with same PKs are consecutive
+        query = query.order_by(sql_alchemy_pk_column)
 
         logger.info(
             {
