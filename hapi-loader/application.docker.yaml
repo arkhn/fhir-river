@@ -38,7 +38,7 @@ hapi:
     concurrency: 8
     kafka:
       bootstrapAddress: kafka:9093
-      topic: load
+      topicPattern: "^transform.*"
       groupId: loader
       replicationFactor: 1
   fhir:

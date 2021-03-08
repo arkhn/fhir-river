@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import sys
 
@@ -17,7 +18,12 @@ def main(folder_path):
             with open(file_) as f:
                 lines = f.readlines()
                 for resource in lines:
-                    producer.produce(topic="load", value=resource)
+                    event = {
+                        "fhir_object": resource,
+                        "batch_id": "batchId",
+                        "resource_id": "rid",
+                    }
+                    producer.produce(topic="transform.batchId", value=json.JSONEncoder().encode(event))
                     producer.poll(1)
 
 
