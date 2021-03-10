@@ -7,7 +7,10 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { differenceBy, first } from "lodash";
 
 import { useListOwnersQuery, useUpdateOwnerMutation } from "services/api/api";
-import type { Source, Owner } from "services/api/generated/api.generated";
+import type { Owner } from "services/api/generated/api.generated";
+
+import { useAppSelector } from "../../app/store";
+import { selectSourceToEdit } from "./sourceSlice";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,12 +21,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-type SourceOwnerSelectProps = {
-  source: Source;
-};
-
-const SourceOwnerSelect = ({ source }: SourceOwnerSelectProps): JSX.Element => {
+const SourceOwnerSelect = (): JSX.Element | null => {
   const classes = useStyles();
+
+  const source = useAppSelector(selectSourceToEdit);
+  if (!source?.id) return null;
 
   const { owners, selectedOwners, isOwnersLoading } = useListOwnersQuery(
     { source: source.id },

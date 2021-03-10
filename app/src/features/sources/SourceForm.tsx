@@ -145,20 +145,21 @@ const SourceForm = (): JSX.Element => {
 
   const handleSubmitSource = (data: Credential) => {
     if (!source) return;
-    const _source: Source = {
+
+    const editedSource: Source = {
       ...source,
       credential: {
         ...source.credential,
         ...data,
       },
     };
-    if (source.id) {
-      updateSource({ id: source.id, source: _source })
+    if (editedSource.id) {
+      updateSource({ id: editedSource.id, source: editedSource })
         .unwrap()
         .then((source) => dispatch(editSource(source)))
         .catch();
     } else {
-      createSource({ source: _source })
+      createSource({ source: editedSource })
         .unwrap()
         .then((source) => dispatch(editSource(source)))
         .catch();
@@ -207,7 +208,7 @@ const SourceForm = (): JSX.Element => {
           }
         />
       </div>
-      {source?.id && <SourceOwnerSelect source={source} />}
+      <SourceOwnerSelect />
     </Drawer>
   );
 };
