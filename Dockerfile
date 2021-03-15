@@ -11,7 +11,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 WORKDIR /srv
 
 RUN apt-get update \
-    && apt-get upgrade -y \
+    && ACCEPT_EULA=Y apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     binutils \
     build-essential \
@@ -48,7 +48,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 WORKDIR /srv
 
 RUN apt-get update \
-    && apt-get upgrade -y \
+    && ACCEPT_EULA=Y apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
     curl libpq-dev \
     && apt-get autoremove --purge -y \
