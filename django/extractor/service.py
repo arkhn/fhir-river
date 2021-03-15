@@ -75,9 +75,8 @@ class ExtractHandler(Handler):
         credentials = analysis.source_credentials
         self.extractor.update_connection(credentials)
         # Check which documents have already been ETLed
-        # self.extractor.check_existing_documents(
-        # resource_id, analysis.definition["type"]
-        # )
+        # self.extractor.check_existing_documents
+        # (resource_id, analysis.definition["type"])
         query = self.extractor.extract(analysis, primary_key_values)
 
         broadcast_events(query, analysis, self.producer, self.extractor, self.counter_redis, batch_id)

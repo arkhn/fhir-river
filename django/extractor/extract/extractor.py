@@ -180,9 +180,10 @@ class Extractor:
                 acc = defaultdict(list)
 
             prev_pk_val = row[pk_ind]
-            check_val = str(int(prev_pk_val)) if prev_pk_val.is_integer() else str(prev_pk_val)
-            if check_val in self.present_primary_keys:
-                continue
+            # check_val = str(int(prev_pk_val))
+            # if prev_pk_val.is_integer() else str(prev_pk_val)
+            # if check_val in self.present_primary_keys:
+            #     continue
 
             for key, value in zip(row.keys(), row):
                 acc[key].append(value)
