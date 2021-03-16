@@ -92,7 +92,7 @@ class Column(models.Model):
     column = models.TextField()
     join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
     input_ = models.OneToOneField(Input, name="input", blank=True, null=True, on_delete=models.CASCADE)
-    owner = models.ForeignKey("Owner", related_name="owners", on_delete=models.CASCADE)
+    owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -124,7 +124,7 @@ class Condition(models.Model):
     action = models.TextField(choices=Action.choices)
     column = models.OneToOneField(Column, on_delete=models.CASCADE)
     value = models.TextField(blank=True, default="")
-    input_group = models.ForeignKey(InputGroup, on_delete=models.CASCADE)
+    input_group = models.ForeignKey(InputGroup, related_name="conditions", on_delete=models.CASCADE)
     relation = models.TextField(choices=Relation.choices, default=Relation.EQUAL)
 
 
@@ -152,4 +152,4 @@ class Owner(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField()
     schema = models.JSONField(blank=True, null=True)
-    credential = models.ForeignKey(Credential, on_delete=models.CASCADE)
+    credential = models.ForeignKey(Credential, related_name="owners", on_delete=models.CASCADE)

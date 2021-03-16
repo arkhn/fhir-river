@@ -1,0 +1,68 @@
+# name: test_retrieve_full_source
+  <class 'dict'> {
+    'credential': <class 'dict'> {
+      'database': '',
+      'host': '',
+      'model': '',
+      'owners': <class 'list'> [
+        <class 'dict'> {
+          'columns': <class 'list'> [
+            <class 'dict'> {
+              'column': '',
+              'id': 'column_id_0001',
+              'joins': <class 'list'> [
+              ],
+              'table': '',
+            },
+          ],
+          'id': 'owner_id_0001',
+          'name': '',
+          'schema': None,
+        },
+      ],
+      'port': 5432,
+    },
+    'name': 'source_1',
+    'resources': <class 'list'> [
+      <class 'dict'> {
+        'attributes': <class 'list'> [
+          <class 'dict'> {
+            'definition_id': '',
+            'input_groups': <class 'list'> [
+              <class 'dict'> {
+                'conditions': <class 'list'> [
+                  <class 'dict'> {
+                    'action': '',
+                    'column': 'column_id_0001',
+                    'relation': 'EQ',
+                    'value': '',
+                  },
+                ],
+                'inputs': <class 'list'> [
+                  <class 'dict'> {
+                    'column': 'column_id_0001',
+                    'concept_map_id': '',
+                    'script': '',
+                    'static_value': '',
+                  },
+                ],
+                'merging_script': '',
+              },
+            ],
+            'path': '',
+            'slice_name': '',
+          },
+        ],
+        'definition_id': '',
+        'filters': <class 'list'> [
+        ],
+        'label': '',
+        'logical_reference': '',
+        'primary_key_column': '',
+        'primary_key_owner': 'owner_id_0001',
+        'primary_key_table': '',
+      },
+    ],
+    'version': '',
+  }
+---

@@ -10,6 +10,9 @@ import java.util.Arrays;
 
 import javax.annotation.PreDestroy;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
@@ -21,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -34,18 +36,14 @@ import ca.uhn.fhir.parser.IParser;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import com.arkhn.hapi.loader.embedded.KafkaProducer;
-
 @SpringBootTest(classes = ResourceConsumer.class)
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" }, topics = {
+        "${test.topic}" })
 @ContextConfiguration(initializers = EmbeddedKafkaIntegrationTest.Initializer.class)
 class EmbeddedKafkaIntegrationTest {
 
     private static ElasticsearchContainer embeddedElastic;
     private static PostgreSQLContainer<?> embeddedPostgres;
-
-    @Autowired
-    public KafkaTemplate<String, String> template;
 
     @Autowired
     DaoRegistry daoRegistry;
@@ -91,10 +89,14 @@ class EmbeddedKafkaIntegrationTest {
 
         // serialize it and send it to the loader
         IParser parser = myFhirContext.newJsonParser();
-        String serialized = parser.encodeResourceToString(p);
-        producer.send(topic, serialized);
+        JsonNode serialized = new ObjectMapper().readTree(parser.encodeResourceToString(p));
+        KafkaMessage msg = new KafkaMessage();
+        msg.setBatchId("batchId");
+        msg.setResourceId("resourceId");
+        msg.setFhirObject(serialized);
 
         // wait a bit (could use a refactor)
+        producer.sendMessage(msg, topic);
         Thread.sleep(3000);
 
         // assert it has been created in the db
@@ -120,8 +122,13 @@ class EmbeddedKafkaIntegrationTest {
         created.getName().get(0).addGiven("Jude");
         created.setGender(AdministrativeGender.MALE);
         IParser parser = myFhirContext.newJsonParser();
-        String serialized = parser.encodeResourceToString(created);
-        producer.send(topic, serialized);
+        JsonNode serialized = new ObjectMapper().readTree(parser.encodeResourceToString(p));
+        KafkaMessage msg = new KafkaMessage();
+        msg.setBatchId("batchId");
+        msg.setResourceId("resourceId");
+        msg.setFhirObject(serialized);
+
+        producer.sendMessage(msg, topic);
 
         // wait a bit (could use a refactor)
         Thread.sleep(3000);
