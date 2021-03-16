@@ -3,9 +3,9 @@ import { createSlice, createAction } from "@reduxjs/toolkit";
 import type { RootState } from "app/store";
 import type { Source } from "services/api/generated/api.generated";
 
-const initialState = null as null | Source;
+const initialState = null as Source | null;
 
-export const editSource = createAction<null | Source>("editSource");
+export const editSource = createAction<Source | null>("editSource");
 
 const sourceSlice = createSlice({
   name: "source",

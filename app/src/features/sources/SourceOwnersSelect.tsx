@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const SourceOwnerSelect = (): JSX.Element | null => {
+const SourceOwnersSelect = (): JSX.Element | null => {
   const classes = useStyles();
 
   const source = useAppSelector(selectSourceToEdit);
@@ -90,4 +90,4 @@ const SourceOwnerSelect = (): JSX.Element | null => {
   );
 };
 
-export default SourceOwnerSelect;
+export default SourceOwnersSelect;

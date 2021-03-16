@@ -20,7 +20,7 @@ import {
 } from "services/api/api";
 import { Source, Credential } from "services/api/generated/api.generated";
 
-import SourceOwnerSelect from "./SourceOwnerSelect";
+import SourceOwnersSelect from "./SourceOwnersSelect";
 import { editSource, selectSourceToEdit } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
@@ -208,7 +208,7 @@ const SourceForm = (): JSX.Element => {
           }
         />
       </div>
-      <SourceOwnerSelect />
+      <SourceOwnersSelect />
     </Drawer>
   );
 };
