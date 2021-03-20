@@ -4,7 +4,7 @@ import { CircularProgress } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { differenceBy, first } from "lodash";
+import { differenceBy } from "lodash";
 
 import { useListOwnersQuery, useUpdateOwnerMutation } from "services/api/api";
 import type { Owner } from "services/api/generated/api.generated";
@@ -47,7 +47,7 @@ const SourceOwnersSelect = (): JSX.Element | null => {
     if (!selectedOwners) return;
     switch (reason) {
       case "select-option":
-        const selectedOwner = first(differenceBy(value, selectedOwners, "id"));
+        const [selectedOwner] = differenceBy(value, selectedOwners, "id");
         if (selectedOwner?.id) {
           updateOwner({
             id: selectedOwner.id,
@@ -59,7 +59,7 @@ const SourceOwnersSelect = (): JSX.Element | null => {
         }
         return;
       case "remove-option":
-        const removedOwner = first(differenceBy(selectedOwners, value, "id"));
+        const [removedOwner] = differenceBy(selectedOwners, value, "id");
         if (removedOwner?.id) {
           updateOwner({
             id: removedOwner.id,
