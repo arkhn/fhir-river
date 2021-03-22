@@ -175,6 +175,29 @@ def test_build_nested_arrays(mock_datetime):
 
 
 @mock.patch("transformer.transform.fhir.datetime", autospec=True)
+def test_conditions_have_filtered_one_value(mock_datetime):
+    mock_datetime.now.return_value = mockdatetime()
+
+    attr_status = Attribute("status")
+
+    path_attributes_map = {attr_status.path: attr_status}
+
+    # One value left
+    row = {attr_status.path: [None, "active", None]}
+
+    actual = fhir.build_fhir_object(row, path_attributes_map)
+
+    assert actual == {"id": actual["id"], "status": "active"}
+
+    # No value left
+    row = {attr_status.path: [None, None]}
+
+    actual = fhir.build_fhir_object(row, path_attributes_map)
+
+    assert actual == {"id": actual["id"]}
+
+
+@mock.patch("transformer.transform.fhir.datetime", autospec=True)
 def test_build_metadata(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
