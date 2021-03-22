@@ -97,6 +97,8 @@ def test_transform_with_condition_arrays(_, dict_map_code):
         "ADMISSIONS_CODE_1_8b2318cd": ["abc", "abc", "def"],
         "ADMISSIONS_CODE_2_2411de10": ["cba", "cba", "fed"],
         "ADMISSIONS_COND_64b3742b": [1, 0, 2],
+        "ADMISSIONS_STATUS_3a989f8a": ["inactive", "inactive", "active"],
+        "ADMISSIONS_TATUS_COND_09e39615": [0, 0, 1],
     }
 
     attr_name = Attribute("name")
@@ -145,8 +147,17 @@ def test_transform_with_condition_arrays(_, dict_map_code):
     )
     attr_language_sys.add_input_group(group)
 
+    attr_status = Attribute("status")
+    group = InputGroup(
+        id_="id_status",
+        attribute=attr_status,
+        columns=[SqlColumn("PUBLIC", "ADMISSIONS", "STATUS")],
+        conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "STATUS_COND"), "EQ", "1")],
+    )
+    attr_status.add_input_group(group)
+
     analysis = Analysis()
-    analysis.attributes = [attr_name, attr_language, attr_language_sys]
+    analysis.attributes = [attr_name, attr_language, attr_language_sys, attr_status]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
     analysis.definition = {"type": "Patient"}
     analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
@@ -161,6 +172,7 @@ def test_transform_with_condition_arrays(_, dict_map_code):
         "id": actual["id"],
         "meta": actual["meta"],
         "name": "alice",
+        "status": "active",
         "language": [{"code": "abc", "system": "SYS"}, {"system": "SYS"}, {"code": "fed", "system": "SYS"}],
         "resourceType": "Patient",
     }
