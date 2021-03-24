@@ -6,6 +6,7 @@ urlpatterns = [
     path("", include("control.urls")),
     path("", include("pagai.urls")),
     path("", include("pyrog.urls")),
+    path("", include("users.urls")),
 ]
 
 if settings.ADMIN_ENABLED:
