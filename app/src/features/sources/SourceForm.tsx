@@ -208,7 +208,7 @@ const SourceForm = (): JSX.Element => {
           }
         />
       </div>
-      <SourceOwnersSelect />
+      {source?.id && <SourceOwnersSelect sourceId={source.id} />}
     </Drawer>
   );
 };

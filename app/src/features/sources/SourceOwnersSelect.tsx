@@ -4,13 +4,11 @@ import { CircularProgress } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
 import { differenceBy } from "lodash";
 
 import { useListOwnersQuery, useUpdateOwnerMutation } from "services/api/api";
 import type { Owner } from "services/api/generated/api.generated";
-
-import { useAppSelector } from "../../app/store";
-import { selectSourceToEdit } from "./sourceSlice";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -21,14 +19,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const SourceOwnersSelect = (): JSX.Element | null => {
+type SourceOwnersSelectProps = {
+  sourceId: string;
+};
+
+const SourceOwnersSelect = ({
+  sourceId,
+}: SourceOwnersSelectProps): JSX.Element => {
   const classes = useStyles();
 
-  const source = useAppSelector(selectSourceToEdit);
-  if (!source?.id) return null;
-
   const { owners, selectedOwners, isOwnersLoading } = useListOwnersQuery(
-    { source: source.id },
+    { source: sourceId },
     {
       selectFromResult: ({ data, isLoading }) => ({
         owners: data,
@@ -42,7 +43,7 @@ const SourceOwnersSelect = (): JSX.Element | null => {
   const handleChange = (
     _: React.ChangeEvent<Record<string, never>>,
     value: Owner[],
-    reason: string
+    reason: AutocompleteChangeReason
   ) => {
     if (!selectedOwners) return;
     switch (reason) {
