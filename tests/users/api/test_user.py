@@ -13,9 +13,9 @@ def test_retrieve_unauthenticated_user(api_client):
     assert response.status_code == 403
 
 
+@pytest.mark.as_user
 def test_retrieve_authenticated_user(api_client, user):
     url = reverse("auth-user-detail")
-    api_client.force_authenticate(user)
 
     response = api_client.get(url)
 
