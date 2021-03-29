@@ -30,9 +30,8 @@ def get_factories():
     ]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def reset_factories_sequences():
     """Reset all sequences for predictable values."""
-
     for factory in get_factories():
         factory.reset_sequence()
