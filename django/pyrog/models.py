@@ -3,12 +3,6 @@ from django.db import models
 
 from cuid import cuid
 
-# NOTE:
-# * Some FK fields are expected to be sometimes null in the previous DB schema.
-# * User, Comment and AccessControl tables will be added. The User table should be
-#   implemented with respect to the framework (django).
-# * Everything is now snake-cased. Other cases could be provided through serialization.
-
 
 class Source(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
