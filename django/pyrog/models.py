@@ -8,7 +8,7 @@ class Source(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField(unique=True)
     version = models.TextField(blank=True, default="")
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="SourceUser")
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="sources", through="SourceUser")
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)

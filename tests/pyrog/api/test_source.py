@@ -32,7 +32,7 @@ def test_create_and_assign_source(api_client, user, name, version, status_code):
         return
 
     # Check that the new source has been assigned to the authenticated user
-    assert user.source_set.filter(id=response.data["id"]).exists()
+    assert user.sources.filter(id=response.data["id"]).exists()
 
 
 @pytest.mark.as_user
@@ -89,18 +89,18 @@ def test_list_sources(api_client, user, other_user, source_factory):
 
     # Assign 3 sources to the authenticated user
     source_factory.create_batch(3, source_user__user=user)
-    assert user.user_sources.count() == 3
-    assert other_user.user_sources.count() == 0
+    assert user.sources.count() == 3
+    assert other_user.sources.count() == 0
     # Assign 3 other sources to the other user
     source_factory.create_batch(3, source_user__user=other_user)
-    assert user.user_sources.count() == 3
-    assert other_user.user_sources.count() == 3
+    assert user.sources.count() == 3
+    assert other_user.sources.count() == 3
 
     response = api_client.get(url)
 
     assert response.status_code == 200
-    assert {source.id for source in user.source_set.all()} == {item["id"] for item in response.data}
-    assert all(source.id not in {item["id"] for item in response.data} for source in other_user.source_set.all())
+    assert {source.id for source in user.sources.all()} == {item["id"] for item in response.data}
+    assert all(source.id not in {item["id"] for item in response.data} for source in other_user.sources.all())
 
 
 def test_list_sources_unauthenticated(api_client, source):

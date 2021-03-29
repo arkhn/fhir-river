@@ -66,6 +66,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="source",
             name="users",
-            field=models.ManyToManyField(through="pyrog.SourceUser", to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(
+                related_name="sources", through="pyrog.SourceUser", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]
