@@ -7,6 +7,7 @@ from pytest_factoryboy import register
 from . import factories
 
 register(factories.SourceFactory)
+register(factories.SourceUserFactory)
 register(factories.ResourceFactory)
 register(factories.CredentialFactory)
 register(factories.AttributeFactory)
@@ -18,6 +19,8 @@ register(factories.JoinFactory)
 register(factories.ConditionFactory)
 register(factories.FilterFactory)
 register(factories.OwnerFactory)
+register(factories.UserFactory)
+register(factories.UserFactory, "other_user")
 
 
 def get_factories():

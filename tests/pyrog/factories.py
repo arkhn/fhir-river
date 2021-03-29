@@ -1,5 +1,7 @@
 import factory
 
+from django.conf import settings
+
 
 class SourceFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -7,6 +9,16 @@ class SourceFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"source_id_{n:04d}")
     name = factory.Sequence(lambda n: f"source_{n}")
+    source_user = factory.RelatedFactory("tests.pyrog.factories.SourceUserFactory", factory_related_name="source")
+
+
+class SourceUserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.SourceUser"
+
+    id = factory.Sequence(lambda n: f"source_user_id_{n:04d}")
+    user = factory.SubFactory("tests.pyrog.factories.UserFactory")
+    source = factory.SubFactory(SourceFactory)
 
 
 class ResourceFactory(factory.django.DjangoModelFactory):
@@ -95,3 +107,11 @@ class OwnerFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"owner_id_{n:04d}")
     credential = factory.SubFactory(CredentialFactory)
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = settings.AUTH_USER_MODEL
+
+    id = factory.Sequence(lambda n: f"user_id_{n:04d}")
+    email = factory.Faker("email")
