@@ -10,61 +10,46 @@ class OwnerSerializer(serializers.ModelSerializer):
         model = models.Owner
         fields = "__all__"
 
-    def update(self, instance, validated_data):
-        if not instance.schema and "schema" not in validated_data:
-            credential = CredentialSerializer(validated_data["credential"]).data
-            try:
-                db_connection = DBConnection(credential)
-                explorer = DatabaseExplorer(db_connection)
-                validated_data["schema"] = explorer.get_owner_schema(instance.name)
-            except Exception as e:
-                raise serializers.ValidationError({"credential": [e]})
-        return super(OwnerSerializer, self).update(instance, validated_data)
+    def create(self, validated_data):
+        credential = CredentialSerializer(validated_data["credential"]).data
+        try:
+            db_connection = DBConnection(credential)
+            explorer = DatabaseExplorer(db_connection)
+            validated_data["schema"] = explorer.get_owner_schema(validated_data["name"])
+        except Exception as e:
+            raise serializers.ValidationError(e)
+        return super(OwnerSerializer, self).create(validated_data)
 
 
 class CredentialSerializer(serializers.ModelSerializer):
+    owners = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Credential
         fields = "__all__"
-        extra_kwargs = {
-            "source": {
-                "required": False,
-                "read_only": True,
-            },
-        }
 
-
-class SourceSerializer(serializers.ModelSerializer):
-    credential = CredentialSerializer()
-
-    class Meta:
-        model = models.Source
-        fields = "__all__"
-
-    def create(self, validated_data):
+    def get_owners(self, obj):
         try:
-            db_connection = DBConnection(validated_data["credential"])
+            db_connection = DBConnection(obj)
             explorer = DatabaseExplorer(db_connection)
             owners = explorer.get_owners()
         except Exception as e:
-            raise serializers.ValidationError({"credential": [e]})
-        source = models.Source.objects.create(name=validated_data["name"])
-        credential = models.Credential.objects.create(source=source, **validated_data["credential"])
-        for owner in owners:
-            models.Owner.objects.create(credential=credential, name=owner)
-        return source
+            raise serializers.ValidationError(e)
+        return owners
 
-    def update(self, instance, validated_data):
-        credential = instance.credential
-        credential_serializer = self.fields["credential"]
-        credential_data = validated_data.pop("credential")
+    def validate(self, data):
         try:
-            db_connection = DBConnection(credential_data).engine.connect()
+            db_connection = DBConnection(data).engine.connect()
             db_connection.close()
         except Exception as e:
-            raise serializers.ValidationError({"credential": [e]})
-        credential_serializer.update(instance=credential, validated_data=credential_data)
-        return super(SourceSerializer, self).update(instance, validated_data)
+            raise serializers.ValidationError(e)
+        return data
+
+
+class SourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Source
+        fields = "__all__"
 
 
 class ResourceSerializer(serializers.ModelSerializer):
