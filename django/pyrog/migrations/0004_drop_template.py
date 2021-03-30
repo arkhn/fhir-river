@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0002_unique_source_name"),
+        ("pyrog", "0003_unique_source_name"),
     ]
 
     operations = [

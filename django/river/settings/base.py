@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "topicleaner",
     "pagai",
     "pyrog",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -103,6 +104,18 @@ DATABASES = {
     }
 }
 
+
+# Custom User model
+# https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#substituting-a-custom-user-model
+
+AUTH_USER_MODEL = "users.User"
+
+# Auth backends
+# https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#specifying-authentication-backends
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -195,6 +208,7 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
 # Redis

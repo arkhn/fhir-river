@@ -17,3 +17,4 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
 # Rest Framework
 
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += ["rest_framework.renderers.BrowsableAPIRenderer"]
+REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = ["rest_framework.permissions.AllowAny"]

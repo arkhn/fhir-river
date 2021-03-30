@@ -8,6 +8,11 @@ class Source(admin.ModelAdmin):
     list_display = ("id", "name")
 
 
+@admin.register(models.SourceUser)
+class SourceUser(admin.ModelAdmin):
+    list_display = ("id", "source", "user", "role")
+
+
 @admin.register(models.Resource)
 class Resource(admin.ModelAdmin):
     pass
@@ -20,6 +25,11 @@ class Credential(admin.ModelAdmin):
 
 @admin.register(models.Attribute)
 class Attribute(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Comment)
+class Comment(admin.ModelAdmin):
     pass
 
 

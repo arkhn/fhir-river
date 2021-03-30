@@ -15,6 +15,20 @@ class SourceViewSet(viewsets.ModelViewSet):
             return SourceSerializer
         return basic_serializers.SourceSerializer
 
+    def get_queryset(self):
+        """Limit visibility of sources."""
+        return self.queryset.filter(users=self.request.user)
+
+    def perform_create(self, serializer):
+        """Try to assign a owner to the new source."""
+
+        source = serializer.save()
+
+        # To give the source a owner, the request must be authenticated
+        if not self.request.user.is_anonymous:
+            source.users.add(self.request.user)
+            source.save()
+
 
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = models.Resource.objects.all()
