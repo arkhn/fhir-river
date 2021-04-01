@@ -5,9 +5,7 @@ import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
-  Drawer,
   makeStyles,
-  TextField,
   Typography,
 } from "@material-ui/core";
 import { TFunction } from "i18next";
@@ -15,12 +13,11 @@ import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import {
-  useCreateSourceMutation,
+  useApiSourcesCreateMutation,
   useUpdateSourceMutation,
 } from "services/api/api";
-import { Source, Credential } from "services/api/generated/api.generated";
+import { Source } from "services/api/generated/api.generated";
 
-import SourceOwnersSelect from "./SourceOwnersSelect";
 import { editSource, selectSourceToEdit } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,66 +46,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
-  t
-) => [
+const sourceInputs: (t: TFunction) => FormInputProperty<Source>[] = (t) => [
   {
     type: "text",
-    name: "host",
-    label: t("host"),
-    variant: "outlined",
-    validationRules: { required: true },
-  },
-  {
-    type: "number",
-    name: "port",
-    label: t("port"),
-    variant: "outlined",
-    validationRules: { required: true },
-  },
-  {
-    type: "text",
-    name: "database",
-    label: t("database"),
-    variant: "outlined",
-    validationRules: { required: true },
-  },
-  {
-    type: "text",
-    name: "login",
-    label: t("username"),
-    variant: "outlined",
-    validationRules: { required: true },
-  },
-  {
-    type: "text",
-    password: true,
-    name: "password",
-    label: t("password"),
-    variant: "outlined",
-  },
-  {
-    type: "select",
-    selectOptions: [
-      {
-        id: "MSSQL",
-        label: "MSSQL",
-      },
-      {
-        id: "POSTGRES",
-        label: "POSTGRESQL",
-      },
-      {
-        id: "ORACLE",
-        label: "ORACLE",
-      },
-      {
-        id: "SQLLITE",
-        label: "SQLITE",
-      },
-    ],
-    name: "model",
-    label: t("vendor"),
+    name: "name",
+    label: t("name"),
     variant: "outlined",
     validationRules: { required: true },
   },
@@ -120,8 +62,6 @@ const SourceForm = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const source = useAppSelector(selectSourceToEdit);
-  const isDrawerOpen = !!source;
-  const handleCloseDrawer = () => dispatch(editSource(null));
 
   const [
     createSource,
@@ -134,32 +74,14 @@ const SourceForm = (): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSourceRename = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(
-      editSource({
-        ...source,
-        name: e.target.value,
-      } as Source)
-    );
-  };
-
-  const handleSubmitSource = (data: Credential) => {
-    if (!source) return;
-
-    const editedSource: Source = {
-      ...source,
-      credential: {
-        ...source.credential,
-        ...data,
-      },
-    };
-    if (editedSource.id) {
-      updateSource({ id: editedSource.id, source: editedSource })
+  const handleSubmitSource = (source: Source) => {
+    if (source.id) {
+      updateSource({ id: source.id, source })
         .unwrap()
         .then((source) => dispatch(editSource(source)))
         .catch();
     } else {
-      createSource({ source: editedSource })
+      createSource({ source })
         .unwrap()
         .then((source) => dispatch(editSource(source)))
         .catch();
@@ -167,49 +89,37 @@ const SourceForm = (): JSX.Element => {
   };
 
   return (
-    <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
-      <Typography className={classes.title} variant="h5">
-        {source?.id ? t("editSource") : t("newSource")}
-      </Typography>
-      <div className={classes.formContainer}>
-        <div className={classes.sourceName}>
-          <TextField
-            id="outlined-basic"
-            label="Name"
-            variant="outlined"
-            required={true}
-            onChange={handleSourceRename}
-            value={source?.name ?? ""}
-            className={classes.sourceNameInput}
-          />
-        </div>
-        <Form<Credential>
-          properties={credentialInputs(t)}
-          submit={handleSubmitSource}
-          formStyle={{ display: "block" }}
-          defaultValues={{ ...source?.credential }}
-          displaySubmitButton={false}
-          formFooter={
-            <Button
-              className={classes.button}
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth={false}
-            >
-              {isLoading ? (
-                <CircularProgress color="inherit" size={23} />
-              ) : (
-                <Typography>
-                  {source?.id ? t("editSource") : t("createSource")}
-                </Typography>
-              )}
-            </Button>
-          }
-        />
-      </div>
-      {source?.id && <SourceOwnersSelect sourceId={source.id} />}
-    </Drawer>
+    <div className={classes.formContainer}>
+      <Form<Source>
+        properties={sourceInputs(t)}
+        submit={handleSubmitSource}
+        formStyle={{ display: "block" }}
+        defaultValues={source ?? undefined}
+        displaySubmitButton={false}
+        formHeader={
+          <Typography className={classes.title} variant="h5">
+            {source?.id ? t("editSource") : t("newSource")}
+          </Typography>
+        }
+        formFooter={
+          <Button
+            className={classes.button}
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth={false}
+          >
+            {isLoading ? (
+              <CircularProgress color="inherit" size={23} />
+            ) : (
+              <Typography>
+                {source?.id ? t("editSource") : t("createSource")}
+              </Typography>
+            )}
+          </Button>
+        }
+      />
+    </div>
   );
 };
 

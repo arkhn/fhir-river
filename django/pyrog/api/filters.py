@@ -14,11 +14,3 @@ class AttributeFilterSet(filters.FilterSet):
     class Meta:
         model = models.Attribute
         fields = ["source"]
-
-
-class OwnerFilterSet(filters.FilterSet):
-    source = filters.ModelChoiceFilter("credential__source", queryset=models.Source.objects.all())
-
-    class Meta:
-        model = models.Owner
-        fields = ["source"]

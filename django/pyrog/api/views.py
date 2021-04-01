@@ -20,6 +20,8 @@ class ResourceViewSet(viewsets.ModelViewSet):
 class CredentialViewSet(viewsets.ModelViewSet):
     queryset = models.Credential.objects.all()
     serializer_class = serializers.CredentialSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_fields = ["source"]
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
@@ -63,4 +65,4 @@ class OwnerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Destro
     queryset = models.Owner.objects.all()
     serializer_class = serializers.OwnerSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_class = filters.OwnerFilterSet
+    filterset_fields = ["credential"]

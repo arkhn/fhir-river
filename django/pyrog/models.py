@@ -152,4 +152,4 @@ class Owner(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField()
     schema = models.JSONField(blank=True, null=True)
-    credential = models.ForeignKey(Credential, on_delete=models.CASCADE)
+    credential = models.ForeignKey(Credential, related_name="owners", on_delete=models.CASCADE)

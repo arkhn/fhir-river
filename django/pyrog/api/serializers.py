@@ -1,3 +1,4 @@
+from typing import List
 from rest_framework import serializers
 
 from common.database_connection.db_connection import DBConnection
@@ -9,6 +10,7 @@ class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Owner
         fields = "__all__"
+        read_only_fields = ["schema"]
 
     def create(self, validated_data):
         credential = CredentialSerializer(validated_data["credential"]).data
@@ -18,19 +20,25 @@ class OwnerSerializer(serializers.ModelSerializer):
             validated_data["schema"] = explorer.get_owner_schema(validated_data["name"])
         except Exception as e:
             raise serializers.ValidationError(e)
-        return super(OwnerSerializer, self).create(validated_data)
+        if not validated_data["schema"]:
+            raise serializers.ValidationError({"name": [f"{validated_data['name']} schema is empty"]})
+        return super().create(validated_data)
+
+    def __str__(self):
+        return self.name
 
 
 class CredentialSerializer(serializers.ModelSerializer):
-    owners = serializers.SerializerMethodField()
+    owners = serializers.StringRelatedField(many=True)
+    available_owners = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Credential
         fields = "__all__"
 
-    def get_owners(self, obj):
+    def get_available_owners(self, obj) -> List[str]:
         try:
-            db_connection = DBConnection(obj)
+            db_connection = DBConnection(obj.__dict__)
             explorer = DatabaseExplorer(db_connection)
             owners = explorer.get_owners()
         except Exception as e:
