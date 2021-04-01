@@ -38,7 +38,7 @@ class Condition:
         self.value = value
 
     def check(self, data: Dict[DataDictKey, DataDictValue]):
-        data_value = data[(CONDITION_FLAG, (self.sql_column.table, self.sql_column.column))]
+        data_value = data[(CONDITION_FLAG, (self.sql_column.table_name(), self.sql_column.column))]
 
         try:
             cast_value = self.cast_value_type(data_value)

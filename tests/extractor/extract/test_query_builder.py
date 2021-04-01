@@ -123,7 +123,8 @@ def test_sqlalchemy_query(mock_sha1):
         "FROM patients "
         "LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.patient_id = patients.patient_id \n"
-        "WHERE admissions_1.admittime LIKE :param_1"
+        "WHERE admissions_1.admittime LIKE :param_1 "
+        "ORDER BY patients_subject_id_hash"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
@@ -167,7 +168,8 @@ def test_2hop_joins(mock_sha1):
         "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM patients "
         "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
-        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id "
+        "ORDER BY patients_subject_id_hash"
     )
 
 
@@ -183,48 +185,47 @@ def test_1and2hop_joins(mock_sha1):
     attribute.add_input_group(input_group)
     input_group.add_column(
         SqlColumn(
-            "public",
             "join_table",
             "adm_id",
             joins=[
                 SqlJoin(
-                    SqlColumn("public", "patients", "row_id"),
-                    SqlColumn("public", "join_table", "pat_id"),
+                    SqlColumn("patients", "row_id"),
+                    SqlColumn("join_table", "pat_id"),
                 ),
             ],
         )
     )
     input_group.add_column(
         SqlColumn(
-            "public",
             "admissions",
             "admittime",
             joins=[
                 SqlJoin(
-                    SqlColumn("public", "patients", "row_id"),
-                    SqlColumn("public", "join_table", "pat_id"),
+                    SqlColumn("patients", "row_id"),
+                    SqlColumn("join_table", "pat_id"),
                 ),
                 SqlJoin(
-                    SqlColumn("public", "join_table", "adm_id"),
-                    SqlColumn("public", "admissions", "row_id"),
+                    SqlColumn("join_table", "adm_id"),
+                    SqlColumn("admissions", "row_id"),
                 ),
             ],
         )
     )
 
-    analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
+    analysis.primary_key_column = SqlColumn("patients", "subject_id")
     analysis.attributes.append(attribute)
 
     query_builder = make_query_builder(analysis)
     query = query_builder.build_query()
 
     assert str(query) == (
-        "SELECT public.patients.subject_id AS patients_subject_id_hash, "
+        "SELECT patients.subject_id AS patients_subject_id_hash, "
         "join_table_1.adm_id AS join_table_adm_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
-        "FROM public.patients "
-        "LEFT OUTER JOIN public.join_table AS join_table_1 ON join_table_1.pat_id = public.patients.row_id "
-        "LEFT OUTER JOIN public.admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id"
+        "FROM patients "
+        "LEFT OUTER JOIN join_table AS join_table_1 ON join_table_1.pat_id = patients.row_id "
+        "LEFT OUTER JOIN admissions AS admissions_1 ON admissions_1.row_id = join_table_1.adm_id "
+        "ORDER BY patients_subject_id_hash"
     )
 
 
@@ -301,7 +302,8 @@ def test_duplicated_joins(mock_sha1):
         "admissions_2.admittime AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.subject_id = patients.subject_id "
-        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id"
+        "LEFT OUTER JOIN admissions AS admissions_2 ON admissions_2.row_id = patients.row_id "
+        "ORDER BY patients_subject_id_hash"
     )
 
 
@@ -327,7 +329,8 @@ def test_apply_filters(mock_sha1):
         "WHERE patients.subject_id IN (:param_1, :param_2) "
         "AND admissions.admittime LIKE :param_3 "
         "AND patients.row_id <= :param_4 "
-        "AND patients.row_id >= :param_5 AND patients.row_id <= :param_6"
+        "AND patients.row_id >= :param_5 AND patients.row_id <= :param_6 "
+        "ORDER BY patients_subject_id_hash"
     )
     assert query.statement.compile().params == {
         "param_1": 123,
@@ -355,7 +358,8 @@ def test_apply_filters_single_value(mock_sha1):
     assert str(query) == (
         "SELECT patients.subject_id AS patients_subject_id_hash \n"
         "FROM patients \n"
-        "WHERE patients.subject_id = :param_1"
+        "WHERE patients.subject_id = :param_1 "
+        "ORDER BY patients_subject_id_hash"
     )
     assert query.statement.compile().params == {"param_1": 123}
 
@@ -391,7 +395,8 @@ def test_filters_with_joins(mock_sha1):
         "SELECT patients.subject_id AS patients_subject_id_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
         "ON admissions_1.subject_id = patients.subject_id \n"
-        "WHERE admissions_1.admittime LIKE :param_1"
+        "WHERE admissions_1.admittime LIKE :param_1 "
+        "ORDER BY patients_subject_id_hash"
     )
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
@@ -435,5 +440,6 @@ def test_conditions_with_joins(mock_sha1):
         "patients.row_id AS patients_row_id_hash, "
         "admissions_1.admittime AS admissions_admittime_hash \n"
         "FROM patients LEFT OUTER JOIN admissions AS admissions_1 "
-        "ON admissions_1.subject_id = patients.subject_id"
+        "ON admissions_1.subject_id = patients.subject_id "
+        "ORDER BY patients_subject_id_hash"
     )

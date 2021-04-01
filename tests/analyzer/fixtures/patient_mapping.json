@@ -370,6 +370,28 @@
     },
     {
       "id": "ckdyl65ki0166gu9kc38lftnl",
+      "path": "generalPractitioner[0].identifier.value",
+      "sliceName": null,
+      "definitionId": "Identifier",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0166gu9kc38lftnl",
+      "path": "generalPractitioner[0].identifier.system",
+      "sliceName": null,
+      "definitionId": "Identifier",
+      "resourceId": "ckdyl65kh0125gu9kpvjbja6j",
+      "updatedAt": "2020-08-17T14:01:01.366Z",
+      "createdAt": "2020-08-17T14:01:01.362Z",
+      "comments": [],
+      "inputGroups": []
+    },
+    {
+      "id": "ckdyl65ki0166gu9kc38lftnl",
       "path": "generalPractitioner[0].identifier",
       "sliceName": null,
       "definitionId": "Identifier",

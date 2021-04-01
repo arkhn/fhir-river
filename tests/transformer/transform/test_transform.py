@@ -94,19 +94,19 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
         "PATIENTS_NAME_hash": ["alicedirty", "alicedirty", "alicedirty"],
         "PATIENTS_ID_hash": ["id1", "id1", "id1"],
         "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
-        "ADMISSIONS_SYSTEM_a3030ac5": ["SYS", "SYS", "SYS"],
-        "ADMISSIONS_CODE_1_8b2318cd": ["abc", "abc", "def"],
-        "ADMISSIONS_CODE_2_2411de10": ["cba", "cba", "fed"],
-        "ADMISSIONS_COND_64b3742b": [1, 0, 2],
-        "ADMISSIONS_STATUS_3a989f8a": ["inactive", "inactive", "active"],
-        "ADMISSIONS_TATUS_COND_09e39615": [0, 0, 1],
+        "ADMISSIONS_SYSTEM_hash": ["SYS", "SYS", "SYS"],
+        "ADMISSIONS_CODE_1_hash": ["abc", "abc", "def"],
+        "ADMISSIONS_CODE_2_hash": ["cba", "cba", "fed"],
+        "ADMISSIONS_COND_hash": [1, 0, 2],
+        "ADMISSIONS_STATUS_hash": ["inactive", "inactive", "active"],
+        "ADMISSIONS_TATUS_COND_hash": [0, 0, 1],
     }
 
     attr_name = Attribute("name")
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
     )
     attr_name.add_input_group(group)
 
@@ -117,12 +117,11 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
             attribute=attr_language,
             columns=[
                 SqlColumn(
-                    "PUBLIC",
                     "ADMISSIONS",
                     "CODE_1",
                 )
             ],
-            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND"), "EQ", "1")],
+            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND"), "EQ", "1")],
         )
     )
     attr_language.add_input_group(
@@ -131,12 +130,11 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
             attribute=attr_language,
             columns=[
                 SqlColumn(
-                    "PUBLIC",
                     "ADMISSIONS",
                     "CODE_2",
                 )
             ],
-            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND"), "EQ", "2")],
+            conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "COND"), "EQ", "2")],
         )
     )
 
@@ -144,7 +142,7 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
     group = InputGroup(
         id_="id_language_sys",
         attribute=attr_language_sys,
-        columns=[SqlColumn("PUBLIC", "ADMISSIONS", "SYSTEM")],
+        columns=[SqlColumn("ADMISSIONS", "SYSTEM")],
     )
     attr_language_sys.add_input_group(group)
 
@@ -152,14 +150,14 @@ def test_transform_with_condition_arrays(_, mock_sha1, dict_map_code):
     group = InputGroup(
         id_="id_status",
         attribute=attr_status,
-        columns=[SqlColumn("PUBLIC", "ADMISSIONS", "STATUS")],
-        conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "STATUS_COND"), "EQ", "1")],
+        columns=[SqlColumn("ADMISSIONS", "STATUS")],
+        conditions=[Condition("INCLUDE", SqlColumn("ADMISSIONS", "STATUS_COND"), "EQ", "1")],
     )
     attr_status.add_input_group(group)
 
     analysis = Analysis()
     analysis.attributes = [attr_name, attr_language, attr_language_sys, attr_status]
-    analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
+    analysis.primary_key_column = SqlColumn("PATIENTS", "ID")
     analysis.definition = {"type": "Patient"}
 
     transformer = Transformer()
