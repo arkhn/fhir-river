@@ -11,14 +11,14 @@ import {
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import { useAppDispatch, useAppSelector } from "app/store";
+import { useAppDispatch } from "app/store";
 import {
   useApiSourcesCreateMutation,
-  useUpdateSourceMutation,
+  useApiSourcesUpdateMutation,
 } from "services/api/api";
-import { Source } from "services/api/generated/api.generated";
+import { Source, SourceRequest } from "services/api/generated/api.generated";
 
-import { editSource, selectSourceToEdit } from "./sourceSlice";
+import { updateSource } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -46,7 +46,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const sourceInputs: (t: TFunction) => FormInputProperty<Source>[] = (t) => [
+const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
+  t
+) => [
   {
     type: "text",
     name: "name",
@@ -56,49 +58,51 @@ const sourceInputs: (t: TFunction) => FormInputProperty<Source>[] = (t) => [
   },
 ];
 
-const SourceForm = (): JSX.Element => {
+type SourceFormProps = {
+  sourceToUpdate?: Source;
+};
+
+const SourceForm = ({ sourceToUpdate }: SourceFormProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const source = useAppSelector(selectSourceToEdit);
-
   const [
-    createSource,
+    apiCreateSource,
     { isLoading: isCreateSourceLoading },
-  ] = useCreateSourceMutation();
+  ] = useApiSourcesCreateMutation();
   const [
-    updateSource,
+    apiUpdateSource,
     { isLoading: isUpdateSourceLoading },
-  ] = useUpdateSourceMutation();
+  ] = useApiSourcesUpdateMutation();
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmitSource = (source: Source) => {
-    if (source.id) {
-      updateSource({ id: source.id, source })
+  const handleSubmitSource = (sourceRequest: SourceRequest) => {
+    if (sourceToUpdate) {
+      apiUpdateSource({ id: sourceToUpdate.id, sourceRequest })
         .unwrap()
-        .then((source) => dispatch(editSource(source)))
+        .then((source) => dispatch(updateSource(source)))
         .catch();
     } else {
-      createSource({ source })
+      apiCreateSource({ sourceRequest })
         .unwrap()
-        .then((source) => dispatch(editSource(source)))
+        .then((source) => dispatch(updateSource(source)))
         .catch();
     }
   };
 
   return (
     <div className={classes.formContainer}>
-      <Form<Source>
+      <Form<SourceRequest>
         properties={sourceInputs(t)}
         submit={handleSubmitSource}
         formStyle={{ display: "block" }}
-        defaultValues={source ?? undefined}
+        defaultValues={sourceToUpdate}
         displaySubmitButton={false}
         formHeader={
           <Typography className={classes.title} variant="h5">
-            {source?.id ? t("editSource") : t("newSource")}
+            {sourceToUpdate ? t("editSource") : t("newSource")}
           </Typography>
         }
         formFooter={
@@ -113,7 +117,7 @@ const SourceForm = (): JSX.Element => {
               <CircularProgress color="inherit" size={23} />
             ) : (
               <Typography>
-                {source?.id ? t("editSource") : t("createSource")}
+                {sourceToUpdate ? t("editSource") : t("createSource")}
               </Typography>
             )}
           </Button>

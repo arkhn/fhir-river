@@ -1,24 +1,39 @@
 import { createSlice, createAction } from "@reduxjs/toolkit";
 
 import type { RootState } from "app/store";
-import type { Source } from "services/api/generated/api.generated";
+import type {
+  Source,
+  SourceRequest,
+} from "services/api/generated/api.generated";
 
-const initialState = null as Source | null;
+type SourceSliceState = {
+  sourceToCreate?: SourceRequest;
+  sourceToUpdate?: Source;
+};
 
-export const editSource = createAction<Source | null>("editSource");
+const initialState: SourceSliceState = {};
+
+export const createSource = createAction<SourceRequest>("create");
+export const updateSource = createAction<Source>("update");
 
 const sourceSlice = createSlice({
   name: "source",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(editSource, (state, action) => {
-      return action.payload;
+    builder.addCase(createSource, (state, { payload }) => {
+      state.sourceToCreate = payload;
+    });
+    builder.addCase(updateSource, (state, { payload }) => {
+      state.sourceToUpdate = payload;
     });
   },
 });
 
-export const selectSourceToEdit = (state: RootState): Source | null =>
-  state.source;
+export const selectSourceToCreate = (
+  state: RootState
+): SourceRequest | undefined => state.source.sourceToCreate;
+export const selectSourceToUpdate = (state: RootState): Source | undefined =>
+  state.source.sourceToUpdate;
 
 export default sourceSlice.reducer;

@@ -4,1032 +4,1143 @@ export const api = createApi({
   baseQuery: apiBaseQuery,
   entityTypes: [],
   endpoints: (build) => ({
-    listSources: build.query<ListSourcesApiResponse, ListSourcesApiArg>({
-      query: () => ({ url: `/api/sources/` }),
-    }),
-    createSource: build.mutation<CreateSourceApiResponse, CreateSourceApiArg>({
-      query: (queryArg) => ({
-        url: `/api/sources/`,
-        method: "POST",
-        body: queryArg.source,
-      }),
-    }),
-    retrieveSource: build.query<
-      RetrieveSourceApiResponse,
-      RetrieveSourceApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/sources/${queryArg.id}/` }),
-    }),
-    updateSource: build.mutation<UpdateSourceApiResponse, UpdateSourceApiArg>({
-      query: (queryArg) => ({
-        url: `/api/sources/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.source,
-      }),
-    }),
-    partialUpdateSource: build.mutation<
-      PartialUpdateSourceApiResponse,
-      PartialUpdateSourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.source,
-      }),
-    }),
-    destroySource: build.mutation<
-      DestroySourceApiResponse,
-      DestroySourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    listResources: build.query<ListResourcesApiResponse, ListResourcesApiArg>({
-      query: (queryArg) => ({
-        url: `/api/resources/`,
-        params: { source: queryArg.source },
-      }),
-    }),
-    createResource: build.mutation<
-      CreateResourceApiResponse,
-      CreateResourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/resources/`,
-        method: "POST",
-        body: queryArg.resource,
-      }),
-    }),
-    retrieveResource: build.query<
-      RetrieveResourceApiResponse,
-      RetrieveResourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/resources/${queryArg.id}/`,
-        params: { source: queryArg.source },
-      }),
-    }),
-    updateResource: build.mutation<
-      UpdateResourceApiResponse,
-      UpdateResourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/resources/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.resource,
-        params: { source: queryArg.source },
-      }),
-    }),
-    partialUpdateResource: build.mutation<
-      PartialUpdateResourceApiResponse,
-      PartialUpdateResourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/resources/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.resource,
-        params: { source: queryArg.source },
-      }),
-    }),
-    destroyResource: build.mutation<
-      DestroyResourceApiResponse,
-      DestroyResourceApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/resources/${queryArg.id}/`,
-        method: "DELETE",
-        params: { source: queryArg.source },
-      }),
-    }),
-    listCredentials: build.query<
-      ListCredentialsApiResponse,
-      ListCredentialsApiArg
-    >({
-      query: () => ({ url: `/api/credentials/` }),
-    }),
-    createCredential: build.mutation<
-      CreateCredentialApiResponse,
-      CreateCredentialApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/credentials/`,
-        method: "POST",
-        body: queryArg.credential,
-      }),
-    }),
-    retrieveCredential: build.query<
-      RetrieveCredentialApiResponse,
-      RetrieveCredentialApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/credentials/${queryArg.id}/` }),
-    }),
-    updateCredential: build.mutation<
-      UpdateCredentialApiResponse,
-      UpdateCredentialApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/credentials/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.credential,
-      }),
-    }),
-    partialUpdateCredential: build.mutation<
-      PartialUpdateCredentialApiResponse,
-      PartialUpdateCredentialApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/credentials/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.credential,
-      }),
-    }),
-    destroyCredential: build.mutation<
-      DestroyCredentialApiResponse,
-      DestroyCredentialApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/credentials/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    listAttributes: build.query<
-      ListAttributesApiResponse,
-      ListAttributesApiArg
+    apiAttributesList: build.query<
+      ApiAttributesListApiResponse,
+      ApiAttributesListApiArg
     >({
       query: (queryArg) => ({
         url: `/api/attributes/`,
         params: { source: queryArg.source },
       }),
     }),
-    createAttribute: build.mutation<
-      CreateAttributeApiResponse,
-      CreateAttributeApiArg
+    apiAttributesCreate: build.mutation<
+      ApiAttributesCreateApiResponse,
+      ApiAttributesCreateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/attributes/`,
         method: "POST",
-        body: queryArg.attribute,
+        body: queryArg.attributeRequest,
       }),
     }),
-    retrieveAttribute: build.query<
-      RetrieveAttributeApiResponse,
-      RetrieveAttributeApiArg
+    apiAttributesRetrieve: build.query<
+      ApiAttributesRetrieveApiResponse,
+      ApiAttributesRetrieveApiArg
     >({
-      query: (queryArg) => ({
-        url: `/api/attributes/${queryArg.id}/`,
-        params: { source: queryArg.source },
-      }),
+      query: (queryArg) => ({ url: `/api/attributes/${queryArg.id}/` }),
     }),
-    updateAttribute: build.mutation<
-      UpdateAttributeApiResponse,
-      UpdateAttributeApiArg
+    apiAttributesUpdate: build.mutation<
+      ApiAttributesUpdateApiResponse,
+      ApiAttributesUpdateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/attributes/${queryArg.id}/`,
         method: "PUT",
-        body: queryArg.attribute,
-        params: { source: queryArg.source },
+        body: queryArg.attributeRequest,
       }),
     }),
-    partialUpdateAttribute: build.mutation<
-      PartialUpdateAttributeApiResponse,
-      PartialUpdateAttributeApiArg
+    apiAttributesPartialUpdate: build.mutation<
+      ApiAttributesPartialUpdateApiResponse,
+      ApiAttributesPartialUpdateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/attributes/${queryArg.id}/`,
         method: "PATCH",
-        body: queryArg.attribute,
-        params: { source: queryArg.source },
+        body: queryArg.patchedAttributeRequest,
       }),
     }),
-    destroyAttribute: build.mutation<
-      DestroyAttributeApiResponse,
-      DestroyAttributeApiArg
+    apiAttributesDestroy: build.mutation<
+      ApiAttributesDestroyApiResponse,
+      ApiAttributesDestroyApiArg
     >({
       query: (queryArg) => ({
         url: `/api/attributes/${queryArg.id}/`,
         method: "DELETE",
-        params: { source: queryArg.source },
       }),
     }),
-    listInputGroups: build.query<
-      ListInputGroupsApiResponse,
-      ListInputGroupsApiArg
+    apiColumnsList: build.query<
+      ApiColumnsListApiResponse,
+      ApiColumnsListApiArg
     >({
-      query: () => ({ url: `/api/input-groups/` }),
-    }),
-    createInputGroup: build.mutation<
-      CreateInputGroupApiResponse,
-      CreateInputGroupApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/input-groups/`,
-        method: "POST",
-        body: queryArg.inputGroup,
-      }),
-    }),
-    retrieveInputGroup: build.query<
-      RetrieveInputGroupApiResponse,
-      RetrieveInputGroupApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/input-groups/${queryArg.id}/` }),
-    }),
-    updateInputGroup: build.mutation<
-      UpdateInputGroupApiResponse,
-      UpdateInputGroupApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/input-groups/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.inputGroup,
-      }),
-    }),
-    partialUpdateInputGroup: build.mutation<
-      PartialUpdateInputGroupApiResponse,
-      PartialUpdateInputGroupApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/input-groups/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.inputGroup,
-      }),
-    }),
-    destroyInputGroup: build.mutation<
-      DestroyInputGroupApiResponse,
-      DestroyInputGroupApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/input-groups/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    listInputs: build.query<ListInputsApiResponse, ListInputsApiArg>({
-      query: () => ({ url: `/api/inputs/` }),
-    }),
-    createInput: build.mutation<CreateInputApiResponse, CreateInputApiArg>({
-      query: (queryArg) => ({
-        url: `/api/inputs/`,
-        method: "POST",
-        body: queryArg.input,
-      }),
-    }),
-    retrieveInput: build.query<RetrieveInputApiResponse, RetrieveInputApiArg>({
-      query: (queryArg) => ({ url: `/api/inputs/${queryArg.id}/` }),
-    }),
-    updateInput: build.mutation<UpdateInputApiResponse, UpdateInputApiArg>({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.input,
-      }),
-    }),
-    partialUpdateInput: build.mutation<
-      PartialUpdateInputApiResponse,
-      PartialUpdateInputApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.input,
-      }),
-    }),
-    destroyInput: build.mutation<DestroyInputApiResponse, DestroyInputApiArg>({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    listColumns: build.query<ListColumnsApiResponse, ListColumnsApiArg>({
       query: () => ({ url: `/api/columns/` }),
     }),
-    createColumn: build.mutation<CreateColumnApiResponse, CreateColumnApiArg>({
+    apiColumnsCreate: build.mutation<
+      ApiColumnsCreateApiResponse,
+      ApiColumnsCreateApiArg
+    >({
       query: (queryArg) => ({
         url: `/api/columns/`,
         method: "POST",
-        body: queryArg.column,
+        body: queryArg.columnRequest,
       }),
     }),
-    retrieveColumn: build.query<
-      RetrieveColumnApiResponse,
-      RetrieveColumnApiArg
+    apiColumnsRetrieve: build.query<
+      ApiColumnsRetrieveApiResponse,
+      ApiColumnsRetrieveApiArg
     >({
       query: (queryArg) => ({ url: `/api/columns/${queryArg.id}/` }),
     }),
-    updateColumn: build.mutation<UpdateColumnApiResponse, UpdateColumnApiArg>({
+    apiColumnsUpdate: build.mutation<
+      ApiColumnsUpdateApiResponse,
+      ApiColumnsUpdateApiArg
+    >({
       query: (queryArg) => ({
         url: `/api/columns/${queryArg.id}/`,
         method: "PUT",
-        body: queryArg.column,
+        body: queryArg.columnRequest,
       }),
     }),
-    partialUpdateColumn: build.mutation<
-      PartialUpdateColumnApiResponse,
-      PartialUpdateColumnApiArg
+    apiColumnsPartialUpdate: build.mutation<
+      ApiColumnsPartialUpdateApiResponse,
+      ApiColumnsPartialUpdateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/columns/${queryArg.id}/`,
         method: "PATCH",
-        body: queryArg.column,
+        body: queryArg.patchedColumnRequest,
       }),
     }),
-    destroyColumn: build.mutation<
-      DestroyColumnApiResponse,
-      DestroyColumnApiArg
+    apiColumnsDestroy: build.mutation<
+      ApiColumnsDestroyApiResponse,
+      ApiColumnsDestroyApiArg
     >({
       query: (queryArg) => ({
         url: `/api/columns/${queryArg.id}/`,
         method: "DELETE",
       }),
     }),
-    listJoins: build.query<ListJoinsApiResponse, ListJoinsApiArg>({
-      query: () => ({ url: `/api/joins/` }),
-    }),
-    createJoin: build.mutation<CreateJoinApiResponse, CreateJoinApiArg>({
-      query: (queryArg) => ({
-        url: `/api/joins/`,
-        method: "POST",
-        body: queryArg.join,
-      }),
-    }),
-    retrieveJoin: build.query<RetrieveJoinApiResponse, RetrieveJoinApiArg>({
-      query: (queryArg) => ({ url: `/api/joins/${queryArg.id}/` }),
-    }),
-    updateJoin: build.mutation<UpdateJoinApiResponse, UpdateJoinApiArg>({
-      query: (queryArg) => ({
-        url: `/api/joins/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.join,
-      }),
-    }),
-    partialUpdateJoin: build.mutation<
-      PartialUpdateJoinApiResponse,
-      PartialUpdateJoinApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/joins/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.join,
-      }),
-    }),
-    destroyJoin: build.mutation<DestroyJoinApiResponse, DestroyJoinApiArg>({
-      query: (queryArg) => ({
-        url: `/api/joins/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    listConditions: build.query<
-      ListConditionsApiResponse,
-      ListConditionsApiArg
+    apiConditionsList: build.query<
+      ApiConditionsListApiResponse,
+      ApiConditionsListApiArg
     >({
       query: () => ({ url: `/api/conditions/` }),
     }),
-    createCondition: build.mutation<
-      CreateConditionApiResponse,
-      CreateConditionApiArg
+    apiConditionsCreate: build.mutation<
+      ApiConditionsCreateApiResponse,
+      ApiConditionsCreateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/conditions/`,
         method: "POST",
-        body: queryArg.condition,
+        body: queryArg.conditionRequest,
       }),
     }),
-    retrieveCondition: build.query<
-      RetrieveConditionApiResponse,
-      RetrieveConditionApiArg
+    apiConditionsRetrieve: build.query<
+      ApiConditionsRetrieveApiResponse,
+      ApiConditionsRetrieveApiArg
     >({
       query: (queryArg) => ({ url: `/api/conditions/${queryArg.id}/` }),
     }),
-    updateCondition: build.mutation<
-      UpdateConditionApiResponse,
-      UpdateConditionApiArg
+    apiConditionsUpdate: build.mutation<
+      ApiConditionsUpdateApiResponse,
+      ApiConditionsUpdateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/conditions/${queryArg.id}/`,
         method: "PUT",
-        body: queryArg.condition,
+        body: queryArg.conditionRequest,
       }),
     }),
-    partialUpdateCondition: build.mutation<
-      PartialUpdateConditionApiResponse,
-      PartialUpdateConditionApiArg
+    apiConditionsPartialUpdate: build.mutation<
+      ApiConditionsPartialUpdateApiResponse,
+      ApiConditionsPartialUpdateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/conditions/${queryArg.id}/`,
         method: "PATCH",
-        body: queryArg.condition,
+        body: queryArg.patchedConditionRequest,
       }),
     }),
-    destroyCondition: build.mutation<
-      DestroyConditionApiResponse,
-      DestroyConditionApiArg
+    apiConditionsDestroy: build.mutation<
+      ApiConditionsDestroyApiResponse,
+      ApiConditionsDestroyApiArg
     >({
       query: (queryArg) => ({
         url: `/api/conditions/${queryArg.id}/`,
         method: "DELETE",
       }),
     }),
-    listFilters: build.query<ListFiltersApiResponse, ListFiltersApiArg>({
+    apiCredentialsList: build.query<
+      ApiCredentialsListApiResponse,
+      ApiCredentialsListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/credentials/`,
+        params: { source: queryArg.source },
+      }),
+    }),
+    apiCredentialsCreate: build.mutation<
+      ApiCredentialsCreateApiResponse,
+      ApiCredentialsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/credentials/`,
+        method: "POST",
+        body: queryArg.credentialRequest,
+      }),
+    }),
+    apiCredentialsRetrieve: build.query<
+      ApiCredentialsRetrieveApiResponse,
+      ApiCredentialsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/credentials/${queryArg.id}/` }),
+    }),
+    apiCredentialsUpdate: build.mutation<
+      ApiCredentialsUpdateApiResponse,
+      ApiCredentialsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/credentials/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.credentialRequest,
+      }),
+    }),
+    apiCredentialsPartialUpdate: build.mutation<
+      ApiCredentialsPartialUpdateApiResponse,
+      ApiCredentialsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/credentials/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedCredentialRequest,
+      }),
+    }),
+    apiCredentialsDestroy: build.mutation<
+      ApiCredentialsDestroyApiResponse,
+      ApiCredentialsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/credentials/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiFiltersList: build.query<
+      ApiFiltersListApiResponse,
+      ApiFiltersListApiArg
+    >({
       query: () => ({ url: `/api/filters/` }),
     }),
-    createFilter: build.mutation<CreateFilterApiResponse, CreateFilterApiArg>({
+    apiFiltersCreate: build.mutation<
+      ApiFiltersCreateApiResponse,
+      ApiFiltersCreateApiArg
+    >({
       query: (queryArg) => ({
         url: `/api/filters/`,
         method: "POST",
-        body: queryArg.filter,
+        body: queryArg.filterRequest,
       }),
     }),
-    retrieveFilter: build.query<
-      RetrieveFilterApiResponse,
-      RetrieveFilterApiArg
+    apiFiltersRetrieve: build.query<
+      ApiFiltersRetrieveApiResponse,
+      ApiFiltersRetrieveApiArg
     >({
       query: (queryArg) => ({ url: `/api/filters/${queryArg.id}/` }),
     }),
-    updateFilter: build.mutation<UpdateFilterApiResponse, UpdateFilterApiArg>({
+    apiFiltersUpdate: build.mutation<
+      ApiFiltersUpdateApiResponse,
+      ApiFiltersUpdateApiArg
+    >({
       query: (queryArg) => ({
         url: `/api/filters/${queryArg.id}/`,
         method: "PUT",
-        body: queryArg.filter,
+        body: queryArg.filterRequest,
       }),
     }),
-    partialUpdateFilter: build.mutation<
-      PartialUpdateFilterApiResponse,
-      PartialUpdateFilterApiArg
+    apiFiltersPartialUpdate: build.mutation<
+      ApiFiltersPartialUpdateApiResponse,
+      ApiFiltersPartialUpdateApiArg
     >({
       query: (queryArg) => ({
         url: `/api/filters/${queryArg.id}/`,
         method: "PATCH",
-        body: queryArg.filter,
+        body: queryArg.patchedFilterRequest,
       }),
     }),
-    destroyFilter: build.mutation<
-      DestroyFilterApiResponse,
-      DestroyFilterApiArg
+    apiFiltersDestroy: build.mutation<
+      ApiFiltersDestroyApiResponse,
+      ApiFiltersDestroyApiArg
     >({
       query: (queryArg) => ({
         url: `/api/filters/${queryArg.id}/`,
         method: "DELETE",
       }),
     }),
-    listOwners: build.query<ListOwnersApiResponse, ListOwnersApiArg>({
+    apiInputGroupsList: build.query<
+      ApiInputGroupsListApiResponse,
+      ApiInputGroupsListApiArg
+    >({
+      query: () => ({ url: `/api/input-groups/` }),
+    }),
+    apiInputGroupsCreate: build.mutation<
+      ApiInputGroupsCreateApiResponse,
+      ApiInputGroupsCreateApiArg
+    >({
       query: (queryArg) => ({
-        url: `/api/owners/`,
-        params: { source: queryArg.source },
+        url: `/api/input-groups/`,
+        method: "POST",
+        body: queryArg.inputGroupRequest,
       }),
     }),
-    createOwner: build.mutation<CreateOwnerApiResponse, CreateOwnerApiArg>({
+    apiInputGroupsRetrieve: build.query<
+      ApiInputGroupsRetrieveApiResponse,
+      ApiInputGroupsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/input-groups/${queryArg.id}/` }),
+    }),
+    apiInputGroupsUpdate: build.mutation<
+      ApiInputGroupsUpdateApiResponse,
+      ApiInputGroupsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/input-groups/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.inputGroupRequest,
+      }),
+    }),
+    apiInputGroupsPartialUpdate: build.mutation<
+      ApiInputGroupsPartialUpdateApiResponse,
+      ApiInputGroupsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/input-groups/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedInputGroupRequest,
+      }),
+    }),
+    apiInputGroupsDestroy: build.mutation<
+      ApiInputGroupsDestroyApiResponse,
+      ApiInputGroupsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/input-groups/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiInputsList: build.query<ApiInputsListApiResponse, ApiInputsListApiArg>({
+      query: () => ({ url: `/api/inputs/` }),
+    }),
+    apiInputsCreate: build.mutation<
+      ApiInputsCreateApiResponse,
+      ApiInputsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/inputs/`,
+        method: "POST",
+        body: queryArg.inputRequest,
+      }),
+    }),
+    apiInputsRetrieve: build.query<
+      ApiInputsRetrieveApiResponse,
+      ApiInputsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/inputs/${queryArg.id}/` }),
+    }),
+    apiInputsUpdate: build.mutation<
+      ApiInputsUpdateApiResponse,
+      ApiInputsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/inputs/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.inputRequest,
+      }),
+    }),
+    apiInputsPartialUpdate: build.mutation<
+      ApiInputsPartialUpdateApiResponse,
+      ApiInputsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/inputs/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedInputRequest,
+      }),
+    }),
+    apiInputsDestroy: build.mutation<
+      ApiInputsDestroyApiResponse,
+      ApiInputsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/inputs/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiJoinsList: build.query<ApiJoinsListApiResponse, ApiJoinsListApiArg>({
+      query: () => ({ url: `/api/joins/` }),
+    }),
+    apiJoinsCreate: build.mutation<
+      ApiJoinsCreateApiResponse,
+      ApiJoinsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/joins/`,
+        method: "POST",
+        body: queryArg.joinRequest,
+      }),
+    }),
+    apiJoinsRetrieve: build.query<
+      ApiJoinsRetrieveApiResponse,
+      ApiJoinsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/joins/${queryArg.id}/` }),
+    }),
+    apiJoinsUpdate: build.mutation<
+      ApiJoinsUpdateApiResponse,
+      ApiJoinsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/joins/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.joinRequest,
+      }),
+    }),
+    apiJoinsPartialUpdate: build.mutation<
+      ApiJoinsPartialUpdateApiResponse,
+      ApiJoinsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/joins/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedJoinRequest,
+      }),
+    }),
+    apiJoinsDestroy: build.mutation<
+      ApiJoinsDestroyApiResponse,
+      ApiJoinsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/joins/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiOwnersList: build.query<ApiOwnersListApiResponse, ApiOwnersListApiArg>({
+      query: (queryArg) => ({
+        url: `/api/owners/`,
+        params: { credential: queryArg.credential },
+      }),
+    }),
+    apiOwnersCreate: build.mutation<
+      ApiOwnersCreateApiResponse,
+      ApiOwnersCreateApiArg
+    >({
       query: (queryArg) => ({
         url: `/api/owners/`,
         method: "POST",
-        body: queryArg.owner,
+        body: queryArg.ownerRequest,
       }),
     }),
-    retrieveOwner: build.query<RetrieveOwnerApiResponse, RetrieveOwnerApiArg>({
-      query: (queryArg) => ({
-        url: `/api/owners/${queryArg.id}/`,
-        params: { source: queryArg.source },
-      }),
-    }),
-    updateOwner: build.mutation<UpdateOwnerApiResponse, UpdateOwnerApiArg>({
-      query: (queryArg) => ({
-        url: `/api/owners/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.owner,
-        params: { source: queryArg.source },
-      }),
-    }),
-    partialUpdateOwner: build.mutation<
-      PartialUpdateOwnerApiResponse,
-      PartialUpdateOwnerApiArg
+    apiOwnersDestroy: build.mutation<
+      ApiOwnersDestroyApiResponse,
+      ApiOwnersDestroyApiArg
     >({
       query: (queryArg) => ({
         url: `/api/owners/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.owner,
+        method: "DELETE",
+      }),
+    }),
+    apiResourcesList: build.query<
+      ApiResourcesListApiResponse,
+      ApiResourcesListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/resources/`,
         params: { source: queryArg.source },
       }),
     }),
-    destroyOwner: build.mutation<DestroyOwnerApiResponse, DestroyOwnerApiArg>({
+    apiResourcesCreate: build.mutation<
+      ApiResourcesCreateApiResponse,
+      ApiResourcesCreateApiArg
+    >({
       query: (queryArg) => ({
-        url: `/api/owners/${queryArg.id}/`,
+        url: `/api/resources/`,
+        method: "POST",
+        body: queryArg.resourceRequest,
+      }),
+    }),
+    apiResourcesRetrieve: build.query<
+      ApiResourcesRetrieveApiResponse,
+      ApiResourcesRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/resources/${queryArg.id}/` }),
+    }),
+    apiResourcesUpdate: build.mutation<
+      ApiResourcesUpdateApiResponse,
+      ApiResourcesUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/resources/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.resourceRequest,
+      }),
+    }),
+    apiResourcesPartialUpdate: build.mutation<
+      ApiResourcesPartialUpdateApiResponse,
+      ApiResourcesPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/resources/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedResourceRequest,
+      }),
+    }),
+    apiResourcesDestroy: build.mutation<
+      ApiResourcesDestroyApiResponse,
+      ApiResourcesDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/resources/${queryArg.id}/`,
         method: "DELETE",
-        params: { source: queryArg.source },
+      }),
+    }),
+    apiSourcesList: build.query<
+      ApiSourcesListApiResponse,
+      ApiSourcesListApiArg
+    >({
+      query: () => ({ url: `/api/sources/` }),
+    }),
+    apiSourcesCreate: build.mutation<
+      ApiSourcesCreateApiResponse,
+      ApiSourcesCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sources/`,
+        method: "POST",
+        body: queryArg.sourceRequest,
+      }),
+    }),
+    apiSourcesRetrieve: build.query<
+      ApiSourcesRetrieveApiResponse,
+      ApiSourcesRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/sources/${queryArg.id}/` }),
+    }),
+    apiSourcesUpdate: build.mutation<
+      ApiSourcesUpdateApiResponse,
+      ApiSourcesUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sources/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.sourceRequest,
+      }),
+    }),
+    apiSourcesPartialUpdate: build.mutation<
+      ApiSourcesPartialUpdateApiResponse,
+      ApiSourcesPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sources/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedSourceRequest,
+      }),
+    }),
+    apiSourcesDestroy: build.mutation<
+      ApiSourcesDestroyApiResponse,
+      ApiSourcesDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sources/${queryArg.id}/`,
+        method: "DELETE",
       }),
     }),
   }),
 });
-export type ListSourcesApiResponse = /** status 200  */ Source[];
-export type ListSourcesApiArg = {};
-export type CreateSourceApiResponse = /** status 201  */ Source;
-export type CreateSourceApiArg = {
-  source: Source;
-};
-export type RetrieveSourceApiResponse = /** status 200  */ Source;
-export type RetrieveSourceApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-};
-export type UpdateSourceApiResponse = /** status 200  */ Source;
-export type UpdateSourceApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-  source: Source;
-};
-export type PartialUpdateSourceApiResponse = /** status 200  */ Source;
-export type PartialUpdateSourceApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-  source: Source;
-};
-export type DestroySourceApiResponse = unknown;
-export type DestroySourceApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-};
-export type ListResourcesApiResponse = /** status 200  */ Resource[];
-export type ListResourcesApiArg = {
-  /** source */
+export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
+export type ApiAttributesListApiArg = {
   source?: string;
 };
-export type CreateResourceApiResponse = /** status 201  */ Resource;
-export type CreateResourceApiArg = {
-  resource: Resource;
+export type ApiAttributesCreateApiResponse = /** status 201  */ Attribute;
+export type ApiAttributesCreateApiArg = {
+  attributeRequest: AttributeRequest;
 };
-export type RetrieveResourceApiResponse = /** status 200  */ Resource;
-export type RetrieveResourceApiArg = {
-  /** A unique value identifying this resource. */
-  id: string;
-  /** source */
-  source?: string;
-};
-export type UpdateResourceApiResponse = /** status 200  */ Resource;
-export type UpdateResourceApiArg = {
-  /** A unique value identifying this resource. */
-  id: string;
-  /** source */
-  source?: string;
-  resource: Resource;
-};
-export type PartialUpdateResourceApiResponse = /** status 200  */ Resource;
-export type PartialUpdateResourceApiArg = {
-  /** A unique value identifying this resource. */
-  id: string;
-  /** source */
-  source?: string;
-  resource: Resource;
-};
-export type DestroyResourceApiResponse = unknown;
-export type DestroyResourceApiArg = {
-  /** A unique value identifying this resource. */
-  id: string;
-  /** source */
-  source?: string;
-};
-export type ListCredentialsApiResponse = /** status 200  */ Credential[];
-export type ListCredentialsApiArg = {};
-export type CreateCredentialApiResponse = /** status 201  */ Credential;
-export type CreateCredentialApiArg = {
-  credential: Credential;
-};
-export type RetrieveCredentialApiResponse = /** status 200  */ Credential;
-export type RetrieveCredentialApiArg = {
-  /** A unique value identifying this credential. */
-  id: string;
-};
-export type UpdateCredentialApiResponse = /** status 200  */ Credential;
-export type UpdateCredentialApiArg = {
-  /** A unique value identifying this credential. */
-  id: string;
-  credential: Credential;
-};
-export type PartialUpdateCredentialApiResponse = /** status 200  */ Credential;
-export type PartialUpdateCredentialApiArg = {
-  /** A unique value identifying this credential. */
-  id: string;
-  credential: Credential;
-};
-export type DestroyCredentialApiResponse = unknown;
-export type DestroyCredentialApiArg = {
-  /** A unique value identifying this credential. */
-  id: string;
-};
-export type ListAttributesApiResponse = /** status 200  */ Attribute[];
-export type ListAttributesApiArg = {
-  /** source */
-  source?: string;
-};
-export type CreateAttributeApiResponse = /** status 201  */ Attribute;
-export type CreateAttributeApiArg = {
-  attribute: Attribute;
-};
-export type RetrieveAttributeApiResponse = /** status 200  */ Attribute;
-export type RetrieveAttributeApiArg = {
+export type ApiAttributesRetrieveApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesRetrieveApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
-  /** source */
-  source?: string;
 };
-export type UpdateAttributeApiResponse = /** status 200  */ Attribute;
-export type UpdateAttributeApiArg = {
+export type ApiAttributesUpdateApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
-  /** source */
-  source?: string;
-  attribute: Attribute;
+  attributeRequest: AttributeRequest;
 };
-export type PartialUpdateAttributeApiResponse = /** status 200  */ Attribute;
-export type PartialUpdateAttributeApiArg = {
+export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
-  /** source */
-  source?: string;
-  attribute: Attribute;
+  patchedAttributeRequest: PatchedAttributeRequest;
 };
-export type DestroyAttributeApiResponse = unknown;
-export type DestroyAttributeApiArg = {
+export type ApiAttributesDestroyApiResponse = unknown;
+export type ApiAttributesDestroyApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
-  /** source */
-  source?: string;
 };
-export type ListInputGroupsApiResponse = /** status 200  */ InputGroup[];
-export type ListInputGroupsApiArg = {};
-export type CreateInputGroupApiResponse = /** status 201  */ InputGroup;
-export type CreateInputGroupApiArg = {
-  inputGroup: InputGroup;
+export type ApiColumnsListApiResponse = /** status 200  */ Column[];
+export type ApiColumnsListApiArg = {};
+export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
+export type ApiColumnsCreateApiArg = {
+  columnRequest: ColumnRequest;
 };
-export type RetrieveInputGroupApiResponse = /** status 200  */ InputGroup;
-export type RetrieveInputGroupApiArg = {
-  /** A unique value identifying this input group. */
-  id: string;
-};
-export type UpdateInputGroupApiResponse = /** status 200  */ InputGroup;
-export type UpdateInputGroupApiArg = {
-  /** A unique value identifying this input group. */
-  id: string;
-  inputGroup: InputGroup;
-};
-export type PartialUpdateInputGroupApiResponse = /** status 200  */ InputGroup;
-export type PartialUpdateInputGroupApiArg = {
-  /** A unique value identifying this input group. */
-  id: string;
-  inputGroup: InputGroup;
-};
-export type DestroyInputGroupApiResponse = unknown;
-export type DestroyInputGroupApiArg = {
-  /** A unique value identifying this input group. */
-  id: string;
-};
-export type ListInputsApiResponse = /** status 200  */ Input[];
-export type ListInputsApiArg = {};
-export type CreateInputApiResponse = /** status 201  */ Input;
-export type CreateInputApiArg = {
-  input: Input;
-};
-export type RetrieveInputApiResponse = /** status 200  */ Input;
-export type RetrieveInputApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-};
-export type UpdateInputApiResponse = /** status 200  */ Input;
-export type UpdateInputApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-  input: Input;
-};
-export type PartialUpdateInputApiResponse = /** status 200  */ Input;
-export type PartialUpdateInputApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-  input: Input;
-};
-export type DestroyInputApiResponse = unknown;
-export type DestroyInputApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-};
-export type ListColumnsApiResponse = /** status 200  */ Column[];
-export type ListColumnsApiArg = {};
-export type CreateColumnApiResponse = /** status 201  */ Column;
-export type CreateColumnApiArg = {
-  column: Column;
-};
-export type RetrieveColumnApiResponse = /** status 200  */ Column;
-export type RetrieveColumnApiArg = {
+export type ApiColumnsRetrieveApiResponse = /** status 200  */ Column;
+export type ApiColumnsRetrieveApiArg = {
   /** A unique value identifying this column. */
   id: string;
 };
-export type UpdateColumnApiResponse = /** status 200  */ Column;
-export type UpdateColumnApiArg = {
+export type ApiColumnsUpdateApiResponse = /** status 200  */ Column;
+export type ApiColumnsUpdateApiArg = {
   /** A unique value identifying this column. */
   id: string;
-  column: Column;
+  columnRequest: ColumnRequest;
 };
-export type PartialUpdateColumnApiResponse = /** status 200  */ Column;
-export type PartialUpdateColumnApiArg = {
+export type ApiColumnsPartialUpdateApiResponse = /** status 200  */ Column;
+export type ApiColumnsPartialUpdateApiArg = {
   /** A unique value identifying this column. */
   id: string;
-  column: Column;
+  patchedColumnRequest: PatchedColumnRequest;
 };
-export type DestroyColumnApiResponse = unknown;
-export type DestroyColumnApiArg = {
+export type ApiColumnsDestroyApiResponse = unknown;
+export type ApiColumnsDestroyApiArg = {
   /** A unique value identifying this column. */
   id: string;
 };
-export type ListJoinsApiResponse = /** status 200  */ Join[];
-export type ListJoinsApiArg = {};
-export type CreateJoinApiResponse = /** status 201  */ Join;
-export type CreateJoinApiArg = {
-  join: Join;
+export type ApiConditionsListApiResponse = /** status 200  */ Condition[];
+export type ApiConditionsListApiArg = {};
+export type ApiConditionsCreateApiResponse = /** status 201  */ Condition;
+export type ApiConditionsCreateApiArg = {
+  conditionRequest: ConditionRequest;
 };
-export type RetrieveJoinApiResponse = /** status 200  */ Join;
-export type RetrieveJoinApiArg = {
-  /** A unique value identifying this join. */
-  id: string;
-};
-export type UpdateJoinApiResponse = /** status 200  */ Join;
-export type UpdateJoinApiArg = {
-  /** A unique value identifying this join. */
-  id: string;
-  join: Join;
-};
-export type PartialUpdateJoinApiResponse = /** status 200  */ Join;
-export type PartialUpdateJoinApiArg = {
-  /** A unique value identifying this join. */
-  id: string;
-  join: Join;
-};
-export type DestroyJoinApiResponse = unknown;
-export type DestroyJoinApiArg = {
-  /** A unique value identifying this join. */
-  id: string;
-};
-export type ListConditionsApiResponse = /** status 200  */ Condition[];
-export type ListConditionsApiArg = {};
-export type CreateConditionApiResponse = /** status 201  */ Condition;
-export type CreateConditionApiArg = {
-  condition: Condition;
-};
-export type RetrieveConditionApiResponse = /** status 200  */ Condition;
-export type RetrieveConditionApiArg = {
+export type ApiConditionsRetrieveApiResponse = /** status 200  */ Condition;
+export type ApiConditionsRetrieveApiArg = {
   /** A unique value identifying this condition. */
   id: string;
 };
-export type UpdateConditionApiResponse = /** status 200  */ Condition;
-export type UpdateConditionApiArg = {
+export type ApiConditionsUpdateApiResponse = /** status 200  */ Condition;
+export type ApiConditionsUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
-  condition: Condition;
+  conditionRequest: ConditionRequest;
 };
-export type PartialUpdateConditionApiResponse = /** status 200  */ Condition;
-export type PartialUpdateConditionApiArg = {
+export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
-  condition: Condition;
+  patchedConditionRequest: PatchedConditionRequest;
 };
-export type DestroyConditionApiResponse = unknown;
-export type DestroyConditionApiArg = {
+export type ApiConditionsDestroyApiResponse = unknown;
+export type ApiConditionsDestroyApiArg = {
   /** A unique value identifying this condition. */
   id: string;
 };
-export type ListFiltersApiResponse = /** status 200  */ Filter[];
-export type ListFiltersApiArg = {};
-export type CreateFilterApiResponse = /** status 201  */ Filter;
-export type CreateFilterApiArg = {
-  filter: Filter;
+export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
+export type ApiCredentialsListApiArg = {
+  source?: string;
 };
-export type RetrieveFilterApiResponse = /** status 200  */ Filter;
-export type RetrieveFilterApiArg = {
+export type ApiCredentialsCreateApiResponse = /** status 201  */ Credential;
+export type ApiCredentialsCreateApiArg = {
+  credentialRequest: CredentialRequest;
+};
+export type ApiCredentialsRetrieveApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsRetrieveApiArg = {
+  /** A unique value identifying this credential. */
+  id: string;
+};
+export type ApiCredentialsUpdateApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsUpdateApiArg = {
+  /** A unique value identifying this credential. */
+  id: string;
+  credentialRequest: CredentialRequest;
+};
+export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiArg = {
+  /** A unique value identifying this credential. */
+  id: string;
+  patchedCredentialRequest: PatchedCredentialRequest;
+};
+export type ApiCredentialsDestroyApiResponse = unknown;
+export type ApiCredentialsDestroyApiArg = {
+  /** A unique value identifying this credential. */
+  id: string;
+};
+export type ApiFiltersListApiResponse = /** status 200  */ Filter[];
+export type ApiFiltersListApiArg = {};
+export type ApiFiltersCreateApiResponse = /** status 201  */ Filter;
+export type ApiFiltersCreateApiArg = {
+  filterRequest: FilterRequest;
+};
+export type ApiFiltersRetrieveApiResponse = /** status 200  */ Filter;
+export type ApiFiltersRetrieveApiArg = {
   /** A unique value identifying this filter. */
   id: string;
 };
-export type UpdateFilterApiResponse = /** status 200  */ Filter;
-export type UpdateFilterApiArg = {
+export type ApiFiltersUpdateApiResponse = /** status 200  */ Filter;
+export type ApiFiltersUpdateApiArg = {
   /** A unique value identifying this filter. */
   id: string;
-  filter: Filter;
+  filterRequest: FilterRequest;
 };
-export type PartialUpdateFilterApiResponse = /** status 200  */ Filter;
-export type PartialUpdateFilterApiArg = {
+export type ApiFiltersPartialUpdateApiResponse = /** status 200  */ Filter;
+export type ApiFiltersPartialUpdateApiArg = {
   /** A unique value identifying this filter. */
   id: string;
-  filter: Filter;
+  patchedFilterRequest: PatchedFilterRequest;
 };
-export type DestroyFilterApiResponse = unknown;
-export type DestroyFilterApiArg = {
+export type ApiFiltersDestroyApiResponse = unknown;
+export type ApiFiltersDestroyApiArg = {
   /** A unique value identifying this filter. */
   id: string;
 };
-export type ListOwnersApiResponse = /** status 200  */ Owner[];
-export type ListOwnersApiArg = {
-  /** source */
-  source?: string;
+export type ApiInputGroupsListApiResponse = /** status 200  */ InputGroup[];
+export type ApiInputGroupsListApiArg = {};
+export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup;
+export type ApiInputGroupsCreateApiArg = {
+  inputGroupRequest: InputGroupRequest;
 };
-export type CreateOwnerApiResponse = /** status 201  */ Owner;
-export type CreateOwnerApiArg = {
-  owner: Owner;
+export type ApiInputGroupsRetrieveApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsRetrieveApiArg = {
+  /** A unique value identifying this input group. */
+  id: string;
 };
-export type RetrieveOwnerApiResponse = /** status 200  */ Owner;
-export type RetrieveOwnerApiArg = {
+export type ApiInputGroupsUpdateApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsUpdateApiArg = {
+  /** A unique value identifying this input group. */
+  id: string;
+  inputGroupRequest: InputGroupRequest;
+};
+export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiArg = {
+  /** A unique value identifying this input group. */
+  id: string;
+  patchedInputGroupRequest: PatchedInputGroupRequest;
+};
+export type ApiInputGroupsDestroyApiResponse = unknown;
+export type ApiInputGroupsDestroyApiArg = {
+  /** A unique value identifying this input group. */
+  id: string;
+};
+export type ApiInputsListApiResponse = /** status 200  */ Input[];
+export type ApiInputsListApiArg = {};
+export type ApiInputsCreateApiResponse = /** status 201  */ Input;
+export type ApiInputsCreateApiArg = {
+  inputRequest: InputRequest;
+};
+export type ApiInputsRetrieveApiResponse = /** status 200  */ Input;
+export type ApiInputsRetrieveApiArg = {
+  /** A unique value identifying this input. */
+  id: string;
+};
+export type ApiInputsUpdateApiResponse = /** status 200  */ Input;
+export type ApiInputsUpdateApiArg = {
+  /** A unique value identifying this input. */
+  id: string;
+  inputRequest: InputRequest;
+};
+export type ApiInputsPartialUpdateApiResponse = /** status 200  */ Input;
+export type ApiInputsPartialUpdateApiArg = {
+  /** A unique value identifying this input. */
+  id: string;
+  patchedInputRequest: PatchedInputRequest;
+};
+export type ApiInputsDestroyApiResponse = unknown;
+export type ApiInputsDestroyApiArg = {
+  /** A unique value identifying this input. */
+  id: string;
+};
+export type ApiJoinsListApiResponse = /** status 200  */ Join[];
+export type ApiJoinsListApiArg = {};
+export type ApiJoinsCreateApiResponse = /** status 201  */ Join;
+export type ApiJoinsCreateApiArg = {
+  joinRequest: JoinRequest;
+};
+export type ApiJoinsRetrieveApiResponse = /** status 200  */ Join;
+export type ApiJoinsRetrieveApiArg = {
+  /** A unique value identifying this join. */
+  id: string;
+};
+export type ApiJoinsUpdateApiResponse = /** status 200  */ Join;
+export type ApiJoinsUpdateApiArg = {
+  /** A unique value identifying this join. */
+  id: string;
+  joinRequest: JoinRequest;
+};
+export type ApiJoinsPartialUpdateApiResponse = /** status 200  */ Join;
+export type ApiJoinsPartialUpdateApiArg = {
+  /** A unique value identifying this join. */
+  id: string;
+  patchedJoinRequest: PatchedJoinRequest;
+};
+export type ApiJoinsDestroyApiResponse = unknown;
+export type ApiJoinsDestroyApiArg = {
+  /** A unique value identifying this join. */
+  id: string;
+};
+export type ApiOwnersListApiResponse = /** status 200  */ Owner[];
+export type ApiOwnersListApiArg = {
+  credential?: string;
+};
+export type ApiOwnersCreateApiResponse = /** status 201  */ Owner;
+export type ApiOwnersCreateApiArg = {
+  ownerRequest: OwnerRequest;
+};
+export type ApiOwnersDestroyApiResponse = unknown;
+export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
-  /** source */
+};
+export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
+export type ApiResourcesListApiArg = {
   source?: string;
 };
-export type UpdateOwnerApiResponse = /** status 200  */ Owner;
-export type UpdateOwnerApiArg = {
-  /** A unique value identifying this owner. */
+export type ApiResourcesCreateApiResponse = /** status 201  */ Resource;
+export type ApiResourcesCreateApiArg = {
+  resourceRequest: ResourceRequest;
+};
+export type ApiResourcesRetrieveApiResponse = /** status 200  */ Resource;
+export type ApiResourcesRetrieveApiArg = {
+  /** A unique value identifying this resource. */
   id: string;
-  /** source */
-  source?: string;
-  owner: Owner;
 };
-export type PartialUpdateOwnerApiResponse = /** status 200  */ Owner;
-export type PartialUpdateOwnerApiArg = {
-  /** A unique value identifying this owner. */
+export type ApiResourcesUpdateApiResponse = /** status 200  */ Resource;
+export type ApiResourcesUpdateApiArg = {
+  /** A unique value identifying this resource. */
   id: string;
-  /** source */
-  source?: string;
-  owner: Owner;
+  resourceRequest: ResourceRequest;
 };
-export type DestroyOwnerApiResponse = unknown;
-export type DestroyOwnerApiArg = {
-  /** A unique value identifying this owner. */
+export type ApiResourcesPartialUpdateApiResponse = /** status 200  */ Resource;
+export type ApiResourcesPartialUpdateApiArg = {
+  /** A unique value identifying this resource. */
   id: string;
-  /** source */
-  source?: string;
+  patchedResourceRequest: PatchedResourceRequest;
 };
-export type Source = {
-  id?: string;
-  credential: {
-    id?: string;
-    host: string;
-    port: number;
-    database: string;
-    login: string;
-    password: string;
-    model: "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
-    updated_at?: string;
-    created_at?: string;
-    source?: string;
-  };
-  name: string;
-  version?: string;
-  updated_at?: string;
-  created_at?: string;
+export type ApiResourcesDestroyApiResponse = unknown;
+export type ApiResourcesDestroyApiArg = {
+  /** A unique value identifying this resource. */
+  id: string;
 };
-export type Resource = {
-  id?: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  logical_reference: string;
-  updated_at?: string;
-  created_at?: string;
-  source: string;
-  primary_key_owner: string;
+export type ApiSourcesListApiResponse = /** status 200  */ Source[];
+export type ApiSourcesListApiArg = {};
+export type ApiSourcesCreateApiResponse = /** status 201  */ Source;
+export type ApiSourcesCreateApiArg = {
+  sourceRequest: SourceRequest;
 };
+export type ApiSourcesRetrieveApiResponse = /** status 200  */ Source;
+export type ApiSourcesRetrieveApiArg = {
+  /** A unique value identifying this source. */
+  id: string;
+};
+export type ApiSourcesUpdateApiResponse = /** status 200  */ Source;
+export type ApiSourcesUpdateApiArg = {
+  /** A unique value identifying this source. */
+  id: string;
+  sourceRequest: SourceRequest;
+};
+export type ApiSourcesPartialUpdateApiResponse = /** status 200  */ Source;
+export type ApiSourcesPartialUpdateApiArg = {
+  /** A unique value identifying this source. */
+  id: string;
+  patchedSourceRequest: PatchedSourceRequest;
+};
+export type ApiSourcesDestroyApiResponse = unknown;
+export type ApiSourcesDestroyApiArg = {
+  /** A unique value identifying this source. */
+  id: string;
+};
+export type Attribute = {
+  id: string;
+  path: string;
+  sliceName?: string;
+  definitionId: string;
+  updatedAt: string;
+  createdAt: string;
+  resource: string;
+};
+export type AttributeRequest = {
+  path: string;
+  sliceName?: string;
+  definitionId: string;
+  resource: string;
+};
+export type PatchedAttributeRequest = {
+  path?: string;
+  sliceName?: string;
+  definitionId?: string;
+  resource?: string;
+};
+export type Column = {
+  id: string;
+  table: string;
+  column: string;
+  updatedAt: string;
+  createdAt: string;
+  join?: string | null;
+  input?: string | null;
+  owner: string;
+};
+export type ColumnRequest = {
+  table: string;
+  column: string;
+  join?: string | null;
+  input?: string | null;
+  owner: string;
+};
+export type PatchedColumnRequest = {
+  table?: string;
+  column?: string;
+  join?: string | null;
+  input?: string | null;
+  owner?: string;
+};
+export type ActionEnum = "INCLUDE" | "EXCLUDE";
+export type ConditionRelationEnum =
+  | "EQ"
+  | "GT"
+  | "GE"
+  | "LT"
+  | "LE"
+  | "NOTNULL"
+  | "NULL";
+export type Condition = {
+  id: string;
+  action: ActionEnum;
+  value?: string;
+  relation?: ConditionRelationEnum;
+  column: string;
+  inputGroup: string;
+};
+export type ConditionRequest = {
+  action: ActionEnum;
+  value?: string;
+  relation?: ConditionRelationEnum;
+  column: string;
+  inputGroup: string;
+};
+export type PatchedConditionRequest = {
+  action?: ActionEnum;
+  value?: string;
+  relation?: ConditionRelationEnum;
+  column?: string;
+  inputGroup?: string;
+};
+export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
 export type Credential = {
-  id?: string;
+  id: string;
+  owners: string[];
+  availableOwners: string[];
   host: string;
   port: number;
   database: string;
   login: string;
   password: string;
-  model: "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
-  updated_at?: string;
-  created_at?: string;
+  model: ModelEnum;
+  updatedAt: string;
+  createdAt: string;
+  source: string;
+};
+export type CredentialRequest = {
+  owners: string[];
+  host: string;
+  port: number;
+  database: string;
+  login: string;
+  password: string;
+  model: ModelEnum;
+  source: string;
+};
+export type PatchedCredentialRequest = {
+  owners?: string[];
+  host?: string;
+  port?: number;
+  database?: string;
+  login?: string;
+  password?: string;
+  model?: ModelEnum;
   source?: string;
 };
-export type Attribute = {
-  id?: string;
-  path: string;
-  slice_name?: string;
-  definition_id: string;
-  updated_at?: string;
-  created_at?: string;
+export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
+export type Filter = {
+  id: string;
+  relation: FilterRelationEnum;
+  value?: string;
   resource: string;
+  sqlColumn: string;
+};
+export type FilterRequest = {
+  relation: FilterRelationEnum;
+  value?: string;
+  resource: string;
+  sqlColumn: string;
+};
+export type PatchedFilterRequest = {
+  relation?: FilterRelationEnum;
+  value?: string;
+  resource?: string;
+  sqlColumn?: string;
 };
 export type InputGroup = {
-  id?: string;
-  merging_script?: string;
-  updated_at?: string;
-  created_at?: string;
+  id: string;
+  mergingScript?: string;
+  updatedAt: string;
+  createdAt: string;
   attribute: string;
 };
-export type Input = {
-  id?: string;
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string;
-  updated_at?: string;
-  created_at?: string;
-  input_group: string;
+export type InputGroupRequest = {
+  mergingScript?: string;
+  attribute: string;
 };
-export type Column = {
-  id?: string;
-  table: string;
-  column: string;
-  updated_at?: string;
-  created_at?: string;
-  join?: string | null;
-  input?: string | null;
-  owner: string;
+export type PatchedInputGroupRequest = {
+  mergingScript?: string;
+  attribute?: string;
+};
+export type Input = {
+  id: string;
+  script?: string;
+  conceptMapId?: string;
+  staticValue?: string;
+  updatedAt: string;
+  createdAt: string;
+  inputGroup: string;
+};
+export type InputRequest = {
+  script?: string;
+  conceptMapId?: string;
+  staticValue?: string;
+  inputGroup: string;
+};
+export type PatchedInputRequest = {
+  script?: string;
+  conceptMapId?: string;
+  staticValue?: string;
+  inputGroup?: string;
 };
 export type Join = {
-  id?: string;
-  updated_at?: string;
-  created_at?: string;
+  id: string;
+  updatedAt: string;
+  createdAt: string;
   column: string;
 };
-export type Condition = {
-  id?: string;
-  action: "INCLUDE" | "EXCLUDE";
-  value?: string;
-  relation?: "EQ" | "GT" | "GE" | "LT" | "LE" | "NOTNULL" | "NULL";
+export type JoinRequest = {
   column: string;
-  input_group: string;
 };
-export type Filter = {
-  id?: string;
-  relation: "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
-  value?: string;
-  resource: string;
-  sql_column: string;
+export type PatchedJoinRequest = {
+  column?: string;
 };
 export type Owner = {
-  id?: string;
+  id: string;
   name: string;
-  schema?: object | null;
+  schema: {
+    [key: string]: any;
+  };
   credential: string;
 };
+export type OwnerRequest = {
+  name: string;
+  credential: string;
+};
+export type Resource = {
+  id: string;
+  label?: string;
+  primaryKeyTable: string;
+  primaryKeyColumn: string;
+  definitionId: string;
+  logicalReference: string;
+  updatedAt: string;
+  createdAt: string;
+  source: string;
+  primaryKeyOwner: string;
+};
+export type ResourceRequest = {
+  label?: string;
+  primaryKeyTable: string;
+  primaryKeyColumn: string;
+  definitionId: string;
+  logicalReference: string;
+  source: string;
+  primaryKeyOwner: string;
+};
+export type PatchedResourceRequest = {
+  label?: string;
+  primaryKeyTable?: string;
+  primaryKeyColumn?: string;
+  definitionId?: string;
+  logicalReference?: string;
+  source?: string;
+  primaryKeyOwner?: string;
+};
+export type Source = {
+  id: string;
+  name: string;
+  version?: string;
+  updatedAt: string;
+  createdAt: string;
+};
+export type SourceRequest = {
+  name: string;
+  version?: string;
+};
+export type PatchedSourceRequest = {
+  name?: string;
+  version?: string;
+};
 export const {
-  useListSourcesQuery,
-  useCreateSourceMutation,
-  useRetrieveSourceQuery,
-  useUpdateSourceMutation,
-  usePartialUpdateSourceMutation,
-  useDestroySourceMutation,
-  useListResourcesQuery,
-  useCreateResourceMutation,
-  useRetrieveResourceQuery,
-  useUpdateResourceMutation,
-  usePartialUpdateResourceMutation,
-  useDestroyResourceMutation,
-  useListCredentialsQuery,
-  useCreateCredentialMutation,
-  useRetrieveCredentialQuery,
-  useUpdateCredentialMutation,
-  usePartialUpdateCredentialMutation,
-  useDestroyCredentialMutation,
-  useListAttributesQuery,
-  useCreateAttributeMutation,
-  useRetrieveAttributeQuery,
-  useUpdateAttributeMutation,
-  usePartialUpdateAttributeMutation,
-  useDestroyAttributeMutation,
-  useListInputGroupsQuery,
-  useCreateInputGroupMutation,
-  useRetrieveInputGroupQuery,
-  useUpdateInputGroupMutation,
-  usePartialUpdateInputGroupMutation,
-  useDestroyInputGroupMutation,
-  useListInputsQuery,
-  useCreateInputMutation,
-  useRetrieveInputQuery,
-  useUpdateInputMutation,
-  usePartialUpdateInputMutation,
-  useDestroyInputMutation,
-  useListColumnsQuery,
-  useCreateColumnMutation,
-  useRetrieveColumnQuery,
-  useUpdateColumnMutation,
-  usePartialUpdateColumnMutation,
-  useDestroyColumnMutation,
-  useListJoinsQuery,
-  useCreateJoinMutation,
-  useRetrieveJoinQuery,
-  useUpdateJoinMutation,
-  usePartialUpdateJoinMutation,
-  useDestroyJoinMutation,
-  useListConditionsQuery,
-  useCreateConditionMutation,
-  useRetrieveConditionQuery,
-  useUpdateConditionMutation,
-  usePartialUpdateConditionMutation,
-  useDestroyConditionMutation,
-  useListFiltersQuery,
-  useCreateFilterMutation,
-  useRetrieveFilterQuery,
-  useUpdateFilterMutation,
-  usePartialUpdateFilterMutation,
-  useDestroyFilterMutation,
-  useListOwnersQuery,
-  useCreateOwnerMutation,
-  useRetrieveOwnerQuery,
-  useUpdateOwnerMutation,
-  usePartialUpdateOwnerMutation,
-  useDestroyOwnerMutation,
+  useApiAttributesListQuery,
+  useApiAttributesCreateMutation,
+  useApiAttributesRetrieveQuery,
+  useApiAttributesUpdateMutation,
+  useApiAttributesPartialUpdateMutation,
+  useApiAttributesDestroyMutation,
+  useApiColumnsListQuery,
+  useApiColumnsCreateMutation,
+  useApiColumnsRetrieveQuery,
+  useApiColumnsUpdateMutation,
+  useApiColumnsPartialUpdateMutation,
+  useApiColumnsDestroyMutation,
+  useApiConditionsListQuery,
+  useApiConditionsCreateMutation,
+  useApiConditionsRetrieveQuery,
+  useApiConditionsUpdateMutation,
+  useApiConditionsPartialUpdateMutation,
+  useApiConditionsDestroyMutation,
+  useApiCredentialsListQuery,
+  useApiCredentialsCreateMutation,
+  useApiCredentialsRetrieveQuery,
+  useApiCredentialsUpdateMutation,
+  useApiCredentialsPartialUpdateMutation,
+  useApiCredentialsDestroyMutation,
+  useApiFiltersListQuery,
+  useApiFiltersCreateMutation,
+  useApiFiltersRetrieveQuery,
+  useApiFiltersUpdateMutation,
+  useApiFiltersPartialUpdateMutation,
+  useApiFiltersDestroyMutation,
+  useApiInputGroupsListQuery,
+  useApiInputGroupsCreateMutation,
+  useApiInputGroupsRetrieveQuery,
+  useApiInputGroupsUpdateMutation,
+  useApiInputGroupsPartialUpdateMutation,
+  useApiInputGroupsDestroyMutation,
+  useApiInputsListQuery,
+  useApiInputsCreateMutation,
+  useApiInputsRetrieveQuery,
+  useApiInputsUpdateMutation,
+  useApiInputsPartialUpdateMutation,
+  useApiInputsDestroyMutation,
+  useApiJoinsListQuery,
+  useApiJoinsCreateMutation,
+  useApiJoinsRetrieveQuery,
+  useApiJoinsUpdateMutation,
+  useApiJoinsPartialUpdateMutation,
+  useApiJoinsDestroyMutation,
+  useApiOwnersListQuery,
+  useApiOwnersCreateMutation,
+  useApiOwnersDestroyMutation,
+  useApiResourcesListQuery,
+  useApiResourcesCreateMutation,
+  useApiResourcesRetrieveQuery,
+  useApiResourcesUpdateMutation,
+  useApiResourcesPartialUpdateMutation,
+  useApiResourcesDestroyMutation,
+  useApiSourcesListQuery,
+  useApiSourcesCreateMutation,
+  useApiSourcesRetrieveQuery,
+  useApiSourcesUpdateMutation,
+  useApiSourcesPartialUpdateMutation,
+  useApiSourcesDestroyMutation,
 } = api;
