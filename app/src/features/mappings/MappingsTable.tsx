@@ -1,13 +1,9 @@
 import React from "react";
 
-import {
-  CircularProgress,
-  Table,
-  TableBody,
-  TableContainer,
-} from "@material-ui/core";
+import { CircularProgress, Table, TableBody } from "@material-ui/core";
 import { useParams } from "react-router";
 
+import TableContainer from "common/TableContainer/TableContainer";
 import {
   useListSourceResources,
   useRetrieveSourceQuery,
