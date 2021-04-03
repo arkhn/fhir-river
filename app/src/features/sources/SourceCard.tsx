@@ -2,9 +2,7 @@ import React, { useState } from "react";
 
 import {
   Card,
-  CardContent,
   CardHeader,
-  CircularProgress,
   Divider,
   IconButton,
   ListItemIcon,
@@ -15,23 +13,17 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import AttributeIcon from "@material-ui/icons/LocalOffer";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import ManagePermissionsIcon from "@material-ui/icons/Person";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { ReactComponent as MappingIcon } from "assets/icons/mapping_icon.svg";
-import CardContentItem from "common/components/CardContentItem";
-import {
-  useApiSourcesDestroyMutation,
-  useApiResourcesListQuery,
-  useApiAttributesListQuery,
-} from "services/api/api";
+import { useAppDispatch } from "app/store";
+import { useApiSourcesDestroyMutation } from "services/api/endpoints";
 import { Source } from "services/api/generated/api.generated";
 
-import { useAppDispatch } from "../../app/store";
-import { updateSource } from "./sourceSlice";
+import SourceCardInfo from "./SourceCardInfo";
+import { editSource } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -54,14 +46,6 @@ const useStyles = makeStyles((theme) => ({
     }`,
     borderRadius: 5,
   },
-  icon: {
-    width: 12,
-    height: 12,
-    marginRight: theme.spacing(1),
-    "& path": {
-      fill: theme.palette.text.secondary,
-    },
-  },
 }));
 
 type SourceCardProps = {
@@ -77,27 +61,13 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
 
   const [deleteSource] = useApiSourcesDestroyMutation();
 
-  const {
-    data: mappings,
-    isLoading: isMappingsLoading,
-  } = useApiResourcesListQuery({ source: source.id });
-  const {
-    data: attributes,
-    isLoading: isAttributesLoading,
-  } = useApiAttributesListQuery({ source: source.id });
-
-  const isSourceInfosLoading = isMappingsLoading || isAttributesLoading;
-
-  const attributesCount = attributes?.length;
-  const mappingsCount = mappings?.length;
-
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleEditSource = () => {
-    dispatch(updateSource(source));
+    dispatch(editSource(source));
     handleMenuClose();
   };
   const handleDeleteSource = () => deleteSource({ id: source.id });
@@ -160,26 +130,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
           </>
         }
       />
-      <CardContent>
-        {isSourceInfosLoading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {undefined !== mappingsCount && (
-              <CardContentItem
-                label={t("mappingCount", { count: mappingsCount })}
-                startAdornment={<MappingIcon className={classes.icon} />}
-              />
-            )}
-            {undefined !== attributesCount && (
-              <CardContentItem
-                label={t("attributesCount", { count: attributesCount })}
-                startAdornment={<AttributeIcon className={classes.icon} />}
-              />
-            )}
-          </>
-        )}
-      </CardContent>
+      <SourceCardInfo source={source} />
     </Card>
   );
 };

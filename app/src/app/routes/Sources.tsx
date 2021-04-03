@@ -3,8 +3,9 @@ import React from "react";
 import { Container, Grid, makeStyles } from "@material-ui/core";
 
 import SourceCreate from "features/sources/SourceCreate";
-import SourceForm from "features/sources/SourceForm";
 import SourceGrid from "features/sources/SourceGrid";
+
+import Drawer from "./SourceDrawer";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -22,7 +23,7 @@ const Sources = (): JSX.Element => {
         <SourceCreate />
       </Grid>
       <SourceGrid />
-      <SourceForm />
+      <Drawer />
     </Container>
   );
 };

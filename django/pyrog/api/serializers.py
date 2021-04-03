@@ -24,12 +24,8 @@ class OwnerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"name": [f"{validated_data['name']} schema is empty"]})
         return super().create(validated_data)
 
-    def __str__(self):
-        return self.name
-
 
 class CredentialSerializer(serializers.ModelSerializer):
-    owners = serializers.StringRelatedField(many=True)
     available_owners = serializers.SerializerMethodField()
 
     class Meta:

@@ -2,7 +2,7 @@ import React from "react";
 
 import { CircularProgress, Grid, makeStyles } from "@material-ui/core";
 
-import { useApiSourcesListQuery } from "services/api/api";
+import { useApiSourcesListQuery } from "services/api/endpoints";
 
 import SourceCard from "./SourceCard";
 

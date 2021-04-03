@@ -5,15 +5,14 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
-import { differenceBy } from "lodash";
+import { difference } from "lodash";
 
 import {
+  useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersDestroyMutation,
-  useApiOwnersListQuery,
-  useApiCredentialsRetrieveQuery,
-} from "services/api/api";
-import type { Owner } from "services/api/generated/api.generated";
+} from "services/api/endpoints";
+import type { Credential } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,66 +24,70 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type CredentialOwnersSelectProps = {
-  credentialId: string;
+  credential: Credential;
 };
 
 const CredentialOwnersSelect = ({
-  credentialId,
+  credential,
 }: CredentialOwnersSelectProps): JSX.Element => {
   const classes = useStyles();
 
-  const {
-    isLoading: isRetrieveCredentialLoading,
-    data: credential,
-  } = useApiCredentialsRetrieveQuery({ id: credentialId });
-  const credentialOwners = credential?.owners;
+  const availableOwnersNames = credential.availableOwners;
 
   const {
-    isLoading: isListOwnersLoading,
+    isLoading: isApiOwnersListLoading,
     data: owners,
   } = useApiOwnersListQuery({
-    credential: credentialId,
+    credential: credential.id,
   });
   const [
-    createOwner,
-    { isLoading: isCreateOwnerLoading },
+    apiOwnersCreate,
+    { isLoading: isApiOwnerCreateLoading },
   ] = useApiOwnersCreateMutation();
-  const [deleteOwner] = useApiOwnersDestroyMutation();
+  const [apiOwnersDestroy] = useApiOwnersDestroyMutation();
 
-  const handleChange = (
+  const isLoading = isApiOwnersListLoading || isApiOwnerCreateLoading;
+
+  const handleOwnerChange = (
     _: React.ChangeEvent<Record<string, never>>,
-    value: Owner[],
+    value: string[],
     reason: AutocompleteChangeReason
   ) => {
-    if (!selectedOwners) return;
+    if (!owners) return;
     switch (reason) {
       case "select-option":
-        const [selectedOwner] = differenceBy(value, selectedOwners, "id");
-        if (selectedOwner?.id) {
-          createOwner({ owner: selectedOwner });
-        }
+        const [selectedOwnerName] = difference(
+          value,
+          owners.map((owner) => owner.name)
+        );
+        apiOwnersCreate({
+          ownerRequest: { name: selectedOwnerName, credential: credential.id },
+        });
         return;
       case "remove-option":
-        const [removedOwner] = differenceBy(selectedOwners, value, "id");
-        if (removedOwner?.id) {
-          deleteOwner({ id: removedOwner.id });
-        }
+        const [removedOwnerName] = difference(
+          owners.map((owner) => owner.name),
+          value
+        );
+        const removedOwner = owners.find(
+          (owner) => owner.name === removedOwnerName
+        );
+        if (removedOwner) apiOwnersDestroy({ id: removedOwner.id });
         return;
     }
   };
 
-  if (isOwnersLoading) return <CircularProgress />;
+  if (isLoading) return <CircularProgress />;
   return (
     <div className={classes.root}>
       <Autocomplete
         multiple
-        options={owners || []}
-        getOptionLabel={(owner) => owner.name}
+        options={availableOwnersNames}
         renderInput={(params) => (
           <TextField {...params} variant="outlined" label="Owners" />
         )}
-        value={owners}
-        onChange={handleChange}
+        value={owners?.map((owner) => owner.name)}
+        onChange={handleOwnerChange}
       />
     </div>
   );

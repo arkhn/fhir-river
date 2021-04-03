@@ -1651,10 +1651,6 @@ components:
         id:
           type: string
           readOnly: true
-        owners:
-          type: array
-          items:
-            type: string
         availableOwners:
           type: array
           items:
@@ -1692,7 +1688,6 @@ components:
       - id
       - login
       - model
-      - owners
       - password
       - port
       - source
@@ -1700,10 +1695,6 @@ components:
     CredentialRequest:
       type: object
       properties:
-        owners:
-          type: array
-          items:
-            type: string
         host:
           type: string
         port:
@@ -1725,7 +1716,6 @@ components:
       - host
       - login
       - model
-      - owners
       - password
       - port
       - source
@@ -1951,10 +1941,6 @@ components:
     PatchedCredentialRequest:
       type: object
       properties:
-        owners:
-          type: array
-          items:
-            type: string
         host:
           type: string
         port:

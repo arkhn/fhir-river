@@ -11,16 +11,13 @@ import {
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import CredentialOwnersSelect from "features/credentials/CredentialOwnersSelect";
 import {
   useApiCredentialsCreateMutation,
   useApiCredentialsUpdateMutation,
-  useApiCredentialsListQuery,
-} from "services/api/api";
+} from "services/api/endpoints";
 import type {
-  Credential,
   CredentialRequest,
-  Source,
+  Credential,
 } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,9 +46,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
-  t
-) => [
+const credentialInputs: (
+  t: TFunction
+) => FormInputProperty<CredentialRequest>[] = (t) => [
   {
     type: "text",
     name: "host",
@@ -114,23 +111,13 @@ const credentialInputs: (t: TFunction) => FormInputProperty<Credential>[] = (
   },
 ];
 
-type SourceCredentialFormProps = {
-  source: Source;
+type CredentialFormProps = {
+  credential?: Credential;
 };
 
-const SourceCredentialForm = ({
-  source,
-}: SourceCredentialFormProps): JSX.Element => {
+const CredentialForm = ({ credential }: CredentialFormProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-
-  const {
-    isLoading: isListCredentialLoading,
-    data: credentials,
-  } = useApiCredentialsListQuery({
-    source: source.id,
-  });
-  const credential = credentials && credentials[0];
 
   const [
     createCredential,
@@ -141,12 +128,9 @@ const SourceCredentialForm = ({
     { isLoading: isUpdateCredentialLoading },
   ] = useApiCredentialsUpdateMutation();
 
-  const isLoading =
-    isListCredentialLoading ||
-    isCreateCredentialLoading ||
-    isUpdateCredentialLoading;
+  const isLoading = isCreateCredentialLoading || isUpdateCredentialLoading;
 
-  const handleSubmitCredential = (credentialRequest: CredentialRequest) => {
+  const handleCredentialSubmit = (credentialRequest: CredentialRequest) => {
     if (credential) {
       updateCredential({ id: credential.id, credentialRequest });
     } else {
@@ -156,9 +140,9 @@ const SourceCredentialForm = ({
 
   return (
     <div className={classes.formContainer}>
-      <Form<Credential>
+      <Form<CredentialRequest>
         properties={credentialInputs(t)}
-        submit={handleSubmitCredential}
+        submit={handleCredentialSubmit}
         formStyle={{ display: "block" }}
         defaultValues={credential}
         displaySubmitButton={false}
@@ -173,16 +157,15 @@ const SourceCredentialForm = ({
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : (
-              <Typography>{t("submitCredential")}</Typography>
+              <Typography>
+                {credential ? t("updateCredential") : t("createCredential")}
+              </Typography>
             )}
           </Button>
         }
       />
-      {credential?.id && (
-        <CredentialOwnersSelect credentialId={credential.id} />
-      )}
     </div>
   );
 };
 
-export default SourceCredentialForm;
+export default CredentialForm;

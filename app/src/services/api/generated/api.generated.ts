@@ -922,7 +922,6 @@ export type PatchedConditionRequest = {
 export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
 export type Credential = {
   id: string;
-  owners: string[];
   availableOwners: string[];
   host: string;
   port: number;
@@ -935,7 +934,6 @@ export type Credential = {
   source: string;
 };
 export type CredentialRequest = {
-  owners: string[];
   host: string;
   port: number;
   database: string;
@@ -945,7 +943,6 @@ export type CredentialRequest = {
   source: string;
 };
 export type PatchedCredentialRequest = {
-  owners?: string[];
   host?: string;
   port?: number;
   database?: string;

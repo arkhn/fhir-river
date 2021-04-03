@@ -15,10 +15,10 @@ import { useAppDispatch } from "app/store";
 import {
   useApiSourcesCreateMutation,
   useApiSourcesUpdateMutation,
-} from "services/api/api";
+} from "services/api/endpoints";
 import { Source, SourceRequest } from "services/api/generated/api.generated";
 
-import { updateSource } from "./sourceSlice";
+import { editSource } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -59,35 +59,35 @@ const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
 ];
 
 type SourceFormProps = {
-  sourceToUpdate?: Source;
+  source?: Source;
 };
 
-const SourceForm = ({ sourceToUpdate }: SourceFormProps): JSX.Element => {
+const SourceForm = ({ source }: SourceFormProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const [
-    apiCreateSource,
+    apiSourcesCreate,
     { isLoading: isCreateSourceLoading },
   ] = useApiSourcesCreateMutation();
   const [
-    apiUpdateSource,
+    apiSourcesUpdate,
     { isLoading: isUpdateSourceLoading },
   ] = useApiSourcesUpdateMutation();
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
   const handleSubmitSource = (sourceRequest: SourceRequest) => {
-    if (sourceToUpdate) {
-      apiUpdateSource({ id: sourceToUpdate.id, sourceRequest })
+    if (source) {
+      apiSourcesUpdate({ id: source.id, sourceRequest })
         .unwrap()
-        .then((source) => dispatch(updateSource(source)))
+        .then((_) => dispatch(editSource(undefined)))
         .catch();
     } else {
-      apiCreateSource({ sourceRequest })
+      apiSourcesCreate({ sourceRequest })
         .unwrap()
-        .then((source) => dispatch(updateSource(source)))
+        .then((_) => dispatch(editSource(undefined)))
         .catch();
     }
   };
@@ -98,11 +98,11 @@ const SourceForm = ({ sourceToUpdate }: SourceFormProps): JSX.Element => {
         properties={sourceInputs(t)}
         submit={handleSubmitSource}
         formStyle={{ display: "block" }}
-        defaultValues={sourceToUpdate}
+        defaultValues={source}
         displaySubmitButton={false}
         formHeader={
           <Typography className={classes.title} variant="h5">
-            {sourceToUpdate ? t("editSource") : t("newSource")}
+            {source ? t("editSource") : t("newSource")}
           </Typography>
         }
         formFooter={
@@ -117,7 +117,7 @@ const SourceForm = ({ sourceToUpdate }: SourceFormProps): JSX.Element => {
               <CircularProgress color="inherit" size={23} />
             ) : (
               <Typography>
-                {sourceToUpdate ? t("editSource") : t("createSource")}
+                {source ? t("editSource") : t("createSource")}
               </Typography>
             )}
           </Button>
