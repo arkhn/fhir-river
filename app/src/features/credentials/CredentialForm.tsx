@@ -117,6 +117,7 @@ const credentialInputs: (
     name: "model",
     label: t("vendor"),
     variant: "outlined",
+    defaultValue: "POSTGRES",
     validationRules: { required: true },
   },
 ];
