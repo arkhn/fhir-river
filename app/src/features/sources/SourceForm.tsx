@@ -119,7 +119,7 @@ const SourceForm = ({ source }: SourceFormProps): JSX.Element => {
               <CircularProgress color="inherit" size={23} />
             ) : (
               <Typography>
-                {source ? t("editSource") : t("createSource")}
+                {source ? t("updateSource") : t("createSource")}
               </Typography>
             )}
           </Button>
