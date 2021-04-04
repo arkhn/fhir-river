@@ -3,17 +3,17 @@ import React from "react";
 import { Drawer } from "@material-ui/core";
 import { head } from "lodash";
 
-import { useAppSelector } from "app/store";
+import { useAppDispatch, useAppSelector } from "app/store";
 import CredentialForm from "features/credentials/CredentialForm";
 import CredentialOwnersSelect from "features/credentials/CredentialOwnersSelect";
 import SourceForm from "features/sources/SourceForm";
-import { selectSourceToEdit } from "features/sources/sourceSlice";
+import { selectSourceToEdit, editSource } from "features/sources/sourceSlice";
 import { useApiCredentialsListQuery } from "services/api/endpoints";
 
 const SourceDrawer = (): JSX.Element => {
-  const sourceToEdit = useAppSelector(selectSourceToEdit);
+  const dispatch = useAppDispatch();
 
-  const isDrawerOpen = undefined !== sourceToEdit;
+  const sourceToEdit = useAppSelector(selectSourceToEdit);
 
   const { isLoading, data: credentials } = useApiCredentialsListQuery(
     {
@@ -21,12 +21,17 @@ const SourceDrawer = (): JSX.Element => {
     },
     { skip: !sourceToEdit }
   );
-  const credential = head(credentials);
+  const credential = (sourceToEdit ?? undefined) && head(credentials);
+
+  const isDrawerOpen = undefined !== sourceToEdit;
+  const handleCloseDrawer = () => dispatch(editSource(undefined));
 
   return (
-    <Drawer open={isDrawerOpen} anchor="right">
+    <Drawer open={isDrawerOpen} onClose={handleCloseDrawer} anchor="right">
       <SourceForm source={sourceToEdit ?? undefined} />
-      {!isLoading && <CredentialForm credential={credential} />}
+      {!isLoading && sourceToEdit && (
+        <CredentialForm source={sourceToEdit} credential={credential} />
+      )}
       {!isLoading && credential && (
         <CredentialOwnersSelect credential={credential} />
       )}

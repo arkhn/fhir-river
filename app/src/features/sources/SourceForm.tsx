@@ -16,7 +16,7 @@ import {
   useApiSourcesCreateMutation,
   useApiSourcesUpdateMutation,
 } from "services/api/endpoints";
-import { Source, SourceRequest } from "services/api/generated/api.generated";
+import { Source } from "services/api/generated/api.generated";
 
 import { editSource } from "./sourceSlice";
 
@@ -46,7 +46,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
+type SourceFormInputs = {
+  name: string;
+};
+
+const sourceInputs: (t: TFunction) => FormInputProperty<SourceFormInputs>[] = (
   t
 ) => [
   {
@@ -63,9 +67,9 @@ type SourceFormProps = {
 };
 
 const SourceForm = ({ source }: SourceFormProps): JSX.Element => {
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
-  const dispatch = useAppDispatch();
 
   const [
     apiSourcesCreate,
@@ -78,23 +82,21 @@ const SourceForm = ({ source }: SourceFormProps): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmitSource = (sourceRequest: SourceRequest) => {
+  const handleSubmitSource = (sourceFormInputs: SourceFormInputs) => {
     if (source) {
-      apiSourcesUpdate({ id: source.id, sourceRequest })
+      apiSourcesUpdate({ id: source.id, sourceRequest: sourceFormInputs })
         .unwrap()
-        .then((_) => dispatch(editSource(undefined)))
-        .catch();
+        .then((source) => dispatch(editSource(source)));
     } else {
-      apiSourcesCreate({ sourceRequest })
+      apiSourcesCreate({ sourceRequest: sourceFormInputs })
         .unwrap()
-        .then((_) => dispatch(editSource(undefined)))
-        .catch();
+        .then((source) => dispatch(editSource(source)));
     }
   };
 
   return (
     <div className={classes.formContainer}>
-      <Form<SourceRequest>
+      <Form<SourceFormInputs>
         properties={sourceInputs(t)}
         submit={handleSubmitSource}
         formStyle={{ display: "block" }}

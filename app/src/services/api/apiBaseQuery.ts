@@ -36,7 +36,7 @@ export const apiBaseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  // TODO: Remove this condition after the next rtk-query > 0.2.0 release
+  // FIXME: Remove this condition after the next rtk-query > 0.2.0 release
   // Undefined query params should be excluded.
   // Fixed by https://github.com/rtk-incubator/rtk-query/pull/146
   if (typeof args !== "string" && args.params) {

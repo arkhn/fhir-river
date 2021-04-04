@@ -16,8 +16,9 @@ import {
   useApiCredentialsUpdateMutation,
 } from "services/api/endpoints";
 import type {
-  CredentialRequest,
   Credential,
+  Source,
+  ModelEnum,
 } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
@@ -46,9 +47,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type CredentialFormInputs = {
+  host: string;
+  port: number;
+  database: string;
+  login: string;
+  password: string;
+  model: ModelEnum;
+};
+
 const credentialInputs: (
   t: TFunction
-) => FormInputProperty<CredentialRequest>[] = (t) => [
+) => FormInputProperty<CredentialFormInputs>[] = (t) => [
   {
     type: "text",
     name: "host",
@@ -112,10 +122,14 @@ const credentialInputs: (
 ];
 
 type CredentialFormProps = {
+  source: Source;
   credential?: Credential;
 };
 
-const CredentialForm = ({ credential }: CredentialFormProps): JSX.Element => {
+const CredentialForm = ({
+  source,
+  credential,
+}: CredentialFormProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -130,17 +144,22 @@ const CredentialForm = ({ credential }: CredentialFormProps): JSX.Element => {
 
   const isLoading = isCreateCredentialLoading || isUpdateCredentialLoading;
 
-  const handleCredentialSubmit = (credentialRequest: CredentialRequest) => {
+  const handleCredentialSubmit = (credentialInputs: CredentialFormInputs) => {
     if (credential) {
-      updateCredential({ id: credential.id, credentialRequest });
+      updateCredential({
+        id: credential.id,
+        credentialRequest: { source: credential.source, ...credentialInputs },
+      });
     } else {
-      createCredential({ credentialRequest });
+      createCredential({
+        credentialRequest: { source: source.id, ...credentialInputs },
+      });
     }
   };
 
   return (
     <div className={classes.formContainer}>
-      <Form<CredentialRequest>
+      <Form<CredentialFormInputs>
         properties={credentialInputs(t)}
         submit={handleCredentialSubmit}
         formStyle={{ display: "block" }}
