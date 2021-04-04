@@ -9717,6 +9717,11 @@ react-hook-form@^6.15.1:
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-6.15.4.tgz#328003e1ccc096cd158899ffe7e3b33735a9b024"
   integrity sha512-K+Sw33DtTMengs8OdqFJI3glzNl1wBzSefD/ksQw/hJf9CnOHQAU6qy82eOrh0IRNt2G53sjr7qnnw1JDjvx1w==
 
+react-hook-form@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.0.0.tgz#7a7b0b51cc26f1448ab2a113bcff8b49e0f78864"
+  integrity sha512-cXoKnNnQe5IxieesTu+enDS7Jfh8lyX8mSMwzNvC4L0k6R6yQ2F8rIhvBbzlFOGSoeEnsR64dvMZ1izWRCAw6A==
+
 react-i18next@^11.8.7:
   version "11.8.8"
   resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-11.8.8.tgz#23d34518c784f2ada7cec41cfe439ac4ae51875c"
