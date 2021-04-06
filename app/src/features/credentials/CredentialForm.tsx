@@ -8,7 +8,7 @@ import {
   TextField,
   MenuItem,
 } from "@material-ui/core";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -16,6 +16,7 @@ import {
   useApiCredentialsUpdateMutation,
 } from "services/api/endpoints";
 import type {
+  CredentialRequest,
   Credential,
   Source,
   ModelEnum,
@@ -24,14 +25,11 @@ import type {
 const useStyles = makeStyles((theme) => ({
   formContainer: {
     minWidth: 400,
-  },
-  sourceName: {
-    minWidth: 400,
     padding: "1em",
     display: "flex",
     flexDirection: "column",
   },
-  sourceNameInput: {
+  input: {
     margin: theme.spacing(2),
   },
   title: {
@@ -53,8 +51,10 @@ type CredentialFormInputs = {
   database: string;
   login: string;
   password: string;
-  model: ModelEnum;
+  model: ModelEnum | "";
 };
+
+type CredentialFormValidatedInputs = Omit<CredentialRequest, "source">;
 
 type CredentialFormProps = {
   source: Source;
@@ -67,12 +67,23 @@ const CredentialForm = ({
 }: CredentialFormProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { register, reset, handleSubmit } = useForm<CredentialFormInputs>({
-    defaultValues: credential ? { ...credential } : {},
+
+  const defaultValues = credential
+    ? { ...credential }
+    : {
+        host: "",
+        database: "",
+        number: 0,
+        login: "",
+        password: "",
+      };
+
+  const { control, reset, handleSubmit } = useForm<CredentialFormInputs>({
+    defaultValues,
   });
 
   useEffect(() => {
-    reset(credential ? { ...credential } : {});
+    reset(defaultValues);
   }, [credential]);
 
   const [
@@ -86,7 +97,9 @@ const CredentialForm = ({
 
   const isLoading = isCreateCredentialLoading || isUpdateCredentialLoading;
 
-  const handleCredentialSubmit = (credentialInputs: CredentialFormInputs) => {
+  const handleCredentialSubmit = (
+    credentialInputs: CredentialFormValidatedInputs
+  ) => {
     if (credential) {
       updateCredential({
         id: credential.id,
@@ -100,61 +113,144 @@ const CredentialForm = ({
   };
 
   return (
-    <div className={classes.formContainer}>
-      <form onSubmit={handleSubmit(handleCredentialSubmit)}>
-        <TextField required label={t("host")} inputRef={register("host").ref} />
-        <TextField required label={t("port")} inputRef={register("port").ref} />
-        <TextField
-          required
-          label={t("database")}
-          inputRef={register("database").ref}
-        />
-        <TextField
-          required
-          label={t("username")}
-          inputRef={register("login").ref}
-        />
-        <TextField
-          required
-          label={t("password")}
-          inputRef={register("password").ref}
-        />
-        <TextField
-          required
-          select
-          label={t("vendor")}
-          inputRef={register("model").ref}
-        >
-          <MenuItem key={"MSSQL"} value={"MSSQL"}>
-            MSSQL
-          </MenuItem>
-          <MenuItem key={"POSTGRES"} value={"POSGRES"}>
-            POSTGRESQL
-          </MenuItem>
-          <MenuItem key={"ORACLE"} value={"ORACLE"}>
-            ORACLE
-          </MenuItem>
-          <MenuItem key={"SQLLITE"} value={"SQLLITE"}>
-            SQLITE
-          </MenuItem>
-        </TextField>
-        <Button
-          className={classes.button}
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth={false}
-        >
-          {isLoading ? (
-            <CircularProgress color="inherit" size={23} />
-          ) : (
-            <Typography>
-              {credential ? t("updateCredential") : t("createCredential")}
-            </Typography>
-          )}
-        </Button>
-      </form>
-    </div>
+    <form
+      className={classes.formContainer}
+      onSubmit={handleSubmit(handleCredentialSubmit)}
+    >
+      <Controller
+        name="host"
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <TextField
+            required
+            label={t("host")}
+            inputRef={ref}
+            onBlur={onBlur}
+            variant="outlined"
+            className={classes.input}
+            onChange={onChange}
+            value={value}
+          />
+        )}
+      />
+      <Controller
+        name="port"
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <TextField
+            required
+            type="number"
+            label={t("port")}
+            inputRef={ref}
+            onBlur={onBlur}
+            variant="outlined"
+            className={classes.input}
+            onChange={onChange}
+            value={value || ""}
+          />
+        )}
+      />
+      <Controller
+        name="database"
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <TextField
+            required
+            label={t("database")}
+            inputRef={ref}
+            onBlur={onBlur}
+            variant="outlined"
+            className={classes.input}
+            onChange={onChange}
+            value={value}
+          />
+        )}
+      />
+      <Controller
+        name="login"
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <TextField
+            required
+            label={t("login")}
+            inputRef={ref}
+            onBlur={onBlur}
+            variant="outlined"
+            className={classes.input}
+            onChange={onChange}
+            value={value}
+          />
+        )}
+      />
+      <Controller
+        name="password"
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <TextField
+            required
+            type="password"
+            label={t("password")}
+            inputRef={ref}
+            onBlur={onBlur}
+            variant="outlined"
+            className={classes.input}
+            onChange={onChange}
+            value={value}
+          />
+        )}
+      />
+      <Controller
+        name="model"
+        control={control}
+        rules={{ required: true }}
+        render={({ field: { onChange, onBlur, value, ref } }) => (
+          <TextField
+            required
+            select
+            label={t("vendor")}
+            inputRef={ref}
+            onChange={onChange}
+            onBlur={onBlur}
+            value={value}
+            variant="outlined"
+            className={classes.input}
+          >
+            <MenuItem key={"MSSQL"} value={"MSSQL"}>
+              MSSQL
+            </MenuItem>
+            <MenuItem key={"POSTGRES"} value={"POSTGRES"}>
+              POSTGRESQL
+            </MenuItem>
+            <MenuItem key={"ORACLE"} value={"ORACLE"}>
+              ORACLE
+            </MenuItem>
+            <MenuItem key={"SQLLITE"} value={"SQLLITE"}>
+              SQLITE
+            </MenuItem>
+          </TextField>
+        )}
+      />
+      <Button
+        className={classes.button}
+        type="submit"
+        variant="contained"
+        color="primary"
+        fullWidth={false}
+      >
+        {isLoading ? (
+          <CircularProgress color="inherit" size={23} />
+        ) : (
+          <Typography>
+            {credential ? t("updateCredential") : t("createCredential")}
+          </Typography>
+        )}
+      </Button>
+    </form>
   );
 };
 
