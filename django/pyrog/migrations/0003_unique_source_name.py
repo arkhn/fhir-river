@@ -14,7 +14,7 @@ def update_source_name(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0001_initial"),
+        ("pyrog", "0002_integrate_users"),
     ]
 
     operations = [migrations.RunPython(update_source_name, reverse_code=migrations.RunPython.noop)]

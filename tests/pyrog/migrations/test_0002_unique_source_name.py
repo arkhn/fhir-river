@@ -15,7 +15,7 @@ def test_migrate(migrator, state):
     s2 = Source.objects.create(template=t2, name="my_source")
 
     try:
-        migrator.apply_tested_migration(("pyrog", "0002_unique_source_name"))
+        migrator.apply_tested_migration(("pyrog", "0003_unique_source_name"))
     except Exception:
         pytest.fail()
 

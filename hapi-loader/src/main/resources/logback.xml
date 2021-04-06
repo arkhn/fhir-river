@@ -7,7 +7,15 @@
         </encoder>
     </appender>
 
+    <appender name="FLUENT_TEXT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+        <tag>river</tag>
+        <label>normal</label>
+        <remoteHost>fluentd</remoteHost>
+        <port>24224</port>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="FLUENT_TEXT" />
     </root>
 </configuration>

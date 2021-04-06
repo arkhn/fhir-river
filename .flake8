@@ -7,3 +7,4 @@ per-file-ignores =
     django/**/settings/*:F401 F403 F405
     django/manage.py:F401
     django/**/apps.py:F401
+    django/**/migrations/*:E501

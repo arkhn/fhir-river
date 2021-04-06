@@ -7,6 +7,7 @@ from pytest_factoryboy import register
 from . import factories
 
 register(factories.SourceFactory)
+register(factories.SourceUserFactory)
 register(factories.ResourceFactory)
 register(factories.CredentialFactory)
 register(factories.AttributeFactory)
@@ -18,6 +19,8 @@ register(factories.JoinFactory)
 register(factories.ConditionFactory)
 register(factories.FilterFactory)
 register(factories.OwnerFactory)
+register(factories.UserFactory)
+register(factories.UserFactory, "other_user")
 
 
 def get_factories():
@@ -27,9 +30,8 @@ def get_factories():
     ]
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def reset_factories_sequences():
     """Reset all sequences for predictable values."""
-
     for factory in get_factories():
         factory.reset_sequence()
