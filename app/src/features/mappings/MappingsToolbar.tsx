@@ -33,11 +33,10 @@ const MappingsToolbar = (): JSX.Element => {
   const classes = useStyles();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
-  if (!sourceId) {
-    return <></>;
-  }
-
-  const { data: source } = useRetrieveSourceQuery({ id: sourceId ?? "" });
+  const { data: source } = useRetrieveSourceQuery(
+    { id: sourceId ?? "" },
+    { skip: !sourceId }
+  );
   const { data: mappings } = useListSourceResources(source);
   const { data: attributes } = useListSourceAttributes(source);
 

@@ -14,15 +14,15 @@ import MappingRow from "./MappingRow";
 const MappingsTable = (): JSX.Element => {
   const { sourceId } = useParams<{ sourceId?: string }>();
 
-  if (!sourceId) {
-    return <></>;
-  }
-
-  const { data: source } = useRetrieveSourceQuery({ id: sourceId ?? "" });
+  const { data: source } = useRetrieveSourceQuery(
+    { id: sourceId ?? "" },
+    { skip: !sourceId }
+  );
   const {
     data: mappings,
     isLoading: isMappingLoading,
   } = useListSourceResources(source);
+
   return isMappingLoading ? (
     <CircularProgress />
   ) : (
