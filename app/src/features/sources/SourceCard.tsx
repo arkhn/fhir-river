@@ -136,7 +136,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
             <CircularProgress />
           ) : (
             <>
-              {undefined !== mappingsCount && (
+              {mappingsCount !== undefined && (
                 <CardContentItem
                   label={t("mappingCount", { count: mappingsCount })}
                   startAdornment={
@@ -148,7 +148,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
                   }
                 />
               )}
-              {undefined !== attributesCount && (
+              {attributesCount !== undefined && (
                 <CardContentItem
                   label={t("attributesCount", { count: attributesCount })}
                   startAdornment={<AttributeIcon className={classes.icon} />}
