@@ -24,7 +24,7 @@ def test_delete_batch_endpoint(api_client: APIClient):
     url = reverse("delete-resources")
     data = {"resources": []}
     response = api_client.post(url, data=data, format="json")
-    # assert response.status_code == 200
+    assert response.status_code == 200
 
 
 @mock.patch("control.api.views.getmembers")

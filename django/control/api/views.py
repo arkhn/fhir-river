@@ -7,12 +7,14 @@ from rest_framework.response import Response
 from django.conf import settings
 
 from fhir.resources import construct_fhir_element
+from fhirstore.errors import NotFoundError
 
 import redis
 import scripts
 from common.analyzer import Analyzer
 from control.api.serializers import PreviewSerializer
 from extractor.extract import Extractor
+from loader.load.fhirstore import get_fhirstore
 from pydantic import ValidationError
 from transformer.transform.transformer import Transformer
 
@@ -72,3 +74,29 @@ class ScriptsEndpoint(views.APIView):
                 doc = getdoc(script)
                 res.append({"name": script_name, "description": doc, "category": module_name})
         return Response(res, status=status.HTTP_200_OK)
+
+
+class ResourceEndpoint(views.APIView):
+    def post(self, request):
+        for resource in request.data["resources"]:
+            resource_id = resource.get("resource_id")
+            resource_type = resource.get("resource_type")
+            logger.debug(
+                {
+                    "message": f"Deleting all documents of type {resource_type} for given resource",
+                    "resource_id": resource_id,
+                },
+            )
+
+            fhirstore = get_fhirstore()
+            try:
+                fhirstore.delete(resource_type, resource_id=resource_id)
+            except NotFoundError:
+                logger.debug(
+                    {
+                        "message": f"No documents for resource {resource_id} were found",
+                        "resource_id": resource_id,
+                    },
+                )
+
+        return Response(status=status.HTTP_200_OK)

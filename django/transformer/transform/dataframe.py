@@ -55,7 +55,7 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
                 # The column name in the new intermediary dataframe
                 cond_col_name = (
                     CONDITION_FLAG,
-                    (condition.sql_column.table, condition.sql_column.column),
+                    (condition.sql_column.table_name(), condition.sql_column.column),
                 )
 
                 # Get the original column
