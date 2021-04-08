@@ -4,7 +4,7 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import AttributeIcon from "@material-ui/icons/LocalOffer";
-import { useParams } from "react-router";
+import { useParams, useHistory } from "react-router";
 
 import {
   useListSourceAttributes,
@@ -31,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MappingsToolbar = (): JSX.Element => {
   const classes = useStyles();
+  const history = useHistory();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
   const { data: source } = useRetrieveSourceQuery(
@@ -39,6 +40,10 @@ const MappingsToolbar = (): JSX.Element => {
   );
   const { data: mappings } = useListSourceResources(source);
   const { data: attributes } = useListSourceAttributes(source);
+
+  const handleCreateMappingClick = () => {
+    history.push(`/source/${sourceId}/createMapping`);
+  };
 
   return (
     <Grid
@@ -53,6 +58,7 @@ const MappingsToolbar = (): JSX.Element => {
           variant="contained"
           className={classes.button}
           size="small"
+          onClick={handleCreateMappingClick}
         >
           <Typography>New mapping</Typography>
         </Button>

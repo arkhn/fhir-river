@@ -13,5 +13,9 @@
   "logout": "Log out",
   "editSource": "Edit source",
   "renameSource": "Rename source",
-  "sources": "Sources"
+  "sources": "Sources",
+  "defineSourceTable": "Define a source table",
+  "selectFhirResource": "Select a FHIR resource",
+  "chooseFhirProfile": "Choose a FHIR profile",
+  "nameMapping": "Name mapping"
 }
