@@ -148,7 +148,8 @@ def handle_array_attributes(attributes_in_array, row):
             # a joined table or if we don't have a nested array,
             # we want to expand the outside array
             element = build_fhir_object(indexed_row, attributes_in_array)
-            if element is not None and element != {}:
+            # TODO hack for RelatedPersons, remove
+            if element is not None and element != {} and element not in array:
                 array.append(element)
 
     return array
