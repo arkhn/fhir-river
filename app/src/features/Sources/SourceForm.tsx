@@ -11,14 +11,14 @@ import {
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import { useAppDispatch } from "app/store";
+import { useAppDispatch, useAppSelector } from "app/store";
 import {
   useApiSourcesCreateMutation,
   useApiSourcesUpdateMutation,
 } from "services/api/endpoints";
-import { Source } from "services/api/generated/api.generated";
+import type { SourceRequest } from "services/api/generated/api.generated";
 
-import { editSource } from "./sourceSlice";
+import { sourceEdited, selectSourceCurrent } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -46,11 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type SourceFormInputs = {
-  name: string;
-};
-
-const sourceInputs: (t: TFunction) => FormInputProperty<SourceFormInputs>[] = (
+const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
   t
 ) => [
   {
@@ -62,14 +58,12 @@ const sourceInputs: (t: TFunction) => FormInputProperty<SourceFormInputs>[] = (
   },
 ];
 
-type SourceFormProps = {
-  source?: Source;
-};
-
-const SourceForm = ({ source }: SourceFormProps): JSX.Element => {
+const SourceForm = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
+
+  const source = useAppSelector(selectSourceCurrent);
 
   const [
     apiSourcesCreate,
@@ -82,25 +76,22 @@ const SourceForm = ({ source }: SourceFormProps): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmitSource = (sourceFormInputs: SourceFormInputs) => {
-    if (source) {
-      apiSourcesUpdate({ id: source.id, sourceRequest: sourceFormInputs })
-        .unwrap()
-        .then((source) => dispatch(editSource(source)));
-    } else {
-      apiSourcesCreate({ sourceRequest: sourceFormInputs })
-        .unwrap()
-        .then((source) => dispatch(editSource(source)));
-    }
+  const handleSubmitSource = async (sourceRequest: SourceRequest) => {
+    try {
+      const submittedSource = source
+        ? await apiSourcesUpdate({ id: source.id, sourceRequest }).unwrap()
+        : await apiSourcesCreate({ sourceRequest }).unwrap();
+      dispatch(sourceEdited(submittedSource));
+    } catch {}
   };
 
   return (
     <div className={classes.formContainer}>
-      <Form<SourceFormInputs>
+      <Form<SourceRequest>
         properties={sourceInputs(t)}
         submit={handleSubmitSource}
         formStyle={{ display: "block" }}
-        defaultValues={source}
+        defaultValues={source ?? undefined}
         displaySubmitButton={false}
         formHeader={
           <Typography className={classes.title} variant="h5">

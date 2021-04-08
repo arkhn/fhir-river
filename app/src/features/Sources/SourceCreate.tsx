@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
 
-import { editSource } from "./sourceSlice";
+import { createSource } from "./sourceSlice";
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -18,7 +18,7 @@ const SourceCreate = (): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const handleCreateSource = () => dispatch(editSource(null));
+  const handleCreateSource = () => dispatch(createSource());
 
   return (
     <Button

@@ -4,7 +4,7 @@ import {
   isRejectedWithValue,
 } from "@reduxjs/toolkit";
 
-import { logApiError } from "features/logger/loggerSlice";
+import { logApiError } from "features/Logger/loggerSlice";
 
 const apiLogger: Middleware = (api: MiddlewareAPI) => (next) => (action) => {
   if (isRejectedWithValue(action)) {
