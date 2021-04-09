@@ -16,7 +16,7 @@ def mock_get_script(*args):
     elif len(args) == 2:
         return args[0]
     else:
-        return args[0] + args[1] + "merge"
+        return f"{args[0]}{args[1]}merge"
 
 
 @mock.patch("common.analyzer.sql_column.hashlib.sha1")
@@ -207,8 +207,27 @@ def test_merge_by_attributes_with_condition_arrays(_):
     attributes = [attr_language]
 
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
-    expected = {
-        "language": ["lang21", "lang2", "lang3", None],
-    }
+    expected = {"language": ["lang21", "lang2", "lang3", None]}
+
+    assert actual == expected
+
+
+def test_merge_by_attributes_static_input_with_condition_arrays():
+    attr_language = Attribute("language")
+    attr_language.add_input_group(
+        InputGroup(
+            id_="id_language_1",
+            attribute=attr_language,
+            static_inputs=["ENGL"],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "1")],
+        ),
+    )
+
+    data = {(CONDITION_FLAG, "PUBLIC_ADMISSIONS_COND_LANG"): ["2", "1", "1", "0"]}
+
+    attributes = [attr_language]
+
+    actual = dataframe.merge_by_attributes(data, attributes, "pk")
+    expected = {"language": [None, "ENGL", "ENGL", None]}
 
     assert actual == expected

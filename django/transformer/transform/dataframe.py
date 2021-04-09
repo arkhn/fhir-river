@@ -80,7 +80,16 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
     """
     merged_data = defaultdict(list)
     for attribute in attributes:
-        data_for_attribute = {key: value for key, value in data.items() if key[0] == attribute.path}
+        data_for_attribute = {
+            key: value
+            for key, value in data.items()
+            if key[0] == attribute.path
+            or (
+                key[0] == CONDITION_FLAG
+                and key[1]
+                in (c.sql_column.table_name_with_joins() for g in attribute.input_groups for c in g.conditions)
+            )
+        }
         nb_rows_for_attribute = max(len(col) for col in data_for_attribute.values()) if data_for_attribute else 1
 
         for row_ind in range(nb_rows_for_attribute):
