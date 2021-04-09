@@ -9,10 +9,9 @@ import CredentialOwnersSelect from "features/Sources/CredentialOwnersSelect";
 import SourceForm from "features/Sources/SourceForm";
 import {
   selectSourceCurrent,
-  selectIsSourceEditing,
+  selectEditedItem,
   selectSourceCredential,
-  selectIsSourceCredentialEditing,
-  selectIsCredentialOwnersEditing,
+  EditedItemEnum,
   initSource,
 } from "features/Sources/sourceSlice";
 
@@ -31,28 +30,19 @@ const SourceDrawer = (): JSX.Element => {
   const classes = useStyles();
 
   const source = useAppSelector(selectSourceCurrent);
-  const isSourceEditing = useAppSelector(selectIsSourceEditing);
-
   const credential = useAppSelector(selectSourceCredential);
-  const isSourceCredentialEditing = useAppSelector(
-    selectIsSourceCredentialEditing
-  );
+  const editedItem = useAppSelector(selectEditedItem);
 
-  const isCredentialOwnersEditing = useAppSelector(
-    selectIsCredentialOwnersEditing
-  );
-
-  const isDrawerOpen =
-    isSourceEditing || isSourceCredentialEditing || isCredentialOwnersEditing;
+  const isDrawerOpen = Boolean(editedItem);
   const handleDrawerClose = () => dispatch(initSource());
 
   return (
     <Drawer open={isDrawerOpen} onClose={handleDrawerClose} anchor="right">
-      {isSourceEditing && <SourceForm />}
-      {isSourceCredentialEditing && source && (
+      {editedItem === EditedItemEnum.Source && <SourceForm />}
+      {editedItem === EditedItemEnum.Credential && source && (
         <CredentialForm source={source} />
       )}
-      {isCredentialOwnersEditing && credential && (
+      {editedItem === EditedItemEnum.Owners && credential && (
         <>
           <CredentialOwnersSelect credential={credential} />
           <Button

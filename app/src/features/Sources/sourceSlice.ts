@@ -3,21 +3,19 @@ import { createSlice, createAction } from "@reduxjs/toolkit";
 import type { RootState } from "app/store";
 import type { Source, Credential } from "services/api/generated/api.generated";
 
+export enum EditedItemEnum {
+  Source = "SOURCE",
+  Credential = "CREDENTIAL",
+  Owners = "OWNERS",
+}
+
 type SourceSliceState = {
   current?: Source;
-  editing: boolean;
   credential?: Credential;
-  credentialEditing: boolean;
-  ownersEditing: boolean;
+  editedItem?: EditedItemEnum;
 };
 
-const initialState: SourceSliceState = {
-  current: undefined,
-  editing: false,
-  credential: undefined,
-  credentialEditing: false,
-  ownersEditing: false,
-};
+const initialState: SourceSliceState = {};
 
 export const editSource = createAction<Source>("editSource");
 export const sourceEdited = createAction<Source>("sourceEdited");
@@ -29,26 +27,24 @@ const sourceSlice = createSlice({
   reducers: {
     initSource: () => initialState,
     createSource: (state) => {
-      state.editing = true;
+      state.editedItem = EditedItemEnum.Source;
     },
     editCredential: (state) => {
-      state.credentialEditing = true;
+      state.editedItem = EditedItemEnum.Credential;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(editSource, (state, { payload }) => {
       state.current = payload;
-      state.editing = true;
+      state.editedItem = EditedItemEnum.Source;
     });
     builder.addCase(sourceEdited, (state, { payload }) => {
-      state.editing = false;
-      state.credentialEditing = true;
+      state.editedItem = EditedItemEnum.Credential;
       state.current = payload;
     });
     builder.addCase(credentialEdited, (state, { payload }) => {
       state.credential = payload;
-      state.credentialEditing = false;
-      state.ownersEditing = true;
+      state.editedItem = EditedItemEnum.Owners;
     });
   },
 });
@@ -57,14 +53,11 @@ export const { initSource, createSource, editCredential } = sourceSlice.actions;
 
 export const selectSourceCurrent = (state: RootState): Source | undefined =>
   state.source.current;
-export const selectIsSourceEditing = (state: RootState): boolean =>
-  state.source.editing;
+export const selectEditedItem = (
+  state: RootState
+): EditedItemEnum | undefined => state.source.editedItem;
 export const selectSourceCredential = (
   state: RootState
 ): Credential | undefined => state.source.credential;
-export const selectIsSourceCredentialEditing = (state: RootState): boolean =>
-  state.source.credentialEditing;
-export const selectIsCredentialOwnersEditing = (state: RootState): boolean =>
-  state.source.ownersEditing;
 
 export default sourceSlice.reducer;
