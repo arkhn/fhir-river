@@ -3,7 +3,7 @@ import { createSlice, createAction } from "@reduxjs/toolkit";
 import type { RootState } from "app/store";
 import type { Source, Credential } from "services/api/generated/api.generated";
 
-export enum EditedItemEnum {
+export enum EditTypeEnum {
   Source = "SOURCE",
   Credential = "CREDENTIAL",
   Owners = "OWNERS",
@@ -12,7 +12,7 @@ export enum EditedItemEnum {
 type SourceSliceState = {
   current?: Source;
   credential?: Credential;
-  editedItem?: EditedItemEnum;
+  editType?: EditTypeEnum;
 };
 
 const initialState: SourceSliceState = {};
@@ -27,24 +27,24 @@ const sourceSlice = createSlice({
   reducers: {
     initSource: () => initialState,
     createSource: (state) => {
-      state.editedItem = EditedItemEnum.Source;
+      state.editType = EditTypeEnum.Source;
     },
     editCredential: (state) => {
-      state.editedItem = EditedItemEnum.Credential;
+      state.editType = EditTypeEnum.Credential;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(editSource, (state, { payload }) => {
       state.current = payload;
-      state.editedItem = EditedItemEnum.Source;
+      state.editType = EditTypeEnum.Source;
     });
     builder.addCase(sourceEdited, (state, { payload }) => {
-      state.editedItem = EditedItemEnum.Credential;
       state.current = payload;
+      state.editType = EditTypeEnum.Credential;
     });
     builder.addCase(credentialEdited, (state, { payload }) => {
       state.credential = payload;
-      state.editedItem = EditedItemEnum.Owners;
+      state.editType = EditTypeEnum.Owners;
     });
   },
 });
@@ -53,9 +53,8 @@ export const { initSource, createSource, editCredential } = sourceSlice.actions;
 
 export const selectSourceCurrent = (state: RootState): Source | undefined =>
   state.source.current;
-export const selectEditedItem = (
-  state: RootState
-): EditedItemEnum | undefined => state.source.editedItem;
+export const selectEditType = (state: RootState): EditTypeEnum | undefined =>
+  state.source.editType;
 export const selectSourceCredential = (
   state: RootState
 ): Credential | undefined => state.source.credential;

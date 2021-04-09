@@ -4,16 +4,17 @@ import { Button, Drawer, makeStyles, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import CredentialForm from "features/Sources/CredentialForm";
-import CredentialOwnersSelect from "features/Sources/CredentialOwnersSelect";
-import SourceForm from "features/Sources/SourceForm";
+
+import CredentialForm from "./CredentialForm";
+import CredentialOwnersSelect from "./CredentialOwnersSelect";
+import SourceForm from "./SourceForm";
 import {
   selectSourceCurrent,
-  selectEditedItem,
+  selectEditType,
   selectSourceCredential,
-  EditedItemEnum,
+  EditTypeEnum,
   initSource,
-} from "features/Sources/sourceSlice";
+} from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -31,18 +32,18 @@ const SourceDrawer = (): JSX.Element => {
 
   const source = useAppSelector(selectSourceCurrent);
   const credential = useAppSelector(selectSourceCredential);
-  const editedItem = useAppSelector(selectEditedItem);
+  const editType = useAppSelector(selectEditType);
 
-  const isDrawerOpen = Boolean(editedItem);
+  const isDrawerOpen = Boolean(editType);
   const handleDrawerClose = () => dispatch(initSource());
 
   return (
     <Drawer open={isDrawerOpen} onClose={handleDrawerClose} anchor="right">
-      {editedItem === EditedItemEnum.Source && <SourceForm />}
-      {editedItem === EditedItemEnum.Credential && source && (
+      {editType === EditTypeEnum.Source && <SourceForm />}
+      {editType === EditTypeEnum.Credential && source && (
         <CredentialForm source={source} />
       )}
-      {editedItem === EditedItemEnum.Owners && credential && (
+      {editType === EditTypeEnum.Owners && credential && (
         <>
           <CredentialOwnersSelect credential={credential} />
           <Button
