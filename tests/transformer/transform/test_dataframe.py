@@ -88,11 +88,11 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     cleaned_data = dataframe.clean_data(data, attributes, primary_key_column, "pk_val")
 
     columns = [
-        ("name", "id_name", ("PUBLIC.PATIENTS", "NAME")),
-        ("id", "id_id", ("PUBLIC.PATIENTS", "ID")),
-        ("id", "id_id", ("PUBLIC.PATIENTS", "ID2")),
-        ("language", "id_language", ("PUBLIC.ADMISSIONS", "LANGUAGE")),
-        ("code", "id_code", ("PUBLIC.ADMISSIONS", "ID")),
+        ("name", "id_name", "PUBLIC_PATIENTS_NAME"),
+        ("id", "id_id", "PUBLIC_PATIENTS_ID"),
+        ("id", "id_id", "PUBLIC_PATIENTS_ID2"),
+        ("language", "id_language", "PUBLIC_ADMISSIONS_LANGUAGE"),
+        ("code", "id_code", "PUBLIC_ADMISSIONS_ID"),
     ]
 
     expected = {
@@ -154,14 +154,14 @@ def test_merge_by_attributes(_):
     attr_static.add_input_group(group)
 
     data = {
-        ("name", "id_name", ("PUBLIC.PATIENTS", "NAME")): ["bob"],
-        ("id", "id_id", ("PUBLIC.PATIENTS", "ID")): ["id1"],
-        ("id", "id_id", ("PUBLIC.PATIENTS", "ID2")): ["id21"],
-        ("language", "id_language_1", ("PUBLIC.ADMISSIONS", "LANGUAGE_1")): ["lang1", "lang2", "lang3", "lang4"],
-        ("language", "id_language_2", ("PUBLIC.ADMISSIONS", "LANGUAGE_2")): ["lang21", "lang22", "lang23", "lang24"],
-        ("language", "id_language_3", ("PUBLIC.ADMISSIONS", "LANGUAGE_3")): ["lang31", "lang32", "lang33", "lang34"],
-        ("admid", "id_admid", ("PUBLIC.ADMISSIONS", "ID")): ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
-        (CONDITION_FLAG, ("PUBLIC.ADMISSIONS", "COND_LANG")): ["false"],
+        ("name", "id_name", "PUBLIC_PATIENTS_NAME"): ["bob"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID"): ["id1"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID2"): ["id21"],
+        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): ["lang1", "lang2", "lang3", "lang4"],
+        ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", "lang22", "lang23", "lang24"],
+        ("language", "id_language_3", "PUBLIC_ADMISSIONS_LANGUAGE_3"): ["lang31", "lang32", "lang33", "lang34"],
+        ("admid", "id_admid", "PUBLIC_ADMISSIONS_ID"): ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
+        (CONDITION_FLAG, "PUBLIC_ADMISSIONS_COND_LANG"): ["false"],
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid, attr_static]
@@ -199,9 +199,9 @@ def test_merge_by_attributes_with_condition_arrays(_):
     )
 
     data = {
-        ("language", "id_language_1", ("PUBLIC.ADMISSIONS", "LANGUAGE_1")): ["lang1", "lang2", "lang3", "lang4"],
-        ("language", "id_language_2", ("PUBLIC.ADMISSIONS", "LANGUAGE_2")): ["lang21", "lang22", "lang23", "lang24"],
-        (CONDITION_FLAG, ("PUBLIC.ADMISSIONS", "COND_LANG")): ["2", "1", "1", "0"],
+        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): ["lang1", "lang2", "lang3", "lang4"],
+        ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", "lang22", "lang23", "lang24"],
+        (CONDITION_FLAG, "PUBLIC_ADMISSIONS_COND_LANG"): ["2", "1", "1", "0"],
     }
 
     attributes = [attr_language]

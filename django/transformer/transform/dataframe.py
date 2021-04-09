@@ -25,7 +25,7 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
                 dict_col_name = col.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                attr_col_name = (attribute.path, input_group.id, (col.table_name(), col.column))
+                attr_col_name = (attribute.path, input_group.id, col.table_name_with_joins())
 
                 # cleaned_data will be modified several times
                 if col.table_name() == primary_key_col.table_name():
@@ -53,10 +53,7 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
                 dict_col_name = condition.sql_column.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                cond_col_name = (
-                    CONDITION_FLAG,
-                    (condition.sql_column.table_name(), condition.sql_column.column),
-                )
+                cond_col_name = (CONDITION_FLAG, condition.sql_column.table_name_with_joins())
 
                 # Get the original column
                 cleaned_data[cond_col_name] = data[dict_col_name]

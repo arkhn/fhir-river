@@ -43,7 +43,10 @@ class SqlColumn:
         return f"{self.owner}.{self.table}"
 
     def table_name_with_joins(self) -> str:
-        return f"{self.owner}_{self.table}_{self.column}_{'_'.join(str(join) for join in self.joins)}"
+        if self.joins:
+            return f"{self.owner}_{self.table}_{self.column}_{'_'.join(str(join) for join in self.joins)}"
+        else:
+            return f"{self.owner}_{self.table}_{self.column}"
 
     def __hash__(self):
         return hash(self.table_name_with_joins())
