@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { TFunction } from "i18next";
+import { isEqual } from "lodash";
 import { head } from "lodash";
 import { useTranslation } from "react-i18next";
 
@@ -18,22 +19,16 @@ import {
   useApiCredentialsListQuery,
   useApiCredentialsUpdateMutation,
 } from "services/api/endpoints";
-import type { Credential, Source } from "services/api/generated/api.generated";
+import type {
+  CredentialRequest,
+  Source,
+} from "services/api/generated/api.generated";
 
 import { credentialEdited } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
     minWidth: 400,
-  },
-  sourceName: {
-    minWidth: 400,
-    padding: "1em",
-    display: "flex",
-    flexDirection: "column",
-  },
-  sourceNameInput: {
-    margin: theme.spacing(2),
   },
   title: {
     marginTop: theme.spacing(3),
@@ -48,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type CredentialFormInputs = Omit<Credential, "source">;
+type CredentialFormInputs = Omit<CredentialRequest, "source">;
 
 const credentialInputs: (
   t: TFunction
@@ -87,6 +82,7 @@ const credentialInputs: (
     name: "password",
     label: t("password"),
     variant: "outlined",
+    validationRules: { required: true },
   },
   {
     type: "select",
@@ -147,6 +143,14 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const handleCredentialSubmit = async (
     credentialInputs: CredentialFormInputs
   ) => {
+    if (
+      credential &&
+      isEqual(credential, { ...credential, ...credentialInputs })
+    ) {
+      dispatch(credentialEdited(credential));
+      return;
+    }
+
     try {
       const submittedCredential = credential
         ? await updateCredential({
@@ -172,6 +176,11 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
         formStyle={{ display: "block" }}
         defaultValues={credential}
         displaySubmitButton={false}
+        formHeader={
+          <Typography className={classes.title} variant="h5">
+            {credential ? t("editCredential") : t("newCredential")}
+          </Typography>
+        }
         formFooter={
           <Button
             className={classes.button}

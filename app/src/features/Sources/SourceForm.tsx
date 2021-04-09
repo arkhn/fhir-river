@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { TFunction } from "i18next";
+import { isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -23,15 +24,6 @@ import { sourceEdited, selectSourceCurrent } from "./sourceSlice";
 const useStyles = makeStyles((theme) => ({
   formContainer: {
     minWidth: 400,
-  },
-  sourceName: {
-    minWidth: 400,
-    padding: "1em",
-    display: "flex",
-    flexDirection: "column",
-  },
-  sourceNameInput: {
-    margin: theme.spacing(2),
   },
   title: {
     marginTop: theme.spacing(3),
@@ -77,6 +69,11 @@ const SourceForm = (): JSX.Element => {
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
   const handleSubmitSource = async (sourceRequest: SourceRequest) => {
+    if (source && isEqual(source, { ...source, ...sourceRequest })) {
+      dispatch(sourceEdited(source));
+      return;
+    }
+
     try {
       const submittedSource = source
         ? await apiSourcesUpdate({ id: source.id, sourceRequest }).unwrap()

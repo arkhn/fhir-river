@@ -5,7 +5,7 @@ import type { Source, Credential } from "services/api/generated/api.generated";
 
 type SourceSliceState = {
   current?: Source;
-  sourceEditing: boolean;
+  editing: boolean;
   credential?: Credential;
   credentialEditing: boolean;
   ownersEditing: boolean;
@@ -13,7 +13,7 @@ type SourceSliceState = {
 
 const initialState: SourceSliceState = {
   current: undefined,
-  sourceEditing: false,
+  editing: false,
   credential: undefined,
   credentialEditing: false,
   ownersEditing: false,
@@ -27,11 +27,9 @@ const sourceSlice = createSlice({
   name: "source",
   initialState,
   reducers: {
-    initSource: (state) => {
-      Object.assign(state, initialState);
-    },
+    initSource: () => initialState,
     createSource: (state) => {
-      state.sourceEditing = true;
+      state.editing = true;
     },
     editCredential: (state) => {
       state.credentialEditing = true;
@@ -40,10 +38,10 @@ const sourceSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(editSource, (state, { payload }) => {
       state.current = payload;
-      state.sourceEditing = true;
+      state.editing = true;
     });
     builder.addCase(sourceEdited, (state, { payload }) => {
-      state.sourceEditing = false;
+      state.editing = false;
       state.credentialEditing = true;
       state.current = payload;
     });
@@ -60,13 +58,13 @@ export const { initSource, createSource, editCredential } = sourceSlice.actions;
 export const selectSourceCurrent = (state: RootState): Source | undefined =>
   state.source.current;
 export const selectIsSourceEditing = (state: RootState): boolean =>
-  state.source.sourceEditing;
+  state.source.editing;
 export const selectSourceCredential = (
   state: RootState
 ): Credential | undefined => state.source.credential;
 export const selectIsSourceCredentialEditing = (state: RootState): boolean =>
   state.source.credentialEditing;
-export const selectIsOwnersEditing = (state: RootState): boolean =>
+export const selectIsCredentialOwnersEditing = (state: RootState): boolean =>
   state.source.ownersEditing;
 
 export default sourceSlice.reducer;
