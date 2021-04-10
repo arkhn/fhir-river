@@ -60,7 +60,11 @@ const credentialInputs: (
     name: "port",
     label: t("port"),
     variant: "outlined",
-    validationRules: { required: true },
+    validationRules: {
+      required: true,
+      min: 0,
+      max: 65535,
+    },
   },
   {
     type: "text",

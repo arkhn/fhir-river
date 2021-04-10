@@ -88,7 +88,7 @@ const SourceForm = (): JSX.Element => {
         properties={sourceInputs(t)}
         submit={handleSubmitSource}
         formStyle={{ display: "block" }}
-        defaultValues={source ?? undefined}
+        defaultValues={source}
         displaySubmitButton={false}
         formHeader={
           <Typography className={classes.title} variant="h5">
