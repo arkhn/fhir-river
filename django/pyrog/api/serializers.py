@@ -1,4 +1,5 @@
 from typing import List
+
 from rest_framework import serializers
 
 from common.database_connection.db_connection import DBConnection
@@ -21,7 +22,9 @@ class OwnerSerializer(serializers.ModelSerializer):
         except Exception as e:
             raise serializers.ValidationError(e)
         if not validated_data["schema"]:
-            raise serializers.ValidationError({"name": [f"{validated_data['name']} schema is empty"]})
+            raise serializers.ValidationError(
+                {"name": [f"{validated_data['name']} schema is empty or does not exist"]}
+            )
         return super().create(validated_data)
 
 
