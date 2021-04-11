@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
-import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
+import type {
+  FormInputProperty,
+  ValidationError,
+} from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { TFunction } from "i18next";
+import type { FetchBaseQueryError } from "@rtk-incubator/rtk-query";
+import type { TFunction } from "i18next";
 import { isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 
@@ -55,6 +59,10 @@ const SourceForm = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const [errors, setErrors] = useState<
+    ValidationError<SourceRequest> | undefined
+  >(undefined);
+
   const source = useAppSelector(selectSourceCurrent);
 
   const [
@@ -79,7 +87,11 @@ const SourceForm = (): JSX.Element => {
         ? await apiSourcesUpdate({ id: source.id, sourceRequest }).unwrap()
         : await apiSourcesCreate({ sourceRequest }).unwrap();
       dispatch(sourceEdited(submittedSource));
-    } catch {}
+    } catch (e) {
+      setErrors(
+        (e as FetchBaseQueryError).data as ValidationError<SourceRequest>
+      );
+    }
   };
 
   return (
@@ -90,6 +102,7 @@ const SourceForm = (): JSX.Element => {
         formStyle={{ display: "block" }}
         defaultValues={source}
         displaySubmitButton={false}
+        validationErrors={errors}
         formHeader={
           <Typography className={classes.title} variant="h5">
             {source ? t("editSource") : t("newSource")}

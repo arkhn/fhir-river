@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
-import { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
+import type {
+  FormInputProperty,
+  ValidationError,
+} from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
   makeStyles,
   Typography,
 } from "@material-ui/core";
+import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
 import { TFunction } from "i18next";
 import { isEqual } from "lodash";
 import { head } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
+import Alert from "common/components/Alert";
 import {
   useApiCredentialsCreateMutation,
   useApiCredentialsListQuery,
@@ -125,6 +130,9 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const handleAlertClose = () => setAlert(undefined);
+
   const {
     isLoading: isCredentialsLoading,
     data: credentials,
@@ -168,7 +176,17 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             credentialRequest: { source: source.id, ...credentialInputs },
           }).unwrap();
       dispatch(credentialEdited(submittedCredential));
-    } catch {}
+    } catch (e) {
+      const apiError: FetchBaseQueryError = e;
+      if (apiError.status !== 400) return;
+
+      const data = apiError.data as ValidationError<
+        Partial<CredentialRequest>
+      > & {
+        nonFieldErrors?: string[];
+      };
+      if (data.nonFieldErrors) setAlert(head(data.nonFieldErrors));
+    }
   };
 
   if (isCredentialsLoading) return <CircularProgress />;
@@ -202,6 +220,12 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             )}
           </Button>
         }
+      />
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
       />
     </div>
   );

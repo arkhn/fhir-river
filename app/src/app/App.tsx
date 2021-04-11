@@ -14,9 +14,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-import Logger from "features/Logger/Logger";
-
-import Router from "./routes/Router";
+import Router from "app/routes/Router";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -52,7 +50,6 @@ const App = (): JSX.Element => {
       <div className={classes.root}>
         <Router />
       </div>
-      <Logger />
     </ThemeProvider>
   );
 };

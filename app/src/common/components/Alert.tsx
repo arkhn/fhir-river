@@ -7,7 +7,7 @@ type AlertProps = {
   severity: "error" | "success";
   open: boolean;
   onClose: (event?: React.SyntheticEvent, reason?: string) => void;
-  message: string;
+  message?: string;
 };
 
 export const Alert = ({
