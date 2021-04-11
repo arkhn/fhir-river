@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
-import type {
-  FormInputProperty,
-  ValidationError,
-} from "@arkhn/ui/lib/Form/InputTypes";
+import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
@@ -23,6 +20,7 @@ import {
   useApiCredentialsListQuery,
   useApiCredentialsUpdateMutation,
 } from "services/api/endpoints";
+import { apiValidationErrorFromResponse } from "services/api/errors";
 import type {
   CredentialRequest,
   Source,
@@ -176,15 +174,10 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
           }).unwrap();
       dispatch(credentialEdited(submittedCredential));
     } catch (e) {
-      const apiError: FetchBaseQueryError = e;
-      if (apiError.status !== 400) return;
-
-      const data = apiError.data as ValidationError<
-        Partial<CredentialRequest>
-      > & {
-        nonFieldErrors?: string[];
-      };
-      if (data.nonFieldErrors) setAlert(head(data.nonFieldErrors));
+      const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
+        e as FetchBaseQueryError
+      );
+      setAlert(head(data?.nonFieldErrors));
     }
   };
 

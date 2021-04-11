@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
-import type {
-  FormInputProperty,
-  ValidationError,
-} from "@arkhn/ui/lib/Form/InputTypes";
+import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
 import {
   Button,
   CircularProgress,
@@ -21,6 +18,10 @@ import {
   useApiSourcesCreateMutation,
   useApiSourcesUpdateMutation,
 } from "services/api/endpoints";
+import {
+  ApiValidationError,
+  apiValidationErrorFromResponse,
+} from "services/api/errors";
 import type { SourceRequest } from "services/api/generated/api.generated";
 
 import { sourceEdited, selectSourceCurrent } from "./sourceSlice";
@@ -60,7 +61,7 @@ const SourceForm = (): JSX.Element => {
   const classes = useStyles();
 
   const [errors, setErrors] = useState<
-    ValidationError<SourceRequest> | undefined
+    ApiValidationError<SourceRequest> | undefined
   >(undefined);
 
   const source = useAppSelector(selectSourceCurrent);
@@ -88,9 +89,10 @@ const SourceForm = (): JSX.Element => {
         : await apiSourcesCreate({ sourceRequest }).unwrap();
       dispatch(sourceEdited(submittedSource));
     } catch (e) {
-      const apiError: FetchBaseQueryError = e;
-      if (apiError.status === 400)
-        setErrors(apiError.data as ValidationError<SourceRequest>);
+      const data = apiValidationErrorFromResponse<SourceRequest>(
+        e as FetchBaseQueryError
+      );
+      setErrors(data);
     }
   };
 
