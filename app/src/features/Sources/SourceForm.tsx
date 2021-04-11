@@ -76,7 +76,7 @@ const SourceForm = (): JSX.Element => {
 
   const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
 
-  const handleSubmitSource = async (sourceRequest: SourceRequest) => {
+  const handleSourceSubmit = async (sourceRequest: SourceRequest) => {
     if (source && isEqual(source, { ...source, ...sourceRequest })) {
       dispatch(sourceEdited(source));
       return;
@@ -88,9 +88,9 @@ const SourceForm = (): JSX.Element => {
         : await apiSourcesCreate({ sourceRequest }).unwrap();
       dispatch(sourceEdited(submittedSource));
     } catch (e) {
-      setErrors(
-        (e as FetchBaseQueryError).data as ValidationError<SourceRequest>
-      );
+      const apiError: FetchBaseQueryError = e;
+      if (apiError.status === 400)
+        setErrors(apiError.data as ValidationError<SourceRequest>);
     }
   };
 
@@ -98,7 +98,7 @@ const SourceForm = (): JSX.Element => {
     <div className={classes.formContainer}>
       <Form<SourceRequest>
         properties={sourceInputs(t)}
-        submit={handleSubmitSource}
+        submit={handleSourceSubmit}
         formStyle={{ display: "block" }}
         defaultValues={source}
         displaySubmitButton={false}

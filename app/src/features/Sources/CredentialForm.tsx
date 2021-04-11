@@ -13,8 +13,7 @@ import {
 } from "@material-ui/core";
 import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
 import { TFunction } from "i18next";
-import { isEqual } from "lodash";
-import { head } from "lodash";
+import { head, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
