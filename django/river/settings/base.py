@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_filters",
+    "mozilla_django_oidc",
     # 1st parties
     "core",
     "extractor",
@@ -65,6 +66,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Redirect requests to silently re-authenticated:
+    "mozilla_django_oidc.middleware.SessionRefresh",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -114,6 +117,7 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#specifying-authentication-backends
 
 AUTHENTICATION_BACKENDS = [
+    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -247,3 +251,32 @@ FHIRSTORE_PASSWORD = os.environ.get("FHIRSTORE_PASSWORD")
 # Prometheus
 
 EXPORTER_PORT = os.environ.get("EXPORTER_PORT", 8001)
+
+# Mozilla OpenID Connect
+# https://mozilla-django-oidc.readthedocs.io/en/stable/settings.html
+
+OIDC_STORE_ID_TOKEN = True
+OIDC_STORE_ACCESS_TOKEN = True
+# Silently re-authenticated after following time:
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 15
+
+# Relying party
+OIDC_RP_CLIENT_ID = os.environ.get("OIDC_RP_CLIENT_ID")
+OIDC_RP_CLIENT_SECRET = os.environ.get("OIDC_RP_CLIENT_SECRET")
+OIDC_RP_EXTRA_SCOPES = os.environ.get("OIDC_RP_EXTRA_SCOPES", "").replace(",", " ").split(" ")
+OIDC_RP_SCOPES = " ".join(["openid", *OIDC_RP_EXTRA_SCOPES])
+OIDC_RP_SIGN_ALGO = os.environ.get("OIDC_RP_SIGN_ALGO")
+
+LOGIN_REDIRECT_URL = os.environ.get("LOGIN_REDIRECT_URL")
+LOGIN_REDIRECT_URL_FAILURE = os.environ.get("LOGIN_REDIRECT_URL_FAILURE")
+LOGOUT_REDIRECT_URL = os.environ.get("LOGOUT_REDIRECT_URL")
+
+# Provider
+OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT")
+OIDC_OP_TOKEN_ENDPOINT = os.environ.get("OIDC_OP_TOKEN_ENDPOINT")
+OIDC_OP_USER_ENDPOINT = os.environ.get("OIDC_OP_USER_ENDPOINT")
+
+if OIDC_RP_SIGN_ALGO == "RS256":
+    OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT")
+elif OIDC_RP_SIGN_ALGO == "HS256":
+    pass
