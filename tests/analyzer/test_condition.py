@@ -41,6 +41,40 @@ def test_check():
     row = {(CONDITION_FLAG, ("public.patients", "age")): 3}
     assert cond.check(row)
 
+    # IN integers
+    cond = Condition("INCLUDE", SqlColumn("public", "patients", "age"), "IN", "2,4,6")
+
+    row = {(CONDITION_FLAG, ("public.patients", "age")): 2}
+    assert cond.check(row)
+
+    row = {(CONDITION_FLAG, ("public.patients", "age")): 3}
+    assert not cond.check(row)
+
+    cond = Condition("EXCLUDE", SqlColumn("public", "patients", "age"), "IN", "2,4,6")
+
+    row = {(CONDITION_FLAG, ("public.patients", "age")): 4}
+    assert not cond.check(row)
+
+    row = {(CONDITION_FLAG, ("public.patients", "age")): 5}
+    assert cond.check(row)
+
+    # IN strings
+    cond = Condition("INCLUDE", SqlColumn("public", "patients", "name"), "IN", "bob,bill")
+
+    row = {(CONDITION_FLAG, ("public.patients", "name")): "bill"}
+    assert cond.check(row)
+
+    row = {(CONDITION_FLAG, ("public.patients", "name")): "alice"}
+    assert not cond.check(row)
+
+    cond = Condition("EXCLUDE", SqlColumn("public", "patients", "name"), "IN", "bob,bill")
+
+    row = {(CONDITION_FLAG, ("public.patients", "name")): "bob"}
+    assert not cond.check(row)
+
+    row = {(CONDITION_FLAG, ("public.patients", "name")): "alice"}
+    assert cond.check(row)
+
     # NOTNULL
     cond = Condition("INCLUDE", SqlColumn("public", "patients", "age"), "NOTNULL", "dummy")
 

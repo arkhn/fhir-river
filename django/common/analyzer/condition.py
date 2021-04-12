@@ -19,6 +19,7 @@ CONDITION_RELATION_TO_FUNCTION = {
     "LE": lambda x, y: x is not None and x <= y,
     "GE": lambda x, y: x is not None and x >= y,
     "GT": lambda x, y: x is not None and x > y,
+    "IN": lambda x, y: x is not None and x in y,
     "NULL": lambda x, _: x is None,
     "NOTNULL": lambda x, _: x is not None,
 }
@@ -66,6 +67,8 @@ class Condition:
             # For dates, we parse the string
             # NOTE the input date format is fixed here
             cast_value = datetime.strptime(self.value, "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%S")
+        elif self.relation == "IN":
+            cast_value = [type(data_value)(val) for val in self.value.split(",")]
         else:
             cast_value = type(data_value)(self.value)
 
