@@ -127,6 +127,19 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@admin.admin
       - DJANGO_SUPERUSER_PASSWORD=admin
+      - OIDC_RP_CLIENT_ID=
+      - OIDC_RP_CLIENT_SECRET=
+      - OIDC_RP_EXTRA_SCOPES=email
+      - OIDC_RP_SIGN_ALGO=HS256
+      - LOGIN_REDIRECT_URL=http://localhost:3000/
+      - LOGIN_REDIRECT_URL_FAILURE=http://localhost:3000/error/
+      - LOGOUT_REDIRECT_URL=http://localhost:3000/
+      # LPT: Always use 127.0.0.1 (not localhost) in public URLs redirecting to the provider
+      # This is to prevent cookies in the browser from being shared and overridden by
+      # different services running on the host.
+      - OIDC_OP_AUTHORIZATION_ENDPOINT=http://127.0.0.1:8001/o/authorize/
+      - OIDC_OP_TOKEN_ENDPOINT=http://127.0.0.1:8001/o/token/
+      - OIDC_OP_USER_ENDPOINT=http://127.0.0.1:8001/o/userinfo/
 
   zookeeper:
     image: zookeeper:3.4.10
