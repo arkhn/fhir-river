@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(0.5),
   },
   tableIcon: {
-    fill: "#265EB1",
+    fill: theme.palette.secondary.main,
     marginRight: theme.spacing(1),
   },
   text: {

@@ -39,6 +39,9 @@ const App = (): JSX.Element => {
             dark: "#2d8273",
             contrastText: "#FFFFFF",
           },
+          secondary: {
+            main: "#265EB1",
+          },
         },
       }),
     [prefersDarkMode]
