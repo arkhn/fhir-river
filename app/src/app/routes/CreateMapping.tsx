@@ -5,7 +5,10 @@ import BackIcon from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 
-import MappingCreationStepper from "features/mappingCreation/MappingCreationStepper";
+import StepPanel from "common/Stepper/StepPanel";
+import MappingCreationStepper from "features/mappings/MappingCreationStepper";
+import TableStep from "features/mappings/TableStep";
+import { Resource } from "services/api/generated/api.generated";
 
 const FOOTER_HEIGHT = 150;
 
@@ -22,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     height: `calc(100vh - ${FOOTER_HEIGHT + theme.spacing(10)}px)`,
   },
   scrollContainer: {
+    paddingTop: theme.spacing(5),
     overflowY: "auto",
   },
   button: {
@@ -45,7 +49,11 @@ const CreateMapping = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [activeStep, setActiveStep] = useState(0);
+  const [mapping, setMapping] = useState<Partial<Resource>>({});
 
+  const updateMapping = (newMapping: Partial<Resource>) => {
+    setMapping({ ...mapping, ...newMapping });
+  };
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
@@ -76,7 +84,20 @@ const CreateMapping = (): JSX.Element => {
           style={{
             height: `calc(100% - ${stepperRef.current?.clientHeight}px)`,
           }}
-        ></div>
+        >
+          <StepPanel index={0} value={activeStep}>
+            <TableStep mapping={mapping} onChange={updateMapping} />
+          </StepPanel>
+          <StepPanel index={1} value={activeStep}>
+            <Typography>Truc</Typography>
+          </StepPanel>
+          <StepPanel index={2} value={activeStep}>
+            <Typography>Muche</Typography>
+          </StepPanel>
+          <StepPanel index={3} value={activeStep}>
+            <Typography>Chouette</Typography>
+          </StepPanel>
+        </div>
       </Container>
       <div className={classes.footerContainer}>
         <Button
