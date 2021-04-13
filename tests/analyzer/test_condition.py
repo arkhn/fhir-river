@@ -75,6 +75,23 @@ def test_check():
     row = {(CONDITION_FLAG, ("public.patients", "name")): "alice"}
     assert cond.check(row)
 
+    # IN dates
+    cond = Condition("INCLUDE", SqlColumn("public", "patients", "bd"), "IN", "2020-02-02,2021-12-02")
+
+    row = {(CONDITION_FLAG, ("public.patients", "bd")): "2020-02-02"}
+    assert cond.check(row)
+
+    row = {(CONDITION_FLAG, ("public.patients", "bd")): "2020-02-03"}
+    assert not cond.check(row)
+
+    cond = Condition("EXCLUDE", SqlColumn("public", "patients", "bd"), "IN", "2020-02-02,2021-12-02")
+
+    row = {(CONDITION_FLAG, ("public.patients", "bd")): "2020-02-02"}
+    assert not cond.check(row)
+
+    row = {(CONDITION_FLAG, ("public.patients", "bd")): "2020-02-03"}
+    assert cond.check(row)
+
     # NOTNULL
     cond = Condition("INCLUDE", SqlColumn("public", "patients", "age"), "NOTNULL", "dummy")
 
