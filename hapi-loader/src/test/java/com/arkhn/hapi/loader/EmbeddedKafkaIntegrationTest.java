@@ -164,7 +164,7 @@ class EmbeddedKafkaIntegrationTest {
                             "spring.datasource.password=" + embeddedPostgres.getPassword(),
                             "spring.redis.host=" + embeddedRedis.getContainerIpAddress(),
                             "spring.redis.port=" + embeddedRedis.getMappedPort(REDIS_PORT).toString(),
-                            "spring.redis.db=2",
+                            "spring.redis.db_index=2",
                             "spring.datasource.driverClassName=org.postgresql.Driver")
                     .applyTo(configurableApplicationContext.getEnvironment());
         }

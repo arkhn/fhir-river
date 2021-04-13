@@ -49,6 +49,9 @@ public class ResourceConsumer {
         @Autowired
         private KafkaProducer producer;
 
+        @Autowired
+        private RedisCounterProperties redisCounterProperties;
+
         static final Histogram loadMetrics = Histogram.build().name("time_load").help("Time to perform load.")
                 .register();
         static final Counter failedInsertions = Counter.build().name("count_failed_insertions")
@@ -86,10 +89,9 @@ public class ResourceConsumer {
             producer.sendMessage(loadMessage, String.format("load.%s", batchId));
 
             // Increment redis counter
-            Jedis j = new Jedis("river-redis", 6379);
-            j.select(2);
-            j.hincrBy(String.format("batch:%s:counter", batchId), String.format("resource:%s:loaded", resourceId),
-                    1);
+            Jedis j = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
+            j.select(redisCounterProperties.getDb_index());
+            j.hincrBy(String.format("batch:%s:counter", batchId), String.format("resource:%s:loaded", resourceId), 1);
 
             // TODO: error handling
 
