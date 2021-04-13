@@ -21,5 +21,7 @@
   "selectTable": "Select table",
   "selectPrimaryIdentifier": "Select primary identifier",
   "selectColumn": "Select column",
-  "addFilter": "Add filter"
+  "addFilter": "Add filter",
+  "selectFhirResourcePrompt": "Please select the FHIR resource that you want to generate from the source",
+  "search": "Search"
 }

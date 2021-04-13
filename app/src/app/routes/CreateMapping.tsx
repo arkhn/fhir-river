@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 
 import StepPanel from "common/Stepper/StepPanel";
+import FhirResourceStep from "features/mappings/FhirResourceStep";
 import MappingCreationStepper from "features/mappings/MappingCreationStepper";
 import TableStep from "features/mappings/TableStep";
 import { Resource } from "services/api/generated/api.generated";
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     height: `calc(100vh - ${FOOTER_HEIGHT + theme.spacing(10)}px)`,
   },
   scrollContainer: {
-    paddingTop: theme.spacing(5),
+    paddingTop: theme.spacing(8),
     overflowY: "auto",
   },
   button: {
@@ -112,7 +113,7 @@ const CreateMapping = (): JSX.Element => {
             <TableStep mapping={mapping} onChange={updateMapping} />
           </StepPanel>
           <StepPanel index={1} value={activeStep}>
-            <Typography>Truc</Typography>
+            <FhirResourceStep mapping={mapping} onChange={updateMapping} />
           </StepPanel>
           <StepPanel index={2} value={activeStep}>
             <Typography>Muche</Typography>
