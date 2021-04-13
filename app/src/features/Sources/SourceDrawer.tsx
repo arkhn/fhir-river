@@ -23,6 +23,11 @@ const useStyles = makeStyles((theme) => ({
     width: "fit-content",
     minWidth: 150,
   },
+  title: {
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(3),
+    fontWeight: "bold",
+  },
 }));
 
 const SourceDrawer = (): JSX.Element => {
@@ -45,10 +50,12 @@ const SourceDrawer = (): JSX.Element => {
       )}
       {editType === EditTypeEnum.Owners && credential && (
         <>
+          <Typography className={classes.title} variant="h5">
+            {t("selectOwners")}
+          </Typography>
           <CredentialOwnersSelect credential={credential} />
           <Button
             className={classes.button}
-            type="submit"
             variant="contained"
             color="primary"
             fullWidth={false}

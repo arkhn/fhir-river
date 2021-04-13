@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@arkhn/ui": "^1.11.1",
+    "@arkhn/ui": "^1.11.2",
     "@fontsource/roboto": "^4.2.1",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -23,6 +23,7 @@
     "i18next": "^19.8.8",
     "i18next-browser-languagedetector": "^6.0.1",
     "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-i18next": "^11.8.7",
@@ -69,6 +70,7 @@
     ]
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.5.10",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.20.0",
@@ -80,6 +82,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "4.3.6",
     "lint-staged": "10.5.3",
+    "msw": "^0.28.1",
     "prettier": "2.2.1"
   }
 }

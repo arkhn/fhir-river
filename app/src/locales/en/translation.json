@@ -15,6 +15,7 @@
   "editCredential": "Edit credential",
   "createCredential": "Create credential",
   "updateCredential": "Update credential",
+  "selectOwners": "Select owners",
   "name": "Name",
   "host": "Host",
   "port": "Port",
