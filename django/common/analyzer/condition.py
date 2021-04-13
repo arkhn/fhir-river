@@ -38,7 +38,7 @@ class Condition:
         self.value = value.split(",") if relation == "IN" else value
 
     def check(self, data: Dict[DataDictKey, DataDictValue]):
-        value_data = data[(CONDITION_FLAG, (self.sql_column.table_name(), self.sql_column.column))]
+        value_data = data[(CONDITION_FLAG, self.sql_column.col_name_with_joins())]
 
         try:
             cast_value = self.cast_value_type(value_data)
