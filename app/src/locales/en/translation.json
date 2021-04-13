@@ -17,5 +17,9 @@
   "defineSourceTable": "Define a source table",
   "selectFhirResource": "Select a FHIR resource",
   "chooseFhirProfile": "Choose a FHIR profile",
-  "nameMapping": "Name mapping"
+  "nameMapping": "Name mapping",
+  "selectTable": "Select table",
+  "selectPrimaryIdentifier": "Select primary identifier",
+  "selectColumn": "Select column",
+  "addFilter": "Add filter"
 }

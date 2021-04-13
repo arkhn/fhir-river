@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, Button, Typography } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/AddCircleOutline";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +14,9 @@ import {
 } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
+  button: {
+    textTransform: "none",
+  },
   icon: {
     paddingRight: theme.spacing(1),
     fill: theme.palette.text.disabled,
@@ -69,46 +73,57 @@ const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
   }, [owner, mapping.primary_key_table]);
 
   return (
-    <Grid container spacing={2} xs={12}>
-      <Grid item>
-        <Select
-          className={clsx({
-            [classes.inputSelected]: isPKTableSelected,
-          })}
-          value={mapping.primary_key_table ?? ""}
-          options={PKTables}
-          emptyOption={t("selectTable")}
-          onChange={handlePKTableChange}
-          startIcon={
-            <Icon
-              icon={IconNames.TH}
-              iconSize={15}
-              className={clsx(classes.icon, {
-                [classes.iconSelected]: isPKTableSelected,
-              })}
-            />
-          }
-        />
+    <Grid container direction="column" spacing={2}>
+      <Grid item container spacing={2} xs={12}>
+        <Grid item>
+          <Select
+            className={clsx({
+              [classes.inputSelected]: isPKTableSelected,
+            })}
+            value={mapping.primary_key_table ?? ""}
+            options={PKTables}
+            emptyOption={t("selectTable")}
+            onChange={handlePKTableChange}
+            startIcon={
+              <Icon
+                icon={IconNames.TH}
+                iconSize={15}
+                className={clsx(classes.icon, {
+                  [classes.iconSelected]: isPKTableSelected,
+                })}
+              />
+            }
+          />
+        </Grid>
+        <Grid item>
+          <Select
+            className={clsx(classes.icon, {
+              [classes.inputSelected]: isPKColumnSelected,
+            })}
+            value={mapping.primary_key_column ?? ""}
+            options={PKColumns}
+            emptyOption={t("selectPrimaryIdentifier")}
+            onChange={handlePKColumnChange}
+            startIcon={
+              <Icon
+                icon={IconNames.COLUMN_LAYOUT}
+                iconSize={15}
+                className={clsx(classes.icon, {
+                  [classes.iconSelected]: isPKColumnSelected,
+                })}
+              />
+            }
+          />
+        </Grid>
       </Grid>
       <Grid item>
-        <Select
-          className={clsx(classes.icon, {
-            [classes.inputSelected]: isPKColumnSelected,
-          })}
-          value={mapping.primary_key_column ?? ""}
-          options={PKColumns}
-          emptyOption={t("selectPrimaryIdentifier")}
-          onChange={handlePKColumnChange}
-          startIcon={
-            <Icon
-              icon={IconNames.COLUMN_LAYOUT}
-              iconSize={15}
-              className={clsx(classes.icon, {
-                [classes.iconSelected]: isPKColumnSelected,
-              })}
-            />
-          }
-        />
+        <Button
+          className={classes.button}
+          startIcon={<AddIcon />}
+          variant="outlined"
+        >
+          <Typography>{t("addFilter")}</Typography>
+        </Button>
       </Grid>
     </Grid>
   );
