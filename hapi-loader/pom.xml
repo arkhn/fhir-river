@@ -104,6 +104,13 @@
             <version>${jaxb_api_version}</version>
         </dependency>
 
+        <!-- Redis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.5.2</version>
+        </dependency>
+
         <!-- Prometheus dependencies -->
         <!-- The client -->
         <dependency>
