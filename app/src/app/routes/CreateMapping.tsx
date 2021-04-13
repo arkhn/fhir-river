@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 import { Container, Button, makeStyles, Typography } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
@@ -50,6 +50,28 @@ const CreateMapping = (): JSX.Element => {
   const history = useHistory();
   const [activeStep, setActiveStep] = useState(0);
   const [mapping, setMapping] = useState<Partial<Resource>>({});
+  const isNextDisabled = useMemo((): boolean => {
+    let isDisabled = true;
+    switch (activeStep) {
+      case 0:
+        isDisabled =
+          mapping.primary_key_table === undefined ||
+          mapping.primary_key_column === undefined;
+        break;
+      case 1:
+        isDisabled = mapping.definition_id === undefined;
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+
+      default:
+        break;
+    }
+
+    return isDisabled;
+  }, [activeStep, mapping]);
 
   const updateMapping = (newMapping: Partial<Resource>) => {
     setMapping({ ...mapping, ...newMapping });
@@ -63,6 +85,7 @@ const CreateMapping = (): JSX.Element => {
   const handleCancelClick = () => {
     history.goBack();
   };
+
   return (
     <>
       <Button
@@ -112,6 +135,7 @@ const CreateMapping = (): JSX.Element => {
           color="primary"
           variant="contained"
           onClick={handleNextStep}
+          disabled={isNextDisabled}
         >
           <Typography>Next</Typography>
         </Button>
