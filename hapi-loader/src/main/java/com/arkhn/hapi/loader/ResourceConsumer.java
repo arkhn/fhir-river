@@ -4,6 +4,8 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
-public class ResourceConsumer {
+public class ResourceConsumer extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws Exception {
         try {
@@ -65,7 +67,14 @@ public class ResourceConsumer {
             String resourceId = message.getResourceId();
 
             IParser parser = myFhirContext.newJsonParser();
-            IBaseResource r = parser.parseResource(message.getFhirObject().toString());
+            IBaseResource r;
+            try {
+                r = parser.parseResource(message.getFhirObject().toString());
+            } catch (ca.uhn.fhir.parser.DataFormatException e) {
+                logger.error(String.format("Could not parse resource: %s", e.toString()));
+                failedInsertions.inc();
+                return;
+            }
 
             @SuppressWarnings("unchecked")
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
