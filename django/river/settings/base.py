@@ -258,7 +258,7 @@ EXPORTER_PORT = os.environ.get("EXPORTER_PORT", 8001)
 OIDC_STORE_ID_TOKEN = True
 OIDC_STORE_ACCESS_TOKEN = True
 # Silently re-authenticated after following time:
-OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 60 * 15
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(os.environ.get("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", 12 * 60 * 60))
 
 # Relying party
 OIDC_RP_CLIENT_ID = os.environ.get("OIDC_RP_CLIENT_ID")
