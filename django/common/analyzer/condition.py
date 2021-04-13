@@ -19,6 +19,7 @@ CONDITION_RELATION_TO_FUNCTION = {
     "LE": lambda x, y: x is not None and x <= y,
     "GE": lambda x, y: x is not None and x >= y,
     "GT": lambda x, y: x is not None and x > y,
+    "IN": lambda x, y: x is not None and x in y,
     "NULL": lambda x, _: x is None,
     "NOTNULL": lambda x, _: x is not None,
 }
@@ -34,20 +35,19 @@ class Condition:
         self.action = action
         self.sql_column = sql_column
         self.relation = relation
-        # We turn the value into a number if it looks like one
-        self.value = value
+        self.value = value.split(",") if relation == "IN" else value
 
     def check(self, data: Dict[DataDictKey, DataDictValue]):
-        data_value = data[(CONDITION_FLAG, self.sql_column.col_name_with_joins())]
+        value_data = data[(CONDITION_FLAG, self.sql_column.col_name_with_joins())]
 
         try:
-            cast_value = self.cast_value_type(data_value)
+            cast_value = self.cast_value_type(value_data)
         except Exception as e:
-            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(data_value)}: {e}")
+            raise OperationOutcome(f"Could not cast condition value ({self.value}) to type {type(value_data)}: {e}")
 
         # We first check if the relation between the condition's value and
         # the value fetched from the DB holds.
-        is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](data_value, cast_value)
+        is_relation_true = CONDITION_RELATION_TO_FUNCTION[self.relation](value_data, cast_value)
 
         # Then, to know if we need to include the input group or not, we need to XOR
         # is_relation_true with self.action == "EXCLUDE".
@@ -55,19 +55,24 @@ class Condition:
         # to return False (and to exclude the input group from the attribute).
         return (self.action == "EXCLUDE") ^ is_relation_true
 
-    def cast_value_type(self, data_value):
-        if self.relation in UNARY_RELATIONS or data_value is None:
+    def cast_value_type(self, value_data, condition_data=None):
+        if self.relation in UNARY_RELATIONS or value_data is None:
             # For unary relations, we don't need a reference value
-            cast_value = None
-        elif isinstance(data_value, bool):
+            return None
+
+        if self.relation == "IN" and condition_data is None:
+            return [self.cast_value_type(value_data, val) for val in self.value]
+
+        condition_data = condition_data or self.value
+        if isinstance(value_data, bool):
             # For booleans, we cast to False if the value is "0", "false" or "False"
-            cast_value = self.value.lower() not in ["0", "false"]
-        elif isinstance(data_value, str) and self.is_date(data_value):
+            cast_value = condition_data.lower() not in ["0", "false"]
+        elif isinstance(value_data, str) and self.is_date(value_data):
             # For dates, we parse the string
             # NOTE the input date format is fixed here
-            cast_value = datetime.strptime(self.value, "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%S")
+            cast_value = datetime.strptime(condition_data, "%Y-%m-%d").strftime("%Y-%m-%dT%H:%M:%S")
         else:
-            cast_value = type(data_value)(self.value)
+            cast_value = type(value_data)(condition_data)
 
         return cast_value
 
