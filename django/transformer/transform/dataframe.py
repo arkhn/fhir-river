@@ -11,9 +11,9 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
     This function takes the dictionary produced by the Extractor and returns another
     one which looks like:
     {
-        (attribute.path, input_group.id, (table, column)): [val, val, ...],
-        (attribute.path, input_group.id, (table, column)): [val, val, ...],
-        (CONDITION_FLAG, (table, column)): [val, val, ...],
+        (attribute.path, input_group.id, col_name): [val, val, ...],
+        (attribute.path, input_group.id, col_name): [val, val, ...],
+        (CONDITION_FLAG, col_name): [val, val, ...],
         ...
     }
     and where all values are cleaned (with cleaning scripts and concept maps).
@@ -25,7 +25,7 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
                 dict_col_name = col.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                attr_col_name = (attribute.path, input_group.id, col.table_name_with_joins())
+                attr_col_name = (attribute.path, input_group.id, col.col_name_with_joins())
 
                 # cleaned_data will be modified several times
                 if col.table_name() == primary_key_col.table_name():
@@ -53,7 +53,7 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
                 dict_col_name = condition.sql_column.dataframe_column_name()
 
                 # The column name in the new intermediary dataframe
-                cond_col_name = (CONDITION_FLAG, condition.sql_column.table_name_with_joins())
+                cond_col_name = (CONDITION_FLAG, condition.sql_column.col_name_with_joins())
 
                 # Get the original column
                 cleaned_data[cond_col_name] = data[dict_col_name]
@@ -64,10 +64,10 @@ def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, pr
 def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: str):
     """Takes as input a dict of the form
     {
-        (attribute.path, input_group1.id, (table1, column1)): values,
-        (attribute.path, input_group1.id, (table2, column2)): values,
-        (attribute.path, input_group2.id, (table3, column3)): values,
-        (CONDITION_FLAG, (table4, column4)): values,
+        (attribute.path, input_group1.id, col_name): values,
+        (attribute.path, input_group1.id, col_name): values,
+        (attribute.path, input_group2.id, col_name): values,
+        (CONDITION_FLAG, col_name): values,
         ...
     }
     and outputs
@@ -87,7 +87,7 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
             or (
                 key[0] == CONDITION_FLAG
                 and key[1]
-                in (c.sql_column.table_name_with_joins() for g in attribute.input_groups for c in g.conditions)
+                in (c.sql_column.col_name_with_joins() for g in attribute.input_groups for c in g.conditions)
             )
         }
         nb_rows_for_attribute = max(len(col) for col in data_for_attribute.values()) if data_for_attribute else 1
