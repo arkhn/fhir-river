@@ -88,6 +88,7 @@ const CredentialOwnersSelect = ({
         )}
         value={owners?.map((owner) => owner.name)}
         onChange={handleOwnerChange}
+        disableClearable
       />
     </div>
   );
