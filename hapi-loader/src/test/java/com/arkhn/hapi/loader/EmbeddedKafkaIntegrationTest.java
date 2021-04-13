@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.annotation.PreDestroy;
@@ -26,6 +25,8 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ContextConfiguration;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -33,8 +34,6 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.model.DaoMethodOutcome;
 import ca.uhn.fhir.parser.IParser;
-
-import org.testcontainers.containers.PostgreSQLContainer;
 
 @SpringBootTest(classes = ResourceConsumer.class)
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" }, topics = {
@@ -44,6 +43,7 @@ class EmbeddedKafkaIntegrationTest {
 
     private static ElasticsearchContainer embeddedElastic;
     private static PostgreSQLContainer<?> embeddedPostgres;
+    static GenericContainer embeddedRedis;
 
     @Autowired
     DaoRegistry daoRegistry;
@@ -59,8 +59,9 @@ class EmbeddedKafkaIntegrationTest {
 
     private static final String ELASTIC_VERSION = "7.10.1";
     private static final String ELASTIC_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:" + ELASTIC_VERSION;
-
     private static final String POSTGRES_IMAGE = "postgres:13";
+    private static final String REDIS_IMAGE = "redis:5.0.7-alpine";
+    private static final int REDIS_PORT = 6379;
 
     @BeforeAll
     public static void beforeClass() {
@@ -71,12 +72,18 @@ class EmbeddedKafkaIntegrationTest {
         embeddedElastic = new ElasticsearchContainer(ELASTIC_IMAGE)
                 .withStartupTimeout(Duration.of(300, ChronoUnit.SECONDS));
         embeddedElastic.start();
+
+        embeddedRedis = new GenericContainer(REDIS_IMAGE).withExposedPorts(REDIS_PORT);
+        embeddedRedis.start();
+        System.setProperty("spring.redis.host", embeddedRedis.getContainerIpAddress());
+        System.setProperty("spring.redis.port", embeddedRedis.getMappedPort(REDIS_PORT).toString());
     }
 
     @PreDestroy
     public void stop() {
         embeddedPostgres.stop();
         embeddedElastic.stop();
+        embeddedRedis.stop();
     }
 
     @Test
@@ -155,6 +162,9 @@ class EmbeddedKafkaIntegrationTest {
                             "spring.datasource.jdbcUrl=" + embeddedPostgres.getJdbcUrl(),
                             "spring.datasource.username=" + embeddedPostgres.getUsername(),
                             "spring.datasource.password=" + embeddedPostgres.getPassword(),
+                            "spring.redis.host=" + embeddedRedis.getContainerIpAddress(),
+                            "spring.redis.port=" + embeddedRedis.getMappedPort(REDIS_PORT).toString(),
+                            "spring.redis.db=2",
                             "spring.datasource.driverClassName=org.postgresql.Driver")
                     .applyTo(configurableApplicationContext.getEnvironment());
         }

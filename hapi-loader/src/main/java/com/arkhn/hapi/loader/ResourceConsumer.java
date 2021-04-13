@@ -39,9 +39,6 @@ public class ResourceConsumer {
     public static class ResourceListener {
 
         private static final Logger logger = LoggerFactory.getLogger(ResourceListener.class);
-        private static final String REDIS_COUNTER_HOST = System.getenv("REDIS_COUNTER_HOST");
-        private static final String REDIS_COUNTER_DB = System.getenv("REDIS_COUNTER_DB");
-        private static Jedis jedis = new Jedis(REDIS_COUNTER_HOST);
 
         @Autowired
         DaoRegistry daoRegistry;
@@ -89,8 +86,9 @@ public class ResourceConsumer {
             producer.sendMessage(loadMessage, String.format("load.%s", batchId));
 
             // Increment redis counter
-            jedis.select(Integer.parseInt(REDIS_COUNTER_DB));
-            jedis.hincrBy(String.format("batch:%s:counter", batchId), String.format("resource:%s:loaded", resourceId),
+            Jedis j = new Jedis("river-redis", 6379);
+            j.select(2);
+            j.hincrBy(String.format("batch:%s:counter", batchId), String.format("resource:%s:loaded", resourceId),
                     1);
 
             // TODO: error handling
