@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { CircularProgress } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
-import { difference } from "lodash";
+import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
+import { difference, head } from "lodash";
 
+import Alert from "common/components/Alert";
 import {
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersDestroyMutation,
 } from "services/api/endpoints";
-import type { Credential } from "services/api/generated/api.generated";
+import { apiValidationErrorFromResponse } from "services/api/errors";
+import type { Credential, Owner } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +35,10 @@ const CredentialOwnersSelect = ({
 }: CredentialOwnersSelectProps): JSX.Element => {
   const classes = useStyles();
 
-  const availableOwnersNames = credential.availableOwners;
+  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const handleAlertClose = () => setAlert(undefined);
+
+  const availableOwnersNames = credential.available_owners;
 
   const {
     isLoading: isApiOwnersListLoading,
@@ -60,9 +66,20 @@ const CredentialOwnersSelect = ({
           value,
           owners.map((owner) => owner.name)
         );
-        apiOwnersCreate({
-          ownerRequest: { name: selectedOwnerName, credential: credential.id },
-        });
+        // TODO: handle failure
+        try {
+          apiOwnersCreate({
+            ownerRequest: {
+              name: selectedOwnerName,
+              credential: credential.id,
+            },
+          });
+        } catch (e) {
+          const data = apiValidationErrorFromResponse<Partial<Owner>>(
+            e as FetchBaseQueryError
+          );
+          setAlert(head(data?.nonFieldErrors));
+        }
         return;
       case "remove-option":
         const [removedOwnerName] = difference(
@@ -89,6 +106,12 @@ const CredentialOwnersSelect = ({
         value={owners?.map((owner) => owner.name)}
         onChange={handleOwnerChange}
         disableClearable
+      />
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
       />
     </div>
   );
