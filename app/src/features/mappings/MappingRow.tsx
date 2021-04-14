@@ -6,6 +6,7 @@ import { makeStyles, TableCell, TableRow, Typography } from "@material-ui/core";
 import { ArrowForward } from "@material-ui/icons";
 import clsx from "clsx";
 
+import { useListResourceFilters } from "services/api/api";
 import { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,6 +46,9 @@ type MappingRowProps = {
 
 const MappingRow = ({ mapping }: MappingRowProps): JSX.Element => {
   const classes = useStyles();
+  const { data: filters } = useListResourceFilters(mapping);
+  const filtersCount = filters?.length ?? 0;
+
   return (
     <TableRow hover className={classes.row}>
       <TableCell className={classes.cell} size="small">
@@ -54,6 +58,7 @@ const MappingRow = ({ mapping }: MappingRowProps): JSX.Element => {
         />
         <Typography className={classes.text} color="textPrimary">
           {mapping.primary_key_table}
+          {filtersCount > 0 && ` + ${filtersCount} filter(s)`}
         </Typography>
         <ArrowForward className={clsx(classes.icon, classes.inlineSpace)} />
         <Icon

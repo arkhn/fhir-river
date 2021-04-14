@@ -23,7 +23,7 @@ const mappings: Resource[] = [
     primary_key_table: "table",
     primary_key_column: "column",
     primary_key_owner: "owner",
-    definition_id: "definition",
+    definition_id: "definition_1",
     source: "source_1",
     logical_reference: "logical_reference",
   },
@@ -32,7 +32,7 @@ const mappings: Resource[] = [
     primary_key_table: "table",
     primary_key_column: "column",
     primary_key_owner: "owner",
-    definition_id: "definition",
+    definition_id: "definition_2",
     source: "source_1",
     logical_reference: "logical_reference",
   },
@@ -92,6 +92,10 @@ api.updateSourceMock = jest.fn((source: Source) => ({
 }));
 api.useUpdateSourceMutation = () => {
   return [api.updateSourceMock, { isLoading: false }];
+};
+
+api.useRetrieveSourceQuery = (params: { id: string }) => {
+  return { data: sources.find(({ id }) => id === params.id) };
 };
 
 module.exports = api;

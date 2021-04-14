@@ -1,4 +1,8 @@
-import { api as generatedApi, Source } from "./generated/api.generated";
+import {
+  api as generatedApi,
+  Resource,
+  Source,
+} from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
   addEntityTypes: ["Sources"],
@@ -55,6 +59,18 @@ const useListSourceAttributes = (source?: Source) => {
   );
 };
 
+const useListResourceFilters = (mapping?: Resource) => {
+  return api.useListFiltersQuery(
+    {},
+    {
+      selectFromResult: ({ data, ...props }) => ({
+        data: data?.filter((filter) => filter.resource === mapping?.id),
+        ...props,
+      }),
+    }
+  );
+};
+
 export const {
   useListSourcesQuery,
   useCreateSourceMutation,
@@ -64,4 +80,8 @@ export const {
   useDestroySourceMutation,
 } = api;
 
-export { useListSourceResources, useListSourceAttributes };
+export {
+  useListSourceResources,
+  useListSourceAttributes,
+  useListResourceFilters,
+};
