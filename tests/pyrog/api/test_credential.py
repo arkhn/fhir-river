@@ -39,6 +39,8 @@ def test_create_credential(
     model,
     status_code,
 ):
+    mock_database_explorer().get_owners.return_value = []
+
     url = reverse("credentials-list")
 
     data = {
@@ -78,6 +80,8 @@ def test_create_invalid_credential(
 @mock.patch("pyrog.api.serializers.DBConnection")
 @mock.patch("pyrog.api.serializers.DatabaseExplorer")
 def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_client, credential):
+    mock_database_explorer().get_owners.return_value = []
+
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     response = api_client.get(url)
@@ -88,6 +92,8 @@ def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_cli
 @mock.patch("pyrog.api.serializers.DBConnection")
 @mock.patch("pyrog.api.serializers.DatabaseExplorer")
 def test_list_credentials(mock_database_explorer, mock_db_connection, api_client, credential_factory):
+    mock_database_explorer().get_owners.return_value = []
+
     url = reverse("credentials-list")
     credential_factory.create_batch(3)
 
@@ -106,7 +112,10 @@ def test_filter_credentials_by_source(
     source_factory,
     credential_factory,
 ):
+    mock_database_explorer().get_owners.return_value = []
+
     url = reverse("credentials-list")
+
     first_source, second_source = source_factory.create_batch(2)
     first_source_credentials = credential_factory.create_batch(1, source=first_source)
     credential_factory.create_batch(1, source=second_source)
@@ -148,6 +157,8 @@ def test_update_credential(
     model,
     status_code,
 ):
+    mock_database_explorer().get_owners.return_value = []
+
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     data = {}

@@ -1,5 +1,3 @@
 from .prod import *
 
 SECRET_KEY = "USE_IN_TEST_ONLY"
-
-REST_FRAMEWORK["TEST_REQUEST_DEFAULT_FORMAT"] = "json"
