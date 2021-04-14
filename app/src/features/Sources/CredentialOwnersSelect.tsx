@@ -54,7 +54,7 @@ const CredentialOwnersSelect = ({
 
   const isLoading = isApiOwnersListLoading || isApiOwnerCreateLoading;
 
-  const handleOwnerChange = (
+  const handleOwnerChange = async (
     _: React.ChangeEvent<Record<string, never>>,
     value: string[],
     reason: AutocompleteChangeReason
@@ -66,14 +66,13 @@ const CredentialOwnersSelect = ({
           value,
           owners.map((owner) => owner.name)
         );
-        // TODO: handle failure
         try {
-          apiOwnersCreate({
+          await apiOwnersCreate({
             ownerRequest: {
               name: selectedOwnerName,
               credential: credential.id,
             },
-          });
+          }).unwrap();
         } catch (e) {
           const data = apiValidationErrorFromResponse<Partial<Owner>>(
             e as FetchBaseQueryError
@@ -89,7 +88,8 @@ const CredentialOwnersSelect = ({
         const removedOwner = owners.find(
           (owner) => owner.name === removedOwnerName
         );
-        if (removedOwner) apiOwnersDestroy({ id: removedOwner.id });
+        if (removedOwner)
+          await apiOwnersDestroy({ id: removedOwner.id }).unwrap();
         return;
     }
   };
