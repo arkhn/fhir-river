@@ -24,10 +24,10 @@ def mock_get_script(*args):
 def test_transform(_, dict_map_code):
 
     data = {
-        "PATIENTS_NAME_f055e60c": ["alicedirty", "alicedirty", "alicedirty"],
-        "PATIENTS_ID_40840214": ["id1", "id1", "id1"],
+        "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
+        "PATIENTS_ID_0f208c2f": ["id1", "id1", "id1"],
         "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
-        "ADMISSIONS_CODE_14824047": ["ABCdirty", "ABCdirty", "DEFdirty"],
+        "ADMISSIONS_CODE_3596e6e0": ["ABCdirty", "ABCdirty", "DEFdirty"],
     }
 
     attr_name = Attribute("name")
@@ -90,15 +90,15 @@ def test_transform(_, dict_map_code):
 @mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
 def test_transform_with_condition_arrays(_, dict_map_code):
     data = {
-        "PATIENTS_NAME_f055e60c": ["alicedirty", "alicedirty", "alicedirty"],
-        "PATIENTS_ID_40840214": ["id1", "id1", "id1"],
+        "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
+        "PATIENTS_ID_0f208c2f": ["id1", "id1", "id1"],
         "PATIENTS_ID2_hash": ["id21", "id21", "id21"],
-        "ADMISSIONS_SYSTEM_a3030ac5": ["SYS", "SYS", "SYS"],
-        "ADMISSIONS_CODE_1_8b2318cd": ["abc", "abc", "def"],
-        "ADMISSIONS_CODE_2_2411de10": ["cba", "cba", "fed"],
-        "ADMISSIONS_COND_64b3742b": [1, 0, 2],
-        "ADMISSIONS_STATUS_3a989f8a": ["inactive", "inactive", "active"],
-        "ADMISSIONS_TATUS_COND_09e39615": [0, 0, 1],
+        "ADMISSIONS_SYSTEM_a42b38e1": ["SYS", "SYS", "SYS"],
+        "ADMISSIONS_CODE_1_25a91be2": ["abc", "abc", "def"],
+        "ADMISSIONS_CODE_2_544ec6f3": ["cba", "cba", "fed"],
+        "ADMISSIONS_COND_54c00db3": [1, 0, 2],
+        "ADMISSIONS_STATUS_16ca93b9": ["inactive", "inactive", "active"],
+        "ADMISSIONS_TATUS_COND_d52bc57a": [0, 0, 1],
     }
 
     attr_name = Attribute("name")
