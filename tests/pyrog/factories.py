@@ -106,6 +106,7 @@ class OwnerFactory(factory.django.DjangoModelFactory):
         model = "pyrog.Owner"
 
     id = factory.Sequence(lambda n: f"owner_id_{n:04d}")
+    name = factory.Sequence(lambda n: f"owner_{n}")
     credential = factory.SubFactory(CredentialFactory)
 
 

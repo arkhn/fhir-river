@@ -10,8 +10,8 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
-@mock.patch("pyrog.api.serializers.DBConnection")
-@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@mock.patch("pyrog.api.serializers.basic.DBConnection")
+@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
@@ -77,8 +77,8 @@ def test_create_invalid_credential(
     assert response.status_code == 400
 
 
-@mock.patch("pyrog.api.serializers.DBConnection")
-@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@mock.patch("pyrog.api.serializers.basic.DBConnection")
+@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_client, credential):
     mock_database_explorer().get_owners.return_value = []
 
@@ -89,8 +89,8 @@ def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_cli
     assert response.status_code == 200
 
 
-@mock.patch("pyrog.api.serializers.DBConnection")
-@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@mock.patch("pyrog.api.serializers.basic.DBConnection")
+@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 def test_list_credentials(mock_database_explorer, mock_db_connection, api_client, credential_factory):
     mock_database_explorer().get_owners.return_value = []
 
@@ -103,8 +103,8 @@ def test_list_credentials(mock_database_explorer, mock_db_connection, api_client
     assert len(response.data) == 3
 
 
-@mock.patch("pyrog.api.serializers.DBConnection")
-@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@mock.patch("pyrog.api.serializers.basic.DBConnection")
+@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 def test_filter_credentials_by_source(
     mock_database_explorer,
     mock_db_connection,
@@ -128,8 +128,8 @@ def test_filter_credentials_by_source(
     }
 
 
-@mock.patch("pyrog.api.serializers.DBConnection")
-@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@mock.patch("pyrog.api.serializers.basic.DBConnection")
+@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
