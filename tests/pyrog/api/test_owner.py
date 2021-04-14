@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from faker import Faker
 
@@ -8,11 +10,34 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.parametrize("name, schema, status_code", [(faker.word(), faker.json(), 201)])
+@mock.patch("pyrog.api.serializers.DBConnection")
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@pytest.mark.parametrize("name, status_code", [(faker.word(), 201)])
 def test_create_owner(
+    mock_database_explorer,
+    mock_db_connection,
     api_client,
     name,
-    schema,
+    credential,
+    status_code,
+):
+    mock_database_explorer().get_owner_schema.return_value = faker.json()
+
+    url = reverse("owners-list")
+
+    data = {
+        "name": name,
+        "credential": credential.id,
+    }
+    response = api_client.post(url, data)
+
+    assert response.status_code == status_code
+
+
+@pytest.mark.parametrize("name, status_code", [(faker.word(), 400)])
+def test_create_owner_with_invalid_credential(
+    api_client,
+    name,
     credential,
     status_code,
 ):
@@ -20,7 +45,30 @@ def test_create_owner(
 
     data = {
         "name": name,
-        "schema": schema,
+        "credential": credential.id,
+    }
+    response = api_client.post(url, data)
+
+    assert response.status_code == status_code
+
+
+@mock.patch("pyrog.api.serializers.DBConnection")
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@pytest.mark.parametrize("name, status_code", [(faker.word(), 400)])
+def test_create_owner_with_empty_schema(
+    mock_database_explorer,
+    mock_db_connection,
+    api_client,
+    name,
+    credential,
+    status_code,
+):
+    mock_database_explorer().get_owner_schema.return_value = {}
+
+    url = reverse("owners-list")
+
+    data = {
+        "name": name,
         "credential": credential.id,
     }
     response = api_client.post(url, data)
@@ -44,25 +92,6 @@ def test_list_owners(api_client, owner_factory):
 
     assert response.status_code == 200
     assert len(response.data) == 3
-
-
-@pytest.mark.parametrize("name, schema, status_code", [(faker.word(), faker.json(), 200)])
-def test_update_owner(
-    api_client,
-    owner,
-    name,
-    schema,
-    status_code,
-):
-    url = reverse("owners-detail", kwargs={"pk": owner.id})
-
-    data = {}
-    for field in ["name", "schema"]:
-        if locals()[field]:
-            data[field] = locals()[field]
-    response = api_client.patch(url, data)
-
-    assert response.status_code == status_code
 
 
 def test_delete_owner(api_client, owner):

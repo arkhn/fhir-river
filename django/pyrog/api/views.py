@@ -61,7 +61,13 @@ class FilterViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.FilterSerializer
 
 
-class OwnerViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class OwnerViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = models.Owner.objects.all()
     serializer_class = serializers.OwnerSerializer
     filter_backends = [django_filters.DjangoFilterBackend]

@@ -7,25 +7,10 @@ from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog import models
 
 
-class OwnerSerializer(serializers.ModelSerializer):
+class SourceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Owner
+        model = models.Source
         fields = "__all__"
-        read_only_fields = ["schema"]
-
-    def create(self, validated_data):
-        credential = CredentialSerializer(validated_data["credential"]).data
-        try:
-            db_connection = DBConnection(credential)
-            explorer = DatabaseExplorer(db_connection)
-            validated_data["schema"] = explorer.get_owner_schema(validated_data["name"])
-        except Exception as e:
-            raise serializers.ValidationError(e)
-        if not validated_data["schema"]:
-            raise serializers.ValidationError(
-                {"name": [f"{validated_data['name']} schema is empty or does not exist"]}
-            )
-        return super().create(validated_data)
 
 
 class CredentialSerializer(serializers.ModelSerializer):
@@ -53,10 +38,25 @@ class CredentialSerializer(serializers.ModelSerializer):
         return data
 
 
-class SourceSerializer(serializers.ModelSerializer):
+class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Source
+        model = models.Owner
         fields = "__all__"
+        read_only_fields = ["schema"]
+
+    def create(self, validated_data):
+        credential = CredentialSerializer(validated_data["credential"]).data
+        try:
+            db_connection = DBConnection(credential)
+            explorer = DatabaseExplorer(db_connection)
+            validated_data["schema"] = explorer.get_owner_schema(validated_data["name"])
+        except Exception as e:
+            raise serializers.ValidationError(e)
+        if not validated_data["schema"]:
+            raise serializers.ValidationError(
+                {"name": [f"{validated_data['name']} schema is empty or does not exist"]}
+            )
+        return super().create(validated_data)
 
 
 class ResourceSerializer(serializers.ModelSerializer):

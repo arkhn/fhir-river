@@ -10,6 +10,8 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
+@mock.patch("pyrog.api.serializers.DBConnection")
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
@@ -25,6 +27,8 @@ pytestmark = pytest.mark.django_db
     ],
 )
 def test_create_credential(
+    mock_database_explorer,
+    mock_db_connection,
     api_client,
     source,
     host,
@@ -51,9 +55,29 @@ def test_create_credential(
     assert response.status_code == status_code
 
 
-@mock.patch("pyrog.api.serializers.CredentialSerializer.get_available_owners", return_value=[])
+def test_create_invalid_credential(
+    api_client,
+    source,
+):
+    url = reverse("credentials-list")
+
+    data = {
+        "source": source.id,
+        "host": "invalid",
+        "port": 0,
+        "database": "invalid",
+        "login": "invalid",
+        "password": "invalid",
+        "model": "invalid",
+    }
+    response = api_client.post(url, data)
+
+    assert response.status_code == 400
+
+
 @mock.patch("pyrog.api.serializers.DBConnection")
-def test_retrieve_credential(mock_db_connection, mock_credential_available_owners, api_client, credential):
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_client, credential):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     response = api_client.get(url)
@@ -61,9 +85,9 @@ def test_retrieve_credential(mock_db_connection, mock_credential_available_owner
     assert response.status_code == 200
 
 
-@mock.patch("pyrog.api.serializers.CredentialSerializer.get_available_owners", return_value=[])
 @mock.patch("pyrog.api.serializers.DBConnection")
-def test_list_credentials(mock_db_connection, mock_credential_available_owners, api_client, credential_factory):
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+def test_list_credentials(mock_database_explorer, mock_db_connection, api_client, credential_factory):
     url = reverse("credentials-list")
     credential_factory.create_batch(3)
 
@@ -75,9 +99,7 @@ def test_list_credentials(mock_db_connection, mock_credential_available_owners, 
 
 @mock.patch("pyrog.api.serializers.DBConnection")
 @mock.patch("pyrog.api.serializers.DatabaseExplorer")
-@mock.patch("pyrog.api.serializers.DatabaseExplorer.get_owners", return_value=[])
 def test_filter_credentials_by_source(
-    mock_get_owners,
     mock_database_explorer,
     mock_db_connection,
     api_client,
@@ -97,6 +119,8 @@ def test_filter_credentials_by_source(
     }
 
 
+@mock.patch("pyrog.api.serializers.DBConnection")
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
@@ -111,7 +135,19 @@ def test_filter_credentials_by_source(
         ),
     ],
 )
-def test_update_credential(api_client, credential, host, port, database, login, password, model, status_code):
+def test_update_credential(
+    mock_database_explorer,
+    mock_db_connection,
+    api_client,
+    credential,
+    host,
+    port,
+    database,
+    login,
+    password,
+    model,
+    status_code,
+):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     data = {}
@@ -121,6 +157,25 @@ def test_update_credential(api_client, credential, host, port, database, login, 
     response = api_client.patch(url, data)
 
     assert response.status_code == status_code
+
+
+def test_update_invalid_credential(
+    api_client,
+    credential,
+):
+    url = reverse("credentials-detail", kwargs={"pk": credential.id})
+
+    data = {
+        "host": "invalid",
+        "port": 0,
+        "database": "invalid",
+        "login": "invalid",
+        "password": "invalid",
+        "model": "invalid",
+    }
+    response = api_client.patch(url, data)
+
+    assert response.status_code == 400
 
 
 def test_delete_credential(api_client, credential):
