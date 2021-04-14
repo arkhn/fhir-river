@@ -53,14 +53,14 @@ const handlers = [
         ctx.json<ApiResourcesListApiResponse>(
           ["resource_1", "resource_2"].map((id) => ({
             id,
-            primaryKeyTable: "",
-            primaryKeyColumn: "",
-            definitionId: "",
-            logicalReference: "",
-            updatedAt: "",
-            createdAt: "",
+            primary_key_table: "",
+            primary_key_column: "",
+            definition_id: "",
+            logical_reference: "",
+            updated_at: "",
+            created_at: "",
             source: "source_1",
-            primaryKeyOwner: "",
+            primary_key_owner: "",
           }))
         )
       )
@@ -73,9 +73,9 @@ const handlers = [
           ["attribute_1", "attribute_2", "attribute_3"].map((id) => ({
             id,
             path: "",
-            definitionId: "",
-            updatedAt: "",
-            createdAt: "",
+            definition_id: "",
+            updated_at: "",
+            created_at: "",
             resource: "",
           }))
         )
@@ -105,8 +105,8 @@ describe("Sources page", () => {
           res.once(
             ctx.json<ApiSourcesCreateApiResponse>({
               id: "source_1",
-              updatedAt: "",
-              createdAt: "",
+              updated_at: "",
+              created_at: "",
               ...req.body,
             })
           )
@@ -123,8 +123,8 @@ describe("Sources page", () => {
                 id: "source_1",
                 name: "source_1",
                 version: "",
-                updatedAt: "",
-                createdAt: "",
+                updated_at: "",
+                created_at: "",
               },
             ])
           )
@@ -162,9 +162,9 @@ describe("Sources page", () => {
           res.once(
             ctx.json<ApiCredentialsCreateApiResponse>({
               id: "credential_1",
-              updatedAt: "",
-              createdAt: "",
-              availableOwners: ["public"],
+              updated_at: "",
+              created_at: "",
+              available_owners: ["public"],
               ...req.body,
             })
           )
@@ -184,9 +184,9 @@ describe("Sources page", () => {
             ctx.json<ApiCredentialsListApiResponse>([
               {
                 id: "credential_1",
-                updatedAt: "",
-                createdAt: "",
-                availableOwners: ["public"],
+                updated_at: "",
+                created_at: "",
+                available_owners: ["public"],
                 host: "localhost",
                 port: 5432,
                 database: "river",
@@ -281,8 +281,8 @@ describe("Sources page", () => {
           res.once(
             ctx.json<ApiSourcesUpdateApiResponse>({
               id: "source_1",
-              updatedAt: "",
-              createdAt: "",
+              updated_at: "",
+              created_at: "",
               ...req.body,
             })
           )
@@ -298,8 +298,8 @@ describe("Sources page", () => {
               {
                 id: "source_1",
                 name: "source_1_edited",
-                updatedAt: "",
-                createdAt: "",
+                updated_at: "",
+                created_at: "",
               },
             ])
           )

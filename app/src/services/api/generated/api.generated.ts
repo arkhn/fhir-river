@@ -428,6 +428,12 @@ export const api = createApi({
         body: queryArg.ownerRequest,
       }),
     }),
+    apiOwnersRetrieve: build.query<
+      ApiOwnersRetrieveApiResponse,
+      ApiOwnersRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/owners/${queryArg.id}/` }),
+    }),
     apiOwnersDestroy: build.mutation<
       ApiOwnersDestroyApiResponse,
       ApiOwnersDestroyApiArg
@@ -780,6 +786,11 @@ export type ApiOwnersCreateApiResponse = /** status 201  */ Owner;
 export type ApiOwnersCreateApiArg = {
   ownerRequest: OwnerRequest;
 };
+export type ApiOwnersRetrieveApiResponse = /** status 200  */ Owner;
+export type ApiOwnersRetrieveApiArg = {
+  /** A unique value identifying this owner. */
+  id: string;
+};
 export type ApiOwnersDestroyApiResponse = unknown;
 export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
@@ -846,30 +857,30 @@ export type ApiSourcesDestroyApiArg = {
 export type Attribute = {
   id: string;
   path: string;
-  sliceName?: string;
-  definitionId: string;
-  updatedAt: string;
-  createdAt: string;
+  slice_name?: string;
+  definition_id: string;
+  updated_at: string;
+  created_at: string;
   resource: string;
 };
 export type AttributeRequest = {
   path: string;
-  sliceName?: string;
-  definitionId: string;
+  slice_name?: string;
+  definition_id: string;
   resource: string;
 };
 export type PatchedAttributeRequest = {
   path?: string;
-  sliceName?: string;
-  definitionId?: string;
+  slice_name?: string;
+  definition_id?: string;
   resource?: string;
 };
 export type Column = {
   id: string;
   table: string;
   column: string;
-  updatedAt: string;
-  createdAt: string;
+  updated_at: string;
+  created_at: string;
   join?: string | null;
   input?: string | null;
   owner: string;
@@ -903,34 +914,34 @@ export type Condition = {
   value?: string;
   relation?: ConditionRelationEnum;
   column: string;
-  inputGroup: string;
+  input_group: string;
 };
 export type ConditionRequest = {
   action: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
   column: string;
-  inputGroup: string;
+  input_group: string;
 };
 export type PatchedConditionRequest = {
   action?: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
   column?: string;
-  inputGroup?: string;
+  input_group?: string;
 };
 export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
 export type Credential = {
   id: string;
-  availableOwners: string[];
+  available_owners: string[];
   host: string;
   port: number;
   database: string;
   login: string;
   password: string;
   model: ModelEnum;
-  updatedAt: string;
-  createdAt: string;
+  updated_at: string;
+  created_at: string;
   source: string;
 };
 export type CredentialRequest = {
@@ -957,60 +968,60 @@ export type Filter = {
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
-  sqlColumn: string;
+  sql_column: string;
 };
 export type FilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
-  sqlColumn: string;
+  sql_column: string;
 };
 export type PatchedFilterRequest = {
   relation?: FilterRelationEnum;
   value?: string;
   resource?: string;
-  sqlColumn?: string;
+  sql_column?: string;
 };
 export type InputGroup = {
   id: string;
-  mergingScript?: string;
-  updatedAt: string;
-  createdAt: string;
+  merging_script?: string;
+  updated_at: string;
+  created_at: string;
   attribute: string;
 };
 export type InputGroupRequest = {
-  mergingScript?: string;
+  merging_script?: string;
   attribute: string;
 };
 export type PatchedInputGroupRequest = {
-  mergingScript?: string;
+  merging_script?: string;
   attribute?: string;
 };
 export type Input = {
   id: string;
   script?: string;
-  conceptMapId?: string;
-  staticValue?: string;
-  updatedAt: string;
-  createdAt: string;
-  inputGroup: string;
+  concept_map_id?: string;
+  static_value?: string;
+  updated_at: string;
+  created_at: string;
+  input_group: string;
 };
 export type InputRequest = {
   script?: string;
-  conceptMapId?: string;
-  staticValue?: string;
-  inputGroup: string;
+  concept_map_id?: string;
+  static_value?: string;
+  input_group: string;
 };
 export type PatchedInputRequest = {
   script?: string;
-  conceptMapId?: string;
-  staticValue?: string;
-  inputGroup?: string;
+  concept_map_id?: string;
+  static_value?: string;
+  input_group?: string;
 };
 export type Join = {
   id: string;
-  updatedAt: string;
-  createdAt: string;
+  updated_at: string;
+  created_at: string;
   column: string;
 };
 export type JoinRequest = {
@@ -1034,39 +1045,39 @@ export type OwnerRequest = {
 export type Resource = {
   id: string;
   label?: string;
-  primaryKeyTable: string;
-  primaryKeyColumn: string;
-  definitionId: string;
-  logicalReference: string;
-  updatedAt: string;
-  createdAt: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  logical_reference: string;
+  updated_at: string;
+  created_at: string;
   source: string;
-  primaryKeyOwner: string;
+  primary_key_owner: string;
 };
 export type ResourceRequest = {
   label?: string;
-  primaryKeyTable: string;
-  primaryKeyColumn: string;
-  definitionId: string;
-  logicalReference: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  logical_reference: string;
   source: string;
-  primaryKeyOwner: string;
+  primary_key_owner: string;
 };
 export type PatchedResourceRequest = {
   label?: string;
-  primaryKeyTable?: string;
-  primaryKeyColumn?: string;
-  definitionId?: string;
-  logicalReference?: string;
+  primary_key_table?: string;
+  primary_key_column?: string;
+  definition_id?: string;
+  logical_reference?: string;
   source?: string;
-  primaryKeyOwner?: string;
+  primary_key_owner?: string;
 };
 export type Source = {
   id: string;
   name: string;
   version?: string;
-  updatedAt: string;
-  createdAt: string;
+  updated_at: string;
+  created_at: string;
 };
 export type SourceRequest = {
   name: string;
@@ -1127,6 +1138,7 @@ export const {
   useApiJoinsDestroyMutation,
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
+  useApiOwnersRetrieveQuery,
   useApiOwnersDestroyMutation,
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
