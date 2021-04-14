@@ -38,9 +38,6 @@
       "pre-commit": "lint-staged"
     }
   },
-  "jest": {
-    "resetMocks": false
-  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write --ignore-unknown"
