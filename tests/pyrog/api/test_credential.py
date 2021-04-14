@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from faker import Faker
 
@@ -49,7 +51,9 @@ def test_create_credential(
     assert response.status_code == status_code
 
 
-def test_retrieve_credential(api_client, credential):
+@mock.patch("pyrog.api.serializers.CredentialSerializer.get_available_owners", return_value=[])
+@mock.patch("pyrog.api.serializers.DBConnection")
+def test_retrieve_credential(mock_db_connection, mock_credential_available_owners, api_client, credential):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     response = api_client.get(url)
@@ -57,7 +61,9 @@ def test_retrieve_credential(api_client, credential):
     assert response.status_code == 200
 
 
-def test_list_credentials(api_client, credential_factory):
+@mock.patch("pyrog.api.serializers.CredentialSerializer.get_available_owners", return_value=[])
+@mock.patch("pyrog.api.serializers.DBConnection")
+def test_list_credentials(mock_db_connection, mock_credential_available_owners, api_client, credential_factory):
     url = reverse("credentials-list")
     credential_factory.create_batch(3)
 
@@ -65,6 +71,30 @@ def test_list_credentials(api_client, credential_factory):
 
     assert response.status_code == 200
     assert len(response.data) == 3
+
+
+@mock.patch("pyrog.api.serializers.DBConnection")
+@mock.patch("pyrog.api.serializers.DatabaseExplorer")
+@mock.patch("pyrog.api.serializers.DatabaseExplorer.get_owners", return_value=[])
+def test_filter_credentials_by_source(
+    mock_get_owners,
+    mock_database_explorer,
+    mock_db_connection,
+    api_client,
+    source_factory,
+    credential_factory,
+):
+    url = reverse("credentials-list")
+    first_source, second_source = source_factory.create_batch(2)
+    first_source_credentials = credential_factory.create_batch(1, source=first_source)
+    credential_factory.create_batch(1, source=second_source)
+
+    response = api_client.get(url, {"source": first_source.id})
+
+    assert response.status_code == 200
+    assert {credential_data["id"] for credential_data in response.json()} == {
+        credential.id for credential in first_source_credentials
+    }
 
 
 @pytest.mark.parametrize(
