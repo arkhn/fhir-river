@@ -17,9 +17,9 @@ def test_preview_endpoint(mock_fetch_mapping, mock_extractor, mock_redis, api_cl
     extractor = mock.MagicMock()
     extractor.split_dataframe.return_value = [
         {
-            "patients_row_id_02edb49e": ["PK"],
-            "patients_dob_4e3cd18c": ["2000-01-01"],
-            "patients_expire_flag_5364901b": [True],
+            "patients_row_id_e3000d96": ["PK"],
+            "patients_dob_c533b685": ["2000-01-01"],
+            "patients_expire_flag_b26e8b36": [True],
         }
     ]
     mock_extractor.return_value = extractor
@@ -68,8 +68,8 @@ def test_preview_endpoint_with_error(
     extractor = mock.MagicMock()
     extractor.split_dataframe.return_value = [
         {
-            "patients_row_id_02edb49e": ["PK"],
-            "patients_dob_4e3cd18c": ["01 01 2000"],
+            "patients_row_id_e3000d96": ["PK"],
+            "patients_dob_c533b685": ["01 01 2000"],
         }
     ]
     mock_extractor.return_value = extractor
