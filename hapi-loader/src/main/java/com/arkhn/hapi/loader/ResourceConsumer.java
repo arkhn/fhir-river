@@ -65,7 +65,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         }
 
         @KafkaHandler
-        @Timed(description = "time_load")
+        @Timed(value = "time_load")
         public void listen(KafkaMessage message) {
             String batchId = message.getBatchId();
             String resourceId = message.getResourceId();
