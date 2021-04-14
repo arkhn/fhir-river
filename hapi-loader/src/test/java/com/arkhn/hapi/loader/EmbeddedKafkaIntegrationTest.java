@@ -75,8 +75,6 @@ class EmbeddedKafkaIntegrationTest {
 
         embeddedRedis = new GenericContainer(REDIS_IMAGE).withExposedPorts(REDIS_PORT);
         embeddedRedis.start();
-        System.setProperty("spring.redis.host", embeddedRedis.getContainerIpAddress());
-        System.setProperty("spring.redis.port", embeddedRedis.getMappedPort(REDIS_PORT).toString());
     }
 
     @PreDestroy
