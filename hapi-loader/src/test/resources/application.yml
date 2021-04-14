@@ -1,17 +1,26 @@
 test:
-  topic: load
+  topic: transform.batchId
 
 spring:
-  kafka:
-    consumer:
-      group-id: loader
+  batch:
+    job:
+      enabled: false
+  jpa:
+    properties:
+      hibernate:
+        search:
+          enabled: true
+          backend:
+            type: elasticsearch
+            analysis:
+              configurer: ca.uhn.fhir.jpa.search.elastic.HapiElasticsearchAnalysisConfigurer
 
 hapi:
   loader:
     concurrency: 1
     kafka:
       bootstrapAddress: localhost:9092
-      topic: load
+      topicPattern: "^transform.*"
       groupId: loader
       replicationFactor: 1
 

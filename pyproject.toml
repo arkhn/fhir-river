@@ -11,7 +11,7 @@ known_arkhn = "fhirstore,fhir.resources"
 known_first_party = "common,control,core,extractor,loader,pagai,pyrog,river,transformer,utils"
 known_third_party = "dotenv,rest_framework,factory,pytest,faker,pytest_factoryboy"
 line_length = 119
-multi_line_output = 5
+multi_line_output = 3
 sections = "FUTURE,STDLIB,THIRDPARTY,DJANGO,ARKHN,FIRSTPARTY,LOCALFOLDER"
 skip_gitignore = true
 use_parentheses = true
@@ -37,5 +37,8 @@ testpaths = "tests"
 python_paths = "django"
 markers = '''
     migration(app_label=..., migration_name=...): mark a test as requiring the given migration state
+    export_data(path): mark a test as requiring the given export data
     pagai: mark test that requires access to tests databases
+    as_user: force authenticate the api_client fixture to the user fixure
+    as_other_user: force authenticate the api_client fixture to the other_user fixture
 '''

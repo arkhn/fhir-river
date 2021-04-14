@@ -10,3 +10,4 @@ pytest-django==4.1.0
 pytest-dotenv==0.5.2
 pytest-factoryboy==2.1.0
 pytest-pythonpath==0.7.3
+syrupy==1.1.0

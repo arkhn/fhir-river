@@ -31,7 +31,7 @@ pip install -r test_producer/requirements.txt
 docker-compose up -d
 
 # run hapi-loader and wait for incoming events
-mvn spring-boot run
+mvn spring-boot:run
 
 # produce test events
 # (assumes a fhirdata/ folder containing .ndjson files exist)

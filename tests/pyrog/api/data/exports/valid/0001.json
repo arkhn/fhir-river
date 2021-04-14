@@ -1,0 +1,13 @@
+# No resources, no owners
+{
+    "name": "test",
+    "version": "",
+    "resources": [],
+    "credential": {
+        "host": "localhost",
+        "port": 5432,
+        "database": "default",
+        "model": "POSTGRES",
+        "owners": []
+    }
+}

@@ -1,24 +1,34 @@
+from django.conf import settings
 from django.db import models
 
 from cuid import cuid
-
-# NOTE:
-# * Some FK fields are expected to be sometimes null in the previous DB schema.
-# * User, Comment and AccessControl tables will be added. The User table should be
-#   implemented with respect to the framework (django).
-# * Everything is now snake-cased. Other cases could be provided through serialization.
 
 
 class Source(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField(unique=True)
     version = models.TextField(blank=True, default="")
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="sources", through="SourceUser")
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+
+class SourceUser(models.Model):
+    class Meta:
+        unique_together = (("user", "source"),)
+
+    class SourceRole(models.TextChoices):
+        WRITER = "WRITER"
+        READER = "READER"
+
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_sources", on_delete=models.CASCADE)
+    source = models.ForeignKey(Source, related_name="source_users", on_delete=models.CASCADE)
+    role = models.TextField(choices=SourceRole.choices, default=SourceRole.READER)
 
 
 class Resource(models.Model):
@@ -66,6 +76,17 @@ class Attribute(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class Comment(models.Model):
+    id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
+    content = models.TextField()
+    validated = models.BooleanField(default=False)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="comments", on_delete=models.CASCADE)
+    attribute = models.ForeignKey(Attribute, related_name="comments", on_delete=models.CASCADE)
+
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class InputGroup(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     merging_script = models.TextField(blank=True, default="")
@@ -92,7 +113,7 @@ class Column(models.Model):
     column = models.TextField()
     join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
     input_ = models.OneToOneField(Input, name="input", blank=True, null=True, on_delete=models.CASCADE)
-    owner = models.ForeignKey("Owner", related_name="owners", on_delete=models.CASCADE)
+    owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -124,7 +145,7 @@ class Condition(models.Model):
     action = models.TextField(choices=Action.choices)
     column = models.OneToOneField(Column, on_delete=models.CASCADE)
     value = models.TextField(blank=True, default="")
-    input_group = models.ForeignKey(InputGroup, on_delete=models.CASCADE)
+    input_group = models.ForeignKey(InputGroup, related_name="conditions", on_delete=models.CASCADE)
     relation = models.TextField(choices=Relation.choices, default=Relation.EQUAL)
 
 
