@@ -9,8 +9,8 @@ import NavigationBreadcrumbs from "../NavigationBreadcrumbs";
 
 jest.mock("services/api/api");
 
-describe("Source mappings page", () => {
-  it("should display the existing mappings", () => {
+describe("Navigation breadcrumbs", () => {
+  it("should display the source name", () => {
     render(<NavigationBreadcrumbs />, {
       path: "/source/:sourceId",
       route: "/source/source_1",
