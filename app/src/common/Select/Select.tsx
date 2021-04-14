@@ -31,12 +31,13 @@ const Select = ({
   options,
   emptyOption,
   value,
+  className,
   ...muiSelectProps
 }: SelectProps): JSX.Element => {
   const classes = useStyles();
   return (
     <MuiSelect
-      className={classes.selectInput}
+      className={clsx(classes.selectInput, className)}
       displayEmpty
       input={
         <OutlinedInput

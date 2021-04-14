@@ -6,8 +6,10 @@ import clsx from "clsx";
 import { useHistory } from "react-router-dom";
 
 import StepPanel from "common/Stepper/StepPanel";
+import FhirProfileStep from "features/mappings/FhirProfileStep";
 import FhirResourceStep from "features/mappings/FhirResourceStep";
 import MappingCreationStepper from "features/mappings/MappingCreationStepper";
+import MappingNameStep from "features/mappings/MappingNameStep";
 import TableStep from "features/mappings/TableStep";
 import { Resource } from "services/api/generated/api.generated";
 
@@ -63,8 +65,13 @@ const CreateMapping = (): JSX.Element => {
         isDisabled = mapping.definition_id === undefined;
         break;
       case 2:
+        isDisabled = mapping.definition_id === undefined;
         break;
       case 3:
+        isDisabled =
+          mapping.definition_id === undefined ||
+          mapping.primary_key_table === undefined ||
+          mapping.primary_key_column === undefined;
         break;
 
       default:
@@ -116,10 +123,10 @@ const CreateMapping = (): JSX.Element => {
             <FhirResourceStep mapping={mapping} onChange={updateMapping} />
           </StepPanel>
           <StepPanel index={2} value={activeStep}>
-            <Typography>Muche</Typography>
+            <FhirProfileStep mapping={mapping} onChange={updateMapping} />
           </StepPanel>
           <StepPanel index={3} value={activeStep}>
-            <Typography>Chouette</Typography>
+            <MappingNameStep mapping={mapping} onChange={updateMapping} />
           </StepPanel>
         </div>
       </Container>

@@ -23,5 +23,12 @@
   "selectColumn": "Select column",
   "addFilter": "Add filter",
   "selectFhirResourcePrompt": "Please select the FHIR resource that you want to generate from the source",
-  "search": "Search"
+  "search": "Search",
+  "defaultProfile": "Default profile",
+  "importNewProfile": "Import a new profile",
+  "selectFhirProfilePrompt": "Please select a profile for the",
+  "resource": "resource",
+  "typeNameHere": "Type your name here",
+  "mappingNamePrompt": "Almost there ! Give a user-friendly name to your mapping",
+  "optionalPrompt": "(optional but strongly recommended)"
 }
