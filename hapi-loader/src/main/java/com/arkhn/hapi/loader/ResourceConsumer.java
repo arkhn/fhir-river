@@ -91,8 +91,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 logger.error(String.format("Could not insert resource: %s", e.toString()));
                 failedInsertions.increment();
                 return;
-            } finally {
-                // loadTimer.observeDuration();
             }
 
             // Send load event
