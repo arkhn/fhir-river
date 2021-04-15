@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import user from "features/auth/userSlice";
+import mapping from "features/mappings/mappingSlice";
 import source from "features/sources/sourceSlice";
 import { api } from "services/api/api";
 
@@ -10,6 +11,7 @@ export const store = configureStore({
     [api.reducerPath]: api.reducer,
     user,
     source,
+    mapping,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware),

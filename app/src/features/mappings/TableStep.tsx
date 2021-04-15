@@ -14,10 +14,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import Select from "common/Select/Select";
-import {
-  Resource,
-  useListOwnersQuery,
-} from "services/api/generated/api.generated";
+import { Owner, Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -37,14 +34,17 @@ const useStyles = makeStyles((theme) => ({
 
 type TableStepProps = {
   mapping: Partial<Resource>;
+  owner?: Owner;
   onChange?: (mapping: Partial<Resource>) => void;
 };
 
-const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
+const TableStep = ({
+  onChange,
+  mapping,
+  owner,
+}: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { data: owners } = useListOwnersQuery({});
-  const owner = owners?.[0];
   const PKTables = Object.keys(owner?.schema ?? []);
   const [PKColumns, setPKColumns] = useState<string[]>([]);
 
@@ -69,7 +69,7 @@ const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
   };
 
   useEffect(() => {
-    if (owner && owner?.schema) {
+    if (owner && owner.schema) {
       const schema = owner.schema as Record<string, string[]>;
       if (mapping.primary_key_table) {
         onChange && onChange({ primary_key_column: undefined });

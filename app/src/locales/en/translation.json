@@ -30,5 +30,8 @@
   "resource": "resource",
   "typeNameHere": "Type your name here",
   "mappingNamePrompt": "Almost there ! Give a user-friendly name to your mapping",
-  "optionalPrompt": "(optional but strongly recommended)"
+  "optionalPrompt": "(optional but strongly recommended)",
+  "cancel": "Cancel",
+  "previousStep": "Previous step",
+  "next": "Next"
 }
