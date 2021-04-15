@@ -9,9 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class RedisCounterProperties {
 
-    private String host = "river-redis";
-    private Integer port = 6379;
-    private Integer db_index = 2;
+    private String host;
+    private Integer port;
+    private Integer db_index;
 
     public String getHost() {
         return host;
