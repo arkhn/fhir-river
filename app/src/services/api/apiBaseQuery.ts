@@ -1,9 +1,4 @@
-import {
-  fetchBaseQuery,
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
-} from "@rtk-incubator/rtk-query";
+import { fetchBaseQuery } from "@rtk-incubator/rtk-query";
 import Cookies from "js-cookie";
 import { omitBy, isUndefined } from "lodash";
 
@@ -30,11 +25,11 @@ const baseQuery = fetchBaseQuery({
  * @param api
  * @param extraOptions
  */
-export const apiBaseQuery: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args, api, extraOptions) => {
+export const apiBaseQuery: ReturnType<typeof fetchBaseQuery> = async (
+  args,
+  api,
+  extraOptions
+) => {
   // FIXME: Remove this condition after the next rtk-query > 0.2.0 release
   // Undefined query params should be excluded.
   // Fixed by https://github.com/rtk-incubator/rtk-query/pull/146
