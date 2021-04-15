@@ -101,7 +101,6 @@ jobs:
         working-directory: hapi-loader
 
   build-and-publish-hapi:
-    needs: test-hapi
     runs-on: ubuntu-18.04
     steps:
       - id: docker_meta
