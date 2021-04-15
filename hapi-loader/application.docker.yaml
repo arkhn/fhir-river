@@ -158,6 +158,10 @@ elasticsearch:
   schema_management_strategy: CREATE
 
 management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
   endpoints:
     web:
       exposure:

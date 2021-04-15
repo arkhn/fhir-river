@@ -16,6 +16,7 @@ import ca.uhn.fhir.parser.IParser;
 
 import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -55,13 +56,12 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @Autowired
         private RedisCounterProperties redisCounterProperties;
 
-        private static Counter failedInsertions;
-        private static Counter successfulInsertions;
+        private Counter failedInsertions;
+        private Counter successfulInsertions;
 
         ResourceListener(MeterRegistry registry) {
             failedInsertions = registry.counter("count_failed_insertions");
             successfulInsertions = registry.counter("count_successful_insertions");
-            // loadMetrics = registry.timer("time_load");
         }
 
         @KafkaHandler
