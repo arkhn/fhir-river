@@ -107,6 +107,7 @@ describe("Sources page", () => {
               id: "source_1",
               updated_at: "",
               created_at: "",
+              users: [],
               ...req.body,
             })
           )
@@ -123,6 +124,7 @@ describe("Sources page", () => {
                 id: "source_1",
                 name: "source_1",
                 version: "",
+                users: [],
                 updated_at: "",
                 created_at: "",
               },
@@ -283,6 +285,7 @@ describe("Sources page", () => {
               id: "source_1",
               updated_at: "",
               created_at: "",
+              users: [],
               ...req.body,
             })
           )
@@ -298,6 +301,7 @@ describe("Sources page", () => {
               {
                 id: "source_1",
                 name: "source_1_edited",
+                users: [],
                 updated_at: "",
                 created_at: "",
               },

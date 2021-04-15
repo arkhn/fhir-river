@@ -1078,6 +1078,7 @@ export type Source = {
   version?: string;
   updated_at: string;
   created_at: string;
+  users: string[];
 };
 export type SourceRequest = {
   name: string;

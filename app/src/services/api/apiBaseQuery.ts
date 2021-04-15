@@ -4,9 +4,9 @@ import {
   FetchArgs,
   FetchBaseQueryError,
 } from "@rtk-incubator/rtk-query";
+import Cookies from "js-cookie";
 import { omitBy, isUndefined } from "lodash";
 
-// import { logApiError } from "../../features/logger/loggerSlice";
 import { API_URL } from "./constants";
 
 /**
@@ -14,15 +14,14 @@ import { API_URL } from "./constants";
  */
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
-  // TODO: handle authentication
-  // credentials: "include",
-  // prepareHeaders: (headers) => {
-  //   const token = Cookies.get("csrftoken");
-  //   if (token) {
-  //     headers.set("X-CSRFToken", token);
-  //   }
-  //   return headers;
-  // },
+  credentials: "include",
+  prepareHeaders: (headers) => {
+    const token = Cookies.get("csrftoken");
+    if (token) {
+      headers.set("X-CSRFToken", token);
+    }
+    return headers;
+  },
 });
 
 /**
