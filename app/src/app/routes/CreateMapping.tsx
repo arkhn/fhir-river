@@ -126,7 +126,6 @@ const CreateMapping = (): JSX.Element => {
           ...mapping,
           primary_key_owner: owner.id,
           source: sourceId,
-          logical_reference: "test",
         } as Resource,
       })
         .unwrap()
