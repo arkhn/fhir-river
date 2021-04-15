@@ -21,7 +21,6 @@ services:
 
   river:
     image: arkhn/river:${IMAGE_TAG:-latest}
-    build: .
     entrypoint: ""
     # keep container alive for test commands with `docker-compose exec`
     command: tail -F anything

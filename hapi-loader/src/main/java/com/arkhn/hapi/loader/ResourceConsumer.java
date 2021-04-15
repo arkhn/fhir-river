@@ -14,6 +14,7 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
+import redis.clients.jedis.Jedis;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,9 @@ public class ResourceConsumer {
         @Autowired
         private KafkaProducer producer;
 
+        @Autowired
+        private RedisCounterProperties redisCounterProperties;
+
         static final Histogram loadMetrics = Histogram.build().name("time_load").help("Time to perform load.")
                 .register();
         static final Counter failedInsertions = Counter.build().name("count_failed_insertions")
@@ -57,6 +61,9 @@ public class ResourceConsumer {
 
         @KafkaHandler
         public void listen(KafkaMessage message) {
+            String batchId = message.getBatchId();
+            String resourceId = message.getResourceId();
+
             IParser parser = myFhirContext.newJsonParser();
             IBaseResource r = parser.parseResource(message.getFhirObject().toString());
 
@@ -76,9 +83,16 @@ public class ResourceConsumer {
                 loadTimer.observeDuration();
             }
 
+            // Send load event
             KafkaMessage loadMessage = new KafkaMessage();
-            loadMessage.setBatchId(message.getBatchId());
-            producer.sendMessage(loadMessage, String.format("load.%s", message.getBatchId()));
+            loadMessage.setBatchId(batchId);
+            producer.sendMessage(loadMessage, String.format("load.%s", batchId));
+
+            // Increment redis counter
+            Jedis j = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
+            j.select(redisCounterProperties.getDb_index());
+            j.hincrBy(String.format("batch:%s:counter", batchId), String.format("resource:%s:loaded", resourceId), 1);
+
             // TODO: error handling
 
             // // THE FOLLOWING CODE IS THE "BATCH UPDATE" VERSION

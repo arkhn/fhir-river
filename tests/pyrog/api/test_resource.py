@@ -41,6 +41,9 @@ def test_create_resource(
 
     assert response.status_code == status_code
 
+    # Check that logical_reference has been generated
+    assert response.data["logical_reference"] != logical_reference
+
 
 def test_retrieve_resource(api_client, resource):
     url = reverse("resources-detail", kwargs={"pk": resource.id})
