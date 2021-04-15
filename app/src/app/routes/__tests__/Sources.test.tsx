@@ -10,6 +10,13 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from "common/test/test-utils";
+import {
+  sourceFactory,
+  credentialFactory,
+  resourceFactory,
+  attributeFactory,
+  ownerFactory,
+} from "services/api/factory";
 import type {
   SourceRequest,
   CredentialRequest,
@@ -26,6 +33,35 @@ import type {
 } from "services/api/generated/api.generated";
 
 import Sources from "../Sources";
+
+const source = sourceFactory.build();
+const source_credential = credentialFactory.build(
+  {},
+  { associations: { source: source.id } }
+);
+const credential_owner = ownerFactory.build(
+  {},
+  { associations: { credential: source_credential.id } }
+);
+const source_resources = resourceFactory.buildList(
+  2,
+  {},
+  { associations: { source: source.id } }
+);
+const source_attributes = [
+  attributeFactory.build(
+    {},
+    { associations: { resource: source_resources[0].id } }
+  ),
+  attributeFactory.build(
+    {},
+    { associations: { resource: source_resources[0].id } }
+  ),
+  attributeFactory.build(
+    {},
+    { associations: { resource: source_resources[1].id } }
+  ),
+];
 
 const handlers = [
   rest.get(
@@ -49,37 +85,12 @@ const handlers = [
   rest.get(
     "http://example.com/api/resources/",
     (_, res: ResponseComposition<ApiResourcesListApiResponse>, ctx) =>
-      res(
-        ctx.json<ApiResourcesListApiResponse>(
-          ["resource_1", "resource_2"].map((id) => ({
-            id,
-            primary_key_table: "",
-            primary_key_column: "",
-            definition_id: "",
-            logical_reference: "",
-            updated_at: "",
-            created_at: "",
-            source: "source_1",
-            primary_key_owner: "",
-          }))
-        )
-      )
+      res(ctx.json<ApiResourcesListApiResponse>(source_resources))
   ),
   rest.get(
     "http://example.com/api/attributes/",
     (_, res: ResponseComposition<ApiAttributesListApiResponse>, ctx) =>
-      res(
-        ctx.json<ApiAttributesListApiResponse>(
-          ["attribute_1", "attribute_2", "attribute_3"].map((id) => ({
-            id,
-            path: "",
-            definition_id: "",
-            updated_at: "",
-            created_at: "",
-            resource: "",
-          }))
-        )
-      )
+      res(ctx.json<ApiAttributesListApiResponse>(source_attributes))
   ),
 ];
 const server = setupServer(...handlers);
@@ -104,10 +115,7 @@ describe("Sources page", () => {
         ) =>
           res.once(
             ctx.json<ApiSourcesCreateApiResponse>({
-              id: "source_1",
-              updated_at: "",
-              created_at: "",
-              users: [],
+              ...source,
               ...req.body,
             })
           )
@@ -121,12 +129,8 @@ describe("Sources page", () => {
           res.once(
             ctx.json<ApiSourcesListApiResponse>([
               {
-                id: "source_1",
+                ...source,
                 name: "source_1",
-                version: "",
-                users: [],
-                updated_at: "",
-                created_at: "",
               },
             ])
           )
@@ -140,6 +144,7 @@ describe("Sources page", () => {
       }),
       "source_1"
     );
+
     userEvent.click(
       screen.getByRole("button", {
         name: /create source/i,
@@ -163,10 +168,7 @@ describe("Sources page", () => {
         ) =>
           res.once(
             ctx.json<ApiCredentialsCreateApiResponse>({
-              id: "credential_1",
-              updated_at: "",
-              created_at: "",
-              available_owners: ["public"],
+              ...source_credential,
               ...req.body,
             })
           )
@@ -185,17 +187,14 @@ describe("Sources page", () => {
           return res.once(
             ctx.json<ApiCredentialsListApiResponse>([
               {
-                id: "credential_1",
-                updated_at: "",
-                created_at: "",
-                available_owners: ["public"],
+                ...source_credential,
+                source: sourceId ?? "",
                 host: "localhost",
                 port: 5432,
                 database: "river",
                 login: "river",
                 password: "river",
                 model: "POSTGRES",
-                source: sourceId ?? "",
               },
             ])
           );
@@ -210,6 +209,7 @@ describe("Sources page", () => {
     userEvent.type(screen.getByLabelText("password"), "river");
     userEvent.click(screen.getByRole("button", { name: /vendor model/i }));
     userEvent.click(screen.getByRole("option", { name: /postgresql/i }));
+
     userEvent.click(screen.getByRole("button", { name: /create credential/i }));
 
     await waitForElementToBeRemoved(() =>
@@ -229,8 +229,7 @@ describe("Sources page", () => {
         ) =>
           res.once(
             ctx.json<ApiOwnersCreateApiResponse>({
-              id: "owner_1",
-              schema: {},
+              ...credential_owner,
               ...req.body,
             })
           )
@@ -242,14 +241,7 @@ describe("Sources page", () => {
         "http://example.com/api/owners/",
         (_, rest: ResponseComposition<ApiOwnersListApiResponse>, ctx) =>
           rest.once(
-            ctx.json<ApiOwnersListApiResponse>([
-              {
-                id: "owner_1",
-                name: "public",
-                schema: {},
-                credential: "credential_1",
-              },
-            ])
+            ctx.json<ApiOwnersListApiResponse>([credential_owner])
           )
       )
     );
@@ -282,10 +274,7 @@ describe("Sources page", () => {
         ) =>
           res.once(
             ctx.json<ApiSourcesUpdateApiResponse>({
-              id: "source_1",
-              updated_at: "",
-              created_at: "",
-              users: [],
+              ...source,
               ...req.body,
             })
           )
@@ -299,11 +288,8 @@ describe("Sources page", () => {
           res.once(
             ctx.json<ApiSourcesListApiResponse>([
               {
-                id: "source_1",
+                ...source,
                 name: "source_1_edited",
-                users: [],
-                updated_at: "",
-                created_at: "",
               },
             ])
           )
@@ -329,9 +315,8 @@ describe("Sources page", () => {
     await waitForElementToBeRemoved(() =>
       screen.getByRole("heading", { name: /edit source/i })
     );
-    await waitFor(
-      () => screen.getByRole("heading", { name: /edit credential/i }),
-      { timeout: 10000 }
+    await waitFor(() =>
+      screen.getByRole("heading", { name: /edit credential/i })
     );
 
     userEvent.click(screen.getByRole("button", { name: /update credential/i }));
@@ -349,8 +334,6 @@ describe("Sources page", () => {
   });
 
   test("deleting a source", async () => {
-    screen.getByText("source_1_edited");
-
     server.use(
       rest.get(
         "http://example.com/api/sources/",
