@@ -77,6 +77,8 @@ class ConditionViewSet(viewsets.ModelViewSet):
 class FilterViewSet(viewsets.ModelViewSet):
     queryset = models.Filter.objects.all()
     serializer_class = basic_serializers.FilterSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_fields = ["resource"]
 
 
 class OwnerViewSet(viewsets.ModelViewSet):
