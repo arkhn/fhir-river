@@ -4,8 +4,6 @@ import pytest
 from factory import Factory
 from pytest_factoryboy import register
 
-from django.conf import settings
-
 from . import factories
 
 register(factories.SourceFactory)
@@ -23,22 +21,6 @@ register(factories.FilterFactory)
 register(factories.OwnerFactory)
 register(factories.UserFactory)
 register(factories.UserFactory, "other_user")
-
-
-@pytest.fixture
-def credential(source, credential_factory):
-    """Override the default fixture with valid credentials
-
-    It actually describes the django test db."""
-    return credential_factory(
-        source=source,
-        host=settings.DATABASES["default"]["HOST"],
-        port=settings.DATABASES["default"]["PORT"],
-        database=settings.DATABASES["default"]["NAME"],
-        login=settings.DATABASES["default"]["USER"],
-        password=settings.DATABASES["default"]["PASSWORD"],
-        model="POSTGRES",
-    )
 
 
 def get_factories():

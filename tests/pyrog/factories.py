@@ -2,6 +2,8 @@ import factory
 
 from django.conf import settings
 
+from pyrog import models
+
 
 class SourceFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -31,12 +33,22 @@ class ResourceFactory(factory.django.DjangoModelFactory):
 
 
 class CredentialFactory(factory.django.DjangoModelFactory):
+    """Valid Credential factory
+
+    This factory only produces credentials corresponding to the django db,
+    which is a valid and available database."""
+
     class Meta:
         model = "pyrog.Credential"
 
     id = factory.Sequence(lambda n: f"credential_id_{n:04d}")
     source = factory.SubFactory(SourceFactory)
-    port = 5432
+    host = settings.DATABASES["default"]["HOST"]
+    port = settings.DATABASES["default"]["PORT"]
+    database = settings.DATABASES["default"]["NAME"]
+    login = settings.DATABASES["default"]["USER"]
+    password = settings.DATABASES["default"]["PASSWORD"]
+    model = models.Credential.Dialect.POSTGRESQL
 
 
 class AttributeFactory(factory.django.DjangoModelFactory):
