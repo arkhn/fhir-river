@@ -653,6 +653,11 @@ paths:
     get:
       operationId: api_filters_list
       description: ''
+      parameters:
+      - in: query
+        name: resource
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -2287,8 +2292,6 @@ components:
           type: string
         definition_id:
           type: string
-        logical_reference:
-          type: string
         source:
           type: string
         primary_key_owner:
@@ -2316,6 +2319,7 @@ components:
           type: string
         logical_reference:
           type: string
+          readOnly: true
         updated_at:
           type: string
           format: date-time
@@ -2349,15 +2353,12 @@ components:
           type: string
         definition_id:
           type: string
-        logical_reference:
-          type: string
         source:
           type: string
         primary_key_owner:
           type: string
       required:
       - definition_id
-      - logical_reference
       - primary_key_column
       - primary_key_owner
       - primary_key_table

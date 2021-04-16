@@ -57,7 +57,7 @@
         'filters': <class 'list'> [
         ],
         'label': '',
-        'logical_reference': '',
+        'logical_reference': 'logical_reference_0001',
         'primary_key_column': '',
         'primary_key_owner': 'owner_id_0001',
         'primary_key_table': '',
