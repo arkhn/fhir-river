@@ -51,7 +51,10 @@ type FhirProfileStepProps = {
   onChange?: (mapping: Partial<Resource>) => void;
 };
 
-const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
+const FhirProfileStep = ({
+  mapping,
+  onChange,
+}: FhirProfileStepProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [isDefaultProfileSelected, setDefaultProfileSelected] = useState(false);
@@ -59,6 +62,7 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
 
   const handleClickDefaultProfile = () => {
     setDefaultProfileSelected(true);
+    onChange && onChange({});
   };
 
   return (

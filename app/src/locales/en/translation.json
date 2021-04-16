@@ -33,5 +33,14 @@
   "optionalPrompt": "(optional but strongly recommended)",
   "cancel": "Cancel",
   "previousStep": "Previous step",
-  "next": "Next"
+  "next": "Next",
+  "=": "is equal to",
+  "<>": "is different from",
+  "IN": "is in",
+  ">": "is greater than",
+  ">=": "is greater than or equal",
+  "<": "is lesser than",
+  "<=": "is lesser than or equal",
+  "selectOperation": "Select operation",
+  "typeValue": "Type value"
 }

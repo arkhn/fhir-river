@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { Container, Button, makeStyles, Typography } from "@material-ui/core";
+import {
+  CircularProgress,
+  Container,
+  Button,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -16,11 +22,16 @@ import {
   initMappingCreation,
   resetMappingCreation,
   selectMappingCurrent,
+  selectMappingFilters,
   updateMapping,
 } from "features/mappings/mappingSlice";
 import TableStep from "features/mappings/TableStep";
 import {
+  Column,
+  Filter,
   Resource,
+  useCreateColumnMutation,
+  useCreateFilterMutation,
   useCreateResourceMutation,
   useListOwnersQuery,
 } from "services/api/generated/api.generated";
@@ -56,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
   },
   absolute: {
     position: "absolute",
+    zIndex: 1,
   },
 }));
 
@@ -70,11 +82,15 @@ const CreateMapping = (): JSX.Element => {
   const owner = owners?.[0];
 
   const [activeStep, setActiveStep] = useState(0);
+  const [isProfileSelected, setIsProfileSelected] = useState(false);
   const mapping = useAppSelector(selectMappingCurrent);
+  const filters = useAppSelector(selectMappingFilters);
   const [
     createMapping,
-    // { isLoading: isCreateMappingLoading },
+    { isLoading: isCreateMappingLoading },
   ] = useCreateResourceMutation();
+  const [createFilter] = useCreateFilterMutation();
+  const [createColumn] = useCreateColumnMutation();
 
   useEffect(() => {
     if (!mapping) {
@@ -102,7 +118,8 @@ const CreateMapping = (): JSX.Element => {
           isDisabled = mapping.definition_id === undefined;
           break;
         case 2:
-          isDisabled = mapping.definition_id === undefined;
+          isDisabled =
+            mapping.definition_id === undefined || !isProfileSelected;
           break;
         case 3:
           isDisabled =
@@ -119,24 +136,50 @@ const CreateMapping = (): JSX.Element => {
     return isDisabled;
   }, [activeStep, mapping]);
 
-  const handleSubmitCreation = () => {
-    if (mapping && owner && sourceId)
-      createMapping({
-        resource: {
-          ...mapping,
-          primary_key_owner: owner.id,
-          source: sourceId,
-        } as Resource,
-      })
-        .unwrap()
-        .then(() => {
-          history.goBack();
-        })
-        .catch(() => {
-          debugger;
-        });
+  const handleSubmitCreation = async () => {
+    if (mapping && owner && sourceId && filters) {
+      try {
+        const createdMapping = await createMapping({
+          resource: {
+            ...mapping,
+            primary_key_owner: owner.id,
+            source: sourceId,
+          } as Resource,
+        }).unwrap();
+
+        for (const filter of filters) {
+          try {
+            const createdColumn = await createColumn({
+              column: {
+                ...filter.col,
+                owner: owner.id,
+              } as Column,
+            }).unwrap();
+
+            createFilter({
+              filter: {
+                sql_column: createdColumn.id,
+                relation: filter.relation,
+                resource: createdMapping.id,
+                value: filter.value,
+              } as Filter,
+            });
+          } catch (error) {
+            // Fix: Handle Column & Filter creation errors
+          }
+        }
+
+        history.push(`/source/${sourceId}/mapping/${createdMapping.id}`);
+      } catch (error) {
+        // Fix: Handle Resource creation errors
+      }
+    }
   };
   const handleUpdateMapping = (newMapping: Partial<Resource>) => {
+    // Remove disable on "next" button for 3rd step
+    if (activeStep === 2) {
+      setIsProfileSelected(true);
+    }
     dispatch(updateMapping(newMapping));
   };
   const handlePrevStep = () => {
@@ -214,9 +257,13 @@ const CreateMapping = (): JSX.Element => {
           color="primary"
           variant="contained"
           onClick={handleNextStep}
-          disabled={isNextDisabled}
+          disabled={isNextDisabled || isCreateMappingLoading}
         >
-          <Typography>{t("next")}</Typography>
+          {isCreateMappingLoading ? (
+            <CircularProgress color="inherit" size={23} />
+          ) : (
+            <Typography>{t("next")}</Typography>
+          )}
         </Button>
       </div>
     </>

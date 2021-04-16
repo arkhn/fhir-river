@@ -5,7 +5,7 @@ import {
 } from "./generated/api.generated";
 
 export const api = generatedApi.enhanceEndpoints({
-  addEntityTypes: ["Sources", "Resources"],
+  addEntityTypes: ["Sources", "Resources", "Filters"],
   endpoints: {
     //Sources
     listSources: {
@@ -51,6 +51,32 @@ export const api = generatedApi.enhanceEndpoints({
     },
     destroyResource: {
       invalidates: (_, { id }) => [{ type: "Resources", id }],
+    },
+
+    //Filters
+    listFilters: {
+      provides: (response) => [
+        ...response.map(({ id }) => ({ type: "Resources" as const, id })),
+        { type: "Resources", id: "LIST" },
+      ],
+    },
+    createFilter: {
+      invalidates: [
+        { type: "Filters", id: "LIST" },
+        { type: "Resources", id: "LIST" },
+      ],
+    },
+    retrieveFilter: {
+      provides: (_, { id }) => [{ type: "Filters", id }],
+    },
+    updateFilter: {
+      invalidates: (_, { id }) => [{ type: "Filters", id }],
+    },
+    partialUpdateFilter: {
+      invalidates: (_, { id }) => [{ type: "Filters", id }],
+    },
+    destroyFilter: {
+      invalidates: (_, { id }) => [{ type: "Filters", id }],
     },
   },
 });

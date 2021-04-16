@@ -11,17 +11,18 @@ import clsx from "clsx";
 
 type SelectProps = {
   startIcon?: React.ReactNode;
-  options?: string[];
+  options?: (string | { id: string; label?: string })[];
   emptyOption?: string;
 } & MuiSelectProps;
 
 const useStyles = makeStyles((theme) => ({
   selectInput: {
     minWidth: 200,
-    border: `1px solid ${theme.palette.divider}`,
     color: theme.palette.text.disabled,
+    boxShadow: `0 1px 5px ${theme.palette.divider}`,
   },
   selected: {
+    fontWeight: 500,
     color: theme.palette.text.primary,
   },
 }));
@@ -59,11 +60,17 @@ const Select = ({
         </MenuItem>
       )}
       {options &&
-        options.map((value) => (
-          <MenuItem key={value} value={value}>
-            {value}
-          </MenuItem>
-        ))}
+        options.map((value) =>
+          typeof value === "string" ? (
+            <MenuItem key={value} value={value}>
+              {value}
+            </MenuItem>
+          ) : (
+            <MenuItem key={value.id} value={value.id}>
+              {value.label}
+            </MenuItem>
+          )
+        )}
     </MuiSelect>
   );
 };

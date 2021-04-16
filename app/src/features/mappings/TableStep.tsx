@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { Icon } from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
 import {
   Container,
   Grid,
@@ -10,11 +8,14 @@ import {
   Typography,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
-import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import Select from "common/Select/Select";
+import { useAppDispatch, useAppSelector } from "app/store";
+import ColumnSelects from "features/columns/ColumnSelects";
+import FilterSelects from "features/filters/FilterSelects";
 import { Owner, Resource } from "services/api/generated/api.generated";
+
+import { addFilter, FilterPending, updateFilter } from "./mappingSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -45,88 +46,55 @@ const TableStep = ({
 }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const PKTables = Object.keys(owner?.schema ?? []);
-  const [PKColumns, setPKColumns] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const filters = useAppSelector((state) => state.mapping.filters);
 
-  const isPKTableSelected = !!mapping.primary_key_table;
-  const isPKColumnSelected = !!mapping.primary_key_column;
-
-  const handlePKTableChange = (
-    event: React.ChangeEvent<{
-      name?: string | undefined;
-      value: unknown;
-    }>
-  ) => {
-    onChange && onChange({ primary_key_table: event.target.value as string });
+  const handleAddFilterClick = () => {
+    dispatch(addFilter());
   };
-  const handlePKColumnChange = (
-    event: React.ChangeEvent<{
-      name?: string | undefined;
-      value: unknown;
-    }>
-  ) => {
-    onChange && onChange({ primary_key_column: event.target.value as string });
+  const handleFilterChange = (filter: FilterPending) => {
+    dispatch(updateFilter(filter));
   };
-
-  useEffect(() => {
-    if (owner && owner.schema) {
-      const schema = owner.schema as Record<string, string[]>;
-      if (mapping.primary_key_table) {
-        onChange && onChange({ primary_key_column: undefined });
-        setPKColumns(schema[mapping.primary_key_table]);
-      }
-    }
-  }, [owner, mapping.primary_key_table]);
+  const handlePKTableChange = (primary_key_table?: string) => {
+    onChange && onChange({ primary_key_table });
+  };
+  const handlePKColumnChange = (primary_key_column?: string) => {
+    onChange && onChange({ primary_key_column });
+  };
 
   return (
     <Container maxWidth="md">
       <Grid container direction="column" spacing={2}>
-        <Grid item container spacing={2} xs={12}>
-          <Grid item>
-            <Select
-              className={clsx({
-                [classes.inputSelected]: isPKTableSelected,
-              })}
-              value={mapping.primary_key_table ?? ""}
-              options={PKTables}
-              emptyOption={t("selectTable")}
-              onChange={handlePKTableChange}
-              startIcon={
-                <Icon
-                  icon={IconNames.TH}
-                  iconSize={15}
-                  className={clsx(classes.icon, {
-                    [classes.iconSelected]: isPKTableSelected,
-                  })}
-                />
-              }
-            />
-          </Grid>
-          <Grid item>
-            <Select
-              className={clsx(classes.icon, {
-                [classes.inputSelected]: isPKColumnSelected,
-              })}
-              value={mapping.primary_key_column ?? ""}
-              options={PKColumns}
-              emptyOption={t("selectPrimaryIdentifier")}
-              onChange={handlePKColumnChange}
-              startIcon={
-                <Icon
-                  icon={IconNames.COLUMN_LAYOUT}
-                  iconSize={15}
-                  className={clsx(classes.icon, {
-                    [classes.iconSelected]: isPKColumnSelected,
-                  })}
-                />
-              }
-            />
-          </Grid>
+        <Grid item container spacing={2}>
+          <ColumnSelects
+            owner={owner}
+            PKTable={mapping.primary_key_table}
+            PKColumn={mapping.primary_key_column}
+            onPKTableChange={handlePKTableChange}
+            onPKColumnChange={handlePKColumnChange}
+          />
         </Grid>
+        {filters && filters.length > 0 && (
+          <Grid item container spacing={1} direction="column">
+            <Grid item>
+              <Typography gutterBottom={false}>Filter on :</Typography>
+            </Grid>
+            {filters.map((filter, index) => (
+              <Grid item container key={`filter ${index}`}>
+                <FilterSelects
+                  filter={filter}
+                  owner={owner}
+                  onChange={handleFilterChange}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
         <Grid item>
           <Button
             className={classes.button}
             startIcon={<AddIcon />}
+            onClick={handleAddFilterClick}
             variant="outlined"
           >
             <Typography>{t("addFilter")}</Typography>
