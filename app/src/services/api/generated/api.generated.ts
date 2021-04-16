@@ -218,7 +218,10 @@ export const api = createApi({
       ApiFiltersListApiResponse,
       ApiFiltersListApiArg
     >({
-      query: () => ({ url: `/api/filters/` }),
+      query: (queryArg) => ({
+        url: `/api/filters/`,
+        params: { resource: queryArg.resource },
+      }),
     }),
     apiFiltersCreate: build.mutation<
       ApiFiltersCreateApiResponse,
@@ -433,6 +436,26 @@ export const api = createApi({
       ApiOwnersRetrieveApiArg
     >({
       query: (queryArg) => ({ url: `/api/owners/${queryArg.id}/` }),
+    }),
+    apiOwnersUpdate: build.mutation<
+      ApiOwnersUpdateApiResponse,
+      ApiOwnersUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/owners/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.ownerRequest,
+      }),
+    }),
+    apiOwnersPartialUpdate: build.mutation<
+      ApiOwnersPartialUpdateApiResponse,
+      ApiOwnersPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/owners/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedOwnerRequest,
+      }),
     }),
     apiOwnersDestroy: build.mutation<
       ApiOwnersDestroyApiResponse,
@@ -667,7 +690,9 @@ export type ApiCredentialsDestroyApiArg = {
   id: string;
 };
 export type ApiFiltersListApiResponse = /** status 200  */ Filter[];
-export type ApiFiltersListApiArg = {};
+export type ApiFiltersListApiArg = {
+  resource?: string;
+};
 export type ApiFiltersCreateApiResponse = /** status 201  */ Filter;
 export type ApiFiltersCreateApiArg = {
   filterRequest: FilterRequest;
@@ -790,6 +815,18 @@ export type ApiOwnersRetrieveApiResponse = /** status 200  */ Owner;
 export type ApiOwnersRetrieveApiArg = {
   /** A unique value identifying this owner. */
   id: string;
+};
+export type ApiOwnersUpdateApiResponse = /** status 200  */ Owner;
+export type ApiOwnersUpdateApiArg = {
+  /** A unique value identifying this owner. */
+  id: string;
+  ownerRequest: OwnerRequest;
+};
+export type ApiOwnersPartialUpdateApiResponse = /** status 200  */ Owner;
+export type ApiOwnersPartialUpdateApiArg = {
+  /** A unique value identifying this owner. */
+  id: string;
+  patchedOwnerRequest: PatchedOwnerRequest;
 };
 export type ApiOwnersDestroyApiResponse = unknown;
 export type ApiOwnersDestroyApiArg = {
@@ -1042,6 +1079,10 @@ export type OwnerRequest = {
   name: string;
   credential: string;
 };
+export type PatchedOwnerRequest = {
+  name?: string;
+  credential?: string;
+};
 export type Resource = {
   id: string;
   label?: string;
@@ -1059,7 +1100,6 @@ export type ResourceRequest = {
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
-  logical_reference: string;
   source: string;
   primary_key_owner: string;
 };
@@ -1068,7 +1108,6 @@ export type PatchedResourceRequest = {
   primary_key_table?: string;
   primary_key_column?: string;
   definition_id?: string;
-  logical_reference?: string;
   source?: string;
   primary_key_owner?: string;
 };
@@ -1140,6 +1179,8 @@ export const {
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersRetrieveQuery,
+  useApiOwnersUpdateMutation,
+  useApiOwnersPartialUpdateMutation,
   useApiOwnersDestroyMutation,
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
