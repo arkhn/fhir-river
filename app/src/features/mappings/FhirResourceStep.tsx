@@ -63,7 +63,8 @@ const FhirResourceStep = ({
   const classes = useStyles();
   const [searchValue, setSearchValue] = useState("");
 
-  const isDefIdSelected = (defId: string) => defId === mapping.definition_id;
+  const isDefinitionIdSelected = (defId: string) =>
+    defId === mapping.definition_id;
   const handleClickFhirResource = (defId: string) => () => {
     onChange && onChange({ definition_id: defId });
   };
@@ -106,7 +107,7 @@ const FhirResourceStep = ({
               />
             </ListItemIcon>
             <ListItemText primary={defId} />
-            {isDefIdSelected(defId) && <CheckIcon color="primary" />}
+            {isDefinitionIdSelected(defId) && <CheckIcon color="primary" />}
           </ListItem>
         ))}
       </List>
