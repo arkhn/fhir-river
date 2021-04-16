@@ -1361,6 +1361,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/Owner'
           description: ''
+    put:
+      operationId: api_owners_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this owner.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OwnerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OwnerRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+          description: ''
+    patch:
+      operationId: api_owners_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this owner.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOwnerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOwnerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOwnerRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+          description: ''
     delete:
       operationId: api_owners_destroy
       description: ''
@@ -2199,6 +2268,13 @@ components:
       type: object
       properties:
         column:
+          type: string
+    PatchedOwnerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        credential:
           type: string
     PatchedResourceRequest:
       type: object
