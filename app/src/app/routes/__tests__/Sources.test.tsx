@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest, RestRequest } from "msw";
 import { setupServer } from "msw/node";
 
+import { resetState, store } from "app/store";
 import {
   render,
   screen,
@@ -95,13 +96,15 @@ const handlers = [
 ];
 const server = setupServer(...handlers);
 
-beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: "error" });
+  store.dispatch(resetState());
+});
+beforeEach(() => render(<Sources />));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Sources page", () => {
-  beforeEach(() => render(<Sources />));
-
   test("creating a new source", async () => {
     userEvent.click(screen.getByRole("button", { name: /new source/i }));
 
