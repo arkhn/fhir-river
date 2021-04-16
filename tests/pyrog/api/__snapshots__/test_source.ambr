@@ -1,9 +1,9 @@
 # name: test_retrieve_full_source
   <class 'dict'> {
     'credential': <class 'dict'> {
-      'database': '',
-      'host': '',
-      'model': '',
+      'database': 'river',
+      'host': 'localhost',
+      'model': 'POSTGRES',
       'owners': <class 'list'> [
         <class 'dict'> {
           'columns': <class 'list'> [
