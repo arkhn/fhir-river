@@ -48,6 +48,19 @@ def test_list_filters(api_client, filter_factory):
     assert len(response.data) == 3
 
 
+def test_filter_filters_by_resource(api_client, filter_factory, resource_factory):
+    url = reverse("filters-list")
+
+    first_resource, second_resource = resource_factory.create_batch(2)
+    first_resource_filters = filter_factory.create_batch(3, resource=first_resource)
+    filter_factory.create_batch(2, resource=second_resource)
+
+    response = api_client.get(url, {"resource": first_resource.id})
+
+    assert response.status_code == 200
+    assert {filter_data["id"] for filter_data in response.json()} == {filter.id for filter in first_resource_filters}
+
+
 @pytest.mark.parametrize("relation, value, status_code", [("=", faker.word(), 200)])
 def test_update_filter(
     api_client,
