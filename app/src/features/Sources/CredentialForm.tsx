@@ -177,7 +177,7 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
       const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
         e as FetchBaseQueryError
       );
-      setAlert(head(data?.nonFieldErrors));
+      setAlert(head(data?.non_field_errors));
     }
   };
 

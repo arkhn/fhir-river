@@ -77,7 +77,7 @@ const CredentialOwnersSelect = ({
           const data = apiValidationErrorFromResponse<Partial<Owner>>(
             e as FetchBaseQueryError
           );
-          setAlert(head(data?.nonFieldErrors));
+          setAlert(head(data?.non_field_errors));
         }
         return;
       case "remove-option":

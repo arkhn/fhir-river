@@ -2,7 +2,7 @@ import { ValidationError } from "@arkhn/ui/lib/Form/InputTypes";
 import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
 
 export type ApiValidationError<T> = ValidationError<T> & {
-  nonFieldErrors?: string[];
+  non_field_errors?: string[];
 };
 
 export const isApiValidationError = (error: FetchBaseQueryError): boolean =>

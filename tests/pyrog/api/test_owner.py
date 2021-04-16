@@ -65,13 +65,12 @@ def test_filter_owners_by_credential(
 def test_update_owner(
     api_client,
     owner,
-    credential,
     name,
     status_code,
 ):
     url = reverse("owners-detail", kwargs={"pk": owner.id})
 
-    data = {"name": name, "credential": credential.id}
+    data = {"name": name}
     response = api_client.patch(url, data)
 
     assert response.status_code == status_code
