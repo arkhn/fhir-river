@@ -21,7 +21,8 @@ def test_create_owner(
     credential,
     status_code,
 ):
-    mock_database_explorer().get_owner_schema.return_value = faker.json()
+    schema = faker.json()
+    mock_database_explorer().get_owner_schema.return_value = schema
 
     url = reverse("owners-list")
 
@@ -32,6 +33,7 @@ def test_create_owner(
     response = api_client.post(url, data)
 
     assert response.status_code == status_code
+    assert response.data["schema"] == schema
 
 
 @pytest.mark.parametrize("name, status_code", [(faker.word(), 400)])
