@@ -61,6 +61,24 @@ def test_filter_owners_by_credential(
     assert {owner_data["id"] for owner_data in response.json()} == {owner.id for owner in first_credential_owners}
 
 
+@pytest.mark.parametrize("name, status_code", [(faker.word(), 200)])
+def test_update_owner(
+    api_client,
+    owner,
+    name,
+    status_code,
+):
+    url = reverse("owners-detail", kwargs={"pk": owner.id})
+
+    data = {}
+    for field in ["name"]:
+        if locals()[field]:
+            data[field] = locals()[field]
+    response = api_client.patch(url, data)
+
+    assert response.status_code == status_code
+
+
 def test_delete_owner(api_client, owner):
     url = reverse("owners-detail", kwargs={"pk": owner.id})
 
