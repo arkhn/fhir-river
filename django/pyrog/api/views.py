@@ -1,4 +1,4 @@
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 
 from django_filters import rest_framework as django_filters
 from pyrog import models
@@ -81,13 +81,7 @@ class FilterViewSet(viewsets.ModelViewSet):
     serializer_class = basic_serializers.FilterSerializer
 
 
-class OwnerViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
+class OwnerViewSet(viewsets.ModelViewSet):
     queryset = models.Owner.objects.all()
     serializer_class = basic_serializers.OwnerSerializer
     filter_backends = [django_filters.DjangoFilterBackend]

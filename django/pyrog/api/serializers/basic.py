@@ -44,19 +44,17 @@ class OwnerSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["schema"]
 
-    def create(self, validated_data):
-        credential = CredentialSerializer(validated_data["credential"]).data
+    def validate(self, data):
         try:
+            credential = CredentialSerializer(data["credential"]).data
             db_connection = DBConnection(credential)
             explorer = DatabaseExplorer(db_connection)
-            validated_data["schema"] = explorer.get_owner_schema(validated_data["name"])
+            data["schema"] = explorer.get_owner_schema(data["name"])
         except Exception as e:
             raise serializers.ValidationError(e)
-        if not validated_data["schema"]:
-            raise serializers.ValidationError(
-                {"name": [f"{validated_data['name']} schema is empty or does not exist"]}
-            )
-        return super().create(validated_data)
+        if not data["schema"]:
+            raise serializers.ValidationError({"name": [f"{data['name']} schema is empty or does not exist"]})
+        return data
 
 
 class ResourceSerializer(serializers.ModelSerializer):
