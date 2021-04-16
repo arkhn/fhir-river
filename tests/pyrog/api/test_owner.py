@@ -1,5 +1,3 @@
-from unittest import mock
-
 import pytest
 from faker import Faker
 
@@ -10,63 +8,13 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
-@pytest.mark.parametrize("name, status_code", [(faker.word(), 201)])
+@pytest.mark.parametrize("name, status_code", [("public", 201), ("NOT_A_VALID_OWNER", 400)])
 def test_create_owner(
-    mock_database_explorer,
-    mock_db_connection,
     api_client,
     name,
     credential,
     status_code,
 ):
-    schema = faker.json()
-    mock_database_explorer().get_owner_schema.return_value = schema
-
-    url = reverse("owners-list")
-
-    data = {
-        "name": name,
-        "credential": credential.id,
-    }
-    response = api_client.post(url, data)
-
-    assert response.status_code == status_code
-    assert response.data["schema"] == schema
-
-
-@pytest.mark.parametrize("name, status_code", [(faker.word(), 400)])
-def test_create_owner_with_invalid_credential(
-    api_client,
-    name,
-    credential,
-    status_code,
-):
-    url = reverse("owners-list")
-
-    data = {
-        "name": name,
-        "credential": credential.id,
-    }
-    response = api_client.post(url, data)
-
-    assert response.status_code == status_code
-
-
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
-@pytest.mark.parametrize("name, status_code", [(faker.word(), 400)])
-def test_create_owner_with_empty_schema(
-    mock_database_explorer,
-    mock_db_connection,
-    api_client,
-    name,
-    credential,
-    status_code,
-):
-    mock_database_explorer().get_owner_schema.return_value = {}
-
     url = reverse("owners-list")
 
     data = {

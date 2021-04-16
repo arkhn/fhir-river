@@ -1,8 +1,7 @@
-from unittest import mock
-
 import pytest
 from faker import Faker
 
+from django.conf import settings
 from django.urls import reverse
 
 faker = Faker()
@@ -10,25 +9,30 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
         (
-            faker.word(),
-            faker.random_number(digits=4, fix_len=True),
-            faker.word(),
-            faker.word(),
-            faker.word(),
-            "MSSQL",
+            settings.DATABASES["default"]["HOST"],
+            settings.DATABASES["default"]["PORT"],
+            settings.DATABASES["default"]["NAME"],
+            settings.DATABASES["default"]["USER"],
+            settings.DATABASES["default"]["PASSWORD"],
+            "POSTGRES",
             201,
+        ),
+        (
+            settings.DATABASES["default"]["HOST"],
+            settings.DATABASES["default"]["PORT"],
+            settings.DATABASES["default"]["NAME"],
+            settings.DATABASES["default"]["USER"],
+            "NOT_THE_PASSWORD",
+            "POSTGRES",
+            400,
         ),
     ],
 )
 def test_create_credential(
-    mock_database_explorer,
-    mock_db_connection,
     api_client,
     source,
     host,
@@ -39,8 +43,6 @@ def test_create_credential(
     model,
     status_code,
 ):
-    mock_database_explorer().get_owners.return_value = []
-
     url = reverse("credentials-list")
 
     data = {
@@ -57,31 +59,7 @@ def test_create_credential(
     assert response.status_code == status_code
 
 
-def test_create_invalid_credential(
-    api_client,
-    source,
-):
-    url = reverse("credentials-list")
-
-    data = {
-        "source": source.id,
-        "host": "invalid",
-        "port": 0,
-        "database": "invalid",
-        "login": "invalid",
-        "password": "invalid",
-        "model": "invalid",
-    }
-    response = api_client.post(url, data)
-
-    assert response.status_code == 400
-
-
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
-def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_client, credential):
-    mock_database_explorer().get_owners.return_value = []
-
+def test_retrieve_credential(api_client, credential):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     response = api_client.get(url)
@@ -89,11 +67,7 @@ def test_retrieve_credential(mock_database_explorer, mock_db_connection, api_cli
     assert response.status_code == 200
 
 
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
-def test_list_credentials(mock_database_explorer, mock_db_connection, api_client, credential_factory):
-    mock_database_explorer().get_owners.return_value = []
-
+def test_list_credentials(api_client, credential_factory):
     url = reverse("credentials-list")
     credential_factory.create_batch(3)
 
@@ -103,17 +77,11 @@ def test_list_credentials(mock_database_explorer, mock_db_connection, api_client
     assert len(response.data) == 3
 
 
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 def test_filter_credentials_by_source(
-    mock_database_explorer,
-    mock_db_connection,
     api_client,
     source_factory,
     credential_factory,
 ):
-    mock_database_explorer().get_owners.return_value = []
-
     url = reverse("credentials-list")
 
     first_source, second_source = source_factory.create_batch(2)
@@ -128,8 +96,6 @@ def test_filter_credentials_by_source(
     }
 
 
-@mock.patch("pyrog.api.serializers.basic.DBConnection")
-@mock.patch("pyrog.api.serializers.basic.DatabaseExplorer")
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
@@ -140,13 +106,11 @@ def test_filter_credentials_by_source(
             None,
             None,
             "POSTGRES",
-            200,
+            400,
         ),
     ],
 )
 def test_update_credential(
-    mock_database_explorer,
-    mock_db_connection,
     api_client,
     credential,
     host,
@@ -157,8 +121,6 @@ def test_update_credential(
     model,
     status_code,
 ):
-    mock_database_explorer().get_owners.return_value = []
-
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     data = {}
@@ -168,25 +130,6 @@ def test_update_credential(
     response = api_client.patch(url, data)
 
     assert response.status_code == status_code
-
-
-def test_update_invalid_credential(
-    api_client,
-    credential,
-):
-    url = reverse("credentials-detail", kwargs={"pk": credential.id})
-
-    data = {
-        "host": "invalid",
-        "port": 0,
-        "database": "invalid",
-        "login": "invalid",
-        "password": "invalid",
-        "model": "invalid",
-    }
-    response = api_client.patch(url, data)
-
-    assert response.status_code == 400
 
 
 def test_delete_credential(api_client, credential):
