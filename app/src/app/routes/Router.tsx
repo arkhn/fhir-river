@@ -28,7 +28,7 @@ const Router = (): JSX.Element => {
           <Route exact path="/source/:sourceId">
             <SourceMappings />
           </Route>
-          <Route exact path="/source/:sourceId/createMapping">
+          <Route exact path="/source/:sourceId/mapping">
             <CreateMapping />
           </Route>
           <Route>

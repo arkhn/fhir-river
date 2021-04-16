@@ -42,7 +42,7 @@ const MappingsToolbar = (): JSX.Element => {
   const { data: attributes } = useListSourceAttributes(source);
 
   const handleCreateMappingClick = () => {
-    history.push(`/source/${sourceId}/createMapping`);
+    history.push(`/source/${sourceId}/mapping`);
   };
 
   return (
