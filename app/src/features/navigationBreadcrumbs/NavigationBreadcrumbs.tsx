@@ -9,7 +9,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
-import { useRetrieveSourceQuery } from "services/api/api";
+import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -33,7 +33,7 @@ const NavigationBreadcrumbs = (): JSX.Element => {
   const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
-  const { data: source } = useRetrieveSourceQuery({
+  const { data: source } = useApiSourcesRetrieveQuery({
     id: sourceId ?? "",
   });
 

@@ -1,6 +1,7 @@
 import pytest
 from faker import Faker
 
+from django.conf import settings
 from django.urls import reverse
 
 faker = Faker()
@@ -12,13 +13,22 @@ pytestmark = pytest.mark.django_db
     "host, port, database, login, password, model, status_code",
     [
         (
-            faker.word(),
-            faker.random_number(digits=4, fix_len=True),
-            faker.word(),
-            faker.word(),
-            faker.word(),
-            "MSSQL",
+            settings.DATABASES["default"]["HOST"],
+            settings.DATABASES["default"]["PORT"],
+            settings.DATABASES["default"]["NAME"],
+            settings.DATABASES["default"]["USER"],
+            settings.DATABASES["default"]["PASSWORD"],
+            "POSTGRES",
             201,
+        ),
+        (
+            settings.DATABASES["default"]["HOST"],
+            settings.DATABASES["default"]["PORT"],
+            settings.DATABASES["default"]["NAME"],
+            settings.DATABASES["default"]["USER"],
+            "NOT_THE_PASSWORD",
+            "POSTGRES",
+            400,
         ),
     ],
 )
@@ -67,21 +77,59 @@ def test_list_credentials(api_client, credential_factory):
     assert len(response.data) == 3
 
 
+def test_filter_credentials_by_source(
+    api_client,
+    source_factory,
+    credential_factory,
+):
+    url = reverse("credentials-list")
+
+    first_source, second_source = source_factory.create_batch(2)
+    first_source_credentials = credential_factory.create_batch(1, source=first_source)
+    credential_factory.create_batch(1, source=second_source)
+
+    response = api_client.get(url, {"source": first_source.id})
+
+    assert response.status_code == 200
+    assert {credential_data["id"] for credential_data in response.json()} == {
+        credential.id for credential in first_source_credentials
+    }
+
+
 @pytest.mark.parametrize(
     "host, port, database, login, password, model, status_code",
     [
         (
             None,
-            faker.random_number(digits=4, fix_len=True),
+            None,
             None,
             None,
             None,
             "POSTGRES",
             200,
         ),
+        (
+            "INVALID_HOST",
+            None,
+            None,
+            None,
+            None,
+            None,
+            400,
+        ),
     ],
 )
-def test_update_credential(api_client, credential, host, port, database, login, password, model, status_code):
+def test_update_credential(
+    api_client,
+    credential,
+    host,
+    port,
+    database,
+    login,
+    password,
+    model,
+    status_code,
+):
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     data = {}

@@ -7,10 +7,9 @@ import AttributeIcon from "@material-ui/icons/LocalOffer";
 import { useParams, useHistory } from "react-router";
 
 import {
-  useListSourceAttributes,
-  useListSourceResources,
-  useRetrieveSourceQuery,
-} from "services/api/api";
+  useApiResourcesListQuery,
+  useApiAttributesListQuery,
+} from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
   rowContainer: {
@@ -34,12 +33,8 @@ const MappingsToolbar = (): JSX.Element => {
   const history = useHistory();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
-  const { data: source } = useRetrieveSourceQuery(
-    { id: sourceId ?? "" },
-    { skip: !sourceId }
-  );
-  const { data: mappings } = useListSourceResources(source);
-  const { data: attributes } = useListSourceAttributes(source);
+  const { data: mappings } = useApiResourcesListQuery({ source: sourceId });
+  const { data: attributes } = useApiAttributesListQuery({ source: sourceId });
 
   const handleCreateMappingClick = () => {
     history.push(`/source/${sourceId}/mapping`);
