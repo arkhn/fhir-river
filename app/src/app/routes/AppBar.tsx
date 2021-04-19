@@ -1,13 +1,11 @@
 import React from "react";
 
 import AppBarArkhnUI from "@arkhn/ui/lib/NavBar/NavBar";
-import { Button, Divider, makeStyles, Typography } from "@material-ui/core";
-import { ExitToApp } from "@material-ui/icons";
-import { useTranslation } from "react-i18next";
+import { makeStyles, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
-import { useAppSelector } from "app/store";
 import { ReactComponent as Logo } from "assets/icons/arkhn-logo.svg";
+import User from "features/User/User";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -33,23 +31,9 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.light,
     marginRight: theme.spacing(1),
   },
-  logoutButton: {
-    textTransform: "none",
-  },
-  logoutIcon: {
-    marginRight: theme.spacing(1),
-    fill: theme.palette.text.secondary,
-  },
-  verticalDivider: {
-    height: 25,
-    marginLeft: theme.spacing(2),
-    marginRight: theme.spacing(1),
-  },
 }));
 
 const AppBar = (): JSX.Element => {
-  const { t } = useTranslation();
-  const { user } = useAppSelector((state) => state);
   const classes = useStyles();
 
   return (
@@ -72,19 +56,7 @@ const AppBar = (): JSX.Element => {
               </Typography>
             </Link>
           </div>
-          {user && (
-            <>
-              <Typography color="textSecondary">{user.mail}</Typography>
-              <Divider
-                orientation="vertical"
-                className={classes.verticalDivider}
-              />
-              <Button className={classes.logoutButton}>
-                <ExitToApp className={classes.logoutIcon} />
-                <Typography color="textSecondary">{t("logout")}</Typography>
-              </Button>
-            </>
-          )}
+          <User />
         </>
       }
     />

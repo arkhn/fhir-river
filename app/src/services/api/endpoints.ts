@@ -7,6 +7,7 @@ export const api = generatedApi.enhanceEndpoints({
     "Attributes",
     "Owners",
     "Credentials",
+    "Users",
   ],
   endpoints: {
     apiSourcesList: {
@@ -66,6 +67,9 @@ export const api = generatedApi.enhanceEndpoints({
     apiCredentialsUpdate: {
       invalidates: (_, { id }) => [{ type: "Credentials", id }],
     },
+    apiUserRetrieve: {
+      provides: ({ id }) => [{ type: "Users", id }],
+    },
   },
 });
 
@@ -84,4 +88,5 @@ export const {
   useApiCredentialsCreateMutation,
   useApiCredentialsRetrieveQuery,
   useApiCredentialsUpdateMutation,
+  useApiUserRetrieveQuery,
 } = api;

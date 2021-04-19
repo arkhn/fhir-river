@@ -1,0 +1,4 @@
+export const {
+  REACT_APP_OIDC_LOGIN_URL: OIDC_LOGIN_URL,
+  REACT_APP_OIDC_LOGOUT_URL: OIDC_LOGOUT_URL,
+} = process.env;

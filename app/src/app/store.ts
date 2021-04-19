@@ -6,14 +6,12 @@ import {
 } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
-import user from "features/Auth/userSlice";
 import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
 
 const appReducer = combineReducers({
   [api.reducerPath]: api.reducer,
   source,
-  user,
 });
 export type RootState = ReturnType<typeof appReducer>;
 
