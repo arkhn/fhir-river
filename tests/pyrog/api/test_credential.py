@@ -101,11 +101,20 @@ def test_filter_credentials_by_source(
     [
         (
             None,
-            faker.random_number(digits=4, fix_len=True),
+            None,
             None,
             None,
             None,
             "POSTGRES",
+            200,
+        ),
+        (
+            "INVALID_HOST",
+            None,
+            None,
+            None,
+            None,
+            None,
             400,
         ),
     ],
