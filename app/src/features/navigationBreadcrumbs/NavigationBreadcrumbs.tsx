@@ -33,9 +33,12 @@ const NavigationBreadcrumbs = (): JSX.Element => {
   const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
-  const { data: source } = useApiSourcesRetrieveQuery({
-    id: sourceId ?? "",
-  });
+  const { data: source } = useApiSourcesRetrieveQuery(
+    {
+      id: sourceId ?? "",
+    },
+    { skip: !sourceId }
+  );
 
   const classes = useStyles();
   return (
