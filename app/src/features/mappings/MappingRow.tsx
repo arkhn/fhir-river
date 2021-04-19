@@ -5,6 +5,7 @@ import { IconNames } from "@blueprintjs/icons";
 import { makeStyles, TableCell, TableRow, Typography } from "@material-ui/core";
 import { ArrowForward } from "@material-ui/icons";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 import { useListResourceFilters } from "services/api/api";
 import { Resource } from "services/api/generated/api.generated";
@@ -45,6 +46,7 @@ type MappingRowProps = {
 };
 
 const MappingRow = ({ mapping }: MappingRowProps): JSX.Element => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const { data: filters } = useListResourceFilters(mapping);
   const filtersCount = filters?.length ?? 0;
@@ -58,7 +60,7 @@ const MappingRow = ({ mapping }: MappingRowProps): JSX.Element => {
         />
         <Typography className={classes.text} color="textPrimary">
           {mapping.primary_key_table}
-          {filtersCount > 0 && ` + ${filtersCount} filter(s)`}
+          {filtersCount > 0 && t(`filterWithCount`, { count: filtersCount })}
         </Typography>
         <ArrowForward className={clsx(classes.icon, classes.inlineSpace)} />
         <Icon

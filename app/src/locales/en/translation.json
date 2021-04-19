@@ -13,5 +13,7 @@
   "logout": "Log out",
   "editSource": "Edit source",
   "renameSource": "Rename source",
-  "sources": "Sources"
+  "sources": "Sources",
+  "filterWithCount": "{{count}} filter",
+  "filterWithCount_plural": "{{count}} filters"
 }
