@@ -1,12 +1,14 @@
 import * as faker from "faker";
 import { Factory } from "fishery";
 
-import type {
+import {
   Attribute,
   Credential,
+  Filter,
   Resource,
   Source,
   Owner,
+  Column,
 } from "./generated/api.generated";
 
 export const sourceFactory = Factory.define<Source>(({ sequence }) => ({
@@ -53,6 +55,7 @@ export const resourceFactory = Factory.define<Resource>(
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
     source: associations.source || sourceFactory.build().id,
+    label: `resource_${sequence}`,
   })
 );
 
@@ -63,6 +66,26 @@ export const attributeFactory = Factory.define<Attribute>(
     definition_id: faker.lorem.word(),
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
+    resource: associations.resource || resourceFactory.build().id,
+  })
+);
+
+export const columnFactory = Factory.define<Column>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    column: associations.column || faker.lorem.word(),
+    table: associations.table || faker.lorem.word(),
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
+    owner: associations.owner || ownerFactory.build().id,
+  })
+);
+
+export const filterFactory = Factory.define<Filter>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    relation: "<",
+    sql_column: associations.sql_column || columnFactory.build().id,
     resource: associations.resource || resourceFactory.build().id,
   })
 );

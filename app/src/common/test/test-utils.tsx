@@ -19,23 +19,20 @@ const wrapper: FC = ({ children }) => {
 
 const customRender = (
   ui: ReactElement,
-  options?: Omit<RenderOptions, "queries">
-): RenderResult => render(ui, { wrapper, ...options });
-
-const renderWithRouterMatch = (
-  ui: ReactElement,
+  options?: Omit<RenderOptions, "queries">,
   {
     path = "/",
     route = "/",
     history = createMemoryHistory({ initialEntries: [route] }),
   }: { path?: string; route?: string; history?: MemoryHistory<unknown> } = {}
-): ReturnType<typeof render> =>
-  customRender(
+): RenderResult =>
+  render(
     <Router history={history}>
       <Route path={path}>{ui}</Route>
-    </Router>
+    </Router>,
+    { wrapper, ...options }
   );
 
 export * from "@testing-library/react";
 
-export { customRender as render, renderWithRouterMatch };
+export { customRender as render };
