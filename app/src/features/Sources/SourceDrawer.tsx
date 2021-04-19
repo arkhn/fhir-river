@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(3),
     fontWeight: "bold",
   },
+  drawer: {
+    minWidth: 400,
+  },
 }));
 
 const SourceDrawer = (): JSX.Element => {
@@ -43,7 +46,12 @@ const SourceDrawer = (): JSX.Element => {
   const handleDrawerClose = () => dispatch(initSource());
 
   return (
-    <Drawer open={isDrawerOpen} onClose={handleDrawerClose} anchor="right">
+    <Drawer
+      PaperProps={{ className: classes.drawer }}
+      open={isDrawerOpen}
+      onClose={handleDrawerClose}
+      anchor="right"
+    >
       {editType === EditTypeEnum.Source && <SourceForm />}
       {editType === EditTypeEnum.Credential && source && (
         <CredentialForm source={source} />
