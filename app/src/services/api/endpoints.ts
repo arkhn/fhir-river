@@ -7,8 +7,12 @@ export const api = generatedApi.enhanceEndpoints({
     "Attributes",
     "Owners",
     "Credentials",
+    "Filters",
   ],
   endpoints: {
+    /**
+     *  Sources
+     */
     apiSourcesList: {
       provides: (response) => [
         ...response.map(({ id }) => ({ type: "Sources" as const, id })),
@@ -27,18 +31,33 @@ export const api = generatedApi.enhanceEndpoints({
     apiSourcesDestroy: {
       invalidates: (_, { id }) => [{ type: "Sources", id }],
     },
+
+    /**
+     * Resources
+     */
     apiResourcesList: {
       provides: (response) => [
         ...response.map(({ id }) => ({ type: "Resources" as const, id })),
         { type: "Resources", id: "LIST" },
       ],
     },
+    apiResourcesCreate: {
+      invalidates: [{ type: "Sources", id: "LIST" }],
+    },
+
+    /**
+     * Attributes
+     */
     apiAttributesList: {
       provides: (response) => [
         ...response.map(({ id }) => ({ type: "Attributes" as const, id })),
         { type: "Attributes", id: "LIST" },
       ],
     },
+
+    /**
+     * Owners
+     */
     apiOwnersList: {
       provides: (response) => [
         ...response.map(({ id }) => ({ type: "Owners" as const, id })),
@@ -51,6 +70,10 @@ export const api = generatedApi.enhanceEndpoints({
     apiOwnersDestroy: {
       invalidates: (_, { id }) => [{ type: "Owners", id }],
     },
+
+    /**
+     * Credentials
+     */
     apiCredentialsList: {
       provides: (response) => [
         ...response.map(({ id }) => ({ type: "Credentials" as const, id })),
@@ -66,22 +89,47 @@ export const api = generatedApi.enhanceEndpoints({
     apiCredentialsUpdate: {
       invalidates: (_, { id }) => [{ type: "Credentials", id }],
     },
+
+    /**
+     * Filters
+     */
+    apiFiltersList: {
+      provides: (response) => [
+        ...response.map(({ id }) => ({ type: "Filters" as const, id })),
+        { type: "Filters", id: "LIST" },
+      ],
+    },
+    apiFiltersCreate: {
+      invalidates: [
+        { type: "Resources", id: "LIST" },
+        { type: "Sources", id: "LIST" },
+      ],
+    },
   },
 });
 
 export const {
+  // Sources
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
   useApiSourcesRetrieveQuery,
   useApiSourcesUpdateMutation,
   useApiSourcesDestroyMutation,
+  // Resources
   useApiResourcesListQuery,
+  useApiResourcesCreateMutation,
+  // Attributes
   useApiAttributesListQuery,
+  // Owners
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersDestroyMutation,
+  // Credentials
   useApiCredentialsListQuery,
   useApiCredentialsCreateMutation,
   useApiCredentialsRetrieveQuery,
   useApiCredentialsUpdateMutation,
+  // Filters
+  useApiFiltersListQuery,
+  useApiFiltersCreateMutation,
 } = api;

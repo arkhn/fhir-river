@@ -27,13 +27,16 @@ import {
 } from "features/mappings/mappingSlice";
 import TableStep from "features/mappings/TableStep";
 import {
+  useApiCredentialsListQuery,
+  useApiOwnersListQuery,
+  useApiFiltersCreateMutation,
+  useApiResourcesCreateMutation,
+} from "services/api/endpoints";
+import {
   Column,
   Filter,
   Resource,
-  useCreateColumnMutation,
-  useCreateFilterMutation,
-  useCreateResourceMutation,
-  useListOwnersQuery,
+  useApiColumnsCreateMutation,
 } from "services/api/generated/api.generated";
 
 const FOOTER_HEIGHT = 150;
@@ -78,7 +81,10 @@ const CreateMapping = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const { data: owners } = useListOwnersQuery({});
+  const { data: credential } = useApiCredentialsListQuery({ source: sourceId });
+  const { data: owners } = useApiOwnersListQuery({
+    credential: credential?.[0].id,
+  });
   const owner = owners?.[0];
 
   const [activeStep, setActiveStep] = useState(0);
@@ -88,9 +94,9 @@ const CreateMapping = (): JSX.Element => {
   const [
     createMapping,
     { isLoading: isCreateMappingLoading },
-  ] = useCreateResourceMutation();
-  const [createFilter] = useCreateFilterMutation();
-  const [createColumn] = useCreateColumnMutation();
+  ] = useApiResourcesCreateMutation();
+  const [createFilter] = useApiFiltersCreateMutation();
+  const [createColumn] = useApiColumnsCreateMutation();
 
   useEffect(() => {
     if (!mapping) {
@@ -140,7 +146,7 @@ const CreateMapping = (): JSX.Element => {
     if (mapping && owner && sourceId && filters) {
       try {
         const createdMapping = await createMapping({
-          resource: {
+          resourceRequest: {
             ...mapping,
             primary_key_owner: owner.id,
             source: sourceId,
@@ -150,14 +156,14 @@ const CreateMapping = (): JSX.Element => {
         for (const filter of filters) {
           try {
             const createdColumn = await createColumn({
-              column: {
+              columnRequest: {
                 ...filter.col,
                 owner: owner.id,
               } as Column,
             }).unwrap();
 
             createFilter({
-              filter: {
+              filterRequest: {
                 sql_column: createdColumn.id,
                 relation: filter.relation,
                 resource: createdMapping.id,
