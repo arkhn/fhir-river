@@ -1283,7 +1283,13 @@ paths:
     get:
       operationId: listFilters
       description: ''
-      parameters: []
+      parameters:
+      - name: resource
+        required: false
+        in: query
+        description: resource
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1330,6 +1336,12 @@ paths:
         description: A unique value identifying this filter.
         schema:
           type: string
+      - name: resource
+        required: false
+        in: query
+        description: resource
+        schema:
+          type: string
       responses:
         '200':
           content:
@@ -1347,6 +1359,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this filter.
+        schema:
+          type: string
+      - name: resource
+        required: false
+        in: query
+        description: resource
         schema:
           type: string
       requestBody:
@@ -1379,6 +1397,12 @@ paths:
         description: A unique value identifying this filter.
         schema:
           type: string
+      - name: resource
+        required: false
+        in: query
+        description: resource
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
@@ -1407,6 +1431,12 @@ paths:
         in: path
         required: true
         description: A unique value identifying this filter.
+        schema:
+          type: string
+      - name: resource
+        required: false
+        in: query
+        description: resource
         schema:
           type: string
       responses:
@@ -1569,6 +1599,11 @@ components:
           type: string
           format: date-time
           readOnly: true
+        users:
+          type: array
+          items:
+            type: string
+          readOnly: true
       required:
       - name
     Resource:
@@ -1587,6 +1622,7 @@ components:
           type: string
         logical_reference:
           type: string
+          readOnly: true
         updated_at:
           type: string
           format: date-time
@@ -1603,7 +1639,6 @@ components:
       - primary_key_table
       - primary_key_column
       - definition_id
-      - logical_reference
       - source
       - primary_key_owner
     Credential:

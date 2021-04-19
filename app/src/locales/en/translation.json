@@ -42,5 +42,7 @@
   "<": "is lesser than",
   "<=": "is lesser than or equal",
   "selectOperation": "Select operation",
-  "typeValue": "Type value"
+  "typeValue": "Type value",
+  "filterWithCount": "{{count}} filter",
+  "filterWithCount_plural": "{{count}} filters"
 }
