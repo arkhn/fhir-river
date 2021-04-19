@@ -62,7 +62,8 @@ const MappingRow = ({ mapping }: MappingRowProps): JSX.Element => {
         />
         <Typography className={classes.text} color="textPrimary">
           {mapping.primary_key_table}
-          {filtersCount > 0 && t(`filterWithCount`, { count: filtersCount })}
+          {filtersCount > 0 &&
+            ` + ${t(`filterWithCount`, { count: filtersCount })}`}
         </Typography>
         <ArrowForward className={clsx(classes.icon, classes.inlineSpace)} />
         <Icon
