@@ -37,6 +37,7 @@ const CredentialOwnersSelect = ({
 
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const handleAlertClose = () => setAlert(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const availableOwnersNames = credential.available_owners;
 
@@ -77,7 +78,8 @@ const CredentialOwnersSelect = ({
           const data = apiValidationErrorFromResponse<Partial<Owner>>(
             e as FetchBaseQueryError
           );
-          setAlert(head(data?.non_field_errors));
+          if (data?.non_field_errors) setAlert(head(data.non_field_errors));
+          if (data?.name) setError(head(data.name));
         }
         return;
       case "remove-option":
@@ -101,7 +103,13 @@ const CredentialOwnersSelect = ({
         multiple
         options={availableOwnersNames}
         renderInput={(params) => (
-          <TextField {...params} variant="outlined" label="Owners" />
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Owners"
+            error={!!error}
+            helperText={error}
+          />
         )}
         value={owners?.map((owner) => owner.name)}
         onChange={handleOwnerChange}
