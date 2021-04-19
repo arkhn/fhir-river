@@ -1,10 +1,11 @@
 import React from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import { CardContent, CircularProgress, makeStyles } from "@material-ui/core";
 import AttributeIcon from "@material-ui/icons/LocalOffer";
 import { useTranslation } from "react-i18next";
 
-import { ReactComponent as MappingIcon } from "assets/icons/mapping_icon.svg";
 import CardContentItem from "common/components/CardContentItem";
 import {
   useApiResourcesListQuery,
@@ -54,7 +55,13 @@ const SourceCardInfo = ({ source }: SourceCardInfoProps): JSX.Element => {
           {undefined !== mappingsCount && (
             <CardContentItem
               label={t("mappingCount", { count: mappingsCount })}
-              startAdornment={<MappingIcon className={classes.icon} />}
+              startAdornment={
+                <Icon
+                  icon={IconNames.DIAGRAM_TREE}
+                  className={classes.icon}
+                  iconSize={12}
+                />
+              }
             />
           )}
           {undefined !== attributesCount && (

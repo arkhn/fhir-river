@@ -79,65 +79,66 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const handleDeleteSource = () => deleteSource({ id: source.id });
 
   return (
-    <Card className={classes.root} variant="outlined" onClick={handleCardClick}>
-      <CardHeader
-        title={source.name}
-        titleTypographyProps={{ variant: "h6" }}
-        action={
-          <>
-            <IconButton
-              onClick={handleMenuClick}
-              className={classes.actionButton}
-              size="small"
-              aria-label={`${source.name} menu`}
-            >
-              <MoreIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              getContentAnchorEl={null}
-              variant="menu"
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-            >
-              <MenuItem disabled>
-                <ListItemIcon className={classes.listItemIcon}>
-                  <ManagePermissionsIcon />
-                </ListItemIcon>
-                <ListItemText primary={t("managePermissions")} />
-              </MenuItem>
-              <MenuItem onClick={handleEditSource}>
-                <ListItemIcon className={classes.listItemIcon}>
-                  <EditIcon />
-                </ListItemIcon>
-                <ListItemText primary={t("edit")} />
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={handleDeleteSource}>
-                <ListItemIcon
-                  className={clsx(classes.listItemIcon, classes.delete)}
-                >
-                  <DeleteIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={t("delete")}
-                  className={classes.delete}
-                />
-              </MenuItem>
-            </Menu>
-          </>
-        }
-      />
-      <SourceCardInfo source={source} />
-    </Card>
+    <>
+      <Card
+        className={classes.root}
+        variant="outlined"
+        onClick={handleCardClick}
+      >
+        <CardHeader
+          title={source.name}
+          titleTypographyProps={{ variant: "h6" }}
+          action={
+            <>
+              <IconButton
+                onClick={handleMenuClick}
+                className={classes.actionButton}
+                size="small"
+                aria-label={`${source.name} menu`}
+              >
+                <MoreIcon />
+              </IconButton>
+            </>
+          }
+        />
+        <SourceCardInfo source={source} />
+      </Card>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        getContentAnchorEl={null}
+        variant="menu"
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem disabled>
+          <ListItemIcon className={classes.listItemIcon}>
+            <ManagePermissionsIcon />
+          </ListItemIcon>
+          <ListItemText primary={t("managePermissions")} />
+        </MenuItem>
+        <MenuItem onClick={handleEditSource}>
+          <ListItemIcon className={classes.listItemIcon}>
+            <EditIcon />
+          </ListItemIcon>
+          <ListItemText primary={t("edit")} />
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleDeleteSource}>
+          <ListItemIcon className={clsx(classes.listItemIcon, classes.delete)}>
+            <DeleteIcon />
+          </ListItemIcon>
+          <ListItemText primary={t("delete")} className={classes.delete} />
+        </MenuItem>
+      </Menu>
+    </>
   );
 };
 
