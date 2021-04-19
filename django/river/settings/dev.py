@@ -6,7 +6,7 @@ ALLOWED_HOSTS = ["*"]
 
 SECRET_KEY = "USE_IN_DEV_ONLY"
 
-INSTALLED_APPS += ["drf_spectacular"]
+INSTALLED_APPS += ["drf_spectacular"] if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True" else []
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
