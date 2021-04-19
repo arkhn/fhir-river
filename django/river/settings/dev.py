@@ -30,4 +30,7 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.hooks.postprocess_schema_enums",
     ],
     "COMPONENT_SPLIT_REQUEST": True,
+    "TITLE": "River API",
+    "DESCRIPTION": "Arkhn's River API",
+    "VERSION": "0.1.0",
 }

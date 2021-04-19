@@ -1,7 +1,8 @@
 openapi: 3.0.3
 info:
-  title: ''
-  version: 0.0.0
+  title: River API
+  version: 0.1.0
+  description: Arkhn's River API
 paths:
   /api/attributes/:
     get:
@@ -157,6 +158,50 @@ paths:
         schema:
           type: string
         description: A unique value identifying this attribute.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/batch/:
+    get:
+      operationId: api_batch_retrieve
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: api_batch_create
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          description: No response body
+  /api/batch/{id}/:
+    delete:
+      operationId: api_batch_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
         required: true
       tags:
       - api
@@ -484,6 +529,19 @@ paths:
       - {}
       responses:
         '204':
+          description: No response body
+  /api/core/version/:
+    get:
+      operationId: api_core_version_retrieve
+      description: Return the version of the application
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
           description: No response body
   /api/credentials/:
     get:
@@ -1454,6 +1512,19 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/preview/:
+    post:
+      operationId: api_preview_create
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          description: No response body
   /api/resources/:
     get:
       operationId: api_resources_list
@@ -1618,6 +1689,19 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/scripts/:
+    get:
+      operationId: api_scripts_retrieve
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/sources/:
     get:
       operationId: api_sources_list
@@ -1776,6 +1860,83 @@ paths:
       - {}
       responses:
         '204':
+          description: No response body
+  /api/user/:
+    get:
+      operationId: api_user_retrieve
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /pagai/explore/{resource_id}/{owner}/{table}/:
+    get:
+      operationId: pagai_explore_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: owner
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: resource_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: table
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagai
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /pagai/list-owners/:
+    post:
+      operationId: pagai_list_owners_create
+      description: ''
+      tags:
+      - pagai
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /pagai/owner-schema/{owner}/:
+    post:
+      operationId: pagai_owner_schema_create
+      description: ''
+      parameters:
+      - in: path
+        name: owner
+        schema:
+          type: string
+        required: true
+      tags:
+      - pagai
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
           description: No response body
 components:
   schemas:
@@ -2401,6 +2562,26 @@ components:
           type: string
       required:
       - name
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+      required:
+      - email
+      - id
+      - username
   securitySchemes:
     basicAuth:
       type: http

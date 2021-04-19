@@ -58,6 +58,27 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiBatchRetrieve: build.query<
+      ApiBatchRetrieveApiResponse,
+      ApiBatchRetrieveApiArg
+    >({
+      query: () => ({ url: `/api/batch/` }),
+    }),
+    apiBatchCreate: build.mutation<
+      ApiBatchCreateApiResponse,
+      ApiBatchCreateApiArg
+    >({
+      query: () => ({ url: `/api/batch/`, method: "POST" }),
+    }),
+    apiBatchDestroy: build.mutation<
+      ApiBatchDestroyApiResponse,
+      ApiBatchDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batch/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
     apiColumnsList: build.query<
       ApiColumnsListApiResponse,
       ApiColumnsListApiArg
@@ -159,6 +180,12 @@ export const api = createApi({
         url: `/api/conditions/${queryArg.id}/`,
         method: "DELETE",
       }),
+    }),
+    apiCoreVersionRetrieve: build.query<
+      ApiCoreVersionRetrieveApiResponse,
+      ApiCoreVersionRetrieveApiArg
+    >({
+      query: () => ({ url: `/api/core/version/` }),
     }),
     apiCredentialsList: build.query<
       ApiCredentialsListApiResponse,
@@ -466,6 +493,12 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiPreviewCreate: build.mutation<
+      ApiPreviewCreateApiResponse,
+      ApiPreviewCreateApiArg
+    >({
+      query: () => ({ url: `/api/preview/`, method: "POST" }),
+    }),
     apiResourcesList: build.query<
       ApiResourcesListApiResponse,
       ApiResourcesListApiArg
@@ -520,6 +553,12 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiScriptsRetrieve: build.query<
+      ApiScriptsRetrieveApiResponse,
+      ApiScriptsRetrieveApiArg
+    >({
+      query: () => ({ url: `/api/scripts/` }),
+    }),
     apiSourcesList: build.query<
       ApiSourcesListApiResponse,
       ApiSourcesListApiArg
@@ -571,6 +610,35 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiUserRetrieve: build.query<
+      ApiUserRetrieveApiResponse,
+      ApiUserRetrieveApiArg
+    >({
+      query: () => ({ url: `/api/user/` }),
+    }),
+    pagaiExploreRetrieve: build.query<
+      PagaiExploreRetrieveApiResponse,
+      PagaiExploreRetrieveApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/pagai/explore/${queryArg.resourceId}/${queryArg.owner}/${queryArg.table}/`,
+      }),
+    }),
+    pagaiListOwnersCreate: build.mutation<
+      PagaiListOwnersCreateApiResponse,
+      PagaiListOwnersCreateApiArg
+    >({
+      query: () => ({ url: `/pagai/list-owners/`, method: "POST" }),
+    }),
+    pagaiOwnerSchemaCreate: build.mutation<
+      PagaiOwnerSchemaCreateApiResponse,
+      PagaiOwnerSchemaCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/pagai/owner-schema/${queryArg.owner}/`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
@@ -601,6 +669,14 @@ export type ApiAttributesPartialUpdateApiArg = {
 export type ApiAttributesDestroyApiResponse = unknown;
 export type ApiAttributesDestroyApiArg = {
   /** A unique value identifying this attribute. */
+  id: string;
+};
+export type ApiBatchRetrieveApiResponse = unknown;
+export type ApiBatchRetrieveApiArg = {};
+export type ApiBatchCreateApiResponse = unknown;
+export type ApiBatchCreateApiArg = {};
+export type ApiBatchDestroyApiResponse = unknown;
+export type ApiBatchDestroyApiArg = {
   id: string;
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
@@ -659,6 +735,8 @@ export type ApiConditionsDestroyApiArg = {
   /** A unique value identifying this condition. */
   id: string;
 };
+export type ApiCoreVersionRetrieveApiResponse = unknown;
+export type ApiCoreVersionRetrieveApiArg = {};
 export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
   source?: string;
@@ -833,6 +911,8 @@ export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
+export type ApiPreviewCreateApiResponse = unknown;
+export type ApiPreviewCreateApiArg = {};
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
   source?: string;
@@ -863,6 +943,8 @@ export type ApiResourcesDestroyApiArg = {
   /** A unique value identifying this resource. */
   id: string;
 };
+export type ApiScriptsRetrieveApiResponse = unknown;
+export type ApiScriptsRetrieveApiArg = {};
 export type ApiSourcesListApiResponse = /** status 200  */ Source[];
 export type ApiSourcesListApiArg = {};
 export type ApiSourcesCreateApiResponse = /** status 201  */ Source;
@@ -890,6 +972,20 @@ export type ApiSourcesDestroyApiResponse = unknown;
 export type ApiSourcesDestroyApiArg = {
   /** A unique value identifying this source. */
   id: string;
+};
+export type ApiUserRetrieveApiResponse = /** status 200  */ User;
+export type ApiUserRetrieveApiArg = {};
+export type PagaiExploreRetrieveApiResponse = unknown;
+export type PagaiExploreRetrieveApiArg = {
+  owner: string;
+  resourceId: string;
+  table: string;
+};
+export type PagaiListOwnersCreateApiResponse = unknown;
+export type PagaiListOwnersCreateApiArg = {};
+export type PagaiOwnerSchemaCreateApiResponse = unknown;
+export type PagaiOwnerSchemaCreateApiArg = {
+  owner: string;
 };
 export type Attribute = {
   id: string;
@@ -1127,6 +1223,11 @@ export type PatchedSourceRequest = {
   name?: string;
   version?: string;
 };
+export type User = {
+  id: string;
+  email: string;
+  username: string;
+};
 export const {
   useApiAttributesListQuery,
   useApiAttributesCreateMutation,
@@ -1134,6 +1235,9 @@ export const {
   useApiAttributesUpdateMutation,
   useApiAttributesPartialUpdateMutation,
   useApiAttributesDestroyMutation,
+  useApiBatchRetrieveQuery,
+  useApiBatchCreateMutation,
+  useApiBatchDestroyMutation,
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
   useApiColumnsRetrieveQuery,
@@ -1146,6 +1250,7 @@ export const {
   useApiConditionsUpdateMutation,
   useApiConditionsPartialUpdateMutation,
   useApiConditionsDestroyMutation,
+  useApiCoreVersionRetrieveQuery,
   useApiCredentialsListQuery,
   useApiCredentialsCreateMutation,
   useApiCredentialsRetrieveQuery,
@@ -1182,16 +1287,22 @@ export const {
   useApiOwnersUpdateMutation,
   useApiOwnersPartialUpdateMutation,
   useApiOwnersDestroyMutation,
+  useApiPreviewCreateMutation,
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
   useApiResourcesRetrieveQuery,
   useApiResourcesUpdateMutation,
   useApiResourcesPartialUpdateMutation,
   useApiResourcesDestroyMutation,
+  useApiScriptsRetrieveQuery,
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
   useApiSourcesRetrieveQuery,
   useApiSourcesUpdateMutation,
   useApiSourcesPartialUpdateMutation,
   useApiSourcesDestroyMutation,
+  useApiUserRetrieveQuery,
+  usePagaiExploreRetrieveQuery,
+  usePagaiListOwnersCreateMutation,
+  usePagaiOwnerSchemaCreateMutation,
 } = api;

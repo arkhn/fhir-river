@@ -53,7 +53,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
-    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../pyrog-schema.yml"
+    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../river-schema.yml"
   },
   "eslintConfig": {
     "extends": "react-app"
