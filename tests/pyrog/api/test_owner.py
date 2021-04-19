@@ -8,11 +8,10 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.parametrize("name, schema, status_code", [(faker.word(), faker.json(), 201)])
+@pytest.mark.parametrize("name, status_code", [("public", 201), ("NOT_A_VALID_OWNER", 400)])
 def test_create_owner(
     api_client,
     name,
-    schema,
     credential,
     status_code,
 ):
@@ -20,7 +19,6 @@ def test_create_owner(
 
     data = {
         "name": name,
-        "schema": schema,
         "credential": credential.id,
     }
     response = api_client.post(url, data)
@@ -46,20 +44,33 @@ def test_list_owners(api_client, owner_factory):
     assert len(response.data) == 3
 
 
-@pytest.mark.parametrize("name, schema, status_code", [(faker.word(), faker.json(), 200)])
+def test_filter_owners_by_credential(
+    api_client,
+    credential_factory,
+    owner_factory,
+):
+    url = reverse("owners-list")
+
+    first_credential, second_credential = credential_factory.create_batch(2)
+    first_credential_owners = owner_factory.create_batch(3, credential=first_credential)
+    owner_factory.create_batch(1, credential=second_credential)
+
+    response = api_client.get(url, {"credential": first_credential.id})
+
+    assert response.status_code == 200
+    assert {owner_data["id"] for owner_data in response.json()} == {owner.id for owner in first_credential_owners}
+
+
+@pytest.mark.parametrize("name, status_code", [("public", 200), ("NOT_A_VALID_OWNER", 400)])
 def test_update_owner(
     api_client,
     owner,
     name,
-    schema,
     status_code,
 ):
     url = reverse("owners-detail", kwargs={"pk": owner.id})
 
-    data = {}
-    for field in ["name", "schema"]:
-        if locals()[field]:
-            data[field] = locals()[field]
+    data = {"name": name}
     response = api_client.patch(url, data)
 
     assert response.status_code == status_code

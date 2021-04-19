@@ -4,9 +4,8 @@ import { Button, makeStyles, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import { Source } from "services/api/generated/api.generated";
 
-import { editSource } from "./sourceSlice";
+import { createSource } from "./sourceSlice";
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -19,14 +18,14 @@ const SourceCreate = (): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const handleClick = () => dispatch(editSource({ name: "" } as Source));
+  const handleCreateSource = () => dispatch(createSource());
 
   return (
     <Button
       className={classes.button}
       color="primary"
       variant="contained"
-      onClick={handleClick}
+      onClick={handleCreateSource}
     >
       <Typography>{t("newSource")}</Typography>
     </Button>

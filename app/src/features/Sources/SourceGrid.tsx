@@ -2,7 +2,7 @@ import React from "react";
 
 import { CircularProgress, Grid, makeStyles } from "@material-ui/core";
 
-import { useListSourcesQuery } from "services/api/api";
+import { useApiSourcesListQuery } from "services/api/endpoints";
 
 import SourceCard from "./SourceCard";
 
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SourceGrid = (): JSX.Element => {
   const classes = useStyles();
-  const { isLoading, data: sources } = useListSourcesQuery({});
+  const { isLoading, data: sources } = useApiSourcesListQuery({});
 
   return (
     <Grid className={classes.gridContainer} container spacing={3}>

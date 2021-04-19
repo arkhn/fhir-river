@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@arkhn/ui": "^1.10.2",
+    "@arkhn/ui": "^1.11.2",
     "@blueprintjs/core": "^3.40.0",
     "@blueprintjs/icons": "^3.25.0",
     "@fontsource/roboto": "^4.2.1",
@@ -15,14 +15,21 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.7.3",
+    "@types/faker": "^5.5.1",
     "@types/jest": "^24.0.0",
+    "@types/lodash": "^4.14.168",
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
     "@types/react-router-dom": "^5.1.7",
+    "faker": "^5.5.3",
+    "fishery": "^1.2.0",
     "i18next": "^19.8.8",
     "i18next-browser-languagedetector": "^6.0.1",
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-i18next": "^11.8.7",
@@ -37,9 +44,6 @@
       "pre-commit": "lint-staged"
     }
   },
-  "jest": {
-    "resetMocks": false
-  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write --ignore-unknown"
@@ -51,7 +55,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
-    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../pyrog-schema.yml && sed -i '' '4s#({ baseUrl: \"https://example.com\" })##' ./src/services/api/generated/api.generated.ts"
+    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../pyrog-schema.yml"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -69,6 +73,8 @@
     ]
   },
   "devDependencies": {
+    "@types/js-cookie": "^2.2.6",
+    "@types/node-fetch": "^2.5.10",
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.20.0",
@@ -80,6 +86,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "4.3.6",
     "lint-staged": "10.5.3",
+    "msw": "^0.28.1",
     "prettier": "2.2.1"
   }
 }
