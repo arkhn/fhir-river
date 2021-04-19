@@ -4,6 +4,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,15 +13,18 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
-import io.prometheus.client.Counter;
-import io.prometheus.client.Histogram;
+
 import redis.clients.jedis.Jedis;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
-public class ResourceConsumer {
+public class ResourceConsumer extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws Exception {
         try {
@@ -31,8 +35,8 @@ public class ResourceConsumer {
     }
 
     @Bean
-    public ResourceListener resourceListener() {
-        return new ResourceListener();
+    public ResourceListener resourceListener(MeterRegistry registry) {
+        return new ResourceListener(registry);
     }
 
     @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
@@ -52,35 +56,41 @@ public class ResourceConsumer {
         @Autowired
         private RedisCounterProperties redisCounterProperties;
 
-        static final Histogram loadMetrics = Histogram.build().name("time_load").help("Time to perform load.")
-                .register();
-        static final Counter failedInsertions = Counter.build().name("count_failed_insertions")
-                .help("Number of failed insertions.").register();
-        static final Counter successfulInsertions = Counter.build().name("count_successful_insertions")
-                .help("Number of successful insertions.").register();
+        private Counter failedInsertions;
+        private Counter successfulInsertions;
+
+        ResourceListener(MeterRegistry registry) {
+            failedInsertions = registry.counter("count_failed_insertions");
+            successfulInsertions = registry.counter("count_successful_insertions");
+        }
 
         @KafkaHandler
+        @Timed(value = "time_load")
         public void listen(KafkaMessage message) {
             String batchId = message.getBatchId();
             String resourceId = message.getResourceId();
 
             IParser parser = myFhirContext.newJsonParser();
-            IBaseResource r = parser.parseResource(message.getFhirObject().toString());
+            IBaseResource r;
+            try {
+                r = parser.parseResource(message.getFhirObject().toString());
+            } catch (ca.uhn.fhir.parser.DataFormatException e) {
+                logger.error(String.format("Could not parse resource: %s", e.toString()));
+                failedInsertions.increment();
+                return;
+            }
 
             @SuppressWarnings("unchecked")
             IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(r.getClass().getSimpleName());
 
-            Histogram.Timer loadTimer = loadMetrics.startTimer();
             try {
                 // TODO how does the following method tells us that something wrong happened
                 dao.update(r);
-                successfulInsertions.inc();
+                successfulInsertions.increment();
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e.toString()));
-                failedInsertions.inc();
+                failedInsertions.increment();
                 return;
-            } finally {
-                loadTimer.observeDuration();
             }
 
             // Send load event

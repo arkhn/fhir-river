@@ -1,6 +1,4 @@
 spring:
-  main:
-    web-application-type: none
   datasource:
     jdbcUrl: "jdbc:postgresql://postgres:5432/test-hapi-db"
     username: hapi
@@ -35,6 +33,12 @@ spring:
   batch:
     job:
       enabled: false
+  elasticsearch:
+    rest:
+      uris:
+        - http://elasticsearch:9200
+      username: elastic
+      password: SomePassword
 
 hapi:
   loader:
@@ -152,3 +156,13 @@ elasticsearch:
   rest_url: "elasticsearch:9200"
   protocol: http
   schema_management_strategy: CREATE
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
