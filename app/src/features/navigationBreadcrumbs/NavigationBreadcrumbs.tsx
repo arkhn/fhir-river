@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceBreadcrumbs = (): JSX.Element => {
+const NavigationBreadcrumbs = (): JSX.Element => {
   const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
@@ -57,4 +57,4 @@ const SourceBreadcrumbs = (): JSX.Element => {
   );
 };
 
-export default SourceBreadcrumbs;
+export default NavigationBreadcrumbs;
