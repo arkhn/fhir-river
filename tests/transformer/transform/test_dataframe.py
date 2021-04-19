@@ -106,6 +106,9 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     assert cleaned_data == expected
 
 
+# TODO tests filter_with_conditions
+
+
 @mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
 def test_merge_by_attributes(_):
     attr_name = Attribute("name")
@@ -157,7 +160,7 @@ def test_merge_by_attributes(_):
         ("name", "id_name", "PUBLIC_PATIENTS_NAME"): ["bob"],
         ("id", "id_id", "PUBLIC_PATIENTS_ID"): ["id1"],
         ("id", "id_id", "PUBLIC_PATIENTS_ID2"): ["id21"],
-        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): ["lang1", "lang2", "lang3", "lang4"],
+        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): [None, None, None, None],
         ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", "lang22", "lang23", "lang24"],
         ("language", "id_language_3", "PUBLIC_ADMISSIONS_LANGUAGE_3"): ["lang31", "lang32", "lang33", "lang34"],
         ("admid", "id_admid", "PUBLIC_ADMISSIONS_ID"): ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
@@ -199,9 +202,8 @@ def test_merge_by_attributes_with_condition_arrays(_):
     )
 
     data = {
-        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): ["lang1", "lang2", "lang3", "lang4"],
-        ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", "lang22", "lang23", "lang24"],
-        (CONDITION_FLAG, "PUBLIC_ADMISSIONS_COND_LANG"): ["2", "1", "1", "0"],
+        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): [None, "lang2", "lang3", None],
+        ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", None, None, None],
     }
 
     attributes = [attr_language]

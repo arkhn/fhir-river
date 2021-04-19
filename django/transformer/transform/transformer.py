@@ -3,7 +3,7 @@ from uuid import UUID, uuid5
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
-from transformer.transform.dataframe import clean_data, merge_by_attributes
+from transformer.transform.dataframe import clean_data, filter_with_conditions, merge_by_attributes
 from transformer.transform.fhir import build_fhir_object, build_metadata
 
 logger = logging.getLogger(__name__)
@@ -36,9 +36,19 @@ class Transformer:
         logger.debug({"message": f"Apply cleaning to {data}", **logging_extras})
         data = clean_data(data, analysis.attributes, analysis.primary_key_column, primary_key_value)
 
+        # Filter with conditions
+        print("++++++++++++++")
+        print(data)
+        logger.debug({"message": f"Filter data with conditions: {data}", **logging_extras})
+        data = filter_with_conditions(data, analysis.attributes, primary_key_value)
+        print("--------------")
+        print(data)
+
         # Apply merging scripts on data
         logger.debug({"message": f"Apply merging scripts to {data}", **logging_extras})
         data = merge_by_attributes(data, analysis.attributes, primary_key_value)
+        print("===============")
+        print(data)
 
         logger.debug({"message": f"Transformed data: {data}", **logging_extras})
         return data
