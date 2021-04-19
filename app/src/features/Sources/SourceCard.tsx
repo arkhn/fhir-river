@@ -2,9 +2,7 @@ import React, { useState } from "react";
 
 import {
   Card,
-  CardContent,
   CardHeader,
-  CircularProgress,
   Divider,
   IconButton,
   ListItemIcon,
@@ -15,22 +13,16 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
-import AttributeIcon from "@material-ui/icons/LocalOffer";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import ManagePermissionsIcon from "@material-ui/icons/Person";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { ReactComponent as MappingIcon } from "assets/icons/mapping_icon.svg";
-import CardContentItem from "common/CardContentItem/CardContentItem";
-import {
-  useDestroySourceMutation,
-  useListSourceAttributes,
-  useListSourceResources,
-} from "services/api/api";
+import { useAppDispatch } from "app/store";
+import { useApiSourcesDestroyMutation } from "services/api/endpoints";
 import { Source } from "services/api/generated/api.generated";
 
-import { useAppDispatch } from "../../app/store";
+import SourceCardInfo from "./SourceCardInfo";
 import { editSource } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
@@ -54,14 +46,6 @@ const useStyles = makeStyles((theme) => ({
     }`,
     borderRadius: 5,
   },
-  icon: {
-    width: 12,
-    height: 12,
-    marginRight: theme.spacing(1),
-    "& path": {
-      fill: theme.palette.text.secondary,
-    },
-  },
 }));
 
 type SourceCardProps = {
@@ -75,34 +59,18 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const [deleteSource] = useDestroySourceMutation();
-
-  const {
-    data: mappings,
-    isLoading: isMappingLoading,
-  } = useListSourceResources(source);
-  const {
-    data: attributes,
-    isLoading: isAttributesLoading,
-  } = useListSourceAttributes(source);
-
-  const attributesCount = attributes?.length;
-  const mappingsCount = mappings?.length;
-
-  const isSourceInfosLoading = isMappingLoading || isAttributesLoading;
+  const [deleteSource] = useApiSourcesDestroyMutation();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => setAnchorEl(null);
-  const handleManagePermissions = () => handleClose();
-  const handleRenameSource = () => {
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleEditSource = () => {
     dispatch(editSource(source));
-    handleClose();
+    handleMenuClose();
   };
-  const handleDeleteSource = () => {
-    source.id && deleteSource({ id: source.id });
-  };
+  const handleDeleteSource = () => deleteSource({ id: source.id });
 
   return (
     <Card className={classes.root} variant="outlined">
@@ -122,7 +90,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
-              onClose={handleClose}
+              onClose={handleMenuClose}
               getContentAnchorEl={null}
               variant="menu"
               anchorOrigin={{
@@ -134,17 +102,17 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
                 horizontal: "left",
               }}
             >
-              <MenuItem onClick={handleManagePermissions} disabled>
+              <MenuItem disabled>
                 <ListItemIcon className={classes.listItemIcon}>
                   <ManagePermissionsIcon />
                 </ListItemIcon>
                 <ListItemText primary={t("managePermissions")} />
               </MenuItem>
-              <MenuItem onClick={handleRenameSource}>
+              <MenuItem onClick={handleEditSource}>
                 <ListItemIcon className={classes.listItemIcon}>
                   <EditIcon />
                 </ListItemIcon>
-                <ListItemText primary={t("rename")} />
+                <ListItemText primary={t("edit")} />
               </MenuItem>
               <Divider />
               <MenuItem onClick={handleDeleteSource}>
@@ -162,26 +130,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
           </>
         }
       />
-      <CardContent>
-        {isSourceInfosLoading ? (
-          <CircularProgress />
-        ) : (
-          <>
-            {undefined !== mappingsCount && (
-              <CardContentItem
-                label={t("mappingCount", { count: mappingsCount })}
-                startAdornment={<MappingIcon className={classes.icon} />}
-              />
-            )}
-            {undefined !== attributesCount && (
-              <CardContentItem
-                label={t("attributesCount", { count: attributesCount })}
-                startAdornment={<AttributeIcon className={classes.icon} />}
-              />
-            )}
-          </>
-        )}
-      </CardContent>
+      <SourceCardInfo source={source} />
     </Card>
   );
 };

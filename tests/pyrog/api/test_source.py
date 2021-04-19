@@ -73,7 +73,17 @@ def test_create_full_source(api_client, export_data):
 
 @pytest.mark.as_user
 def test_retrieve_full_source(
-    snapshot, reset_factories_sequences, api_client, source, resource, attribute, input_group, input, column, condition
+    snapshot,
+    reset_factories_sequences,
+    api_client,
+    source,
+    credential,
+    resource,
+    attribute,
+    input_group,
+    input,
+    column,
+    condition,
 ):
     url = reverse("sources-detail", kwargs={"pk": source.id})
 
