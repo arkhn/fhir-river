@@ -7,17 +7,17 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { ExitToApp } from "@material-ui/icons";
-import { useTranslation } from "react-i18next/*";
+import { ExitToApp, Launch } from "@material-ui/icons";
+import { useTranslation } from "react-i18next";
 
 import { useApiUserRetrieveQuery } from "services/api/endpoints";
 import { OIDC_LOGIN_URL, OIDC_LOGOUT_URL } from "services/oidc/urls";
 
 const useStyles = makeStyles((theme) => ({
-  logoutButton: {
+  button: {
     textTransform: "none",
   },
-  logoutIcon: {
+  icon: {
     marginRight: theme.spacing(1),
     fill: theme.palette.text.secondary,
   },
@@ -41,14 +41,19 @@ const User = (): JSX.Element => {
         <>
           <Typography color="textSecondary">{user.email}</Typography>
           <Divider orientation="vertical" className={classes.verticalDivider} />
-          <Button href={OIDC_LOGOUT_URL} className={classes.logoutButton}>
-            <ExitToApp className={classes.logoutIcon} />
+          <Button href={OIDC_LOGOUT_URL} className={classes.button}>
+            <ExitToApp className={classes.icon} />
             <Typography color="textSecondary">{t("logout")}</Typography>
           </Button>
         </>
       ) : (
-        <Button href={OIDC_LOGIN_URL} color="inherit">
-          {t("login")}
+        <Button
+          href={OIDC_LOGIN_URL}
+          color="inherit"
+          className={classes.button}
+        >
+          <Launch className={classes.icon} />
+          <Typography color="textSecondary">{t("login")}</Typography>
         </Button>
       )}
     </>

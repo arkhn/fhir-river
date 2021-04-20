@@ -2,7 +2,7 @@ import { fetchBaseQuery } from "@rtk-incubator/rtk-query";
 import Cookies from "js-cookie";
 import { omitBy, isUndefined } from "lodash";
 
-import { API_URL } from "./constants";
+import { API_URL } from "./urls";
 
 /**
  * Fetch wrapper
@@ -40,12 +40,6 @@ export const apiBaseQuery: ReturnType<typeof fetchBaseQuery> = async (
     };
   }
   const result = await baseQuery(args, api, extraOptions);
-  if (result.error) {
-    if (result.error.status === 401) {
-      // TODO: handle authentication errors
-      // api.dispatch(logout());
-    }
-    // api.dispatch(logApiError(result.error));
-  }
+  // if (result.error?.status === 401) api.dispatch(logout());
   return result;
 };
