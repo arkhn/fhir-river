@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { ExitToApp, Launch } from "@material-ui/icons";
+import type { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -31,14 +32,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const User = (): JSX.Element => {
+const UserAuth = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
 
   const { isLoading, data: user } = useApiUserRetrieveQuery({});
   const [oidcLogout] = useOidcLogoutMutation();
 
-  const handleLogout = () => oidcLogout({});
+  const handleLogout = async () => {
+    try {
+      await oidcLogout({}).unwrap();
+    } catch (e) {
+      // The oidc logout route returns a http-redirect (302).
+      // Since Fetch redirect option is set to manual, we catch
+      // a special response object with zeroed status
+      const err: FetchBaseQueryError = e;
+      if (err.status === 0) document.location.reload();
+    }
+  };
 
   if (isLoading) return <CircularProgress />;
   return (
@@ -66,4 +77,4 @@ const User = (): JSX.Element => {
   );
 };
 
-export default User;
+export default UserAuth;

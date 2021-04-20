@@ -2,6 +2,9 @@ import { fetchBaseQuery } from "@rtk-incubator/rtk-query";
 import Cookies from "js-cookie";
 import { omitBy, isUndefined } from "lodash";
 
+import { RootState } from "app/store";
+import { api as river } from "services/api/endpoints";
+
 import { API_URL } from "./urls";
 
 /**
@@ -10,6 +13,7 @@ import { API_URL } from "./urls";
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
   credentials: "include",
+  redirect: "manual",
   prepareHeaders: (headers) => {
     const token = Cookies.get("csrftoken");
     if (token) {
@@ -40,6 +44,14 @@ export const apiBaseQuery: ReturnType<typeof fetchBaseQuery> = async (
     };
   }
   const result = await baseQuery(args, api, extraOptions);
-  // if (result.error?.status === 401) api.dispatch(logout());
+  const userSelector = river.endpoints.apiUserRetrieve.select({});
+  const { data: user } = userSelector(api.getState() as RootState);
+  if (result.error && [401, 403].includes(result.error.status) && user)
+    api.dispatch(
+      river.endpoints.apiUserRetrieve.initiate(
+        {},
+        { subscribe: false, forceRefetch: true }
+      )
+    );
   return result;
 };

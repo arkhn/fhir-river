@@ -1,7 +1,9 @@
 import React from "react";
 
 import { makeStyles } from "@material-ui/core";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Switch } from "react-router-dom";
+
+import PrivateRoute from "features/User/UserRoute";
 
 import AppBar from "./AppBar";
 import PageNotFound from "./PageNotFound";
@@ -20,12 +22,12 @@ const Router = (): JSX.Element => {
       <AppBar />
       <div className={classes.body}>
         <Switch>
-          <Route exact path={["/", "/sources"]}>
+          <PrivateRoute exact path={["/", "/sources"]}>
             <Sources />
-          </Route>
-          <Route>
+          </PrivateRoute>
+          <PrivateRoute>
             <PageNotFound />
-          </Route>
+          </PrivateRoute>
         </Switch>
       </div>
     </BrowserRouter>

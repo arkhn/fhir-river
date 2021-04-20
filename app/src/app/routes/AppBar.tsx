@@ -5,7 +5,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
 import { ReactComponent as Logo } from "assets/icons/arkhn-logo.svg";
-import User from "features/User/User";
+import UserAuth from "features/User/UserAuth";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -56,7 +56,7 @@ const AppBar = (): JSX.Element => {
               </Typography>
             </Link>
           </div>
-          <User />
+          <UserAuth />
         </>
       }
     />
