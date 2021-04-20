@@ -39,7 +39,7 @@ export const ownerFactory = Factory.define<Owner>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     name: "public",
-    schema: JSON.parse(faker.datatype.json()),
+    schema: { table: ["column"] },
     credential: associations.credential || credentialFactory.build().id,
   })
 );
