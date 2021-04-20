@@ -7,9 +7,15 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useHistory, useParams } from "react-router-dom";
 
 import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
+import {
+  Resource,
+  useApiResourcesRetrieveQuery,
+} from "services/api/generated/api.generated";
+
+import MappingSelectButton from "./MappingSelectButton";
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -30,8 +36,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NavigationBreadcrumbs = (): JSX.Element => {
+  const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const history = useHistory();
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
+    mappingId?: string;
+  }>();
 
   const { data: source } = useApiSourcesRetrieveQuery(
     {
@@ -39,8 +50,17 @@ const NavigationBreadcrumbs = (): JSX.Element => {
     },
     { skip: !sourceId }
   );
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    {
+      id: mappingId ?? "",
+    },
+    { skip: !mappingId }
+  );
 
-  const classes = useStyles();
+  const handleMappingChange = (newMapping: Resource) => {
+    history.push(`/source/${sourceId}/mapping/${newMapping.id}`);
+  };
+
   return (
     <Breadcrumbs separator=">" classes={{ separator: classes.separator }}>
       <Link variant="h5" color="textSecondary" to="/">
@@ -50,11 +70,18 @@ const NavigationBreadcrumbs = (): JSX.Element => {
         <Link
           className={classes.mainCrumb}
           variant="h5"
-          color="textPrimary"
+          color={mapping ? "textSecondary" : "textPrimary"}
           to={`/source/${source.id}`}
         >
           {source.name}
         </Link>
+      )}
+      {source && mapping && (
+        <MappingSelectButton
+          mapping={mapping}
+          source={source}
+          onChange={handleMappingChange}
+        />
       )}
     </Breadcrumbs>
   );

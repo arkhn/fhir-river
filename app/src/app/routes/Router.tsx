@@ -31,6 +31,7 @@ const Router = (): JSX.Element => {
           <Route exact path="/source/:sourceId/mapping">
             <CreateMapping />
           </Route>
+          <Route exact path="/source/:sourceId/mapping/:mappingId"></Route>
           <Route>
             <PageNotFound />
           </Route>
