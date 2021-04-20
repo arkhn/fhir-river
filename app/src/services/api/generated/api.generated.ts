@@ -1,4 +1,4 @@
-import { createApi } from "@rtk-incubator/rtk-query";
+import { createApi } from "@rtk-incubator/rtk-query/react";
 import { apiBaseQuery } from "../apiBaseQuery";
 export const api = createApi({
   baseQuery: apiBaseQuery,

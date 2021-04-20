@@ -22,67 +22,101 @@ export const api = generatedApi
     ],
     endpoints: {
       apiSourcesList: {
-        provides: (response) => [
-          ...response.map(({ id }) => ({ type: "Sources" as const, id })),
-          { type: "Sources", id: "LIST" },
-        ],
+        providesTags: (response) =>
+          response
+            ? [
+                ...response.map(({ id }) => ({ type: "Sources" as const, id })),
+                { type: "Sources", id: "LIST" },
+              ]
+            : [{ type: "Sources", id: "LIST" }],
       },
       apiSourcesCreate: {
-        invalidates: [{ type: "Sources", id: "LIST" }],
+        invalidatesTags: [{ type: "Sources", id: "LIST" }],
       },
       apiSourcesRetrieve: {
-        provides: (_, { id }) => [{ type: "Sources", id }],
+        providesTags: (_response, _error, { id }) => [{ type: "Sources", id }],
       },
       apiSourcesUpdate: {
-        invalidates: (_, { id }) => [{ type: "Sources", id }],
+        invalidatesTags: (_response, _error, { id }) => [
+          { type: "Sources", id },
+        ],
       },
       apiSourcesDestroy: {
-        invalidates: (_, { id }) => [{ type: "Sources", id }],
+        invalidatesTags: (_response, _error, { id }) => [
+          { type: "Sources", id },
+        ],
       },
       apiResourcesList: {
-        provides: (response) => [
-          ...response.map(({ id }) => ({ type: "Resources" as const, id })),
-          { type: "Resources", id: "LIST" },
-        ],
+        providesTags: (response) =>
+          response
+            ? [
+                ...response.map(({ id }) => ({
+                  type: "Resources" as const,
+                  id,
+                })),
+                { type: "Resources", id: "LIST" },
+              ]
+            : [{ type: "Resources", id: "LIST" }],
       },
       apiAttributesList: {
-        provides: (response) => [
-          ...response.map(({ id }) => ({ type: "Attributes" as const, id })),
-          { type: "Attributes", id: "LIST" },
-        ],
+        providesTags: (response) =>
+          response
+            ? [
+                ...response.map(({ id }) => ({
+                  type: "Attributes" as const,
+                  id,
+                })),
+                { type: "Attributes", id: "LIST" },
+              ]
+            : [{ type: "Attributes", id: "LIST" }],
       },
       apiOwnersList: {
-        provides: (response) => [
-          ...response.map(({ id }) => ({ type: "Owners" as const, id })),
-          { type: "Owners", id: "LIST" },
-        ],
+        providesTags: (response) =>
+          response
+            ? [
+                ...response.map(({ id }) => ({ type: "Owners" as const, id })),
+                { type: "Owners", id: "LIST" },
+              ]
+            : [{ type: "Owners", id: "LIST" }],
       },
       apiOwnersCreate: {
-        invalidates: [{ type: "Owners", id: "LIST" }],
+        invalidatesTags: [{ type: "Owners", id: "LIST" }],
       },
       apiOwnersDestroy: {
-        invalidates: (_, { id }) => [{ type: "Owners", id }],
-      },
-      apiCredentialsList: {
-        provides: (response) => [
-          ...response.map(({ id }) => ({ type: "Credentials" as const, id })),
-          { type: "Credentials", id: "LIST" },
+        invalidatesTags: (_response, _error, { id }) => [
+          { type: "Owners", id },
         ],
       },
+      apiCredentialsList: {
+        providesTags: (response) =>
+          response
+            ? [
+                ...response.map(({ id }) => ({
+                  type: "Credentials" as const,
+                  id,
+                })),
+                { type: "Credentials", id: "LIST" },
+              ]
+            : [{ type: "Credentials", id: "LIST" }],
+      },
       apiCredentialsCreate: {
-        invalidates: [{ type: "Credentials", id: "LIST" }],
+        invalidatesTags: [{ type: "Credentials", id: "LIST" }],
       },
       apiCredentialsRetrieve: {
-        provides: (_, { id }) => [{ type: "Credentials", id }],
+        providesTags: (_response, _error, { id }) => [
+          { type: "Credentials", id },
+        ],
       },
       apiCredentialsUpdate: {
-        invalidates: (_, { id }) => [{ type: "Credentials", id }],
+        invalidatesTags: (_response, _error, { id }) => [
+          { type: "Credentials", id },
+        ],
       },
       apiUserRetrieve: {
-        provides: ({ id }) => [{ type: "User", id }],
+        providesTags: ["User"],
       },
       oidcLogout: {
-        invalidates: ["User"],
+        invalidatesTags: ["User"],
       },
     },
   });
