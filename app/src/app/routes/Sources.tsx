@@ -2,9 +2,9 @@ import React from "react";
 
 import { Container, Grid, makeStyles } from "@material-ui/core";
 
-import SourceCreate from "features/Sources/SourceCreate";
-import SourceDrawer from "features/Sources/SourceDrawer";
-import SourceGrid from "features/Sources/SourceGrid";
+import SourceCreate from "features/sources/SourceCreate";
+import SourceDrawer from "features/sources/SourceDrawer";
+import SourceGrid from "features/sources/SourceGrid";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {

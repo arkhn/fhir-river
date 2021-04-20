@@ -24,5 +24,8 @@
   "password": "Password",
   "vendor": "Vendor",
   "pageNotFound": "Woops... Seems like this page doesn't exist.",
-  "logout": "Log out"
+  "logout": "Log out",
+  "sources": "Sources",
+  "filterWithCount": "{{count}} filter",
+  "filterWithCount_plural": "{{count}} filters"
 }
