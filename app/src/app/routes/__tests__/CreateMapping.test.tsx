@@ -55,42 +55,42 @@ describe("Mapping creation page", () => {
       path: "/source/:sourceId/mapping",
       route: `/source/sourceId/mapping`,
     });
-    screen.getByText(/define a source table/i);
-    screen.getByText(/select a fhir resource/i);
-    screen.getByText(/choose a fhir profile/i);
-    screen.getByText(/name mapping/i);
+    await screen.findByText(/define a source table/i);
+    await screen.findByText(/select a fhir resource/i);
+    await screen.findByText(/choose a fhir profile/i);
+    await screen.findByText(/name mapping/i);
 
     // primary_key_table selection
     userEvent.click(
       await screen.findByRole("button", { name: /select table/i })
     );
-    userEvent.click(screen.getByRole("option", { name: /^table$/i }));
+    userEvent.click(await screen.findByRole("option", { name: /^table$/i }));
 
     // primary_key_column selection
     userEvent.click(
       await screen.findByRole("button", { name: /select column/i })
     );
-    userEvent.click(screen.getByRole("option", { name: /^column$/i }));
+    userEvent.click(await screen.findByRole("option", { name: /^column$/i }));
 
-    userEvent.click(screen.getByRole("button", { name: /next/i }));
+    userEvent.click(await screen.findByRole("button", { name: /next/i }));
 
     // Second step header text
-    screen.getByText(
+    await screen.findByText(
       /^please select the fhir resource that you want to generate from the source$/i
     );
 
     // FHIR Resource selection
-    userEvent.click(screen.getByText(/account/i));
-    userEvent.click(screen.getByRole("button", { name: /next/i }));
+    userEvent.click(await screen.findByText(/account/i));
+    userEvent.click(await screen.findByRole("button", { name: /next/i }));
 
     // Third step header text
-    screen.getByText(/^Please select a profile for the/i);
+    await screen.findByText(/^Please select a profile for the/i);
 
-    userEvent.click(screen.getByText(/default profile/i));
-    userEvent.click(screen.getByRole("button", { name: /next/i }));
+    userEvent.click(await screen.findByText(/default profile/i));
+    userEvent.click(await screen.findByRole("button", { name: /next/i }));
 
     // Fourth step header text
-    screen.getByText(
+    await screen.findByText(
       /^Almost there ! Give a user-friendly name to your mapping$/i
     );
 
