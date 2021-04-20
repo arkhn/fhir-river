@@ -10,8 +10,11 @@ import {
 import { ExitToApp, Launch } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
-import { useApiUserRetrieveQuery } from "services/api/endpoints";
-import { OIDC_LOGIN_URL, OIDC_LOGOUT_URL } from "services/oidc/urls";
+import {
+  useApiUserRetrieveQuery,
+  useOidcLogoutMutation,
+} from "services/api/endpoints";
+import { OIDC_LOGIN_URL } from "services/oidc/urls";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -33,6 +36,9 @@ const User = (): JSX.Element => {
   const classes = useStyles();
 
   const { isLoading, data: user } = useApiUserRetrieveQuery({});
+  const [oidcLogout] = useOidcLogoutMutation();
+
+  const handleLogout = () => oidcLogout({});
 
   if (isLoading) return <CircularProgress />;
   return (
@@ -41,7 +47,7 @@ const User = (): JSX.Element => {
         <>
           <Typography color="textSecondary">{user.email}</Typography>
           <Divider orientation="vertical" className={classes.verticalDivider} />
-          <Button href={OIDC_LOGOUT_URL} className={classes.button}>
+          <Button onClick={handleLogout} className={classes.button}>
             <ExitToApp className={classes.icon} />
             <Typography color="textSecondary">{t("logout")}</Typography>
           </Button>

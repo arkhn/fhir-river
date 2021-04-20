@@ -12,7 +12,7 @@ SECRET_KEY = "USE_IN_DEV_ONLY"
 # CorsHeaders
 # Intended for headless frontend development
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Rest Framework
