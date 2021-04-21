@@ -1,11 +1,19 @@
 import {
-  defaultTags,
   providesList,
   providesOne,
   invalidatesList,
   invalidatesOne,
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
+
+const entityTypes = [
+  "Sources",
+  "Resources",
+  "Attributes",
+  "Owners",
+  "Credentials",
+  "User",
+];
 
 export const api = generatedApi
   .injectEndpoints({
@@ -19,14 +27,7 @@ export const api = generatedApi
     }),
   })
   .enhanceEndpoints({
-    addEntityTypes: [
-      "Sources",
-      "Resources",
-      "Attributes",
-      "Owners",
-      "Credentials",
-      "User",
-    ].concat(defaultTags),
+    addEntityTypes: entityTypes,
     endpoints: {
       apiSourcesList: {
         providesTags: providesList("Sources"),

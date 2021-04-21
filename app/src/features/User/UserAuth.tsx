@@ -7,15 +7,13 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { ExitToApp, Launch } from "@material-ui/icons";
-import type { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
+import { ExitToApp } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 import {
   useApiUserRetrieveQuery,
   useOidcLogoutMutation,
 } from "services/api/endpoints";
-import { OIDC_LOGIN_URL } from "services/oidc/urls";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -32,49 +30,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const UserAuth = (): JSX.Element => {
+const UserAuth = (): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
 
   const { isLoading, data: user } = useApiUserRetrieveQuery({});
   const [oidcLogout] = useOidcLogoutMutation();
 
-  const handleLogout = async () => {
-    try {
-      await oidcLogout({}).unwrap();
-    } catch (e) {
-      // The oidc logout route returns a http-redirect (302).
-      // Since Fetch redirect option is set to manual, we catch
-      // a special response object with zeroed status
-      const err: FetchBaseQueryError = e;
-      if (err.status === 0) document.location.reload();
-    }
+  const handleLogout = () => {
+    oidcLogout({});
   };
 
   if (isLoading) return <CircularProgress />;
-  return (
-    <>
-      {user ? (
-        <>
-          <Typography color="textSecondary">{user.email}</Typography>
-          <Divider orientation="vertical" className={classes.verticalDivider} />
-          <Button onClick={handleLogout} className={classes.button}>
-            <ExitToApp className={classes.icon} />
-            <Typography color="textSecondary">{t("logout")}</Typography>
-          </Button>
-        </>
-      ) : (
+  if (user)
+    return (
+      <>
+        <Typography color="textSecondary">{user.email}</Typography>
+        <Divider orientation="vertical" className={classes.verticalDivider} />
         <Button
-          href={OIDC_LOGIN_URL}
-          color="inherit"
+          onClick={handleLogout}
           className={classes.button}
+          startIcon={<ExitToApp className={classes.icon} />}
         >
-          <Launch className={classes.icon} />
-          <Typography color="textSecondary">{t("login")}</Typography>
+          <Typography color="textSecondary">{t("logout")}</Typography>
         </Button>
-      )}
-    </>
-  );
+      </>
+    );
+  return null;
 };
 
 export default UserAuth;
