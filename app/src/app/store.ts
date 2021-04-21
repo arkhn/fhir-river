@@ -7,6 +7,7 @@ import {
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import user from "features/auth/userSlice";
+import mapping from "features/mappings/mappingSlice";
 import source from "features/sources/sourceSlice";
 import { api } from "services/api/endpoints";
 
@@ -14,6 +15,7 @@ const appReducer = combineReducers({
   [api.reducerPath]: api.reducer,
   source,
   user,
+  mapping,
 });
 
 export const resetState = createAction("state/reset");

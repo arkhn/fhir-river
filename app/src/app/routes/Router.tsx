@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AppBar from "./AppBar";
+import CreateMapping from "./CreateMapping";
 import PageNotFound from "./PageNotFound";
 import SourceMappings from "./SourceMappings";
 import Sources from "./Sources";
@@ -26,6 +27,9 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/source/:sourceId">
             <SourceMappings />
+          </Route>
+          <Route exact path="/source/:sourceId/mapping">
+            <CreateMapping />
           </Route>
           <Route>
             <PageNotFound />
