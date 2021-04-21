@@ -154,37 +154,39 @@ const FilterSelects = ({
           </IconButton>
         </Grid>
       </Grid>
-      <Grid item container>
-        <div className={classes.leftShift}>
-          <Grid container direction="column" spacing={1}>
-            <Grid item>
-              <Typography gutterBottom={false}>{t("joinOn")}</Typography>
+      {joins.length > 0 && (
+        <Grid item container>
+          <div className={classes.leftShift}>
+            <Grid container direction="column" spacing={1}>
+              <Grid item>
+                <Typography gutterBottom={false}>{t("joinOn")}</Typography>
+              </Grid>
+              {joins.map((join, index) => (
+                <JoinSelects
+                  key={join.id}
+                  filter={filter.id}
+                  join={join}
+                  owner={owner}
+                  disableDelete={
+                    Boolean(isMappingPKTableAndFilterPKTableDifferent) &&
+                    index === 0
+                  }
+                />
+              ))}
+              <Grid item>
+                <Button
+                  className={classes.button}
+                  startIcon={<AddIcon />}
+                  onClick={handleAddJoinClick}
+                  variant="outlined"
+                >
+                  <Typography>{t("addJoin")}</Typography>
+                </Button>
+              </Grid>
             </Grid>
-            {joins.map((join, index) => (
-              <JoinSelects
-                key={join.id}
-                filter={filter.id}
-                join={join}
-                owner={owner}
-                disableDelete={
-                  Boolean(isMappingPKTableAndFilterPKTableDifferent) &&
-                  index === 0
-                }
-              />
-            ))}
-            <Grid item>
-              <Button
-                className={classes.button}
-                startIcon={<AddIcon />}
-                onClick={handleAddJoinClick}
-                variant="outlined"
-              >
-                <Typography>{t("addJoin")}</Typography>
-              </Button>
-            </Grid>
-          </Grid>
-        </div>
-      </Grid>
+          </div>
+        </Grid>
+      )}
     </Grid>
   );
 };
