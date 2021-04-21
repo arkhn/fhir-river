@@ -6,7 +6,8 @@ import { Grid, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import Select from "common/Select/Select";
+import Select from "common/components/Select";
+import usePrevious from "common/hooks/usePrevious";
 import { Owner } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,6 +44,9 @@ const ColumnSelects = ({
   const isPKTableSelected = !!PKTable;
   const isPKColumnSelected = !!PKColumn;
 
+  const prevPKTable = usePrevious(PKTable);
+  const hasPKTableChanged = prevPKTable !== PKTable;
+
   const handlePKTableChange = (
     event: React.ChangeEvent<{
       name?: string | undefined;
@@ -61,14 +65,17 @@ const ColumnSelects = ({
   };
 
   useEffect(() => {
-    if (owner && owner.schema) {
+    if (owner?.schema && hasPKTableChanged) {
       const schema = owner.schema as Record<string, string[]>;
       if (PKTable) {
-        onPKColumnChange && onPKColumnChange();
+        // Reset PKColumn only if it is not in the new PKTable column list
+        if (PKColumn && !schema[PKTable].includes(PKColumn)) {
+          onPKColumnChange && onPKColumnChange();
+        }
         setPKColumns(schema[PKTable]);
       }
     }
-  }, [owner, PKTable]);
+  }, [owner?.schema, hasPKTableChanged, PKTable, PKColumn]);
 
   return (
     <>

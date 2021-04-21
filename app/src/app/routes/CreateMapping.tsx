@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import StepPanel from "common/Stepper/StepPanel";
+import StepPanel from "common/components/Stepper/StepPanel";
 import FhirProfileStep from "features/mappings/FhirProfileStep";
 import FhirResourceStep from "features/mappings/FhirResourceStep";
 import MappingCreationStepper from "features/mappings/MappingCreationStepper";
