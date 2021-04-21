@@ -1,3 +1,10 @@
+import {
+  defaultTags,
+  providesList,
+  providesOne,
+  invalidatesList,
+  invalidatesOne,
+} from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
 export const api = generatedApi
@@ -19,98 +26,49 @@ export const api = generatedApi
       "Owners",
       "Credentials",
       "User",
-    ],
+    ].concat(defaultTags),
     endpoints: {
       apiSourcesList: {
-        providesTags: (response) =>
-          response
-            ? [
-                ...response.map(({ id }) => ({ type: "Sources" as const, id })),
-                { type: "Sources", id: "LIST" },
-              ]
-            : [{ type: "Sources", id: "LIST" }],
+        providesTags: providesList("Sources"),
       },
       apiSourcesCreate: {
-        invalidatesTags: [{ type: "Sources", id: "LIST" }],
+        invalidatesTags: invalidatesList("Sources"),
       },
       apiSourcesRetrieve: {
-        providesTags: (_response, _error, { id }) => [{ type: "Sources", id }],
+        providesTags: providesOne("Sources"),
       },
       apiSourcesUpdate: {
-        invalidatesTags: (_response, _error, { id }) => [
-          { type: "Sources", id },
-        ],
+        invalidatesTags: invalidatesOne("Sources"),
       },
       apiSourcesDestroy: {
-        invalidatesTags: (_response, _error, { id }) => [
-          { type: "Sources", id },
-        ],
+        invalidatesTags: invalidatesOne("Sources"),
       },
       apiResourcesList: {
-        providesTags: (response) =>
-          response
-            ? [
-                ...response.map(({ id }) => ({
-                  type: "Resources" as const,
-                  id,
-                })),
-                { type: "Resources", id: "LIST" },
-              ]
-            : [{ type: "Resources", id: "LIST" }],
+        providesTags: providesList("Resources"),
       },
       apiAttributesList: {
-        providesTags: (response) =>
-          response
-            ? [
-                ...response.map(({ id }) => ({
-                  type: "Attributes" as const,
-                  id,
-                })),
-                { type: "Attributes", id: "LIST" },
-              ]
-            : [{ type: "Attributes", id: "LIST" }],
+        providesTags: providesList("Attributes"),
       },
       apiOwnersList: {
-        providesTags: (response) =>
-          response
-            ? [
-                ...response.map(({ id }) => ({ type: "Owners" as const, id })),
-                { type: "Owners", id: "LIST" },
-              ]
-            : [{ type: "Owners", id: "LIST" }],
+        providesTags: providesList("Owners"),
       },
       apiOwnersCreate: {
-        invalidatesTags: [{ type: "Owners", id: "LIST" }],
+        invalidatesTags: invalidatesList("Owners"),
       },
       apiOwnersDestroy: {
-        invalidatesTags: (_response, _error, { id }) => [
-          { type: "Owners", id },
-        ],
+        invalidatesTags: invalidatesOne("Owners"),
       },
       apiCredentialsList: {
-        providesTags: (response) =>
-          response
-            ? [
-                ...response.map(({ id }) => ({
-                  type: "Credentials" as const,
-                  id,
-                })),
-                { type: "Credentials", id: "LIST" },
-              ]
-            : [{ type: "Credentials", id: "LIST" }],
+        providesTags: providesList("Credentials"),
       },
       apiCredentialsCreate: {
-        invalidatesTags: [{ type: "Credentials", id: "LIST" }],
+        invalidatesTags: invalidatesList("Credentials"),
       },
       apiCredentialsRetrieve: {
-        providesTags: (_response, _error, { id }) => [
-          { type: "Credentials", id },
-        ],
+        providesTags: providesOne("Credentials"),
       },
       apiCredentialsUpdate: {
-        invalidatesTags: (_response, _error, { id }) => [
-          { type: "Credentials", id },
-        ],
+        invalidatesTags: invalidatesOne("Credentials"),
       },
       apiUserRetrieve: {
         providesTags: ["User"],
