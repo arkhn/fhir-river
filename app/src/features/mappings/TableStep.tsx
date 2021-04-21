@@ -63,7 +63,7 @@ const TableStep = ({
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
           <ColumnSelects
@@ -77,17 +77,19 @@ const TableStep = ({
         {filters && filters.length > 0 && (
           <Grid item container spacing={1} direction="column">
             <Grid item>
-              <Typography gutterBottom={false}>Filter on :</Typography>
+              <Typography gutterBottom={false}>{t("filterOn")}</Typography>
             </Grid>
-            {filters.map((filter, index) => (
-              <Grid item container key={`filter ${index}`}>
+            <Grid item container spacing={5} direction="column">
+              {filters.map((filter, index) => (
                 <FilterSelects
+                  key={`filter ${index}`}
+                  mapping={mapping}
                   filter={filter}
                   owner={owner}
                   onChange={handleFilterChange}
                 />
-              </Grid>
-            ))}
+              ))}
+            </Grid>
           </Grid>
         )}
         <Grid item>
