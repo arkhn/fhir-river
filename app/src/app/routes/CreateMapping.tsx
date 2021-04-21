@@ -153,26 +153,32 @@ const CreateMapping = (): JSX.Element => {
           } as Resource,
         }).unwrap();
 
-        for (const filter of filters) {
-          try {
-            const createdColumn = await createColumn({
-              columnRequest: {
-                ...filter.col,
-                owner: owner.id,
-              } as Column,
-            }).unwrap();
+        try {
+          // Column creation
+          const createdColumns = await Promise.all(
+            filters.map(({ col }) =>
+              createColumn({
+                columnRequest: { ...col, owner: owner.id } as Column,
+              }).unwrap()
+            )
+          );
 
-            createFilter({
-              filterRequest: {
-                sql_column: createdColumn.id,
-                relation: filter.relation,
-                resource: createdMapping.id,
-                value: filter.value,
-              } as Filter,
-            });
-          } catch (error) {
-            // Fix: Handle Column & Filter creation errors
-          }
+          // Filter creation
+          await Promise.all(
+            filters.map(({ relation, value }, index) => {
+              const createdColumn = createdColumns[index];
+              return createFilter({
+                filterRequest: {
+                  sql_column: createdColumn.id,
+                  relation: relation,
+                  resource: createdMapping.id,
+                  value: value,
+                } as Filter,
+              }).unwrap();
+            })
+          );
+        } catch (error) {
+          // Fix: Handle Column & Filter creation errors
         }
 
         history.push(`/source/${sourceId}/mapping/${createdMapping.id}`);
