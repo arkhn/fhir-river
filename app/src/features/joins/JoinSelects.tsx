@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconButton, Grid, makeStyles, Typography } from "@material-ui/core";
+import { IconButton, Grid, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import { useAppDispatch } from "app/store";
@@ -11,9 +11,6 @@ import {
   updateJoin,
 } from "features/mappings/mappingSlice";
 import { Owner } from "services/api/generated/api.generated";
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const useStyles = makeStyles(() => ({}));
 
 type FilterSelectsProps = {
   filter?: string;
