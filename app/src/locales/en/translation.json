@@ -24,6 +24,5 @@
   "password": "Password",
   "vendor": "Vendor",
   "pageNotFound": "Woops... Seems like this page doesn't exist.",
-  "login": "Log in",
   "logout": "Log out"
 }
