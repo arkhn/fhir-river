@@ -198,14 +198,15 @@ def test_merge_by_attributes():
     attr_name.add_input_group(group)
 
     attr_id = Attribute("id")
-    group = InputGroup(
-        id_="id_id",
-        attribute=attr_id,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "ID"), SqlColumn("PUBLIC", "PATIENTS", "ID2")],
-        static_inputs=["unknown"],
-        merging_script=MergingScript("merge"),
+    attr_id.add_input_group(
+        InputGroup(
+            id_="id_id",
+            attribute=attr_id,
+            columns=[SqlColumn("PUBLIC", "PATIENTS", "ID"), SqlColumn("PUBLIC", "PATIENTS", "ID2")],
+            static_inputs=["unknown"],
+            merging_script=MergingScript("merge"),
+        )
     )
-    attr_id.add_input_group(group)
 
     attr_language = Attribute("language")
     attr_language.add_input_group(
@@ -213,7 +214,6 @@ def test_merge_by_attributes():
             id_="id_language_1",
             attribute=attr_language,
             columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_1"), SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")],
-            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "true")],
             merging_script=MergingScript("merge"),
         )
     )
@@ -224,31 +224,26 @@ def test_merge_by_attributes():
     )
 
     attr_admid = Attribute("admid")
-    group = InputGroup(id_="id_admid", attribute=attr_admid, columns=[SqlColumn("PUBLIC", "ADMISSIONS", "ID")])
-    attr_admid.add_input_group(group)
-
-    attr_static = Attribute("static")
-    group = InputGroup(id_="static", attribute=attr_static, static_inputs=["static"])
-    attr_static.add_input_group(group)
+    attr_admid.add_input_group(
+        InputGroup(id_="id_admid", attribute=attr_admid, columns=[SqlColumn("PUBLIC", "ADMISSIONS", "ID")])
+    )
 
     data = {
         ("name", "id_name"): [["bob"]],
-        ("id", "id_id"): [["id1"], ["id21"], ["null"]],
-        ("language", "id_language_1"): [[None], ["lang21", "lang22", "lang23", "lang24"]],
-        ("language", "id_language_2"): [["lang31", "lang32", "lang33", "lang34"]],
-        ("admid", "id_admid"): [["hadmid1", "hadmid2", "hadmid3", "hadmid4"]],
-        ("static", "static"): [["static"]],
+        ("id", "id_id"): [["id11", "id12"], ["id21", "id22"], ["unknown"]],
+        ("language", "id_language_1"): [[None], ["lang21", "lang22"]],
+        ("language", "id_language_2"): [["lang31", "lang32"]],
+        ("admid", "id_admid"): [["hadmid1", "hadmid2"]],
     }
 
-    attributes = [attr_name, attr_id, attr_language, attr_admid, attr_static]
+    attributes = [attr_name, attr_id, attr_language, attr_admid]
 
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
     expected = {
         "name": ["bob"],
-        "id": ["id1id21null"],
-        "language": ["lang21", "lang22", "lang23", "lang24"],
-        "admid": ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
-        "static": ["static"],
+        "id": ["id11id21unknown", "id12id22unknown"],
+        "language": ["lang21", "lang22"],
+        "admid": ["hadmid1", "hadmid2"],
     }
 
     assert actual == expected
