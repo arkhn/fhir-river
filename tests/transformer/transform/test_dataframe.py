@@ -3,7 +3,7 @@ from unittest import mock
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript
 from common.analyzer.concept_map import ConceptMap
-from common.analyzer.condition import Condition
+from common.analyzer.condition import CONDITION_FLAG, Condition
 from common.analyzer.input_group import InputGroup
 from common.analyzer.merging_script import MergingScript
 from common.analyzer.sql_column import SqlColumn
@@ -85,26 +85,110 @@ def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
 
     cleaned_data = dataframe.clean_data(data, attributes, primary_key_column, "pk_val")
 
-    columns = [
-        ("name", "id_name", "PUBLIC_PATIENTS_NAME"),
-        ("id", "id_id", "PUBLIC_PATIENTS_ID"),
-        ("id", "id_id", "PUBLIC_PATIENTS_ID2"),
-        ("language", "id_language", "PUBLIC_ADMISSIONS_LANGUAGE"),
-        ("code", "id_code", "PUBLIC_ADMISSIONS_ID"),
-    ]
-
     expected = {
-        columns[0]: ["alice"],
-        columns[1]: ["id1"],
-        columns[2]: ["id21"],
-        columns[3]: ["male", "female", "female"],
-        columns[4]: ["abc", "def", "ghi"],
+        ("name", "id_name", "PUBLIC_PATIENTS_NAME"): ["alice"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID"): ["id1"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID2"): ["id21"],
+        ("language", "id_language", "PUBLIC_ADMISSIONS_LANGUAGE"): ["male", "female", "female"],
+        ("code", "id_code", "PUBLIC_ADMISSIONS_ID"): ["abc", "def", "ghi"],
     }
 
     assert cleaned_data == expected
 
 
-# TODO tests filter_with_conditions
+@mock.patch("common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+def test_filter_with_conditions(mock_sha1, dict_map_gender, dict_map_code):
+    mock_sha1.return_value.hexdigest.return_value = "hash"
+
+    data = {
+        ("name", "id_name", "PUBLIC_PATIENTS_NAME"): ["alice"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID"): ["id1"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID2"): ["id21"],
+        ("gender", "id_gender", "PUBLIC_ADMISSIONS_GENDER"): ["male", "female", "female"],
+        ("hadm_id", "hadm_id", "PUBLIC_ADMISSIONS_ID"): ["hid1", "hid2", "hid3"],
+        ("hadm_id", "hadm_id", "PUBLIC_ADMISSIONS_ID2"): ["id21", "id22", "id23"],
+        ("code1", "code1", "PUBLIC_CODE_C1"): ["C1"],
+        ("code2", "code2", "PUBLIC_CODE_C2"): ["C21", "C22", "C23"],
+        (CONDITION_FLAG, "PUBLIC_CONDITION_CONDLIST"): [1, 0, 1],
+        (CONDITION_FLAG, "PUBLIC_CONDITION_COND"): [1],
+    }
+
+    attr_name = Attribute("name")
+    attr_name.add_input_group(
+        InputGroup(
+            id_="id_name",
+            attribute=attr_name,
+            columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "CONDITION", "CONDLIST"), "EQ", "1")],
+        )
+    )
+
+    attr_id = Attribute("id")
+    attr_id.add_input_group(
+        InputGroup(
+            id_="id_id",
+            attribute=attr_id,
+            columns=[SqlColumn("PUBLIC", "PATIENTS", "ID"), SqlColumn("PUBLIC", "PATIENTS", "ID2")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "CONDITION", "CONDLIST"), "EQ", "1")],
+            static_inputs=["val"],
+        )
+    )
+
+    attr_gender = Attribute("gender")
+    attr_gender.add_input_group(
+        InputGroup(
+            id_="id_gender",
+            attribute=attr_gender,
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "GENDER")],
+            conditions=[Condition("EXCLUDE", SqlColumn("PUBLIC", "CONDITION", "CONDLIST"), "EQ", "1")],
+        )
+    )
+
+    attr_admid = Attribute("hadm_id")
+    attr_admid.add_input_group(
+        InputGroup(
+            id_="hadm_id",
+            attribute=attr_name,
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "ID"), SqlColumn("PUBLIC", "ADMISSIONS", "ID2")],
+            conditions=[Condition("EXCLUDE", SqlColumn("PUBLIC", "CONDITION", "CONDLIST"), "EQ", "1")],
+        )
+    )
+
+    attr_code1 = Attribute("code1")
+    attr_code1.add_input_group(
+        InputGroup(
+            id_="code1",
+            attribute=attr_code1,
+            columns=[SqlColumn("PUBLIC", "CODE", "C1")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "CONDITION", "COND"), "EQ", "1")],
+        )
+    )
+
+    attr_code2 = Attribute("code2")
+    attr_code2.add_input_group(
+        InputGroup(
+            id_="code2",
+            attribute=attr_code2,
+            columns=[SqlColumn("PUBLIC", "CODE", "C2")],
+            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "CONDITION", "COND"), "EQ", "1")],
+        )
+    )
+
+    attributes = [attr_name, attr_id, attr_gender, attr_admid, attr_code1, attr_code2]
+
+    filtered_data = dataframe.filter_with_conditions(data, attributes, "pk_val")
+
+    expected = {
+        ("name", "id_name"): [["alice", None, "alice"]],
+        ("id", "id_id"): [["id1", None, "id1"], ["id21", None, "id21"], ["val", None, "val"]],
+        ("gender", "id_gender"): [[None, "female", None]],
+        ("hadm_id", "hadm_id"): [[None, "hid2", None], [None, "id22", None]],
+        ("code1", "code1"): [["C1"]],
+        ("code2", "code2"): [["C21", "C22", "C23"]],
+    }
+
+    assert filtered_data == expected
 
 
 @mock.patch("common.analyzer.merging_script.scripts.get_script", mock_get_script)

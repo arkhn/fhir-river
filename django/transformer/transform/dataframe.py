@@ -70,6 +70,8 @@ def filter_with_conditions(data, attributes: List[Attribute], primary_key_value:
                 cond_key = (CONDITION_FLAG, condition.sql_column.col_name_with_joins())
                 cond_data.append(data[cond_key])
 
+            max_cond_data_len = max([len(cond_col) for cond_col in cond_data]) if cond_data else 1
+
             # TODO check that len cond <= len col?
             group_key = (attribute.path, input_group.id)
             filtered_data[group_key] = []
@@ -77,22 +79,22 @@ def filter_with_conditions(data, attributes: List[Attribute], primary_key_value:
             for col in input_group.columns:
                 col_key = (attribute.path, input_group.id, col.col_name_with_joins())
                 col_data = []
-                for ind, val in enumerate(data[col_key]):
+                nb_rows = max(max_cond_data_len, len(data[col_key]))
+                for ind in range(nb_rows):
                     if all(
-                        condition.check(cond_row[ind])
+                        condition.check(cond_row[ind if len(cond_row) > 1 else 0])
                         for (condition, cond_row) in zip(input_group.conditions, cond_data)
                     ):
-                        col_data.append(val)
+                        col_data.append(data[col_key][ind if len(data[col_key]) > 1 else 0])
                     else:
                         col_data.append(None)
                 filtered_data[group_key].append(col_data)
 
             for static_input in input_group.static_inputs:
                 input_data = []
-                max_cond_data_len = max([len(cond_col) for cond_col in cond_data]) if cond_data else 1
                 for ind in range(max_cond_data_len):
                     if all(
-                        condition.check(cond_row[ind])
+                        condition.check(cond_row[ind if len(cond_row) > 1 else 0])
                         for (condition, cond_row) in zip(input_group.conditions, cond_data)
                     ):
                         input_data.append(static_input)
