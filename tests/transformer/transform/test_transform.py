@@ -11,17 +11,15 @@ from common.analyzer.sql_column import SqlColumn
 from transformer.transform import Transformer
 
 
-def mock_get_script(*args):
-    if len(args) == 1:
-        return args[0].replace("dirty", "")
-    elif len(args) == 2:
-        return args[0]
-    else:
-        return args[0] + args[1] + "merge"
+def mock_get_script(name):
+    if name == "merge":
+        return lambda *args: "".join(arg for arg in args if arg)
+    elif name == "clean":
+        return lambda arg: arg.replace("dirty", "")
 
 
-@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_transform(_, dict_map_code):
+@mock.patch("common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+def test_transform(dict_map_code):
 
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
@@ -34,7 +32,7 @@ def test_transform(_, dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean"))],
     )
     attr_name.add_input_group(group)
 
@@ -47,7 +45,7 @@ def test_transform(_, dict_map_code):
                 "PUBLIC",
                 "ADMISSIONS",
                 "CODE",
-                cleaning_script=CleaningScript("clean1"),
+                cleaning_script=CleaningScript("clean"),
                 concept_map=ConceptMap(dict_map_code, "id_cm_gender"),
             )
         ],
@@ -80,15 +78,15 @@ def test_transform(_, dict_map_code):
         "id": actual["id"],
         "meta": actual["meta"],
         "name": "alice",
-        "language": [{"code": "abc"}, {"code": "abc"}, {"code": "def"}],
+        "language": [{"code": "abcval"}, {"code": "abcval"}, {"code": "defval"}],
         "static": "static",
         "static_list": ["static_list"],
         "resourceType": "Patient",
     }
 
 
-@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_transform_with_condition_arrays(_, dict_map_code):
+@mock.patch("common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+def test_transform_with_condition_arrays(dict_map_code):
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
         "PATIENTS_ID_0f208c2f": ["id1", "id1", "id1"],
@@ -105,7 +103,7 @@ def test_transform_with_condition_arrays(_, dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean"))],
     )
     attr_name.add_input_group(group)
 

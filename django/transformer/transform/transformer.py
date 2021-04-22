@@ -37,18 +37,12 @@ class Transformer:
         data = clean_data(data, analysis.attributes, analysis.primary_key_column, primary_key_value)
 
         # Filter with conditions
-        print("++++++++++++++")
-        print(data)
         logger.debug({"message": f"Filter data with conditions: {data}", **logging_extras})
         data = filter_with_conditions(data, analysis.attributes, primary_key_value)
-        print("--------------")
-        print(data)
 
         # Apply merging scripts on data
         logger.debug({"message": f"Apply merging scripts to {data}", **logging_extras})
         data = merge_by_attributes(data, analysis.attributes, primary_key_value)
-        print("===============")
-        print(data)
 
         logger.debug({"message": f"Transformed data: {data}", **logging_extras})
         return data

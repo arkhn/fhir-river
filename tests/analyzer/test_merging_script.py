@@ -19,7 +19,6 @@ def test_merging_script_apply(_):
     merging_script = MergingScript("concat")
 
     data = ["alice", "a"]
-    static_values = ["djadja"]
 
-    merged_col = merging_script.apply(data, static_values, "path", "pk")
-    assert merged_col == "alice_a_djadja"
+    merged_col = merging_script.apply(data, "path", "pk")
+    assert merged_col == "alice_a"

@@ -70,18 +70,36 @@ def filter_with_conditions(data, attributes: List[Attribute], primary_key_value:
                 cond_key = (CONDITION_FLAG, condition.sql_column.col_name_with_joins())
                 cond_data.append(data[cond_key])
 
-            # TODO check that len cond <= len col
+            # TODO check that len cond <= len col?
+            group_key = (attribute.path, input_group.id)
+            filtered_data[group_key] = []
+
             for col in input_group.columns:
                 col_key = (attribute.path, input_group.id, col.col_name_with_joins())
-                filtered_data[col_key] = []
+                col_data = []
                 for ind, val in enumerate(data[col_key]):
                     if all(
                         condition.check(cond_row[ind])
                         for (condition, cond_row) in zip(input_group.conditions, cond_data)
                     ):
-                        filtered_data[col_key].append(val)
+                        col_data.append(val)
                     else:
-                        filtered_data[col_key].append(None)
+                        col_data.append(None)
+                filtered_data[group_key].append(col_data)
+
+            for static_input in input_group.static_inputs:
+                input_data = []
+                max_cond_data_len = max([len(cond_col) for cond_col in cond_data]) if cond_data else 1
+                for ind in range(max_cond_data_len):
+                    if all(
+                        condition.check(cond_row[ind])
+                        for (condition, cond_row) in zip(input_group.conditions, cond_data)
+                    ):
+                        input_data.append(static_input)
+                    else:
+                        input_data.append(None)
+                filtered_data[group_key].append(input_data)
+
     return filtered_data
 
 
@@ -104,35 +122,26 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
     merged_data = defaultdict(list)
     for attribute in attributes:
         data_for_attribute = {key: value for key, value in data.items() if key[0] == attribute.path}
-        nb_rows_for_attribute = max(len(col) for col in data_for_attribute.values()) if data_for_attribute else 1
+        nb_rows_for_attribute = (
+            max(len(col) for inputs in data_for_attribute.values() for col in inputs) if data_for_attribute else 1
+        )
 
         for row_ind in range(nb_rows_for_attribute):
             # We process the data row by row
-            row_data = {col_key: col[row_ind if len(col) > 1 else 0] for col_key, col in data.items()}
+            row_data = {
+                col_key: [col[row_ind if len(col) > 1 else 0] for col in inputs] for col_key, inputs in data.items()
+            }
 
             to_append = None
             for input_group in attribute.input_groups:
 
-                # cur_group_columns is a list containing all the sql inputs for the
-                # current input group
-                cur_group_columns = [value for key, value in row_data.items() if key[1] == input_group.id]
+                cur_group_columns = row_data[(attribute.path, input_group.id)]
 
                 if not cur_group_columns:
-                    # If the input group has no data in the dataframe, we check if
-                    # it has any static input
-                    if input_group.static_inputs:
-                        if len(input_group.static_inputs) != 1:
-                            raise ValueError(
-                                f"the mapping contains an attribute ({attribute.path}) "
-                                "with several static inputs (and no sql input)"
-                            )
-                        to_append = input_group.static_inputs[0]
-                        break
+                    raise ValueError(f"empty input group at ({attribute.path}) ")
                 elif input_group.merging_script:
                     # TODO issue #148: static inputs could be before sql inputs
-                    to_append = input_group.merging_script.apply(
-                        cur_group_columns, input_group.static_inputs, attribute.path, primary_key_value
-                    )
+                    to_append = input_group.merging_script.apply(cur_group_columns, attribute.path, primary_key_value)
                     break
                 elif len(cur_group_columns) != 1:
                     raise ValueError(f"the mapping contains several unmerged columns for attribute {attribute}")

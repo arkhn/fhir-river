@@ -3,25 +3,23 @@ from unittest import mock
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript
 from common.analyzer.concept_map import ConceptMap
-from common.analyzer.condition import CONDITION_FLAG, Condition
+from common.analyzer.condition import Condition
 from common.analyzer.input_group import InputGroup
 from common.analyzer.merging_script import MergingScript
 from common.analyzer.sql_column import SqlColumn
 from transformer.transform import dataframe
 
 
-def mock_get_script(*args):
-    if len(args) == 1:
-        return args[0].replace("dirty", "")
-    elif len(args) == 2:
-        return args[0]
-    else:
-        return f"{args[0]}{args[1]}merge"
+def mock_get_script(name):
+    if name == "merge":
+        return lambda *args: "".join(arg for arg in args if arg)
+    elif name == "clean":
+        return lambda arg: arg.replace("dirty", "")
 
 
 @mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
+@mock.patch("common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     data = {
@@ -36,7 +34,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean"))],
     )
     attr_name.add_input_group(group)
 
@@ -58,7 +56,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
                 "PUBLIC",
                 "ADMISSIONS",
                 "LANGUAGE",
-                cleaning_script=CleaningScript("clean1"),
+                cleaning_script=CleaningScript("clean"),
                 concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
             )
         ],
@@ -75,7 +73,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
                 "PUBLIC",
                 "ADMISSIONS",
                 "ID",
-                cleaning_script=CleaningScript("clean2"),
+                cleaning_script=CleaningScript("clean"),
                 concept_map=ConceptMap(dict_map_code, "id_cm_code"),
             )
         ],
@@ -109,8 +107,8 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
 # TODO tests filter_with_conditions
 
 
-@mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
-def test_merge_by_attributes(_):
+@mock.patch("common.analyzer.merging_script.scripts.get_script", mock_get_script)
+def test_merge_by_attributes():
     attr_name = Attribute("name")
     group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")])
     attr_name.add_input_group(group)
@@ -130,21 +128,14 @@ def test_merge_by_attributes(_):
         InputGroup(
             id_="id_language_1",
             attribute=attr_language,
-            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_1")],
+            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_1"), SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")],
             conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "true")],
+            merging_script=MergingScript("merge"),
         )
     )
     attr_language.add_input_group(
         InputGroup(
-            id_="id_language_2",
-            attribute=attr_language,
-            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")],
-            conditions=[Condition("EXCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "true")],
-        )
-    )
-    attr_language.add_input_group(
-        InputGroup(
-            id_="not_reached", attribute=attr_language, columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_3")]
+            id_="id_language_2", attribute=attr_language, columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")]
         )
     )
 
@@ -157,14 +148,12 @@ def test_merge_by_attributes(_):
     attr_static.add_input_group(group)
 
     data = {
-        ("name", "id_name", "PUBLIC_PATIENTS_NAME"): ["bob"],
-        ("id", "id_id", "PUBLIC_PATIENTS_ID"): ["id1"],
-        ("id", "id_id", "PUBLIC_PATIENTS_ID2"): ["id21"],
-        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): [None, None, None, None],
-        ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", "lang22", "lang23", "lang24"],
-        ("language", "id_language_3", "PUBLIC_ADMISSIONS_LANGUAGE_3"): ["lang31", "lang32", "lang33", "lang34"],
-        ("admid", "id_admid", "PUBLIC_ADMISSIONS_ID"): ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
-        (CONDITION_FLAG, "PUBLIC_ADMISSIONS_COND_LANG"): ["false"],
+        ("name", "id_name"): [["bob"]],
+        ("id", "id_id"): [["id1"], ["id21"], ["null"]],
+        ("language", "id_language_1"): [[None], ["lang21", "lang22", "lang23", "lang24"]],
+        ("language", "id_language_2"): [["lang31", "lang32", "lang33", "lang34"]],
+        ("admid", "id_admid"): [["hadmid1", "hadmid2", "hadmid3", "hadmid4"]],
+        ("static", "static"): [["static"]],
     }
 
     attributes = [attr_name, attr_id, attr_language, attr_admid, attr_static]
@@ -172,64 +161,10 @@ def test_merge_by_attributes(_):
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
     expected = {
         "name": ["bob"],
-        "id": ["id1id21merge"],
+        "id": ["id1id21null"],
         "language": ["lang21", "lang22", "lang23", "lang24"],
         "admid": ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
         "static": ["static"],
     }
-
-    assert actual == expected
-
-
-@mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
-def test_merge_by_attributes_with_condition_arrays(_):
-    attr_language = Attribute("language")
-    attr_language.add_input_group(
-        InputGroup(
-            id_="id_language_1",
-            attribute=attr_language,
-            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_1")],
-            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "1")],
-        ),
-    )
-    attr_language.add_input_group(
-        InputGroup(
-            id_="id_language_2",
-            attribute=attr_language,
-            columns=[SqlColumn("PUBLIC", "ADMISSIONS", "LANGUAGE_2")],
-            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "2")],
-        )
-    )
-
-    data = {
-        ("language", "id_language_1", "PUBLIC_ADMISSIONS_LANGUAGE_1"): [None, "lang2", "lang3", None],
-        ("language", "id_language_2", "PUBLIC_ADMISSIONS_LANGUAGE_2"): ["lang21", None, None, None],
-    }
-
-    attributes = [attr_language]
-
-    actual = dataframe.merge_by_attributes(data, attributes, "pk")
-    expected = {"language": ["lang21", "lang2", "lang3", None]}
-
-    assert actual == expected
-
-
-def test_merge_by_attributes_static_input_with_condition_arrays():
-    attr_language = Attribute("language")
-    attr_language.add_input_group(
-        InputGroup(
-            id_="id_language_1",
-            attribute=attr_language,
-            static_inputs=["ENGL"],
-            conditions=[Condition("INCLUDE", SqlColumn("PUBLIC", "ADMISSIONS", "COND_LANG"), "EQ", "1")],
-        ),
-    )
-
-    data = {(CONDITION_FLAG, "PUBLIC_ADMISSIONS_COND_LANG"): ["2", "1", "1", "0"]}
-
-    attributes = [attr_language]
-
-    actual = dataframe.merge_by_attributes(data, attributes, "pk")
-    expected = {"language": [None, "ENGL", "ENGL", None]}
 
     assert actual == expected
