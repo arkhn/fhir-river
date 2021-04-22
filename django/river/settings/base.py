@@ -206,7 +206,7 @@ LOGGING = {
 # CorsHeaders
 # Used to access api from third-party domain
 
-# CORS_URLS_REGEX = r"^/api/.*$"
+CORS_URLS_REGEX = r"^\/api\/.*$|^\/oidc\/.*$"
 
 # Rest Framework
 # https://www.django-rest-framework.org/api-guide/settings/
