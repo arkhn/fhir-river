@@ -14,10 +14,10 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/components/Stepper/StepPanel";
-import FhirProfileStep from "features/Mappings_/FhirProfileStep";
-import FhirResourceStep from "features/Mappings_/FhirResourceStep";
-import MappingCreationStepper from "features/Mappings_/MappingCreationStepper";
-import MappingNameStep from "features/Mappings_/MappingNameStep";
+import FhirProfileStep from "features/Mappings/FhirProfileStep";
+import FhirResourceStep from "features/Mappings/FhirResourceStep";
+import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
+import MappingNameStep from "features/Mappings/MappingNameStep";
 import {
   initMappingCreation,
   JoinPending,
@@ -26,8 +26,8 @@ import {
   selectMappingFilters,
   selectMappingJoins,
   updateMapping,
-} from "features/Mappings_/mappingSlice";
-import TableStep from "features/Mappings_/TableStep";
+} from "features/Mappings/mappingSlice";
+import TableStep from "features/Mappings/TableStep";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,

@@ -14,13 +14,13 @@ import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
-import ColumnSelects from "features/Columns_/ColumnSelects";
-import JoinSelects from "features/Joins_/JoinSelects";
+import ColumnSelects from "features/Columns/ColumnSelects";
+import JoinSelects from "features/Joins/JoinSelects";
 import {
   addJoin,
   deleteFilter,
   FilterPending,
-} from "features/Mappings_/mappingSlice";
+} from "features/Mappings/mappingSlice";
 import { Owner, Resource } from "services/api/generated/api.generated";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
