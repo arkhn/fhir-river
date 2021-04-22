@@ -85,6 +85,9 @@ export const selectMappingCurrent = (
 export const selectMappingFilters = (
   state: RootState
 ): FilterPending[] | undefined => state.mapping.filters;
+export const selectMappingJoins = (
+  state: RootState
+): Record<string, JoinPending[]> => state.mapping.joins ?? {};
 
 export default mappingSlice.reducer;
 export const {
