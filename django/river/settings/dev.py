@@ -6,22 +6,23 @@ ALLOWED_HOSTS = ["*"]
 
 SECRET_KEY = "USE_IN_DEV_ONLY"
 
-INSTALLED_APPS += ["drf_spectacular"] if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True" else []
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # CorsHeaders
 # Intended for headless frontend development
 
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Rest Framework
 
 REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = ["rest_framework.permissions.AllowAny"]
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += ["rest_framework.renderers.BrowsableAPIRenderer"]
-REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
+if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True":
+    INSTALLED_APPS += ["drf_spectacular"]
+    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
 # DRF Spectacular settings
 
@@ -30,4 +31,7 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.hooks.postprocess_schema_enums",
     ],
     "COMPONENT_SPLIT_REQUEST": True,
+    "TITLE": "River API",
+    "DESCRIPTION": "Arkhn's River API",
+    "VERSION": "0.1.0",
 }

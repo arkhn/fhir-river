@@ -206,7 +206,7 @@ LOGGING = {
 # CorsHeaders
 # Used to access api from third-party domain
 
-CORS_URLS_REGEX = r"^/api/.*$"
+CORS_URLS_REGEX = r"^\/(api|oidc)\/.*$"
 
 # Rest Framework
 # https://www.django-rest-framework.org/api-guide/settings/
@@ -260,6 +260,9 @@ OIDC_STORE_ID_TOKEN = True
 OIDC_STORE_ACCESS_TOKEN = True
 # Silently re-authenticated after following time:
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = int(os.environ.get("OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS", 12 * 60 * 60))
+# Enable HTTP Basic Authorization method:
+# the OAuth 2.0 Client ID and secret are sent in the HTTP Header
+OIDC_TOKEN_USE_BASIC_AUTH = os.environ.get("OIDC_TOKEN_USE_BASIC_AUTH", False) == "True"
 
 # Relying party
 OIDC_RP_CLIENT_ID = os.environ.get("OIDC_RP_CLIENT_ID")

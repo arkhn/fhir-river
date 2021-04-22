@@ -20,7 +20,7 @@
   "host": "Host",
   "port": "Port",
   "database": "Database",
-  "login": "Username",
+  "username": "Username",
   "password": "Password",
   "vendor": "Vendor",
   "pageNotFound": "Woops... Seems like this page doesn't exist.",

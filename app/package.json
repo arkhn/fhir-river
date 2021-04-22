@@ -10,7 +10,7 @@
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@reduxjs/toolkit": "^1.2.5",
-    "@rtk-incubator/rtk-query": "^0.2.0",
+    "@rtk-incubator/rtk-query": "0.3.0",
     "@testing-library/dom": "^7.29.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^11.2.5",
@@ -57,7 +57,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
-    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../pyrog-schema.yml"
+    "generate:api": "npx @rtk-incubator/rtk-query-codegen-openapi --file ./src/services/api/generated/api.generated.ts --baseQuery ./src/services/api/apiBaseQuery.ts:apiBaseQuery --hooks ../river-schema.yml"
   },
   "eslintConfig": {
     "extends": "react-app"

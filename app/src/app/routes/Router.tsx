@@ -25,10 +25,10 @@ const Router = (): JSX.Element => {
           <Route exact path={["/", "/sources"]}>
             <Sources />
           </Route>
-          <Route exact path="/source/:sourceId">
+          <Route exact path="/sources/:sourceId">
             <SourceMappings />
           </Route>
-          <Route exact path="/source/:sourceId/mapping">
+          <Route exact path="/sources/:sourceId/mappings">
             <CreateMapping />
           </Route>
           <Route>

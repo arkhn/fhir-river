@@ -1,15 +1,14 @@
 import { fetchBaseQuery } from "@rtk-incubator/rtk-query";
 import Cookies from "js-cookie";
-import { omitBy, isUndefined } from "lodash";
 
-import { API_URL } from "./constants";
+import { OIDC_LOGIN_URL } from "services/oidc/urls";
 
-/**
- * Fetch wrapper
- */
+import { API_URL } from "./urls";
+
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
   credentials: "include",
+  redirect: "manual",
   prepareHeaders: (headers) => {
     const token = Cookies.get("csrftoken");
     if (token) {
@@ -19,33 +18,13 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-/**
- * Equivalent to axios interceptor
- * @param args
- * @param api
- * @param extraOptions
- */
 export const apiBaseQuery: ReturnType<typeof fetchBaseQuery> = async (
   args,
   api,
   extraOptions
 ) => {
-  // FIXME: Remove this condition after the next rtk-query > 0.2.0 release
-  // Undefined query params should be excluded.
-  // Fixed by https://github.com/rtk-incubator/rtk-query/pull/146
-  if (typeof args !== "string" && args.params) {
-    args = {
-      ...args,
-      params: omitBy({ ...args.params }, isUndefined),
-    };
-  }
   const result = await baseQuery(args, api, extraOptions);
-  if (result.error) {
-    if (result.error.status === 401) {
-      // TODO: handle authentication errors
-      // api.dispatch(logout());
-    }
-    // api.dispatch(logApiError(result.error));
-  }
+  if (result.error?.status === 403)
+    window.location.replace(OIDC_LOGIN_URL ?? "");
   return result;
 };

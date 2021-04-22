@@ -14,18 +14,18 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/Stepper/StepPanel";
-import FhirProfileStep from "features/mappings/FhirProfileStep";
-import FhirResourceStep from "features/mappings/FhirResourceStep";
-import MappingCreationStepper from "features/mappings/MappingCreationStepper";
-import MappingNameStep from "features/mappings/MappingNameStep";
+import FhirProfileStep from "features/Mappings/FhirProfileStep";
+import FhirResourceStep from "features/Mappings/FhirResourceStep";
+import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
+import MappingNameStep from "features/Mappings/MappingNameStep";
 import {
   initMappingCreation,
   resetMappingCreation,
   selectMappingCurrent,
   selectMappingFilters,
   updateMapping,
-} from "features/mappings/mappingSlice";
-import TableStep from "features/mappings/TableStep";
+} from "features/Mappings/mappingSlice";
+import TableStep from "features/Mappings/TableStep";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
@@ -181,7 +181,7 @@ const CreateMapping = (): JSX.Element => {
           // Fix: Handle Column & Filter creation errors
         }
 
-        history.push(`/source/${sourceId}/mapping/${createdMapping.id}`);
+        history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
       } catch (error) {
         // Fix: Handle Resource creation errors
       }

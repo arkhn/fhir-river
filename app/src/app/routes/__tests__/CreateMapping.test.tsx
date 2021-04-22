@@ -52,8 +52,8 @@ beforeAll(() => {
 describe("Mapping creation page", () => {
   it("should display the stepper with 4 steps", async () => {
     render(<CreateMapping />, undefined, {
-      path: "/source/:sourceId/mapping",
-      route: `/source/sourceId/mapping`,
+      path: "/sources/:sourceId/mappings",
+      route: `/sources/sourceId/mappings`,
     });
     await screen.findByText(/define a source table/i);
     await screen.findByText(/select a fhir resource/i);
@@ -122,7 +122,7 @@ describe("Mapping creation page", () => {
 
     await waitFor(() =>
       expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "source/sourceId/mapping/1"
+        "sources/sourceId/mappings/1"
       )
     );
   });

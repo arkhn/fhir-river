@@ -4,8 +4,8 @@ import { Grid, TextField, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 import Select from "common/Select/Select";
-import ColumnSelects from "features/columns/ColumnSelects";
-import { FilterPending } from "features/mappings/mappingSlice";
+import ColumnSelects from "features/Columns/ColumnSelects";
+import { FilterPending } from "features/Mappings/mappingSlice";
 import { Owner } from "services/api/generated/api.generated";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
