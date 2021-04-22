@@ -24,7 +24,6 @@ type ColumnSelectsProps = {
   owner?: Owner;
   PKTable?: string;
   PKColumn?: string;
-
   onPKTableChange?: (PKTable?: string) => void;
   onPKColumnChange?: (PKColumn?: string) => void;
 };

@@ -4,12 +4,12 @@ import { IconButton, Grid, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
 import { useAppDispatch } from "app/store";
-import ColumnSelects from "features/columns/ColumnSelects";
+import ColumnSelects from "features/Columns_/ColumnSelects";
 import {
   deleteJoin,
   JoinPending,
   updateJoin,
-} from "features/mappings/mappingSlice";
+} from "features/Mappings_/mappingSlice";
 import { Owner } from "services/api/generated/api.generated";
 
 type FilterSelectsProps = {

@@ -42,7 +42,7 @@ export const api = generatedApi.enhanceEndpoints({
       ],
     },
     apiResourcesCreate: {
-      invalidates: [{ type: "Sources", id: "LIST" }],
+      invalidates: [{ type: "Resources", id: "LIST" }],
     },
 
     /**
@@ -100,10 +100,7 @@ export const api = generatedApi.enhanceEndpoints({
       ],
     },
     apiFiltersCreate: {
-      invalidates: [
-        { type: "Resources", id: "LIST" },
-        { type: "Sources", id: "LIST" },
-      ],
+      invalidates: [{ type: "Filters", id: "LIST" }],
     },
   },
 });
