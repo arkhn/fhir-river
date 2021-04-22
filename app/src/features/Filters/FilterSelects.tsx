@@ -1,34 +1,23 @@
 import React, { ChangeEvent, useEffect } from "react";
 
-import {
-  Button,
-  IconButton,
-  Grid,
-  TextField,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/AddCircleOutline";
+import { IconButton, Grid, TextField, makeStyles } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
 import ColumnSelects from "features/Columns/ColumnSelects";
-import JoinSelects from "features/Joins/JoinSelects";
+import JoinSection from "features/Joins/JoinSection";
 import {
   addJoin,
   deleteFilter,
-  FilterPending,
+  PendingFilter,
 } from "features/Mappings/mappingSlice";
 import { Owner, Resource } from "services/api/generated/api.generated";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
 
 const useStyles = makeStyles((theme) => ({
-  button: {
-    textTransform: "none",
-  },
   textInput: {
     minWidth: 200,
     boxShadow: `0 1px 5px ${theme.palette.divider}`,
@@ -41,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
 
 type FilterSelectsProps = {
   mapping?: Partial<Resource>;
-  filter: FilterPending;
-  onChange?: (filter: FilterPending) => void;
+  filter: PendingFilter;
+  onChange?: (filter: PendingFilter) => void;
   owner?: Owner;
 };
 
@@ -110,9 +99,6 @@ const FilterSelects = ({
         value: event.target.value as string,
       });
   };
-  const handleAddJoinClick = () => {
-    filter.id && dispatch(addJoin(filter.id));
-  };
   const handleFilterDelete = () => {
     filter.id && dispatch(deleteFilter(filter.id));
   };
@@ -157,33 +143,14 @@ const FilterSelects = ({
       {joins.length > 0 && (
         <Grid item container>
           <div className={classes.leftShift}>
-            <Grid container direction="column" spacing={1}>
-              <Grid item>
-                <Typography gutterBottom={false}>{t("joinOn")}</Typography>
-              </Grid>
-              {joins.map((join, index) => (
-                <JoinSelects
-                  key={join.id}
-                  filter={filter.id}
-                  join={join}
-                  owner={owner}
-                  disableDelete={
-                    Boolean(isMappingPKTableAndFilterPKTableDifferent) &&
-                    index === 0
-                  }
-                />
-              ))}
-              <Grid item>
-                <Button
-                  className={classes.button}
-                  startIcon={<AddIcon />}
-                  onClick={handleAddJoinClick}
-                  variant="outlined"
-                >
-                  <Typography>{t("addJoin")}</Typography>
-                </Button>
-              </Grid>
-            </Grid>
+            <JoinSection
+              filter={filter}
+              owner={owner}
+              joins={joins}
+              isFirstJoinRequired={Boolean(
+                isMappingPKTableAndFilterPKTableDifferent
+              )}
+            />
           </div>
         </Grid>
       )}

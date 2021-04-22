@@ -15,7 +15,7 @@ import ColumnSelects from "features/Columns/ColumnSelects";
 import FilterSelects from "features/Filters/FilterSelects";
 import { Owner, Resource } from "services/api/generated/api.generated";
 
-import { addFilter, FilterPending, updateFilter } from "./mappingSlice";
+import { addFilter, PendingFilter, updateFilter } from "./mappingSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -52,7 +52,7 @@ const TableStep = ({
   const handleAddFilterClick = () => {
     dispatch(addFilter());
   };
-  const handleFilterChange = (filter: FilterPending) => {
+  const handleFilterChange = (filter: PendingFilter) => {
     dispatch(updateFilter(filter));
   };
   const handlePKTableChange = (primary_key_table?: string) => {

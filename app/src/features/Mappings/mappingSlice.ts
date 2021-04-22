@@ -4,18 +4,17 @@ import { v4 as uuid } from "uuid";
 import { RootState } from "app/store";
 import { Column, Filter, Resource } from "services/api/generated/api.generated";
 
-export type JoinPending = {
+export type PendingJoin = {
   id: string;
   columns: [Partial<Column>, Partial<Column>];
 };
 
-export type FilterPending = Partial<Filter & { col: Partial<Column> }>;
+export type PendingFilter = Partial<Filter & { col: Partial<Column> }>;
 
 type MappingState = {
   current?: Partial<Resource>;
-  filters?: FilterPending[];
-  // { [filter.id] : JoinPending[] }
-  joins?: Record<string, JoinPending[]>;
+  filters?: PendingFilter[];
+  joins?: Record<string, PendingJoin[]>;
 };
 
 const initialState: MappingState = {};
@@ -38,7 +37,7 @@ const mappingSlice = createSlice({
         state.filters = [...state.filters, { id: uuid() }];
       }
     },
-    updateFilter: (state, { payload }: PayloadAction<FilterPending>) => {
+    updateFilter: (state, { payload }: PayloadAction<PendingFilter>) => {
       state.filters = state?.filters?.map((filter) =>
         filter.id === payload.id ? payload : filter
       );
@@ -67,7 +66,7 @@ const mappingSlice = createSlice({
     },
     updateJoin: (
       state,
-      { payload }: PayloadAction<{ filter: string; join: JoinPending }>
+      { payload }: PayloadAction<{ filter: string; join: PendingJoin }>
     ) => {
       const { filter, join } = payload;
       if (state.joins && state.joins[filter]) {
@@ -84,10 +83,10 @@ export const selectMappingCurrent = (
 ): Partial<Resource> | undefined => state.mapping.current;
 export const selectMappingFilters = (
   state: RootState
-): FilterPending[] | undefined => state.mapping.filters;
+): PendingFilter[] | undefined => state.mapping.filters;
 export const selectMappingJoins = (
   state: RootState
-): Record<string, JoinPending[]> => state.mapping.joins ?? {};
+): Record<string, PendingJoin[]> => state.mapping.joins ?? {};
 
 export default mappingSlice.reducer;
 export const {

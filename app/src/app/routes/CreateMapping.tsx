@@ -20,7 +20,7 @@ import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
 import {
   initMappingCreation,
-  JoinPending,
+  PendingJoin,
   resetMappingCreation,
   selectMappingCurrent,
   selectMappingFilters,
@@ -187,23 +187,25 @@ const CreateMapping = (): JSX.Element => {
           // Joins columns creation
           await Promise.all(
             filtersJoins.map((filterJoins, filterIndex) => {
-              const joinsData: JoinPending[] = Object.values(joins)[
+              const joinsData: PendingJoin[] = Object.values(joins)[
                 filterIndex
               ];
               return Promise.all(
                 filterJoins.map((join, joinIndex) => {
-                  const [columnA, columnB] = joinsData[joinIndex].columns;
+                  const [leftColumn, rightColumn] = joinsData[
+                    joinIndex
+                  ].columns;
                   return Promise.all([
                     createColumn({
                       columnRequest: {
-                        ...columnA,
+                        ...leftColumn,
                         owner: owner.id,
                         join: join.id,
                       } as Column,
                     }).unwrap(),
                     createColumn({
                       columnRequest: {
-                        ...columnB,
+                        ...rightColumn,
                         owner: owner.id,
                         join: join.id,
                       } as Column,

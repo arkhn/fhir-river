@@ -3,70 +3,45 @@ import React from "react";
 import { IconButton, Grid, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import { useAppDispatch } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelects";
-import {
-  deleteJoin,
-  JoinPending,
-  updateJoin,
-} from "features/Mappings/mappingSlice";
+import { PendingJoin } from "features/Mappings/mappingSlice";
 import { Owner } from "services/api/generated/api.generated";
 
-type FilterSelectsProps = {
-  filter?: string;
-  join: JoinPending;
+type JoinSelectsProps = {
+  join: PendingJoin;
   owner?: Owner;
   disableDelete?: boolean;
+  onChange?: (join: PendingJoin) => void;
+  onDelete?: (joinId: string) => void;
 };
 
-const FilterSelects = ({
-  filter,
+const JoinSelects = ({
   join,
   owner,
+  onChange,
+  onDelete,
   disableDelete,
-}: FilterSelectsProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-
-  const [columnA, columnB] = join.columns;
+}: JoinSelectsProps): JSX.Element => {
+  const [leftColumn, rightColumn] = join.columns;
 
   const handlePKTableAChange = (table?: string) => {
-    filter &&
-      dispatch(
-        updateJoin({
-          filter,
-          join: { ...join, columns: [{ ...columnA, table }, columnB] },
-        })
-      );
+    onChange &&
+      onChange({ ...join, columns: [{ ...leftColumn, table }, rightColumn] });
   };
   const handlePKTableBChange = (table?: string) => {
-    filter &&
-      dispatch(
-        updateJoin({
-          filter,
-          join: { ...join, columns: [columnA, { ...columnB, table }] },
-        })
-      );
+    onChange &&
+      onChange({ ...join, columns: [leftColumn, { ...rightColumn, table }] });
   };
   const handlePKColumnAChange = (column?: string) => {
-    filter &&
-      dispatch(
-        updateJoin({
-          filter,
-          join: { ...join, columns: [{ ...columnA, column }, columnB] },
-        })
-      );
+    onChange &&
+      onChange({ ...join, columns: [{ ...leftColumn, column }, rightColumn] });
   };
   const handlePKColumnBChange = (column?: string) => {
-    filter &&
-      dispatch(
-        updateJoin({
-          filter,
-          join: { ...join, columns: [columnA, { ...columnB, column }] },
-        })
-      );
+    onChange &&
+      onChange({ ...join, columns: [leftColumn, { ...rightColumn, column }] });
   };
   const handleJoinDelete = () => {
-    filter && dispatch(deleteJoin({ filter, join: join.id }));
+    onDelete && onDelete(join.id);
   };
 
   return (
@@ -80,16 +55,16 @@ const FilterSelects = ({
     >
       <ColumnSelects
         owner={owner}
-        PKColumn={columnA.column}
-        PKTable={columnA.table}
+        PKColumn={leftColumn.column}
+        PKTable={leftColumn.table}
         onPKTableChange={handlePKTableAChange}
         onPKColumnChange={handlePKColumnAChange}
       />
       <Typography> == </Typography>
       <ColumnSelects
         owner={owner}
-        PKColumn={columnB.column}
-        PKTable={columnB.table}
+        PKColumn={rightColumn.column}
+        PKTable={rightColumn.table}
         onPKTableChange={handlePKTableBChange}
         onPKColumnChange={handlePKColumnBChange}
       />
@@ -102,4 +77,4 @@ const FilterSelects = ({
   );
 };
 
-export default FilterSelects;
+export default JoinSelects;
