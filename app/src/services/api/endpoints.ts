@@ -97,10 +97,7 @@ export const api = generatedApi
         provides: providesList("Filters"),
       },
       apiFiltersCreate: {
-        invalidates: [
-          { type: "Resources", id: "LIST" },
-          { type: "Sources", id: "LIST" },
-        ],
+        invalidatesTags: invalidatesList("Filters"),
       },
       /**
        * User
