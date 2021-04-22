@@ -12,6 +12,7 @@ const entityTypes = [
   "Attributes",
   "Owners",
   "Credentials",
+  "Filters",
   "User",
 ];
 
@@ -29,6 +30,9 @@ export const api = generatedApi
   .enhanceEndpoints({
     addEntityTypes: entityTypes,
     endpoints: {
+      /**
+       *  Sources
+       */
       apiSourcesList: {
         providesTags: providesList("Sources"),
       },
@@ -44,12 +48,24 @@ export const api = generatedApi
       apiSourcesDestroy: {
         invalidatesTags: invalidatesOne("Sources"),
       },
+      /**
+       * Resources
+       */
       apiResourcesList: {
         providesTags: providesList("Resources"),
       },
+      apiResourcesCreate: {
+        invalidatesTags: invalidatesList("Resources"),
+      },
+      /**
+       * Attributes
+       */
       apiAttributesList: {
         providesTags: providesList("Attributes"),
       },
+      /**
+       * Owners
+       */
       apiOwnersList: {
         providesTags: providesList("Owners"),
       },
@@ -59,6 +75,9 @@ export const api = generatedApi
       apiOwnersDestroy: {
         invalidatesTags: invalidatesOne("Owners"),
       },
+      /**
+       * Credentials
+       */
       apiCredentialsList: {
         providesTags: providesList("Credentials"),
       },
@@ -71,6 +90,21 @@ export const api = generatedApi
       apiCredentialsUpdate: {
         invalidatesTags: invalidatesOne("Credentials"),
       },
+      /**
+       * Filters
+       */
+      apiFiltersList: {
+        provides: providesList("Filters"),
+      },
+      apiFiltersCreate: {
+        invalidates: [
+          { type: "Resources", id: "LIST" },
+          { type: "Sources", id: "LIST" },
+        ],
+      },
+      /**
+       * User
+       */
       apiUserRetrieve: {
         providesTags: ["User"],
       },
@@ -81,20 +115,29 @@ export const api = generatedApi
   });
 
 export const {
-  useOidcLogoutMutation,
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
   useApiSourcesRetrieveQuery,
   useApiSourcesUpdateMutation,
   useApiSourcesDestroyMutation,
+  // Resources
   useApiResourcesListQuery,
+  useApiResourcesCreateMutation,
+  // Attributes
   useApiAttributesListQuery,
+  // Owners
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersDestroyMutation,
+  // Credentials
   useApiCredentialsListQuery,
   useApiCredentialsCreateMutation,
   useApiCredentialsRetrieveQuery,
   useApiCredentialsUpdateMutation,
+  // Filters
+  useApiFiltersListQuery,
+  useApiFiltersCreateMutation,
+  // User
   useApiUserRetrieveQuery,
+  useOidcLogoutMutation,
 } = api;

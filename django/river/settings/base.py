@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "mozilla_django_oidc",
+    "sentry",
     # 1st parties
     "core",
     "extractor",
@@ -281,3 +282,14 @@ if OIDC_RP_SIGN_ALGO == "RS256":
     OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT")
 elif OIDC_RP_SIGN_ALGO == "HS256":
     pass
+
+# Sentry
+
+SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED", False)
+
+if SENTRY_ENABLED:
+    SENTRY = {
+        "DSN": os.environ.get("SENTRY_DSN"),
+        "ENV": os.environ.get("SENTRY_ENVIRONMENT"),
+        "RELEASE": os.environ.get("SENTRY_RELEASE", VERSION_NAME or VERSION_SHA),
+    }
