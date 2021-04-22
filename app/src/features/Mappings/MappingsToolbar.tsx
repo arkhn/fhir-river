@@ -37,7 +37,7 @@ const MappingsToolbar = (): JSX.Element => {
   const { data: attributes } = useApiAttributesListQuery({ source: sourceId });
 
   const handleCreateMappingClick = () => {
-    history.push(`/source/${sourceId}/mapping`);
+    history.push(`/sources/${sourceId}/mappings`);
   };
 
   return (

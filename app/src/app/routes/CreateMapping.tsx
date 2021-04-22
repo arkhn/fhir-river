@@ -181,7 +181,7 @@ const CreateMapping = (): JSX.Element => {
           // Fix: Handle Column & Filter creation errors
         }
 
-        history.push(`/source/${sourceId}/mapping/${createdMapping.id}`);
+        history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
       } catch (error) {
         // Fix: Handle Resource creation errors
       }

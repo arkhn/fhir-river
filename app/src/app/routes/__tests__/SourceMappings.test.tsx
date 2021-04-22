@@ -84,8 +84,8 @@ beforeAll(() => {
 });
 beforeEach(() =>
   render(<SourceMappings />, undefined, {
-    path: "/source/:sourceId",
-    route: `/source/${source.id}`,
+    path: "/sources/:sourceId",
+    route: `/sources/${source.id}`,
   })
 );
 afterEach(() => server.resetHandlers());

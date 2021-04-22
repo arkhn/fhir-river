@@ -30,8 +30,8 @@ afterAll(() => server.close());
 describe("Navigation breadcrumbs", () => {
   it("should display the source name", async () => {
     render(<NavigationBreadcrumbs />, undefined, {
-      path: "/source/:sourceId",
-      route: `/source/${source.id}`,
+      path: "/sources/:sourceId",
+      route: `/sources/${source.id}`,
     });
 
     await waitFor(() => screen.getByText("source_1"));

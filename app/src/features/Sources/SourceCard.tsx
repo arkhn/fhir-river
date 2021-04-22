@@ -64,7 +64,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const [deleteSource] = useApiSourcesDestroyMutation();
 
   const handleCardClick = () => {
-    history.push(`/source/${source.id}`);
+    history.push(`/sources/${source.id}`);
   };
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();

@@ -51,7 +51,7 @@ const NavigationBreadcrumbs = (): JSX.Element => {
           className={classes.mainCrumb}
           variant="h5"
           color="textPrimary"
-          to={`/source/${source.id}`}
+          to={`/sources/${source.id}`}
         >
           {source.name}
         </Link>
