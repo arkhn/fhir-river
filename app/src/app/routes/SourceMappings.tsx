@@ -12,10 +12,10 @@ import {
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
-import MappingsTable from "features/mappings/MappingsTable";
-import MappingsToolbar from "features/mappings/MappingsToolbar";
-import NavigationBreadcrumbs from "features/navigationBreadcrumbs/NavigationBreadcrumbs";
-import CredentialForm from "features/sources/CredentialForm";
+import MappingsTable from "features/Mappings/MappingsTable";
+import MappingsToolbar from "features/Mappings/MappingsToolbar";
+import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import CredentialForm from "features/Sources/CredentialForm";
 import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({

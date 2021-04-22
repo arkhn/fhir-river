@@ -6,8 +6,8 @@ import {
 } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
-import mapping from "features/mappings/mappingSlice";
-import source from "features/sources/sourceSlice";
+import mapping from "features/Mappings/mappingSlice";
+import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
 
 const appReducer = combineReducers({
