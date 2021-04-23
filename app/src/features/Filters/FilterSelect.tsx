@@ -52,8 +52,8 @@ const FilterSelects = ({
     owner &&
       table &&
       mapping?.primary_key_table &&
-      table !== mapping?.primary_key_table &&
-      owner !== mapping?.primary_key_owner
+      (table !== mapping?.primary_key_table ||
+        owner !== mapping?.primary_key_owner)
   );
 
   useEffect(() => {
