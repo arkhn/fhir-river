@@ -5,8 +5,11 @@ import { useTranslation } from "react-i18next";
 
 import Select from "common/Select/Select";
 import ColumnSelects from "features/Columns/ColumnSelects";
-import { FilterPending } from "features/Mappings/mappingSlice";
-import { Owner } from "services/api/generated/api.generated";
+import type {
+  Column,
+  Filter,
+  Owner,
+} from "services/api/generated/api.generated";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
 
@@ -18,41 +21,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type FilterSelectsProps = {
-  filter: FilterPending;
-  onChange?: (filter: FilterPending) => void;
+  filter: Partial<Filter>;
+  column?: Partial<Column>;
+  onChange?: (filter?: Partial<Filter>, column?: Partial<Column>) => void;
   owner?: Owner;
 };
 
 const FilterSelects = ({
   filter,
+  column,
   onChange,
   owner,
 }: FilterSelectsProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const PKTable = filter.col?.table;
-  const PKColumn = filter.col?.column;
-
-  const handlePKTableChange = (table?: string) => {
-    onChange &&
-      onChange({
-        ...filter,
-        col: {
-          ...filter.col,
-          table,
-        },
-      });
+  const handleTableChange = (table?: string) => {
+    onChange && onChange(filter, { table });
   };
-  const handlePKColumnChange = (column?: string) => {
-    onChange &&
-      onChange({
-        ...filter,
-        col: {
-          ...filter.col,
-          column,
-        },
-      });
+  const handleColumnChange = (column?: string) => {
+    onChange && onChange(filter, { column });
   };
   const handleRelationChange = (
     event: ChangeEvent<{ name?: string | undefined; value: unknown }>
@@ -77,10 +65,10 @@ const FilterSelects = ({
     <Grid item container xs={12} spacing={2} direction="row">
       <ColumnSelects
         owner={owner}
-        PKColumn={PKColumn}
-        PKTable={PKTable}
-        onPKTableChange={handlePKTableChange}
-        onPKColumnChange={handlePKColumnChange}
+        column={column?.column}
+        table={column?.table}
+        onTableChange={handleTableChange}
+        onColumnChange={handleColumnChange}
       />
       <Grid item>
         <Select

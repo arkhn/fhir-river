@@ -9,13 +9,29 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
+import { v4 as uuid } from "uuid";
 
-import { useAppDispatch, useAppSelector } from "app/store";
+import { store, useAppDispatch } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelects";
 import FilterSelects from "features/Filters/FilterSelects";
-import { Owner, Resource } from "services/api/generated/api.generated";
+import type {
+  Column,
+  Filter,
+  Owner,
+  Resource,
+} from "services/api/generated/api.generated";
 
-import { addFilter, FilterPending, updateFilter } from "./mappingSlice";
+import {
+  columnAdded,
+  columnSelectors,
+  columnUpdated,
+} from "../Columns/columnSlice";
+import {
+  filterAdded,
+  filterSelectors,
+  filterUpdated,
+} from "../Filters/filterSlice";
+import { resourceUpdated } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -35,31 +51,40 @@ const useStyles = makeStyles((theme) => ({
 
 type TableStepProps = {
   mapping: Partial<Resource>;
-  owner?: Owner;
-  onChange?: (mapping: Partial<Resource>) => void;
+  owner: Owner;
 };
 
-const TableStep = ({
-  onChange,
-  mapping,
-  owner,
-}: TableStepProps): JSX.Element => {
+const TableStep = ({ mapping, owner }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const filters = useAppSelector((state) => state.mapping.filters);
+
+  const filters = filterSelectors.selectAll(store.getState());
+
+  const columnById = (id: string) =>
+    columnSelectors.selectById(store.getState(), id);
 
   const handleAddFilterClick = () => {
-    dispatch(addFilter());
+    const columnId = uuid();
+    dispatch(columnAdded({ id: columnId, owner: owner.id }));
+    dispatch(filterAdded({ id: uuid(), resource: "0", sql_column: columnId }));
   };
-  const handleFilterChange = (filter: FilterPending) => {
-    dispatch(updateFilter(filter));
+  const handleFilterChange = (
+    filter?: Partial<Filter>,
+    column?: Partial<Column>
+  ) => {
+    if (filter?.id)
+      dispatch(filterUpdated({ id: filter.id, changes: { ...filter } }));
+    if (filter?.sql_column)
+      dispatch(
+        columnUpdated({ id: filter.sql_column, changes: { ...column } })
+      );
   };
   const handlePKTableChange = (primary_key_table?: string) => {
-    onChange && onChange({ primary_key_table });
+    dispatch(resourceUpdated({ id: "0", changes: { primary_key_table } }));
   };
   const handlePKColumnChange = (primary_key_column?: string) => {
-    onChange && onChange({ primary_key_column });
+    dispatch(resourceUpdated({ id: "0", changes: { primary_key_column } }));
   };
 
   return (
@@ -80,9 +105,10 @@ const TableStep = ({
               <Typography gutterBottom={false}>Filter on :</Typography>
             </Grid>
             {filters.map((filter, index) => (
-              <Grid item container key={`filter ${index}`}>
+              <Grid item container key={`filter-${index}`}>
                 <FilterSelects
                   filter={filter}
+                  column={columnById(filter.sql_column ?? "")}
                   owner={owner}
                   onChange={handleFilterChange}
                 />

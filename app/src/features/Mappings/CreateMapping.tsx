@@ -12,14 +12,13 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "app/store";
+import { store, useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/Stepper/StepPanel";
 import FhirProfileStep from "features/Mappings/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
 import {
-  initMappingCreation,
   resetMappingCreation,
   selectMappingCurrent,
   selectMappingFilters,
@@ -39,6 +38,8 @@ import {
   useApiColumnsCreateMutation,
   Source,
 } from "services/api/generated/api.generated";
+
+import { resourceAdded, resourceSelectors } from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 
@@ -75,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateMapping = (): JSX.Element => {
+const CreateMapping = (): JSX.Element | null => {
   const { t } = useTranslation();
   const { id: sourceId } = useParams<Pick<Source, "id">>();
   const stepperRef = useRef<HTMLDivElement>();
@@ -91,7 +92,10 @@ const CreateMapping = (): JSX.Element => {
   const [activeStep, setActiveStep] = useState(0);
   const [isProfileSelected, setIsProfileSelected] = useState(false);
   const mapping = useAppSelector(selectMappingCurrent);
+  const resources = resourceSelectors.selectAll(store.getState());
+  const resource = resources[0];
   const filters = useAppSelector(selectMappingFilters);
+
   const [
     createMapping,
     { isLoading: isCreateMappingLoading },
@@ -100,10 +104,15 @@ const CreateMapping = (): JSX.Element => {
   const [createColumn] = useApiColumnsCreateMutation();
 
   useEffect(() => {
-    if (!mapping) {
-      dispatch(initMappingCreation());
+    if (!resource) {
+      dispatch(
+        resourceAdded({
+          id: "0",
+          source: sourceId,
+        })
+      );
     }
-  }, [dispatch, mapping]);
+  }, [dispatch, resource]);
 
   useEffect(() => {
     return () => {
@@ -206,6 +215,7 @@ const CreateMapping = (): JSX.Element => {
     history.goBack();
   };
 
+  if (!owner) return null;
   return (
     <>
       <Button
@@ -230,11 +240,7 @@ const CreateMapping = (): JSX.Element => {
             }}
           >
             <StepPanel index={0} value={activeStep}>
-              <TableStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-                owner={owner}
-              />
+              <TableStep mapping={resource} owner={owner} />
             </StepPanel>
             <StepPanel index={1} value={activeStep}>
               <FhirResourceStep
