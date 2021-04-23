@@ -1,17 +1,18 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 
-import { Filter } from "services/api/generated/api.generated";
+import type { RootState } from "app/store";
+import type { Filter } from "services/api/generated/api.generated";
 
-const filtersAdapter = createEntityAdapter<Partial<Filter>>();
+const filterAdapter = createEntityAdapter<Partial<Filter>>();
 
-const filtersSlice = createSlice({
-  name: "filters",
-  initialState: filtersAdapter.getInitialState(),
+const filterSlice = createSlice({
+  name: "filter",
+  initialState: filterAdapter.getInitialState(),
   reducers: {
-    filterAdded: filtersAdapter.addOne,
-    filtersAdded: filtersAdapter.addMany,
-    filterUpdated: filtersAdapter.updateOne,
-    filtersUpdated: filtersAdapter.updateMany,
+    filterAdded: filterAdapter.addOne,
+    filtersAdded: filterAdapter.addMany,
+    filterUpdated: filterAdapter.updateOne,
+    filtersUpdated: filterAdapter.updateMany,
   },
 });
 
@@ -20,6 +21,10 @@ export const {
   filtersAdded,
   filterUpdated,
   filtersUpdated,
-} = filtersSlice.actions;
+} = filterSlice.actions;
 
-export default filtersSlice.reducer;
+export const filterSelectors = filterAdapter.getSelectors<RootState>(
+  (state) => state.filter
+);
+
+export default filterSlice.reducer;
