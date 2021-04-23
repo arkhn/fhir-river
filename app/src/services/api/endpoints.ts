@@ -6,7 +6,7 @@ import {
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
-const entityTypes = [
+const tagTypes = [
   "Sources",
   "Resources",
   "Attributes",
@@ -28,7 +28,7 @@ export const api = generatedApi
     }),
   })
   .enhanceEndpoints({
-    addEntityTypes: entityTypes,
+    addTagTypes: tagTypes,
     endpoints: {
       /**
        *  Sources
