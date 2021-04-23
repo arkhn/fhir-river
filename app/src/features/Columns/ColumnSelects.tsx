@@ -21,27 +21,27 @@ const useStyles = makeStyles((theme) => ({
 
 type ColumnSelectsProps = {
   owner?: Owner;
-  PKTable?: string;
-  PKColumn?: string;
+  table?: string;
+  column?: string;
 
-  onPKTableChange?: (PKTable?: string) => void;
-  onPKColumnChange?: (PKColumn?: string) => void;
+  onTableChange?: (table?: string) => void;
+  onColumnChange?: (column?: string) => void;
 };
 
 const ColumnSelects = ({
   owner,
-  PKTable,
-  PKColumn,
-  onPKTableChange,
-  onPKColumnChange,
+  table,
+  column,
+  onTableChange,
+  onColumnChange,
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const PKTables = Object.keys(owner?.schema ?? []);
+  const tables = Object.keys(owner?.schema ?? []);
   const [PKColumns, setPKColumns] = useState<string[]>([]);
 
-  const isPKTableSelected = !!PKTable;
-  const isPKColumnSelected = !!PKColumn;
+  const isPKTableSelected = !!table;
+  const isPKColumnSelected = !!column;
 
   const handlePKTableChange = (
     event: React.ChangeEvent<{
@@ -49,7 +49,7 @@ const ColumnSelects = ({
       value: unknown;
     }>
   ) => {
-    onPKTableChange && onPKTableChange(event.target.value as string);
+    onTableChange && onTableChange(event.target.value as string);
   };
   const handlePKColumnChange = (
     event: React.ChangeEvent<{
@@ -57,25 +57,25 @@ const ColumnSelects = ({
       value: unknown;
     }>
   ) => {
-    onPKColumnChange && onPKColumnChange(event.target.value as string);
+    onColumnChange && onColumnChange(event.target.value as string);
   };
 
   useEffect(() => {
     if (owner && owner.schema) {
       const schema = owner.schema as Record<string, string[]>;
-      if (PKTable) {
-        onPKColumnChange && onPKColumnChange();
-        setPKColumns(schema[PKTable]);
+      if (table) {
+        onColumnChange && onColumnChange();
+        setPKColumns(schema[table]);
       }
     }
-  }, [owner, PKTable]);
+  }, [owner, table]);
 
   return (
     <>
       <Grid item>
         <Select
-          value={PKTable ?? ""}
-          options={PKTables}
+          value={table ?? ""}
+          options={tables}
           emptyOption={t("selectTable")}
           onChange={handlePKTableChange}
           startIcon={
@@ -91,7 +91,7 @@ const ColumnSelects = ({
       </Grid>
       <Grid item>
         <Select
-          value={PKColumn ?? ""}
+          value={column ?? ""}
           options={PKColumns}
           emptyOption={t("selectColumn")}
           onChange={handlePKColumnChange}

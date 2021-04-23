@@ -68,10 +68,10 @@ const TableStep = ({
         <Grid item container spacing={2}>
           <ColumnSelects
             owner={owner}
-            PKTable={mapping.primary_key_table}
-            PKColumn={mapping.primary_key_column}
-            onPKTableChange={handlePKTableChange}
-            onPKColumnChange={handlePKColumnChange}
+            table={mapping.primary_key_table}
+            column={mapping.primary_key_column}
+            onTableChange={handlePKTableChange}
+            onColumnChange={handlePKColumnChange}
           />
         </Grid>
         {filters && filters.length > 0 && (
