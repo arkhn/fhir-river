@@ -18,7 +18,6 @@ import type {
   Column,
   Filter,
   Owner,
-  Resource,
 } from "services/api/generated/api.generated";
 
 import {
@@ -31,7 +30,7 @@ import {
   filterSelectors,
   filterUpdated,
 } from "../Filters/filterSlice";
-import { resourceUpdated } from "./resourceSlice";
+import { resourceSelectors, resourceUpdated } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -50,15 +49,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type TableStepProps = {
-  mapping: Partial<Resource>;
   owner: Owner;
 };
 
-const TableStep = ({ mapping, owner }: TableStepProps): JSX.Element => {
+const TableStep = ({ owner }: TableStepProps): JSX.Element | null => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
+  const resource = resourceSelectors.selectById(store.getState(), "0");
   const filters = filterSelectors.selectAll(store.getState());
 
   const columnById = (id: string) =>
@@ -66,8 +65,14 @@ const TableStep = ({ mapping, owner }: TableStepProps): JSX.Element => {
 
   const handleAddFilterClick = () => {
     const columnId = uuid();
-    dispatch(columnAdded({ id: columnId, owner: owner.id }));
-    dispatch(filterAdded({ id: uuid(), resource: "0", sql_column: columnId }));
+    if (resource) {
+      dispatch(
+        columnAdded({ id: columnId, owner: resource.primary_key_owner })
+      );
+      dispatch(
+        filterAdded({ id: uuid(), resource: "0", sql_column: columnId })
+      );
+    }
   };
   const handleFilterChange = (
     filter?: Partial<Filter>,
@@ -87,14 +92,15 @@ const TableStep = ({ mapping, owner }: TableStepProps): JSX.Element => {
     dispatch(resourceUpdated({ id: "0", changes: { primary_key_column } }));
   };
 
+  if (!resource) return null;
   return (
     <Container maxWidth="md">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
           <ColumnSelects
             owner={owner}
-            table={mapping.primary_key_table}
-            column={mapping.primary_key_column}
+            table={resource.primary_key_table}
+            column={resource.primary_key_column}
             onTableChange={handlePKTableChange}
             onColumnChange={handlePKColumnChange}
           />

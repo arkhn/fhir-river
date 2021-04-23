@@ -13,22 +13,14 @@ const resourceSlice = createSlice({
   reducers: {
     initResource: () => initialState,
     resourceAdded: resourceAdapter.addOne,
-    resourcesAdded: resourceAdapter.addMany,
     resourceUpdated: resourceAdapter.updateOne,
-    resourcesUpdated: resourceAdapter.updateMany,
-    resourceUpserted: resourceAdapter.upsertOne,
-    resourcesUpserted: resourceAdapter.upsertMany,
   },
 });
 
 export const {
   initResource,
   resourceAdded,
-  resourcesAdded,
   resourceUpdated,
-  resourcesUpdated,
-  resourceUpserted,
-  resourcesUpserted,
 } = resourceSlice.actions;
 
 export const resourceSelectors = resourceAdapter.getSelectors<RootState>(

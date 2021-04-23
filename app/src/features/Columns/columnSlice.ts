@@ -10,18 +10,11 @@ const columnSlice = createSlice({
   initialState: columnAdapter.getInitialState(),
   reducers: {
     columnAdded: columnAdapter.addOne,
-    columnsAdded: columnAdapter.addMany,
     columnUpdated: columnAdapter.updateOne,
-    columnsUpdated: columnAdapter.updateMany,
   },
 });
 
-export const {
-  columnAdded,
-  columnsAdded,
-  columnUpdated,
-  columnsUpdated,
-} = columnSlice.actions;
+export const { columnAdded, columnUpdated } = columnSlice.actions;
 
 export const columnSelectors = columnAdapter.getSelectors<RootState>(
   (state) => state.column

@@ -10,18 +10,11 @@ const filterSlice = createSlice({
   initialState: filterAdapter.getInitialState(),
   reducers: {
     filterAdded: filterAdapter.addOne,
-    filtersAdded: filterAdapter.addMany,
     filterUpdated: filterAdapter.updateOne,
-    filtersUpdated: filterAdapter.updateMany,
   },
 });
 
-export const {
-  filterAdded,
-  filtersAdded,
-  filterUpdated,
-  filtersUpdated,
-} = filterSlice.actions;
+export const { filterAdded, filterUpdated } = filterSlice.actions;
 
 export const filterSelectors = filterAdapter.getSelectors<RootState>(
   (state) => state.filter

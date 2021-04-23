@@ -16,7 +16,8 @@ import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { Resource } from "services/api/generated/api.generated";
+import { store } from "../../app/store";
+import { resourceSelectors } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -46,25 +47,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type FhirProfileStepProps = {
-  mapping: Partial<Resource>;
-  onChange?: (mapping: Partial<Resource>) => void;
-};
-
-const FhirProfileStep = ({
-  mapping,
-  onChange,
-}: FhirProfileStepProps): JSX.Element => {
+const FhirProfileStep = (): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [isDefaultProfileSelected, setDefaultProfileSelected] = useState(false);
-  const { definition_id: resource } = mapping;
+
+  const mapping = resourceSelectors.selectById(store.getState(), "0");
 
   const handleClickDefaultProfile = () => {
     setDefaultProfileSelected(true);
-    onChange && onChange({});
+    // TODO: update
   };
 
+  if (!mapping) return null;
   return (
     <Container maxWidth="md">
       <Typography align="center">
@@ -75,7 +70,7 @@ const FhirProfileStep = ({
             className={clsx(classes.icon, classes.flameIcon)}
             iconSize={12}
           />
-          {` ${resource} `}
+          {` ${mapping.definition_id} `}
         </b>
         {t("resource")}
       </Typography>

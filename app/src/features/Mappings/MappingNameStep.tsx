@@ -8,7 +8,8 @@ import {
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
-import { Resource } from "services/api/generated/api.generated";
+import { store, useAppDispatch } from "../../app/store";
+import { resourceSelectors, resourceUpdated } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   inputContainer: {
@@ -17,22 +18,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type MappingNameStepProps = {
-  mapping: Partial<Resource>;
-  onChange?: (mapping: Partial<Resource>) => void;
-};
-
-const MappingNameStep = ({
-  mapping,
-  onChange,
-}: MappingNameStepProps): JSX.Element => {
+const MappingNameStep = (): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+
+  const resource = resourceSelectors.selectById(store.getState(), "0");
 
   const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange && onChange({ label: event.target.value });
+    if (resource?.id)
+      dispatch(
+        resourceUpdated({
+          id: resource.id,
+          changes: { label: event.target.value },
+        })
+      );
   };
 
+  if (!resource) return null;
   return (
     <Container maxWidth="md">
       <Typography align="center">{t("mappingNamePrompt")}</Typography>
@@ -45,7 +48,7 @@ const MappingNameStep = ({
           margin="dense"
           fullWidth
           placeholder={t("typeNameHere")}
-          value={mapping.label ?? ""}
+          value={resource.label ?? ""}
           onChange={handleChangeName}
         />
       </div>

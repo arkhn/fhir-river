@@ -12,17 +12,15 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { store, useAppDispatch, useAppSelector } from "app/store";
+import { useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/Stepper/StepPanel";
 import FhirProfileStep from "features/Mappings/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
 import {
-  resetMappingCreation,
   selectMappingCurrent,
   selectMappingFilters,
-  updateMapping,
 } from "features/Mappings/mappingSlice";
 import TableStep from "features/Mappings/TableStep";
 import {
@@ -39,7 +37,7 @@ import {
   Source,
 } from "services/api/generated/api.generated";
 
-import { resourceAdded, resourceSelectors } from "./resourceSlice";
+import { initResource, resourceAdded } from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 
@@ -92,8 +90,6 @@ const CreateMapping = (): JSX.Element | null => {
   const [activeStep, setActiveStep] = useState(0);
   const [isProfileSelected, setIsProfileSelected] = useState(false);
   const mapping = useAppSelector(selectMappingCurrent);
-  const resources = resourceSelectors.selectAll(store.getState());
-  const resource = resources[0];
   const filters = useAppSelector(selectMappingFilters);
 
   const [
@@ -104,19 +100,17 @@ const CreateMapping = (): JSX.Element | null => {
   const [createColumn] = useApiColumnsCreateMutation();
 
   useEffect(() => {
-    if (!resource) {
-      dispatch(
-        resourceAdded({
-          id: "0",
-          source: sourceId,
-        })
-      );
-    }
-  }, [dispatch, resource]);
+    dispatch(
+      resourceAdded({
+        id: "0",
+        source: sourceId,
+      })
+    );
+  }, []);
 
   useEffect(() => {
     return () => {
-      dispatch(resetMappingCreation());
+      dispatch(initResource());
     };
   }, []);
 
@@ -197,13 +191,12 @@ const CreateMapping = (): JSX.Element | null => {
       }
     }
   };
-  const handleUpdateMapping = (newMapping: Partial<Resource>) => {
-    // Remove disable on "next" button for 3rd step
-    if (activeStep === 2) {
-      setIsProfileSelected(true);
-    }
-    dispatch(updateMapping(newMapping));
-  };
+  // const handleUpdateMapping = (newMapping: Partial<Resource>) => {
+  //   // Remove disable on "next" button for 3rd step
+  //   if (activeStep === 2) {
+  //     setIsProfileSelected(true);
+  //   }
+  // };
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
@@ -240,25 +233,16 @@ const CreateMapping = (): JSX.Element | null => {
             }}
           >
             <StepPanel index={0} value={activeStep}>
-              <TableStep mapping={resource} owner={owner} />
+              <TableStep owner={owner} />
             </StepPanel>
             <StepPanel index={1} value={activeStep}>
-              <FhirResourceStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-              />
+              <FhirResourceStep />
             </StepPanel>
             <StepPanel index={2} value={activeStep}>
-              <FhirProfileStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-              />
+              <FhirProfileStep />
             </StepPanel>
             <StepPanel index={3} value={activeStep}>
-              <MappingNameStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-              />
+              <MappingNameStep />
             </StepPanel>
           </div>
         )}
