@@ -69,7 +69,9 @@ class BatchEndpoint(viewsets.ViewSet):
 
         # Fetch mapping
         mappings_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
         )
 
         for resource_id in resource_ids:
@@ -87,9 +89,21 @@ class BatchEndpoint(viewsets.ViewSet):
 
         # Create kafka topics for batch
         new_topics = [
-            NewTopic(f"batch.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"extract.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"transform.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
+            NewTopic(
+                f"batch.{batch_id}",
+                settings.KAFKA_NUM_PARTITIONS,
+                settings.KAFKA_REPLICATION_FACTOR,
+            ),
+            NewTopic(
+                f"extract.{batch_id}",
+                settings.KAFKA_NUM_PARTITIONS,
+                settings.KAFKA_REPLICATION_FACTOR,
+            ),
+            NewTopic(
+                f"transform.{batch_id}",
+                settings.KAFKA_NUM_PARTITIONS,
+                settings.KAFKA_REPLICATION_FACTOR,
+            ),
             NewTopic(f"load.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
         ]
         admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
@@ -112,7 +126,10 @@ class BatchEndpoint(viewsets.ViewSet):
                 fhirstore.delete(resource_type, resource_id=resource_id)
             except NotFoundError:
                 logger.debug(
-                    {"message": f"No documents for resource {resource_id} were found", "resource_id": resource_id},
+                    {
+                        "message": f"No documents for resource {resource_id} were found",
+                        "resource_id": resource_id,
+                    },
                 )
 
         # Send event to the extractor
@@ -148,7 +165,9 @@ class BatchEndpoint(viewsets.ViewSet):
         batch_counter_redis.expire(f"batch:{pk}:counter", timedelta(weeks=2))
 
         mappings_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
         )
         for key in mappings_redis.scan_iter(f"{pk}:*"):
             mappings_redis.delete(key)

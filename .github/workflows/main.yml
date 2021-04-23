@@ -135,7 +135,7 @@ jobs:
 
   integration:
     runs-on: ubuntu-18.04
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
+    # if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
     needs: [unit-tests, build-and-publish-hapi]
     steps:
       # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
@@ -153,6 +153,8 @@ jobs:
           cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
           contextName: river-ci-${{ github.sha }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
+          deploymentRef: sv/break-down-stack-role
+          debug: true
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",
