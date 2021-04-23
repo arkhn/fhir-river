@@ -3,11 +3,11 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
+import CreateMapping from "../../features/Mappings/CreateMapping";
 import AppBar from "./AppBar";
-import CreateMapping from "./CreateMapping";
 import PageNotFound from "./PageNotFound";
-import SourceMappings from "./SourceMappings";
-import Sources from "./Sources";
+import SourceMappings from "./Sources/SourceMappings";
+import Sources from "./Sources/Sources";
 
 const useStyles = makeStyles((theme) => ({
   body: {

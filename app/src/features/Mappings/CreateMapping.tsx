@@ -37,6 +37,7 @@ import {
   Filter,
   Resource,
   useApiColumnsCreateMutation,
+  Source,
 } from "services/api/generated/api.generated";
 
 const FOOTER_HEIGHT = 150;
@@ -76,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateMapping = (): JSX.Element => {
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { id: sourceId } = useParams<Pick<Source, "id">>();
   const stepperRef = useRef<HTMLDivElement>();
   const classes = useStyles();
   const history = useHistory();
