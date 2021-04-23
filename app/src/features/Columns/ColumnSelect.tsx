@@ -135,8 +135,8 @@ const ColumnSelects = ({
           options={tables}
           groupBy={(option) => option.label.split("/")[0]}
           getOptionLabel={(option) => option.label.split("/")[1]}
+          getOptionSelected={({ id }) => id === ownerTable?.id}
           onChange={handleOwnerTableChange}
-          value={ownerTable}
           selectOnFocus
           openOnFocus
           clearOnBlur
@@ -151,7 +151,7 @@ const ColumnSelects = ({
               InputProps={{
                 ...params.InputProps,
                 className: clsx(params.InputProps.className, {
-                  [classes.selected]: undefined !== ownerTable,
+                  [classes.selected]: ownerTable !== undefined,
                 }),
                 startAdornment: (
                   <Icon
