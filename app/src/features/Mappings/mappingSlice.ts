@@ -1,8 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
 
-import { RootState } from "app/store";
-import { Column, Filter, Resource } from "services/api/generated/api.generated";
+import type { RootState } from "app/store";
+import type {
+  Column,
+  Filter,
+  Resource,
+} from "services/api/generated/api.generated";
 
 export type PendingJoin = {
   id: string;
@@ -88,7 +92,6 @@ export const selectMappingJoins = (
   state: RootState
 ): Record<string, PendingJoin[]> => state.mapping.joins ?? {};
 
-export default mappingSlice.reducer;
 export const {
   resetMappingCreation,
   initMappingCreation,
@@ -100,3 +103,5 @@ export const {
   updateJoin,
   deleteJoin,
 } = mappingSlice.actions;
+
+export default mappingSlice.reducer;

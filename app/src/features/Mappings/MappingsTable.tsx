@@ -33,7 +33,7 @@ const MappingsTable = (): JSX.Element => {
   } = useApiResourcesListQuery({ source: sourceId });
 
   const handleMappingRowClick = (mapping: Resource) => () => {
-    history.push(`/source/${sourceId}/mapping/${mapping.id}`);
+    history.push(`/sources/${sourceId}/mappings/${mapping.id}`);
   };
 
   return isMappingLoading ? (

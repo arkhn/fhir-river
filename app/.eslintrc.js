@@ -57,12 +57,4 @@ module.exports = {
       },
     ],
   },
-  overrides: [
-    {
-      files: ["*.test.tsx"],
-      rules: {
-        "@typescript-eslint/no-var-requires": "off",
-      },
-    },
-  ],
 };
