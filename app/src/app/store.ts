@@ -7,15 +7,19 @@ import {
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import filter from "features/Filters/filterSlice";
+import column from "features/Mappings/columnSlice";
 import mapping from "features/Mappings/mappingSlice";
+import resource from "features/Mappings/resourceSlice";
 import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
 
 const appReducer = combineReducers({
   [api.reducerPath]: api.reducer,
+  column,
   filter,
-  source,
   mapping,
+  resource,
+  source,
 });
 export type RootState = ReturnType<typeof appReducer>;
 
