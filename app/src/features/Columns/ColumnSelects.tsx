@@ -52,7 +52,7 @@ const ColumnSelects = ({
   const isColumnSelected = !!column;
 
   const prevTable = usePrevious(table);
-  const hasPKTableChanged = prevTable !== table;
+  const hasTableChanged = prevTable !== table;
 
   const handleTableChange = (
     event: React.ChangeEvent<{
@@ -80,24 +80,19 @@ const ColumnSelects = ({
   };
 
   useEffect(() => {
-    if (schema) {
-      const { table, column } = pendingColumn;
-
-      if (hasPKTableChanged) {
-        if (table) {
-          // Reset column only if it is not in the new table pendingColumn list
-          if (column && !schema[table].includes(column)) {
-            onChange &&
-              onChange({
-                ...pendingColumn,
-                column: undefined,
-              });
-          }
-          setColumns(schema[table]);
-        }
+    const { table, column } = pendingColumn;
+    if (schema && hasTableChanged && table) {
+      // Reset column only if it is not in the new table pendingColumn list
+      if (column && !schema[table].includes(column)) {
+        onChange &&
+          onChange({
+            ...pendingColumn,
+            column: undefined,
+          });
       }
+      setColumns(schema[table]);
     }
-  }, [schema, hasPKTableChanged, pendingColumn]);
+  }, [schema, hasTableChanged, pendingColumn]);
 
   return (
     <>
