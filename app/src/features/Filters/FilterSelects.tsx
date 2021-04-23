@@ -47,11 +47,10 @@ const FilterSelects = ({
     (state) => state.mapping.joins?.[filter.col?.id ?? ""] ?? []
   );
   const filterColumn = filter.col ?? {};
-  const { table: PKTable } = filterColumn;
-  const isMappingPKTableAndFilterPKTableDifferent =
-    PKTable &&
-    mapping?.primary_key_table &&
-    PKTable !== mapping?.primary_key_table;
+  const { table } = filterColumn;
+  const isMappingPKTableAndFilterPKTableDifferent = Boolean(
+    table && mapping?.primary_key_table && table !== mapping?.primary_key_table
+  );
 
   useEffect(() => {
     if (joins.length === 0 && isMappingPKTableAndFilterPKTableDifferent) {
@@ -128,9 +127,7 @@ const FilterSelects = ({
             <JoinSection
               column={filter.col}
               joins={joins}
-              isFirstJoinRequired={Boolean(
-                isMappingPKTableAndFilterPKTableDifferent
-              )}
+              isFirstJoinRequired={isMappingPKTableAndFilterPKTableDifferent}
             />
           </div>
         </Grid>
