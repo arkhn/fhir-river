@@ -9,9 +9,9 @@ const filtersSlice = createSlice({
   initialState: filtersAdapter.getInitialState(),
   reducers: {
     filterAdded: filtersAdapter.addOne,
-    filtersReceived(state, action) {
-      filtersAdapter.setAll(state, action.payload.books);
-    },
+    filtersAdded: filtersAdapter.addMany,
+    filterUpdated: filtersAdapter.updateOne,
+    filtersUpdated: filtersAdapter.updateMany,
   },
 });
 
