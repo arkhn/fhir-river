@@ -91,7 +91,7 @@ export const api = generatedApi
        * Filters
        */
       apiFiltersList: {
-        provides: providesList("Filters"),
+        providesTags: providesList("Filters"),
       },
       apiFiltersCreate: {
         invalidatesTags: invalidatesList("Filters"),
