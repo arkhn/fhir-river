@@ -127,8 +127,6 @@ const ColumnSelects = ({
     }
   }, [schema, hasTableChanged, pendingColumn]);
 
-  console.log(tables);
-
   return (
     <>
       <Grid item>
@@ -152,6 +150,9 @@ const ColumnSelects = ({
               placeholder={t("selectTable")}
               InputProps={{
                 ...params.InputProps,
+                className: clsx(params.InputProps.className, {
+                  [classes.selected]: undefined !== ownerTable,
+                }),
                 startAdornment: (
                   <Icon
                     icon={IconNames.TH}
