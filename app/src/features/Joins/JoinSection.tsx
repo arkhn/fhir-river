@@ -9,11 +9,10 @@ import JoinSelects from "features/Joins/JoinSelects";
 import {
   addJoin,
   deleteJoin,
-  PendingFilter,
   PendingJoin,
   updateJoin,
 } from "features/Mappings/mappingSlice";
-import { Owner } from "services/api/generated/api.generated";
+import { Column } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -22,15 +21,13 @@ const useStyles = makeStyles(() => ({
 }));
 
 type JoinSectionProps = {
-  owner?: Owner;
-  filter: PendingFilter;
+  column?: Partial<Column>;
   joins: PendingJoin[];
   isFirstJoinRequired?: boolean;
 };
 
 const JoinSection = ({
-  owner,
-  filter,
+  column,
   joins,
   isFirstJoinRequired,
 }: JoinSectionProps): JSX.Element => {
@@ -38,19 +35,19 @@ const JoinSection = ({
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const handleAddJoinClick = () => {
-    filter.id && dispatch(addJoin(filter.id));
+    column?.id && dispatch(addJoin(column.id));
   };
   const handleJoinChange = (join: PendingJoin) => {
-    filter.id &&
+    column?.id &&
       dispatch(
         updateJoin({
-          filter: filter.id,
+          column: column.id,
           join,
         })
       );
   };
   const handleJoinDelete = (joinId: string) => {
-    filter.id && dispatch(deleteJoin({ filter: filter.id, join: joinId }));
+    column?.id && dispatch(deleteJoin({ column: column.id, join: joinId }));
   };
 
   return (
@@ -62,7 +59,6 @@ const JoinSection = ({
         <JoinSelects
           key={join.id}
           join={join}
-          owner={owner}
           onChange={handleJoinChange}
           onDelete={handleJoinDelete}
           disableDelete={isFirstJoinRequired && index === 0}

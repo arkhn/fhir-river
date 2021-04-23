@@ -5,10 +5,15 @@ import { IconNames } from "@blueprintjs/icons";
 import { Grid, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 
 import Select from "common/components/Select";
 import usePrevious from "common/hooks/usePrevious";
-import { Owner } from "services/api/generated/api.generated";
+import {
+  useApiCredentialsListQuery,
+  useApiOwnersListQuery,
+} from "services/api/endpoints";
+import { Column } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -21,75 +26,93 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type ColumnSelectsProps = {
-  owner?: Owner;
-  PKTable?: string;
-  PKColumn?: string;
-  onPKTableChange?: (PKTable?: string) => void;
-  onPKColumnChange?: (PKColumn?: string) => void;
+  pendingColumn: Partial<Column>;
+  onChange?: (column: Partial<Column>) => void;
 };
 
 const ColumnSelects = ({
-  owner,
-  PKTable,
-  PKColumn,
-  onPKTableChange,
-  onPKColumnChange,
+  pendingColumn,
+  onChange,
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const PKTables = Object.keys(owner?.schema ?? []);
-  const [PKColumns, setPKColumns] = useState<string[]>([]);
+  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { data: credential } = useApiCredentialsListQuery({ source: sourceId });
+  const { data: credentialOwners } = useApiOwnersListQuery({
+    credential: credential?.[0].id,
+  });
+  const { table, column } = pendingColumn;
+  const selectedOwner = credentialOwners?.[0];
+  const schema = selectedOwner?.schema as Record<string, string[]>;
 
-  const isPKTableSelected = !!PKTable;
-  const isPKColumnSelected = !!PKColumn;
+  const tables = (schema && Object.keys(schema)) || [];
+  const [columns, setColumns] = useState<string[]>([]);
 
-  const prevPKTable = usePrevious(PKTable);
-  const hasPKTableChanged = prevPKTable !== PKTable;
+  const isTableSelected = !!table;
+  const isColumnSelected = !!column;
 
-  const handlePKTableChange = (
+  const prevTable = usePrevious(table);
+  const hasPKTableChanged = prevTable !== table;
+
+  const handleTableChange = (
     event: React.ChangeEvent<{
       name?: string | undefined;
       value: unknown;
     }>
   ) => {
-    onPKTableChange && onPKTableChange(event.target.value as string);
+    onChange &&
+      onChange({
+        ...pendingColumn,
+        table: event.target.value as string,
+      });
   };
-  const handlePKColumnChange = (
+  const handleColumnChange = (
     event: React.ChangeEvent<{
       name?: string | undefined;
       value: unknown;
     }>
   ) => {
-    onPKColumnChange && onPKColumnChange(event.target.value as string);
+    onChange &&
+      onChange({
+        ...pendingColumn,
+        column: event.target.value as string,
+      });
   };
 
   useEffect(() => {
-    if (owner?.schema && hasPKTableChanged) {
-      const schema = owner.schema as Record<string, string[]>;
-      if (PKTable) {
-        // Reset PKColumn only if it is not in the new PKTable column list
-        if (PKColumn && !schema[PKTable].includes(PKColumn)) {
-          onPKColumnChange && onPKColumnChange();
+    if (schema) {
+      const { table, column } = pendingColumn;
+
+      if (hasPKTableChanged) {
+        if (table) {
+          // Reset column only if it is not in the new table pendingColumn list
+          if (column && !schema[table].includes(column)) {
+            onChange &&
+              onChange({
+                ...pendingColumn,
+                column: undefined,
+              });
+          }
+          setColumns(schema[table]);
         }
-        setPKColumns(schema[PKTable]);
       }
     }
-  }, [owner?.schema, hasPKTableChanged, PKTable, PKColumn]);
+  }, [schema, hasPKTableChanged, pendingColumn]);
 
   return (
     <>
       <Grid item>
         <Select
-          value={PKTable ?? ""}
-          options={PKTables}
+          value={table ?? ""}
+          options={tables}
           emptyOption={t("selectTable")}
-          onChange={handlePKTableChange}
+          onChange={handleTableChange}
           startIcon={
             <Icon
               icon={IconNames.TH}
               iconSize={15}
               className={clsx(classes.icon, {
-                [classes.iconSelected]: isPKTableSelected,
+                [classes.iconSelected]: isTableSelected,
               })}
             />
           }
@@ -97,16 +120,16 @@ const ColumnSelects = ({
       </Grid>
       <Grid item>
         <Select
-          value={PKColumn ?? ""}
-          options={PKColumns}
+          value={column ?? ""}
+          options={columns}
           emptyOption={t("selectColumn")}
-          onChange={handlePKColumnChange}
+          onChange={handleColumnChange}
           startIcon={
             <Icon
               icon={IconNames.COLUMN_LAYOUT}
               iconSize={15}
               className={clsx(classes.icon, {
-                [classes.iconSelected]: isPKColumnSelected,
+                [classes.iconSelected]: isColumnSelected,
               })}
             />
           }

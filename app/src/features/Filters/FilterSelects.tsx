@@ -13,7 +13,7 @@ import {
   deleteFilter,
   PendingFilter,
 } from "features/Mappings/mappingSlice";
-import { Owner, Resource } from "services/api/generated/api.generated";
+import { Column, Resource } from "services/api/generated/api.generated";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
 
@@ -32,24 +32,22 @@ type FilterSelectsProps = {
   mapping?: Partial<Resource>;
   filter: PendingFilter;
   onChange?: (filter: PendingFilter) => void;
-  owner?: Owner;
 };
 
 const FilterSelects = ({
   mapping,
   filter,
   onChange,
-  owner,
 }: FilterSelectsProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
   const joins = useAppSelector(
-    (state) => state.mapping.joins?.[filter.id ?? ""] ?? []
+    (state) => state.mapping.joins?.[filter.col?.id ?? ""] ?? []
   );
   const filterColumn = filter.col ?? {};
-  const { table: PKTable, column: PKColumn } = filterColumn;
+  const { table: PKTable } = filterColumn;
   const isMappingPKTableAndFilterPKTableDifferent =
     PKTable &&
     mapping?.primary_key_table &&
@@ -57,28 +55,15 @@ const FilterSelects = ({
 
   useEffect(() => {
     if (joins.length === 0 && isMappingPKTableAndFilterPKTableDifferent) {
-      filter.id && dispatch(addJoin(filter.id));
+      filter.col?.id && dispatch(addJoin(filter.col?.id));
     }
   }, [isMappingPKTableAndFilterPKTableDifferent]);
 
-  const handlePKTableChange = (table?: string) => {
+  const handleFilterColumnChange = (col?: Partial<Column>) => {
     onChange &&
       onChange({
         ...filter,
-        col: {
-          ...filterColumn,
-          table,
-        },
-      });
-  };
-  const handlePKColumnChange = (column?: string) => {
-    onChange &&
-      onChange({
-        ...filter,
-        col: {
-          ...filterColumn,
-          column,
-        },
+        col,
       });
   };
   const handleRelationChange = (
@@ -107,11 +92,8 @@ const FilterSelects = ({
     <Grid item container direction="column" spacing={2}>
       <Grid item container xs={12} spacing={2}>
         <ColumnSelects
-          owner={owner}
-          PKColumn={PKColumn}
-          PKTable={PKTable}
-          onPKTableChange={handlePKTableChange}
-          onPKColumnChange={handlePKColumnChange}
+          pendingColumn={filterColumn}
+          onChange={handleFilterColumnChange}
         />
         <Grid item>
           <Select
@@ -144,8 +126,7 @@ const FilterSelects = ({
         <Grid item container>
           <div className={classes.leftShift}>
             <JoinSection
-              filter={filter}
-              owner={owner}
+              column={filter.col}
               joins={joins}
               isFirstJoinRequired={Boolean(
                 isMappingPKTableAndFilterPKTableDifferent

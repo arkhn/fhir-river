@@ -170,8 +170,10 @@ const CreateMapping = (): JSX.Element => {
 
           // Filters Joins creation
           const filtersJoins = await Promise.all(
-            Object.entries(joins).map(([filter, filterJoins]) => {
-              const filterIndex = filters.findIndex(({ id }) => id === filter);
+            Object.entries(joins).map(([column, filterJoins]) => {
+              const filterIndex = filters.findIndex(
+                ({ col }) => col?.id === column
+              );
               return Promise.all(
                 filterJoins.map(() =>
                   createJoin({
@@ -272,7 +274,7 @@ const CreateMapping = (): JSX.Element => {
       >
         <Typography>{t("cancel")}</Typography>
       </Button>
-      <Container className={classes.rootContainer}>
+      <Container className={classes.rootContainer} maxWidth="lg">
         <MappingCreationStepper ref={stepperRef} activeStep={activeStep} />
         {mapping && (
           <div

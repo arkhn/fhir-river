@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelects";
 import FilterSelects from "features/Filters/FilterSelects";
-import { Owner, Resource } from "services/api/generated/api.generated";
+import { Column, Owner, Resource } from "services/api/generated/api.generated";
 
 import { addFilter, PendingFilter, updateFilter } from "./mappingSlice";
 
@@ -39,15 +39,16 @@ type TableStepProps = {
   onChange?: (mapping: Partial<Resource>) => void;
 };
 
-const TableStep = ({
-  onChange,
-  mapping,
-  owner,
-}: TableStepProps): JSX.Element => {
+const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const filters = useAppSelector((state) => state.mapping.filters);
+  const mappingColumn: Partial<Column> = {
+    owner: mapping.primary_key_owner,
+    table: mapping.primary_key_table,
+    column: mapping.primary_key_column,
+  };
 
   const handleAddFilterClick = () => {
     dispatch(addFilter());
@@ -55,23 +56,22 @@ const TableStep = ({
   const handleFilterChange = (filter: PendingFilter) => {
     dispatch(updateFilter(filter));
   };
-  const handlePKTableChange = (primary_key_table?: string) => {
-    onChange && onChange({ primary_key_table });
-  };
-  const handlePKColumnChange = (primary_key_column?: string) => {
-    onChange && onChange({ primary_key_column });
+  const handleFilterColumnChange = (column: Partial<Column>) => {
+    onChange &&
+      onChange({
+        primary_key_owner: column.owner,
+        primary_key_table: column.table,
+        primary_key_column: column.column,
+      });
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
           <ColumnSelects
-            owner={owner}
-            PKTable={mapping.primary_key_table}
-            PKColumn={mapping.primary_key_column}
-            onPKTableChange={handlePKTableChange}
-            onPKColumnChange={handlePKColumnChange}
+            pendingColumn={mappingColumn}
+            onChange={handleFilterColumnChange}
           />
         </Grid>
         {filters && filters.length > 0 && (
@@ -85,7 +85,6 @@ const TableStep = ({
                   key={`filter ${index}`}
                   mapping={mapping}
                   filter={filter}
-                  owner={owner}
                   onChange={handleFilterChange}
                 />
               ))}

@@ -34,7 +34,7 @@ const mappingSlice = createSlice({
     },
     addFilter: (state) => {
       if (state.filters) {
-        state.filters = [...state.filters, { id: uuid() }];
+        state.filters = [...state.filters, { id: uuid(), col: { id: uuid() } }];
       }
     },
     updateFilter: (state, { payload }: PayloadAction<PendingFilter>) => {
@@ -56,21 +56,21 @@ const mappingSlice = createSlice({
     },
     deleteJoin: (
       state,
-      { payload }: PayloadAction<{ filter: string; join: string }>
+      { payload }: PayloadAction<{ column: string; join: string }>
     ) => {
       if (state.filters && state.joins) {
-        state.joins[payload.filter] = state.joins[payload.filter]?.filter(
+        state.joins[payload.column] = state.joins[payload.column]?.filter(
           (join) => join.id !== payload.join
         );
       }
     },
     updateJoin: (
       state,
-      { payload }: PayloadAction<{ filter: string; join: PendingJoin }>
+      { payload }: PayloadAction<{ column: string; join: PendingJoin }>
     ) => {
-      const { filter, join } = payload;
-      if (state.joins && state.joins[filter]) {
-        state.joins[filter] = state.joins[filter].map((_join) =>
+      const { column, join } = payload;
+      if (state.joins && state.joins[column]) {
+        state.joins[column] = state.joins[column].map((_join) =>
           _join.id === join.id ? join : _join
         );
       }
