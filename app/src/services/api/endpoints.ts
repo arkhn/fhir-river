@@ -7,6 +7,7 @@ import {
 import { api as generatedApi } from "./generated/api.generated";
 
 const entityTypes = [
+  "Columns",
   "Sources",
   "Resources",
   "Attributes",
@@ -30,6 +31,12 @@ export const api = generatedApi
   .enhanceEndpoints({
     addEntityTypes: entityTypes,
     endpoints: {
+      /**
+       * Columns
+       */
+      apiColumnsCreate: {
+        invalidatesTags: invalidatesList("Columns"),
+      },
       /**
        *  Sources
        */
@@ -84,9 +91,6 @@ export const api = generatedApi
       apiCredentialsCreate: {
         invalidatesTags: invalidatesList("Credentials"),
       },
-      apiCredentialsRetrieve: {
-        providesTags: providesOne("Credentials"),
-      },
       apiCredentialsUpdate: {
         invalidatesTags: invalidatesOne("Credentials"),
       },
@@ -112,6 +116,8 @@ export const api = generatedApi
   });
 
 export const {
+  //Columns
+  useApiColumnsCreateMutation,
   // Sources
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
@@ -130,7 +136,6 @@ export const {
   // Credentials
   useApiCredentialsListQuery,
   useApiCredentialsCreateMutation,
-  useApiCredentialsRetrieveQuery,
   useApiCredentialsUpdateMutation,
   // Filters
   useApiFiltersListQuery,

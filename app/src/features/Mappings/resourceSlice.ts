@@ -11,16 +11,16 @@ const resourceSlice = createSlice({
   name: "resource",
   initialState,
   reducers: {
-    initResource: () => initialState,
     resourceAdded: resourceAdapter.addOne,
     resourceUpdated: resourceAdapter.updateOne,
+    resourceRemoved: resourceAdapter.removeOne,
   },
 });
 
 export const {
-  initResource,
   resourceAdded,
   resourceUpdated,
+  resourceRemoved,
 } = resourceSlice.actions;
 
 export const resourceSelectors = resourceAdapter.getSelectors<RootState>(

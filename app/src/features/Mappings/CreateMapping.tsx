@@ -12,32 +12,34 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "app/store";
+import { store, useAppDispatch } from "app/store";
 import StepPanel from "common/Stepper/StepPanel";
 import FhirProfileStep from "features/Mappings/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
-import {
-  selectMappingCurrent,
-  selectMappingFilters,
-} from "features/Mappings/mappingSlice";
 import TableStep from "features/Mappings/TableStep";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
   useApiFiltersCreateMutation,
   useApiResourcesCreateMutation,
+  useApiColumnsCreateMutation,
 } from "services/api/endpoints";
 import {
-  Column,
-  Filter,
-  Resource,
-  useApiColumnsCreateMutation,
   Source,
+  ResourceRequest,
+  ColumnRequest,
+  FilterRequest,
 } from "services/api/generated/api.generated";
 
-import { initResource, resourceAdded } from "./resourceSlice";
+import { columnSelectors } from "../Columns/columnSlice";
+import { filterSelectors } from "../Filters/filterSlice";
+import {
+  resourceAdded,
+  resourceRemoved,
+  resourceSelectors,
+} from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 
@@ -88,9 +90,9 @@ const CreateMapping = (): JSX.Element | null => {
   const owner = owners?.[0];
 
   const [activeStep, setActiveStep] = useState(0);
-  const [isProfileSelected, setIsProfileSelected] = useState(false);
-  const mapping = useAppSelector(selectMappingCurrent);
-  const filters = useAppSelector(selectMappingFilters);
+  const mapping = resourceSelectors.selectById(store.getState(), "0");
+  const columns = columnSelectors.selectAll(store.getState());
+  const filters = filterSelectors.selectAll(store.getState());
 
   const [
     createMapping,
@@ -100,17 +102,20 @@ const CreateMapping = (): JSX.Element | null => {
   const [createColumn] = useApiColumnsCreateMutation();
 
   useEffect(() => {
-    dispatch(
-      resourceAdded({
-        id: "0",
-        source: sourceId,
-      })
-    );
+    // TODO: upsert
+    if (owner?.id && sourceId)
+      dispatch(
+        resourceAdded({
+          id: "0",
+          source: sourceId,
+          primary_key_owner: owner.id,
+        })
+      );
   }, []);
 
   useEffect(() => {
     return () => {
-      dispatch(initResource());
+      dispatch(resourceRemoved("0"));
     };
   }, []);
 
@@ -128,8 +133,7 @@ const CreateMapping = (): JSX.Element | null => {
           isDisabled = mapping.definition_id === undefined;
           break;
         case 2:
-          isDisabled =
-            mapping.definition_id === undefined || !isProfileSelected;
+          isDisabled = mapping.definition_id === undefined;
           break;
         case 3:
           isDisabled =
@@ -152,32 +156,30 @@ const CreateMapping = (): JSX.Element | null => {
         const createdMapping = await createMapping({
           resourceRequest: {
             ...mapping,
-            primary_key_owner: owner.id,
-            source: sourceId,
-          } as Resource,
+          } as ResourceRequest,
         }).unwrap();
 
         try {
           // Column creation
           const createdColumns = await Promise.all(
-            filters.map(({ col }) =>
+            columns.map((column) =>
               createColumn({
-                columnRequest: { ...col, owner: owner.id } as Column,
+                columnRequest: { ...column, owner: owner.id } as ColumnRequest,
               }).unwrap()
             )
           );
 
           // Filter creation
           await Promise.all(
-            filters.map(({ relation, value }, index) => {
+            filters.map((filter, index) => {
               const createdColumn = createdColumns[index];
               return createFilter({
                 filterRequest: {
                   sql_column: createdColumn.id,
-                  relation: relation,
+                  relation: filter.relation,
                   resource: createdMapping.id,
-                  value: value,
-                } as Filter,
+                  value: filter.value,
+                } as FilterRequest,
               }).unwrap();
             })
           );
@@ -191,12 +193,7 @@ const CreateMapping = (): JSX.Element | null => {
       }
     }
   };
-  // const handleUpdateMapping = (newMapping: Partial<Resource>) => {
-  //   // Remove disable on "next" button for 3rd step
-  //   if (activeStep === 2) {
-  //     setIsProfileSelected(true);
-  //   }
-  // };
+
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
