@@ -13,7 +13,17 @@ import { v4 as uuid } from "uuid";
 
 import { store, useAppDispatch } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelects";
+import {
+  columnAdded,
+  columnSelectors,
+  columnUpdated,
+} from "features/Columns/columnSlice";
 import FilterSelects from "features/Filters/FilterSelects";
+import {
+  filterAdded,
+  filterSelectors,
+  filterUpdated,
+} from "features/Filters/filterSlice";
 import type {
   Column,
   Filter,
@@ -21,16 +31,6 @@ import type {
   Resource,
 } from "services/api/generated/api.generated";
 
-import {
-  columnAdded,
-  columnSelectors,
-  columnUpdated,
-} from "../Columns/columnSlice";
-import {
-  filterAdded,
-  filterSelectors,
-  filterUpdated,
-} from "../Filters/filterSlice";
 import { resourceUpdated } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +54,7 @@ type TableStepProps = {
   owner: Owner;
 };
 
-const TableStep = ({ owner, mapping }: TableStepProps): JSX.Element | null => {
+const TableStep = ({ owner, mapping }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();

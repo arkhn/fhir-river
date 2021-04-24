@@ -16,7 +16,7 @@ import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { Resource } from "../../services/api/generated/api.generated";
+import { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -50,9 +50,7 @@ type FhirProfileStepProps = {
   mapping: Partial<Resource>;
 };
 
-const FhirProfileStep = ({
-  mapping,
-}: FhirProfileStepProps): JSX.Element | null => {
+const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [isDefaultProfileSelected, setDefaultProfileSelected] = useState(false);
