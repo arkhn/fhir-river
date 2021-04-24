@@ -17,8 +17,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { store, useAppDispatch } from "../../app/store";
-import { resourceSelectors, resourceUpdated } from "./resourceSlice";
+import { useAppDispatch } from "../../app/store";
+import { Resource } from "../../services/api/generated/api.generated";
+import { resourceUpdated } from "./resourceSlice";
 
 //Mock
 const FhirResources = [
@@ -51,22 +52,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FhirResourceStep = (): JSX.Element => {
+type FhirResourceStepProps = {
+  mapping: Partial<Resource>;
+};
+
+const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [searchValue, setSearchValue] = useState("");
 
-  const resource = resourceSelectors.selectById(store.getState(), "0");
-
   const isDefinitionIdSelected = (definitionId: string) =>
-    definitionId === resource?.definition_id;
+    definitionId === mapping.definition_id;
 
   const handleClickFhirResource = (definitionId: string) => () => {
-    if (resource?.id)
+    if (mapping.id)
       dispatch(
         resourceUpdated({
-          id: resource.id,
+          id: mapping.id,
           changes: { definition_id: definitionId },
         })
       );

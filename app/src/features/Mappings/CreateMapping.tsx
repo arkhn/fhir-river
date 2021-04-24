@@ -11,6 +11,7 @@ import BackIcon from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 
 import { store, useAppDispatch } from "app/store";
 import StepPanel from "common/Stepper/StepPanel";
@@ -33,11 +34,11 @@ import {
   FilterRequest,
 } from "services/api/generated/api.generated";
 
-import { columnSelectors } from "../Columns/columnSlice";
-import { filterSelectors } from "../Filters/filterSlice";
+import { columnSelectors, columnsRemoved } from "../Columns/columnSlice";
+import { filterSelectors, filtersRemoved } from "../Filters/filterSlice";
 import {
   resourceAdded,
-  resourceRemoved,
+  resourcesRemoved,
   resourceSelectors,
 } from "./resourceSlice";
 
@@ -90,7 +91,7 @@ const CreateMapping = (): JSX.Element | null => {
   const owner = owners?.[0];
 
   const [activeStep, setActiveStep] = useState(0);
-  const mapping = resourceSelectors.selectById(store.getState(), "0");
+  const [mapping] = resourceSelectors.selectAll(store.getState());
   const columns = columnSelectors.selectAll(store.getState());
   const filters = filterSelectors.selectAll(store.getState());
 
@@ -102,11 +103,10 @@ const CreateMapping = (): JSX.Element | null => {
   const [createColumn] = useApiColumnsCreateMutation();
 
   useEffect(() => {
-    // TODO: upsert
     if (owner?.id && sourceId)
       dispatch(
         resourceAdded({
-          id: "0",
+          id: uuid(),
           source: sourceId,
           primary_key_owner: owner.id,
         })
@@ -115,7 +115,9 @@ const CreateMapping = (): JSX.Element | null => {
 
   useEffect(() => {
     return () => {
-      dispatch(resourceRemoved("0"));
+      dispatch(resourcesRemoved());
+      dispatch(filtersRemoved());
+      dispatch(columnsRemoved());
     };
   }, []);
 
@@ -151,7 +153,7 @@ const CreateMapping = (): JSX.Element | null => {
   }, [activeStep, mapping]);
 
   const handleSubmitCreation = async () => {
-    if (mapping && owner && sourceId && filters) {
+    if (mapping && owner) {
       try {
         const createdMapping = await createMapping({
           resourceRequest: {
@@ -171,14 +173,14 @@ const CreateMapping = (): JSX.Element | null => {
 
           // Filter creation
           await Promise.all(
-            filters.map((filter, index) => {
+            filters.map(({ relation, value }, index) => {
               const createdColumn = createdColumns[index];
               return createFilter({
                 filterRequest: {
                   sql_column: createdColumn.id,
-                  relation: filter.relation,
+                  relation: relation,
                   resource: createdMapping.id,
-                  value: filter.value,
+                  value: value,
                 } as FilterRequest,
               }).unwrap();
             })
@@ -230,16 +232,16 @@ const CreateMapping = (): JSX.Element | null => {
             }}
           >
             <StepPanel index={0} value={activeStep}>
-              <TableStep owner={owner} />
+              <TableStep mapping={mapping} owner={owner} />
             </StepPanel>
             <StepPanel index={1} value={activeStep}>
-              <FhirResourceStep />
+              <FhirResourceStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={2} value={activeStep}>
-              <FhirProfileStep />
+              <FhirProfileStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={3} value={activeStep}>
-              <MappingNameStep />
+              <MappingNameStep mapping={mapping} />
             </StepPanel>
           </div>
         )}
