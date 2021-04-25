@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 import {
   CircularProgress,
@@ -11,7 +11,6 @@ import BackIcon from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
-import { v4 as uuid } from "uuid";
 
 import { store, useAppDispatch } from "app/store";
 import StepPanel from "common/Stepper/StepPanel";
@@ -21,14 +20,11 @@ import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
 import TableStep from "features/Mappings/TableStep";
 import {
-  useApiCredentialsListQuery,
-  useApiOwnersListQuery,
   useApiFiltersCreateMutation,
   useApiResourcesCreateMutation,
   useApiColumnsCreateMutation,
 } from "services/api/endpoints";
 import {
-  Source,
   ResourceRequest,
   ColumnRequest,
   FilterRequest,
@@ -36,11 +32,7 @@ import {
 
 import { columnSelectors, columnsRemoved } from "../Columns/columnSlice";
 import { filterSelectors, filtersRemoved } from "../Filters/filterSlice";
-import {
-  resourceAdded,
-  resourcesRemoved,
-  resourceSelectors,
-} from "./resourceSlice";
+import { resourcesRemoved, resourceSelectors } from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 
@@ -79,16 +71,11 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateMapping = (): JSX.Element | null => {
   const { t } = useTranslation();
-  const { id: sourceId } = useParams<Pick<Source, "id">>();
+  const { sourceId } = useParams<{ sourceId: string }>();
   const stepperRef = useRef<HTMLDivElement>();
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const { data: credential } = useApiCredentialsListQuery({ source: sourceId });
-  const { data: owners } = useApiOwnersListQuery({
-    credential: credential?.[0].id,
-  });
-  const owner = owners?.[0];
 
   const [activeStep, setActiveStep] = useState(0);
   const [mapping] = resourceSelectors.selectAll(store.getState());
@@ -101,25 +88,6 @@ const CreateMapping = (): JSX.Element | null => {
   ] = useApiResourcesCreateMutation();
   const [createFilter] = useApiFiltersCreateMutation();
   const [createColumn] = useApiColumnsCreateMutation();
-
-  useEffect(() => {
-    if (owner?.id && sourceId)
-      dispatch(
-        resourceAdded({
-          id: uuid(),
-          source: sourceId,
-          primary_key_owner: owner.id,
-        })
-      );
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      dispatch(resourcesRemoved());
-      dispatch(filtersRemoved());
-      dispatch(columnsRemoved());
-    };
-  }, []);
 
   const isNextDisabled = useMemo((): boolean => {
     let isDisabled = true;
@@ -152,8 +120,14 @@ const CreateMapping = (): JSX.Element | null => {
     return isDisabled;
   }, [activeStep, mapping]);
 
+  const resetCreateMapping = () => {
+    dispatch(resourcesRemoved());
+    dispatch(filtersRemoved());
+    dispatch(columnsRemoved());
+  };
+
   const handleSubmitCreation = async () => {
-    if (mapping && owner) {
+    if (mapping) {
       try {
         const createdMapping = await createMapping({
           resourceRequest: {
@@ -166,7 +140,7 @@ const CreateMapping = (): JSX.Element | null => {
           const createdColumns = await Promise.all(
             columns.map((column) =>
               createColumn({
-                columnRequest: { ...column, owner: owner.id } as ColumnRequest,
+                columnRequest: { ...column } as ColumnRequest,
               }).unwrap()
             )
           );
@@ -189,6 +163,7 @@ const CreateMapping = (): JSX.Element | null => {
           // Fix: Handle Column & Filter creation errors
         }
 
+        resetCreateMapping();
         history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
       } catch (error) {
         // Fix: Handle Resource creation errors
@@ -204,10 +179,10 @@ const CreateMapping = (): JSX.Element | null => {
     activeStep === 3 && handleSubmitCreation();
   };
   const handleCancelClick = () => {
+    resetCreateMapping();
     history.goBack();
   };
 
-  if (!owner) return null;
   return (
     <>
       <Button
@@ -232,7 +207,7 @@ const CreateMapping = (): JSX.Element | null => {
             }}
           >
             <StepPanel index={0} value={activeStep}>
-              <TableStep mapping={mapping} owner={owner} />
+              <TableStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={1} value={activeStep}>
               <FhirResourceStep mapping={mapping} />

@@ -24,10 +24,13 @@ import {
   filterSelectors,
   filterUpdated,
 } from "features/Filters/filterSlice";
+import {
+  useApiCredentialsListQuery,
+  useApiOwnersListQuery,
+} from "services/api/endpoints";
 import type {
   Column,
   Filter,
-  Owner,
   Resource,
 } from "services/api/generated/api.generated";
 
@@ -51,13 +54,23 @@ const useStyles = makeStyles((theme) => ({
 
 type TableStepProps = {
   mapping: Partial<Resource>;
-  owner: Owner;
 };
 
-const TableStep = ({ owner, mapping }: TableStepProps): JSX.Element => {
+const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+
+  const { data: credential } = useApiCredentialsListQuery(
+    {
+      source: mapping.source,
+    },
+    { skip: !mapping.source }
+  );
+  const { data: owners } = useApiOwnersListQuery({
+    credential: credential?.[0].id,
+  });
+  const owner = owners?.[0];
 
   const filters = filterSelectors.selectAll(store.getState());
 

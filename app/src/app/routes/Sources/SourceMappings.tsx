@@ -13,6 +13,7 @@ import {
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import SourceDrawer from "features/Sources/SourceDrawer";
 import SourceEditButton from "features/Sources/SourceEditButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +42,12 @@ const SourceMappings = (): JSX.Element => {
         <div className={classes.header}>
           <NavigationBreadcrumbs />
           <Grid>
-            <SourceEditButton />
+            <SourceEditButton
+              size="small"
+              variant="contained"
+              className={classes.button}
+              startIcon={<Icon icon={IconNames.COG} className={classes.icon} />}
+            />
             <Button
               size="small"
               variant="contained"
@@ -69,6 +75,7 @@ const SourceMappings = (): JSX.Element => {
           <MappingsTable />
         </Container>
       </Container>
+      <SourceDrawer />
     </>
   );
 };
