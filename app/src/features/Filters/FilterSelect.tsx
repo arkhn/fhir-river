@@ -103,7 +103,7 @@ const FilterSelect = ({
     <Grid item container direction="column" spacing={2}>
       <Grid item container xs={12} spacing={2}>
         <ColumnSelect
-          column={filterColumn}
+          pendingColumn={filterColumn}
           onChange={handleFilterColumnChange}
         />
         <Grid item>

@@ -36,9 +36,15 @@ const JoinSelect = ({
 
   return (
     <Grid item container xs={12} spacing={2} alignItems="center">
-      <ColumnSelect column={leftColumn} onChange={handleLeftColumnChange} />
+      <ColumnSelect
+        pendingColumn={leftColumn}
+        onChange={handleLeftColumnChange}
+      />
       <Typography>==</Typography>
-      <ColumnSelect column={rightColumn} onChange={handleRightColumnChange} />
+      <ColumnSelect
+        pendingColumn={rightColumn}
+        onChange={handleRightColumnChange}
+      />
       <IconButton onClick={handleJoinDelete} disabled={disableDelete}>
         <CloseIcon />
       </IconButton>

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, makeStyles, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -16,6 +17,18 @@ import {
 import { Column } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
+  autocomplete: {
+    minWidth: 200,
+    color: theme.palette.text.disabled,
+    boxShadow: `0 1px 5px ${theme.palette.divider}`,
+  },
+  autocompleteIcon: {
+    paddingLeft: theme.spacing(1),
+  },
+  selected: {
+    fontWeight: 500,
+    color: theme.palette.text.primary,
+  },
   icon: {
     paddingRight: theme.spacing(1),
     fill: theme.palette.text.disabled,
@@ -26,12 +39,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type ColumnSelectsProps = {
-  column?: Partial<Column>;
+  pendingColumn: Partial<Column>;
   onChange?: (column: Partial<Column>) => void;
 };
 
-const ColumnSelect = ({
-  column,
+const ColumnSelects = ({
+  pendingColumn,
   onChange,
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
@@ -41,29 +54,50 @@ const ColumnSelect = ({
   const { data: credentialOwners } = useApiOwnersListQuery({
     credential: credential?.[0].id,
   });
-  const selectedOwner = credentialOwners?.[0];
+  const { table, column, owner: ownerId } = pendingColumn;
+  const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
   const schema = selectedOwner?.schema as Record<string, string[]>;
+  const ownerTable =
+    table && selectedOwner
+      ? {
+          id: `${selectedOwner.id}/${table}`,
+          label: `${selectedOwner.name}/${table}`,
+        }
+      : undefined;
 
-  const tables = (schema && Object.keys(schema)) || [];
+  const tables = !credentialOwners
+    ? []
+    : credentialOwners.reduce((acc: { id: string; label: string }[], owner) => {
+        const ownerTables = Object.keys(owner.schema);
+        return [
+          ...acc,
+          ...ownerTables.map((_table) => ({
+            id: `${owner.id}/${_table}`,
+            label: `${owner.name}/${_table}`,
+          })),
+        ];
+      }, []);
   const [columns, setColumns] = useState<string[]>([]);
 
-  const isTableSelected = !!column?.table;
-  const isColumnSelected = !!column?.column;
+  const isTableSelected = !!table;
+  const isColumnSelected = !!column;
 
-  const prevTable = usePrevious(column?.table);
-  const hasTableChanged = prevTable !== column?.table;
+  const prevTable = usePrevious(table);
+  const hasTableChanged = prevTable !== table;
 
-  const handleTableChange = (
-    event: React.ChangeEvent<{
-      name?: string | undefined;
-      value: unknown;
-    }>
+  const handleOwnerTableChange = (
+    _: React.ChangeEvent<Record<string, never>>,
+    value: { id: string; label: string } | null
   ) => {
-    onChange &&
-      onChange({
-        ...column,
-        table: event.target.value as string,
-      });
+    if (value) {
+      const [_owner, _table] = value.id.split("/");
+      onChange &&
+        onChange({
+          ...pendingColumn,
+          table: _table,
+          owner: _owner,
+        });
+    }
   };
   const handleColumnChange = (
     event: React.ChangeEvent<{
@@ -73,42 +107,64 @@ const ColumnSelect = ({
   ) => {
     onChange &&
       onChange({
-        ...column,
+        ...pendingColumn,
         column: event.target.value as string,
       });
   };
 
   useEffect(() => {
-    if (schema && hasTableChanged && column?.table) {
+    const { table, column } = pendingColumn;
+    if (schema && hasTableChanged && table) {
       // Reset column only if it is not in the new table pendingColumn list
-      if (column.column && !schema[column.table].includes(column.column)) {
+      if (column && !schema[table].includes(column)) {
         onChange &&
           onChange({
-            ...column,
+            ...pendingColumn,
             column: undefined,
           });
       }
-      setColumns(schema[column.table]);
+      setColumns(schema[table]);
     }
-  }, [schema, hasTableChanged, column]);
+  }, [schema, hasTableChanged, pendingColumn]);
 
   return (
     <>
       <Grid item>
-        <Select
-          value={column?.table ?? ""}
+        <Autocomplete
+          className={classes.autocomplete}
           options={tables}
-          emptyOption={t("selectTable")}
-          onChange={handleTableChange}
-          startIcon={
-            <Icon
-              icon={IconNames.TH}
-              iconSize={15}
-              className={clsx(classes.icon, {
-                [classes.iconSelected]: isTableSelected,
-              })}
+          groupBy={(option) => option.label.split("/")[0]}
+          getOptionLabel={(option) => option.label.split("/")[1]}
+          getOptionSelected={({ id }) => id === ownerTable?.id}
+          onChange={handleOwnerTableChange}
+          selectOnFocus
+          openOnFocus
+          clearOnBlur
+          disableClearable
+          handleHomeEndKeys
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              size="small"
+              placeholder={t("selectTable")}
+              InputProps={{
+                ...params.InputProps,
+                className: clsx(params.InputProps.className, {
+                  [classes.selected]: ownerTable !== undefined,
+                }),
+                startAdornment: (
+                  <Icon
+                    icon={IconNames.TH}
+                    iconSize={15}
+                    className={clsx(classes.icon, classes.autocompleteIcon, {
+                      [classes.iconSelected]: isTableSelected,
+                    })}
+                  />
+                ),
+              }}
             />
-          }
+          )}
         />
       </Grid>
       <Grid item>
@@ -132,4 +188,4 @@ const ColumnSelect = ({
   );
 };
 
-export default ColumnSelect;
+export default ColumnSelects;
