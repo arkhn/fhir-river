@@ -5,7 +5,7 @@ import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import JoinSelects from "features/Joins/JoinSelects";
+import JoinSelects from "features/Joins/JoinSelect";
 import {
   addJoin,
   deleteJoin,

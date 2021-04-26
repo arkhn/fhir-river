@@ -11,8 +11,8 @@ import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import ColumnSelects from "features/Columns/ColumnSelects";
-import FilterSelects from "features/Filters/FilterSelects";
+import ColumnSelects from "features/Columns/ColumnSelect";
+import FilterSelects from "features/Filters/FilterSelect";
 import { Column, Owner, Resource } from "services/api/generated/api.generated";
 
 import { addFilter, PendingFilter, updateFilter } from "./mappingSlice";

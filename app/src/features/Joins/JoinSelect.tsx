@@ -3,7 +3,7 @@ import React from "react";
 import { IconButton, Grid, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import ColumnSelects from "features/Columns/ColumnSelects";
+import ColumnSelects from "features/Columns/ColumnSelect";
 import { PendingJoin } from "features/Mappings/mappingSlice";
 import { Column } from "services/api/generated/api.generated";
 

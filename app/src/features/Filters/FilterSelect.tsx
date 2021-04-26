@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
-import ColumnSelects from "features/Columns/ColumnSelects";
+import ColumnSelects from "features/Columns/ColumnSelect";
 import JoinSection from "features/Joins/JoinSection";
 import {
   addJoin,
