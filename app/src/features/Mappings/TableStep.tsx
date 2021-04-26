@@ -11,11 +11,11 @@ import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import ColumnSelects from "features/Columns/ColumnSelects";
-import FilterSelects from "features/Filters/FilterSelects";
-import { Owner, Resource } from "services/api/generated/api.generated";
+import ColumnSelects from "features/Columns/ColumnSelect";
+import FilterSelects from "features/Filters/FilterSelect";
+import { Column, Owner, Resource } from "services/api/generated/api.generated";
 
-import { addFilter, FilterPending, updateFilter } from "./mappingSlice";
+import { addFilter, PendingFilter, updateFilter } from "./mappingSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -39,55 +39,56 @@ type TableStepProps = {
   onChange?: (mapping: Partial<Resource>) => void;
 };
 
-const TableStep = ({
-  onChange,
-  mapping,
-  owner,
-}: TableStepProps): JSX.Element => {
+const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const filters = useAppSelector((state) => state.mapping.filters);
+  const mappingColumn: Partial<Column> = {
+    owner: mapping.primary_key_owner,
+    table: mapping.primary_key_table,
+    column: mapping.primary_key_column,
+  };
 
   const handleAddFilterClick = () => {
     dispatch(addFilter());
   };
-  const handleFilterChange = (filter: FilterPending) => {
+  const handleFilterChange = (filter: PendingFilter) => {
     dispatch(updateFilter(filter));
   };
-  const handlePKTableChange = (primary_key_table?: string) => {
-    onChange && onChange({ primary_key_table });
-  };
-  const handlePKColumnChange = (primary_key_column?: string) => {
-    onChange && onChange({ primary_key_column });
+  const handleFilterColumnChange = (column: Partial<Column>) => {
+    onChange &&
+      onChange({
+        primary_key_owner: column.owner,
+        primary_key_table: column.table,
+        primary_key_column: column.column,
+      });
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="xl">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
           <ColumnSelects
-            owner={owner}
-            PKTable={mapping.primary_key_table}
-            PKColumn={mapping.primary_key_column}
-            onPKTableChange={handlePKTableChange}
-            onPKColumnChange={handlePKColumnChange}
+            pendingColumn={mappingColumn}
+            onChange={handleFilterColumnChange}
           />
         </Grid>
         {filters && filters.length > 0 && (
           <Grid item container spacing={1} direction="column">
             <Grid item>
-              <Typography gutterBottom={false}>Filter on :</Typography>
+              <Typography gutterBottom={false}>{t("filterOn")}</Typography>
             </Grid>
-            {filters.map((filter, index) => (
-              <Grid item container key={`filter ${index}`}>
+            <Grid item container spacing={5} direction="column">
+              {filters.map((filter, index) => (
                 <FilterSelects
+                  key={`filter ${index}`}
+                  mapping={mapping}
                   filter={filter}
-                  owner={owner}
                   onChange={handleFilterChange}
                 />
-              </Grid>
-            ))}
+              ))}
+            </Grid>
           </Grid>
         )}
         <Grid item>

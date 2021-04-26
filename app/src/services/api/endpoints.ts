@@ -6,7 +6,7 @@ import {
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
-const entityTypes = [
+const tagTypes = [
   "Sources",
   "Resources",
   "Attributes",
@@ -28,7 +28,7 @@ export const api = generatedApi
     }),
   })
   .enhanceEndpoints({
-    addEntityTypes: entityTypes,
+    addTagTypes: tagTypes,
     endpoints: {
       /**
        *  Sources
@@ -84,9 +84,6 @@ export const api = generatedApi
       apiCredentialsCreate: {
         invalidatesTags: invalidatesList("Credentials"),
       },
-      apiCredentialsRetrieve: {
-        providesTags: providesOne("Credentials"),
-      },
       apiCredentialsUpdate: {
         invalidatesTags: invalidatesOne("Credentials"),
       },
@@ -94,7 +91,7 @@ export const api = generatedApi
        * Filters
        */
       apiFiltersList: {
-        provides: providesList("Filters"),
+        providesTags: providesList("Filters"),
       },
       apiFiltersCreate: {
         invalidatesTags: invalidatesList("Filters"),
@@ -129,7 +126,6 @@ export const {
   // Credentials
   useApiCredentialsListQuery,
   useApiCredentialsCreateMutation,
-  useApiCredentialsRetrieveQuery,
   useApiCredentialsUpdateMutation,
   // Filters
   useApiFiltersListQuery,

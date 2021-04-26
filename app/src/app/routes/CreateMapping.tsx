@@ -13,16 +13,18 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import StepPanel from "common/Stepper/StepPanel";
+import StepPanel from "common/components/Stepper/StepPanel";
 import FhirProfileStep from "features/Mappings/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
 import {
   initMappingCreation,
+  PendingJoin,
   resetMappingCreation,
   selectMappingCurrent,
   selectMappingFilters,
+  selectMappingJoins,
   updateMapping,
 } from "features/Mappings/mappingSlice";
 import TableStep from "features/Mappings/TableStep";
@@ -37,6 +39,7 @@ import {
   Filter,
   Resource,
   useApiColumnsCreateMutation,
+  useApiJoinsCreateMutation,
 } from "services/api/generated/api.generated";
 
 const FOOTER_HEIGHT = 150;
@@ -91,12 +94,14 @@ const CreateMapping = (): JSX.Element => {
   const [isProfileSelected, setIsProfileSelected] = useState(false);
   const mapping = useAppSelector(selectMappingCurrent);
   const filters = useAppSelector(selectMappingFilters);
+  const joins = useAppSelector(selectMappingJoins);
   const [
     createMapping,
     { isLoading: isCreateMappingLoading },
   ] = useApiResourcesCreateMutation();
   const [createFilter] = useApiFiltersCreateMutation();
   const [createColumn] = useApiColumnsCreateMutation();
+  const [createJoin] = useApiJoinsCreateMutation();
 
   useEffect(() => {
     if (!mapping) {
@@ -154,8 +159,8 @@ const CreateMapping = (): JSX.Element => {
         }).unwrap();
 
         try {
-          // Column creation
-          const createdColumns = await Promise.all(
+          // Filters Column creation
+          const filterColumns = await Promise.all(
             filters.map(({ col }) =>
               createColumn({
                 columnRequest: { ...col, owner: owner.id } as Column,
@@ -163,10 +168,60 @@ const CreateMapping = (): JSX.Element => {
             )
           );
 
+          // Filters Joins creation
+          const filtersJoins = await Promise.all(
+            Object.entries(joins).map(([column, filterJoins]) => {
+              const filterIndex = filters.findIndex(
+                ({ col }) => col?.id === column
+              );
+              return Promise.all(
+                filterJoins.map(() =>
+                  createJoin({
+                    joinRequest: {
+                      column: filterColumns[filterIndex].id,
+                    },
+                  }).unwrap()
+                )
+              );
+            })
+          );
+
+          // Joins columns creation
+          await Promise.all(
+            filtersJoins.map((filterJoins, filterIndex) => {
+              const joinsData: PendingJoin[] = Object.values(joins)[
+                filterIndex
+              ];
+              return Promise.all(
+                filterJoins.map((join, joinIndex) => {
+                  const [leftColumn, rightColumn] = joinsData[
+                    joinIndex
+                  ].columns;
+                  return Promise.all([
+                    createColumn({
+                      columnRequest: {
+                        ...leftColumn,
+                        owner: owner.id,
+                        join: join.id,
+                      } as Column,
+                    }).unwrap(),
+                    createColumn({
+                      columnRequest: {
+                        ...rightColumn,
+                        owner: owner.id,
+                        join: join.id,
+                      } as Column,
+                    }).unwrap(),
+                  ]);
+                })
+              );
+            })
+          );
+
           // Filter creation
           await Promise.all(
             filters.map(({ relation, value }, index) => {
-              const createdColumn = createdColumns[index];
+              const createdColumn = filterColumns[index];
               return createFilter({
                 filterRequest: {
                   sql_column: createdColumn.id,
@@ -219,7 +274,7 @@ const CreateMapping = (): JSX.Element => {
       >
         <Typography>{t("cancel")}</Typography>
       </Button>
-      <Container className={classes.rootContainer}>
+      <Container className={classes.rootContainer} maxWidth="lg">
         <MappingCreationStepper ref={stepperRef} activeStep={activeStep} />
         {mapping && (
           <div
