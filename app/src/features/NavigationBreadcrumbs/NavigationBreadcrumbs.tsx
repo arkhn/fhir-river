@@ -6,10 +6,17 @@ import {
   Link as MuiLink,
   makeStyles,
 } from "@material-ui/core";
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { Link as RouterLink, useHistory, useParams } from "react-router-dom";
 
 import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
+import {
+  Resource,
+  useApiResourcesRetrieveQuery,
+} from "services/api/generated/api.generated";
+
+import MappingSelectButton from "./MappingSelectButton";
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -30,8 +37,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NavigationBreadcrumbs = (): JSX.Element => {
+  const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const history = useHistory();
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
+    mappingId?: string;
+  }>();
 
   const { data: source } = useApiSourcesRetrieveQuery(
     {
@@ -39,8 +51,17 @@ const NavigationBreadcrumbs = (): JSX.Element => {
     },
     { skip: !sourceId }
   );
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    {
+      id: mappingId ?? "",
+    },
+    { skip: !mappingId }
+  );
 
-  const classes = useStyles();
+  const handleMappingChange = (newMapping: Resource) => {
+    history.push(`/sources/${sourceId}/mappings/${newMapping.id}`);
+  };
+
   return (
     <Breadcrumbs separator=">" classes={{ separator: classes.separator }}>
       <Link variant="h5" color="textSecondary" to="/">
@@ -48,13 +69,20 @@ const NavigationBreadcrumbs = (): JSX.Element => {
       </Link>
       {source && (
         <Link
-          className={classes.mainCrumb}
+          className={clsx({ [classes.mainCrumb]: source && !mapping })}
           variant="h5"
-          color="textPrimary"
+          color={mapping ? "textSecondary" : "textPrimary"}
           to={`/sources/${source.id}`}
         >
           {source.name}
         </Link>
+      )}
+      {source && mapping && (
+        <MappingSelectButton
+          mapping={mapping}
+          source={source}
+          onChange={handleMappingChange}
+        />
       )}
     </Breadcrumbs>
   );

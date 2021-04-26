@@ -3,6 +3,8 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
+import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+
 import AppBar from "./AppBar";
 import CreateMapping from "./CreateMapping";
 import PageNotFound from "./PageNotFound";
@@ -30,6 +32,9 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId/mappings">
             <CreateMapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId">
+            <NavigationBreadcrumbs />
           </Route>
           <Route>
             <PageNotFound />
