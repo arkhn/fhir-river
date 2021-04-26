@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
-import ColumnSelects from "features/Columns/ColumnSelects";
+import ColumnSelect from "features/Columns/ColumnSelect";
 import { selectColumnById } from "features/Columns/columnSlice";
 import JoinSection from "features/Joins/JoinSection";
 import { joinAdded, joinSelectors } from "features/Joins/joinSlice";
@@ -38,7 +38,7 @@ type FilterSelectsProps = {
   onChange?: (filter?: Partial<Filter>, column?: Partial<Column>) => void;
 };
 
-const FilterSelects = ({
+const FilterSelect = ({
   mapping,
   filter,
   onChange,
@@ -102,7 +102,7 @@ const FilterSelects = ({
   return (
     <Grid item container direction="column" spacing={2}>
       <Grid item container xs={12} spacing={2}>
-        <ColumnSelects
+        <ColumnSelect
           column={filterColumn}
           onChange={handleFilterColumnChange}
         />
@@ -146,4 +146,4 @@ const FilterSelects = ({
   );
 };
 
-export default FilterSelects;
+export default FilterSelect;

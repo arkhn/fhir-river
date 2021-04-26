@@ -30,7 +30,7 @@ type ColumnSelectsProps = {
   onChange?: (column: Partial<Column>) => void;
 };
 
-const ColumnSelects = ({
+const ColumnSelect = ({
   column,
   onChange,
 }: ColumnSelectsProps): JSX.Element => {
@@ -132,4 +132,4 @@ const ColumnSelects = ({
   );
 };
 
-export default ColumnSelects;
+export default ColumnSelect;

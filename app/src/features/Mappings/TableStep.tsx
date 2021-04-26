@@ -12,9 +12,9 @@ import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import ColumnSelects from "features/Columns/ColumnSelects";
+import ColumnSelect from "features/Columns/ColumnSelect";
 import { columnAdded, columnUpdated } from "features/Columns/columnSlice";
-import FilterSelects from "features/Filters/FilterSelects";
+import FilterSelect from "features/Filters/FilterSelect";
 import {
   filterAdded,
   filterSelectors,
@@ -99,7 +99,7 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
     <Container maxWidth="xl">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
-          <ColumnSelects column={mappingColumn} onChange={handleColumnChange} />
+          <ColumnSelect column={mappingColumn} onChange={handleColumnChange} />
         </Grid>
         {filters && filters.length > 0 && (
           <Grid item container spacing={1} direction="column">
@@ -108,7 +108,7 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
             </Grid>
             <Grid item container spacing={5} direction="column">
               {filters.map((filter, index) => (
-                <FilterSelects
+                <FilterSelect
                   key={`filter-${index}`}
                   mapping={mapping}
                   filter={filter}

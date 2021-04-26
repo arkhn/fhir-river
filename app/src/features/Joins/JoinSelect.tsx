@@ -3,7 +3,7 @@ import React from "react";
 import { IconButton, Grid, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import ColumnSelects from "features/Columns/ColumnSelects";
+import ColumnSelect from "features/Columns/ColumnSelect";
 import { Column } from "services/api/generated/api.generated";
 
 type JoinSelectsProps = {
@@ -17,7 +17,7 @@ type JoinSelectsProps = {
   onDelete?: (joinId?: string) => void;
 };
 
-const JoinSelects = ({
+const JoinSelect = ({
   leftColumn,
   rightColumn,
   onChange,
@@ -36,9 +36,9 @@ const JoinSelects = ({
 
   return (
     <Grid item container xs={12} spacing={2} alignItems="center">
-      <ColumnSelects column={leftColumn} onChange={handleLeftColumnChange} />
+      <ColumnSelect column={leftColumn} onChange={handleLeftColumnChange} />
       <Typography>==</Typography>
-      <ColumnSelects column={rightColumn} onChange={handleRightColumnChange} />
+      <ColumnSelect column={rightColumn} onChange={handleRightColumnChange} />
       <IconButton onClick={handleJoinDelete} disabled={disableDelete}>
         <CloseIcon />
       </IconButton>
@@ -46,4 +46,4 @@ const JoinSelects = ({
   );
 };
 
-export default JoinSelects;
+export default JoinSelect;

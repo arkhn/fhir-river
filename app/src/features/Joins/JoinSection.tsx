@@ -6,15 +6,15 @@ import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import { Column } from "services/api/generated/api.generated";
-
 import {
   columnAdded,
   columnSelectors,
   columnUpdated,
   selectColumnById,
-} from "../Columns/columnSlice";
-import JoinSelects from "./JoinSelects";
+} from "features/Columns/columnSlice";
+import { Column } from "services/api/generated/api.generated";
+
+import JoinSelect from "./JoinSelect";
 import { joinAdded, joinRemoved, selectJoinById } from "./joinSlice";
 
 const useStyles = makeStyles(() => ({
@@ -90,7 +90,7 @@ const JoinSection = ({
         <Typography gutterBottom={false}>{t("joinOn")}</Typography>
       </Grid>
       {columnsWihJoin.map((column, index) => (
-        <JoinSelects
+        <JoinSelect
           key={column.id}
           leftColumn={column}
           rightColumn={joinedColumnByColumn(column) as Partial<Column>}
