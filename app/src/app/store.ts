@@ -8,6 +8,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import column from "features/Columns/columnSlice";
 import filter from "features/Filters/filterSlice";
+import join from "features/Joins/joinSlice";
 import resource from "features/Mappings/resourceSlice";
 import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
@@ -16,6 +17,7 @@ const appReducer = combineReducers({
   [api.reducerPath]: api.reducer,
   column,
   filter,
+  join,
   resource,
   source,
 });

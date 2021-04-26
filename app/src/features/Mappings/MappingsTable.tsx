@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import { useParams, useHistory } from "react-router";
 
-import TableContainer from "common/TableContainer/TableContainer";
+import TableContainer from "common/components/TableContainer";
 import { useApiResourcesListQuery } from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 

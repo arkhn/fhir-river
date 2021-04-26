@@ -6,7 +6,8 @@ import {
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
-const entityTypes = [
+const tagTypes = [
+  "Users",
   "Columns",
   "Sources",
   "Resources",
@@ -14,7 +15,7 @@ const entityTypes = [
   "Owners",
   "Credentials",
   "Filters",
-  "User",
+  "Joins",
 ];
 
 export const api = generatedApi
@@ -29,8 +30,17 @@ export const api = generatedApi
     }),
   })
   .enhanceEndpoints({
-    addEntityTypes: entityTypes,
+    addTagTypes: tagTypes,
     endpoints: {
+      /**
+       * User
+       */
+      apiUserRetrieve: {
+        providesTags: ["User"],
+      },
+      oidcLogout: {
+        invalidatesTags: ["User"],
+      },
       /**
        * Columns
        */
@@ -98,24 +108,24 @@ export const api = generatedApi
        * Filters
        */
       apiFiltersList: {
-        provides: providesList("Filters"),
+        providesTags: providesList("Filters"),
       },
       apiFiltersCreate: {
         invalidatesTags: invalidatesList("Filters"),
       },
       /**
-       * User
+       * Joins
        */
-      apiUserRetrieve: {
-        providesTags: ["User"],
-      },
-      oidcLogout: {
-        invalidatesTags: ["User"],
+      apiJoinsCreate: {
+        invalidatesTags: invalidatesList("Joins"),
       },
     },
   });
 
 export const {
+  // User
+  useApiUserRetrieveQuery,
+  useOidcLogoutMutation,
   //Columns
   useApiColumnsCreateMutation,
   // Sources
@@ -140,7 +150,6 @@ export const {
   // Filters
   useApiFiltersListQuery,
   useApiFiltersCreateMutation,
-  // User
-  useApiUserRetrieveQuery,
-  useOidcLogoutMutation,
+  // Joins
+  useApiJoinsCreateMutation,
 } = api;

@@ -11,6 +11,7 @@ const filterSlice = createSlice({
   reducers: {
     filterAdded: filterAdapter.addOne,
     filterUpdated: filterAdapter.updateOne,
+    filterRemoved: filterAdapter.removeOne,
     filtersRemoved: filterAdapter.removeAll,
   },
 });
@@ -18,6 +19,7 @@ const filterSlice = createSlice({
 export const {
   filterAdded,
   filterUpdated,
+  filterRemoved,
   filtersRemoved,
 } = filterSlice.actions;
 

@@ -12,8 +12,8 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import { store, useAppDispatch } from "app/store";
-import StepPanel from "common/Stepper/StepPanel";
+import { useAppDispatch, useAppSelector } from "app/store";
+import StepPanel from "common/components/Stepper/StepPanel";
 import FhirProfileStep from "features/Mappings/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
@@ -23,6 +23,7 @@ import {
   useApiFiltersCreateMutation,
   useApiResourcesCreateMutation,
   useApiColumnsCreateMutation,
+  // useApiJoinsCreateMutation,
 } from "services/api/endpoints";
 import {
   ResourceRequest,
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateMapping = (): JSX.Element | null => {
+const CreateMapping = (): JSX.Element => {
   const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId: string }>();
   const stepperRef = useRef<HTMLDivElement>();
@@ -78,9 +79,11 @@ const CreateMapping = (): JSX.Element | null => {
   const dispatch = useAppDispatch();
 
   const [activeStep, setActiveStep] = useState(0);
-  const [mapping] = resourceSelectors.selectAll(store.getState());
-  const columns = columnSelectors.selectAll(store.getState());
-  const filters = filterSelectors.selectAll(store.getState());
+  const [mapping] = useAppSelector((state) =>
+    resourceSelectors.selectAll(state)
+  );
+  const columns = useAppSelector((state) => columnSelectors.selectAll(state));
+  const filters = useAppSelector((state) => filterSelectors.selectAll(state));
 
   const [
     createMapping,
@@ -88,6 +91,7 @@ const CreateMapping = (): JSX.Element | null => {
   ] = useApiResourcesCreateMutation();
   const [createFilter] = useApiFiltersCreateMutation();
   const [createColumn] = useApiColumnsCreateMutation();
+  // const [createJoin] = useApiJoinsCreateMutation();
 
   const isNextDisabled = useMemo((): boolean => {
     let isDisabled = true;
@@ -145,6 +149,56 @@ const CreateMapping = (): JSX.Element | null => {
             )
           );
 
+          // Filters Joins creation
+          // const filtersJoins = await Promise.all(
+          //   Object.entries(joins).map(([column, filterJoins]) => {
+          //     const filterIndex = filters.findIndex(
+          //       ({ col }) => col?.id === column
+          //     );
+          //     return Promise.all(
+          //       filterJoins.map(() =>
+          //         createJoin({
+          //           joinRequest: {
+          //             column: filterColumns[filterIndex].id,
+          //           },
+          //         }).unwrap()
+          //       )
+          //     );
+          //   })
+          // );
+
+          // Joins columns creation
+          // await Promise.all(
+          //   filtersJoins.map((filterJoins, filterIndex) => {
+          //     const joinsData: PendingJoin[] = Object.values(joins)[
+          //       filterIndex
+          //     ];
+          //     return Promise.all(
+          //       filterJoins.map((join, joinIndex) => {
+          //         const [leftColumn, rightColumn] = joinsData[
+          //           joinIndex
+          //         ].columns;
+          //         return Promise.all([
+          //           createColumn({
+          //             columnRequest: {
+          //               ...leftColumn,
+          //               owner: owner.id,
+          //               join: join.id,
+          //             } as Column,
+          //           }).unwrap(),
+          //           createColumn({
+          //             columnRequest: {
+          //               ...rightColumn,
+          //               owner: owner.id,
+          //               join: join.id,
+          //             } as Column,
+          //           }).unwrap(),
+          //         ]);
+          //       })
+          //     );
+          //   })
+          // );
+
           // Filter creation
           await Promise.all(
             filters.map(({ relation, value }, index) => {
@@ -197,7 +251,7 @@ const CreateMapping = (): JSX.Element | null => {
       >
         <Typography>{t("cancel")}</Typography>
       </Button>
-      <Container className={classes.rootContainer}>
+      <Container className={classes.rootContainer} maxWidth="lg">
         <MappingCreationStepper ref={stepperRef} activeStep={activeStep} />
         {mapping && (
           <div

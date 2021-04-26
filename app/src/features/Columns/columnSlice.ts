@@ -25,4 +25,8 @@ export const columnSelectors = columnAdapter.getSelectors<RootState>(
   (state) => state.column
 );
 
+export const selectColumnById = (state: RootState) => (
+  id: string
+): Partial<Column> | undefined => columnSelectors.selectById(state, id);
+
 export default columnSlice.reducer;

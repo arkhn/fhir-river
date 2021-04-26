@@ -3,8 +3,8 @@ import React, { forwardRef } from "react";
 import { Stepper, Step, StepLabel, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
-import StepConnector from "common/Stepper/StepConnector";
-import StepIcon from "common/Stepper/StepIcon";
+import StepConnector from "common/components/Stepper/StepConnector";
+import StepIcon from "common/components/Stepper/StepIcon";
 
 const useStyles = makeStyles(() => ({
   root: {

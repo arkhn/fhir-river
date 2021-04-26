@@ -11,23 +11,15 @@ import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
-import { store, useAppDispatch } from "app/store";
+import { useAppDispatch, useAppSelector } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelects";
-import {
-  columnAdded,
-  columnSelectors,
-  columnUpdated,
-} from "features/Columns/columnSlice";
+import { columnAdded, columnUpdated } from "features/Columns/columnSlice";
 import FilterSelects from "features/Filters/FilterSelects";
 import {
   filterAdded,
   filterSelectors,
   filterUpdated,
 } from "features/Filters/filterSlice";
-import {
-  useApiCredentialsListQuery,
-  useApiOwnersListQuery,
-} from "services/api/endpoints";
 import type {
   Column,
   Filter,
@@ -61,21 +53,13 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const { data: credential } = useApiCredentialsListQuery(
-    {
-      source: mapping.source,
-    },
-    { skip: !mapping.source }
-  );
-  const { data: owners } = useApiOwnersListQuery({
-    credential: credential?.[0].id,
-  });
-  const owner = owners?.[0];
+  const filters = useAppSelector((state) => filterSelectors.selectAll(state));
 
-  const filters = filterSelectors.selectAll(store.getState());
-
-  const columnById = (id: string) =>
-    columnSelectors.selectById(store.getState(), id);
+  const mappingColumn: Partial<Column> = {
+    owner: mapping.primary_key_owner,
+    table: mapping.primary_key_table,
+    column: mapping.primary_key_column,
+  };
 
   const handleAddFilterClick = () => {
     const columnId = uuid();
@@ -96,46 +80,42 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
         columnUpdated({ id: filter.sql_column, changes: { ...column } })
       );
   };
-  const handlePKTableChange = (primary_key_table?: string) => {
+
+  const handleColumnChange = (column: Partial<Column>) => {
     if (mapping.id)
       dispatch(
-        resourceUpdated({ id: mapping.id, changes: { primary_key_table } })
-      );
-  };
-  const handlePKColumnChange = (primary_key_column?: string) => {
-    if (mapping.id)
-      dispatch(
-        resourceUpdated({ id: mapping.id, changes: { primary_key_column } })
+        resourceUpdated({
+          id: mapping.id,
+          changes: {
+            primary_key_owner: column.owner,
+            primary_key_column: column.column,
+            primary_key_table: column.table,
+          },
+        })
       );
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="xl">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
-          <ColumnSelects
-            owner={owner}
-            table={mapping.primary_key_table}
-            column={mapping.primary_key_column}
-            onTableChange={handlePKTableChange}
-            onColumnChange={handlePKColumnChange}
-          />
+          <ColumnSelects column={mappingColumn} onChange={handleColumnChange} />
         </Grid>
         {filters && filters.length > 0 && (
           <Grid item container spacing={1} direction="column">
             <Grid item>
-              <Typography gutterBottom={false}>Filter on :</Typography>
+              <Typography gutterBottom={false}>{t("filterOn")}</Typography>
             </Grid>
-            {filters.map((filter, index) => (
-              <Grid item container key={`filter-${index}`}>
+            <Grid item container spacing={5} direction="column">
+              {filters.map((filter, index) => (
                 <FilterSelects
+                  key={`filter-${index}`}
+                  mapping={mapping}
                   filter={filter}
-                  column={columnById(filter.sql_column ?? "")}
-                  owner={owner}
                   onChange={handleFilterChange}
                 />
-              </Grid>
-            ))}
+              ))}
+            </Grid>
           </Grid>
         )}
         <Grid item>
