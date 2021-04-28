@@ -85,14 +85,12 @@ const JoinList = ({ filter }: JoinProps): JSX.Element | null => {
     }
   };
 
-  const handleJoinDelete = (joinId?: string) => {
-    if (joinId) {
-      const columns = columnsByJoin(joinId);
-      columns.forEach((column) => {
-        if (column.id) dispatch(columnRemoved(column.id));
-      });
-      dispatch(joinRemoved(joinId));
-    }
+  const handleJoinDelete = (joinId: string) => {
+    const columns = columnsByJoin(joinId);
+    columns.forEach((column) => {
+      if (column.id) dispatch(columnRemoved(column.id));
+    });
+    dispatch(joinRemoved(joinId));
   };
 
   if (!column) return null;

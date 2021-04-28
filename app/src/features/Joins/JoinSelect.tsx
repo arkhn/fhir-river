@@ -12,7 +12,7 @@ type JoinSelectsProps = {
     leftColumn: Partial<Column>,
     rightColumn: Partial<Column>
   ) => void;
-  onDelete?: (joinId?: string) => void;
+  onDelete?: (joinId: string) => void;
 };
 
 const JoinSelect = ({
@@ -28,7 +28,7 @@ const JoinSelect = ({
     onChange && onChange(leftColumn, column);
   };
   const handleJoinDelete = () => {
-    onDelete && onDelete(leftColumn.join ?? undefined);
+    leftColumn.join && onDelete && onDelete(leftColumn.join);
   };
 
   return (
