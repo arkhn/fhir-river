@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -57,27 +57,34 @@ const ColumnSelects = ({
   const { table, column, owner: ownerId } = pendingColumn;
   const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
   const schema = selectedOwner?.schema as Record<string, string[]>;
+  const defaultValue = {
+    id: "/",
+    label: "/",
+  };
   const ownerTable =
     table && selectedOwner
       ? {
           id: `${selectedOwner.id}/${table}`,
           label: `${selectedOwner.name}/${table}`,
         }
-      : undefined;
+      : defaultValue;
 
   const tables = !credentialOwners
     ? []
-    : credentialOwners.reduce((acc: { id: string; label: string }[], owner) => {
-        const ownerTables = Object.keys(owner.schema);
-        return [
-          ...acc,
-          ...ownerTables.map((_table) => ({
-            id: `${owner.id}/${_table}`,
-            label: `${owner.name}/${_table}`,
-          })),
-        ];
-      }, []);
-  const [columns, setColumns] = useState<string[]>([]);
+    : credentialOwners.reduce(
+        (acc: { id: string; label: string }[], owner) => {
+          const ownerTables = Object.keys(owner.schema);
+          return [
+            ...acc,
+            ...ownerTables.map((_table) => ({
+              id: `${owner.id}/${_table}`,
+              label: `${owner.name}/${_table}`,
+            })),
+          ];
+        },
+        [defaultValue]
+      );
+  const [columns, setColumns] = useState<string[]>(table ? schema[table] : []);
 
   const isTableSelected = !!table;
   const isColumnSelected = !!column;
@@ -113,16 +120,12 @@ const ColumnSelects = ({
   };
 
   useEffect(() => {
-    const { table, column } = pendingColumn;
     if (schema && hasTableChanged && table) {
-      // Reset column only if it is not in the new table pendingColumn list
-      if (column && !schema[table].includes(column)) {
-        onChange &&
-          onChange({
-            ...pendingColumn,
-            column: undefined,
-          });
-      }
+      onChange &&
+        onChange({
+          ...pendingColumn,
+          column: undefined,
+        });
       setColumns(schema[table]);
     }
   }, [schema, hasTableChanged, pendingColumn]);
@@ -136,6 +139,7 @@ const ColumnSelects = ({
           groupBy={(option) => option.label.split("/")[0]}
           getOptionLabel={(option) => option.label.split("/")[1]}
           getOptionSelected={({ id }) => id === ownerTable?.id}
+          value={ownerTable}
           onChange={handleOwnerTableChange}
           selectOnFocus
           openOnFocus

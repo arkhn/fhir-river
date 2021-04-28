@@ -56,7 +56,6 @@
   ">=": "is greater than or equal",
   "<": "is lesser than",
   "<=": "is lesser than or equal",
-  "relation": "Relation",
   "selectOperation": "Select operation",
   "typeValue": "Type value",
   "filterWithCount": "{{count}} filter",

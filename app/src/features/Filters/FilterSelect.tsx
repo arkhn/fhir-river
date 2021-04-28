@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
 import ColumnSelect from "features/Columns/ColumnSelect";
 import { columnSelectors, columnUpdated } from "features/Columns/columnSlice";
-import FilterJoins from "features/Joins/FilterJoins";
+import JoinList from "features/Joins/JoinList";
 import type { Column, Filter } from "services/api/generated/api.generated";
 
 import { filterRemoved, filterUpdated } from "./filterSlice";
@@ -110,7 +110,7 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
       </Grid>
       <Grid item container>
         <div className={classes.leftShift}>
-          <FilterJoins filter={filter} />
+          <JoinList filter={filter} />
         </div>
       </Grid>
     </Grid>

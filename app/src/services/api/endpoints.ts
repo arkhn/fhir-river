@@ -36,10 +36,10 @@ export const api = generatedApi
        * User
        */
       apiUserRetrieve: {
-        providesTags: ["User"],
+        providesTags: ["Users"],
       },
       oidcLogout: {
-        invalidatesTags: ["User"],
+        invalidatesTags: ["Users"],
       },
       /**
        * Columns
