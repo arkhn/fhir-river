@@ -54,7 +54,7 @@ describe("Mapping creation page", () => {
   it("should do all the step to create a mapping (without filters)", async () => {
     store.dispatch(
       resourceAdded({
-        id: "1",
+        id: resource.id,
         source: "sourceId",
       })
     );
