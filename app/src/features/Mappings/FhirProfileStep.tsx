@@ -48,16 +48,20 @@ const useStyles = makeStyles((theme) => ({
 
 type FhirProfileStepProps = {
   mapping: Partial<Resource>;
+  onChange?: () => void;
 };
 
-const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
+const FhirProfileStep = ({
+  mapping,
+  onChange,
+}: FhirProfileStepProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [isDefaultProfileSelected, setDefaultProfileSelected] = useState(false);
 
   const handleClickDefaultProfile = () => {
     setDefaultProfileSelected(true);
-    // TODO: update
+    onChange && onChange();
   };
 
   return (

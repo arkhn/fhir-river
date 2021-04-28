@@ -74,13 +74,15 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateMapping = (): JSX.Element => {
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId: string }>();
+  const { sourceId } = useParams<{ sourceId?: string }>();
   const stepperRef = useRef<HTMLDivElement>();
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
 
   const [activeStep, setActiveStep] = useState(0);
+  const [isProfileSelected, setIsProfileSelected] = useState(false);
+
   const [mapping] = useAppSelector((state) =>
     resourceSelectors.selectAll(state)
   );
@@ -112,7 +114,8 @@ const CreateMapping = (): JSX.Element => {
           isDisabled = mapping.definition_id === undefined;
           break;
         case 2:
-          isDisabled = mapping.definition_id === undefined;
+          isDisabled =
+            mapping.definition_id === undefined || !isProfileSelected;
           break;
         case 3:
           isDisabled =
@@ -209,6 +212,7 @@ const CreateMapping = (): JSX.Element => {
     }
   };
 
+  const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
@@ -251,7 +255,10 @@ const CreateMapping = (): JSX.Element => {
               <FhirResourceStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={2} value={activeStep}>
-              <FhirProfileStep mapping={mapping} />
+              <FhirProfileStep
+                mapping={mapping}
+                onChange={handleProfileSelected}
+              />
             </StepPanel>
             <StepPanel index={3} value={activeStep}>
               <MappingNameStep mapping={mapping} />
