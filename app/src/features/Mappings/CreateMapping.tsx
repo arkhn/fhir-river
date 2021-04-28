@@ -130,7 +130,7 @@ const CreateMapping = (): JSX.Element => {
     }
 
     return isDisabled;
-  }, [activeStep, mapping]);
+  }, [activeStep, mapping, isProfileSelected]);
 
   const resetCreateMapping = () => {
     dispatch(resourcesRemoved());

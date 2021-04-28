@@ -26,7 +26,7 @@ const CredentialEditButton = ({
 
   return (
     <Button {...buttonProps} onClick={handleSourceEdit}>
-      <Typography>Settings</Typography>
+      <Typography>Database settings</Typography>
     </Button>
   );
 };

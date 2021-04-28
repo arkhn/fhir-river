@@ -116,7 +116,7 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
         <Grid item>
           <TextField
             className={classes.textInput}
-            value={filter.value}
+            value={filter.value ?? ""}
             onChange={handleValueChange}
             placeholder={t("typeValue")}
             variant="outlined"
