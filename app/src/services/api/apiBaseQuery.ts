@@ -1,4 +1,4 @@
-import { fetchBaseQuery } from "@rtk-incubator/rtk-query";
+import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import Cookies from "js-cookie";
 
 import { OIDC_LOGIN_URL } from "services/oidc/urls";
