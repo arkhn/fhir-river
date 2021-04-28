@@ -1,8 +1,8 @@
-import { createApi } from "@rtk-incubator/rtk-query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { apiBaseQuery } from "../apiBaseQuery";
 export const api = createApi({
   baseQuery: apiBaseQuery,
-  entityTypes: [],
+  tagTypes: [],
   endpoints: (build) => ({
     apiAttributesList: build.query<
       ApiAttributesListApiResponse,
