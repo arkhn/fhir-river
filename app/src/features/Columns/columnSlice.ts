@@ -11,7 +11,6 @@ const columnSlice = createSlice({
   reducers: {
     columnAdded: columnAdapter.addOne,
     columnUpdated: columnAdapter.updateOne,
-    columnUpserted: columnAdapter.upsertOne,
     columnRemoved: columnAdapter.removeOne,
     columnsRemoved: columnAdapter.removeAll,
   },
@@ -20,7 +19,6 @@ const columnSlice = createSlice({
 export const {
   columnAdded,
   columnUpdated,
-  columnUpserted,
   columnRemoved,
   columnsRemoved,
 } = columnSlice.actions;

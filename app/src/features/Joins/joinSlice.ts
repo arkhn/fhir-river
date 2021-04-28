@@ -10,24 +10,15 @@ const joinSlice = createSlice({
   initialState: joinAdapter.getInitialState(),
   reducers: {
     joinAdded: joinAdapter.addOne,
-    joinUpdated: joinAdapter.updateOne,
     joinRemoved: joinAdapter.removeOne,
     joinsRemoved: joinAdapter.removeAll,
   },
 });
 
-export const {
-  joinAdded,
-  joinUpdated,
-  joinRemoved,
-  joinsRemoved,
-} = joinSlice.actions;
+export const { joinAdded, joinRemoved, joinsRemoved } = joinSlice.actions;
 
 export const joinSelectors = joinAdapter.getSelectors<RootState>(
   (state) => state.join
 );
-export const selectJoinById = (state: RootState) => (
-  id: string
-): Partial<Join> | undefined => joinSelectors.selectById(state, id);
 
 export default joinSlice.reducer;
