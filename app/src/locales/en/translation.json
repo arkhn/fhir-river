@@ -63,5 +63,7 @@
   "preview": "Preview",
   "editMappingName": "Edit mapping name",
   "editSourceTable": "Edit source table",
-  "deleteMapping": "Delete mapping"
+  "deleteMapping": "Delete mapping",
+  "mappingName": "Mapping name",
+  "confirm": "Confirm"
 }

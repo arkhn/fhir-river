@@ -14,6 +14,7 @@ import MoreIcon from "@material-ui/icons/MoreHoriz";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
 
+import MappingNameDialog from "features/Mappings/MappingNameDialog";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,6 +52,7 @@ const MappingHeader = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isNameDialogOpen, setNameDialogOpen] = useState(false);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -61,9 +63,13 @@ const MappingHeader = (): JSX.Element => {
   };
   const handleEditNameClick = () => {
     handleMenuClose();
+    setNameDialogOpen(true);
   };
   const handleDeleteClick = () => {
     handleMenuClose();
+  };
+  const handleNameDialogClose = () => {
+    setNameDialogOpen(false);
   };
 
   return (
@@ -122,6 +128,10 @@ const MappingHeader = (): JSX.Element => {
           />
         </MenuItem>
       </Menu>
+      <MappingNameDialog
+        open={isNameDialogOpen}
+        onClose={handleNameDialogClose}
+      />
     </div>
   );
 };

@@ -57,6 +57,9 @@ export const api = generatedApi
       apiResourcesCreate: {
         invalidatesTags: invalidatesList("Resources"),
       },
+      apiResourcesUpdate: {
+        invalidatesTags: invalidatesOne("Resources"),
+      },
       /**
        * Attributes
        */
