@@ -1671,13 +1671,13 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@reduxjs/toolkit@^1.2.5":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.5.0.tgz#1025c1ccb224d1fc06d8d98a61f6717d57e6d477"
-  integrity sha512-E/FUraRx+8guw9Hlg/Ja8jI/hwCrmIKed8Annt9YsZw3BQp+F24t5I5b2OWR6pkEHY4hn1BgP08FrTZFRKsdaQ==
+"@reduxjs/toolkit@^1.6.0-alpha.2":
+  version "1.6.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.6.0-alpha.2.tgz#f4ce4ac840f8e7cf72de4143b22213d8fd2638c4"
+  integrity sha512-sXCcJzKRTB6vFZ02g0MS07WE0UXHr23S/LqHaew/9W4ifx6e1Mg+J31dzCRAGLXS69sIW0V8LvssrMX9gjn04Q==
   dependencies:
-    immer "^8.0.0"
-    redux "^4.0.0"
+    immer "^9.0.1"
+    redux "^4.1.0"
     redux-thunk "^2.3.0"
     reselect "^4.0.0"
 
@@ -1708,14 +1708,6 @@
     "@types/estree" "0.0.39"
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
-
-"@rtk-incubator/rtk-query@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@rtk-incubator/rtk-query/-/rtk-query-0.3.0.tgz#4e4766abf7875f1dcb70ece427e7057df62d5df4"
-  integrity sha512-yOD87mIIDIvlaJQYZonMVAD1uJ0bLVoqhpxOFOVvR7WjeYIMCRfq+COdSCaDWbLu5swYz4ChFCKjnQOemvBSIw==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    immer "^8.0.3"
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.2"
@@ -6303,15 +6295,15 @@ ignore@^5.1.4:
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
 
-immer@8.0.1, immer@^8.0.0:
+immer@8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
   integrity sha512-aqXhGP7//Gui2+UrEtvxZxSquQVXTpZ7KDxfCcKAF3Vysvw0CViVaW9RZ1j1xlIYqaaaipBoqdqeibkc18PNvA==
 
-immer@^8.0.3:
-  version "8.0.4"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-8.0.4.tgz#3a21605a4e2dded852fb2afd208ad50969737b7a"
-  integrity sha512-jMfL18P+/6P6epANRvRk6q8t+3gGhqsJ9EuJ25AXE+9bNTYtssvzeYbEd0mXRYWCmmXSIbnlpz6vd6iJlmGGGQ==
+immer@^9.0.1:
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.2.tgz#83e4593df9914acaecfd9fac6a8601ef44d883fc"
+  integrity sha512-mkcmzLtIfSp40vAqteRr1MbWNSoI7JE+/PB36FNPoSfJ9RQRmNKuTYCjKkyXyuq3Dgn07HuJBrwJd4ZSk2yUbw==
 
 import-cwd@^2.0.0:
   version "2.1.0"
@@ -10330,6 +10322,13 @@ redux@^4.0.0, redux@^4.0.4, redux@^4.0.5:
   dependencies:
     loose-envify "^1.4.0"
     symbol-observable "^1.2.0"
+
+redux@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.1.0.tgz#eb049679f2f523c379f1aff345c8612f294c88d4"
+  integrity sha512-uI2dQN43zqLWCt6B/BMGRMY6db7TTY4qeHHfGeKb3EOhmOKjU3KdWvNLJyqaHRksv/ErdNH7cFZWg9jXtewy4g==
+  dependencies:
+    "@babel/runtime" "^7.9.2"
 
 regenerate-unicode-properties@^8.2.0:
   version "8.2.0"
