@@ -23,17 +23,18 @@ import {
   useApiFiltersCreateMutation,
   useApiResourcesCreateMutation,
   useApiColumnsCreateMutation,
-  // useApiJoinsCreateMutation,
+  useApiJoinsCreateMutation,
 } from "services/api/endpoints";
 import {
   ResourceRequest,
   ColumnRequest,
   FilterRequest,
+  JoinRequest,
 } from "services/api/generated/api.generated";
 
 import { columnSelectors, columnsRemoved } from "../Columns/columnSlice";
 import { filterSelectors, filtersRemoved } from "../Filters/filterSlice";
-import { joinsRemoved } from "../Joins/joinSlice";
+import { joinSelectors, joinsRemoved } from "../Joins/joinSlice";
 import { resourcesRemoved, resourceSelectors } from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
@@ -84,7 +85,10 @@ const CreateMapping = (): JSX.Element => {
     resourceSelectors.selectAll(state)
   );
   const columns = useAppSelector((state) => columnSelectors.selectAll(state));
+  const columnsWithoutJoin = columns.filter((column) => !Boolean(column.join));
+  const columnsWithJoin = columns.filter((column) => Boolean(column.join));
   const filters = useAppSelector((state) => filterSelectors.selectAll(state));
+  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
 
   const [
     createMapping,
@@ -92,7 +96,7 @@ const CreateMapping = (): JSX.Element => {
   ] = useApiResourcesCreateMutation();
   const [createFilter] = useApiFiltersCreateMutation();
   const [createColumn] = useApiColumnsCreateMutation();
-  // const [createJoin] = useApiJoinsCreateMutation();
+  const [createJoin] = useApiJoinsCreateMutation();
 
   const isNextDisabled = useMemo((): boolean => {
     let isDisabled = true;
@@ -142,76 +146,54 @@ const CreateMapping = (): JSX.Element => {
         }).unwrap();
 
         try {
-          // Column creation
+          // Columns without join creation
           const createdColumns = await Promise.all(
-            columns.map((column) =>
+            columnsWithoutJoin.map((column) =>
               createColumn({
                 columnRequest: { ...column } as ColumnRequest,
               }).unwrap()
             )
           );
 
-          // Filters Joins creation
-          // const filtersJoins = await Promise.all(
-          //   Object.entries(joins).map(([column, filterJoins]) => {
-          //     const filterIndex = filters.findIndex(
-          //       ({ col }) => col?.id === column
-          //     );
-          //     return Promise.all(
-          //       filterJoins.map(() =>
-          //         createJoin({
-          //           joinRequest: {
-          //             column: filterColumns[filterIndex].id,
-          //           },
-          //         }).unwrap()
-          //       )
-          //     );
-          //   })
-          // );
-
-          // Joins columns creation
-          // await Promise.all(
-          //   filtersJoins.map((filterJoins, filterIndex) => {
-          //     const joinsData: PendingJoin[] = Object.values(joins)[
-          //       filterIndex
-          //     ];
-          //     return Promise.all(
-          //       filterJoins.map((join, joinIndex) => {
-          //         const [leftColumn, rightColumn] = joinsData[
-          //           joinIndex
-          //         ].columns;
-          //         return Promise.all([
-          //           createColumn({
-          //             columnRequest: {
-          //               ...leftColumn,
-          //               owner: owner.id,
-          //               join: join.id,
-          //             } as Column,
-          //           }).unwrap(),
-          //           createColumn({
-          //             columnRequest: {
-          //               ...rightColumn,
-          //               owner: owner.id,
-          //               join: join.id,
-          //             } as Column,
-          //           }).unwrap(),
-          //         ]);
-          //       })
-          //     );
-          //   })
-          // );
-
-          // Filter creation
+          // Filters creation
           await Promise.all(
-            filters.map(({ relation, value }, index) => {
-              const createdColumn = createdColumns[index];
+            filters.map((filter) => {
+              const index = columnsWithoutJoin.findIndex(
+                (column) => column.id === filter.sql_column
+              );
               return createFilter({
                 filterRequest: {
-                  sql_column: createdColumn.id,
-                  relation: relation,
+                  ...filter,
                   resource: createdMapping.id,
-                  value: value,
+                  sql_column: createdColumns[index].id,
                 } as FilterRequest,
+              }).unwrap();
+            })
+          );
+
+          // Joins creation
+          const createdJoins = await Promise.all(
+            joins.map((join) => {
+              const index = columnsWithoutJoin.findIndex(
+                (column) => column.id === join.column
+              );
+              return createJoin({
+                joinRequest: {
+                  column: createdColumns[index].id,
+                } as JoinRequest,
+              }).unwrap();
+            })
+          );
+
+          // Join columns creation
+          await Promise.all(
+            columnsWithJoin.map((column) => {
+              const index = joins.findIndex((join) => join.id === column.join);
+              return createColumn({
+                columnRequest: {
+                  ...column,
+                  join: createdJoins[index].id,
+                } as ColumnRequest,
               }).unwrap();
             })
           );

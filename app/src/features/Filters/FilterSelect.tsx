@@ -7,10 +7,15 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
 import ColumnSelect from "features/Columns/ColumnSelect";
-import { columnSelectors, columnUpdated } from "features/Columns/columnSlice";
+import {
+  columnRemoved,
+  columnSelectors,
+  columnUpdated,
+} from "features/Columns/columnSlice";
 import JoinList from "features/Joins/JoinList";
 import type { Column, Filter } from "services/api/generated/api.generated";
 
+import { joinRemoved, joinSelectors } from "../Joins/joinSlice";
 import { filterRemoved, filterUpdated } from "./filterSlice";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
@@ -38,6 +43,8 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   const filterColumn = useAppSelector((state) =>
     columnSelectors.selectById(state, filter.sql_column ?? "")
   );
+  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
+  const columns = useAppSelector((state) => columnSelectors.selectAll(state));
 
   const handleFilterColumnChange = (column?: Partial<Column>) => {
     if (filter.sql_column)
@@ -70,6 +77,20 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   };
 
   const handleFilterDelete = () => {
+    if (filterColumn) {
+      const filterJoins = joins.filter(
+        (join) => join.column === filterColumn.id
+      );
+      filterJoins.forEach((join) => {
+        columns
+          .filter((column) => column.id === join.column)
+          .forEach((column) => {
+            if (column.id) dispatch(columnRemoved(column.id));
+          });
+        if (join.id) dispatch(joinRemoved(join.id));
+      });
+      if (filter.sql_column) dispatch(columnRemoved(filter.sql_column));
+    }
     if (filter.id) dispatch(filterRemoved(filter.id));
   };
 
