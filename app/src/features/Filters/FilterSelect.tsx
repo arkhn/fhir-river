@@ -47,9 +47,13 @@ const FilterSelects = ({
     (state) => state.mapping.joins?.[filter.col?.id ?? ""] ?? []
   );
   const filterColumn = filter.col ?? {};
-  const { table } = filterColumn;
+  const { table, owner } = filterColumn;
   const isMappingPKTableAndFilterPKTableDifferent = Boolean(
-    table && mapping?.primary_key_table && table !== mapping?.primary_key_table
+    owner &&
+      table &&
+      mapping?.primary_key_table &&
+      (table !== mapping?.primary_key_table ||
+        owner !== mapping?.primary_key_owner)
   );
 
   useEffect(() => {

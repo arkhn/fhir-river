@@ -50,7 +50,7 @@ beforeAll(() => {
 });
 
 describe("Mapping creation page", () => {
-  it("should display the stepper with 4 steps", async () => {
+  it("should do all the step to create a mapping (without filters)", async () => {
     render(<CreateMapping />, undefined, {
       path: "/sources/:sourceId/mappings",
       route: `/sources/sourceId/mappings`,
@@ -61,9 +61,7 @@ describe("Mapping creation page", () => {
     await screen.findByText(/name mapping/i);
 
     // primary_key_table selection
-    userEvent.click(
-      await screen.findByRole("button", { name: /select table/i })
-    );
+    userEvent.click(await screen.findByRole("textbox"));
     userEvent.click(await screen.findByRole("option", { name: /^table$/i }));
 
     // primary_key_column selection
