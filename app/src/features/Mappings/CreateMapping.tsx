@@ -33,6 +33,7 @@ import {
 
 import { columnSelectors, columnsRemoved } from "../Columns/columnSlice";
 import { filterSelectors, filtersRemoved } from "../Filters/filterSlice";
+import { joinsRemoved } from "../Joins/joinSlice";
 import { resourcesRemoved, resourceSelectors } from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
@@ -128,6 +129,7 @@ const CreateMapping = (): JSX.Element => {
     dispatch(resourcesRemoved());
     dispatch(filtersRemoved());
     dispatch(columnsRemoved());
+    dispatch(joinsRemoved());
   };
 
   const handleSubmitCreation = async () => {

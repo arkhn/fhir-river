@@ -1,23 +1,17 @@
-import React, { ChangeEvent, useEffect } from "react";
+import React, { ChangeEvent } from "react";
 
 import { Grid, TextField, makeStyles, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { useTranslation } from "react-i18next";
-import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
 import ColumnSelect from "features/Columns/ColumnSelect";
-import { selectColumnById } from "features/Columns/columnSlice";
-import JoinSection from "features/Joins/JoinSection";
-import { joinAdded, joinSelectors } from "features/Joins/joinSlice";
-import type {
-  Column,
-  Filter,
-  Resource,
-} from "services/api/generated/api.generated";
+import { columnSelectors, columnUpdated } from "features/Columns/columnSlice";
+import FilterJoins from "features/Joins/FilterJoins";
+import type { Column, Filter } from "services/api/generated/api.generated";
 
-import { filterRemoved } from "./filterSlice";
+import { filterRemoved, filterUpdated } from "./filterSlice";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
 
@@ -33,67 +27,48 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type FilterSelectsProps = {
-  mapping?: Partial<Resource>;
   filter: Partial<Filter>;
-  onChange?: (filter?: Partial<Filter>, column?: Partial<Column>) => void;
 };
 
-const FilterSelect = ({
-  mapping,
-  filter,
-  onChange,
-}: FilterSelectsProps): JSX.Element | null => {
+const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
-  const columnById = useAppSelector(selectColumnById);
-  const filterColumn = columnById(filter.sql_column ?? "");
 
-  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
-
-  const isMappingPKTableAndFilterPKTableDifferent = Boolean(
-    filterColumn?.table &&
-      mapping?.primary_key_table &&
-      filterColumn?.table !== mapping?.primary_key_table
+  const filterColumn = useAppSelector((state) =>
+    columnSelectors.selectById(state, filter.sql_column ?? "")
   );
 
-  useEffect(() => {
-    if (
-      joins.length === 0 &&
-      isMappingPKTableAndFilterPKTableDifferent &&
-      filterColumn?.id
-    ) {
-      dispatch(
-        joinAdded({
-          id: uuid(),
-          column: filterColumn.id,
-        })
-      );
-    }
-  }, [isMappingPKTableAndFilterPKTableDifferent]);
-
   const handleFilterColumnChange = (column?: Partial<Column>) => {
-    onChange && onChange(filter, column);
+    if (filter.sql_column)
+      dispatch(
+        columnUpdated({ id: filter.sql_column, changes: { ...column } })
+      );
   };
 
   const handleRelationChange = (
     event: ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
-    onChange &&
-      onChange({
-        ...filter,
-        relation: event.target.value as typeof filter.relation,
-      });
+    if (filter.id)
+      dispatch(
+        filterUpdated({
+          id: filter.id,
+          changes: { relation: event.target.value as typeof filter.relation },
+        })
+      );
   };
   const handleValueChange = (
     event: ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
-    onChange &&
-      onChange({
-        ...filter,
-        value: event.target.value as string,
-      });
+    if (filter.id)
+      dispatch(
+        filterUpdated({
+          id: filter.id,
+          changes: { value: event.target.value as typeof filter.value },
+        })
+      );
   };
+
   const handleFilterDelete = () => {
     if (filter.id) dispatch(filterRemoved(filter.id));
   };
@@ -111,7 +86,7 @@ const FilterSelect = ({
             value={filter.relation ?? ""}
             options={FILTER_RELATIONS.map((relation) => ({
               id: relation,
-              label: t("relation"),
+              label: t(relation),
             }))}
             onChange={handleRelationChange}
             emptyOption={t("selectOperation")}
@@ -133,15 +108,11 @@ const FilterSelect = ({
           </IconButton>
         </Grid>
       </Grid>
-      {joins.length > 0 && (
-        <Grid item container>
-          <div className={classes.leftShift}>
-            <JoinSection
-              isFirstJoinRequired={isMappingPKTableAndFilterPKTableDifferent}
-            />
-          </div>
-        </Grid>
-      )}
+      <Grid item container>
+        <div className={classes.leftShift}>
+          <FilterJoins filter={filter} />
+        </div>
+      </Grid>
     </Grid>
   );
 };

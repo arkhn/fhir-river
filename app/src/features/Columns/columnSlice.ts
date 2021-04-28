@@ -11,6 +11,8 @@ const columnSlice = createSlice({
   reducers: {
     columnAdded: columnAdapter.addOne,
     columnUpdated: columnAdapter.updateOne,
+    columnUpserted: columnAdapter.upsertOne,
+    columnRemoved: columnAdapter.removeOne,
     columnsRemoved: columnAdapter.removeAll,
   },
 });
@@ -18,15 +20,13 @@ const columnSlice = createSlice({
 export const {
   columnAdded,
   columnUpdated,
+  columnUpserted,
+  columnRemoved,
   columnsRemoved,
 } = columnSlice.actions;
 
 export const columnSelectors = columnAdapter.getSelectors<RootState>(
   (state) => state.column
 );
-
-export const selectColumnById = (state: RootState) => (
-  id: string
-): Partial<Column> | undefined => columnSelectors.selectById(state, id);
 
 export default columnSlice.reducer;

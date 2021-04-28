@@ -7,9 +7,7 @@ import ColumnSelect from "features/Columns/ColumnSelect";
 import { Column } from "services/api/generated/api.generated";
 
 type JoinSelectsProps = {
-  leftColumn: Partial<Column>;
-  rightColumn: Partial<Column>;
-  disableDelete?: boolean;
+  columns: Partial<Column>[];
   onChange?: (
     leftColumn: Partial<Column>,
     rightColumn: Partial<Column>
@@ -18,12 +16,11 @@ type JoinSelectsProps = {
 };
 
 const JoinSelect = ({
-  leftColumn,
-  rightColumn,
+  columns,
   onChange,
   onDelete,
-  disableDelete,
 }: JoinSelectsProps): JSX.Element => {
+  const [leftColumn, rightColumn] = columns;
   const handleLeftColumnChange = (column: Partial<Column>) => {
     onChange && onChange(column, rightColumn);
   };
@@ -45,7 +42,7 @@ const JoinSelect = ({
         pendingColumn={rightColumn}
         onChange={handleRightColumnChange}
       />
-      <IconButton onClick={handleJoinDelete} disabled={disableDelete}>
+      <IconButton onClick={handleJoinDelete}>
         <CloseIcon />
       </IconButton>
     </Grid>

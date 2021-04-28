@@ -10,8 +10,6 @@ import { v4 as uuid } from "uuid";
 import {
   useApiResourcesListQuery,
   useApiAttributesListQuery,
-  useApiCredentialsListQuery,
-  useApiOwnersListQuery,
 } from "services/api/endpoints";
 
 import { useAppDispatch } from "../../app/store";
@@ -41,24 +39,16 @@ const MappingsToolbar = (): JSX.Element => {
 
   const { sourceId } = useParams<{ sourceId?: string }>();
 
-  const { data: credential } = useApiCredentialsListQuery({ source: sourceId });
-  const { data: owners } = useApiOwnersListQuery({
-    credential: credential?.[0].id,
-  });
-  const owner = owners?.[0];
-
   const { data: mappings } = useApiResourcesListQuery({ source: sourceId });
   const { data: attributes } = useApiAttributesListQuery({ source: sourceId });
 
   const handleCreateMappingClick = () => {
-    if (owner)
-      dispatch(
-        resourceAdded({
-          id: uuid(),
-          source: sourceId,
-          primary_key_owner: owner.id,
-        })
-      );
+    dispatch(
+      resourceAdded({
+        id: uuid(),
+        source: sourceId,
+      })
+    );
     history.push(`/sources/${sourceId}/mappings`);
   };
 

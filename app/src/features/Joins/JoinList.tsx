@@ -9,13 +9,13 @@ import { useAppDispatch, useAppSelector } from "app/store";
 import {
   columnAdded,
   columnSelectors,
+  columnRemoved,
   columnUpdated,
-  selectColumnById,
 } from "features/Columns/columnSlice";
 import { Column } from "services/api/generated/api.generated";
 
 import JoinSelect from "./JoinSelect";
-import { joinAdded, joinRemoved, selectJoinById } from "./joinSlice";
+import { joinAdded, joinRemoved, joinSelectors } from "./joinSlice";
 
 const useStyles = makeStyles(() => ({
   button: {
@@ -23,45 +23,39 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type JoinSectionProps = {
-  isFirstJoinRequired?: boolean;
+type JoinProps = {
+  column: Partial<Column>;
 };
 
-const JoinSection = ({
-  isFirstJoinRequired,
-}: JoinSectionProps): JSX.Element => {
+const JoinList = ({ column }: JoinProps): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const joinById = useAppSelector(selectJoinById);
-  const columnById = useAppSelector(selectColumnById);
   const columns = useAppSelector((state) => columnSelectors.selectAll(state));
+  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
+  const columnJoins = joins.filter((join) => join.column === column.id);
+  const columnsByJoin = (joinId?: string) =>
+    columns.filter((column) => column.join === joinId);
 
-  const columnsWihJoin = columns.filter((column) => Boolean(column.join));
-
-  const joinedColumnByColumn = (
-    column: Partial<Column>
-  ): Partial<Column> | undefined => {
-    const joinId = column.join;
-    if (joinId) {
-      const join = joinById(joinId);
-      if (join?.id) return columnById(join.id);
-    }
-  };
-
-  const handleAddJoinClick = () => {
-    // TODO: add owner to column
-    const columnId = uuid();
+  const handleJoinAdd = () => {
+    const joinId = uuid();
     dispatch(
       columnAdded({
-        id: columnId,
+        id: uuid(),
+        join: joinId,
+      })
+    );
+    dispatch(
+      columnAdded({
+        id: uuid(),
+        join: joinId,
       })
     );
     dispatch(
       joinAdded({
-        id: uuid(),
-        column: columnId,
+        id: joinId,
+        column: column.id,
       })
     );
   };
@@ -81,36 +75,37 @@ const JoinSection = ({
   };
 
   const handleJoinDelete = (joinId?: string) => {
-    if (joinId) dispatch(joinRemoved(joinId));
+    if (joinId) {
+      const columns = columnsByJoin(joinId);
+      columns.forEach((column) => {
+        if (column.id) dispatch(columnRemoved(column.id));
+      });
+      dispatch(joinRemoved(joinId));
+    }
   };
 
   return (
-    <Grid container direction="column" spacing={1}>
-      <Grid item>
-        <Typography gutterBottom={false}>{t("joinOn")}</Typography>
-      </Grid>
-      {columnsWihJoin.map((column, index) => (
+    <>
+      {columnJoins.map((join) => (
         <JoinSelect
           key={column.id}
-          leftColumn={column}
-          rightColumn={joinedColumnByColumn(column) as Partial<Column>}
+          columns={columnsByJoin(join.id)}
           onChange={handleJoinChange}
           onDelete={handleJoinDelete}
-          disableDelete={isFirstJoinRequired && index === 0}
         />
       ))}
       <Grid item>
         <Button
           className={classes.button}
           startIcon={<AddIcon />}
-          onClick={handleAddJoinClick}
+          onClick={handleJoinAdd}
           variant="outlined"
         >
           <Typography>{t("addJoin")}</Typography>
         </Button>
       </Grid>
-    </Grid>
+    </>
   );
 };
 
-export default JoinSection;
+export default JoinList;
