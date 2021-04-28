@@ -19,6 +19,7 @@ const initialState: SourceSliceState = {};
 
 export const editSource = createAction<Source>("editSource");
 export const sourceEdited = createAction<Source>("sourceEdited");
+export const editCredential = createAction<Source>("editCredential");
 export const credentialEdited = createAction<Credential>("credentialEdited");
 
 const sourceSlice = createSlice({
@@ -28,9 +29,6 @@ const sourceSlice = createSlice({
     initSource: () => initialState,
     createSource: (state) => {
       state.editType = EditTypeEnum.Source;
-    },
-    editCredential: (state) => {
-      state.editType = EditTypeEnum.Credential;
     },
   },
   extraReducers: (builder) => {
@@ -42,6 +40,10 @@ const sourceSlice = createSlice({
       state.current = payload;
       state.editType = EditTypeEnum.Credential;
     });
+    builder.addCase(editCredential, (state, { payload }) => {
+      state.current = payload;
+      state.editType = EditTypeEnum.Credential;
+    });
     builder.addCase(credentialEdited, (state, { payload }) => {
       state.credential = payload;
       state.editType = EditTypeEnum.Owners;
@@ -49,7 +51,7 @@ const sourceSlice = createSlice({
   },
 });
 
-export const { initSource, createSource, editCredential } = sourceSlice.actions;
+export const { initSource, createSource } = sourceSlice.actions;
 
 export const selectSourceCurrent = (state: RootState): Source | undefined =>
   state.source.current;

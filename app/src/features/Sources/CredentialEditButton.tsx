@@ -6,20 +6,22 @@ import { useParams } from "react-router-dom";
 import { useAppDispatch } from "app/store";
 import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
 
-import { editSource } from "./sourceSlice";
+import { editCredential } from "./sourceSlice";
 
 type SourceEditButtonProps = ButtonProps;
 
-const SourceEditButton = ({
+const CredentialEditButton = ({
   ...buttonProps
 }: SourceEditButtonProps): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
-  const { data: source } = useApiSourcesRetrieveQuery({ id }, { skip: !id });
-
+  const { data: source } = useApiSourcesRetrieveQuery(
+    { id },
+    { skip: !Boolean(id) }
+  );
   const handleSourceEdit = () => {
-    if (source) dispatch(editSource(source));
+    if (source) dispatch(editCredential(source));
   };
 
   return (
@@ -29,4 +31,4 @@ const SourceEditButton = ({
   );
 };
 
-export default SourceEditButton;
+export default CredentialEditButton;

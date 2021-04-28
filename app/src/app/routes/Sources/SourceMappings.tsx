@@ -13,8 +13,8 @@ import {
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import CredentialEditButton from "features/Sources/CredentialEditButton";
 import SourceDrawer from "features/Sources/SourceDrawer";
-import SourceEditButton from "features/Sources/SourceEditButton";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -42,7 +42,7 @@ const SourceMappings = (): JSX.Element => {
         <div className={classes.header}>
           <NavigationBreadcrumbs />
           <Grid>
-            <SourceEditButton
+            <CredentialEditButton
               size="small"
               variant="contained"
               className={classes.button}
