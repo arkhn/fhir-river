@@ -13,7 +13,6 @@ import {
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
-import { useHistory, useParams } from "react-router-dom";
 
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
 
@@ -50,20 +49,21 @@ const useStyles = makeStyles((theme) => ({
 
 const MappingHeader = (): JSX.Element => {
   const { t } = useTranslation();
-  const history = useHistory();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
-    mappingId?: string;
-  }>();
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleMenuClose = () => setAnchorEl(null);
   const handleEditSourceTableClick = () => {
-    history.push(`/sources/${sourceId}/mappings/${mappingId}/edit`);
+    handleMenuClose();
+  };
+  const handleEditNameClick = () => {
+    handleMenuClose();
+  };
+  const handleDeleteClick = () => {
+    handleMenuClose();
   };
 
   return (
@@ -102,7 +102,10 @@ const MappingHeader = (): JSX.Element => {
         }}
       >
         <MenuItem>
-          <ListItemText primary={t("editMappingName")} />
+          <ListItemText
+            primary={t("editMappingName")}
+            onClick={handleEditNameClick}
+          />
         </MenuItem>
         <MenuItem>
           <ListItemText
@@ -114,6 +117,7 @@ const MappingHeader = (): JSX.Element => {
         <MenuItem>
           <ListItemText
             primary={t("deleteMapping")}
+            onClick={handleDeleteClick}
             className={classes.delete}
           />
         </MenuItem>
