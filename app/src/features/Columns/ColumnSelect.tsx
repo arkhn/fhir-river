@@ -14,7 +14,7 @@ import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
 } from "services/api/endpoints";
-import { Column } from "services/api/generated/api.generated";
+import { Column, Owner } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -37,6 +37,21 @@ const useStyles = makeStyles((theme) => ({
     fill: theme.palette.secondary.main,
   },
 }));
+
+const getTableOptions = (owners?: Owner[]): { id: string; label: string }[] => {
+  return !owners
+    ? []
+    : owners.reduce((acc: { id: string; label: string }[], owner) => {
+        const ownerTables = Object.keys(owner.schema);
+        return [
+          ...acc,
+          ...ownerTables.map((_table) => ({
+            id: `${owner.id}/${_table}`,
+            label: `${owner.name}/${_table}`,
+          })),
+        ];
+      }, []);
+};
 
 type ColumnSelectsProps = {
   pendingColumn: Partial<Column>;
@@ -65,18 +80,7 @@ const ColumnSelects = ({
         }
       : undefined;
 
-  const tables = !credentialOwners
-    ? []
-    : credentialOwners.reduce((acc: { id: string; label: string }[], owner) => {
-        const ownerTables = Object.keys(owner.schema);
-        return [
-          ...acc,
-          ...ownerTables.map((_table) => ({
-            id: `${owner.id}/${_table}`,
-            label: `${owner.name}/${_table}`,
-          })),
-        ];
-      }, []);
+  const tableOptions = getTableOptions(credentialOwners);
   const [columns, setColumns] = useState<string[]>([]);
 
   const isTableSelected = !!table;
@@ -132,7 +136,7 @@ const ColumnSelects = ({
       <Grid item>
         <Autocomplete
           className={classes.autocomplete}
-          options={tables}
+          options={tableOptions}
           groupBy={(option) => option.label.split("/")[0]}
           getOptionLabel={(option) => option.label.split("/")[1]}
           getOptionSelected={({ id }) => id === ownerTable?.id}
