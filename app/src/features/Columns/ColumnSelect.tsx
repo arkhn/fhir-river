@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -14,7 +14,7 @@ import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
 } from "services/api/endpoints";
-import { Column } from "services/api/generated/api.generated";
+import type { Column, Owner } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   autocomplete: {
@@ -69,21 +69,27 @@ const ColumnSelects = ({
         }
       : defaultValue;
 
-  const tables = !credentialOwners
-    ? []
-    : credentialOwners.reduce(
-        (acc: { id: string; label: string }[], owner) => {
-          const ownerTables = Object.keys(owner.schema);
-          return [
-            ...acc,
-            ...ownerTables.map((_table) => ({
-              id: `${owner.id}/${_table}`,
-              label: `${owner.name}/${_table}`,
-            })),
-          ];
-        },
-        [defaultValue]
-      );
+  const getTableOptions = (
+    owners?: Owner[]
+  ): { id: string; label: string }[] => {
+    return !owners
+      ? []
+      : owners.reduce(
+          (acc: { id: string; label: string }[], owner) => {
+            const ownerTables = Object.keys(owner.schema);
+            return [
+              ...acc,
+              ...ownerTables.map((_table) => ({
+                id: `${owner.id}/${_table}`,
+                label: `${owner.name}/${_table}`,
+              })),
+            ];
+          },
+          [defaultValue]
+        );
+  };
+
+  const tableOptions = getTableOptions(credentialOwners);
   const [columns, setColumns] = useState<string[]>(table ? schema[table] : []);
 
   const isTableSelected = !!table;
@@ -135,7 +141,7 @@ const ColumnSelects = ({
       <Grid item>
         <Autocomplete
           className={classes.autocomplete}
-          options={tables}
+          options={tableOptions}
           groupBy={(option) => option.label.split("/")[0]}
           getOptionLabel={(option) => option.label.split("/")[1]}
           getOptionSelected={({ id }) => id === ownerTable?.id}
