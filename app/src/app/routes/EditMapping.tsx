@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import TableStep from "features/Mappings/TableStep";
 import { useApiResourcesRetrieveQuery } from "services/api/generated/api.generated";
 
-const EditSourceTables = (): JSX.Element => {
+const EditMapping = (): JSX.Element => {
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
@@ -26,4 +26,4 @@ const EditSourceTables = (): JSX.Element => {
   );
 };
 
-export default EditSourceTables;
+export default EditMapping;

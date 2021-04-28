@@ -63,7 +63,7 @@ const MappingHeader = (): JSX.Element => {
   };
   const handleMenuClose = () => setAnchorEl(null);
   const handleEditSourceTableClick = () => {
-    history.push(`/sources/${sourceId}/mappings/${mappingId}/tables`);
+    history.push(`/sources/${sourceId}/mappings/${mappingId}/edit`);
   };
 
   return (
