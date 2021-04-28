@@ -1,4 +1,4 @@
-import type { FetchBaseQueryError } from "@rtk-incubator/rtk-query";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 type CacheItem<T, ID> = { type: T; id: ID };
 
