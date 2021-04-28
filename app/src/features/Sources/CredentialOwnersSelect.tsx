@@ -5,7 +5,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
-import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { difference, head } from "lodash";
 
 import Alert from "common/components/Alert";
