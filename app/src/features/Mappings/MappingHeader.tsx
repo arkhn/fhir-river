@@ -19,12 +19,12 @@ import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBrea
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    paddingBlock: theme.spacing(3),
     paddingInline: theme.spacing(5),
     boxShadow: `0px 5px 5px ${theme.palette.divider}`,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+    height: "100%",
   },
   navContainer: {
     display: "flex",
