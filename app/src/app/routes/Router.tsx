@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AppBar from "./AppBar";
 import CreateMapping from "./CreateMapping";
+import EditSourceTables from "./EditSourceTables";
+import Mapping from "./Mapping";
 import PageNotFound from "./PageNotFound";
 import SourceMappings from "./SourceMappings";
 import Sources from "./Sources";
@@ -30,6 +32,12 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId/mappings">
             <CreateMapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId">
+            <Mapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId/tables">
+            <EditSourceTables />
           </Route>
           <Route>
             <PageNotFound />

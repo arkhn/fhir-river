@@ -59,5 +59,9 @@
   "selectOperation": "Select operation",
   "typeValue": "Type value",
   "filterWithCount": "{{count}} filter",
-  "filterWithCount_plural": "{{count}} filters"
+  "filterWithCount_plural": "{{count}} filters",
+  "preview": "Preview",
+  "editMappingName": "Edit mapping name",
+  "editSourceTable": "Edit source table",
+  "deleteMapping": "Delete mapping"
 }
