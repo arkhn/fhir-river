@@ -11,7 +11,7 @@ import {
   ownerFactory,
   resourceFactory,
 } from "services/api/factory";
-import {
+import type {
   ApiOwnersListApiResponse,
   ApiCredentialsListApiResponse,
   ResourceRequest,
@@ -19,6 +19,7 @@ import {
 } from "services/api/generated/api.generated";
 
 import CreateMapping from "../CreateMapping";
+import { resourceAdded } from "../resourceSlice";
 
 const resource = resourceFactory.build();
 const credential = credentialFactory.build();
@@ -51,6 +52,12 @@ beforeAll(() => {
 
 describe("Mapping creation page", () => {
   it("should do all the step to create a mapping (without filters)", async () => {
+    store.dispatch(
+      resourceAdded({
+        id: "1",
+        source: "sourceId",
+      })
+    );
     render(<CreateMapping />, undefined, {
       path: "/sources/:sourceId/mappings",
       route: `/sources/sourceId/mappings`,
