@@ -43,11 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type MappingNameDialogProps = {
-  onSubmit?: (name: string) => void;
-} & DialogProps;
-
-const MappingNameDialog = (props: MappingNameDialogProps): JSX.Element => {
+const MappingNameDialog = (props: DialogProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [name, setName] = useState("");
