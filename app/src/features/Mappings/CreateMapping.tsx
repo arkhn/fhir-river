@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   CircularProgress,
@@ -18,29 +24,24 @@ import FhirProfileStep from "features/Mappings/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
 import MappingNameStep from "features/Mappings/MappingNameStep";
-import {
-  initMappingCreation,
-  PendingJoin,
-  resetMappingCreation,
-  selectMappingCurrent,
-  selectMappingFilters,
-  selectMappingJoins,
-  updateMapping,
-} from "features/Mappings/mappingSlice";
 import TableStep from "features/Mappings/TableStep";
 import {
-  useApiCredentialsListQuery,
-  useApiOwnersListQuery,
   useApiFiltersCreateMutation,
   useApiResourcesCreateMutation,
-} from "services/api/endpoints";
-import {
-  Column,
-  Filter,
-  Resource,
   useApiColumnsCreateMutation,
   useApiJoinsCreateMutation,
+} from "services/api/endpoints";
+import {
+  ResourceRequest,
+  ColumnRequest,
+  FilterRequest,
+  JoinRequest,
 } from "services/api/generated/api.generated";
+
+import { columnSelectors, columnsRemoved } from "../Columns/columnSlice";
+import { filterSelectors, filtersRemoved } from "../Filters/filterSlice";
+import { joinSelectors, joinsRemoved } from "../Joins/joinSlice";
+import { resourcesRemoved, resourceSelectors } from "./resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 
@@ -84,17 +85,17 @@ const CreateMapping = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const { data: credential } = useApiCredentialsListQuery({ source: sourceId });
-  const { data: owners } = useApiOwnersListQuery({
-    credential: credential?.[0].id,
-  });
-  const owner = owners?.[0];
 
   const [activeStep, setActiveStep] = useState(0);
   const [isProfileSelected, setIsProfileSelected] = useState(false);
-  const mapping = useAppSelector(selectMappingCurrent);
-  const filters = useAppSelector(selectMappingFilters);
-  const joins = useAppSelector(selectMappingJoins);
+
+  const [mapping] = useAppSelector(resourceSelectors.selectAll);
+  const columns = useAppSelector(columnSelectors.selectAll);
+  const columnsWithoutJoin = columns.filter((column) => !Boolean(column.join));
+  const columnsWithJoin = columns.filter((column) => Boolean(column.join));
+  const filters = useAppSelector(filterSelectors.selectAll);
+  const joins = useAppSelector(joinSelectors.selectAll);
+
   const [
     createMapping,
     { isLoading: isCreateMappingLoading },
@@ -102,18 +103,6 @@ const CreateMapping = (): JSX.Element => {
   const [createFilter] = useApiFiltersCreateMutation();
   const [createColumn] = useApiColumnsCreateMutation();
   const [createJoin] = useApiJoinsCreateMutation();
-
-  useEffect(() => {
-    if (!mapping) {
-      dispatch(initMappingCreation());
-    }
-  }, [dispatch, mapping]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(resetMappingCreation());
-    };
-  }, []);
 
   const isNextDisabled = useMemo((): boolean => {
     let isDisabled = true;
@@ -145,90 +134,73 @@ const CreateMapping = (): JSX.Element => {
     }
 
     return isDisabled;
-  }, [activeStep, mapping]);
+  }, [activeStep, mapping, isProfileSelected]);
+
+  const resetCreateMapping = useCallback(() => {
+    dispatch(resourcesRemoved());
+    dispatch(filtersRemoved());
+    dispatch(columnsRemoved());
+    dispatch(joinsRemoved());
+  }, [dispatch]);
 
   const handleSubmitCreation = async () => {
-    if (mapping && owner && sourceId && filters) {
+    if (mapping) {
       try {
         const createdMapping = await createMapping({
           resourceRequest: {
             ...mapping,
-            primary_key_owner: owner.id,
-            source: sourceId,
-          } as Resource,
+          } as ResourceRequest,
         }).unwrap();
 
         try {
-          // Filters Column creation
-          const filterColumns = await Promise.all(
-            filters.map(({ col }) =>
+          // Columns without join creation
+          const createdColumns = await Promise.all(
+            columnsWithoutJoin.map((column) =>
               createColumn({
-                columnRequest: { ...col, owner: owner.id } as Column,
+                columnRequest: { ...column } as ColumnRequest,
               }).unwrap()
             )
           );
 
-          // Filters Joins creation
-          const filtersJoins = await Promise.all(
-            Object.entries(joins).map(([column, filterJoins]) => {
-              const filterIndex = filters.findIndex(
-                ({ col }) => col?.id === column
-              );
-              return Promise.all(
-                filterJoins.map(() =>
-                  createJoin({
-                    joinRequest: {
-                      column: filterColumns[filterIndex].id,
-                    },
-                  }).unwrap()
-                )
-              );
-            })
-          );
-
-          // Joins columns creation
+          // Filters creation
           await Promise.all(
-            filtersJoins.map((filterJoins, filterIndex) => {
-              const joinsData: PendingJoin[] = Object.values(joins)[
-                filterIndex
-              ];
-              return Promise.all(
-                filterJoins.map((join, joinIndex) => {
-                  const [leftColumn, rightColumn] = joinsData[
-                    joinIndex
-                  ].columns;
-                  return Promise.all([
-                    createColumn({
-                      columnRequest: {
-                        ...leftColumn,
-                        owner: owner.id,
-                        join: join.id,
-                      } as Column,
-                    }).unwrap(),
-                    createColumn({
-                      columnRequest: {
-                        ...rightColumn,
-                        owner: owner.id,
-                        join: join.id,
-                      } as Column,
-                    }).unwrap(),
-                  ]);
-                })
+            filters.map((filter) => {
+              const index = columnsWithoutJoin.findIndex(
+                (column) => column.id === filter.sql_column
               );
-            })
-          );
-
-          // Filter creation
-          await Promise.all(
-            filters.map(({ relation, value }, index) => {
-              const createdColumn = filterColumns[index];
               return createFilter({
                 filterRequest: {
-                  sql_column: createdColumn.id,
-                  relation: relation,
+                  ...filter,
                   resource: createdMapping.id,
-                  value: value,
-                } as Filter,
+                  sql_column: createdColumns[index].id,
+                } as FilterRequest,
+              }).unwrap();
+            })
+          );
+
+          // Joins creation
+          const createdJoins = await Promise.all(
+            joins.map((join) => {
+              const index = columnsWithoutJoin.findIndex(
+                (column) => column.id === join.column
+              );
+              return createJoin({
+                joinRequest: {
+                  column: createdColumns[index].id,
+                } as JoinRequest,
+              }).unwrap();
+            })
+          );
+
+          // Join columns creation
+          await Promise.all(
+            columnsWithJoin.map((column) => {
+              const index = joins.findIndex((join) => join.id === column.join);
+              return createColumn({
+                columnRequest: {
+                  ...column,
+                  join: createdJoins[index].id,
+                } as ColumnRequest,
               }).unwrap();
             })
           );
@@ -236,28 +208,27 @@ const CreateMapping = (): JSX.Element => {
           // Fix: Handle Column & Filter creation errors
         }
 
+        resetCreateMapping();
         history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
       } catch (error) {
         // Fix: Handle Resource creation errors
       }
     }
   };
-  const handleUpdateMapping = (newMapping: Partial<Resource>) => {
-    // Remove disable on "next" button for 3rd step
-    if (activeStep === 2) {
-      setIsProfileSelected(true);
-    }
-    dispatch(updateMapping(newMapping));
+
+  const handleCancelClick = () => {
+    history.goBack();
   };
+
+  useEffect(() => resetCreateMapping, [resetCreateMapping]);
+
+  const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
   const handleNextStep = () => {
     activeStep < 3 && setActiveStep(activeStep + 1);
     activeStep === 3 && handleSubmitCreation();
-  };
-  const handleCancelClick = () => {
-    history.goBack();
   };
 
   return (
@@ -284,29 +255,19 @@ const CreateMapping = (): JSX.Element => {
             }}
           >
             <StepPanel index={0} value={activeStep}>
-              <TableStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-                owner={owner}
-              />
+              <TableStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={1} value={activeStep}>
-              <FhirResourceStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-              />
+              <FhirResourceStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={2} value={activeStep}>
               <FhirProfileStep
                 mapping={mapping}
-                onChange={handleUpdateMapping}
+                onChange={handleProfileSelected}
               />
             </StepPanel>
             <StepPanel index={3} value={activeStep}>
-              <MappingNameStep
-                mapping={mapping}
-                onChange={handleUpdateMapping}
-              />
+              <MappingNameStep mapping={mapping} />
             </StepPanel>
           </div>
         )}

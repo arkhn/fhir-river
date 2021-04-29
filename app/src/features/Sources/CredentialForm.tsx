@@ -120,13 +120,9 @@ const credentialInputs: (
 
 type CredentialFormProps = {
   source: Source;
-  onSuccess?: () => void;
 };
 
-const CredentialForm = ({
-  source,
-  onSuccess,
-}: CredentialFormProps): JSX.Element => {
+const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -161,7 +157,6 @@ const CredentialForm = ({
       isEqual(credential, { ...credential, ...credentialInputs })
     ) {
       dispatch(credentialEdited(credential));
-      onSuccess && onSuccess();
       return;
     }
 
@@ -178,7 +173,6 @@ const CredentialForm = ({
             credentialRequest: { source: source.id, ...credentialInputs },
           }).unwrap();
       dispatch(credentialEdited(submittedCredential));
-      onSuccess && onSuccess();
     } catch (e) {
       const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
         e as FetchBaseQueryError
