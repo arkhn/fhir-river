@@ -71,20 +71,16 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
     );
   };
 
-  const isMappingPKTableAndFilterTableEqual =
-    filterColumn?.owner === mapping?.primary_key_owner &&
-    filterColumn?.table === mapping?.primary_key_table;
+  const isMappingPKTableAndFilterTableDifferent =
+    filterColumn?.table &&
+    mapping &&
+    (filterColumn.owner !== mapping.primary_key_owner ||
+      filterColumn.table !== mapping.primary_key_table);
 
   useEffect(() => {
-    if (
-      filterJoins.length === 0 &&
-      filterColumn &&
-      mapping &&
-      !isMappingPKTableAndFilterTableEqual
-    ) {
+    if (filterJoins.length === 0 && isMappingPKTableAndFilterTableDifferent)
       handleJoinAdd();
-    }
-  }, [isMappingPKTableAndFilterTableEqual]);
+  }, [filterJoins, isMappingPKTableAndFilterTableDifferent]);
 
   const handleJoinChange = (
     leftColumn: Partial<Column>,
