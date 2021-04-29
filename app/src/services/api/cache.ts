@@ -1,4 +1,4 @@
-import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
+import type { FetchBaseQueryError } from "@rtk-incubator/rtk-query";
 
 type CacheItem<T, ID> = { type: T; id: ID };
 

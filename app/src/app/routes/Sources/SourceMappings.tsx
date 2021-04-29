@@ -1,22 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
   Button,
   Container,
-  Drawer,
   Grid,
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { useParams } from "react-router-dom";
 
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
-import CredentialForm from "features/Sources/CredentialForm";
-import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
+import CredentialEditButton from "features/Sources/CredentialEditButton";
+import SourceDrawer from "features/Sources/SourceDrawer";
 
 const useStyles = makeStyles((theme) => ({
   header: {
@@ -37,19 +35,6 @@ const useStyles = makeStyles((theme) => ({
 
 const SourceMappings = (): JSX.Element => {
   const classes = useStyles();
-  const { sourceId } = useParams<{ sourceId?: string }>();
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const { data: source } = useApiSourcesRetrieveQuery(
-    { id: sourceId ?? "" },
-    { skip: !sourceId }
-  );
-
-  const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setDrawerOpen(false);
-  };
 
   return (
     <>
@@ -57,15 +42,12 @@ const SourceMappings = (): JSX.Element => {
         <div className={classes.header}>
           <NavigationBreadcrumbs />
           <Grid>
-            <Button
+            <CredentialEditButton
               size="small"
               variant="contained"
               className={classes.button}
               startIcon={<Icon icon={IconNames.COG} className={classes.icon} />}
-              onClick={handleDrawerOpen}
-            >
-              <Typography>Database settings</Typography>
-            </Button>
+            />
             <Button
               size="small"
               variant="contained"
@@ -93,11 +75,7 @@ const SourceMappings = (): JSX.Element => {
           <MappingsTable />
         </Container>
       </Container>
-      <Drawer open={isDrawerOpen} onClose={handleDrawerClose} anchor="right">
-        {source && (
-          <CredentialForm source={source} onSuccess={handleDrawerClose} />
-        )}
-      </Drawer>
+      <SourceDrawer />
     </>
   );
 };

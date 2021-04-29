@@ -1,19 +1,22 @@
-import React, { ChangeEvent, useEffect } from "react";
+import React, { ChangeEvent } from "react";
 
-import { IconButton, Grid, TextField, makeStyles } from "@material-ui/core";
+import { Grid, TextField, makeStyles, IconButton } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
-import ColumnSelects from "features/Columns/ColumnSelect";
-import JoinSection from "features/Joins/JoinSection";
+import ColumnSelect from "features/Columns/ColumnSelect";
 import {
-  addJoin,
-  deleteFilter,
-  PendingFilter,
-} from "features/Mappings/mappingSlice";
-import { Column, Resource } from "services/api/generated/api.generated";
+  columnRemoved,
+  columnSelectors,
+  columnUpdated,
+} from "features/Columns/columnSlice";
+import FilterJoinList from "features/Joins/FilterJoinList";
+import { joinRemoved, joinSelectors } from "features/Joins/joinSlice";
+import type { Column, Filter } from "services/api/generated/api.generated";
+
+import { filterRemoved, filterUpdated } from "./filterSlice";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
 
@@ -29,72 +32,69 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type FilterSelectsProps = {
-  mapping?: Partial<Resource>;
-  filter: PendingFilter;
-  onChange?: (filter: PendingFilter) => void;
+  filter: Partial<Filter>;
 };
 
-const FilterSelects = ({
-  mapping,
-  filter,
-  onChange,
-}: FilterSelectsProps): JSX.Element => {
+const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const joins = useAppSelector(
-    (state) => state.mapping.joins?.[filter.col?.id ?? ""] ?? []
+  const filterColumn = useAppSelector((state) =>
+    columnSelectors.selectById(state, filter.sql_column ?? "")
   );
-  const filterColumn = filter.col ?? {};
-  const { table, owner } = filterColumn;
-  const isMappingPKTableAndFilterPKTableDifferent = Boolean(
-    owner &&
-      table &&
-      mapping?.primary_key_table &&
-      (table !== mapping?.primary_key_table ||
-        owner !== mapping?.primary_key_owner)
-  );
+  const joins = useAppSelector(joinSelectors.selectAll);
+  const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
+  const columns = useAppSelector(columnSelectors.selectAll);
 
-  useEffect(() => {
-    if (joins.length === 0 && isMappingPKTableAndFilterPKTableDifferent) {
-      filter.col?.id && dispatch(addJoin(filter.col?.id));
-    }
-  }, [isMappingPKTableAndFilterPKTableDifferent]);
-
-  const handleFilterColumnChange = (col?: Partial<Column>) => {
-    onChange &&
-      onChange({
-        ...filter,
-        col,
-      });
+  const handleFilterColumnChange = (column?: Partial<Column>) => {
+    if (filter.sql_column)
+      dispatch(
+        columnUpdated({ id: filter.sql_column, changes: { ...column } })
+      );
   };
+
   const handleRelationChange = (
     event: ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
-    onChange &&
-      onChange({
-        ...filter,
-        relation: event.target.value as typeof filter.relation,
-      });
+    if (filter.id)
+      dispatch(
+        filterUpdated({
+          id: filter.id,
+          changes: { relation: event.target.value as typeof filter.relation },
+        })
+      );
   };
   const handleValueChange = (
     event: ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
-    onChange &&
-      onChange({
-        ...filter,
-        value: event.target.value as string,
-      });
-  };
-  const handleFilterDelete = () => {
-    filter.id && dispatch(deleteFilter(filter.id));
+    if (filter.id)
+      dispatch(
+        filterUpdated({
+          id: filter.id,
+          changes: { value: event.target.value as typeof filter.value },
+        })
+      );
   };
 
+  const handleFilterDelete = () => {
+    filterJoins.forEach((join) => {
+      columns
+        .filter((column) => column.id === join.column)
+        .forEach((column) => {
+          if (column.id) dispatch(columnRemoved(column.id));
+        });
+      if (join.id) dispatch(joinRemoved(join.id));
+    });
+    if (filter.sql_column) dispatch(columnRemoved(filter.sql_column));
+    if (filter.id) dispatch(filterRemoved(filter.id));
+  };
+
+  if (!filterColumn) return null;
   return (
     <Grid item container direction="column" spacing={2}>
       <Grid item container xs={12} spacing={2}>
-        <ColumnSelects
+        <ColumnSelect
           pendingColumn={filterColumn}
           onChange={handleFilterColumnChange}
         />
@@ -112,7 +112,7 @@ const FilterSelects = ({
         <Grid item>
           <TextField
             className={classes.textInput}
-            value={filter.value}
+            value={filter.value ?? ""}
             onChange={handleValueChange}
             placeholder={t("typeValue")}
             variant="outlined"
@@ -125,19 +125,13 @@ const FilterSelects = ({
           </IconButton>
         </Grid>
       </Grid>
-      {joins.length > 0 && (
-        <Grid item container>
-          <div className={classes.leftShift}>
-            <JoinSection
-              column={filter.col}
-              joins={joins}
-              isFirstJoinRequired={isMappingPKTableAndFilterPKTableDifferent}
-            />
-          </div>
-        </Grid>
-      )}
+      <Grid item container>
+        <div className={classes.leftShift}>
+          <FilterJoinList filter={filter} />
+        </div>
+      </Grid>
     </Grid>
   );
 };
 
-export default FilterSelects;
+export default FilterSelect;

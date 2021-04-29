@@ -1,21 +1,17 @@
 import React from "react";
 
-import {
-  Container,
-  Grid,
-  makeStyles,
-  Button,
-  Typography,
-} from "@material-ui/core";
+import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
-import ColumnSelects from "features/Columns/ColumnSelect";
-import FilterSelects from "features/Filters/FilterSelect";
-import { Column, Owner, Resource } from "services/api/generated/api.generated";
+import ColumnSelect from "features/Columns/ColumnSelect";
+import FilterSelect from "features/Filters/FilterSelect";
+import { filterSelectors } from "features/Filters/filterSlice";
+import type { Column, Resource } from "services/api/generated/api.generated";
 
-import { addFilter, PendingFilter, updateFilter } from "./mappingSlice";
+import FilterAddButton from "../Filters/FilterAddButton";
+import { resourceUpdated } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -35,43 +31,42 @@ const useStyles = makeStyles((theme) => ({
 
 type TableStepProps = {
   mapping: Partial<Resource>;
-  owner?: Owner;
-  onChange?: (mapping: Partial<Resource>) => void;
 };
 
-const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
+const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const filters = useAppSelector((state) => state.mapping.filters);
+
+  const filters = useAppSelector(filterSelectors.selectAll);
+
   const mappingColumn: Partial<Column> = {
     owner: mapping.primary_key_owner,
     table: mapping.primary_key_table,
     column: mapping.primary_key_column,
   };
 
-  const handleAddFilterClick = () => {
-    dispatch(addFilter());
-  };
-  const handleFilterChange = (filter: PendingFilter) => {
-    dispatch(updateFilter(filter));
-  };
-  const handleFilterColumnChange = (column: Partial<Column>) => {
-    onChange &&
-      onChange({
-        primary_key_owner: column.owner,
-        primary_key_table: column.table,
-        primary_key_column: column.column,
-      });
+  const handleColumnChange = ({ owner, table, column }: Partial<Column>) => {
+    if (mapping.id)
+      dispatch(
+        resourceUpdated({
+          id: mapping.id,
+          changes: {
+            primary_key_owner: owner,
+            primary_key_column: column,
+            primary_key_table: table,
+          },
+        })
+      );
   };
 
   return (
     <Container maxWidth="xl">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
-          <ColumnSelects
+          <ColumnSelect
             pendingColumn={mappingColumn}
-            onChange={handleFilterColumnChange}
+            onChange={handleColumnChange}
           />
         </Grid>
         {filters && filters.length > 0 && (
@@ -81,25 +76,18 @@ const TableStep = ({ onChange, mapping }: TableStepProps): JSX.Element => {
             </Grid>
             <Grid item container spacing={5} direction="column">
               {filters.map((filter, index) => (
-                <FilterSelects
-                  key={`filter ${index}`}
-                  mapping={mapping}
-                  filter={filter}
-                  onChange={handleFilterChange}
-                />
+                <FilterSelect key={`filter-${index}`} filter={filter} />
               ))}
             </Grid>
           </Grid>
         )}
         <Grid item>
-          <Button
+          <FilterAddButton
             className={classes.button}
             startIcon={<AddIcon />}
-            onClick={handleAddFilterClick}
             variant="outlined"
-          >
-            <Typography>{t("addFilter")}</Typography>
-          </Button>
+            mapping={mapping}
+          />
         </Grid>
       </Grid>
     </Container>
