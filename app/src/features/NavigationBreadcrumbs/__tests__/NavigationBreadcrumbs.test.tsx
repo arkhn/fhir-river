@@ -7,6 +7,8 @@ import { resetState, store } from "app/store";
 import { render, screen, waitFor } from "common/test/test-utils";
 import { sourceFactory, resourceFactory } from "services/api/factory";
 import {
+  ApiFiltersListApiResponse,
+  ApiResourcesListApiResponse,
   ApiResourcesRetrieveApiResponse,
   ApiSourcesRetrieveApiResponse,
 } from "services/api/generated/api.generated";
@@ -25,6 +27,14 @@ const handlers = [
   ),
   rest.get(`http://example.com/api/resources/${mapping.id}/`, (_, res, ctx) =>
     res(ctx.json<ApiResourcesRetrieveApiResponse>(mapping))
+  ),
+  rest.get(`http://example.com/api/filters/`, (_, res, ctx) =>
+    res(ctx.json<ApiFiltersListApiResponse>([]))
+  ),
+  rest.get(`http://example.com/api/resources/`, (_, res, ctx) =>
+    res(
+      ctx.json<ApiResourcesListApiResponse>([mapping])
+    )
   ),
 ];
 
