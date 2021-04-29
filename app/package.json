@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ahryman40k/ts-fhir-types": "^4.0.34",
     "@arkhn/ui": "^1.11.2",
     "@blueprintjs/core": "^3.40.0",
     "@blueprintjs/icons": "^3.25.0",

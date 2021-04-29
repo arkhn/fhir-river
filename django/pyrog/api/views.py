@@ -1,6 +1,5 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 import requests
 from django_filters import rest_framework as django_filters
@@ -10,15 +9,22 @@ from pyrog.api.serializers import basic as basic_serializers
 from pyrog.api.serializers.import_export import SourceSerializer
 
 
-class StructureDefinitionView(APIView):
-    def get(self, request):
+class StructureDefinitionViewSet(viewsets.ViewSet):
+    def list(self, request):
         token = request.session["oidc_access_token"]
         headers = {"Authorization": f"Bearer {token}"}
         url = f"{self.settings.FHIR_API_URL}/StructureDefinition"
         response = requests.get(f"{url}", headers=headers, params=request.query_params)
         return Response(response.json(), response.status_code)
 
-    def post(self, request):
+    def retrieve(self, request, pk=None):
+        token = request.session["oidc_access_token"]
+        headers = {"Authorization": f"Bearer {token}"}
+        url = f"{self.settings.FHIR_API_URL}/StructureDefinition/{pk}"
+        response = requests.get(f"{url}", headers=headers, params=request.query_params)
+        return Response(response.json(), response.status_code)
+
+    def create(self, request):
         token = request.session["oidc_access_token"]
         headers = {"Authorization": f"Bearer {token}"}
         url = f"{self.settings.FHIR_API_URL}/StructureDefinition"
