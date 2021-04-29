@@ -44,7 +44,7 @@ module.exports = {
     "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
     "react/prop-types": [2, { ignore: ["children"] }],
     // React hooks
-    "react-hooks/rules-of-hooks": "error", // Vérifie les règles des Hooks
+    "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     // import
     "import/order": [
