@@ -220,7 +220,7 @@ const CreateMapping = (): JSX.Element => {
     history.goBack();
   };
 
-  useEffect(() => () => resetCreateMapping(), [resetCreateMapping]);
+  useEffect(() => resetCreateMapping, [resetCreateMapping]);
 
   const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
