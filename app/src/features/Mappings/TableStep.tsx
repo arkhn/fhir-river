@@ -38,7 +38,7 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const filters = useAppSelector((state) => filterSelectors.selectAll(state));
+  const filters = useAppSelector(filterSelectors.selectAll);
 
   const mappingColumn: Partial<Column> = {
     owner: mapping.primary_key_owner,

@@ -87,8 +87,8 @@ const CreateMapping = (): JSX.Element => {
   const columns = useAppSelector(columnSelectors.selectAll);
   const columnsWithoutJoin = columns.filter((column) => !Boolean(column.join));
   const columnsWithJoin = columns.filter((column) => Boolean(column.join));
-  const filters = useAppSelector((state) => filterSelectors.selectAll(state));
-  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
+  const filters = useAppSelector(filterSelectors.selectAll);
+  const joins = useAppSelector(joinSelectors.selectAll);
 
   const [
     createMapping,
