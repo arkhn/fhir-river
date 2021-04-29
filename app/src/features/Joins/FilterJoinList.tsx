@@ -39,11 +39,18 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const mapping = useAppSelector((state) =>
     resourceSelectors.selectById(state, filter.resource ?? "")
   );
-  const columns = useAppSelector((state) => columnSelectors.selectAll(state));
-  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
-  const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
+  const columns = useAppSelector(columnSelectors.selectAll);
+  const filterJoins = useAppSelector((state) =>
+    joinSelectors
+      .selectAll(state)
+      .filter((join) => join.column === filterColumn?.id)
+  );
+
   const columnsByJoin = (joinId?: string) =>
-    columns.filter((column) => column.join === joinId);
+    columns.filter((column) => column.join === joinId) as [
+      Partial<Column>,
+      Partial<Column>
+    ];
 
   const handleJoinAdd = useCallback(() => {
     const joinId = uuid();

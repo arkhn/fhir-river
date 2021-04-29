@@ -43,9 +43,9 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   const filterColumn = useAppSelector((state) =>
     columnSelectors.selectById(state, filter.sql_column ?? "")
   );
-  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
+  const joins = useAppSelector(joinSelectors.selectAll);
   const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
-  const columns = useAppSelector((state) => columnSelectors.selectAll(state));
+  const columns = useAppSelector(columnSelectors.selectAll);
 
   const handleFilterColumnChange = (column?: Partial<Column>) => {
     if (filter.sql_column)

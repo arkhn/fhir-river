@@ -1,4 +1,10 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   CircularProgress,
@@ -83,14 +89,12 @@ const CreateMapping = (): JSX.Element => {
   const [activeStep, setActiveStep] = useState(0);
   const [isProfileSelected, setIsProfileSelected] = useState(false);
 
-  const [mapping] = useAppSelector((state) =>
-    resourceSelectors.selectAll(state)
-  );
-  const columns = useAppSelector((state) => columnSelectors.selectAll(state));
+  const [mapping] = useAppSelector(resourceSelectors.selectAll);
+  const columns = useAppSelector(columnSelectors.selectAll);
   const columnsWithoutJoin = columns.filter((column) => !Boolean(column.join));
   const columnsWithJoin = columns.filter((column) => Boolean(column.join));
-  const filters = useAppSelector((state) => filterSelectors.selectAll(state));
-  const joins = useAppSelector((state) => joinSelectors.selectAll(state));
+  const filters = useAppSelector(filterSelectors.selectAll);
+  const joins = useAppSelector(joinSelectors.selectAll);
 
   const [
     createMapping,
@@ -132,12 +136,12 @@ const CreateMapping = (): JSX.Element => {
     return isDisabled;
   }, [activeStep, mapping, isProfileSelected]);
 
-  const resetCreateMapping = () => {
+  const resetCreateMapping = useCallback(() => {
     dispatch(resourcesRemoved());
     dispatch(filtersRemoved());
     dispatch(columnsRemoved());
     dispatch(joinsRemoved());
-  };
+  }, [dispatch]);
 
   const handleSubmitCreation = async () => {
     if (mapping) {
@@ -212,6 +216,12 @@ const CreateMapping = (): JSX.Element => {
     }
   };
 
+  const handleCancelClick = () => {
+    history.goBack();
+  };
+
+  useEffect(() => resetCreateMapping, [resetCreateMapping]);
+
   const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
@@ -219,10 +229,6 @@ const CreateMapping = (): JSX.Element => {
   const handleNextStep = () => {
     activeStep < 3 && setActiveStep(activeStep + 1);
     activeStep === 3 && handleSubmitCreation();
-  };
-  const handleCancelClick = () => {
-    resetCreateMapping();
-    history.goBack();
   };
 
   return (
