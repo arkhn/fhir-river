@@ -19,11 +19,9 @@ import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
+import { useApiResourcesDestroyMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
-import {
-  ResourceRequest,
-  useApiResourcesDestroyMutation,
-} from "services/api/generated/api.generated";
+import { ResourceRequest } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
