@@ -14,8 +14,8 @@ import MoreIcon from "@material-ui/icons/MoreHoriz";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
 
-import MappingDeleteDialog from "features/Mappings/MappingDeleteDialog";
-import MappingNameDialog from "features/Mappings/MappingNameDialog";
+import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
+import MappingNameDialog from "features/Mappings/Edit/MappingNameDialog";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
 
 const useStyles = makeStyles((theme) => ({

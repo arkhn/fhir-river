@@ -10,8 +10,8 @@ import FilterSelect from "features/Filters/FilterSelect";
 import { filterSelectors } from "features/Filters/filterSlice";
 import type { Column, Resource } from "services/api/generated/api.generated";
 
-import FilterAddButton from "../Filters/FilterAddButton";
-import { resourceUpdated } from "./resourceSlice";
+import FilterAddButton from "../../Filters/FilterAddButton";
+import { resourceUpdated } from "../resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {

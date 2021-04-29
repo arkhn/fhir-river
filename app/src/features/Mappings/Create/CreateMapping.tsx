@@ -20,11 +20,11 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/components/Stepper/StepPanel";
-import FhirProfileStep from "features/Mappings/FhirProfileStep";
-import FhirResourceStep from "features/Mappings/FhirResourceStep";
-import MappingCreationStepper from "features/Mappings/MappingCreationStepper";
-import MappingNameStep from "features/Mappings/MappingNameStep";
-import TableStep from "features/Mappings/TableStep";
+import FhirProfileStep from "features/Mappings/Create/FhirProfileStep";
+import FhirResourceStep from "features/Mappings/Create/FhirResourceStep";
+import MappingCreationStepper from "features/Mappings/Create/MappingCreationStepper";
+import MappingNameStep from "features/Mappings/Create/MappingNameStep";
+import TableStep from "features/Mappings/Create/TableStep";
 import {
   useApiFiltersCreateMutation,
   useApiResourcesCreateMutation,
@@ -38,10 +38,10 @@ import {
   JoinRequest,
 } from "services/api/generated/api.generated";
 
-import { columnSelectors, columnsRemoved } from "../Columns/columnSlice";
-import { filterSelectors, filtersRemoved } from "../Filters/filterSlice";
-import { joinSelectors, joinsRemoved } from "../Joins/joinSlice";
-import { resourcesRemoved, resourceSelectors } from "./resourceSlice";
+import { columnSelectors, columnsRemoved } from "../../Columns/columnSlice";
+import { filterSelectors, filtersRemoved } from "../../Filters/filterSlice";
+import { joinSelectors, joinsRemoved } from "../../Joins/joinSlice";
+import { resourcesRemoved, resourceSelectors } from "../resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 

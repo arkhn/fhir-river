@@ -3,7 +3,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import CreateMapping from "features/Mappings/CreateMapping";
+import CreateMapping from "features/Mappings/Create/CreateMapping";
 
 import AppBar from "./AppBar";
 import Mapping from "./Mapping";
