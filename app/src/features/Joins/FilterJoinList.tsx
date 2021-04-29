@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
@@ -45,7 +45,7 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const columnsByJoin = (joinId?: string) =>
     columns.filter((column) => column.join === joinId);
 
-  const handleJoinAdd = () => {
+  const handleJoinAdd = useCallback(() => {
     const joinId = uuid();
     dispatch(
       columnAdded({
@@ -69,7 +69,14 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
         column: filterColumn?.id,
       })
     );
-  };
+  }, [
+    dispatch,
+    filterColumn?.id,
+    filterColumn?.owner,
+    filterColumn?.table,
+    mapping?.primary_key_owner,
+    mapping?.primary_key_table,
+  ]);
 
   const isMappingPKTableAndFilterTableDifferent =
     filterColumn?.table &&
@@ -80,7 +87,7 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   useEffect(() => {
     if (filterJoins.length === 0 && isMappingPKTableAndFilterTableDifferent)
       handleJoinAdd();
-  }, [filterJoins, isMappingPKTableAndFilterTableDifferent]);
+  }, [filterJoins, handleJoinAdd, isMappingPKTableAndFilterTableDifferent]);
 
   const handleJoinChange = (
     leftColumn: Partial<Column>,

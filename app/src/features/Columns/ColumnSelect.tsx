@@ -134,7 +134,7 @@ const ColumnSelects = ({
         });
       setColumns(schema[table]);
     }
-  }, [schema, hasTableChanged, pendingColumn]);
+  }, [schema, hasTableChanged, pendingColumn, table, onChange]);
 
   return (
     <>

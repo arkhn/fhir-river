@@ -9,7 +9,14 @@ module.exports = {
     "plugin:import/typescript",
     "prettier",
   ],
-  plugins: ["react", "jsx-a11y", "import", "prettier", "@typescript-eslint"],
+  plugins: [
+    "react",
+    "react-hooks",
+    "jsx-a11y",
+    "import",
+    "prettier",
+    "@typescript-eslint",
+  ],
   settings: {
     "import/resolver": {
       node: {
@@ -36,6 +43,9 @@ module.exports = {
     // React
     "react/jsx-filename-extension": ["error", { extensions: [".tsx"] }],
     "react/prop-types": [2, { ignore: ["children"] }],
+    // React hooks
+    "react-hooks/rules-of-hooks": "error", // Vérifie les règles des Hooks
+    "react-hooks/exhaustive-deps": "warn",
     // import
     "import/order": [
       "error",
