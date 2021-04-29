@@ -60,6 +60,9 @@ export const api = generatedApi
       apiResourcesUpdate: {
         invalidatesTags: invalidatesOne("Resources"),
       },
+      apiResourcesDestroy: {
+        invalidatesTags: invalidatesList("Resources"),
+      },
       /**
        * Attributes
        */
