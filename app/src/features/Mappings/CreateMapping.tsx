@@ -84,7 +84,7 @@ const CreateMapping = (): JSX.Element => {
   const [isProfileSelected, setIsProfileSelected] = useState(false);
 
   const [mapping] = useAppSelector(resourceSelectors.selectAll);
-  const columns = useAppSelector((state) => columnSelectors.selectAll(state));
+  const columns = useAppSelector(columnSelectors.selectAll);
   const columnsWithoutJoin = columns.filter((column) => !Boolean(column.join));
   const columnsWithJoin = columns.filter((column) => Boolean(column.join));
   const filters = useAppSelector((state) => filterSelectors.selectAll(state));
