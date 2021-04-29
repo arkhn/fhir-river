@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
@@ -28,12 +28,12 @@ type JoinProps = {
   filter: Partial<Filter>;
 };
 
-const JoinList = ({ filter }: JoinProps): JSX.Element | null => {
+const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const column = useAppSelector((state) =>
+  const filterColumn = useAppSelector((state) =>
     columnSelectors.selectById(state, filter.sql_column ?? "")
   );
   const mapping = useAppSelector((state) =>
@@ -41,7 +41,7 @@ const JoinList = ({ filter }: JoinProps): JSX.Element | null => {
   );
   const columns = useAppSelector((state) => columnSelectors.selectAll(state));
   const joins = useAppSelector((state) => joinSelectors.selectAll(state));
-  const columnJoins = joins.filter((join) => join.column === column?.id);
+  const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
   const columnsByJoin = (joinId?: string) =>
     columns.filter((column) => column.join === joinId);
 
@@ -59,17 +59,32 @@ const JoinList = ({ filter }: JoinProps): JSX.Element | null => {
       columnAdded({
         id: uuid(),
         join: joinId,
-        owner: column?.owner,
-        table: column?.table,
+        owner: filterColumn?.owner,
+        table: filterColumn?.table,
       })
     );
     dispatch(
       joinAdded({
         id: joinId,
-        column: column?.id,
+        column: filterColumn?.id,
       })
     );
   };
+
+  const isMappingPKTableAndFilterTableEqual =
+    filterColumn?.owner === mapping?.primary_key_owner &&
+    filterColumn?.table === mapping?.primary_key_table;
+
+  useEffect(() => {
+    if (
+      filterJoins.length === 0 &&
+      filterColumn &&
+      mapping &&
+      !isMappingPKTableAndFilterTableEqual
+    ) {
+      handleJoinAdd();
+    }
+  }, [isMappingPKTableAndFilterTableEqual]);
 
   const handleJoinChange = (
     leftColumn: Partial<Column>,
@@ -93,15 +108,15 @@ const JoinList = ({ filter }: JoinProps): JSX.Element | null => {
     dispatch(joinRemoved(joinId));
   };
 
-  if (!column) return null;
+  if (!filterColumn) return null;
   return (
     <Grid container direction="column" spacing={1}>
-      {column.join && (
+      {filterColumn.join && (
         <Grid item>
           <Typography gutterBottom={false}>{t("joinOn")}</Typography>
         </Grid>
       )}
-      {columnJoins.map((join) => (
+      {filterJoins.map((join) => (
         <JoinSelect
           key={`join-${join.id}`}
           columns={columnsByJoin(join.id)}
@@ -123,4 +138,4 @@ const JoinList = ({ filter }: JoinProps): JSX.Element | null => {
   );
 };
 
-export default JoinList;
+export default FilterJoinList;

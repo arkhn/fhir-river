@@ -12,10 +12,10 @@ import {
   columnSelectors,
   columnUpdated,
 } from "features/Columns/columnSlice";
-import JoinList from "features/Joins/JoinList";
+import FilterJoinList from "features/Joins/FilterJoinList";
+import { joinRemoved, joinSelectors } from "features/Joins/joinSlice";
 import type { Column, Filter } from "services/api/generated/api.generated";
 
-import { joinRemoved, joinSelectors } from "../Joins/joinSlice";
 import { filterRemoved, filterUpdated } from "./filterSlice";
 
 const FILTER_RELATIONS = ["=", "<>", "IN", ">", ">=", "<", "<="];
@@ -44,6 +44,7 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
     columnSelectors.selectById(state, filter.sql_column ?? "")
   );
   const joins = useAppSelector((state) => joinSelectors.selectAll(state));
+  const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
   const columns = useAppSelector((state) => columnSelectors.selectAll(state));
 
   const handleFilterColumnChange = (column?: Partial<Column>) => {
@@ -77,20 +78,15 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   };
 
   const handleFilterDelete = () => {
-    if (filterColumn) {
-      const filterJoins = joins.filter(
-        (join) => join.column === filterColumn.id
-      );
-      filterJoins.forEach((join) => {
-        columns
-          .filter((column) => column.id === join.column)
-          .forEach((column) => {
-            if (column.id) dispatch(columnRemoved(column.id));
-          });
-        if (join.id) dispatch(joinRemoved(join.id));
-      });
-      if (filter.sql_column) dispatch(columnRemoved(filter.sql_column));
-    }
+    filterJoins.forEach((join) => {
+      columns
+        .filter((column) => column.id === join.column)
+        .forEach((column) => {
+          if (column.id) dispatch(columnRemoved(column.id));
+        });
+      if (join.id) dispatch(joinRemoved(join.id));
+    });
+    if (filter.sql_column) dispatch(columnRemoved(filter.sql_column));
     if (filter.id) dispatch(filterRemoved(filter.id));
   };
 
@@ -131,7 +127,7 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
       </Grid>
       <Grid item container>
         <div className={classes.leftShift}>
-          <JoinList filter={filter} />
+          <FilterJoinList filter={filter} />
         </div>
       </Grid>
     </Grid>
