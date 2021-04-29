@@ -19,12 +19,12 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
-import { apiValidationErrorFromResponse } from "services/api/errors";
 import {
-  ResourceRequest,
   useApiResourcesRetrieveQuery,
   useApiResourcesUpdateMutation,
-} from "services/api/generated/api.generated";
+} from "services/api/endpoints";
+import { apiValidationErrorFromResponse } from "services/api/errors";
+import { ResourceRequest } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {

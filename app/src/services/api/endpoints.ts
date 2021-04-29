@@ -123,6 +123,9 @@ export const {
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
+  useApiResourcesRetrieveQuery,
+  useApiResourcesUpdateMutation,
+  useApiResourcesDestroyMutation,
   // Attributes
   useApiAttributesListQuery,
   // Owners
