@@ -10,11 +10,11 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useHistory, useParams } from "react-router-dom";
 
-import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
 import {
-  Resource,
+  useApiSourcesRetrieveQuery,
   useApiResourcesRetrieveQuery,
-} from "services/api/generated/api.generated";
+} from "services/api/endpoints";
+import { Resource } from "services/api/generated/api.generated";
 
 import MappingSelectButton from "./MappingSelectButton";
 

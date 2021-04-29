@@ -18,7 +18,7 @@ import type {
   ApiResourcesCreateApiResponse,
 } from "services/api/generated/api.generated";
 
-import CreateMapping from "../CreateMapping";
+import CreateMapping from "../Create/CreateMapping";
 import { resourceAdded } from "../resourceSlice";
 
 const resource = resourceFactory.build();
