@@ -7,7 +7,7 @@ import ColumnSelect from "features/Columns/ColumnSelect";
 import { Column } from "services/api/generated/api.generated";
 
 type JoinSelectsProps = {
- columns: [ Partial<Column>, Partial<Column> ];
+  columns: [Partial<Column>, Partial<Column>];
   onChange?: (
     leftColumn: Partial<Column>,
     rightColumn: Partial<Column>

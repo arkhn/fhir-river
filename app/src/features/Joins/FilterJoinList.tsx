@@ -43,7 +43,10 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const joins = useAppSelector((state) => joinSelectors.selectAll(state));
   const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
   const columnsByJoin = (joinId?: string) =>
-    columns.filter((column) => column.join === joinId);
+    columns.filter((column) => column.join === joinId) as [
+      Partial<Column>,
+      Partial<Column>
+    ];
 
   const handleJoinAdd = useCallback(() => {
     const joinId = uuid();
