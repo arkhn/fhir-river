@@ -54,6 +54,9 @@ export const api = generatedApi
       apiResourcesList: {
         providesTags: providesList("Resources"),
       },
+      apiResourcesRetrieve: {
+        providesTags: providesOne("Resources"),
+      },
       apiResourcesCreate: {
         invalidatesTags: invalidatesList("Resources"),
       },
