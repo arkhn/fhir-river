@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 type FhirProfileStepProps = {
   mapping: Partial<Resource>;
-  onChange?: (mapping: Partial<Resource>) => void;
+  onChange?: () => void;
 };
 
 const FhirProfileStep = ({
@@ -58,11 +58,10 @@ const FhirProfileStep = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const [isDefaultProfileSelected, setDefaultProfileSelected] = useState(false);
-  const { definition_id: resource } = mapping;
 
   const handleClickDefaultProfile = () => {
     setDefaultProfileSelected(true);
-    onChange && onChange({});
+    onChange && onChange();
   };
 
   return (
@@ -75,7 +74,7 @@ const FhirProfileStep = ({
             className={clsx(classes.icon, classes.flameIcon)}
             iconSize={12}
           />
-          {` ${resource} `}
+          {` ${mapping.definition_id} `}
         </b>
         {t("resource")}
       </Typography>

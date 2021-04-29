@@ -8,7 +8,10 @@ import {
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
+import { useAppDispatch } from "app/store";
 import { Resource } from "services/api/generated/api.generated";
+
+import { resourceUpdated } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   inputContainer: {
@@ -19,18 +22,21 @@ const useStyles = makeStyles((theme) => ({
 
 type MappingNameStepProps = {
   mapping: Partial<Resource>;
-  onChange?: (mapping: Partial<Resource>) => void;
 };
 
-const MappingNameStep = ({
-  mapping,
-  onChange,
-}: MappingNameStepProps): JSX.Element => {
+const MappingNameStep = ({ mapping }: MappingNameStepProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useAppDispatch();
 
   const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange && onChange({ label: event.target.value });
+    if (mapping.id)
+      dispatch(
+        resourceUpdated({
+          id: mapping.id,
+          changes: { label: event.target.value },
+        })
+      );
   };
 
   return (

@@ -5,11 +5,15 @@ import { IconNames } from "@blueprintjs/icons";
 import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import AttributeIcon from "@material-ui/icons/LocalOffer";
 import { useParams, useHistory } from "react-router";
+import { v4 as uuid } from "uuid";
 
 import {
   useApiResourcesListQuery,
   useApiAttributesListQuery,
 } from "services/api/endpoints";
+
+import { useAppDispatch } from "../../app/store";
+import { resourceAdded } from "./resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   rowContainer: {
@@ -31,12 +35,20 @@ const useStyles = makeStyles((theme) => ({
 const MappingsToolbar = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
+  const dispatch = useAppDispatch();
+
   const { sourceId } = useParams<{ sourceId?: string }>();
 
   const { data: mappings } = useApiResourcesListQuery({ source: sourceId });
   const { data: attributes } = useApiAttributesListQuery({ source: sourceId });
 
   const handleCreateMappingClick = () => {
+    dispatch(
+      resourceAdded({
+        id: uuid(),
+        source: sourceId,
+      })
+    );
     history.push(`/sources/${sourceId}/mappings`);
   };
 

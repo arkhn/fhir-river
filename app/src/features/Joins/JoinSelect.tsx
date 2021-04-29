@@ -3,51 +3,50 @@ import React from "react";
 import { IconButton, Grid, Typography } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 
-import ColumnSelects from "features/Columns/ColumnSelect";
-import { PendingJoin } from "features/Mappings/mappingSlice";
+import ColumnSelect from "features/Columns/ColumnSelect";
 import { Column } from "services/api/generated/api.generated";
 
 type JoinSelectsProps = {
-  join: PendingJoin;
-  disableDelete?: boolean;
-  onChange?: (join: PendingJoin) => void;
+  columns: [Partial<Column>, Partial<Column>];
+  onChange?: (
+    leftColumn: Partial<Column>,
+    rightColumn: Partial<Column>
+  ) => void;
   onDelete?: (joinId: string) => void;
 };
 
-const JoinSelects = ({
-  join,
+const JoinSelect = ({
+  columns,
   onChange,
   onDelete,
-  disableDelete,
 }: JoinSelectsProps): JSX.Element => {
-  const [leftColumn, rightColumn] = join.columns;
-
+  const [leftColumn, rightColumn] = columns;
   const handleLeftColumnChange = (column: Partial<Column>) => {
-    onChange && onChange({ ...join, columns: [column, rightColumn] });
+    onChange && onChange(column, rightColumn);
   };
   const handleRightColumnChange = (column: Partial<Column>) => {
-    onChange && onChange({ ...join, columns: [leftColumn, column] });
+    onChange && onChange(leftColumn, column);
   };
   const handleJoinDelete = () => {
-    onDelete && onDelete(join.id);
+    leftColumn.join && onDelete && onDelete(leftColumn.join);
   };
 
   return (
     <Grid item container xs={12} spacing={2} alignItems="center">
-      <ColumnSelects
+      <ColumnSelect
         pendingColumn={leftColumn}
         onChange={handleLeftColumnChange}
       />
       <Typography>==</Typography>
-      <ColumnSelects
+      <ColumnSelect
         pendingColumn={rightColumn}
         onChange={handleRightColumnChange}
       />
-      <IconButton onClick={handleJoinDelete} disabled={disableDelete}>
+      <IconButton onClick={handleJoinDelete}>
         <CloseIcon />
       </IconButton>
     </Grid>
   );
 };
 
-export default JoinSelects;
+export default JoinSelect;
