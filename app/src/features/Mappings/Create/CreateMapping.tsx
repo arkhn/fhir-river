@@ -20,6 +20,9 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/components/Stepper/StepPanel";
+import { columnSelectors, columnsRemoved } from "features/Columns/columnSlice";
+import { filterSelectors, filtersRemoved } from "features/Filters/filterSlice";
+import { joinSelectors, joinsRemoved } from "features/Joins/joinSlice";
 import FhirProfileStep from "features/Mappings/Create/FhirProfileStep";
 import FhirResourceStep from "features/Mappings/Create/FhirResourceStep";
 import MappingCreationStepper from "features/Mappings/Create/MappingCreationStepper";
@@ -38,9 +41,6 @@ import {
   JoinRequest,
 } from "services/api/generated/api.generated";
 
-import { columnSelectors, columnsRemoved } from "../../Columns/columnSlice";
-import { filterSelectors, filtersRemoved } from "../../Filters/filterSlice";
-import { joinSelectors, joinsRemoved } from "../../Joins/joinSlice";
 import { resourcesRemoved, resourceSelectors } from "../resourceSlice";
 
 const FOOTER_HEIGHT = 150;
