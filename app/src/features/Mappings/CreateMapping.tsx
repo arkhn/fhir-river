@@ -1,4 +1,10 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import {
   CircularProgress,
@@ -130,12 +136,12 @@ const CreateMapping = (): JSX.Element => {
     return isDisabled;
   }, [activeStep, mapping, isProfileSelected]);
 
-  const resetCreateMapping = () => {
+  const resetCreateMapping = useCallback(() => {
     dispatch(resourcesRemoved());
     dispatch(filtersRemoved());
     dispatch(columnsRemoved());
     dispatch(joinsRemoved());
-  };
+  }, [dispatch]);
 
   const handleSubmitCreation = async () => {
     if (mapping) {
@@ -210,6 +216,12 @@ const CreateMapping = (): JSX.Element => {
     }
   };
 
+  const handleCancelClick = () => {
+    history.goBack();
+  };
+
+  useEffect(() => () => resetCreateMapping(), [resetCreateMapping]);
+
   const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
@@ -217,10 +229,6 @@ const CreateMapping = (): JSX.Element => {
   const handleNextStep = () => {
     activeStep < 3 && setActiveStep(activeStep + 1);
     activeStep === 3 && handleSubmitCreation();
-  };
-  const handleCancelClick = () => {
-    resetCreateMapping();
-    history.goBack();
   };
 
   return (
