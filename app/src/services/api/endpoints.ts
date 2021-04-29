@@ -64,7 +64,7 @@ export const api = generatedApi
         invalidatesTags: invalidatesOne("Resources"),
       },
       apiResourcesDestroy: {
-        invalidatesTags: invalidatesList("Resources"),
+        invalidatesTags: invalidatesOne("Resources"),
       },
       /**
        * Attributes
