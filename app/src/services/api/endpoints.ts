@@ -170,6 +170,10 @@ export const {
   // User
   useApiUserRetrieveQuery,
   useOidcLogoutMutation,
+  // StructureDefinition
+  useApiStructureDefinitionListQuery,
+  useApiStructureDefinitionCreateMutation,
+  useApiStructureDefinitionRetrieveQuery,
   //Columns
   useApiColumnsCreateMutation,
   // Sources
