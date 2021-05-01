@@ -6,7 +6,7 @@ info:
 paths:
   /api/StructureDefinition/:
     get:
-      operationId: api_StructureDefinition_retrieve
+      operationId: api_StructureDefinition_list
       description: ''
       tags:
       - api
@@ -31,7 +31,7 @@ paths:
           description: No response body
   /api/StructureDefinition/{id}/:
     get:
-      operationId: api_StructureDefinition_retrieve_2
+      operationId: api_StructureDefinition_retrieve
       description: ''
       parameters:
       - in: path

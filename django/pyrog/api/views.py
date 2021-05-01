@@ -3,13 +3,15 @@ from rest_framework.response import Response
 
 import requests
 from django_filters import rest_framework as django_filters
+from drf_spectacular.utils import extend_schema
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
 from pyrog.api.serializers.import_export import SourceSerializer
 
 
-class StructureDefinitionViewSet(viewsets.ViewSet):
+class StructureDefinitionViewSet(viewsets.GenericViewSet):
+    @extend_schema(operation_id="api_StructureDefinition_list")
     def list(self, request):
         token = request.session["oidc_access_token"]
         headers = {"Authorization": f"Bearer {token}"}

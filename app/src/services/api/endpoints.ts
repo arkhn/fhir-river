@@ -1,10 +1,19 @@
 import {
+  IBundle,
+  IStructureDefinition,
+} from "@ahryman40k/ts-fhir-types/lib/R4";
+
+import {
   providesList,
   providesOne,
   invalidatesList,
   invalidatesOne,
+  providesFhirBundle,
 } from "./cache";
-import { api as generatedApi } from "./generated/api.generated";
+import {
+  api as generatedApi,
+  ApiStructureDefinitionRetrieveApiArg,
+} from "./generated/api.generated";
 
 const tagTypes = [
   "Users",
@@ -16,6 +25,7 @@ const tagTypes = [
   "Credentials",
   "Filters",
   "Joins",
+  "StructureDefinition",
 ];
 
 export const api = generatedApi
@@ -25,9 +35,46 @@ export const api = generatedApi
         query: () => ({
           url: `/oidc/logout/`,
           method: "POST",
+          invalidatesTags: ["Users"],
+        }),
+      }),
+      apiStructureDefinitionList: build.query<
+        IBundle,
+        { params: Record<string, string> }
+      >({
+        query: (queryArg) => ({
+          url: `/api/StructureDefinition?${new URLSearchParams(
+            queryArg.params
+          ).toString()}`,
+          providesTags: providesFhirBundle("StructureDefinition"),
+        }),
+      }),
+      apiStructureDefinitionCreate: build.mutation<
+        IStructureDefinition,
+        IStructureDefinition
+      >({
+        query: (queryArg) => ({
+          url: `/api/StructureDefinition`,
+          method: "POST",
+          body: queryArg,
+          invalidatesTags: invalidatesList("StructureDefinition"),
+        }),
+      }),
+      apiStructureDefinitionRetrieve: build.query<
+        IStructureDefinition,
+        ApiStructureDefinitionRetrieveApiArg & {
+          params: Record<string, string>;
+        }
+      >({
+        query: (queryArg) => ({
+          url: `/api/StructureDefinition/${queryArg.id}?${new URLSearchParams(
+            queryArg.params
+          ).toString()}`,
+          providesTags: providesOne("StructureDefinition"),
         }),
       }),
     }),
+    overrideExisting: true,
   })
   .enhanceEndpoints({
     addTagTypes: tagTypes,
@@ -37,9 +84,6 @@ export const api = generatedApi
        */
       apiUserRetrieve: {
         providesTags: ["Users"],
-      },
-      oidcLogout: {
-        invalidatesTags: ["Users"],
       },
       /**
        * Columns
