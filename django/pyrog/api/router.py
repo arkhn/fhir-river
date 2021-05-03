@@ -4,7 +4,6 @@ from pyrog.api import views
 
 router = routers.SimpleRouter()
 
-router.register(r"StructureDefinition", views.StructureDefinitionViewSet, basename="structure-definition")
 router.register(r"sources", views.SourceViewSet, basename="sources")
 router.register(r"resources", views.ResourceViewSet, basename="resources")
 router.register(r"credentials", views.CredentialViewSet, basename="credentials")

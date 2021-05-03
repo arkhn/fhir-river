@@ -1,37 +1,26 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
 
-import requests
+from django.conf import settings
+
 from django_filters import rest_framework as django_filters
-from drf_spectacular.utils import extend_schema
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
 from pyrog.api.serializers.import_export import SourceSerializer
+from revproxy.views import ProxyView
 
 
-class StructureDefinitionViewSet(viewsets.GenericViewSet):
-    @extend_schema(operation_id="api_StructureDefinition_list")
-    def list(self, request):
-        token = request.session["oidc_access_token"]
-        headers = {"Authorization": f"Bearer {token}"}
-        url = f"{self.settings.FHIR_API_URL}/StructureDefinition"
-        response = requests.get(f"{url}", headers=headers, params=request.query_params)
-        return Response(response.json(), response.status_code)
+class FhirProxyView(ProxyView):
+    upstream = settings.FHIR_API_URL
 
-    def retrieve(self, request, pk=None):
-        token = request.session["oidc_access_token"]
-        headers = {"Authorization": f"Bearer {token}"}
-        url = f"{self.settings.FHIR_API_URL}/StructureDefinition/{pk}"
-        response = requests.get(f"{url}", headers=headers, params=request.query_params)
-        return Response(response.json(), response.status_code)
-
-    def create(self, request):
-        token = request.session["oidc_access_token"]
-        headers = {"Authorization": f"Bearer {token}"}
-        url = f"{self.settings.FHIR_API_URL}/StructureDefinition"
-        response = requests.post(f"{url}", headers=headers, data=request.data)
-        return Response(response.json(), response.status_code)
+    def get_request_headers(self):
+        try:
+            token = self.request.session["oidc_access_token"]
+        except KeyError:
+            return super().get_request_headers()
+        headers = super().get_request_headers()
+        headers["Authorization"] = f"Bearer {token}"
+        return headers
 
 
 class SourceViewSet(viewsets.ModelViewSet):

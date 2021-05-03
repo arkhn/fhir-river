@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django_filters",
     "drf_spectacular",
     "mozilla_django_oidc",
+    "revproxy",
     "sentry",
     # 1st parties
     "core",

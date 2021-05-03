@@ -4,50 +4,6 @@ info:
   version: 0.1.0
   description: Arkhn's River API
 paths:
-  /api/StructureDefinition/:
-    get:
-      operationId: api_StructureDefinition_list
-      description: ''
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
-    post:
-      operationId: api_StructureDefinition_create
-      description: ''
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '201':
-          description: No response body
-  /api/StructureDefinition/{id}/:
-    get:
-      operationId: api_StructureDefinition_retrieve
-      description: ''
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
   /api/attributes/:
     get:
       operationId: api_attributes_list
