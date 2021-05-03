@@ -22,6 +22,10 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += ["rest_framework.renderers.Browsab
 
 # DRF Spectacular settings
 
+if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True":
+    INSTALLED_APPS += ["drf_spectacular"]
+    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
 SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",

@@ -4,26 +4,6 @@ export const api = createApi({
   baseQuery: apiBaseQuery,
   tagTypes: [],
   endpoints: (build) => ({
-    apiStructureDefinitionList: build.query<
-      ApiStructureDefinitionListApiResponse,
-      ApiStructureDefinitionListApiArg
-    >({
-      query: () => ({ url: `/api/StructureDefinition/` }),
-    }),
-    apiStructureDefinitionCreate: build.mutation<
-      ApiStructureDefinitionCreateApiResponse,
-      ApiStructureDefinitionCreateApiArg
-    >({
-      query: () => ({ url: `/api/StructureDefinition/`, method: "POST" }),
-    }),
-    apiStructureDefinitionRetrieve: build.query<
-      ApiStructureDefinitionRetrieveApiResponse,
-      ApiStructureDefinitionRetrieveApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/StructureDefinition/${queryArg.id}/`,
-      }),
-    }),
     apiAttributesList: build.query<
       ApiAttributesListApiResponse,
       ApiAttributesListApiArg
@@ -661,14 +641,6 @@ export const api = createApi({
     }),
   }),
 });
-export type ApiStructureDefinitionListApiResponse = unknown;
-export type ApiStructureDefinitionListApiArg = {};
-export type ApiStructureDefinitionCreateApiResponse = unknown;
-export type ApiStructureDefinitionCreateApiArg = {};
-export type ApiStructureDefinitionRetrieveApiResponse = unknown;
-export type ApiStructureDefinitionRetrieveApiArg = {
-  id: string;
-};
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
 export type ApiAttributesListApiArg = {
   source?: string;
@@ -1257,9 +1229,6 @@ export type User = {
   username: string;
 };
 export const {
-  useApiStructureDefinitionListQuery,
-  useApiStructureDefinitionCreateMutation,
-  useApiStructureDefinitionRetrieveQuery,
   useApiAttributesListQuery,
   useApiAttributesCreateMutation,
   useApiAttributesRetrieveQuery,
