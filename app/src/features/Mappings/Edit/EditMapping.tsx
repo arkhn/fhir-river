@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Container,
@@ -60,6 +60,7 @@ const EditMapping = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
+  const [isEditLoading, setEditLoading] = useState(false);
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -93,6 +94,8 @@ const EditMapping = (): JSX.Element => {
     history.goBack();
   };
   const handleEditSubmit = async () => {
+    setEditLoading(true);
+
     if (resource && initialState) {
       const columnsWithoutJoin = columns.filter(
         (column) => !Boolean(column.join)
@@ -257,7 +260,6 @@ const EditMapping = (): JSX.Element => {
           columnsWithJoin,
           ({ id }) => id
         );
-        debugger;
         await Promise.all(
           deletedColumnsWithJoin.map((column) =>
             deleteColumn({ id: column.id }).unwrap()
@@ -278,6 +280,8 @@ const EditMapping = (): JSX.Element => {
         );
       } catch (error) {
         // Fix: Handle Column, Filter, Join creation/update/delete errors
+      } finally {
+        setEditLoading(false);
       }
 
       history.push(`/sources/${sourceId}/mappings/${mappingId}`);
@@ -310,8 +314,13 @@ const EditMapping = (): JSX.Element => {
               onClick={handleEditSubmit}
               variant="contained"
               color="primary"
+              disabled={isEditLoading}
             >
-              <Typography>{t("saveChanges")}</Typography>
+              {isEditLoading ? (
+                <CircularProgress />
+              ) : (
+                <Typography>{t("saveChanges")}</Typography>
+              )}
             </Button>
           </>
         ) : (
