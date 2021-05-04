@@ -99,17 +99,7 @@ const EditMapping = (): JSX.Element => {
         }).unwrap();
       }
       try {
-        // Columns without join creation/update/delete
-        const deletedColumnsWithoutJoin = differenceBy(
-          prevColumnsWithoutJoin,
-          columnsWithoutJoin,
-          ({ id }) => id
-        );
-        await Promise.all(
-          deletedColumnsWithoutJoin.map((column) =>
-            deleteColumn({ id: column.id }).unwrap()
-          )
-        );
+        // Columns without join creation/update
         const createdOrUpdatedColumns = await Promise.all(
           columnsWithoutJoin.map((column) => {
             const prevColumn = prevColumnsWithoutJoin.find(
@@ -133,17 +123,7 @@ const EditMapping = (): JSX.Element => {
           })
         );
 
-        // Filters creation/update/delete
-        const deletedFilters = differenceBy(
-          initialState.filters,
-          filters,
-          ({ id }) => id
-        );
-        await Promise.all(
-          deletedFilters.map((filter) =>
-            deleteFilter({ id: filter.id }).unwrap()
-          )
-        );
+        // Filters creation/update
         await Promise.all(
           filters.map((filter) => {
             const prevFilter = initialState.filters.find(
@@ -177,15 +157,7 @@ const EditMapping = (): JSX.Element => {
           })
         );
 
-        // Joins creation/update/delete
-        const deletedJoins = differenceBy(
-          initialState.joins,
-          joins,
-          ({ id }) => id
-        );
-        await Promise.all(
-          deletedJoins.map((join) => deleteJoin({ id: join.id }).unwrap())
-        );
+        // Joins creation/update
         const createdOrUpdatedJoins = await Promise.all(
           joins.map((join) => {
             const prevJoin = initialState.joins.find(
@@ -215,17 +187,7 @@ const EditMapping = (): JSX.Element => {
           })
         );
 
-        // Join columns creation/update/delete
-        const deletedColumnsWithJoin = differenceBy(
-          prevColumnsWithoutJoin,
-          columnsWithJoin,
-          ({ id }) => id
-        );
-        await Promise.all(
-          deletedColumnsWithJoin.map((column) =>
-            deleteColumn({ id: column.id }).unwrap()
-          )
-        );
+        // Join columns creation/update
         await Promise.all(
           columnsWithJoin.map((column) => {
             const prevColumn = prevColumnsWithJoin.find(
@@ -255,6 +217,47 @@ const EditMapping = (): JSX.Element => {
               return column;
             }
           })
+        );
+
+        // Delete order is inverted from creation order
+        const deletedColumnsWithoutJoin = differenceBy(
+          prevColumnsWithoutJoin,
+          columnsWithoutJoin,
+          ({ id }) => id
+        );
+        const deletedFilters = differenceBy(
+          initialState.filters,
+          filters,
+          ({ id }) => id
+        );
+        const deletedJoins = differenceBy(
+          initialState.joins,
+          joins,
+          ({ id }) => id
+        );
+        const deletedColumnsWithJoin = differenceBy(
+          prevColumnsWithJoin,
+          columnsWithJoin,
+          ({ id }) => id
+        );
+        debugger;
+        await Promise.all(
+          deletedColumnsWithJoin.map((column) =>
+            deleteColumn({ id: column.id }).unwrap()
+          )
+        );
+        await Promise.all(
+          deletedJoins.map((join) => deleteJoin({ id: join.id }).unwrap())
+        );
+        await Promise.all(
+          deletedFilters.map((filter) =>
+            deleteFilter({ id: filter.id }).unwrap()
+          )
+        );
+        await Promise.all(
+          deletedColumnsWithoutJoin.map((column) =>
+            deleteColumn({ id: column.id }).unwrap()
+          )
         );
       } catch (error) {
         // Fix: Handle Column, Filter, Join creation/update/delete errors
