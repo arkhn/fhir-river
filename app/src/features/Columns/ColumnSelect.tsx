@@ -90,7 +90,9 @@ const ColumnSelects = ({
   };
 
   const tableOptions = getTableOptions(credentialOwners);
-  const [columns, setColumns] = useState<string[]>(table ? schema[table] : []);
+  const [columns, setColumns] = useState<string[]>(
+    table && schema ? schema[table] : []
+  );
 
   const isTableSelected = !!table;
   const isColumnSelected = !!column;
@@ -126,12 +128,14 @@ const ColumnSelects = ({
   };
 
   useEffect(() => {
-    if (schema && hasTableChanged && table) {
-      onChange &&
-        onChange({
-          ...pendingColumn,
-          column: undefined,
-        });
+    if (schema && table) {
+      if (hasTableChanged) {
+        onChange &&
+          onChange({
+            ...pendingColumn,
+            column: undefined,
+          });
+      }
       setColumns(schema[table]);
     }
   }, [schema, hasTableChanged, pendingColumn, table, onChange]);

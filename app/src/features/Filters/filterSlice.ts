@@ -10,6 +10,7 @@ const filterSlice = createSlice({
   initialState: filterAdapter.getInitialState(),
   reducers: {
     filterAdded: filterAdapter.addOne,
+    filtersAdded: filterAdapter.addMany,
     filterUpdated: filterAdapter.updateOne,
     filterRemoved: filterAdapter.removeOne,
     filtersRemoved: filterAdapter.removeAll,
@@ -18,6 +19,7 @@ const filterSlice = createSlice({
 
 export const {
   filterAdded,
+  filtersAdded,
   filterUpdated,
   filterRemoved,
   filtersRemoved,

@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import CreateMapping from "features/Mappings/Create/CreateMapping";
+import EditMapping from "features/Mappings/Edit/EditMapping";
 
 import AppBar from "./AppBar";
 import Mapping from "./Mapping";
@@ -35,6 +36,9 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId/mappings/:mappingId">
             <Mapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
+            <EditMapping />
           </Route>
           <Route>
             <PageNotFound />

@@ -47,6 +47,15 @@ export const api = generatedApi
       apiColumnsCreate: {
         invalidatesTags: invalidatesList("Columns"),
       },
+      apiColumnsList: {
+        providesTags: providesList("Columns"),
+      },
+      apiColumnsUpdate: {
+        invalidatesTags: invalidatesOne("Columns"),
+      },
+      apiColumnsDestroy: {
+        invalidatesTags: invalidatesOne("Columns"),
+      },
       /**
        *  Sources
        */
@@ -122,11 +131,26 @@ export const api = generatedApi
       apiFiltersCreate: {
         invalidatesTags: invalidatesList("Filters"),
       },
+      apiFiltersUpdate: {
+        invalidatesTags: invalidatesOne("Filters"),
+      },
+      apiFiltersDestroy: {
+        invalidatesTags: invalidatesOne("Filters"),
+      },
       /**
        * Joins
        */
       apiJoinsCreate: {
         invalidatesTags: invalidatesList("Joins"),
+      },
+      apiJoinsList: {
+        providesTags: providesList("Joins"),
+      },
+      apiJoinsUpdate: {
+        invalidatesTags: invalidatesOne("Joins"),
+      },
+      apiJoinsDestroy: {
+        invalidatesTags: invalidatesOne("Joins"),
       },
     },
   });
@@ -137,6 +161,9 @@ export const {
   useOidcLogoutMutation,
   //Columns
   useApiColumnsCreateMutation,
+  useApiColumnsListQuery,
+  useApiColumnsUpdateMutation,
+  useApiColumnsDestroyMutation,
   // Sources
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
@@ -162,6 +189,11 @@ export const {
   // Filters
   useApiFiltersListQuery,
   useApiFiltersCreateMutation,
+  useApiFiltersUpdateMutation,
+  useApiFiltersDestroyMutation,
   // Joins
   useApiJoinsCreateMutation,
+  useApiJoinsListQuery,
+  useApiJoinsUpdateMutation,
+  useApiJoinsDestroyMutation,
 } = api;
