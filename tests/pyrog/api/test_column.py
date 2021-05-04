@@ -76,3 +76,16 @@ def test_delete_column(api_client, column):
     response = api_client.delete(url)
 
     assert response.status_code == 204
+
+
+def test_filter_columns_by_join(api_client, join_factory, column_factory):
+    url = reverse("columns-list")
+
+    first_join, second_join = join_factory.create_batch(2)
+    first_join_columns = column_factory.create_batch(2, join=first_join)
+    column_factory.create_batch(2, join=second_join)
+
+    response = api_client.get(url, {"join": first_join.id})
+
+    assert response.status_code == 200
+    assert {column_data["id"] for column_data in response.json()} == {column.id for column in first_join_columns}
