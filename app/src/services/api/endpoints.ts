@@ -65,7 +65,6 @@ export const api = generatedApi
         }),
       }),
     }),
-    overrideExisting: true,
   })
   .enhanceEndpoints({
     addTagTypes: tagTypes,
