@@ -64,11 +64,15 @@ class InputViewSet(viewsets.ModelViewSet):
 class ColumnViewSet(viewsets.ModelViewSet):
     queryset = models.Column.objects.all()
     serializer_class = basic_serializers.ColumnSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_fields = ["join"]
 
 
 class JoinViewSet(viewsets.ModelViewSet):
     queryset = models.Join.objects.all()
     serializer_class = basic_serializers.JoinSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_fields = ["column"]
 
 
 class ConditionViewSet(viewsets.ModelViewSet):
