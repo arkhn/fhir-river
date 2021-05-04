@@ -217,6 +217,18 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
+# Sessions
+# https://docs.djangoproject.com/en/3.2/ref/settings/#sessions
+
+# Namespace cookie names to prevent clashes when working behind a proxy which
+# serves multiple services.
+SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "pyrog_sessionid")
+
+# CSRF
+
+CSRF_COOKIE_NAME = os.environ.get("CSRF_COOKIE_NAME", "pyrog_csrftoken")
+
+
 # Redis
 
 REDIS_COUNTER_HOST = os.environ.get("REDIS_COUNTER_HOST", "redis")
