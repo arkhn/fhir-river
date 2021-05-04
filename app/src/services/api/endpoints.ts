@@ -10,10 +10,7 @@ import {
   invalidatesOne,
   providesFhirBundle,
 } from "./cache";
-import {
-  api as generatedApi,
-  ApiStructureDefinitionRetrieveApiArg,
-} from "./generated/api.generated";
+import { api as generatedApi } from "./generated/api.generated";
 
 const tagTypes = [
   "Users",
@@ -38,15 +35,22 @@ export const api = generatedApi
           invalidatesTags: ["Users"],
         }),
       }),
-      apiStructureDefinitionList: build.query<
-        IBundle,
-        { params: Record<string, string> }
+      apiStructureDefinitionList: build.query<IBundle, { params: string }>({
+        query: (queryArg) => ({
+          url: `/api/StructureDefinition?${queryArg.params}`,
+          providesTags: providesFhirBundle("StructureDefinition"),
+        }),
+      }),
+      apiStructureDefinitionRetrieve: build.query<
+        IStructureDefinition,
+        {
+          id: string;
+          params: string;
+        }
       >({
         query: (queryArg) => ({
-          url: `/api/StructureDefinition?${new URLSearchParams(
-            queryArg.params
-          ).toString()}`,
-          providesTags: providesFhirBundle("StructureDefinition"),
+          url: `/api/StructureDefinition/${queryArg.id}?${queryArg.params}`,
+          providesTags: providesOne("StructureDefinition"),
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
@@ -58,19 +62,6 @@ export const api = generatedApi
           method: "POST",
           body: queryArg,
           invalidatesTags: invalidatesList("StructureDefinition"),
-        }),
-      }),
-      apiStructureDefinitionRetrieve: build.query<
-        IStructureDefinition,
-        ApiStructureDefinitionRetrieveApiArg & {
-          params: Record<string, string>;
-        }
-      >({
-        query: (queryArg) => ({
-          url: `/api/StructureDefinition/${queryArg.id}?${new URLSearchParams(
-            queryArg.params
-          ).toString()}`,
-          providesTags: providesOne("StructureDefinition"),
         }),
       }),
     }),
