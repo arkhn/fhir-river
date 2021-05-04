@@ -129,7 +129,9 @@ const ColumnSelects = ({
 
   useEffect(() => {
     if (schema && table) {
-      if (hasTableChanged) {
+      const isColumnInTable =
+        pendingColumn.column && schema[table]?.includes(pendingColumn.column);
+      if (hasTableChanged && !isColumnInTable) {
         onChange &&
           onChange({
             ...pendingColumn,
