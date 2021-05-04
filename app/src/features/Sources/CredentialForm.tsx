@@ -8,8 +8,8 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
-import { TFunction } from "i18next";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import type { TFunction } from "i18next";
 import { head, isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 

@@ -7,6 +7,7 @@ cx-Oracle==7.1.2
 Django==3.1.8
 django-cors-headers==3.7.0
 django-filter==2.4.0
+django-revproxy==0.10.0
 djangorestframework==3.12.4
 dotty-dict==1.2.1
 fhirstore @ git+https://github.com/arkhn/pyfhirstore@0.5.0#egg=fhirstore

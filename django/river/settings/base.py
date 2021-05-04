@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "mozilla_django_oidc",
+    "revproxy",
     "sentry",
     # 1st parties
     "core",

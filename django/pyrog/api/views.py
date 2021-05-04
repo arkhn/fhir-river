@@ -1,10 +1,26 @@
 from rest_framework import viewsets
 
+from django.conf import settings
+
 from django_filters import rest_framework as django_filters
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
 from pyrog.api.serializers.import_export import SourceSerializer
+from revproxy.views import ProxyView
+
+
+class FhirProxyView(ProxyView):
+    upstream = settings.FHIR_API_URL
+
+    def get_request_headers(self):
+        try:
+            token = self.request.session["oidc_access_token"]
+        except KeyError:
+            return super().get_request_headers()
+        headers = super().get_request_headers()
+        headers["Authorization"] = f"Bearer {token}"
+        return headers
 
 
 class SourceViewSet(viewsets.ModelViewSet):
@@ -41,7 +57,7 @@ class CredentialViewSet(viewsets.ModelViewSet):
     queryset = models.Credential.objects.all()
     serializer_class = basic_serializers.CredentialSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = filters.CredentialFilterSet
+    filterset_class = filters.CredentialFilterSet
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
@@ -65,14 +81,14 @@ class ColumnViewSet(viewsets.ModelViewSet):
     queryset = models.Column.objects.all()
     serializer_class = basic_serializers.ColumnSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = filters.ColumnFilterSet
+    filterset_class = filters.ColumnFilterSet
 
 
 class JoinViewSet(viewsets.ModelViewSet):
     queryset = models.Join.objects.all()
     serializer_class = basic_serializers.JoinSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = filters.JoinFilterSet
+    filterset_class = filters.JoinFilterSet
 
 
 class ConditionViewSet(viewsets.ModelViewSet):
@@ -84,11 +100,11 @@ class FilterViewSet(viewsets.ModelViewSet):
     queryset = models.Filter.objects.all()
     serializer_class = basic_serializers.FilterSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = filters.FilterFilterSet
+    filterset_class = filters.FilterFilterSet
 
 
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = models.Owner.objects.all()
     serializer_class = basic_serializers.OwnerSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = filters.OwnerFilterSet
+    filterset_class = filters.OwnerFilterSet

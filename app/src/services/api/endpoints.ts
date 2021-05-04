@@ -1,8 +1,14 @@
 import {
+  IBundle,
+  IStructureDefinition,
+} from "@ahryman40k/ts-fhir-types/lib/R4";
+
+import {
   providesList,
   providesOne,
   invalidatesList,
   invalidatesOne,
+  providesFhirBundle,
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
@@ -16,6 +22,7 @@ const tagTypes = [
   "Credentials",
   "Filters",
   "Joins",
+  "StructureDefinition",
 ];
 
 export const api = generatedApi
@@ -25,6 +32,36 @@ export const api = generatedApi
         query: () => ({
           url: `/oidc/logout/`,
           method: "POST",
+          invalidatesTags: ["Users"],
+        }),
+      }),
+      apiStructureDefinitionList: build.query<IBundle, { params: string }>({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
+          providesTags: providesFhirBundle("StructureDefinition"),
+        }),
+      }),
+      apiStructureDefinitionRetrieve: build.query<
+        IStructureDefinition,
+        {
+          id: string;
+          params: string;
+        }
+      >({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
+          providesTags: providesOne("StructureDefinition"),
+        }),
+      }),
+      apiStructureDefinitionCreate: build.mutation<
+        IStructureDefinition,
+        IStructureDefinition
+      >({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition`,
+          method: "POST",
+          body: queryArg,
+          invalidatesTags: invalidatesList("StructureDefinition"),
         }),
       }),
     }),
@@ -37,9 +74,6 @@ export const api = generatedApi
        */
       apiUserRetrieve: {
         providesTags: ["Users"],
-      },
-      oidcLogout: {
-        invalidatesTags: ["Users"],
       },
       /**
        * Columns
@@ -135,6 +169,10 @@ export const {
   // User
   useApiUserRetrieveQuery,
   useOidcLogoutMutation,
+  // StructureDefinition
+  useApiStructureDefinitionListQuery,
+  useApiStructureDefinitionCreateMutation,
+  useApiStructureDefinitionRetrieveQuery,
   //Columns
   useApiColumnsCreateMutation,
   // Sources

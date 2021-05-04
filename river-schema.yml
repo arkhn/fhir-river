@@ -216,6 +216,11 @@ paths:
     get:
       operationId: api_columns_list
       description: ''
+      parameters:
+      - in: query
+        name: join
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1193,6 +1198,11 @@ paths:
     get:
       operationId: api_joins_list
       description: ''
+      parameters:
+      - in: query
+        name: column
+        schema:
+          type: string
       tags:
       - api
       security:
