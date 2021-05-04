@@ -83,7 +83,10 @@ export const api = createApi({
       ApiColumnsListApiResponse,
       ApiColumnsListApiArg
     >({
-      query: () => ({ url: `/api/columns/` }),
+      query: (queryArg) => ({
+        url: `/api/columns/`,
+        params: { join: queryArg.join },
+      }),
     }),
     apiColumnsCreate: build.mutation<
       ApiColumnsCreateApiResponse,
@@ -395,7 +398,10 @@ export const api = createApi({
       }),
     }),
     apiJoinsList: build.query<ApiJoinsListApiResponse, ApiJoinsListApiArg>({
-      query: () => ({ url: `/api/joins/` }),
+      query: (queryArg) => ({
+        url: `/api/joins/`,
+        params: { column: queryArg.column },
+      }),
     }),
     apiJoinsCreate: build.mutation<
       ApiJoinsCreateApiResponse,
@@ -680,7 +686,9 @@ export type ApiBatchDestroyApiArg = {
   id: string;
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
-export type ApiColumnsListApiArg = {};
+export type ApiColumnsListApiArg = {
+  join?: string;
+};
 export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
 export type ApiColumnsCreateApiArg = {
   columnRequest: ColumnRequest;
@@ -854,7 +862,9 @@ export type ApiInputsDestroyApiArg = {
   id: string;
 };
 export type ApiJoinsListApiResponse = /** status 200  */ Join[];
-export type ApiJoinsListApiArg = {};
+export type ApiJoinsListApiArg = {
+  column?: string;
+};
 export type ApiJoinsCreateApiResponse = /** status 201  */ Join;
 export type ApiJoinsCreateApiArg = {
   joinRequest: JoinRequest;
