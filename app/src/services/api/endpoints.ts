@@ -37,7 +37,7 @@ export const api = generatedApi
       }),
       apiStructureDefinitionList: build.query<IBundle, { params: string }>({
         query: (queryArg) => ({
-          url: `/api/StructureDefinition?${queryArg.params}`,
+          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
           providesTags: providesFhirBundle("StructureDefinition"),
         }),
       }),
@@ -49,7 +49,7 @@ export const api = generatedApi
         }
       >({
         query: (queryArg) => ({
-          url: `/api/StructureDefinition/${queryArg.id}?${queryArg.params}`,
+          url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
           providesTags: providesOne("StructureDefinition"),
         }),
       }),
@@ -58,7 +58,7 @@ export const api = generatedApi
         IStructureDefinition
       >({
         query: (queryArg) => ({
-          url: `/api/StructureDefinition`,
+          url: `/api/fhir/StructureDefinition`,
           method: "POST",
           body: queryArg,
           invalidatesTags: invalidatesList("StructureDefinition"),
