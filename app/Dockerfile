@@ -10,5 +10,3 @@ RUN yarn build
 FROM alpine:3.13
 
 COPY --from=build-image /app/build /app
-
-CMD ls /app
