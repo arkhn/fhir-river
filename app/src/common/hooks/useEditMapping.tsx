@@ -63,29 +63,29 @@ const useEditMapping = (): {
   }, [dispatch]);
 
   useEffect(() => {
-    if (mapping) {
+    if (mapping && !isMappingInit) {
       dispatch(resourceAdded(mapping));
       setMappingInit(true);
     }
-  }, [dispatch, mapping]);
+  }, [dispatch, mapping, isMappingInit]);
   useEffect(() => {
-    if (mappingFilters) {
+    if (mappingFilters && !isFiltersInit) {
       dispatch(filtersAdded(mappingFilters));
       setFiltersInit(true);
     }
-  }, [dispatch, mappingFilters]);
+  }, [dispatch, mappingFilters, isFiltersInit]);
   useEffect(() => {
-    if (joins) {
+    if (joins && !isJoinsInit) {
       dispatch(joinsAdded(joins));
       setJoinsInit(true);
     }
-  }, [dispatch, joins]);
+  }, [dispatch, joins, isJoinsInit]);
   useEffect(() => {
-    if (columns) {
+    if (columns && !isColumnsInit) {
       dispatch(columnsAdded(columns));
       setColumnsInit(true);
     }
-  }, [dispatch, columns]);
+  }, [dispatch, columns, isColumnsInit]);
 
   useEffect(() => {
     return resetEditMapping;
