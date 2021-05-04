@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 
 import {
@@ -8,8 +7,11 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
+import BackIcon from "@material-ui/icons/ArrowBackIos";
+import clsx from "clsx";
 import differenceBy from "lodash/differenceBy";
 import isEqual from "lodash/isEqual";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { useAppSelector } from "app/store";
@@ -41,9 +43,21 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     paddingBlock: theme.spacing(4),
   },
+  button: {
+    textTransform: "none",
+  },
+  previousButton: {
+    margin: theme.spacing(2),
+    color: theme.palette.text.secondary,
+    "&:hover": {
+      backgroundColor: "inherit",
+      color: theme.palette.text.primary,
+    },
+  },
 }));
 
 const EditMapping = (): JSX.Element => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
   const { sourceId, mappingId } = useParams<{
@@ -75,6 +89,9 @@ const EditMapping = (): JSX.Element => {
   const [createJoin] = useApiJoinsCreateMutation();
   const [updateJoin] = useApiJoinsUpdateMutation();
 
+  const handleCancelClick = () => {
+    history.goBack();
+  };
   const handleEditSubmit = async () => {
     if (resource && initialState) {
       const columnsWithoutJoin = columns.filter(
@@ -269,9 +286,14 @@ const EditMapping = (): JSX.Element => {
 
   return (
     <>
-      <div>
-        <Button>Cancel</Button>
-      </div>
+      <Button
+        className={clsx(classes.button, classes.previousButton)}
+        startIcon={<BackIcon />}
+        onClick={handleCancelClick}
+        disableRipple
+      >
+        <Typography>{t("cancel")}</Typography>
+      </Button>
       <Container maxWidth="lg">
         {isLoading ? (
           <CircularProgress />
@@ -283,7 +305,14 @@ const EditMapping = (): JSX.Element => {
             <div className={classes.contentContainer}>
               <TableStep mapping={mapping} />
             </div>
-            <Button onClick={handleEditSubmit}>Submit</Button>
+            <Button
+              className={classes.button}
+              onClick={handleEditSubmit}
+              variant="contained"
+              color="primary"
+            >
+              <Typography>{t("saveChanges")}</Typography>
+            </Button>
           </>
         ) : (
           <></>
