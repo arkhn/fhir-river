@@ -5,12 +5,14 @@ import { OIDC_LOGIN_URL } from "services/oidc/urls";
 
 import { API_URL } from "./urls";
 
+const { REACT_APP_CSRF_COOKIE_NAME: CSRF_COOKIE_NAME } = process.env;
+
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
   credentials: "include",
   redirect: "manual",
   prepareHeaders: (headers) => {
-    const token = Cookies.get("csrftoken");
+    const token = CSRF_COOKIE_NAME && Cookies.get(CSRF_COOKIE_NAME);
     if (token) {
       headers.set("X-CSRFToken", token);
     }
