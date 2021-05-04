@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "app/store";
 import { Resource } from "services/api/generated/api.generated";
 
-import { resourceUpdated } from "./resourceSlice";
+import { resourceUpdated } from "../resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   inputContainer: {

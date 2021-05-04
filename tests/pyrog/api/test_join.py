@@ -46,3 +46,16 @@ def test_delete_join(api_client, join):
     response = api_client.delete(url)
 
     assert response.status_code == 204
+
+
+def test_filter_joins_by_column(api_client, join_factory, column_factory):
+    url = reverse("joins-list")
+
+    first_column, second_column = column_factory.create_batch(2)
+    first_column_joins = join_factory.create_batch(3, column=first_column)
+    join_factory.create_batch(2, column=second_column)
+
+    response = api_client.get(url, {"column": first_column.id})
+
+    assert response.status_code == 200
+    assert {join_data["id"] for join_data in response.json()} == {join.id for join in first_column_joins}

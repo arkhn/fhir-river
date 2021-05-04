@@ -57,7 +57,7 @@ class CredentialViewSet(viewsets.ModelViewSet):
     queryset = models.Credential.objects.all()
     serializer_class = basic_serializers.CredentialSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = ["source"]
+    filterset_fields = filters.CredentialFilterSet
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
@@ -80,11 +80,15 @@ class InputViewSet(viewsets.ModelViewSet):
 class ColumnViewSet(viewsets.ModelViewSet):
     queryset = models.Column.objects.all()
     serializer_class = basic_serializers.ColumnSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_fields = filters.ColumnFilterSet
 
 
 class JoinViewSet(viewsets.ModelViewSet):
     queryset = models.Join.objects.all()
     serializer_class = basic_serializers.JoinSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_fields = filters.JoinFilterSet
 
 
 class ConditionViewSet(viewsets.ModelViewSet):
@@ -96,11 +100,11 @@ class FilterViewSet(viewsets.ModelViewSet):
     queryset = models.Filter.objects.all()
     serializer_class = basic_serializers.FilterSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = ["resource"]
+    filterset_fields = filters.FilterFilterSet
 
 
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = models.Owner.objects.all()
     serializer_class = basic_serializers.OwnerSerializer
     filter_backends = [django_filters.DjangoFilterBackend]
-    filterset_fields = ["credential"]
+    filterset_fields = filters.OwnerFilterSet

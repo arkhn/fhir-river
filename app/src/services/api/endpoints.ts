@@ -105,8 +105,17 @@ export const api = generatedApi
       apiResourcesList: {
         providesTags: providesList("Resources"),
       },
+      apiResourcesRetrieve: {
+        providesTags: providesOne("Resources"),
+      },
       apiResourcesCreate: {
         invalidatesTags: invalidatesList("Resources"),
+      },
+      apiResourcesUpdate: {
+        invalidatesTags: invalidatesOne("Resources"),
+      },
+      apiResourcesDestroy: {
+        invalidatesTags: invalidatesOne("Resources"),
       },
       /**
        * Attributes
@@ -175,6 +184,9 @@ export const {
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
+  useApiResourcesRetrieveQuery,
+  useApiResourcesUpdateMutation,
+  useApiResourcesDestroyMutation,
   // Attributes
   useApiAttributesListQuery,
   // Owners
