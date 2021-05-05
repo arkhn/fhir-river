@@ -111,7 +111,7 @@ In the `process_events` function, each event is processed individually (transfor
 
 ## FHIR Loader
 
-The `loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB.
+The `loader` container includes a consumer that reads the transformed events from Kafka and load it to the posgres db of HAPI FHIR.
 
 ## Kafka events
 
