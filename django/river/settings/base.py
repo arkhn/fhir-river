@@ -29,6 +29,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 #   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
 DEBUG = os.environ.get("DEBUG", False) == "True"
 
+# https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-host
+# Behind a proxy, use the actual host as defined by the proxy. This is needed to
+# properly build urls.
+USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", False)
+
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
 ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", False)
