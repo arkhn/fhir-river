@@ -7,7 +7,6 @@ set -e
 [[ "${DEBUG}" ]] && set -x
 
 export DJANGO_SETTINGS_MODULE=river.settings."${ENV:-prod}"
-export STATIC_ROOT="${FILES_ROOT}/static"
 
 if [[ "$#" -gt 0 ]]; then
   python django/manage.py "$@"
