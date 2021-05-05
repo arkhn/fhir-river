@@ -68,9 +68,10 @@ COPY --chown=uwsgi:uwsgi tests /srv/tests
 COPY --chown=uwsgi:uwsgi tox.ini /srv/tox.ini
 RUN chmod +x docker-entrypoint.sh
 
-ENV FILES_ROOT /var/www
-RUN mkdir -p "${FILES_ROOT}"
-RUN chown uwsgi:uwsgi "${FILES_ROOT}"
+RUN mkdir -p /var/www/static
+RUN chown uwsgi:uwsgi /var/www/static
+
+VOLUME /var/www/static
 
 USER uwsgi
 EXPOSE 8000
