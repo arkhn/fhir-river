@@ -4,6 +4,9 @@ from datetime import datetime
 
 from common.analyzer.attribute import Attribute
 
+ARKHN_SOURCE_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/source"
+ARKHN_RESOURCE_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/resource"
+
 
 def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)
@@ -16,11 +19,9 @@ def build_metadata(analysis):
     metadata["lastUpdated"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # add custom tags
-    # TODO systems here are hardcoded from fhirstore.
-    # Maybe the loader should tag the items?
     metadata["tag"] = [
-        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": analysis.source_id},
-        {"system": "http://terminology.arkhn.org/CodeSystem/resource", "code": analysis.resource_id},
+        {"system": ARKHN_SOURCE_CODE_SYSTEM, "code": analysis.source_id},
+        {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": analysis.resource_id},
     ]
 
     # in case the definition is a profile, add the profile to the resource metadata

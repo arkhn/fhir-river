@@ -24,7 +24,9 @@ class TopicleanerHandler(Handler):
             decode_responses=True,
         )
         self.mappings_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
         )
 
     def is_end_of_batch(self, batch_id: str) -> bool:
@@ -51,7 +53,12 @@ class TopicleanerHandler(Handler):
     def delete_batch(self, batch_id: str) -> None:
         # Delete kafka topics
         self.kafka_admin.delete_topics(
-            [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+            [
+                f"batch.{batch_id}",
+                f"extract.{batch_id}",
+                f"transform.{batch_id}",
+                f"load.{batch_id}",
+            ]
         )
 
         # Delete redis keys

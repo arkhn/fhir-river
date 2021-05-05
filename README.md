@@ -113,17 +113,6 @@ In the `process_events` function, each event is processed individually (transfor
 
 The `loader` container includes a consumer that reads the transformed events from Kafka and load it to the MongoDB.
 
-## Check the mongo database
-
-After you have used fhir-river (via the Extractor or Kafka Connect), you can check mongo to see if the data was correctly loaded (_make sure the port is correct_):
-
-```
-mongo --port 27017 --host localhost fhirstore
-> db.Patient.find({})
-```
-
-Or you can also use a GUI as MongoDB Compass to do so.
-
 ## Kafka events
 
 There are 4 types of events
@@ -131,7 +120,7 @@ There are 4 types of events
 - `batch` is produced by the `api` service when a batch is triggered (`POST /batch`)
 - `extract` is produced by the `extractor` service and contains the data for a single row (as a panda dataframe)
 - `transform` is produced by the `transformer` service and contains the fhir object that has been transformed according to the mapping rules
-- `load` is produced by the `loader` service once a fhir object has been inserted or updated in the target database (fhirstore)
+- `load` is produced by the `loader` service once a fhir object has been inserted or updated in the target database (hapi-fhir)
 
 ## Kafka Connect
 
