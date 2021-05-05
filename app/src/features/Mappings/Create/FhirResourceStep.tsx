@@ -18,6 +18,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
+import { useApiStructureDefinitionListQuery } from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 
 import { resourceUpdated } from "../resourceSlice";
@@ -62,6 +63,10 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [searchValue, setSearchValue] = useState("");
+  const { data } = useApiStructureDefinitionListQuery({
+    params: "type=resource&_count=10000",
+  });
+  console.log(data);
 
   const isDefinitionIdSelected = (definitionId: string) =>
     definitionId === mapping.definition_id;
