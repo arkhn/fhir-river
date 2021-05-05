@@ -12,7 +12,7 @@ const baseQuery = fetchBaseQuery({
   credentials: "include",
   redirect: "manual",
   prepareHeaders: (headers) => {
-    const token = CSRF_COOKIE_NAME && Cookies.get(CSRF_COOKIE_NAME);
+    const token = Cookies.get(CSRF_COOKIE_NAME || "pyrog_csrftoken");
     if (token) {
       headers.set("X-CSRFToken", token);
     }
