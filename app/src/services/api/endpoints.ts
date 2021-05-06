@@ -1,6 +1,7 @@
 import {
   IBundle,
   IStructureDefinition,
+  IValueSet,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
 
 import {
@@ -23,6 +24,7 @@ const tagTypes = [
   "Filters",
   "Joins",
   "StructureDefinition",
+  "ValueSets",
 ];
 
 export const api = generatedApi
@@ -35,11 +37,26 @@ export const api = generatedApi
           invalidatesTags: ["Users"],
         }),
       }),
-      apiStructureDefinitionList: build.query<IBundle, { params: string }>({
+      apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
+          url: `/api/fhir/ValueSet/${queryArg.id}/$expand?`,
+          providesTags: providesFhirBundle("ValueSets"),
+        }),
+      }),
+      apiStructureDefinitionList: build.query<
+        IStructureDefinition[],
+        { id: string; params?: string }
+      >({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition/${queryArg.id}?${
+            queryArg.params || ""
+          }`,
           providesTags: providesFhirBundle("StructureDefinition"),
         }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(
+            ({ resource }) => resource as IStructureDefinition
+          ) || [],
       }),
       apiStructureDefinitionRetrieve: build.query<
         IStructureDefinition,
@@ -202,4 +219,6 @@ export const {
   useApiFiltersCreateMutation,
   // Joins
   useApiJoinsCreateMutation,
+  // ValueSets
+  useApiValueSetsRetrieveQuery,
 } = api;
