@@ -111,7 +111,7 @@ services:
       - FHIRSTORE_USER=arkhn
       - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
       - PYROG_API_URL=http://pyrog-server:1000
-      - FHIR_API_URL=http://hapi.fhir.org/baseR4
+      - FHIR_API_URL=https://dev.arkhn.com/hapi/fhir
       - REDIS_MAPPINGS_HOST=river-redis
       - REDIS_MAPPINGS_PORT=6379
       - REDIS_MAPPINGS_DB=1
