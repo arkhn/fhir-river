@@ -40,7 +40,6 @@ export const api = generatedApi
       apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
         query: (queryArg) => ({
           url: `/api/fhir/ValueSet/${queryArg.id}/$expand?`,
-          providesTags: providesFhirBundle("ValueSets"),
         }),
       }),
       apiStructureDefinitionList: build.query<
@@ -178,6 +177,12 @@ export const api = generatedApi
        */
       apiJoinsCreate: {
         invalidatesTags: invalidatesList("Joins"),
+      },
+      /**
+       * ValueSets
+       */
+      apiValueSetsRetrieve: {
+        providesTags: providesOne("ValueSets"),
       },
     },
   });
