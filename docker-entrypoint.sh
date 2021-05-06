@@ -11,10 +11,10 @@ export DJANGO_SETTINGS_MODULE=river.settings."${ENV:-prod}"
 if [[ "$#" -gt 0 ]]; then
   python django/manage.py "$@"
 else
-  python django/manage.py migrate
   # Skip static files collection (not used)
   # python django/manage.py collectstatic --no-input
   if [[ "${ENV}" == "dev" ]]; then
+    python django/manage.py migrate
     python django/manage.py createsuperuser --no-input || echo "Skipping."
     python django/manage.py runserver 0.0.0.0:8000
   else
