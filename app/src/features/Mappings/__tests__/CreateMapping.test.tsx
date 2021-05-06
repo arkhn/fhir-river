@@ -1,5 +1,6 @@
 import React from "react";
 
+import { IValueSet } from "@ahryman40k/ts-fhir-types/lib/R4";
 import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest, RestRequest } from "msw";
 import { setupServer } from "msw/node";
@@ -39,6 +40,16 @@ const handlers = [
     (_, res: ResponseComposition<ApiOwnersListApiResponse>, ctx) =>
       res(
         ctx.json<ApiOwnersListApiResponse>([owner])
+      )
+  ),
+  rest.get(
+    "http://example.com/api/fhir/ValueSet/resource-types/*",
+    (_, res: ResponseComposition<IValueSet>, ctx) =>
+      res(
+        ctx.json<IValueSet>({
+          resourceType: "ValueSet",
+          expansion: { contains: [{ code: "Account" }] },
+        })
       )
   ),
 ];
