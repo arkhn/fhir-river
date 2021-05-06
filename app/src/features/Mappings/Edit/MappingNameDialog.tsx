@@ -12,7 +12,7 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import clsx from "clsx";
 import { head } from "lodash";
 import { useTranslation } from "react-i18next";
