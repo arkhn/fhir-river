@@ -32,7 +32,6 @@ export const api = generatedApi
         query: () => ({
           url: `/oidc/logout/`,
           method: "POST",
-          invalidatesTags: ["Users"],
         }),
       }),
       apiStructureDefinitionList: build.query<IBundle, { params: string }>({
@@ -69,6 +68,9 @@ export const api = generatedApi
   .enhanceEndpoints({
     addTagTypes: tagTypes,
     endpoints: {
+      oidcLogout: {
+        invalidatesTags: ["Users"],
+      },
       /**
        * User
        */
