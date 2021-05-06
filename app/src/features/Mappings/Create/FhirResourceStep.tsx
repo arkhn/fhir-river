@@ -18,19 +18,14 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import { useApiStructureDefinitionListQuery } from "services/api/endpoints";
+import expandedResourceTypes from "assets/data/expanded_resource-types.json";
 import { Resource } from "services/api/generated/api.generated";
 
 import { resourceUpdated } from "../resourceSlice";
 
-//Mock
-const FhirResources = [
-  "Account",
-  "ActivityDefinition",
-  "AdverseEvent",
-  "AllergyIntolerance",
-  "Appointment",
-];
+const RESOURCE_TYPES_CODES = expandedResourceTypes.expansion.contains.map(
+  ({ code }) => code
+);
 
 const useStyles = makeStyles((theme) => ({
   searchBarContainer: {
@@ -63,15 +58,11 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [searchValue, setSearchValue] = useState("");
-  const { data } = useApiStructureDefinitionListQuery({
-    params: "type=resource&_count=10000",
-  });
-  console.log(data);
 
-  const isDefinitionIdSelected = (definitionId: string) =>
-    definitionId === mapping.definition_id;
+  const isDefinitionIdSelected = (definitionId?: string) =>
+    definitionId && definitionId === mapping.definition_id;
 
-  const handleClickFhirResource = (definitionId: string) => () => {
+  const handleClickFhirResource = (definitionId?: string) => () => {
     if (mapping.id)
       dispatch(
         resourceUpdated({
@@ -102,27 +93,29 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
         />
       </div>
       <List>
-        {FhirResources.filter((defId) =>
-          defId.toLowerCase().includes(searchValue.toLowerCase())
-        ).map((defId) => (
-          <ListItem
-            button
-            key={defId}
-            alignItems="flex-start"
-            className={classes.listItem}
-            onClick={handleClickFhirResource(defId)}
-          >
-            <ListItemIcon>
-              <Icon
-                icon={IconNames.FLAME}
-                className={clsx(classes.icon, classes.flameIcon)}
-                iconSize={20}
-              />
-            </ListItemIcon>
-            <ListItemText primary={defId} />
-            {isDefinitionIdSelected(defId) && <CheckIcon color="primary" />}
-          </ListItem>
-        ))}
+        {RESOURCE_TYPES_CODES.filter((code) =>
+          code.toLowerCase().includes(searchValue.toLowerCase())
+        ).map((code) => {
+          return (
+            <ListItem
+              button
+              key={code}
+              alignItems="flex-start"
+              className={classes.listItem}
+              onClick={handleClickFhirResource(code)}
+            >
+              <ListItemIcon>
+                <Icon
+                  icon={IconNames.FLAME}
+                  className={clsx(classes.icon, classes.flameIcon)}
+                  iconSize={20}
+                />
+              </ListItemIcon>
+              <ListItemText primary={code} />
+              {isDefinitionIdSelected(code) && <CheckIcon color="primary" />}
+            </ListItem>
+          );
+        })}
       </List>
     </Container>
   );
