@@ -11,7 +11,7 @@ import { v4 as uuid } from "uuid";
 
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 
-import { fhirResource } from "./fhirResource";
+import { fhirResourcePat as fhirResource } from "./fhirResource";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
