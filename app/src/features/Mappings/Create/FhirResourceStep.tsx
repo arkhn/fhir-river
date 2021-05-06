@@ -59,8 +59,8 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const [searchValue, setSearchValue] = useState("");
 
-  const isDefinitionIdSelected = (definitionId?: string) =>
-    definitionId && definitionId === mapping.definition_id;
+  const isDefinitionIdSelected = (definitionId: string) =>
+    definitionId === mapping.definition_id;
 
   const handleClickFhirResource = (definitionId?: string) => () => {
     if (mapping.id)
