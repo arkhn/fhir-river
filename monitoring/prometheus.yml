@@ -23,7 +23,3 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ["transformer:8001"]
-  - job_name: "collect-loader"
-    scrape_interval: 5s
-    static_configs:
-      - targets: ["loader:8001"]

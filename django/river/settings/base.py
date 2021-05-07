@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "core",
     "extractor",
     "transformer",
-    "loader",
     "control",
     "topicleaner",
     "pagai",
@@ -258,14 +257,6 @@ KAFKA_REPLICATION_FACTOR = int(os.environ.get("KAFKA_REPLICATION_FACTOR", 1))
 
 PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
 FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
-
-# MongoDB
-
-FHIRSTORE_HOST = os.environ.get("FHIRSTORE_HOST", "mongo")
-FHIRSTORE_PORT = int(os.environ.get("FHIRSTORE_PORT", 27017))
-FHIRSTORE_DATABASE = os.environ.get("FHIRSTORE_DATABASE", "fhirstore")
-FHIRSTORE_USER = os.environ.get("FHIRSTORE_USER")
-FHIRSTORE_PASSWORD = os.environ.get("FHIRSTORE_PASSWORD")
 
 # Prometheus
 

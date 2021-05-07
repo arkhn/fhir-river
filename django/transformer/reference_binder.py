@@ -2,12 +2,21 @@ import logging
 from typing import List
 
 from dotty_dict import dotty
-from loader.load.utils import get_resource_id
 from transformer.errors import IncompleteIdentifierError
 from transformer.transform.transformer import compute_fhir_object_id
 
 logger = logging.getLogger(__name__)
 UUID_LENGTH = 36
+
+
+def get_resource_id(fhir_instance):
+    """
+    Get the resource id stored in the meta field of a fhir document
+    """
+    try:
+        return fhir_instance["meta"]["tag"][1]["code"]
+    except (KeyError, IndexError):
+        return None
 
 
 class ReferenceBinder:

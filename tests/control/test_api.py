@@ -142,25 +142,19 @@ def test_get_batch_endpoint(mock_redis, api_client: APIClient):
 
 @mock.patch("control.api.views.redis.Redis")
 @mock.patch("control.api.views.AdminClient")
-@mock.patch("control.api.views.get_fhirstore")
 @mock.patch("control.api.views.Producer")
 @mock.patch("control.api.views.uuid.uuid4", return_value="batch_id")
 @mock.patch(
     "control.api.views.fetch_resource_mapping",
     side_effect=[{"mapping_1": "mapping_1"}, {"mapping_2": "mapping_2"}, {"mapping_3": "mapping_3"}],
 )
-def test_create_batch_endpoint(
-    _, __, mock_producer, mock_fhirstore, mock_kafka_admin, mock_redis, api_client: APIClient
-):
+def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redis, api_client: APIClient):
     batch_counter_redis = mock.MagicMock()
     mappings_redis = mock.MagicMock()
     mock_redis.side_effect = [mappings_redis, batch_counter_redis]
 
     admin_client = mock.MagicMock()
     mock_kafka_admin.return_value = admin_client
-
-    fhirstore = mock.MagicMock()
-    mock_fhirstore.return_value = fhirstore
 
     producer = mock.MagicMock()
     mock_producer.return_value = producer
@@ -197,14 +191,6 @@ def test_create_batch_endpoint(
             mock.call("batch_id:id_a", '{"mapping_1": "mapping_1"}'),
             mock.call("batch_id:id_b", '{"mapping_2": "mapping_2"}'),
             mock.call("batch_id:id_c", '{"mapping_3": "mapping_3"}'),
-        ]
-    )
-
-    fhirstore.delete.assert_has_calls(
-        [
-            mock.call("type_a", resource_id="id_a"),
-            mock.call("type_b", resource_id="id_b"),
-            mock.call("type_c", resource_id="id_c"),
         ]
     )
 
