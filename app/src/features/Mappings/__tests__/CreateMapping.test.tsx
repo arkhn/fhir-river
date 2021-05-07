@@ -1,6 +1,10 @@
 import React from "react";
 
-import { IValueSet } from "@ahryman40k/ts-fhir-types/lib/R4";
+import {
+  IStructureDefinition,
+  IValueSet,
+  StructureDefinitionDerivationKind,
+} from "@ahryman40k/ts-fhir-types/lib/R4";
 import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest, RestRequest } from "msw";
 import { setupServer } from "msw/node";
@@ -28,6 +32,14 @@ const owner = ownerFactory.build(
   {},
   { associations: { credential: credential.id } }
 );
+const accountStructureDef: IStructureDefinition = {
+  resourceType: "StructureDefinition",
+  title: "Account",
+  name: "Account",
+  type: "Account",
+  id: "Account",
+  derivation: StructureDefinitionDerivationKind._specialization,
+};
 
 const handlers = [
   rest.get("http://example.com/api/credentials/", (_, res, ctx) =>
@@ -51,6 +63,18 @@ const handlers = [
           expansion: { contains: [{ code: "Account" }] },
         })
       )
+  ),
+  rest.get(
+    "http://example.com/api/fhir/StructureDefinition",
+    (_, res: ResponseComposition<IStructureDefinition[]>, ctx) =>
+      res(
+        ctx.json<IStructureDefinition[]>([accountStructureDef])
+      )
+  ),
+  rest.get(
+    "http://example.com/api/fhir/StructureDefinition/Account",
+    (_, res: ResponseComposition<IStructureDefinition>, ctx) =>
+      res(ctx.json<IStructureDefinition>(accountStructureDef))
   ),
 ];
 
