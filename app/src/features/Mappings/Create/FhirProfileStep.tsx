@@ -4,6 +4,7 @@ import { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
+  CircularProgress,
   Container,
   Divider,
   List,
@@ -77,7 +78,10 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
     },
     { skip: !mapping.definition_id }
   );
-  const { data: profiles } = useApiStructureDefinitionListQuery(
+  const {
+    data: profiles,
+    isLoading: isProfilesLoading,
+  } = useApiStructureDefinitionListQuery(
     {
       params: `type=${originalStructureDefinition?.id}&derivation=constraint`,
     },
@@ -147,7 +151,10 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
             <CheckIcon color="primary" />
           )}
         </ListItem>
-        {profiles &&
+        {isProfilesLoading ? (
+          <CircularProgress />
+        ) : (
+          profiles &&
           profiles.map(({ id, title, name }) => (
             <ListItem
               button
@@ -166,7 +173,8 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
               <ListItemText primary={title || name} />
               {isProfileSelected(id) && <CheckIcon color="primary" />}
             </ListItem>
-          ))}
+          ))
+        )}
       </List>
     </Container>
   );
