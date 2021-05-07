@@ -3,6 +3,7 @@ import {
   IStructureDefinition,
   IValueSet,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
+import { Required } from "utility-types";
 
 import {
   providesList,
@@ -12,10 +13,6 @@ import {
   providesFhirBundle,
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
-
-type StructureDefinitionWithId = Omit<IStructureDefinition, "id"> & {
-  id: string;
-};
 
 const tagTypes = [
   "Users",
@@ -46,7 +43,7 @@ export const api = generatedApi
         }),
       }),
       apiStructureDefinitionList: build.query<
-        StructureDefinitionWithId[],
+        Required<IStructureDefinition, "id">[],
         { id: string; params?: string }
       >({
         query: (queryArg) => ({
@@ -55,11 +52,11 @@ export const api = generatedApi
         }),
         transformResponse: (response: IBundle) =>
           response.entry?.map(
-            ({ resource }) => resource as StructureDefinitionWithId
+            ({ resource }) => resource as Required<IStructureDefinition, "id">
           ) || [],
       }),
       apiStructureDefinitionRetrieve: build.query<
-        StructureDefinitionWithId,
+        Required<IStructureDefinition, "id">,
         {
           id: string;
           params: string;
@@ -70,8 +67,8 @@ export const api = generatedApi
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
-        StructureDefinitionWithId,
-        StructureDefinitionWithId
+        Required<IStructureDefinition, "id">,
+        Required<IStructureDefinition, "id">
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition`,
