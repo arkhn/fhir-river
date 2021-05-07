@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # DEBUG modifies the app behaviour. For instance:
 #   * it enables detailed error pages.
 #   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
-DEBUG = os.environ.get("DEBUG", False) == "True"
+DEBUG = os.environ.get("DEBUG") and os.environ.get("DEBUG") == "True" or False
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-host
 # Behind a proxy, use the actual host as defined by the proxy. This is needed to
@@ -36,7 +36,7 @@ USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", False)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
-ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", False)
+ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED") and os.environ.get("ADMIN_ENABLED") == "True" or False
 
 # Application definition
 
@@ -296,7 +296,7 @@ elif OIDC_RP_SIGN_ALGO == "HS256":
 
 # Sentry
 
-SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED", False)
+SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED") and os.environ.get("SENTRY_ENABLED") == "True" or False
 
 if SENTRY_ENABLED:
     SENTRY = {
