@@ -2,10 +2,8 @@ from unittest import mock
 
 from pytest import mark, raises
 
-from fhirstore import ARKHN_CODE_SYSTEMS
-
 from common.analyzer.attribute import Attribute
-from transformer.transform import fhir
+from transformer.transform import ARKHN_RESOURCE_CODE_SYSTEM, ARKHN_SOURCE_CODE_SYSTEM, fhir
 
 
 class mockdatetime:
@@ -215,8 +213,8 @@ def test_build_metadata(mock_datetime):
     assert metadata == {
         "lastUpdated": "now",
         "tag": [
-            {"system": ARKHN_CODE_SYSTEMS.source, "code": "sourceId"},
-            {"system": ARKHN_CODE_SYSTEMS.resource, "code": "resourceId"},
+            {"system": ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
+            {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }
 
@@ -231,8 +229,8 @@ def test_build_metadata(mock_datetime):
         "lastUpdated": "now",
         "profile": ["u/r/l"],
         "tag": [
-            {"system": ARKHN_CODE_SYSTEMS.source, "code": "sourceId"},
-            {"system": ARKHN_CODE_SYSTEMS.resource, "code": "resourceId"},
+            {"system": ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
+            {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }
 

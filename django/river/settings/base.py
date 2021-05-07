@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # DEBUG modifies the app behaviour. For instance:
 #   * it enables detailed error pages.
 #   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
-DEBUG = os.environ.get("DEBUG", False) == "True"
+DEBUG = os.environ.get("DEBUG") and os.environ.get("DEBUG") == "True" or False
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-host
 # Behind a proxy, use the actual host as defined by the proxy. This is needed to
@@ -36,7 +36,7 @@ USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", False)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
-ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", False)
+ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED") and os.environ.get("ADMIN_ENABLED") == "True" or False
 
 # Application definition
 
@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "core",
     "extractor",
     "transformer",
-    "loader",
     "control",
     "topicleaner",
     "pagai",
@@ -259,14 +258,6 @@ KAFKA_REPLICATION_FACTOR = int(os.environ.get("KAFKA_REPLICATION_FACTOR", 1))
 PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
 FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
 
-# MongoDB
-
-FHIRSTORE_HOST = os.environ.get("FHIRSTORE_HOST", "mongo")
-FHIRSTORE_PORT = int(os.environ.get("FHIRSTORE_PORT", 27017))
-FHIRSTORE_DATABASE = os.environ.get("FHIRSTORE_DATABASE", "fhirstore")
-FHIRSTORE_USER = os.environ.get("FHIRSTORE_USER")
-FHIRSTORE_PASSWORD = os.environ.get("FHIRSTORE_PASSWORD")
-
 # Prometheus
 
 EXPORTER_PORT = os.environ.get("EXPORTER_PORT", 8001)
@@ -305,7 +296,7 @@ elif OIDC_RP_SIGN_ALGO == "HS256":
 
 # Sentry
 
-SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED", False)
+SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED") and os.environ.get("SENTRY_ENABLED") == "True" or False
 
 if SENTRY_ENABLED:
     SENTRY = {

@@ -13,6 +13,10 @@ import {
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
+type StructureDefinitionWithId = Omit<IStructureDefinition, "id"> & {
+  id: string;
+};
+
 const tagTypes = [
   "Users",
   "Columns",
@@ -34,7 +38,6 @@ export const api = generatedApi
         query: () => ({
           url: `/oidc/logout/`,
           method: "POST",
-          invalidatesTags: ["Users"],
         }),
       }),
       apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
@@ -43,22 +46,20 @@ export const api = generatedApi
         }),
       }),
       apiStructureDefinitionList: build.query<
-        IStructureDefinition[],
+        StructureDefinitionWithId[],
         { id: string; params?: string }
       >({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition/${queryArg.id}?${
-            queryArg.params || ""
-          }`,
+          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
           providesTags: providesFhirBundle("StructureDefinition"),
         }),
         transformResponse: (response: IBundle) =>
           response.entry?.map(
-            ({ resource }) => resource as IStructureDefinition
+            ({ resource }) => resource as StructureDefinitionWithId
           ) || [],
       }),
       apiStructureDefinitionRetrieve: build.query<
-        IStructureDefinition,
+        StructureDefinitionWithId,
         {
           id: string;
           params: string;
@@ -66,18 +67,16 @@ export const api = generatedApi
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
-          providesTags: providesOne("StructureDefinition"),
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
-        IStructureDefinition,
-        IStructureDefinition
+        StructureDefinitionWithId,
+        StructureDefinitionWithId
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition`,
           method: "POST",
           body: queryArg,
-          invalidatesTags: invalidatesList("StructureDefinition"),
         }),
       }),
     }),
@@ -85,11 +84,26 @@ export const api = generatedApi
   .enhanceEndpoints({
     addTagTypes: tagTypes,
     endpoints: {
+      oidcLogout: {
+        invalidatesTags: ["Users"],
+      },
       /**
        * User
        */
       apiUserRetrieve: {
         providesTags: ["Users"],
+      },
+      /**
+       * StructureDefinition
+       */
+      apiStructureDefinitionList: {
+        providesTags: providesList("StructureDefinition"),
+      },
+      apiStructureDefinitionRetrieve: {
+        providesTags: providesOne("StructureDefinition"),
+      },
+      apiStructureDefinitionCreate: {
+        invalidatesTags: invalidatesList("StructureDefinition"),
       },
       /**
        * Columns
