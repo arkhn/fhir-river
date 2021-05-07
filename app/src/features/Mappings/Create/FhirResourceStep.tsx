@@ -19,7 +19,10 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import { useApiValueSetsRetrieveQuery } from "services/api/endpoints";
+import {
+  useApiStructureDefinitionRetrieveQuery,
+  useApiValueSetsRetrieveQuery,
+} from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 
 import { resourceUpdated } from "../resourceSlice";
@@ -59,12 +62,20 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
   const { data, isLoading } = useApiValueSetsRetrieveQuery({
     id: "resource-types",
   });
+  const {
+    data: selectedStructureDefinition,
+  } = useApiStructureDefinitionRetrieveQuery(
+    {
+      id: mapping.definition_id ?? "",
+    },
+    { skip: !mapping.definition_id }
+  );
   const resourceTypesCodes = data?.expansion?.contains
     ?.map(({ code }) => code || "")
     .sort();
 
   const isDefinitionIdSelected = (definitionId: string) =>
-    definitionId === mapping.definition_id;
+    definitionId === selectedStructureDefinition?.type;
 
   const handleClickFhirResource = (definitionId?: string) => () => {
     if (mapping.id)

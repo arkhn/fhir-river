@@ -87,7 +87,6 @@ const CreateMapping = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const [activeStep, setActiveStep] = useState(0);
-  const [isProfileSelected, setIsProfileSelected] = useState(false);
 
   const [mapping] = useAppSelector(resourceSelectors.selectAll);
   const columns = useAppSelector(columnSelectors.selectAll);
@@ -118,8 +117,7 @@ const CreateMapping = (): JSX.Element => {
           isDisabled = mapping.definition_id === undefined;
           break;
         case 2:
-          isDisabled =
-            mapping.definition_id === undefined || !isProfileSelected;
+          isDisabled = mapping.definition_id === undefined;
           break;
         case 3:
           isDisabled =
@@ -134,7 +132,7 @@ const CreateMapping = (): JSX.Element => {
     }
 
     return isDisabled;
-  }, [activeStep, mapping, isProfileSelected]);
+  }, [activeStep, mapping]);
 
   const resetCreateMapping = useCallback(() => {
     dispatch(resourcesRemoved());
@@ -222,7 +220,6 @@ const CreateMapping = (): JSX.Element => {
 
   useEffect(() => resetCreateMapping, [resetCreateMapping]);
 
-  const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
@@ -261,10 +258,7 @@ const CreateMapping = (): JSX.Element => {
               <FhirResourceStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={2} value={activeStep}>
-              <FhirProfileStep
-                mapping={mapping}
-                onChange={handleProfileSelected}
-              />
+              <FhirProfileStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={3} value={activeStep}>
               <MappingNameStep mapping={mapping} />

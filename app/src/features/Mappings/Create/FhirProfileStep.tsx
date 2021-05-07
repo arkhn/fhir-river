@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
   Container,
   Divider,
+  List,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -16,14 +18,21 @@ import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
+import { useAppDispatch } from "app/store";
+import {
+  useApiStructureDefinitionListQuery,
+  useApiStructureDefinitionRetrieveQuery,
+} from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
+
+import { resourceUpdated } from "../resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: 5,
     boxShadow: `0 1px 5px ${theme.palette.divider}`,
-    marginBlock: theme.spacing(6),
+    marginBlock: theme.spacing(2),
     display: "flex",
     alignItems: "center",
   },
@@ -35,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     maxWidth: 200,
     flexGrow: 1,
+    marginBlock: theme.spacing(2),
   },
   divideContainer: {
     display: "flex",
@@ -48,20 +58,50 @@ const useStyles = makeStyles((theme) => ({
 
 type FhirProfileStepProps = {
   mapping: Partial<Resource>;
-  onChange?: () => void;
 };
 
-const FhirProfileStep = ({
-  mapping,
-  onChange,
-}: FhirProfileStepProps): JSX.Element => {
+const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const classes = useStyles();
-  const [isDefaultProfileSelected, setDefaultProfileSelected] = useState(false);
+  const [
+    originalStructureDefinition,
+    setOriginalStructureDefinition,
+  ] = useState<IStructureDefinition | undefined>(undefined);
 
-  const handleClickDefaultProfile = () => {
-    setDefaultProfileSelected(true);
-    onChange && onChange();
+  const {
+    data: selectedStructureDefinition,
+  } = useApiStructureDefinitionRetrieveQuery(
+    {
+      id: mapping.definition_id ?? "",
+    },
+    { skip: !mapping.definition_id }
+  );
+  const { data: profiles } = useApiStructureDefinitionListQuery(
+    {
+      params: `type=${originalStructureDefinition?.id}&derivation=constraint`,
+    },
+    { skip: !originalStructureDefinition?.id }
+  );
+
+  useEffect(() => {
+    if (
+      selectedStructureDefinition &&
+      selectedStructureDefinition.derivation === "specialization"
+    ) {
+      setOriginalStructureDefinition(selectedStructureDefinition);
+    }
+  }, [selectedStructureDefinition]);
+
+  const isProfileSelected = (id?: string) => mapping.definition_id === id;
+  const handleProfileClick = (definitionId?: string) => () => {
+    if (mapping.id)
+      dispatch(
+        resourceUpdated({
+          id: mapping.id,
+          changes: { definition_id: definitionId },
+        })
+      );
   };
 
   return (
@@ -74,35 +114,60 @@ const FhirProfileStep = ({
             className={clsx(classes.icon, classes.flameIcon)}
             iconSize={12}
           />
-          {` ${mapping.definition_id} `}
+          {` ${selectedStructureDefinition?.type} `}
         </b>
         {t("resource")}
       </Typography>
-      <ListItem
-        button
-        alignItems="flex-start"
-        className={classes.listItem}
-        onClick={handleClickDefaultProfile}
-      >
-        <ListItemIcon>
-          <Icon
-            icon={IconNames.CUBE}
-            className={clsx(classes.icon)}
-            iconSize={20}
-          />
-        </ListItemIcon>
-        <ListItemText primary={t("defaultProfile")} />
-        {isDefaultProfileSelected && <CheckIcon color="primary" />}
-      </ListItem>
-      <div className={classes.divideContainer}>
-        <Divider className={classes.divider} />
-      </div>
+
       <ListItem button className={classes.listItem}>
         <ListItemIcon>
           <AddIcon className={classes.icon} />
         </ListItemIcon>
         <ListItemText primary={t("importNewProfile")} />
       </ListItem>
+      <div className={classes.divideContainer}>
+        <Divider className={classes.divider} />
+      </div>
+      <List>
+        <ListItem
+          button
+          alignItems="flex-start"
+          className={classes.listItem}
+          onClick={handleProfileClick(originalStructureDefinition?.id)}
+        >
+          <ListItemIcon>
+            <Icon
+              icon={IconNames.CUBE}
+              className={clsx(classes.icon)}
+              iconSize={20}
+            />
+          </ListItemIcon>
+          <ListItemText primary={t("defaultProfile")} />
+          {isProfileSelected(originalStructureDefinition?.id) && (
+            <CheckIcon color="primary" />
+          )}
+        </ListItem>
+        {profiles &&
+          profiles.map(({ id, title, name }) => (
+            <ListItem
+              button
+              key={id}
+              alignItems="flex-start"
+              className={classes.listItem}
+              onClick={handleProfileClick(id)}
+            >
+              <ListItemIcon>
+                <Icon
+                  icon={IconNames.CUBE}
+                  className={clsx(classes.icon)}
+                  iconSize={20}
+                />
+              </ListItemIcon>
+              <ListItemText primary={title || name} />
+              {isProfileSelected(id) && <CheckIcon color="primary" />}
+            </ListItem>
+          ))}
+      </List>
     </Container>
   );
 };
