@@ -111,7 +111,7 @@ services:
       - FHIRSTORE_USER=arkhn
       - FHIRSTORE_PASSWORD=5gBwjTYR4DHSbzaUwVNX43DbTn
       - PYROG_API_URL=http://pyrog-server:1000
-      - FHIR_API_URL=http://fhir-api:2000
+      - FHIR_API_URL=${FHIR_API_URL}
       - REDIS_MAPPINGS_HOST=river-redis
       - REDIS_MAPPINGS_PORT=6379
       - REDIS_MAPPINGS_DB=1
@@ -127,19 +127,20 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@admin.admin
       - DJANGO_SUPERUSER_PASSWORD=admin
-      - OIDC_RP_CLIENT_ID=
-      - OIDC_RP_CLIENT_SECRET=
+      - OIDC_RP_CLIENT_ID=${OIDC_RP_CLIENT_ID}
+      - OIDC_RP_CLIENT_SECRET=${OIDC_RP_CLIENT_SECRET}
       - OIDC_RP_EXTRA_SCOPES=email
-      - OIDC_RP_SIGN_ALGO=HS256
-      - LOGIN_REDIRECT_URL=http://localhost:3000/
-      - LOGIN_REDIRECT_URL_FAILURE=http://localhost:3000/error/
-      - LOGOUT_REDIRECT_URL=http://localhost:3000/
+      - OIDC_RP_SIGN_ALGO=RS256
+      - OIDC_TOKEN_USE_BASIC_AUTH=${OIDC_TOKEN_USE_BASIC_AUTH}
+      - LOGIN_REDIRECT_URL=${LOGIN_REDIRECT_URL}
+      - LOGIN_REDIRECT_URL_FAILURE=${LOGIN_REDIRECT_URL_FAILURE}
+      - LOGOUT_REDIRECT_URL=${LOGOUT_REDIRECT_URL}
       # LPT: Always use 127.0.0.1 (not localhost) in public URLs redirecting to the provider
       # This is to prevent cookies in the browser from being shared and overridden by
       # different services running on the host.
-      - OIDC_OP_AUTHORIZATION_ENDPOINT=http://127.0.0.1:8001/o/authorize/
-      - OIDC_OP_TOKEN_ENDPOINT=http://127.0.0.1:8001/o/token/
-      - OIDC_OP_USER_ENDPOINT=http://127.0.0.1:8001/o/userinfo/
+      - OIDC_OP_AUTHORIZATION_ENDPOINT=${OIDC_OP_AUTHORIZATION_ENDPOINT}
+      - OIDC_OP_TOKEN_ENDPOINT=${OIDC_OP_TOKEN_ENDPOINT}
+      - OIDC_OP_USER_ENDPOINT=${OIDC_OP_USER_ENDPOINT}
 
   zookeeper:
     image: zookeeper:3.4.10
