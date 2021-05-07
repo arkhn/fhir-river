@@ -4,8 +4,10 @@ type CacheItem<T, ID> = { type: T; id: ID };
 
 type CacheList<T, ID> = (CacheItem<T, "LIST"> | CacheItem<T, ID>)[];
 
+type Item = { id: unknown };
+
 type ProvidesListFn<T> = <
-  Results extends { id: unknown }[],
+  Results extends Item[],
   Error extends FetchBaseQueryError
 >(
   results?: Results,
@@ -21,17 +23,17 @@ export const providesList = <T extends string>(type: T): ProvidesListFn<T> => (
     : [{ type, id: "LIST" }];
 
 type ProvidesFhirBundleFn<T> = <
-  Results extends { entry: { resource: { id: unknown } }[] },
+  Results extends { entry?: { resource?: { id?: string } }[] },
   Error extends FetchBaseQueryError
 >(
   results?: Results,
   error?: Error
-) => CacheList<T, Results["entry"][number]["resource"]["id"]>;
+) => CacheList<T, string>;
 
 export const providesFhirBundle = <T extends string>(
   type: T
 ): ProvidesFhirBundleFn<T> => (results, _error) =>
-  results?.entry && results.entry.length > 0
+  results?.entry
     ? [
         ...results.entry
           .map(
@@ -41,7 +43,7 @@ export const providesFhirBundle = <T extends string>(
                 id: entry.resource.id,
               }
           )
-          .filter((item): item is { id: unknown; type: T } => Boolean(item)),
+          .filter((item): item is { id: string; type: T } => Boolean(item)),
         { type, id: "LIST" },
       ]
     : [{ type, id: "LIST" }];
@@ -49,7 +51,7 @@ export const providesFhirBundle = <T extends string>(
 type ProvidesOneFn<T> = <
   Result,
   Error extends FetchBaseQueryError,
-  Arg extends { id: unknown }
+  Arg extends Item
 >(
   result: Result | undefined,
   error: Error | undefined,
@@ -71,7 +73,7 @@ export const invalidatesList = <T extends string>(
 type InvalidatesOneFn<T> = <
   Result,
   Error extends FetchBaseQueryError,
-  Arg extends { id: unknown }
+  Arg extends Item
 >(
   result: Result | undefined,
   error: Error | undefined,
