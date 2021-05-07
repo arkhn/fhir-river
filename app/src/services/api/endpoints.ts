@@ -37,7 +37,6 @@ export const api = generatedApi
       apiStructureDefinitionList: build.query<IBundle, { params: string }>({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition?${queryArg.params}`,
-          providesTags: providesFhirBundle("StructureDefinition"),
         }),
       }),
       apiStructureDefinitionRetrieve: build.query<
@@ -49,7 +48,6 @@ export const api = generatedApi
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
-          providesTags: providesOne("StructureDefinition"),
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
@@ -60,7 +58,6 @@ export const api = generatedApi
           url: `/api/fhir/StructureDefinition`,
           method: "POST",
           body: queryArg,
-          invalidatesTags: invalidatesList("StructureDefinition"),
         }),
       }),
     }),
@@ -76,6 +73,18 @@ export const api = generatedApi
        */
       apiUserRetrieve: {
         providesTags: ["Users"],
+      },
+      /**
+       * StructureDefinition
+       */
+      apiStructureDefinitionList: {
+        providesTags: providesFhirBundle("StructureDefinition"),
+      },
+      apiStructureDefinitionRetrieve: {
+        providesTags: providesOne("StructureDefinition"),
+      },
+      apiStructureDefinitionCreate: {
+        invalidatesTags: invalidatesList("StructureDefinition"),
       },
       /**
        * Columns
