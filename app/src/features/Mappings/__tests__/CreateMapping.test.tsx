@@ -43,7 +43,7 @@ const handlers = [
       )
   ),
   rest.get(
-    "http://example.com/api/fhir/ValueSet/resource-types/*",
+    new RegExp("http://example.com/api/fhir/ValueSet/resource-types/\\$expand"),
     (_, res: ResponseComposition<IValueSet>, ctx) =>
       res(
         ctx.json<IValueSet>({
