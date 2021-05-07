@@ -14,7 +14,6 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/AddCircleOutline";
 import CheckIcon from "@material-ui/icons/Check";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -27,6 +26,7 @@ import {
 import { Resource } from "services/api/generated/api.generated";
 
 import { resourceUpdated } from "../resourceSlice";
+import UploadProfileListItem from "./UploadProfileListItem";
 
 const useStyles = makeStyles((theme) => ({
   listItem: {
@@ -122,13 +122,7 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
         </b>
         {t("resource")}
       </Typography>
-
-      <ListItem button className={classes.listItem}>
-        <ListItemIcon>
-          <AddIcon className={classes.icon} />
-        </ListItemIcon>
-        <ListItemText primary={t("importNewProfile")} />
-      </ListItem>
+      <UploadProfileListItem mapping={mapping} />
       <div className={classes.divideContainer}>
         <Divider className={classes.divider} />
       </div>
