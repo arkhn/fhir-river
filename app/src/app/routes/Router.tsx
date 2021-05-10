@@ -17,12 +17,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const { REACT_APP_BASENAME: BASENAME } = process.env;
-
 const Router = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <BrowserRouter basename={BASENAME}>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <AppBar />
       <div className={classes.body}>
         <Switch>
