@@ -80,7 +80,7 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
   );
   const {
     data: profiles,
-    isLoading: isProfilesLoading,
+    isFetching: isProfilesFetching,
   } = useApiStructureDefinitionListQuery(
     {
       params: `type=${originalStructureDefinition?.id}&derivation=constraint`,
@@ -145,7 +145,7 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
             <CheckIcon color="primary" />
           )}
         </ListItem>
-        {isProfilesLoading ? (
+        {isProfilesFetching ? (
           <CircularProgress />
         ) : (
           profiles &&
