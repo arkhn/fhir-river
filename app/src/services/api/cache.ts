@@ -1,11 +1,13 @@
-import type { FetchBaseQueryError } from "@rtk-incubator/rtk-query";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 type CacheItem<T, ID> = { type: T; id: ID };
 
 type CacheList<T, ID> = (CacheItem<T, "LIST"> | CacheItem<T, ID>)[];
 
+type Item = { id: unknown };
+
 type ProvidesListFn<T> = <
-  Results extends { id: unknown }[],
+  Results extends Item[],
   Error extends FetchBaseQueryError
 >(
   results?: Results,
@@ -20,10 +22,36 @@ export const providesList = <T extends string>(type: T): ProvidesListFn<T> => (
     ? [...results.map(({ id }) => ({ type, id })), { type, id: "LIST" }]
     : [{ type, id: "LIST" }];
 
+type ProvidesFhirBundleFn<T> = <
+  Results extends { entry?: { resource?: { id?: string } }[] },
+  Error extends FetchBaseQueryError
+>(
+  results?: Results,
+  error?: Error
+) => CacheList<T, string>;
+
+export const providesFhirBundle = <T extends string>(
+  type: T
+): ProvidesFhirBundleFn<T> => (results, _error) =>
+  results?.entry
+    ? [
+        ...results.entry
+          .map(
+            (entry) =>
+              !!entry.resource?.id && {
+                type,
+                id: entry.resource.id,
+              }
+          )
+          .filter((item): item is { id: string; type: T } => Boolean(item)),
+        { type, id: "LIST" },
+      ]
+    : [{ type, id: "LIST" }];
+
 type ProvidesOneFn<T> = <
   Result,
   Error extends FetchBaseQueryError,
-  Arg extends { id: unknown }
+  Arg extends Item
 >(
   result: Result | undefined,
   error: Error | undefined,
@@ -45,7 +73,7 @@ export const invalidatesList = <T extends string>(
 type InvalidatesOneFn<T> = <
   Result,
   Error extends FetchBaseQueryError,
-  Arg extends { id: unknown }
+  Arg extends Item
 >(
   result: Result | undefined,
   error: Error | undefined,

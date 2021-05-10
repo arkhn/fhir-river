@@ -1,5 +1,5 @@
-import { ValidationError } from "@arkhn/ui/lib/Form/InputTypes";
-import { FetchBaseQueryError } from "@rtk-incubator/rtk-query/dist";
+import type { ValidationError } from "@arkhn/ui/lib/Form/InputTypes";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export type ApiValidationError<T> = ValidationError<T> & {
   non_field_errors?: string[];

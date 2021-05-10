@@ -5,7 +5,7 @@ on:
     paths:
       - "app/**"
     branches:
-      - "master"
+      - "main"
     tags:
       - "v*"
   pull_request:

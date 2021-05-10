@@ -17,14 +17,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Rest Framework
 
-REST_FRAMEWORK["DEFAULT_PERMISSION_CLASSES"] = ["rest_framework.permissions.AllowAny"]
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] += ["rest_framework.renderers.BrowsableAPIRenderer"]
+
+# DRF Spectacular settings
 
 if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True":
     INSTALLED_APPS += ["drf_spectacular"]
     REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
-
-# DRF Spectacular settings
 
 SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [

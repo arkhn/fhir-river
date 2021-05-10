@@ -27,11 +27,16 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # DEBUG modifies the app behaviour. For instance:
 #   * it enables detailed error pages.
 #   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
-DEBUG = os.environ.get("DEBUG", False) == "True"
+DEBUG = os.environ.get("DEBUG") and os.environ.get("DEBUG") == "True" or False
+
+# https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-host
+# Behind a proxy, use the actual host as defined by the proxy. This is needed to
+# properly build urls.
+USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", False)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
 
-ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED", False)
+ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED") and os.environ.get("ADMIN_ENABLED") == "True" or False
 
 # Application definition
 
@@ -47,12 +52,12 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "mozilla_django_oidc",
+    "revproxy",
     "sentry",
     # 1st parties
     "core",
     "extractor",
     "transformer",
-    "loader",
     "control",
     "topicleaner",
     "pagai",
@@ -158,7 +163,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = os.environ.get("STATIC_URL", "/static/")
 STATIC_ROOT = Path(os.environ.get("STATIC_ROOT", "var/www/static"))
 
 
@@ -206,6 +211,9 @@ LOGGING = {
 # CorsHeaders
 # Used to access api from third-party domain
 
+CORS_ALLOWED_ORIGINS = (
+    os.environ.get("CORS_ALLOWED_ORIGINS") and os.environ.get("CORS_ALLOWED_ORIGINS").split(",") or []
+)
 CORS_URLS_REGEX = r"^\/(api|oidc)\/.*$"
 
 # Rest Framework
@@ -215,6 +223,18 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
+
+# Sessions
+# https://docs.djangoproject.com/en/3.2/ref/settings/#sessions
+
+# Namespace cookie names to prevent clashes when working behind a proxy which
+# serves multiple services.
+SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "pyrog_sessionid")
+
+# CSRF
+
+CSRF_COOKIE_NAME = os.environ.get("CSRF_COOKIE_NAME", "pyrog_csrftoken")
+
 
 # Redis
 
@@ -233,21 +253,13 @@ REDIS_REFERENCES_DB = os.environ.get("REDIS_REFERENCES_DB", 0)
 # Kafka
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
-KAFKA_NUM_PARTITIONS = os.environ.get("KAFKA_NUM_PARTITIONS", 1)
-KAFKA_REPLICATION_FACTOR = os.environ.get("KAFKA_REPLICATION_FACTOR", 1)
+KAFKA_NUM_PARTITIONS = int(os.environ.get("KAFKA_NUM_PARTITIONS", 1))
+KAFKA_REPLICATION_FACTOR = int(os.environ.get("KAFKA_REPLICATION_FACTOR", 1))
 
 # API URLs
 
 PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
 FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
-
-# MongoDB
-
-FHIRSTORE_HOST = os.environ.get("FHIRSTORE_HOST", "mongo")
-FHIRSTORE_PORT = int(os.environ.get("FHIRSTORE_PORT", 27017))
-FHIRSTORE_DATABASE = os.environ.get("FHIRSTORE_DATABASE", "fhirstore")
-FHIRSTORE_USER = os.environ.get("FHIRSTORE_USER")
-FHIRSTORE_PASSWORD = os.environ.get("FHIRSTORE_PASSWORD")
 
 # Prometheus
 
@@ -287,7 +299,7 @@ elif OIDC_RP_SIGN_ALGO == "HS256":
 
 # Sentry
 
-SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED", False)
+SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED") and os.environ.get("SENTRY_ENABLED") == "True" or False
 
 if SENTRY_ENABLED:
     SENTRY = {
