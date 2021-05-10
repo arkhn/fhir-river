@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const Router = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/new_pyrog">
       <AppBar />
       <div className={classes.body}>
         <Switch>

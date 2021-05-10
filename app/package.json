@@ -1,5 +1,6 @@
 {
   "name": "app",
+  "homepage": "/new_pyrog",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
