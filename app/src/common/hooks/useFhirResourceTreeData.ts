@@ -1,9 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  ElementDefinition_DiscriminatorTypeKind,
-  IElementDefinition,
-} from "@ahryman40k/ts-fhir-types/lib/R4";
-import { cloneDeep, compact, sortedUniq } from "lodash";
+import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 
 import {
   allowedAttributes,
@@ -24,16 +19,13 @@ type Element<T> = {
   isSlice: boolean;
 
   parent?: T;
-
   children: T[];
-  choices?: T[];
-  slices?: T[];
 
   definition: IElementDefinition;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ElementNode extends Element<ElementNode> {}
+export interface ElementNode extends Element<ElementNode> {}
 
 const shouldOmit = (
   elementDefinition: IElementDefinition
@@ -51,58 +43,23 @@ const shouldOmit = (
   }
 };
 
-const isMultipleChoice = (
-  elementDefinition: IElementDefinition,
-  previousElementDefinition: IElementDefinition
-): boolean => {
-  if (
-    elementDefinition.path === previousElementDefinition.path &&
-    !!elementDefinition.sliceName &&
-    elementDefinition.path &&
-    elementDefinition.path.endsWith("[x]")
-  )
-    return true;
-  else return false;
-};
+const getNature = (elementDefinition: IElementDefinition): TypeNature => {
+  const { max, sliceName, type: types } = elementDefinition;
+  const type = types?.[0].code;
 
-const getType = (
-  max: string,
-  sliceName?: string,
-  type?: string
-): TypeNature => {
-  if ((max === "*" || Number(max) > 1) && !sliceName) {
+  if (max && (max === "*" || +max > 1) && !sliceName) {
     return "multiple";
-  } else if (
-    primitiveTypes.find((primitiveType) => primitiveType === type) ||
-    type === "http://hl7.org/fhirpath/System.String"
+  }
+
+  if (
+    (type && primitiveTypes.includes(type)) ||
+    type === "http://hl7.org/fhirpath/System.String" // Fix : Question
   ) {
     return "primitive";
-  } else if (complexTypes.find((complexType) => complexType === type)) {
-    return "complex";
-  } else {
-    return undefined;
   }
-};
 
-const getNature = (
-  elementDefinition: IElementDefinition,
-  cardinality?: string
-): TypeNature => {
-  if (
-    elementDefinition.max &&
-    elementDefinition.type &&
-    elementDefinition.type?.length === 1
-  ) {
-    return getType(
-      cardinality ?? elementDefinition.max,
-      elementDefinition.sliceName,
-      elementDefinition.type[0].code
-    );
-  } else if (elementDefinition.max && !elementDefinition.type) {
-    return getType(
-      cardinality ?? elementDefinition.max,
-      elementDefinition.sliceName
-    );
+  if (type && complexTypes.includes(type)) {
+    return "complex";
   }
 };
 
@@ -116,88 +73,8 @@ const createElementNode = (
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
     isSlice: !!elementDefinition.sliceName,
+    nature: getNature(elementDefinition),
   };
-};
-
-const getChildren = (
-  elementDefinition: ElementNode,
-  elementDefinitions: ElementNode[]
-): string[] => {
-  const childrenElements = elementDefinitions.filter(
-    (element) =>
-      element.id?.substring(0, element.id.lastIndexOf(".")) ===
-      elementDefinition.id
-  );
-  const children: string[] = [];
-  childrenElements.forEach((c) => c.id && children.push(c.id));
-  return children;
-};
-
-const getParent = (
-  currentElementDefinition: IElementDefinition,
-  elementDefinitions: IElementDefinition[]
-): IElementDefinition | undefined => {
-  const parentElement = elementDefinitions.find(
-    (element) =>
-      currentElementDefinition.id?.substring(
-        0,
-        currentElementDefinition.id.lastIndexOf(".")
-      ) === element.id ||
-      (currentElementDefinition.path === element.path &&
-        !!currentElementDefinition.sliceName) ||
-      (!currentElementDefinition.sliceName &&
-        currentElementDefinition.id === element.id &&
-        (currentElementDefinition.max === "*" ||
-          Number(currentElementDefinition.max) > 1))
-  );
-  return parentElement;
-};
-
-const buildChildren = (
-  snapshot: ElementNode[],
-  elementNodes: ElementNode[]
-) => {
-  const parents = cloneDeep(snapshot);
-  const indexToDelete: number[] = [];
-  snapshot.forEach((element, index) => {
-    if (element.parent) {
-      const parentToFind = parents.find((parent) => {
-        if (
-          element.parent &&
-          element.parent.id === parent.id &&
-          element.parent.nature === parent.nature
-        ) {
-          return parent;
-        }
-      });
-      if (parentToFind) {
-        const newParent = cloneDeep(parentToFind);
-        newParent.children.push(element);
-        element.parent = newParent;
-        //console.log(element);
-        parentToFind.children = element.parent.children;
-      }
-      if (getChildren(element, parents).length === 0) {
-        indexToDelete.push(index);
-      }
-    }
-  });
-  indexToDelete.reverse();
-  indexToDelete.forEach((index) => {
-    parents.splice(index, 1);
-  });
-  return parents;
-};
-
-const isChildOf = (
-  child: IElementDefinition,
-  parent: IElementDefinition
-): boolean => {
-  if (child.path)
-    return child.path.substring(0, child.path.lastIndexOf(".")) === parent.path;
-  else {
-    return false;
-  }
 };
 
 const isSliceOf = (
@@ -213,7 +90,43 @@ const isSliceOf = (
   }
 };
 
-const useFhirResourceTreeData = (): ElementNode[] | any => {
+const isMultipleChoiceOf = (
+  elementDefinition: IElementDefinition,
+  previousElementDefinition: IElementDefinition
+): boolean =>
+  !!elementDefinition.path &&
+  elementDefinition.path === previousElementDefinition.path &&
+  !!elementDefinition.sliceName &&
+  elementDefinition.path.endsWith("[x]");
+
+const isChildOf = (
+  child: IElementDefinition,
+  parent: IElementDefinition
+): boolean => {
+  if (child.path)
+    return child.path.substring(0, child.path.lastIndexOf(".")) === parent.path;
+  else {
+    return false;
+  }
+};
+
+/**
+ * Child of in ElementNode terms
+ * ie if child is either child, slice or choice of parent
+ * @param child
+ * @param parent
+ */
+const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
+  const { definition: childDefinition } = child;
+  const { definition: parentDefinition } = parent;
+  return (
+    isMultipleChoiceOf(childDefinition, parentDefinition) ||
+    isChildOf(childDefinition, parentDefinition) ||
+    isSliceOf(childDefinition, parentDefinition)
+  );
+};
+
+const useFhirResourceTreeData = (): ElementNode[] => {
   if (fhirResource.snapshot) {
     const elementDefinitions = fhirResource.snapshot.element.slice(1);
 
@@ -222,62 +135,49 @@ const useFhirResourceTreeData = (): ElementNode[] | any => {
         elementsDefinition: IElementDefinition[],
         elementNodes: ElementNode[],
         previousElementDefinition?: ElementNode
-      ): ElementNode[] | any => {
-        const [
-          currentElementDefinition,
-          nextElementDefinition,
-          ...remainingSnapshot
-        ] = elementsDefinition;
+      ): ElementNode[] => {
+        const [current, ...rest] = elementsDefinition;
 
-        if (!currentElementDefinition) {
+        if (!current) {
           return elementNodes;
         }
 
-        if (previousElementDefinition) {
-          console.log(previousElementDefinition);
-          if (
-            isChildOf(
-              currentElementDefinition,
-              previousElementDefinition.definition
-            ) &&
-            !isChildOf(nextElementDefinition, currentElementDefinition)
-          ) {
-            console.log(previousElementDefinition.id);
-            const child = createElementNode(currentElementDefinition);
-
-            if (previousElementDefinition) {
-              child.parent = previousElementDefinition;
-              previousElementDefinition.children.push(child);
-              return recBuildElements(
-                remainingSnapshot,
-                elementNodes,
-                previousElementDefinition
-              );
-            }
-          }
-          const newElementNode = createElementNode(currentElementDefinition);
-          elementNodes.push(newElementNode);
+        if (shouldOmit(current)) {
           return recBuildElements(
-            remainingSnapshot,
+            rest,
             elementNodes,
-            previousElementDefinition.parent
+            previousElementDefinition
           );
         }
 
-        const newElementNode = createElementNode(currentElementDefinition);
-        elementNodes.push(newElementNode);
-        return recBuildElements(
-          remainingSnapshot,
-          elementNodes,
-          newElementNode
-        );
+        const currentElementNode = createElementNode(current);
+
+        if (previousElementDefinition) {
+          if (
+            isElementNodeChildOf(currentElementNode, previousElementDefinition)
+          ) {
+            currentElementNode.parent = previousElementDefinition;
+            previousElementDefinition.children.push(currentElementNode);
+            return recBuildElements(rest, elementNodes, currentElementNode);
+          } else {
+            return recBuildElements(
+              elementsDefinition,
+              elementNodes,
+              previousElementDefinition.parent
+            );
+          }
+        }
+
+        elementNodes.push(currentElementNode);
+        return recBuildElements(rest, elementNodes, currentElementNode);
       };
 
       return recBuildElements(elementDefinitions, []);
     };
 
-    console.log(buildElements());
+    return buildElements();
   }
+  return [];
 };
 
 export default useFhirResourceTreeData;
