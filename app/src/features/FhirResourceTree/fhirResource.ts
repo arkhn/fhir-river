@@ -1142,8 +1142,8 @@ export const fhirResourceObs = ({
         ],
       },
       {
-        id: "Observation.category:VSCat.coding.id",
-        path: "Observation.category.coding.id",
+        id: "Observation.category:VSCat.coding.id.lol",
+        path: "Observation.category.coding.id.lol",
         representation: ["xmlAttr"],
         short: "Unique id for inter-element referencing",
         definition:

@@ -25,9 +25,9 @@ type Element<T> = {
 
   parent?: T;
 
-  children?: any[];
+  children: T[];
   choices?: T[];
-  slices?: string[];
+  slices?: T[];
 
   definition: IElementDefinition;
 };
@@ -109,20 +109,19 @@ const getNature = (
 const createElementNode = (
   elementDefinition: IElementDefinition
 ): ElementNode => {
-  const newNode: ElementNode = {
+  return {
     id: elementDefinition.id ?? "",
     name: elementDefinition.id?.split(".").pop() ?? "",
-    //children: [],
+    children: [],
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
     isSlice: !!elementDefinition.sliceName,
   };
-  return newNode;
 };
 
 const getChildren = (
-  elementDefinition: IElementDefinition,
-  elementDefinitions: IElementDefinition[]
+  elementDefinition: ElementNode,
+  elementDefinitions: ElementNode[]
 ): string[] => {
   const childrenElements = elementDefinitions.filter(
     (element) =>
@@ -158,87 +157,126 @@ const buildChildren = (
   snapshot: ElementNode[],
   elementNodes: ElementNode[]
 ) => {
-  const clone = cloneDeep(snapshot);
-  snapshot.forEach((element) => {
+  const parents = cloneDeep(snapshot);
+  const indexToDelete: number[] = [];
+  snapshot.forEach((element, index) => {
     if (element.parent) {
-      //console.log(element);
+      const parentToFind = parents.find((parent) => {
+        if (
+          element.parent &&
+          element.parent.id === parent.id &&
+          element.parent.nature === parent.nature
+        ) {
+          return parent;
+        }
+      });
+      if (parentToFind) {
+        const newParent = cloneDeep(parentToFind);
+        newParent.children.push(element);
+        element.parent = newParent;
+        //console.log(element);
+        parentToFind.children = element.parent.children;
+      }
+      if (getChildren(element, parents).length === 0) {
+        indexToDelete.push(index);
+      }
     }
   });
+  indexToDelete.reverse();
+  indexToDelete.forEach((index) => {
+    parents.splice(index, 1);
+  });
+  return parents;
+};
+
+const isChildOf = (
+  child: IElementDefinition,
+  parent: IElementDefinition
+): boolean => {
+  if (child.path)
+    return child.path.substring(0, child.path.lastIndexOf(".")) === parent.path;
+  else {
+    return false;
+  }
+};
+
+const isSliceOf = (
+  slice: IElementDefinition,
+  element: IElementDefinition
+): boolean => {
+  if (slice.path) {
+    return (
+      slice.path === element.path && !!slice.sliceName && !element.sliceName
+    );
+  } else {
+    return false;
+  }
 };
 
 const useFhirResourceTreeData = (): ElementNode[] | any => {
   if (fhirResource.snapshot) {
     const elementDefinitions = fhirResource.snapshot.element.slice(1);
-    const snapshot: ElementNode[] = [];
 
-    fhirResource.snapshot.element.slice(1).forEach((elementDefinition) => {
-      const elementNode = createElementNode(elementDefinition);
-      if (
-        getParent(elementDefinition, elementDefinitions) &&
-        !elementDefinition.sliceName
-      ) {
-        const parentElement = getParent(elementDefinition, elementDefinitions);
-        const nature = getNature(elementDefinition);
-        if (parentElement) {
-          const parent = createElementNode(parentElement);
-          parent.nature = nature;
-          elementNode.parent = parent;
-          if (nature === "multiple") {
-            const newElementNode = createElementNode(elementDefinition);
-            newElementNode.nature = nature;
-            elementNode.nature = "complex";
-            snapshot.push(newElementNode);
-          } else {
-            elementNode.nature = nature;
+    const buildElements = (): ElementNode[] => {
+      const recBuildElements = (
+        elementsDefinition: IElementDefinition[],
+        elementNodes: ElementNode[],
+        previousElementDefinition?: ElementNode
+      ): ElementNode[] | any => {
+        const [
+          currentElementDefinition,
+          nextElementDefinition,
+          ...remainingSnapshot
+        ] = elementsDefinition;
+
+        if (!currentElementDefinition) {
+          return elementNodes;
+        }
+
+        if (previousElementDefinition) {
+          console.log(previousElementDefinition);
+          if (
+            isChildOf(
+              currentElementDefinition,
+              previousElementDefinition.definition
+            ) &&
+            !isChildOf(nextElementDefinition, currentElementDefinition)
+          ) {
+            console.log(previousElementDefinition.id);
+            const child = createElementNode(currentElementDefinition);
+
+            if (previousElementDefinition) {
+              child.parent = previousElementDefinition;
+              previousElementDefinition.children.push(child);
+              return recBuildElements(
+                remainingSnapshot,
+                elementNodes,
+                previousElementDefinition
+              );
+            }
           }
+          const newElementNode = createElementNode(currentElementDefinition);
+          elementNodes.push(newElementNode);
+          return recBuildElements(
+            remainingSnapshot,
+            elementNodes,
+            previousElementDefinition.parent
+          );
         }
-        snapshot.push(elementNode);
-        /* if (
-          !nature &&
-          elementDefinition.path?.endsWith("[x]") &&
-          !elementDefinition.sliceName
-        ) {
-          // creer les enfants des multiple choice
-          //console.log(elementDefinition);
-        } */
-        //push dans
-      } else if (
-        !getParent(elementDefinition, elementDefinitions) &&
-        !elementDefinition.sliceName
-      ) {
-        const nature = getNature(elementDefinition);
-        if (nature === "multiple") {
-          const parentElement = createElementNode(elementDefinition);
-          parentElement.nature = nature;
-          elementNode.nature = getNature(elementDefinition, "1");
-          elementNode.parent = parentElement;
-          snapshot.push(parentElement);
-        } else {
-          elementNode.nature = nature;
-        }
-        snapshot.push(elementNode);
-      } else if (elementNode.isSlice) {
-        const parentElement = snapshot.find(
-          (snap) =>
-            elementDefinition.id?.substring(
-              0,
-              elementDefinition.id.lastIndexOf(".")
-            ) === snap.id ||
-            (elementDefinition.path === snap.path &&
-              !!elementDefinition.sliceName)
+
+        const newElementNode = createElementNode(currentElementDefinition);
+        elementNodes.push(newElementNode);
+        return recBuildElements(
+          remainingSnapshot,
+          elementNodes,
+          newElementNode
         );
-        const nature = getNature(elementDefinition, "1");
-        elementNode.nature = nature;
-        elementNode.parent = parentElement;
-        snapshot.push(elementNode);
-      }
-    });
+      };
 
-    const complexSnapshot: ElementNode[] = [];
+      return recBuildElements(elementDefinitions, []);
+    };
 
-    const tree = buildChildren(snapshot, []);
-
-    console.log(snapshot);
+    console.log(buildElements());
   }
 };
 
