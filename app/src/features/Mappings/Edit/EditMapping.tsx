@@ -8,13 +8,16 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import BackIcon from "@material-ui/icons/ArrowBackIos";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import clsx from "clsx";
 import differenceBy from "lodash/differenceBy";
+import head from "lodash/head";
 import isEqual from "lodash/isEqual";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { useAppSelector } from "app/store";
+import Alert from "common/components/Alert";
 import useEditMapping from "common/hooks/useEditMapping";
 import { columnSelectors } from "features/Columns/columnSlice";
 import { filterSelectors } from "features/Filters/filterSlice";
@@ -33,8 +36,10 @@ import {
   useApiJoinsUpdateMutation,
   useApiResourcesUpdateMutation,
 } from "services/api/endpoints";
+import { apiValidationErrorFromResponse } from "services/api/errors";
 import {
   ColumnRequest,
+  CredentialRequest,
   FilterRequest,
   JoinRequest,
 } from "services/api/generated/api.generated";
@@ -61,6 +66,7 @@ const EditMapping = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [isEditLoading, setEditLoading] = useState(false);
+  const [alert, setAlert] = useState<string | undefined>(undefined);
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -90,6 +96,7 @@ const EditMapping = (): JSX.Element => {
   const [createJoin] = useApiJoinsCreateMutation();
   const [updateJoin] = useApiJoinsUpdateMutation();
 
+  const handleAlertClose = () => setAlert(undefined);
   const handleCancelClick = () => {
     history.goBack();
   };
@@ -279,7 +286,10 @@ const EditMapping = (): JSX.Element => {
           )
         );
       } catch (error) {
-        // Fix: Handle Column, Filter, Join creation/update/delete errors
+        const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
+          error as FetchBaseQueryError
+        );
+        setAlert(head(data?.non_field_errors));
       } finally {
         setEditLoading(false);
       }
@@ -327,6 +337,12 @@ const EditMapping = (): JSX.Element => {
           <></>
         )}
       </Container>
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
+      />
     </>
   );
 };
