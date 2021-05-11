@@ -9,4 +9,4 @@ set -e
 export STATIC_ROOT="${STATIC_ROOT:-/var/www/static/pyrog-app}"
 
 yarn build
-cp -r ./build "${STATIC_ROOT}"
+rm -rf "${STATIC_ROOT}" && cp -r ./build "${STATIC_ROOT}"
