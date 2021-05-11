@@ -1,12 +1,15 @@
+import { useMemo } from "react";
+
 import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 
 import {
   allowedAttributes,
   complexTypes,
-  fhirResourceObs as fhirResource,
   omittedResources,
   primitiveTypes,
 } from "features/FhirResourceTree/fhirResource";
+import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
+import { Resource } from "services/api/generated/api.generated";
 
 type TypeNature = "complex" | "primitive" | "multiple" | undefined;
 
@@ -126,58 +129,71 @@ const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
   );
 };
 
-const useFhirResourceTreeData = (): ElementNode[] => {
-  if (fhirResource.snapshot) {
-    const elementDefinitions = fhirResource.snapshot.element.slice(1);
+const buildElements = (
+  elementDefinitions: IElementDefinition[]
+): ElementNode[] => {
+  const recBuildElements = (
+    elementsDefinition: IElementDefinition[],
+    elementNodes: ElementNode[],
+    previousElementDefinition?: ElementNode
+  ): ElementNode[] => {
+    const [current, ...rest] = elementsDefinition;
 
-    const buildElements = (): ElementNode[] => {
-      const recBuildElements = (
-        elementsDefinition: IElementDefinition[],
-        elementNodes: ElementNode[],
-        previousElementDefinition?: ElementNode
-      ): ElementNode[] => {
-        const [current, ...rest] = elementsDefinition;
+    if (!current) {
+      return elementNodes;
+    }
 
-        if (!current) {
-          return elementNodes;
-        }
+    if (shouldOmit(current)) {
+      return recBuildElements(rest, elementNodes, previousElementDefinition);
+    }
 
-        if (shouldOmit(current)) {
-          return recBuildElements(
-            rest,
-            elementNodes,
-            previousElementDefinition
-          );
-        }
+    const currentElementNode = createElementNode(current);
 
-        const currentElementNode = createElementNode(current);
-
-        if (previousElementDefinition) {
-          if (
-            isElementNodeChildOf(currentElementNode, previousElementDefinition)
-          ) {
-            currentElementNode.parent = previousElementDefinition;
-            previousElementDefinition.children.push(currentElementNode);
-            return recBuildElements(rest, elementNodes, currentElementNode);
-          } else {
-            return recBuildElements(
-              elementsDefinition,
-              elementNodes,
-              previousElementDefinition.parent
-            );
-          }
-        }
-
-        elementNodes.push(currentElementNode);
+    if (previousElementDefinition) {
+      if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
+        currentElementNode.parent = previousElementDefinition;
+        previousElementDefinition.children.push(currentElementNode);
         return recBuildElements(rest, elementNodes, currentElementNode);
-      };
+      } else {
+        return recBuildElements(
+          elementsDefinition,
+          elementNodes,
+          previousElementDefinition.parent
+        );
+      }
+    }
 
-      return recBuildElements(elementDefinitions, []);
-    };
+    elementNodes.push(currentElementNode);
+    return recBuildElements(rest, elementNodes, currentElementNode);
+  };
 
-    return buildElements();
-  }
-  return [];
+  return recBuildElements(elementDefinitions, []);
+};
+
+const useFhirResourceTreeData = (
+  mapping?: Resource
+): {
+  isLoading: boolean;
+  data: ElementNode[] | undefined;
+} => {
+  const {
+    data: structureDefinition,
+    isLoading,
+  } = useApiStructureDefinitionRetrieveQuery(
+    {
+      id: mapping?.definition_id ?? "",
+    },
+    { skip: !mapping }
+  );
+
+  const data = useMemo(() => {
+    if (structureDefinition?.snapshot) {
+      const elementDefinitions = structureDefinition.snapshot.element.slice(1);
+      return buildElements(elementDefinitions);
+    }
+  }, [structureDefinition]);
+
+  return { isLoading, data };
 };
 
 export default useFhirResourceTreeData;

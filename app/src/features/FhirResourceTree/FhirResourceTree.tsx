@@ -7,12 +7,12 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView, TreeItem } from "@material-ui/lab";
 import clsx from "clsx";
+import { useParams } from "react-router-dom";
 
 import useFhirResourceTreeData, {
   ElementNode,
 } from "common/hooks/useFhirResourceTreeData";
-
-import { fhirResourcePat as fhirResource } from "./fhirResource";
+import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -45,7 +45,14 @@ const ElementNodeTreeItem = (elementNode: ElementNode): JSX.Element => (
 
 const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
-  const elementNodes = useFhirResourceTreeData();
+  const { mappingId } = useParams<{ mappingId?: string }>();
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    {
+      id: mappingId ?? "",
+    },
+    { skip: !mappingId }
+  );
+  const { data: elementNodes } = useFhirResourceTreeData(mapping);
 
   console.log(elementNodes);
 
@@ -58,16 +65,17 @@ const FhirResourceTree = (): JSX.Element => {
           iconSize={15}
         />
         <Typography className={classes.headerTitle} color="textPrimary">
-          {fhirResource.id}
+          {mapping?.definition_id}
         </Typography>
       </div>
       <TreeView
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {elementNodes.map((node: ElementNode) => (
-          <ElementNodeTreeItem key={node.id} {...node} />
-        ))}
+        {elementNodes &&
+          elementNodes.map((node: ElementNode) => (
+            <ElementNodeTreeItem key={node.id} {...node} />
+          ))}
       </TreeView>
     </Container>
   );
