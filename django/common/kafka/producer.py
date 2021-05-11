@@ -16,6 +16,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
         if isinstance(obj, bytes):
+            # FIXME: this should be done differently, issue #376
             # Python doesn't know how to serialize bytes
             # We arbitrarily choose utf-8. Note that if we need to decode bytes another
             # way, we'll need to use a cleaning script that basically does
