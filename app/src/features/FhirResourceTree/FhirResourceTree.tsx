@@ -56,8 +56,6 @@ const FhirResourceTree = (): JSX.Element => {
     id: mapping?.definition_id ?? "",
   });
 
-  console.log(elementNodes);
-
   return (
     <Container>
       <div className={classes.header}>
