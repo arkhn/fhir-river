@@ -9,7 +9,6 @@ import {
   primitiveTypes,
 } from "features/FhirResourceTree/fhirResource";
 import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
-import { Resource } from "services/api/generated/api.generated";
 
 type TypeNature = "complex" | "primitive" | "multiple" | undefined;
 
@@ -170,21 +169,18 @@ const buildElements = (
   return recBuildElements(elementDefinitions, []);
 };
 
-const useFhirResourceTreeData = (
-  mapping?: Resource
-): {
+const useFhirResourceTreeData = (params: {
+  id: string;
+}): {
   isLoading: boolean;
   data: ElementNode[] | undefined;
 } => {
   const {
     data: structureDefinition,
     isLoading,
-  } = useApiStructureDefinitionRetrieveQuery(
-    {
-      id: mapping?.definition_id ?? "",
-    },
-    { skip: !mapping }
-  );
+  } = useApiStructureDefinitionRetrieveQuery({
+    id: params.id,
+  });
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
