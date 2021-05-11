@@ -10,10 +10,23 @@
         <finalName>${project.artifactId}</finalName>
     </build>
 
+    <repositories>
+        <repository>
+            <id>oss-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
     <parent>
         <groupId>ca.uhn.hapi.fhir</groupId>
         <artifactId>hapi-fhir</artifactId>
-        <version>5.3.0</version>
+        <version>5.4.0-PRE10-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -22,14 +35,14 @@
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
-            <version>5.3.0</version>
+            <version>5.4.0-PRE10-SNAPSHOT</version>
         </dependency>
 
         <!-- This dependency includes the JPA server itself, which is packaged separately from the rest of HAPI FHIR -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-base</artifactId>
-            <version>5.3.0</version>
+            <version>5.4.0-PRE10-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
