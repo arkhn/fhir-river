@@ -14,12 +14,13 @@ class FhirProxyView(ProxyView):
     upstream = settings.FHIR_API_URL
 
     def get_request_headers(self):
+        headers = super().get_request_headers()
+        headers["Cache-Control"] = "no-cache"
         try:
             token = self.request.session["oidc_access_token"]
+            headers["Authorization"] = f"Bearer {token}"
         except KeyError:
-            return super().get_request_headers()
-        headers = super().get_request_headers()
-        headers["Authorization"] = f"Bearer {token}"
+            pass
         return headers
 
 
