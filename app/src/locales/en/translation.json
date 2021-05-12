@@ -68,5 +68,6 @@
   "confirm": "Confirm",
   "deleteMappingPrompt": "Are you sure you want to delete this mapping ?",
   "cannotUndoAction": "This action cannot be undone.",
-  "confirmDelete": "Yes, delete"
+  "confirmDelete": "Yes, delete",
+  "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}"
 }

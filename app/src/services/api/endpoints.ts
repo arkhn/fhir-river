@@ -10,7 +10,6 @@ import {
   providesOne,
   invalidatesList,
   invalidatesOne,
-  providesFhirBundle,
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
@@ -44,11 +43,10 @@ export const api = generatedApi
       }),
       apiStructureDefinitionList: build.query<
         Required<IStructureDefinition, "id">[],
-        { id: string; params?: string }
+        { params?: string }
       >({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
-          providesTags: providesFhirBundle("StructureDefinition"),
+          url: `/api/fhir/StructureDefinition?${queryArg.params || ""}`,
         }),
         transformResponse: (response: IBundle) =>
           response.entry?.map(
@@ -59,11 +57,13 @@ export const api = generatedApi
         Required<IStructureDefinition, "id">,
         {
           id: string;
-          params: string;
+          params?: string;
         }
       >({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
+          url: `/api/fhir/StructureDefinition/${queryArg.id}?${
+            queryArg.params || ""
+          }`,
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
