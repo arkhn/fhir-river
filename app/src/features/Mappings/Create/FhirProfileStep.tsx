@@ -122,7 +122,10 @@ const FhirProfileStep = ({ mapping }: FhirProfileStepProps): JSX.Element => {
         </b>
         {t("resource")}
       </Typography>
-      <UploadProfileListItem mapping={mapping} />
+      <UploadProfileListItem
+        mapping={mapping}
+        originalStructureDefinition={originalStructureDefinition}
+      />
       <div className={classes.divideContainer}>
         <Divider className={classes.divider} />
       </div>

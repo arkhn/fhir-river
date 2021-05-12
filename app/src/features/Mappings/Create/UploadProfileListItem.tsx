@@ -1,5 +1,6 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useRef, useState } from "react";
 
+import { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import {
   CircularProgress,
   ListItem,
@@ -11,6 +12,7 @@ import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
+import Alert from "common/components/Alert";
 import { useApiStructureDefinitionCreateMutation } from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 
@@ -37,14 +39,18 @@ const useStyles = makeStyles((theme) => ({
 
 type UploadProfileListItemProps = {
   mapping: Partial<Resource>;
+  originalStructureDefinition?: IStructureDefinition;
 };
 
 const UploadProfileListItem = ({
   mapping,
+  originalStructureDefinition,
 }: UploadProfileListItemProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const classes = useStyles();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [alert, setAlert] = useState<string | undefined>(undefined);
   const [
     createStructureDefinition,
     { isLoading },
@@ -52,14 +58,17 @@ const UploadProfileListItem = ({
 
   let fileReader: FileReader | null = null;
 
+  const handleAlertClose = () => setAlert(undefined);
   const handleFileRead = async () => {
     const content = fileReader?.result;
     if (content && mapping.id) {
       const parsedContent = JSON.parse(content as string);
-      const isContentStructureDef =
-        parsedContent.resourceType === "StructureDefinition";
 
-      if (isContentStructureDef) {
+      const isContentProfileOfSelectedStructureDef =
+        parsedContent.resourceType === "StructureDefinition" &&
+        parsedContent.type === originalStructureDefinition?.type;
+
+      if (isContentProfileOfSelectedStructureDef) {
         const createdStructureDef = await createStructureDefinition(
           parsedContent
         ).unwrap();
@@ -69,6 +78,17 @@ const UploadProfileListItem = ({
             changes: { definition_id: createdStructureDef.id },
           })
         );
+      } else {
+        setAlert(
+          t("errorProfileUpload", {
+            originalType: originalStructureDefinition?.type,
+          })
+        );
+      }
+
+      //Clear input value
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -85,6 +105,7 @@ const UploadProfileListItem = ({
     <label>
       <input
         className={classes.fileInput}
+        ref={fileInputRef}
         disabled={isLoading}
         type="file"
         accept=".json"
@@ -100,6 +121,12 @@ const UploadProfileListItem = ({
           <ListItemText primary={t("importNewProfile")} />
         )}
       </ListItem>
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
+      />
     </label>
   );
 };
