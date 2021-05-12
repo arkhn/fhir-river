@@ -1,7 +1,9 @@
 import {
   IBundle,
   IStructureDefinition,
+  IValueSet,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
+import { Required } from "utility-types";
 
 import {
   providesList,
@@ -23,6 +25,7 @@ const tagTypes = [
   "Filters",
   "Joins",
   "StructureDefinition",
+  "ValueSets",
 ];
 
 export const api = generatedApi
@@ -34,13 +37,26 @@ export const api = generatedApi
           method: "POST",
         }),
       }),
-      apiStructureDefinitionList: build.query<IBundle, { params: string }>({
+      apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
+          url: `/api/fhir/ValueSet/${queryArg.id}/$expand?`,
         }),
       }),
+      apiStructureDefinitionList: build.query<
+        Required<IStructureDefinition, "id">[],
+        { id: string; params?: string }
+      >({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
+          providesTags: providesFhirBundle("StructureDefinition"),
+        }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(
+            ({ resource }) => resource as Required<IStructureDefinition, "id">
+          ) || [],
+      }),
       apiStructureDefinitionRetrieve: build.query<
-        IStructureDefinition,
+        Required<IStructureDefinition, "id">,
         {
           id: string;
           params: string;
@@ -51,8 +67,8 @@ export const api = generatedApi
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
-        IStructureDefinition,
-        IStructureDefinition
+        Required<IStructureDefinition, "id">,
+        Required<IStructureDefinition, "id">
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition`,
@@ -78,7 +94,7 @@ export const api = generatedApi
        * StructureDefinition
        */
       apiStructureDefinitionList: {
-        providesTags: providesFhirBundle("StructureDefinition"),
+        providesTags: providesList("StructureDefinition"),
       },
       apiStructureDefinitionRetrieve: {
         providesTags: providesOne("StructureDefinition"),
@@ -173,6 +189,12 @@ export const api = generatedApi
       apiJoinsCreate: {
         invalidatesTags: invalidatesList("Joins"),
       },
+      /**
+       * ValueSets
+       */
+      apiValueSetsRetrieve: {
+        providesTags: providesOne("ValueSets"),
+      },
     },
   });
 
@@ -213,4 +235,6 @@ export const {
   useApiFiltersCreateMutation,
   // Joins
   useApiJoinsCreateMutation,
+  // ValueSets
+  useApiValueSetsRetrieveQuery,
 } = api;

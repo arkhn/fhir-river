@@ -4,6 +4,7 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
   Container,
+  CircularProgress,
   List,
   ListItem,
   ListItemIcon,
@@ -18,18 +19,10 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
+import { useApiValueSetsRetrieveQuery } from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 
 import { resourceUpdated } from "../resourceSlice";
-
-//Mock
-const FhirResources = [
-  "Account",
-  "ActivityDefinition",
-  "AdverseEvent",
-  "AllergyIntolerance",
-  "Appointment",
-];
 
 const useStyles = makeStyles((theme) => ({
   searchBarContainer: {
@@ -63,10 +56,17 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const [searchValue, setSearchValue] = useState("");
 
+  const { data, isLoading } = useApiValueSetsRetrieveQuery({
+    id: "resource-types",
+  });
+  const resourceTypesCodes = data?.expansion?.contains
+    ?.map(({ code }) => code || "")
+    .sort();
+
   const isDefinitionIdSelected = (definitionId: string) =>
     definitionId === mapping.definition_id;
 
-  const handleClickFhirResource = (definitionId: string) => () => {
+  const handleClickFhirResource = (definitionId?: string) => () => {
     if (mapping.id)
       dispatch(
         resourceUpdated({
@@ -96,29 +96,41 @@ const FhirResourceStep = ({ mapping }: FhirResourceStepProps): JSX.Element => {
           }}
         />
       </div>
-      <List>
-        {FhirResources.filter((defId) =>
-          defId.toLowerCase().includes(searchValue.toLowerCase())
-        ).map((defId) => (
-          <ListItem
-            button
-            key={defId}
-            alignItems="flex-start"
-            className={classes.listItem}
-            onClick={handleClickFhirResource(defId)}
-          >
-            <ListItemIcon>
-              <Icon
-                icon={IconNames.FLAME}
-                className={clsx(classes.icon, classes.flameIcon)}
-                iconSize={20}
-              />
-            </ListItemIcon>
-            <ListItemText primary={defId} />
-            {isDefinitionIdSelected(defId) && <CheckIcon color="primary" />}
-          </ListItem>
-        ))}
-      </List>
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        resourceTypesCodes && (
+          <List>
+            {resourceTypesCodes
+              .filter((code) =>
+                code.toLowerCase().includes(searchValue.toLowerCase())
+              )
+              .map((code) => {
+                return (
+                  <ListItem
+                    button
+                    key={code}
+                    alignItems="flex-start"
+                    className={classes.listItem}
+                    onClick={handleClickFhirResource(code)}
+                  >
+                    <ListItemIcon>
+                      <Icon
+                        icon={IconNames.FLAME}
+                        className={clsx(classes.icon, classes.flameIcon)}
+                        iconSize={20}
+                      />
+                    </ListItemIcon>
+                    <ListItemText primary={code} />
+                    {isDefinitionIdSelected(code) && (
+                      <CheckIcon color="primary" />
+                    )}
+                  </ListItem>
+                );
+              })}
+          </List>
+        )
+      )}
     </Container>
   );
 };

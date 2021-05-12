@@ -11,4 +11,4 @@ global.fetch = nodeFetch;
 //@ts-ignore
 global.Request = Request;
 
-jest.setTimeout(42000);
+jest.setTimeout(100000);
