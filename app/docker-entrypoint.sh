@@ -8,8 +8,6 @@ set -e
 
 export STATIC_ROOT="${STATIC_ROOT:-/var/www/static/pyrog-app}"
 
-yarn build
-
 # template build/index.html using environment variables
 sed -i -e "s/{{REACT_APP_API_URL}}/$REACT_APP_API_URL/g" \
     ./build/index.html
