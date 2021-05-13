@@ -18,7 +18,7 @@ mozilla-django-oidc==1.2.4
 msgpack==0.6.2
 prometheus-client==0.8.0
 pyodbc==4.0.30
-pydantic==1.7.3
+pydantic==1.7.4
 python-dotenv==0.17.0
 pytz==2021.1
 redis==3.5.3
