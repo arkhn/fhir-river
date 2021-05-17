@@ -5,16 +5,21 @@ import { IconName, IconNames } from "@blueprintjs/icons";
 import { Typography } from "@material-ui/core";
 import { TreeItem as MuiTreeItem } from "@material-ui/lab";
 
-import useFhirResourceTreeData, {
-  ElementNode,
-} from "common/hooks/useFhirResourceTreeData";
+import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 
-const TreeItem = (elementNode: ElementNode): JSX.Element => {
+import { ElementNode } from "./resourceTreeSlice";
+
+type TreeItemProps = {
+  elementNode: ElementNode;
+};
+
+const TreeItem = ({ elementNode }: TreeItemProps): JSX.Element => {
   const [hasExpanded, setHasExpanded] = useState(false);
   const isPrimitive = elementNode.nature === "primitive";
-  const { data } = useFhirResourceTreeData(
-    { id: elementNode.type ?? "" },
-    { skip: isPrimitive || !hasExpanded }
+  const isComplex = elementNode.nature === "complex";
+  useFhirResourceTreeData(
+    { id: elementNode.type ?? "", nodeId: elementNode.id },
+    { skip: !isComplex || !hasExpanded }
   );
 
   const handleIconClick = () => {
@@ -63,15 +68,11 @@ const TreeItem = (elementNode: ElementNode): JSX.Element => {
       onIconClick={handleIconClick}
       onLabelClick={handleLabelClick}
     >
-      {elementNode.children.length > 0 ? (
-        elementNode.children.map((node) => <TreeItem key={node.id} {...node} />)
-      ) : !isPrimitive ? (
-        data ? (
-          data.map((node) => <TreeItem key={node.id} {...node} />)
-        ) : (
-          <div key="stub" />
-        )
-      ) : null}
+      {elementNode.children.length > 0
+        ? elementNode.children.map((node) => (
+            <TreeItem key={node.id} elementNode={node} />
+          ))
+        : !isPrimitive && <div key="stub" />}
     </MuiTreeItem>
   );
 };

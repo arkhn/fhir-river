@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   IElementDefinition,
@@ -6,34 +6,20 @@ import {
 } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { v4 as uuid } from "uuid";
 
+import { useAppDispatch, useAppSelector } from "app/store";
 import {
   allowedAttributes,
   complexTypes,
   omittedResources,
   primitiveTypes,
 } from "features/FhirResourceTree/fhirResource";
+import {
+  ElementNode,
+  selectRootNodes,
+  setNodeChildren,
+  TypeNature,
+} from "features/FhirResourceTree/resourceTreeSlice";
 import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
-
-type TypeNature = "complex" | "primitive" | "array" | "choice" | undefined;
-
-type Element<T> = {
-  id: string;
-  name: string;
-  path: string;
-
-  nature?: TypeNature;
-  isSlice: boolean;
-
-  parent?: T;
-  children: T[];
-
-  type?: string;
-
-  definition: IElementDefinition;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ElementNode extends Element<ElementNode> {}
 
 const toCamelCase = (string?: string) => {
   return string && string.charAt(0).toUpperCase() + string.slice(1);
@@ -179,6 +165,32 @@ const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
   );
 };
 
+const getParent = (
+  child: ElementNode,
+  nodes: ElementNode[]
+): ElementNode | undefined => {
+  const isChildInNodes = nodes.some(({ id }) => id === child.id);
+
+  // If we find the child in the nodes array, this means it doesn't have any parents
+  if (isChildInNodes) return undefined;
+
+  for (const node of nodes) {
+    const isChildInNodeChildren = node.children.some(
+      ({ id }) => id === child.id
+    );
+
+    if (isChildInNodeChildren) {
+      return node;
+    }
+  }
+
+  const flattenChildren = nodes.reduce(
+    (acc: ElementNode[], node) => [...acc, ...node.children],
+    []
+  );
+  return getParent(child, flattenChildren);
+};
+
 const buildElements = (
   elementsDefinition: IElementDefinition[],
   elementNodes: ElementNode[],
@@ -204,14 +216,14 @@ const buildElements = (
 
   if (previousElementDefinition) {
     if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
-      currentElementNode.parent = previousElementDefinition;
       previousElementDefinition.children.push(currentElementNode);
       return buildElements(rest, elementNodes, currentElementNode);
     } else {
+      // console.log(getParent(previousElementDefinition, elementNodes));
       return buildElements(
         elementsDefinition,
         elementNodes,
-        previousElementDefinition.parent
+        getParent(previousElementDefinition, elementNodes)
       );
     }
   }
@@ -223,21 +235,25 @@ const buildElements = (
 const useFhirResourceTreeData = (
   params: {
     id: string;
+    nodeId?: string;
   },
   options?: { skip?: boolean }
 ): {
+  rootNodes?: ElementNode[];
   isLoading: boolean;
-  data: ElementNode[] | undefined;
 } => {
+  const { id, nodeId } = params;
   const {
     data: structureDefinition,
     isLoading,
   } = useApiStructureDefinitionRetrieveQuery(
     {
-      id: params.id,
+      id,
     },
     options
   );
+  const dispatch = useAppDispatch();
+  const rootNodes = useAppSelector(selectRootNodes);
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
@@ -246,7 +262,13 @@ const useFhirResourceTreeData = (
     }
   }, [structureDefinition]);
 
-  return { isLoading, data };
+  useEffect(() => {
+    if (data) {
+      data && dispatch(setNodeChildren({ children: data, nodeId }));
+    }
+  }, [nodeId, data, dispatch]);
+
+  return { rootNodes, isLoading };
 };
 
 export default useFhirResourceTreeData;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -9,9 +9,7 @@ import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
 
-import useFhirResourceTreeData, {
-  ElementNode,
-} from "common/hooks/useFhirResourceTreeData";
+import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
 import TreeItem from "./TreeItem";
@@ -37,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
 
 const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
+  const [selectedNode, setSelectedNode] = useState<string>("");
+  const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
   const { mappingId } = useParams<{ mappingId?: string }>();
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
@@ -44,9 +44,19 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { data: elementNodes } = useFhirResourceTreeData({
+  const { rootNodes } = useFhirResourceTreeData({
     id: mapping?.definition_id ?? "",
   });
+
+  const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
+    setSelectedNode(id);
+  };
+  const handleExpandNode = (
+    _: React.ChangeEvent<unknown>,
+    nodeIds: string[]
+  ) => {
+    setExpandedNodes(nodeIds);
+  };
 
   return (
     <Container>
@@ -61,12 +71,16 @@ const FhirResourceTree = (): JSX.Element => {
         </Typography>
       </div>
       <TreeView
+        selected={selectedNode}
+        expanded={expandedNodes}
+        onNodeToggle={handleExpandNode}
+        onNodeSelect={handleSelectNode}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {elementNodes &&
-          elementNodes.map((node: ElementNode) => (
-            <TreeItem key={node.id} {...node} />
+        {rootNodes &&
+          rootNodes.map((node) => (
+            <TreeItem key={node.id} elementNode={node} />
           ))}
       </TreeView>
     </Container>
