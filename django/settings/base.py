@@ -221,14 +221,24 @@ LOGGING = {
 # Used to access api from third-party domain
 
 CORS_ALLOWED_ORIGINS = get_env_array_value("CORS_ALLOWED_ORIGINS", default=[])
+CORS_ALLOW_ALL_ORIGINS = get_env_bool_value("CORS_ALLOW_ALL_ORIGINS", default=False)
 CORS_URLS_REGEX = r"^\/(api|oidc)\/.*$"
+CORS_ALLOW_CREDENTIALS = get_env_bool_value("CORS_ALLOW_CREDENTIALS", default=False)
 
 # Rest Framework
 # https://www.django-rest-framework.org/api-guide/settings/
 
+_DEFAULT_RENDERER_CLASSES = get_env_array_value(
+    "RF_DEFAULT_RENDERER_CLASSES", default=["rest_framework.renderers.JSONRenderer"]
+)
+
+_DEFAULT_PERMISSION_CLASSES = get_env_array_value(
+    "RF_DEFAULT_PERMISSION_CLASSES", default=["rest_framework.permissions.IsAuthenticated"]
+)
+
 REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_RENDERER_CLASSES": _DEFAULT_RENDERER_CLASSES,
+    "DEFAULT_PERMISSION_CLASSES": _DEFAULT_PERMISSION_CLASSES,
 }
 
 # Sessions
@@ -314,3 +324,19 @@ if SENTRY_ENABLED:
         "ENV": os.environ.get("SENTRY_ENVIRONMENT"),
         "RELEASE": os.environ.get("SENTRY_RELEASE", VERSION_NAME or VERSION_SHA),
     }
+
+# DRF Spectacular settings
+
+if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True":
+    INSTALLED_APPS += ["drf_spectacular"]
+    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+
+SPECTACULAR_SETTINGS = {
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+    ],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "TITLE": "River API",
+    "DESCRIPTION": "Arkhn's River API",
+    "VERSION": "0.1.0",
+}

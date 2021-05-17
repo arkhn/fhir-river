@@ -83,6 +83,13 @@ services:
       - "8000:8000"
     environment:
       - ENV=dev
+      - ADMIN_ENABLED=True
+      - ALLOWED_HOSTS=*
+      - SECRET_KEY=USE_IN_DEV_ONLY
+      - CORS_ALLOW_ALL_ORIGINS=True
+      - CORS_ALLOW_CREDENTIALS=True
+      - RF_DEFAULT_RENDERER_CLASSES=rest_framework.renderers.JSONRenderer,rest_framework.renderers.BrowsableAPIRenderer
+      - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
       - LOG_LEVEL=DEBUG
       - DEBUG=True
       - SECRET_KEY=whatever
