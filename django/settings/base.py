@@ -13,6 +13,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+
+def get_env_array_value(key: str, default: list = list):
+    return os.environ.get(key) and os.environ.get(key).split(",") or default
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -34,7 +39,7 @@ DEBUG = os.environ.get("DEBUG") and os.environ.get("DEBUG") == "True" or False
 # properly build urls.
 USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", False)
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS") and os.environ.get("ALLOWED_HOSTS").split(",") or []
+ALLOWED_HOSTS = get_env_array_value("ALLOWED_HOSTS", default=[])
 
 ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED") and os.environ.get("ADMIN_ENABLED") == "True" or False
 
@@ -211,9 +216,7 @@ LOGGING = {
 # CorsHeaders
 # Used to access api from third-party domain
 
-CORS_ALLOWED_ORIGINS = (
-    os.environ.get("CORS_ALLOWED_ORIGINS") and os.environ.get("CORS_ALLOWED_ORIGINS").split(",") or []
-)
+CORS_ALLOWED_ORIGINS = get_env_array_value("CORS_ALLOWED_ORIGINS", default=[])
 CORS_URLS_REGEX = r"^\/(api|oidc)\/.*$"
 
 # Rest Framework
