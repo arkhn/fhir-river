@@ -97,7 +97,7 @@ const createElementNode = (
     nature: getNature(elementDefinition),
     type: elementDefinition.type
       ?.map((t) => toCamelCase(computeType(t)))
-      .join(" | "), //toCamelCase(computeType(elementDefinition.type?.[0])),
+      .join(" | "),
   };
 };
 
@@ -141,13 +141,10 @@ const isMultipleChoiceOf = (
 const isChildOf = (
   child: IElementDefinition,
   parent: IElementDefinition
-): boolean => {
-  if (child.path)
-    return child.path.substring(0, child.path.lastIndexOf(".")) === parent.path;
-  else {
-    return false;
-  }
-};
+): boolean =>
+  child.path
+    ? child.path.substring(0, child.path.lastIndexOf(".")) === parent.path
+    : false;
 
 /**
  * Child of in ElementNode terms
