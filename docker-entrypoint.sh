@@ -6,7 +6,7 @@ set -e
 # Trace execution
 [[ "${DEBUG}" ]] && set -x
 
-export DJANGO_SETTINGS_MODULE=river.settings."${ENV:-prod}"
+export DJANGO_SETTINGS_MODULE=settings."${ENV:-prod}"
 
 if [[ "$#" -gt 0 ]]; then
   python django/manage.py "$@"

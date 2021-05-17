@@ -32,7 +32,7 @@ line-length = 119
 target-version = ["py38"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "river.settings.test"
+DJANGO_SETTINGS_MODULE = "settings.test"
 testpaths = "tests"
 python_paths = "django"
 markers = '''
