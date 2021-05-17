@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 
-import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
+import {
+  IElementDefinition,
+  IElementDefinition_Type,
+} from "@ahryman40k/ts-fhir-types/lib/R4";
+import { v4 as uuid } from "uuid";
 
 import {
   allowedAttributes,
@@ -10,7 +14,7 @@ import {
 } from "features/FhirResourceTree/fhirResource";
 import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
 
-type TypeNature = "complex" | "primitive" | "multiple" | undefined;
+type TypeNature = "complex" | "primitive" | "array" | "choice" | undefined;
 
 type Element<T> = {
   id: string;
@@ -23,11 +27,17 @@ type Element<T> = {
   parent?: T;
   children: T[];
 
+  type?: string;
+
   definition: IElementDefinition;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ElementNode extends Element<ElementNode> {}
+
+const toCamelCase = (string?: string) => {
+  return string && string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 const shouldOmit = (
   elementDefinition: IElementDefinition
@@ -47,15 +57,15 @@ const shouldOmit = (
 
 const getNature = (elementDefinition: IElementDefinition): TypeNature => {
   const { max, sliceName, type: types } = elementDefinition;
-  const type = types?.[0].code;
+  const type = types?.length === 1 && types?.[0].code;
 
   if (max && (max === "*" || +max > 1) && !sliceName) {
-    return "multiple";
+    return "array";
   }
 
   if (
     (type && primitiveTypes.includes(type)) ||
-    type === "http://hl7.org/fhirpath/System.String" // Fix : Question
+    type === "http://hl7.org/fhirpath/System.String"
   ) {
     return "primitive";
   }
@@ -63,21 +73,62 @@ const getNature = (elementDefinition: IElementDefinition): TypeNature => {
   if (type && complexTypes.includes(type)) {
     return "complex";
   }
+  if (types && types.length > 1 && elementDefinition.path?.endsWith("[x]")) {
+    return "choice";
+  }
+};
+
+const computeType = (
+  typeElement?: IElementDefinition_Type
+): string | undefined => {
+  if (!typeElement) return;
+  const primitive =
+    typeElement.extension &&
+    typeElement.extension.find(
+      (ext) =>
+        ext.url ===
+        "http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type"
+    );
+  // when dealing with primitive types (eg: fhirpath/System.String), we use the definition indicated
+  // by the extension of type "structuredefinition-fhir-type" (see "type" of Observation.id for example).
+  if (primitive) return primitive.valueUrl;
+  if (typeElement.profile && typeElement.profile.length > 0) {
+    return typeElement.profile[0].split("/").pop();
+  }
+  return typeElement.code;
 };
 
 const createElementNode = (
   elementDefinition: IElementDefinition
 ): ElementNode => {
   return {
-    id: elementDefinition.id ?? "",
+    id: uuid(),
     name: elementDefinition.id?.split(".").pop() ?? "",
     children: [],
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
     isSlice: !!elementDefinition.sliceName,
     nature: getNature(elementDefinition),
+    type: elementDefinition.type
+      ?.map((t) => toCamelCase(computeType(t)))
+      .join(" | "), //toCamelCase(computeType(elementDefinition.type?.[0])),
   };
 };
+
+const getChildrenChoices = (
+  elementDefinition: IElementDefinition
+): ElementNode[] =>
+  elementDefinition.type?.map((type) =>
+    createElementNode({
+      ...elementDefinition,
+      type: [{ code: computeType(type) }],
+      id: elementDefinition.id?.replace("[x]", toCamelCase(type.code) ?? ""),
+      path: elementDefinition.path?.replace(
+        "[x]",
+        toCamelCase(type.code) ?? ""
+      ),
+    })
+  ) ?? [];
 
 const isSliceOf = (
   slice: IElementDefinition,
@@ -148,6 +199,12 @@ const buildElements = (
 
     const currentElementNode = createElementNode(current);
 
+    if (currentElementNode.nature === "choice") {
+      currentElementNode.children = getChildrenChoices(
+        currentElementNode.definition
+      );
+    }
+
     if (previousElementDefinition) {
       if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
         currentElementNode.parent = previousElementDefinition;
@@ -169,18 +226,24 @@ const buildElements = (
   return recBuildElements(elementDefinitions, []);
 };
 
-const useFhirResourceTreeData = (params: {
-  id: string;
-}): {
+const useFhirResourceTreeData = (
+  params: {
+    id: string;
+  },
+  options?: { skip?: boolean }
+): {
   isLoading: boolean;
   data: ElementNode[] | undefined;
 } => {
   const {
     data: structureDefinition,
     isLoading,
-  } = useApiStructureDefinitionRetrieveQuery({
-    id: params.id,
-  });
+  } = useApiStructureDefinitionRetrieveQuery(
+    {
+      id: params.id,
+    },
+    options
+  );
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {

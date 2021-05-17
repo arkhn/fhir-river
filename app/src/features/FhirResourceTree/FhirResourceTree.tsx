@@ -5,7 +5,7 @@ import { IconNames } from "@blueprintjs/icons";
 import { Container, makeStyles, Typography } from "@material-ui/core";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { TreeView, TreeItem } from "@material-ui/lab";
+import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
 
@@ -13,6 +13,8 @@ import useFhirResourceTreeData, {
   ElementNode,
 } from "common/hooks/useFhirResourceTreeData";
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
+
+import TreeItem from "./TreeItem";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -32,16 +34,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
   },
 }));
-
-const ElementNodeTreeItem = (elementNode: ElementNode): JSX.Element => (
-  <TreeItem nodeId={elementNode.id} label={elementNode.name}>
-    {Array.isArray(elementNode.children)
-      ? elementNode.children.map((node) => (
-          <ElementNodeTreeItem key={node.id} {...node} />
-        ))
-      : null}
-  </TreeItem>
-);
 
 const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
@@ -74,7 +66,7 @@ const FhirResourceTree = (): JSX.Element => {
       >
         {elementNodes &&
           elementNodes.map((node: ElementNode) => (
-            <ElementNodeTreeItem key={node.id} {...node} />
+            <TreeItem key={node.id} {...node} />
           ))}
       </TreeView>
     </Container>
