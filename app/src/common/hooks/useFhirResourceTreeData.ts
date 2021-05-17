@@ -180,50 +180,44 @@ const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
 };
 
 const buildElements = (
-  elementDefinitions: IElementDefinition[]
+  elementsDefinition: IElementDefinition[],
+  elementNodes: ElementNode[],
+  previousElementDefinition?: ElementNode
 ): ElementNode[] => {
-  const recBuildElements = (
-    elementsDefinition: IElementDefinition[],
-    elementNodes: ElementNode[],
-    previousElementDefinition?: ElementNode
-  ): ElementNode[] => {
-    const [current, ...rest] = elementsDefinition;
+  const [current, ...rest] = elementsDefinition;
 
-    if (!current) {
-      return elementNodes;
-    }
+  if (!current) {
+    return elementNodes;
+  }
 
-    if (shouldOmit(current)) {
-      return recBuildElements(rest, elementNodes, previousElementDefinition);
-    }
+  if (shouldOmit(current)) {
+    return buildElements(rest, elementNodes, previousElementDefinition);
+  }
 
-    const currentElementNode = createElementNode(current);
+  const currentElementNode = createElementNode(current);
 
-    if (currentElementNode.nature === "choice") {
-      currentElementNode.children = getChildrenChoices(
-        currentElementNode.definition
+  if (currentElementNode.nature === "choice") {
+    currentElementNode.children = getChildrenChoices(
+      currentElementNode.definition
+    );
+  }
+
+  if (previousElementDefinition) {
+    if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
+      currentElementNode.parent = previousElementDefinition;
+      previousElementDefinition.children.push(currentElementNode);
+      return buildElements(rest, elementNodes, currentElementNode);
+    } else {
+      return buildElements(
+        elementsDefinition,
+        elementNodes,
+        previousElementDefinition.parent
       );
     }
+  }
 
-    if (previousElementDefinition) {
-      if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
-        currentElementNode.parent = previousElementDefinition;
-        previousElementDefinition.children.push(currentElementNode);
-        return recBuildElements(rest, elementNodes, currentElementNode);
-      } else {
-        return recBuildElements(
-          elementsDefinition,
-          elementNodes,
-          previousElementDefinition.parent
-        );
-      }
-    }
-
-    elementNodes.push(currentElementNode);
-    return recBuildElements(rest, elementNodes, currentElementNode);
-  };
-
-  return recBuildElements(elementDefinitions, []);
+  elementNodes.push(currentElementNode);
+  return buildElements(rest, elementNodes, currentElementNode);
 };
 
 const useFhirResourceTreeData = (
@@ -248,7 +242,7 @@ const useFhirResourceTreeData = (
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element.slice(1);
-      return buildElements(elementDefinitions);
+      return buildElements(elementDefinitions, []);
     }
   }, [structureDefinition]);
 
