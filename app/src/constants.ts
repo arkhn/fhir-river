@@ -1,5 +1,6 @@
 type EnhancedWindow = typeof window & {
   env: {
+    PUBLIC_URL: string;
     API_URL?: string;
     OIDC_LOGIN_URL?: string;
     OIDC_LOGOUT_URL?: string;
@@ -8,6 +9,7 @@ type EnhancedWindow = typeof window & {
 };
 
 let {
+  PUBLIC_URL,
   REACT_APP_API_URL: API_URL,
   REACT_APP_OIDC_LOGIN_URL: OIDC_LOGIN_URL,
   REACT_APP_OIDC_LOGOUT_URL: OIDC_LOGOUT_URL,
@@ -17,6 +19,7 @@ let {
 // when using the app with a production build, environment variables are templated in index.html.
 if (process.env.NODE_ENV === "production") {
   ({
+    PUBLIC_URL,
     API_URL,
     OIDC_LOGIN_URL,
     OIDC_LOGOUT_URL,
@@ -24,4 +27,10 @@ if (process.env.NODE_ENV === "production") {
   } = (window as EnhancedWindow).env);
 }
 
-export { API_URL, OIDC_LOGIN_URL, OIDC_LOGOUT_URL, CSRF_COOKIE_NAME };
+export {
+  PUBLIC_URL,
+  API_URL,
+  OIDC_LOGIN_URL,
+  OIDC_LOGOUT_URL,
+  CSRF_COOKIE_NAME,
+};
