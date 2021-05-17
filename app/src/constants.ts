@@ -7,14 +7,21 @@ type EnhancedWindow = typeof window & {
   };
 };
 
-(window as EnhancedWindow).env =
-  process.env.NODE_ENV == "development"
-    ? (process.env as any)
-    : (window as EnhancedWindow).env;
+let {
+  REACT_APP_API_URL: API_URL,
+  REACT_APP_OIDC_LOGIN_URL: OIDC_LOGIN_URL,
+  REACT_APP_OIDC_LOGOUT_URL: OIDC_LOGOUT_URL,
+  REACT_APP_CSRF_COOKIE_NAME: CSRF_COOKIE_NAME,
+} = process.env;
 
-export const {
-  API_URL,
-  OIDC_LOGIN_URL,
-  OIDC_LOGOUT_URL,
-  CSRF_COOKIE_NAME,
-} = (window as EnhancedWindow).env;
+// when using the app with a production build, environment variables are templated in index.html.
+if (process.env.NODE_ENV === "production") {
+  ({
+    API_URL,
+    OIDC_LOGIN_URL,
+    OIDC_LOGOUT_URL,
+    CSRF_COOKIE_NAME,
+  } = (window as EnhancedWindow).env);
+}
+
+export { API_URL, OIDC_LOGIN_URL, OIDC_LOGOUT_URL, CSRF_COOKIE_NAME };
