@@ -18,6 +18,10 @@ def get_env_array_value(key: str, default: list = list):
     return os.environ.get(key) and os.environ.get(key).split(",") or default
 
 
+def get_env_bool_value(key: str, default: bool):
+    return os.environ.get(key) and os.environ.get(key) == "True" or default
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -32,16 +36,16 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # DEBUG modifies the app behaviour. For instance:
 #   * it enables detailed error pages.
 #   * it disables security checks (e.g. authorizes empty ALLOWED_HOSTS)
-DEBUG = os.environ.get("DEBUG") and os.environ.get("DEBUG") == "True" or False
+DEBUG = get_env_bool_value("DEBUG", default=False)
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#use-x-forwarded-host
 # Behind a proxy, use the actual host as defined by the proxy. This is needed to
 # properly build urls.
-USE_X_FORWARDED_HOST = os.environ.get("USE_X_FORWARDED_HOST", False)
+USE_X_FORWARDED_HOST = get_env_bool_value("USE_X_FORWARDED_HOST", default=False)
 
 ALLOWED_HOSTS = get_env_array_value("ALLOWED_HOSTS", default=[])
 
-ADMIN_ENABLED = os.environ.get("ADMIN_ENABLED") and os.environ.get("ADMIN_ENABLED") == "True" or False
+ADMIN_ENABLED = get_env_bool_value("ADMIN_ENABLED", False)
 
 # Application definition
 
