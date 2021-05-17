@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 const Router = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <AppBar />
       <div className={classes.body}>
         <Switch>

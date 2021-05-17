@@ -15,7 +15,7 @@ import redis
 import scripts
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
-from common.kafka.producer import Producer
+from common.kafka.producer import CustomJSONEncoder, Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from confluent_kafka.admin import AdminClient, NewTopic
@@ -158,6 +158,9 @@ class PreviewEndpoint(viewsets.ViewSet):
         errors = []
         transformer = Transformer()
         for row in extractor.split_dataframe(df, analysis):
+            # Encode and decode the row to mimic what happens when events are serialized
+            # to pass through kafka
+            row = json.JSONDecoder().decode(CustomJSONEncoder().encode(row))
             primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
             transformed_data = transformer.transform_data(row, analysis, primary_key_value)
             document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)

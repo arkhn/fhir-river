@@ -1,14 +1,15 @@
 import {
   IBundle,
   IStructureDefinition,
+  IValueSet,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
+import { Required } from "utility-types";
 
 import {
   providesList,
   providesOne,
   invalidatesList,
   invalidatesOne,
-  providesFhirBundle,
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
@@ -23,6 +24,7 @@ const tagTypes = [
   "Filters",
   "Joins",
   "StructureDefinition",
+  "ValueSets",
 ];
 
 export const api = generatedApi
@@ -34,25 +36,39 @@ export const api = generatedApi
           method: "POST",
         }),
       }),
-      apiStructureDefinitionList: build.query<IBundle, { params: string }>({
+      apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
+          url: `/api/fhir/ValueSet/${queryArg.id}/$expand?`,
         }),
       }),
+      apiStructureDefinitionList: build.query<
+        Required<IStructureDefinition, "id">[],
+        { params?: string }
+      >({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition?${queryArg.params || ""}`,
+        }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(
+            ({ resource }) => resource as Required<IStructureDefinition, "id">
+          ) || [],
+      }),
       apiStructureDefinitionRetrieve: build.query<
-        IStructureDefinition,
+        Required<IStructureDefinition, "id">,
         {
           id: string;
-          params: string;
+          params?: string;
         }
       >({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
+          url: `/api/fhir/StructureDefinition/${queryArg.id}?${
+            queryArg.params || ""
+          }`,
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
-        IStructureDefinition,
-        IStructureDefinition
+        Required<IStructureDefinition, "id">,
+        Required<IStructureDefinition, "id">
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition`,
@@ -78,7 +94,7 @@ export const api = generatedApi
        * StructureDefinition
        */
       apiStructureDefinitionList: {
-        providesTags: providesFhirBundle("StructureDefinition"),
+        providesTags: providesList("StructureDefinition"),
       },
       apiStructureDefinitionRetrieve: {
         providesTags: providesOne("StructureDefinition"),
@@ -197,6 +213,12 @@ export const api = generatedApi
       apiJoinsDestroy: {
         invalidatesTags: invalidatesOne("Joins"),
       },
+      /**
+       * ValueSets
+       */
+      apiValueSetsRetrieve: {
+        providesTags: providesOne("ValueSets"),
+      },
     },
   });
 
@@ -245,4 +267,6 @@ export const {
   useApiJoinsListQuery,
   useApiJoinsUpdateMutation,
   useApiJoinsDestroyMutation,
+  // ValueSets
+  useApiValueSetsRetrieveQuery,
 } = api;
