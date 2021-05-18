@@ -235,7 +235,7 @@ const useFhirResourceTreeData = (
 
   useEffect(() => {
     if (data) {
-      data && dispatch(setNodeChildren({ children: data, nodeId }));
+      data && dispatch(setNodeChildren({ data, nodeId }));
     }
   }, [nodeId, data, dispatch]);
 

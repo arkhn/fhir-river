@@ -45,14 +45,14 @@ const resourceTreeSlice = createSlice({
   reducers: {
     setNodeChildren: (
       state,
-      { payload }: PayloadAction<{ nodeId?: string; children: ElementNode }>
+      { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
     ) => {
-      const { nodeId, children } = payload;
+      const { nodeId, data } = payload;
       if (!nodeId) {
-        state.root = children;
+        state.root = data;
       } else if (state.root) {
         const node = getNodeById(nodeId, state.root);
-        if (node) node.children = [...node.children, children];
+        if (node) node.children = data.children;
       }
     },
   },
