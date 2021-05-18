@@ -78,7 +78,9 @@ const FhirResourceTree = (): JSX.Element => {
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {root && <TreeItem elementNode={root} />}
+        {root?.children.map((node) => (
+          <TreeItem key={node.id} elementNode={node} />
+        ))}
       </TreeView>
     </Container>
   );

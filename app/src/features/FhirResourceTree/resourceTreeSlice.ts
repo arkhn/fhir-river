@@ -33,7 +33,6 @@ const getNodeById = (
 ): ElementNode | undefined => {
   if (root.id === id) return root;
   for (const next of root.children) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const result = getNodeById(id, next);
     if (result) return result;
   }
