@@ -10,7 +10,7 @@ export type ElementKind =
   | "choice"
   | undefined;
 
-type Element = {
+export type ElementNode = {
   id: string;
   name: string;
   path: string;
@@ -18,11 +18,8 @@ type Element = {
   isSlice: boolean;
   type?: string;
   definition: IElementDefinition;
-};
-
-export interface ElementNode extends Element {
   children: ElementNode[];
-}
+};
 
 type ResourceTreeSliceState = {
   rootNodes?: ElementNode[];
