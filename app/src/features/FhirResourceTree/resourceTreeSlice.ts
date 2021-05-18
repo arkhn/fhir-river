@@ -23,7 +23,7 @@ type ResourceTreeSliceState = {
 
 const initialState: ResourceTreeSliceState = {};
 
-const findNestedNode = (
+export const findNestedNode = (
   nodes: ElementNode[],
   id: string
 ): ElementNode | undefined => {

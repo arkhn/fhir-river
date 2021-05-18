@@ -25,8 +25,8 @@ const TreeItem = ({ elementNode }: TreeItemProps): JSX.Element => {
   const handleIconClick = () => {
     setHasExpanded(true);
   };
-  const handleLabelClick = (event: React.MouseEvent<Element>) => {
-    event.preventDefault();
+  const handleLabelClick = () => {
+    setHasExpanded(true);
   };
 
   let iconName: IconName | null = null;
