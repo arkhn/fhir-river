@@ -89,7 +89,10 @@ const createElementNode = (
     children: [],
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
-    isArray: isArrayItem ?? isElementArray(elementDefinition),
+    isArray:
+      undefined !== isArrayItem
+        ? !isArrayItem
+        : isElementArray(elementDefinition),
     isSlice: !!elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
@@ -204,7 +207,7 @@ const buildElements = (
   }
 
   if (currentElementNode.isArray) {
-    const elementNodeFirstItem = createElementNode(current, false);
+    const elementNodeFirstItem = createElementNode(current, true);
     currentElementNode.children.push(elementNodeFirstItem);
   }
 
