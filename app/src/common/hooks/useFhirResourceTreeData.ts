@@ -4,6 +4,7 @@ import {
   IElementDefinition,
   IElementDefinition_Type,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
+import camelCase from "lodash/camelCase";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -17,17 +18,11 @@ import {
   ElementNode,
   selectRootNodes,
   setNodeChildren,
-  TypeNature,
+  ElementKind,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
 
-const toCamelCase = (string?: string) => {
-  return string && string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-const shouldOmit = (
-  elementDefinition: IElementDefinition
-): boolean | undefined => {
+const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
   if (elementDefinition.base && elementDefinition.base.path) {
     const parsedPath: string[] = elementDefinition.base.path.split(".");
 
@@ -39,9 +34,10 @@ const shouldOmit = (
     const baseResource = parsedPath[0];
     return omittedResources.includes(baseResource);
   }
+  return false;
 };
 
-const getNature = (elementDefinition: IElementDefinition): TypeNature => {
+const getKind = (elementDefinition: IElementDefinition): ElementKind => {
   const { max, sliceName, type: types } = elementDefinition;
   const type = types?.length === 1 && types?.[0].code;
 
@@ -65,12 +61,12 @@ const getNature = (elementDefinition: IElementDefinition): TypeNature => {
 };
 
 const computeType = (
-  typeElement?: IElementDefinition_Type
+  elementType?: IElementDefinition_Type
 ): string | undefined => {
-  if (!typeElement) return;
+  if (!elementType) return;
   const primitive =
-    typeElement.extension &&
-    typeElement.extension.find(
+    elementType.extension &&
+    elementType.extension.find(
       (ext) =>
         ext.url ===
         "http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type"
@@ -78,10 +74,10 @@ const computeType = (
   // when dealing with primitive types (eg: fhirpath/System.String), we use the definition indicated
   // by the extension of type "structuredefinition-fhir-type" (see "type" of Observation.id for example).
   if (primitive) return primitive.valueUrl;
-  if (typeElement.profile && typeElement.profile.length > 0) {
-    return typeElement.profile[0].split("/").pop();
+  if (elementType.profile && elementType.profile.length > 0) {
+    return elementType.profile[0].split("/").pop();
   }
-  return typeElement.code;
+  return elementType.code;
 };
 
 const createElementNode = (
@@ -94,10 +90,8 @@ const createElementNode = (
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
     isSlice: !!elementDefinition.sliceName,
-    nature: getNature(elementDefinition),
-    type: elementDefinition.type
-      ?.map((t) => toCamelCase(computeType(t)))
-      .join(" | "),
+    kind: getKind(elementDefinition),
+    type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
   };
 };
 
@@ -108,11 +102,8 @@ const getChildrenChoices = (
     createElementNode({
       ...elementDefinition,
       type: [{ code: computeType(type) }],
-      id: elementDefinition.id?.replace("[x]", toCamelCase(type.code) ?? ""),
-      path: elementDefinition.path?.replace(
-        "[x]",
-        toCamelCase(type.code) ?? ""
-      ),
+      id: elementDefinition.id?.replace("[x]", camelCase(type.code) ?? ""),
+      path: elementDefinition.path?.replace("[x]", camelCase(type.code) ?? ""),
     })
   ) ?? [];
 
@@ -199,13 +190,13 @@ const buildElements = (
     return elementNodes;
   }
 
-  if (shouldOmit(current)) {
+  if (isOmittedElement(current)) {
     return buildElements(rest, elementNodes, previousElementDefinition);
   }
 
   const currentElementNode = createElementNode(current);
 
-  if (currentElementNode.nature === "choice") {
+  if (currentElementNode.kind === "choice") {
     currentElementNode.children = getChildrenChoices(
       currentElementNode.definition
     );

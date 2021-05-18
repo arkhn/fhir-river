@@ -15,8 +15,8 @@ type TreeItemProps = {
 
 const TreeItem = ({ elementNode }: TreeItemProps): JSX.Element => {
   const [hasExpanded, setHasExpanded] = useState(false);
-  const isPrimitive = elementNode.nature === "primitive";
-  const isComplex = elementNode.nature === "complex";
+  const isPrimitive = elementNode.kind === "primitive";
+  const isComplex = elementNode.kind === "complex";
   useFhirResourceTreeData(
     { id: elementNode.type ?? "", nodeId: elementNode.id },
     { skip: !isComplex || !hasExpanded }
@@ -31,7 +31,7 @@ const TreeItem = ({ elementNode }: TreeItemProps): JSX.Element => {
 
   let iconName: IconName | null = null;
 
-  switch (elementNode.nature) {
+  switch (elementNode.kind) {
     case "primitive":
       iconName = IconNames.TAG;
       break;

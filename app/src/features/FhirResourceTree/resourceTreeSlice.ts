@@ -3,27 +3,26 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "app/store";
 
-export type TypeNature =
+export type ElementKind =
   | "complex"
   | "primitive"
   | "array"
   | "choice"
   | undefined;
 
-type Element<T> = {
+type Element = {
   id: string;
   name: string;
   path: string;
-  nature?: TypeNature;
+  kind?: ElementKind;
   isSlice: boolean;
-  parent?: T;
-  children: T[];
   type?: string;
   definition: IElementDefinition;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ElementNode extends Element<ElementNode> {}
+export interface ElementNode extends Element {
+  children: ElementNode[];
+}
 
 type ResourceTreeSliceState = {
   rootNodes?: ElementNode[];
