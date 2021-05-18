@@ -19,7 +19,7 @@ const TreeItem = ({ elementNode }: TreeItemProps): JSX.Element => {
   const isComplex = elementNode.kind === "complex";
   useFhirResourceTreeData(
     { id: elementNode.type ?? "", nodeId: elementNode.id },
-    { skip: !isComplex || !hasExpanded }
+    { skip: !isComplex || !hasExpanded || elementNode.isArray }
   );
 
   const handleIconClick = () => {
@@ -31,20 +31,20 @@ const TreeItem = ({ elementNode }: TreeItemProps): JSX.Element => {
 
   let iconName: IconName | null = null;
 
-  switch (elementNode.kind) {
-    case "primitive":
-      iconName = IconNames.TAG;
-      break;
-    case "complex":
-    case "choice":
-      iconName = IconNames.FOLDER_OPEN;
-      break;
-    case "array":
-      iconName = IconNames.LAYERS;
-      break;
-
-    default:
-      break;
+  if (!elementNode.isArray) {
+    switch (elementNode.kind) {
+      case "primitive":
+        iconName = IconNames.TAG;
+        break;
+      case "complex":
+      case "choice":
+        iconName = IconNames.FOLDER_OPEN;
+        break;
+      default:
+        break;
+    }
+  } else {
+    iconName = IconNames.LAYERS;
   }
 
   return (

@@ -38,12 +38,8 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
 };
 
 const getKind = (elementDefinition: IElementDefinition): ElementKind => {
-  const { max, sliceName, type: types } = elementDefinition;
+  const { type: types } = elementDefinition;
   const type = types?.length === 1 && types?.[0].code;
-
-  if (max && (max === "*" || +max > 1) && !sliceName) {
-    return "array";
-  }
 
   if (
     (type && primitiveTypes.includes(type)) ||
@@ -80,8 +76,12 @@ const computeType = (
   return elementType.code;
 };
 
+const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
+  (max && (max === "*" || +max > 1) && !sliceName) || false;
+
 const createElementNode = (
-  elementDefinition: IElementDefinition
+  elementDefinition: IElementDefinition,
+  isArrayItem?: boolean
 ): ElementNode => {
   return {
     id: uuid(),
@@ -89,6 +89,7 @@ const createElementNode = (
     children: [],
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
+    isArray: isArrayItem ?? isElementArray(elementDefinition),
     isSlice: !!elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
@@ -202,12 +203,22 @@ const buildElements = (
     );
   }
 
+  if (currentElementNode.isArray) {
+    const elementNodeFirstItem = createElementNode(current, false);
+    currentElementNode.children.push(elementNodeFirstItem);
+  }
+
   if (previousElementDefinition) {
     if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
-      previousElementDefinition.children.push(currentElementNode);
+      if (previousElementDefinition.isArray) {
+        const prevElementDefItem = previousElementDefinition.children[0];
+        prevElementDefItem &&
+          prevElementDefItem.children.push(currentElementNode);
+      } else {
+        previousElementDefinition.children.push(currentElementNode);
+      }
       return buildElements(rest, elementNodes, currentElementNode);
     } else {
-      // console.log(getParent(previousElementDefinition, elementNodes));
       return buildElements(
         elementsDefinition,
         elementNodes,
