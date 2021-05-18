@@ -1,11 +1,7 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import Cookies from "js-cookie";
 
-import { OIDC_LOGIN_URL } from "services/oidc/urls";
-
-import { API_URL } from "./urls";
-
-const { REACT_APP_CSRF_COOKIE_NAME: CSRF_COOKIE_NAME } = process.env;
+import { API_URL, CSRF_COOKIE_NAME, OIDC_LOGIN_URL } from "../../constants";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
