@@ -28,6 +28,10 @@ class TopicleanerHandler(Handler):
         )
 
     def is_end_of_batch(self, batch_id: str) -> bool:
+        if self.batch_counter_redis.hget("stream", batch_id):
+            # Don't topiclean if we are in stream-mode
+            return False
+
         batch_resources = self.batch_counter_redis.smembers(f"batch:{batch_id}:resources")
         counter = self.batch_counter_redis.hgetall(f"batch:{batch_id}:counter")
 

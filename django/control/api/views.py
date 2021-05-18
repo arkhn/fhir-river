@@ -38,9 +38,10 @@ class BatchEndpoint(viewsets.ViewSet):
         )
 
         batches = batch_counter_redis.hgetall("batch")
+        streams = batch_counter_redis.hgetall("stream")
 
         batch_list = []
-        for batch_id, batch_timestamp in batches.items():
+        for batch_id, batch_timestamp in {**batches, **streams}.items():
             batch_resource_ids = batch_counter_redis.smembers(f"batch:{batch_id}:resources")
             batch_list.append(
                 {
@@ -59,6 +60,7 @@ class BatchEndpoint(viewsets.ViewSet):
         data = serializer.validated_data
 
         resource_ids = [resource.get("resource_id") for resource in data["resources"]]
+        is_streaming = data["is_streaming"]
 
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
@@ -80,7 +82,7 @@ class BatchEndpoint(viewsets.ViewSet):
             port=settings.REDIS_COUNTER_PORT,
             db=settings.REDIS_COUNTER_DB,
         )
-        batch_counter_redis.hset("batch", batch_id, batch_timestamp)
+        batch_counter_redis.hset("stream" if is_streaming else "batch", batch_id, batch_timestamp)
         batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
@@ -92,21 +94,25 @@ class BatchEndpoint(viewsets.ViewSet):
         ]
         admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
         admin_client.create_topics(new_topics)
+        logger.debug(f"New topics created: {admin_client.list_topics().topics}")
 
         # Send event to the extractor
-        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
-        for resource_id in resource_ids:
-            event = {"batch_id": batch_id, "resource_id": resource_id}
-            try:
-                producer.produce_event(topic=f"batch.{batch_id}", event=event)
-            except (KafkaException, ValueError) as err:
-                logger.exception(err)
-                # Clean the batch
-                TopicleanerHandler().delete_batch(batch_id)
-                return Response(
-                    {"id": batch_id, "error": "error while producing extract events"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+        # FIXME: how to conciliate interactions with river-api and airflow?
+        # Here, airflow launches the ETL after river-api has setup kafka/redis
+        if not is_streaming:
+            producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
+            for resource_id in resource_ids:
+                event = {"batch_id": batch_id, "resource_id": resource_id}
+                try:
+                    producer.produce_event(topic=f"batch.{batch_id}", event=event)
+                except (KafkaException, ValueError) as err:
+                    logger.exception(err)
+                    # Clean the batch
+                    TopicleanerHandler().delete_batch(batch_id)
+                    return Response(
+                        {"id": batch_id, "error": "error while producing extract events"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    )
 
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
@@ -122,6 +128,7 @@ class BatchEndpoint(viewsets.ViewSet):
             db=settings.REDIS_COUNTER_DB,
         )
         batch_counter_redis.hdel("batch", pk)
+        batch_counter_redis.hdel("stream", pk)
         batch_counter_redis.delete(f"batch:{pk}:resources")
         batch_counter_redis.expire(f"batch:{pk}:counter", timedelta(weeks=2))
 

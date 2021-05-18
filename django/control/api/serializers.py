@@ -8,6 +8,7 @@ class ResourceSerializer(serializers.Serializer):
 
 class CreateBatchSerializer(serializers.Serializer):
     resources = serializers.ListField(child=ResourceSerializer())
+    is_streaming = serializers.BooleanField(default=False)
 
 
 class PreviewSerializer(serializers.Serializer):
