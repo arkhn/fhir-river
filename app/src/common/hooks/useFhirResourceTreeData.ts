@@ -168,14 +168,16 @@ const getParent = (
 const buildTree = (
   elementsDefinition: IElementDefinition[],
   rootNode: ElementNode,
-  previousElementNode?: ElementNode
+  previousElementNode: ElementNode
 ): void => {
   const [currentElementDefinition, ...rest] = elementsDefinition;
 
   if (!currentElementDefinition) return;
 
-  if (isOmittedElement(currentElementDefinition))
-    return buildTree(rest, rootNode, previousElementNode);
+  if (isOmittedElement(currentElementDefinition)) {
+    buildTree(rest, rootNode, previousElementNode);
+    return;
+  }
 
   const currentElementNode = createElementNode(currentElementDefinition);
 
@@ -188,14 +190,15 @@ const buildTree = (
   if (previousElementNode) {
     if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
       previousElementNode.children.push(currentElementNode);
-      return buildTree(rest, rootNode, currentElementNode);
+      buildTree(rest, rootNode, currentElementNode);
     } else {
       const parent = getParent(previousElementNode, rootNode);
-      return buildTree(elementsDefinition, rootNode, parent);
+      if (parent) buildTree(elementsDefinition, rootNode, parent);
     }
+    return;
   }
 
-  return buildTree(rest, rootNode, currentElementNode);
+  buildTree(rest, rootNode, currentElementNode);
 };
 
 const useFhirResourceTreeData = (
