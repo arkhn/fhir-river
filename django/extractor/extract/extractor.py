@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
@@ -28,7 +28,7 @@ class Extractor:
         self.db_connection = db_connection
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
-    def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
+    def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None, filters: Optional[Dict] = None):
         """Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
         source DB, run it and returns the result as an sqlalchemy ResultProxy.
@@ -56,6 +56,7 @@ class Extractor:
                 metadata=self.db_connection.metadata,
                 analysis=analysis,
                 pk_values=pk_values,
+                filters=filters,
             )
             query = builder.build_query()
 

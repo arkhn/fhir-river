@@ -35,11 +35,12 @@ SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], Callable]] = {
 
 
 class QueryBuilder:
-    def __init__(self, session, metadata, analysis, pk_values):
+    def __init__(self, session, metadata, analysis, pk_values, filters):
         self.session = session
         self.metadata = metadata
         self.analysis = analysis
         self.pk_values = pk_values
+        self.filters = filters
 
         # The PK table has no reason to be aliased so we keep it here
         self._sqlalchemy_pk_table = Table(
@@ -142,6 +143,16 @@ class QueryBuilder:
                 query = query.filter(sqlalchemy_pk_column == self.pk_values[0])
             else:
                 query = query.filter(sqlalchemy_pk_column.in_(self.pk_values))
+
+        if self.filters is not None:
+            for filter_ in self.filters:
+                # FIXME only on primary key table?
+                col = SqlColumn(
+                    self.analysis.primary_key_column.owner, self.analysis.primary_key_column.table, filter_["column"]
+                )
+                sqlalchemy_col = self.get_column(col)
+                filter_clause = sqlalchemy_col == filter_["value"]
+                query = query.filter(filter_clause)
 
         for sql_filter in self.analysis.filters:
             if sql_filter.sql_column.joins:

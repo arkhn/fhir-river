@@ -80,11 +80,12 @@ class ExtractHandler(Handler):
         batch_id = event.data["batch_id"]
         resource_id = event.data["resource_id"]
         primary_key_values = event.data.get("primary_key_values", None)
+        filters = event.data.get("filters", None)
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
         db_connection = DBConnection(analysis.source_credentials)
         extractor = Extractor(db_connection)
-        query = extractor.extract(analysis, primary_key_values)
+        query = extractor.extract(analysis, primary_key_values, filters)
 
         broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
 
