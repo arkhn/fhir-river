@@ -214,7 +214,7 @@ LOGGING = {
 CORS_ALLOWED_ORIGINS = (
     os.environ.get("CORS_ALLOWED_ORIGINS") and os.environ.get("CORS_ALLOWED_ORIGINS").split(",") or []
 )
-CORS_URLS_REGEX = r"^\/(api|oidc)\/.*$"
+CORS_URLS_REGEX = r"^\/(api|oidc|pagai)\/.*$"
 
 # Rest Framework
 # https://www.django-rest-framework.org/api-guide/settings/
