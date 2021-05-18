@@ -4,7 +4,7 @@ import {
   IElementDefinition,
   IElementDefinition_Type,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
-import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -81,16 +81,23 @@ const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
 
 const createElementNode = (
   elementDefinition: IElementDefinition,
-  isArrayItem?: boolean
+  params: { isArrayItem?: boolean; index?: number; parentPath?: string }
 ): ElementNode => {
+  const { isArrayItem, index, parentPath } = params;
+  const prefixPath =
+    (parentPath || elementDefinition.path?.split(".").shift()) ?? "";
+  const suffixPath = elementDefinition.path?.split(".").slice(1).join(".");
+  const elementPath = `${prefixPath}.${suffixPath}${
+    index !== undefined ? `[${index}]` : ""
+  }`;
   return {
     id: uuid(),
     name: elementDefinition.id?.split(".").pop() ?? "",
     children: [],
-    path: elementDefinition.path ?? "",
+    path: elementPath,
     definition: elementDefinition,
     isArray:
-      undefined !== isArrayItem
+      isArrayItem !== undefined
         ? !isArrayItem
         : isElementArray(elementDefinition),
     isSlice: !!elementDefinition.sliceName,
@@ -99,16 +106,22 @@ const createElementNode = (
   };
 };
 
-const getChildrenChoices = (
+const getChildrenChoices = (parentPath?: string) => (
   elementDefinition: IElementDefinition
 ): ElementNode[] =>
   elementDefinition.type?.map((type) =>
-    createElementNode({
-      ...elementDefinition,
-      type: [{ code: computeType(type) }],
-      id: elementDefinition.id?.replace("[x]", camelCase(type.code) ?? ""),
-      path: elementDefinition.path?.replace("[x]", camelCase(type.code) ?? ""),
-    })
+    createElementNode(
+      {
+        ...elementDefinition,
+        type: [{ code: computeType(type) }],
+        id: elementDefinition.id?.replace("[x]", upperFirst(type.code) ?? ""),
+        path: elementDefinition.path?.replace(
+          "[x]",
+          upperFirst(type.code) ?? ""
+        ),
+      },
+      { parentPath }
+    )
   ) ?? [];
 
 const isSliceOf = (
@@ -172,21 +185,24 @@ const getParent = (
 const buildTree = (
   elementsDefinition: IElementDefinition[],
   rootNode: ElementNode,
-  previousElementNode: ElementNode
+  previousElementNode: ElementNode,
+  parentPath?: string
 ): void => {
   const [currentElementDefinition, ...rest] = elementsDefinition;
 
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
-    buildTree(rest, rootNode, previousElementNode);
+    buildTree(rest, rootNode, previousElementNode, parentPath);
     return;
   }
 
-  const currentElementNode = createElementNode(currentElementDefinition);
+  const currentElementNode = createElementNode(currentElementDefinition, {
+    parentPath,
+  });
 
   if (currentElementNode.kind === "choice") {
-    currentElementNode.children = getChildrenChoices(
+    currentElementNode.children = getChildrenChoices(parentPath)(
       currentElementNode.definition
     );
   }
@@ -196,10 +212,10 @@ const buildTree = (
     (!previousElementNode.isArray || rootNode === previousElementNode)
   ) {
     previousElementNode.children.push(currentElementNode);
-    buildTree(rest, rootNode, currentElementNode);
+    buildTree(rest, rootNode, currentElementNode, parentPath);
   } else {
     const parent = getParent(previousElementNode, rootNode);
-    if (parent) buildTree(elementsDefinition, rootNode, parent);
+    if (parent) buildTree(elementsDefinition, rootNode, parent, parentPath);
   }
 };
 
@@ -207,13 +223,14 @@ const useFhirResourceTreeData = (
   params: {
     id: string;
     nodeId?: string;
+    nodePath?: string;
   },
   options?: { skip?: boolean }
 ): {
   root?: ElementNode;
   isLoading: boolean;
 } => {
-  const { id, nodeId } = params;
+  const { id, nodeId, nodePath } = params;
   const {
     data: structureDefinition,
     isLoading,
@@ -229,11 +246,13 @@ const useFhirResourceTreeData = (
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element;
-      const rootNode = createElementNode(elementDefinitions[0]);
-      buildTree(elementDefinitions.slice(1), rootNode, rootNode);
+      const rootNode = createElementNode(elementDefinitions[0], {
+        parentPath: nodePath,
+      });
+      buildTree(elementDefinitions.slice(1), rootNode, rootNode, nodePath);
       return rootNode;
     }
-  }, [structureDefinition]);
+  }, [structureDefinition, nodePath]);
 
   useEffect(() => {
     if (data) {
