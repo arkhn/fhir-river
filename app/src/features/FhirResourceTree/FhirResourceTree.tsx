@@ -44,7 +44,7 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { rootNodes } = useFhirResourceTreeData({
+  const { root } = useFhirResourceTreeData({
     id: mapping?.definition_id ?? "",
   });
 
@@ -78,10 +78,7 @@ const FhirResourceTree = (): JSX.Element => {
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {rootNodes &&
-          rootNodes.map((node) => (
-            <TreeItem key={node.id} elementNode={node} />
-          ))}
+        {root && <TreeItem elementNode={root} />}
       </TreeView>
     </Container>
   );

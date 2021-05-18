@@ -16,7 +16,7 @@ import {
 } from "features/FhirResourceTree/fhirResource";
 import {
   ElementNode,
-  selectRootNodes,
+  selectRoot,
   setNodeChildren,
   ElementKind,
 } from "features/FhirResourceTree/resourceTreeSlice";
@@ -155,46 +155,29 @@ const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
 
 const getParent = (
   child: ElementNode,
-  nodes: ElementNode[]
+  root: ElementNode
 ): ElementNode | undefined => {
-  const isChildInNodes = nodes.some(({ id }) => id === child.id);
-
-  // If we find the child in the nodes array, this means it doesn't have any parents
-  if (isChildInNodes) return undefined;
-
-  for (const node of nodes) {
-    const isChildInNodeChildren = node.children.some(
-      ({ id }) => id === child.id
-    );
-
-    if (isChildInNodeChildren) {
-      return node;
-    }
+  if (root.children.includes(child)) return root;
+  for (const next of root.children) {
+    const result = getParent(child, next);
+    if (result) return result;
   }
-
-  const flattenChildren = nodes.reduce(
-    (acc: ElementNode[], node) => [...acc, ...node.children],
-    []
-  );
-  return getParent(child, flattenChildren);
+  return undefined;
 };
 
-const buildElements = (
+const buildTree = (
   elementsDefinition: IElementDefinition[],
-  elementNodes: ElementNode[],
-  previousElementDefinition?: ElementNode
-): ElementNode[] => {
-  const [current, ...rest] = elementsDefinition;
+  rootNode: ElementNode,
+  previousElementNode?: ElementNode
+): void => {
+  const [currentElementDefinition, ...rest] = elementsDefinition;
 
-  if (!current) {
-    return elementNodes;
-  }
+  if (!currentElementDefinition) return;
 
-  if (isOmittedElement(current)) {
-    return buildElements(rest, elementNodes, previousElementDefinition);
-  }
+  if (isOmittedElement(currentElementDefinition))
+    return buildTree(rest, rootNode, previousElementNode);
 
-  const currentElementNode = createElementNode(current);
+  const currentElementNode = createElementNode(currentElementDefinition);
 
   if (currentElementNode.kind === "choice") {
     currentElementNode.children = getChildrenChoices(
@@ -202,22 +185,17 @@ const buildElements = (
     );
   }
 
-  if (previousElementDefinition) {
-    if (isElementNodeChildOf(currentElementNode, previousElementDefinition)) {
-      previousElementDefinition.children.push(currentElementNode);
-      return buildElements(rest, elementNodes, currentElementNode);
+  if (previousElementNode) {
+    if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
+      previousElementNode.children.push(currentElementNode);
+      return buildTree(rest, rootNode, currentElementNode);
     } else {
-      // console.log(getParent(previousElementDefinition, elementNodes));
-      return buildElements(
-        elementsDefinition,
-        elementNodes,
-        getParent(previousElementDefinition, elementNodes)
-      );
+      const parent = getParent(previousElementNode, rootNode);
+      return buildTree(elementsDefinition, rootNode, parent);
     }
   }
 
-  elementNodes.push(currentElementNode);
-  return buildElements(rest, elementNodes, currentElementNode);
+  return buildTree(rest, rootNode, currentElementNode);
 };
 
 const useFhirResourceTreeData = (
@@ -227,7 +205,7 @@ const useFhirResourceTreeData = (
   },
   options?: { skip?: boolean }
 ): {
-  rootNodes?: ElementNode[];
+  root?: ElementNode;
   isLoading: boolean;
 } => {
   const { id, nodeId } = params;
@@ -241,12 +219,14 @@ const useFhirResourceTreeData = (
     options
   );
   const dispatch = useAppDispatch();
-  const rootNodes = useAppSelector(selectRootNodes);
+  const root = useAppSelector(selectRoot);
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
-      const elementDefinitions = structureDefinition.snapshot.element.slice(1);
-      return buildElements(elementDefinitions, []);
+      const elementDefinitions = structureDefinition.snapshot.element;
+      const rootNode = createElementNode(elementDefinitions[0]);
+      buildTree(elementDefinitions.slice(1), rootNode, rootNode);
+      return rootNode;
     }
   }, [structureDefinition]);
 
@@ -256,7 +236,7 @@ const useFhirResourceTreeData = (
     }
   }, [nodeId, data, dispatch]);
 
-  return { rootNodes, isLoading };
+  return { root, isLoading };
 };
 
 export default useFhirResourceTreeData;
