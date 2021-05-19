@@ -265,6 +265,13 @@ FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
 
 EXPORTER_PORT = os.environ.get("EXPORTER_PORT", 8001)
 
+# Airflow
+
+AIRFLOW_URL = os.environ.get("AIRFLOW_URL", "http://airflow-webserver:8080/api/v1")
+AIRFLOW_DAG_FLUX_ID = os.environ.get("AIRFLOW_DAG_FLUX_ID", "hl7-flux")
+AIRFLOW_USER = os.environ.get("AIRFLOW_USER", "airflow")
+AIRFLOW_PASSWORD = os.environ.get("AIRFLOW_PASSWORD", "airflow")
+
 # Mozilla OpenID Connect
 # https://mozilla-django-oidc.readthedocs.io/en/stable/settings.html
 

@@ -12,6 +12,7 @@ from django.conf import settings
 from fhir.resources import construct_fhir_element
 
 import redis
+import requests
 import scripts
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
@@ -22,6 +23,7 @@ from confluent_kafka.admin import AdminClient, NewTopic
 from control.api.serializers import CreateBatchSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from pydantic import ValidationError
+from requests.auth import HTTPBasicAuth
 from topicleaner.service import TopicleanerHandler
 from transformer.transform.transformer import Transformer
 
@@ -96,10 +98,34 @@ class BatchEndpoint(viewsets.ViewSet):
         admin_client.create_topics(new_topics)
         logger.debug(f"New topics created: {admin_client.list_topics().topics}")
 
-        # Send event to the extractor
         # FIXME: how to conciliate interactions with river-api and airflow?
         # Here, airflow launches the ETL after river-api has setup kafka/redis
-        if not is_streaming:
+        if is_streaming:
+            # Set batch_id and resources variables in Airflow
+            response = requests.post(
+                f"{settings.AIRFLOW_URL}/variables",
+                json={"key": "batch_id", "value": batch_id},
+                auth=HTTPBasicAuth(settings.AIRFLOW_USER, settings.AIRFLOW_PASSWORD),
+            )
+            logger.info(response.json())
+            response = requests.post(
+                f"{settings.AIRFLOW_URL}/variables",
+                json={
+                    "key": "resources",
+                    "value": json.dumps({resource_id: "run_id" for resource_id in resource_ids}),
+                },
+                auth=HTTPBasicAuth(settings.AIRFLOW_USER, settings.AIRFLOW_PASSWORD),
+            )
+            logger.info(response.json())
+            # Unpause dag
+            response = requests.patch(
+                f"{settings.AIRFLOW_URL}/dags/{settings.AIRFLOW_DAG_FLUX_ID}",
+                json={"is_paused": False},
+                auth=HTTPBasicAuth(settings.AIRFLOW_USER, settings.AIRFLOW_PASSWORD),
+            )
+            logger.info(response.json())
+        else:
+            # Send event to the extractor
             producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
             for resource_id in resource_ids:
                 event = {"batch_id": batch_id, "resource_id": resource_id}
