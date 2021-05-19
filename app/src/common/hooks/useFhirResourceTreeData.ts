@@ -191,32 +191,16 @@ const buildTree = (
     );
   }
 
-  if (currentElementNode.isArray) {
-    const elementNodeFirstItem = createElementNode(
-      currentElementDefinition,
-      true
-    );
-    currentElementNode.children.push(elementNodeFirstItem);
+  if (
+    isElementNodeChildOf(currentElementNode, previousElementNode) &&
+    (!previousElementNode.isArray || rootNode === previousElementNode)
+  ) {
+    previousElementNode.children.push(currentElementNode);
+    buildTree(rest, rootNode, currentElementNode);
+  } else {
+    const parent = getParent(previousElementNode, rootNode);
+    if (parent) buildTree(elementsDefinition, rootNode, parent);
   }
-
-  if (previousElementNode) {
-    if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
-      if (previousElementNode.isArray) {
-        const prevElementDefItem = previousElementNode.children[0];
-        prevElementDefItem &&
-          prevElementDefItem.children.push(currentElementNode);
-      } else {
-        previousElementNode.children.push(currentElementNode);
-      }
-      buildTree(rest, rootNode, currentElementNode);
-    } else {
-      const parent = getParent(previousElementNode, rootNode);
-      if (parent) buildTree(elementsDefinition, rootNode, parent);
-    }
-    return;
-  }
-
-  buildTree(rest, rootNode, currentElementNode);
 };
 
 const useFhirResourceTreeData = (
