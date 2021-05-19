@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom";
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
-import { findNestedNode } from "./resourceTreeSlice";
+import { getNodeById } from "./resourceTreeSlice";
 import TreeItem from "./TreeItem";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,12 +45,12 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { rootNodes } = useFhirResourceTreeData({
+  const { root } = useFhirResourceTreeData({
     id: mapping?.definition_id ?? "",
   });
 
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
-    const node = rootNodes && findNestedNode(rootNodes, id);
+    const node = root && getNodeById(id, root);
     if (node && node.kind === "primitive" && !node.isArray) {
       setSelectedNode(id);
     }
@@ -82,10 +82,9 @@ const FhirResourceTree = (): JSX.Element => {
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {rootNodes &&
-          rootNodes.map((node) => (
-            <TreeItem key={node.id} elementNode={node} />
-          ))}
+        {root?.children.map((node) => (
+          <TreeItem key={node.id} elementNode={node} />
+        ))}
       </TreeView>
     </Container>
   );

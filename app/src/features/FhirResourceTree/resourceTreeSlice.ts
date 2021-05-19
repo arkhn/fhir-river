@@ -18,24 +18,21 @@ export type ElementNode = {
 };
 
 type ResourceTreeSliceState = {
-  rootNodes?: ElementNode[];
+  root?: ElementNode;
 };
 
 const initialState: ResourceTreeSliceState = {};
 
-export const findNestedNode = (
-  nodes: ElementNode[],
-  id: string
+export const getNodeById = (
+  id: string,
+  root: ElementNode
 ): ElementNode | undefined => {
-  const node = nodes.find(({ id: nodeId }) => nodeId === id);
-  if (node) return node;
-
-  const flattenChildren = nodes.reduce(
-    (acc: ElementNode[], _node) => [...acc, ..._node.children],
-    []
-  );
-
-  return findNestedNode(flattenChildren, id);
+  if (root.id === id) return root;
+  for (const next of root.children) {
+    const result = getNodeById(id, next);
+    if (result) return result;
+  }
+  return undefined;
 };
 
 const resourceTreeSlice = createSlice({
@@ -44,24 +41,21 @@ const resourceTreeSlice = createSlice({
   reducers: {
     setNodeChildren: (
       state,
-      { payload }: PayloadAction<{ nodeId?: string; children: ElementNode[] }>
+      { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
     ) => {
-      const { nodeId, children } = payload;
+      const { nodeId, data } = payload;
       if (!nodeId) {
-        state.rootNodes = children;
-      } else {
-        const stateNode =
-          state.rootNodes && findNestedNode(state.rootNodes, nodeId);
-        if (stateNode) {
-          stateNode.children = [...stateNode.children, ...children];
-        }
+        state.root = data;
+      } else if (state.root) {
+        const node = getNodeById(nodeId, state.root);
+        if (node) node.children = data.children;
       }
     },
   },
 });
 
-export const selectRootNodes = (state: RootState): ElementNode[] | undefined =>
-  state.resourceTree.rootNodes;
+export const selectRoot = (state: RootState): ElementNode | undefined =>
+  state.resourceTree.root;
 
 export const { setNodeChildren } = resourceTreeSlice.actions;
 export default resourceTreeSlice.reducer;
