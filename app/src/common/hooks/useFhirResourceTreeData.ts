@@ -81,9 +81,9 @@ const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
 
 const createElementNode = (
   elementDefinition: IElementDefinition,
-  params: { isArrayItem?: boolean; index?: number; parentPath?: string }
+  params: { index?: number; parentPath?: string }
 ): ElementNode => {
-  const { isArrayItem, index, parentPath } = params;
+  const { index, parentPath } = params;
   const prefixPath =
     (parentPath || elementDefinition.path?.split(".").shift()) ?? "";
   const suffixPath = elementDefinition.path?.split(".").slice(1).join(".");
@@ -96,10 +96,7 @@ const createElementNode = (
     children: [],
     path: elementPath,
     definition: elementDefinition,
-    isArray:
-      isArrayItem !== undefined
-        ? !isArrayItem
-        : isElementArray(elementDefinition),
+    isArray: index !== undefined ? false : isElementArray(elementDefinition),
     isSlice: !!elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
