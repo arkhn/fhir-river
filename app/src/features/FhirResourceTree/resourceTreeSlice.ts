@@ -3,18 +3,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "app/store";
 
-export type ElementKind =
-  | "complex"
-  | "primitive"
-  | "array"
-  | "choice"
-  | undefined;
+export type ElementKind = "complex" | "primitive" | "choice" | undefined;
 
 export type ElementNode = {
   id: string;
   name: string;
   path: string;
   kind?: ElementKind;
+  isArray: boolean;
   isSlice: boolean;
   type?: string;
   definition: IElementDefinition;
@@ -27,7 +23,7 @@ type ResourceTreeSliceState = {
 
 const initialState: ResourceTreeSliceState = {};
 
-const getNodeById = (
+export const getNodeById = (
   id: string,
   root: ElementNode
 ): ElementNode | undefined => {

@@ -38,12 +38,8 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
 };
 
 const getKind = (elementDefinition: IElementDefinition): ElementKind => {
-  const { max, sliceName, type: types } = elementDefinition;
+  const { type: types } = elementDefinition;
   const type = types?.length === 1 && types?.[0].code;
-
-  if (max && (max === "*" || +max > 1) && !sliceName) {
-    return "array";
-  }
 
   if (
     (type && primitiveTypes.includes(type)) ||
@@ -80,8 +76,12 @@ const computeType = (
   return elementType.code;
 };
 
+const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
+  (max && (max === "*" || +max > 1) && !sliceName) || false;
+
 const createElementNode = (
-  elementDefinition: IElementDefinition
+  elementDefinition: IElementDefinition,
+  isArrayItem?: boolean
 ): ElementNode => {
   return {
     id: uuid(),
@@ -89,6 +89,10 @@ const createElementNode = (
     children: [],
     path: elementDefinition.path ?? "",
     definition: elementDefinition,
+    isArray:
+      undefined !== isArrayItem
+        ? !isArrayItem
+        : isElementArray(elementDefinition),
     isSlice: !!elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
@@ -187,9 +191,23 @@ const buildTree = (
     );
   }
 
+  if (currentElementNode.isArray) {
+    const elementNodeFirstItem = createElementNode(
+      currentElementDefinition,
+      true
+    );
+    currentElementNode.children.push(elementNodeFirstItem);
+  }
+
   if (previousElementNode) {
     if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
-      previousElementNode.children.push(currentElementNode);
+      if (previousElementNode.isArray) {
+        const prevElementDefItem = previousElementNode.children[0];
+        prevElementDefItem &&
+          prevElementDefItem.children.push(currentElementNode);
+      } else {
+        previousElementNode.children.push(currentElementNode);
+      }
       buildTree(rest, rootNode, currentElementNode);
     } else {
       const parent = getParent(previousElementNode, rootNode);

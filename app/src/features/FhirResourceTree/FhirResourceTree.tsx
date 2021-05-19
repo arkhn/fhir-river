@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
+import { getNodeById } from "./resourceTreeSlice";
 import TreeItem from "./TreeItem";
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +50,10 @@ const FhirResourceTree = (): JSX.Element => {
   });
 
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
-    setSelectedNode(id);
+    const node = root && getNodeById(id, root);
+    if (node && node.kind === "primitive" && !node.isArray) {
+      setSelectedNode(id);
+    }
   };
   const handleExpandNode = (
     _: React.ChangeEvent<unknown>,
