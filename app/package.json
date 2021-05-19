@@ -23,6 +23,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/react-router-dom": "^5.1.7",
     "@types/uuid": "^8.3.0",
+    "clsx": "^1.1.1",
     "faker": "^5.5.3",
     "fishery": "^1.2.0",
     "i18next": "^19.8.8",
