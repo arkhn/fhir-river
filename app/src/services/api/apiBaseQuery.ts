@@ -8,6 +8,7 @@ const baseQuery = fetchBaseQuery({
   credentials: "include",
   redirect: "manual",
   prepareHeaders: (headers) => {
+    headers.set("X-Requested-With", "XMLHttpRequest");
     const token = Cookies.get(CSRF_COOKIE_NAME || "pyrog_csrftoken");
     if (token) {
       headers.set("X-CSRFToken", token);
