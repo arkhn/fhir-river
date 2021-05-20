@@ -88,6 +88,7 @@ class BatchEndpoint(viewsets.ViewSet):
         batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
+        # FIXME batch.id is not necessary for streams
         new_topics = [
             NewTopic(f"batch.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
             NewTopic(f"extract.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
@@ -101,6 +102,7 @@ class BatchEndpoint(viewsets.ViewSet):
         # FIXME: how to conciliate interactions with river-api and airflow?
         # Here, airflow launches the ETL after river-api has setup kafka/redis
         if is_streaming:
+            # FIXME handle errors
             # Set batch_id and resources variables in Airflow
             response = requests.post(
                 f"{settings.AIRFLOW_URL}/variables",
@@ -163,6 +165,15 @@ class BatchEndpoint(viewsets.ViewSet):
         )
         for key in mappings_redis.scan_iter(f"{pk}:*"):
             mappings_redis.delete(key)
+
+        # Pause dag
+        # FIXME we only want to do this in streaming mode
+        response = requests.patch(
+            f"{settings.AIRFLOW_URL}/dags/{settings.AIRFLOW_DAG_FLUX_ID}",
+            json={"is_paused": True},
+            auth=HTTPBasicAuth(settings.AIRFLOW_USER, settings.AIRFLOW_PASSWORD),
+        )
+        logger.info(response.json())
 
         return Response({"id": pk}, status=status.HTTP_200_OK)
 
