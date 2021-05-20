@@ -10,6 +10,7 @@ const columnSlice = createSlice({
   initialState: columnAdapter.getInitialState(),
   reducers: {
     columnAdded: columnAdapter.addOne,
+    columnsAdded: columnAdapter.addMany,
     columnUpdated: columnAdapter.updateOne,
     columnRemoved: columnAdapter.removeOne,
     columnsRemoved: columnAdapter.removeAll,
@@ -18,6 +19,7 @@ const columnSlice = createSlice({
 
 export const {
   columnAdded,
+  columnsAdded,
   columnUpdated,
   columnRemoved,
   columnsRemoved,

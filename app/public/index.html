@@ -26,6 +26,19 @@
     -->
     <title>React Redux App</title>
   </head>
+    <!--
+       the following templated variables will be updated dynamically
+       based on environment variables when using a production build.
+       Check the docker-entrypoint.sh to understand how this is done.
+     -->
+  <script>
+    window.env = {
+      PUBLIC_URL: "{{PUBLIC_URL}}",
+      API_URL: "{{API_URL}}",
+      OIDC_LOGIN_URL: "{{OIDC_LOGIN_URL}}",
+      CSRF_COOKIE_NAME: "{{CSRF_COOKIE_NAME}}",
+    };
+  </script>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>

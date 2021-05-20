@@ -10,12 +10,18 @@ const joinSlice = createSlice({
   initialState: joinAdapter.getInitialState(),
   reducers: {
     joinAdded: joinAdapter.addOne,
+    joinsAdded: joinAdapter.addMany,
     joinRemoved: joinAdapter.removeOne,
     joinsRemoved: joinAdapter.removeAll,
   },
 });
 
-export const { joinAdded, joinRemoved, joinsRemoved } = joinSlice.actions;
+export const {
+  joinsAdded,
+  joinAdded,
+  joinRemoved,
+  joinsRemoved,
+} = joinSlice.actions;
 
 export const joinSelectors = joinAdapter.getSelectors<RootState>(
   (state) => state.join

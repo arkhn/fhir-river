@@ -4,7 +4,9 @@ import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import CreateMapping from "features/Mappings/Create/CreateMapping";
+import EditMapping from "features/Mappings/Edit/EditMapping";
 
+import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
 import Mapping from "./Mapping";
 import PageNotFound from "./PageNotFound";
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 const Router = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter basename={PUBLIC_URL}>
       <AppBar />
       <div className={classes.body}>
         <Switch>
@@ -35,6 +37,9 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId/mappings/:mappingId">
             <Mapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
+            <EditMapping />
           </Route>
           <Route>
             <PageNotFound />

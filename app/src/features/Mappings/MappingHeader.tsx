@@ -13,6 +13,7 @@ import {
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
+import { useHistory, useParams } from "react-router-dom";
 
 import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
 import MappingNameDialog from "features/Mappings/Edit/MappingNameDialog";
@@ -50,6 +51,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const MappingHeader = (): JSX.Element => {
+  const history = useHistory();
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
+    mappingId?: string;
+  }>();
   const { t } = useTranslation();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -62,6 +68,7 @@ const MappingHeader = (): JSX.Element => {
   const handleMenuClose = () => setAnchorEl(null);
   const handleEditSourceTableClick = () => {
     handleMenuClose();
+    history.push(`/sources/${sourceId}/mappings/${mappingId}/edit`);
   };
   const handleEditNameClick = () => {
     handleMenuClose();
