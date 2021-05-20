@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { Icon, MaybeElement } from "@blueprintjs/core";
 import { IconName, IconNames } from "@blueprintjs/icons";
@@ -22,11 +21,28 @@ type TreeItemProps = {
 };
 
 const useStyle = makeStyles((theme: Theme) => ({
+  root: {
+    "& .MuiTreeItem-content .MuiTreeItem-label": {
+      borderRadius: 4,
+      height: 32,
+      paddingLeft: 10,
+    },
+  },
+  treeItemContainer: {
+    display: "flex",
+    alignItems: "center",
+    height: "100%",
+    "&:hover": {
+      "& button": {
+        display: "flex",
+      },
+    },
+  },
   icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    fill: theme.palette.text.primary,
   },
   treeItemTitle: {
     fontWeight: 500,
@@ -43,20 +59,12 @@ const useStyle = makeStyles((theme: Theme) => ({
   margin: {
     marginLeft: theme.spacing(1),
   },
-  treeItem: {
-    display: "flex",
-    alignItems: "center",
-    "&:hover": {
-      "& button": {
-        display: "flex",
-      },
-    },
+  iconRight: {
+    fill: theme.palette.text.secondary,
   },
-  treeItemIcons: {
+  labelEndIcons: {
     display: "none",
-    "&:hover": {
-      display: "flex",
-    },
+    marginRight: 4,
   },
 }));
 
@@ -70,10 +78,14 @@ const IconButton = ({ icon, onClick }: IconButtonProps): JSX.Element => {
   return (
     <MuiIconButton
       size="small"
-      className={classes.treeItemIcons}
+      className={classes.labelEndIcons}
       onClick={onClick}
     >
-      <Icon className={classes.icon} icon={icon} iconSize={15} />
+      <Icon
+        className={clsx(classes.icon, classes.iconRight)}
+        icon={icon}
+        iconSize={15}
+      />
     </MuiIconButton>
   );
 };
@@ -117,12 +129,15 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
         break;
     }
   } else {
-    iconName = IconNames.LAYERS;
+    iconName =
+      elementNode.name === "extension"
+        ? IconNames.CODE_BLOCK
+        : (iconName = IconNames.LAYERS);
   }
 
   const LabelContent = (): JSX.Element => {
     return (
-      <div className={classes.treeItem}>
+      <div className={classes.treeItemContainer}>
         {iconName && (
           <Icon className={classes.icon} icon={iconName} iconSize={15} />
         )}
@@ -160,6 +175,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
   return (
     <MuiTreeItem
       nodeId={elementNode.id}
+      classes={{ root: classes.root }}
       label={<LabelContent />}
       onIconClick={handleIconClick}
       onLabelClick={handleLabelClick}

@@ -30,7 +30,8 @@ const App = (): JSX.Element => {
       createMuiTheme({
         palette: {
           text: {
-            secondary: "#a0a0a0",
+            primary: prefersDarkMode ? "#FFFFFF" : "#464646",
+            secondary: prefersDarkMode ? "#a0a0a0" : "#858585",
           },
           type: prefersDarkMode ? "dark" : "light",
           primary: {
