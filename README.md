@@ -15,6 +15,8 @@ Using **River** and your Pyrog mappings, you can ETL your data, from a data sour
 
 ## [Changelog](./CHANGELOG.md)
 
+## [Usage](./USAGE.md)
+
 ## [Contributing](./CONTRIBUTING.md)
 
 ## [License](./LICENSE)
