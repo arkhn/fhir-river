@@ -7,6 +7,7 @@ import {
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import column from "features/Columns/columnSlice";
+import resourceTree from "features/FhirResourceTree/resourceTreeSlice";
 import filter from "features/Filters/filterSlice";
 import join from "features/Joins/joinSlice";
 import resource from "features/Mappings/resourceSlice";
@@ -20,6 +21,7 @@ const appReducer = combineReducers({
   join,
   resource,
   source,
+  resourceTree,
 });
 export type RootState = ReturnType<typeof appReducer>;
 
