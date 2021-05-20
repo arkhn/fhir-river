@@ -4,10 +4,10 @@ from typing import Any, Dict, List, Optional
 
 from arkhn_monitoring import Timer
 from common.analyzer.analysis import Analysis
-from common.database_connection.db_connection import DBConnection
 from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
-from sqlalchemy.orm import Query
+from sqlalchemy import MetaData
+from sqlalchemy.orm import Query, Session
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +24,9 @@ counter_extract_instances = PromCounter(
 
 
 class Extractor:
-    def __init__(self, db_connection: DBConnection):
-        self.db_connection = db_connection
+    def __init__(self, session: Session, metadata: MetaData):
+        self.session = session
+        self.metadata = metadata
 
     @Timer("time_extractor_extract", "time to perform extract method of Extractor")
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None, filters: Optional[Dict] = None):
@@ -42,25 +43,24 @@ class Extractor:
             a an sqlalchemy RestulProxy containing all the columns asked for in the
             mapping
         """
-        with self.db_connection.session_scope() as session:
-            logger.info(
-                {
-                    "message": f"Start extracting resource: {analysis.definition_id}",
-                    "resource_id": analysis.resource_id,
-                },
-            )
+        logger.info(
+            {
+                "message": f"Start extracting resource: {analysis.definition_id}",
+                "resource_id": analysis.resource_id,
+            },
+        )
 
-            # Build sqlalchemy query
-            builder = QueryBuilder(
-                session=session,
-                metadata=self.db_connection.metadata,
-                analysis=analysis,
-                pk_values=pk_values,
-                filters=filters,
-            )
-            query = builder.build_query()
+        # Build sqlalchemy query
+        builder = QueryBuilder(
+            session=self.session,
+            metadata=self.metadata,
+            analysis=analysis,
+            pk_values=pk_values,
+            filters=filters,
+        )
+        query = builder.build_query()
 
-            return self.run_sql_query(query)
+        return self.run_sql_query(query)
 
     @Timer("time_extractor_run_query", "time to run sql query")
     def run_sql_query(self, query: Query, resource_id: Optional[str] = None):

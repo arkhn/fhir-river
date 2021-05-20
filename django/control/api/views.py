@@ -184,31 +184,32 @@ class PreviewEndpoint(viewsets.ViewSet):
         analysis = analyzer.analyze(resource_mapping)
 
         db_connection = DBConnection(analysis.source_credentials)
-        extractor = Extractor(db_connection)
-        df = extractor.extract(analysis, primary_key_values)
+        with db_connection.session_scope() as session:
+            extractor = Extractor(session, db_connection.metadata)
+            df = extractor.extract(analysis, primary_key_values)
 
-        documents = []
-        errors = []
-        transformer = Transformer()
-        for row in extractor.split_dataframe(df, analysis):
-            # Encode and decode the row to mimic what happens when events are serialized
-            # to pass through kafka
-            row = json.JSONDecoder().decode(CustomJSONEncoder().encode(row))
-            primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
-            transformed_data = transformer.transform_data(row, analysis, primary_key_value)
-            document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)
-            documents.append(document)
-            resource_type = document.get("resourceType")
-            try:
-                construct_fhir_element(resource_type, document)
-            except ValidationError as e:
-                errors.extend(
-                    [
-                        f"{err['msg'] or 'Validation error'}: "
-                        f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
-                        for err in e.errors()
-                    ]
-                )
+            documents = []
+            errors = []
+            transformer = Transformer()
+            for row in extractor.split_dataframe(df, analysis):
+                # Encode and decode the row to mimic what happens
+                # when events are serialized to pass through kafka
+                row = json.JSONDecoder().decode(CustomJSONEncoder().encode(row))
+                primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
+                transformed_data = transformer.transform_data(row, analysis, primary_key_value)
+                document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)
+                documents.append(document)
+                resource_type = document.get("resourceType")
+                try:
+                    construct_fhir_element(resource_type, document)
+                except ValidationError as e:
+                    errors.extend(
+                        [
+                            f"{err['msg'] or 'Validation error'}: "
+                            f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
+                            for err in e.errors()
+                        ]
+                    )
 
         return Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
