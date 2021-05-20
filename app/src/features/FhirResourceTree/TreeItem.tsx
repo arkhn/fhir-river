@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import { IconName, IconNames } from "@blueprintjs/icons";
 import { makeStyles } from "@material-ui/core";
 import { TreeItem as MuiTreeItem } from "@material-ui/lab";
 
@@ -42,37 +41,12 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
     setHasExpanded(true);
   };
 
-  let iconName: IconName | null = null;
-
-  if (!elementNode.isArray) {
-    switch (elementNode.kind) {
-      case "primitive":
-        iconName = IconNames.TAG;
-        break;
-      case "complex":
-      case "choice":
-        iconName = IconNames.FOLDER_OPEN;
-        break;
-      default:
-        break;
-    }
-  } else {
-    iconName =
-      elementNode.type === "Extension"
-        ? IconNames.CODE_BLOCK
-        : (iconName = IconNames.LAYERS);
-  }
-
   return (
     <MuiTreeItem
       nodeId={elementNode.id}
       classes={{ root: classes.root }}
       label={
-        <TreeItemLabel
-          iconName={iconName}
-          isArrayItem={isArrayItem}
-          elementNode={elementNode}
-        />
+        <TreeItemLabel isArrayItem={isArrayItem} elementNode={elementNode} />
       }
       onIconClick={handleIconClick}
       onLabelClick={handleLabelClick}

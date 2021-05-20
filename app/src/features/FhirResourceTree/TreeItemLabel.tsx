@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Icon, MaybeElement } from "@blueprintjs/core";
+import { Icon } from "@blueprintjs/core";
 import { IconName, IconNames } from "@blueprintjs/icons";
 import { makeStyles, Theme, Typography } from "@material-ui/core";
 
@@ -9,7 +9,6 @@ import IconButton from "common/components/IconButton";
 import { ElementNode } from "./resourceTreeSlice";
 
 type TreeItemLabelProps = {
-  iconName: IconName | MaybeElement;
   elementNode: ElementNode;
   isArrayItem?: boolean;
 };
@@ -48,11 +47,31 @@ const useStyle = makeStyles((theme: Theme) => ({
 }));
 
 const TreeItemLabel = ({
-  iconName,
   elementNode,
   isArrayItem,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
+
+  let iconName: IconName | null = null;
+
+  if (!elementNode.isArray) {
+    switch (elementNode.kind) {
+      case "primitive":
+        iconName = IconNames.TAG;
+        break;
+      case "complex":
+      case "choice":
+        iconName = IconNames.FOLDER_OPEN;
+        break;
+      default:
+        break;
+    }
+  } else {
+    iconName =
+      elementNode.type === "Extension"
+        ? IconNames.CODE_BLOCK
+        : (iconName = IconNames.LAYERS);
+  }
 
   const handleDeleteItemClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
