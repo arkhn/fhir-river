@@ -10,7 +10,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/attributes/`,
-        params: { source: queryArg.source },
+        params: { resource: queryArg.resource, source: queryArg.source },
       }),
     }),
     apiAttributesCreate: build.mutation<
@@ -649,6 +649,7 @@ export const api = createApi({
 });
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
 export type ApiAttributesListApiArg = {
+  resource?: string;
   source?: string;
 };
 export type ApiAttributesCreateApiResponse = /** status 201  */ Attribute;
@@ -666,7 +667,8 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse =
+  /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -732,7 +734,8 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse =
+  /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -764,7 +767,8 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse =
+  /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -822,7 +826,8 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse =
+  /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;

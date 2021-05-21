@@ -53,6 +53,21 @@ def test_list_attributes(api_client, attribute_factory):
     assert len(response.data) == 3
 
 
+def test_filter_attributes_by_resource(api_client, resource_factory, attribute_factory):
+    url = reverse("attributes-list")
+    first_resource = resource_factory()
+    second_resource = resource_factory()
+    first_resource_attributes = attribute_factory.create_batch(2, resource=first_resource)
+    attribute_factory.create_batch(3, resource=second_resource)
+
+    response = api_client.get(url, {"resource": first_resource.id})
+
+    assert response.status_code == 200
+    assert {attribute_data["id"] for attribute_data in response.json()} == {
+        attribute.id for attribute in first_resource_attributes
+    }
+
+
 def test_filter_attributes_by_source(api_client, source_factory, resource_factory, attribute_factory):
     url = reverse("attributes-list")
     first_source, second_source = source_factory.create_batch(2)
