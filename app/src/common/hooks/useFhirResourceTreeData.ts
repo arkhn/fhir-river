@@ -292,6 +292,8 @@ const useFhirResourceTreeData = (
         const elementDefinition = createElementDefinition(attribute);
         const newElementNode = createElementNode(elementDefinition);
         newElementNode.definition.path = newElementNode.definition.id;
+        /* const newPath = newElementNode.path.split(".").pop();
+        if (newPath) newElementNode.name = newPath; */
         elementNodes.push(newElementNode);
       });
       return elementNodes;
