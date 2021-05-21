@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useMemo } from "react";
+import { createElement, useEffect, useMemo } from "react";
 
 import {
   IElementDefinition,
@@ -267,22 +267,12 @@ const useFhirResourceTreeData = (
   );
   const { mappingId } = useParams<{ mappingId?: string }>();
   const dispatch = useAppDispatch();
-  const root = useAppSelector(selectRoot); /** */
+  const root = useAppSelector(selectRoot);
 
-  /*   const {
+  const {
     data: attributes,
     isLoading: isAttributesLoading,
-  } = useApiAttributesListQuery({ source: mappingId });
-
-  const attributesForUi: ElementNode[] = [];
-  if (attributes) {
-    attributes.forEach((attribute: Attribute) => {
-      const elementDef = createElementDefinition(attribute);
-      const newAttribute = createElementNode(elementDef);
-      newAttribute.definition.path = newAttribute.definition.id;
-      attributesForUi.push(newAttribute);
-    });
-  } */
+  } = useApiAttributesListQuery({ resource: mappingId });
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
@@ -295,13 +285,26 @@ const useFhirResourceTreeData = (
     }
   }, [structureDefinition, nodePath]);
 
+  const dataAttributes = useMemo(() => {
+    if (attributes) {
+      const elementNodes: ElementNode[] = [];
+      attributes.forEach((attribute) => {
+        const elementDefinition = createElementDefinition(attribute);
+        const newElementNode = createElementNode(elementDefinition);
+        newElementNode.definition.path = newElementNode.definition.id;
+        elementNodes.push(newElementNode);
+      });
+      return elementNodes;
+    }
+  }, [attributes]);
+
   useEffect(() => {
     if (data) {
-      data && dispatch(setNodeChildren({ data, nodeId }));
+      data && dispatch(setNodeChildren({ data, nodeId, dataAttributes }));
     }
-  }, [nodeId, data, dispatch]);
+  }, [nodeId, data, dispatch, dataAttributes]);
 
-  return { root, isStructureDefinitionLoading, isAttributesLoading: true };
+  return { root, isStructureDefinitionLoading, isAttributesLoading };
 };
 
 export default useFhirResourceTreeData;

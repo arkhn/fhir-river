@@ -35,16 +35,45 @@ export const getNodeById = (
   return undefined;
 };
 
+export const getNodeByPath = (
+  path: string,
+  root: ElementNode
+): ElementNode | undefined => {
+  if (root.path === path) return root;
+  for (const next of root.children) {
+    const result = getNodeByPath(path, next);
+    if (result) return result;
+  }
+  return undefined;
+};
+
 const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
     setNodeChildren: (
       state,
-      { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
+      {
+        payload,
+      }: PayloadAction<{
+        nodeId?: string;
+        data: ElementNode;
+        dataAttributes?: ElementNode[];
+      }>
     ) => {
-      const { nodeId, data } = payload;
+      const { nodeId, data, dataAttributes } = payload;
       if (!nodeId) {
+        if (dataAttributes) {
+          dataAttributes.forEach((attribute) => {
+            if (attribute.definition.path) {
+              const node = getNodeByPath(attribute.definition.path, data);
+              if (node) {
+                node.children.push(attribute);
+                node.children.sort((a, b) => (a.path > b.path ? 1 : -1));
+              }
+            }
+          });
+        }
         state.root = data;
       } else if (state.root) {
         const node = getNodeById(nodeId, state.root);
