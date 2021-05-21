@@ -87,9 +87,9 @@ const createElementNode = (
   const prefixPath =
     (parentPath || elementDefinition.path?.split(".").shift()) ?? "";
   const suffixPath = elementDefinition.path?.split(".").slice(1).join(".");
-  const elementPath = `${prefixPath}.${suffixPath}${
-    index !== undefined ? `[${index}]` : ""
-  }`;
+  const elementPath = `${prefixPath}${
+    prefixPath && suffixPath && "."
+  }${suffixPath}${index !== undefined ? `[${index}]` : ""}`;
   return {
     id: uuid(),
     name: elementDefinition.id?.split(".").pop() ?? "",
