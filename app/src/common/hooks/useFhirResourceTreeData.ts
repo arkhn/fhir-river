@@ -297,21 +297,6 @@ const useFhirResourceTreeData = (
     }
   }, [attributes]);
 
-  const dataAttributes = useMemo(() => {
-    if (attributes) {
-      const elementNodes: ElementNode[] = [];
-      attributes.forEach((attribute) => {
-        const elementDefinition = createElementDefinition(attribute);
-        const newElementNode = createElementNode(elementDefinition);
-        newElementNode.definition.path = newElementNode.definition.id;
-        /* const newPath = newElementNode.path.split(".").pop();
-        if (newPath) newElementNode.name = newPath; */
-        elementNodes.push(newElementNode);
-      });
-      return elementNodes;
-    }
-  }, [attributes]);
-
   useEffect(() => {
     if (data) {
       data && dispatch(setNodeChildren({ data, nodeId, dataAttributes }));
