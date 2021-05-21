@@ -268,7 +268,6 @@ const useFhirResourceTreeData = (
   const { mappingId } = useParams<{ mappingId?: string }>();
   const dispatch = useAppDispatch();
   const root = useAppSelector(selectRoot);
-
   const {
     data: attributes,
     isLoading: isAttributesLoading,
@@ -290,10 +289,8 @@ const useFhirResourceTreeData = (
       const elementNodes: ElementNode[] = [];
       attributes.forEach((attribute) => {
         const elementDefinition = createElementDefinition(attribute);
-        const newElementNode = createElementNode(elementDefinition);
+        const newElementNode = createElementNode(elementDefinition, {});
         newElementNode.definition.path = newElementNode.definition.id;
-        /* const newPath = newElementNode.path.split(".").pop();
-        if (newPath) newElementNode.name = newPath; */
         elementNodes.push(newElementNode);
       });
       return elementNodes;
