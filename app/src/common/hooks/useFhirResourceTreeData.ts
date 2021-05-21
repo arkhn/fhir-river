@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo } from "react";
 
 import {
@@ -5,6 +6,7 @@ import {
   IElementDefinition_Type,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
 import camelCase from "lodash/camelCase";
+import { useParams } from "react-router";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -20,7 +22,11 @@ import {
   setNodeChildren,
   ElementKind,
 } from "features/FhirResourceTree/resourceTreeSlice";
-import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
+import {
+  useApiStructureDefinitionRetrieveQuery,
+  useApiAttributesListQuery,
+} from "services/api/endpoints";
+import { Attribute } from "services/api/generated/api.generated";
 
 const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
   if (elementDefinition.base && elementDefinition.base.path) {
@@ -97,6 +103,27 @@ const createElementNode = (
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
   };
+};
+
+const getNewPath = (path: string): string => {
+  if (path.endsWith(`]`)) {
+    const splittedPath = path.split(".");
+    const lastPathElement = splittedPath.pop()?.split("[")[0];
+    if (lastPathElement) splittedPath.push(lastPathElement);
+    return splittedPath.join(".");
+  } else {
+    return path;
+  }
+};
+
+const createElementDefinition = (attribute: Attribute): IElementDefinition => {
+  const elementDefinition: IElementDefinition = {
+    path: attribute.path,
+    id: getNewPath(attribute.path),
+    type: [{ code: attribute.definition_id }],
+  };
+  if (attribute.slice_name) elementDefinition.sliceName = attribute.slice_name;
+  return elementDefinition;
 };
 
 const getChildrenChoices = (
@@ -211,20 +238,37 @@ const useFhirResourceTreeData = (
   options?: { skip?: boolean }
 ): {
   root?: ElementNode;
-  isLoading: boolean;
+  isStructureDefinitionLoading: boolean;
+  isAttributesLoading: boolean;
 } => {
   const { id, nodeId } = params;
   const {
     data: structureDefinition,
-    isLoading,
+    isLoading: isStructureDefinitionLoading,
   } = useApiStructureDefinitionRetrieveQuery(
     {
       id,
     },
     options
   );
+  const { mappingId } = useParams<{ mappingId?: string }>();
   const dispatch = useAppDispatch();
-  const root = useAppSelector(selectRoot);
+  const root = useAppSelector(selectRoot); /** */
+
+  /*   const {
+    data: attributes,
+    isLoading: isAttributesLoading,
+  } = useApiAttributesListQuery({ source: mappingId });
+
+  const attributesForUi: ElementNode[] = [];
+  if (attributes) {
+    attributes.forEach((attribute: Attribute) => {
+      const elementDef = createElementDefinition(attribute);
+      const newAttribute = createElementNode(elementDef);
+      newAttribute.definition.path = newAttribute.definition.id;
+      attributesForUi.push(newAttribute);
+    });
+  } */
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
@@ -241,7 +285,7 @@ const useFhirResourceTreeData = (
     }
   }, [nodeId, data, dispatch]);
 
-  return { root, isLoading };
+  return { root, isStructureDefinitionLoading, isAttributesLoading: true };
 };
 
 export default useFhirResourceTreeData;
