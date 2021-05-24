@@ -29,7 +29,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
   const [hasExpanded, setHasExpanded] = useState(false);
   const isPrimitive = elementNode.kind === "primitive";
   const isComplex = elementNode.kind === "complex";
-  useFhirResourceTreeData(
+  const { createItem } = useFhirResourceTreeData(
     {
       definitionId: elementNode.type ?? "",
       node: elementNode,
@@ -49,7 +49,11 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
       nodeId={elementNode.id}
       classes={{ root: classes.root }}
       label={
-        <TreeItemLabel isArrayItem={isArrayItem} elementNode={elementNode} />
+        <TreeItemLabel
+          isArrayItem={isArrayItem}
+          elementNode={elementNode}
+          onCreateItem={createItem}
+        />
       }
       onIconClick={handleIconClick}
       onLabelClick={handleLabelClick}
