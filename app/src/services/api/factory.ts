@@ -1,3 +1,4 @@
+import { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import * as faker from "faker";
 import { Factory } from "fishery";
 
@@ -88,4 +89,26 @@ export const filterFactory = Factory.define<Filter>(
     sql_column: associations.sql_column || columnFactory.build().id,
     resource: associations.resource || resourceFactory.build().id,
   })
+);
+
+export const structureDefinitionFactory = Factory.define<IStructureDefinition>(
+  ({ sequence, associations }) => {
+    const structureDefName = associations.name || faker.lorem.word();
+    return {
+      resourceType: "StructureDefinition",
+      snapshot: {
+        element: [
+          {
+            path: structureDefName,
+            id: structureDefName,
+          },
+          {
+            path: `${structureDefName}.subject${sequence}`,
+            id: `${structureDefName}.subject${sequence}`,
+            type: [{ code: "Annotation" }],
+          },
+        ],
+      },
+    };
+  }
 );
