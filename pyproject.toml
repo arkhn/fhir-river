@@ -38,6 +38,7 @@ python_paths = "django"
 markers = '''
     migration(app_label=..., migration_name=...): mark a test as requiring the given migration state
     export_data(path): mark a test as requiring the given export data
+    kafka: mark a test as requiring kafka
     pagai: mark test that requires access to tests databases
     as_user: force authenticate the api_client fixture to the user fixure
     as_other_user: force authenticate the api_client fixture to the other_user fixture
