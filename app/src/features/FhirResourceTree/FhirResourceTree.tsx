@@ -45,9 +45,12 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { root } = useFhirResourceTreeData({
-    id: mapping?.definition_id ?? "",
-  });
+  const { root } = useFhirResourceTreeData(
+    {
+      id: mapping?.definition_id ?? "",
+    },
+    { skip: !mapping }
+  );
 
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
     const node = root && getNode("id", id, root);
@@ -83,7 +86,7 @@ const FhirResourceTree = (): JSX.Element => {
         defaultExpandIcon={<ChevronRightIcon />}
       >
         {root?.children.map((node) => (
-          <TreeItem key={node.id} elementNode={node} isArrayItem={true} />
+          <TreeItem key={node.id} elementNode={node} />
         ))}
       </TreeView>
     </Container>

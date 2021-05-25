@@ -85,13 +85,12 @@ const computeType = (
 const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
   (max && (max === "*" || +max > 1) && !sliceName) || false;
 
-const createElementNode = (
+export const createElementNode = (
   elementDefinition: IElementDefinition,
   params: { index?: number; parentPath?: string }
 ): ElementNode => {
   const { index, parentPath } = params;
-  const prefixPath =
-    (parentPath || elementDefinition.path?.split(".").shift()) ?? "";
+  const prefixPath = parentPath || elementDefinition.path?.split(".").shift();
   const suffixPath = elementDefinition.path?.split(".").slice(1).join(".");
   const elementPath = `${prefixPath}${
     prefixPath && suffixPath && "."
@@ -206,7 +205,7 @@ const getParent = (
   return undefined;
 };
 
-const buildTree = (
+export const buildTree = (
   elementsDefinition: IElementDefinition[],
   rootNode: ElementNode,
   previousElementNode: ElementNode,
@@ -246,8 +245,7 @@ const buildTree = (
 const useFhirResourceTreeData = (
   params: {
     id: string;
-    nodeId?: string;
-    nodePath?: string;
+    node?: ElementNode;
   },
   options?: { skip?: boolean }
 ): {
@@ -255,7 +253,9 @@ const useFhirResourceTreeData = (
   isStructureDefinitionLoading: boolean;
   isAttributesLoading: boolean;
 } => {
-  const { id, nodeId, nodePath } = params;
+  const { id, node } = params;
+  const nodeId = node?.id;
+  const nodePath = node?.path;
   const {
     data: structureDefinition,
     isLoading: isStructureDefinitionLoading,
