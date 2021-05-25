@@ -11,6 +11,7 @@
     "python.analysis.extraPaths": [
         "./django"
     ],
+    "python.analysis.typeCheckingMode": "basic",
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
     "python.testing.nosetestsEnabled": false,
