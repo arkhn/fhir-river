@@ -159,6 +159,9 @@ export const api = generatedApi
       apiAttributesList: {
         providesTags: providesList("Attributes"),
       },
+      apiAttributesDestroy: {
+        invalidatesTags: invalidatesOne("Attributes"),
+      },
       /**
        * Owners
        */
@@ -249,6 +252,7 @@ export const {
   useApiResourcesDestroyMutation,
   // Attributes
   useApiAttributesListQuery,
+  useApiAttributesDestroyMutation,
   // Owners
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import {
   IElementDefinition,
@@ -25,6 +25,7 @@ import {
 import {
   useApiStructureDefinitionRetrieveQuery,
   useApiAttributesListQuery,
+  useApiAttributesDestroyMutation,
 } from "services/api/endpoints";
 import { Attribute } from "services/api/generated/api.generated";
 
@@ -280,12 +281,9 @@ const useFhirResourceTreeData = (
 ): {
   root?: ElementNode;
   isLoading: boolean;
+  deleteItem: () => Promise<void>;
 } => {
   const { definitionId, node } = params;
-
-  const dispatch = useAppDispatch();
-  const root = useAppSelector(selectRoot);
-  const { mappingId } = useParams<{ mappingId?: string }>();
   const {
     data: structureDefinition,
     isLoading: isStructureDefinitionLoading,
@@ -295,6 +293,10 @@ const useFhirResourceTreeData = (
     },
     options
   );
+  const [deleteAttribute] = useApiAttributesDestroyMutation();
+  const { mappingId } = useParams<{ mappingId?: string }>();
+  const dispatch = useAppDispatch();
+  const root = useAppSelector(selectRoot);
   const {
     data: attributes,
     isLoading: isAttributesLoading,
@@ -321,13 +323,21 @@ const useFhirResourceTreeData = (
     }
   }, [structureDefinition, nodePath, attributes]);
 
+  const deleteItem = useCallback(async () => {
+    const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
+
+    if (attributeToDelete) {
+      await deleteAttribute({ id: attributeToDelete.id }).unwrap();
+    }
+  }, [attributes, nodePath, deleteAttribute]);
+
   useEffect(() => {
     if (data) {
       data && dispatch(setNodeChildren({ data, nodeId }));
     }
   }, [nodeId, data, dispatch]);
 
-  return { root, isLoading };
+  return { root, isLoading, deleteItem };
 };
 
 export default useFhirResourceTreeData;
