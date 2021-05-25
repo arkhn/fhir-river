@@ -7,6 +7,7 @@ urlpatterns = [
     path("", include("pagai.urls")),
     path("", include("pyrog.urls")),
     path("", include("users.urls")),
+    path("", include("river.urls")),
     path("oidc/", include("mozilla_django_oidc.urls")),
 ]
 

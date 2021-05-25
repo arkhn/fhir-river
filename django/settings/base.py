@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "topicleaner",
     "pagai",
     "pyrog",
+    "river",
     "users",
 ]
 
