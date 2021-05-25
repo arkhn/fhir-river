@@ -31,7 +31,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
   const isComplex = elementNode.kind === "complex";
   useFhirResourceTreeData(
     {
-      id: elementNode.type ?? "",
+      definitionId: elementNode.type ?? "",
       node: elementNode,
     },
     { skip: !isComplex || !hasExpanded || elementNode.isArray }
