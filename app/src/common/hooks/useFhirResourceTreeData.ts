@@ -79,6 +79,11 @@ const computeType = (
 const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
   (max && (max === "*" || +max > 1) && !sliceName) || false;
 
+/**
+ * Creates an ElementNode from the corresponding ElementDefinition item
+ * @param elementDefinition Element of StructureDef's snapshot used to create an ElementNode
+ * @param params Set of index and parentPath used to generate the ElementNode path attribute
+ */
 export const createElementNode = (
   elementDefinition: IElementDefinition,
   params: { index?: number; parentPath?: string }
@@ -178,13 +183,20 @@ const getParent = (
   return undefined;
 };
 
+/**
+ * Mutates the `rootNode` argument to build the whole ElementNode tree
+ * @param elementDefinitions Array of ElementDefinition form which the ElementNode tree is built
+ * @param rootNode Root of the ElementNode tree
+ * @param previousElementNode Previous generated ElementNode which has been set in the tree
+ * @param parentPath Path used to prefix new nodes paths
+ */
 export const buildTree = (
-  elementsDefinition: IElementDefinition[],
+  elementDefinitions: IElementDefinition[],
   rootNode: ElementNode,
   previousElementNode: ElementNode,
   parentPath?: string
 ): void => {
-  const [currentElementDefinition, ...rest] = elementsDefinition;
+  const [currentElementDefinition, ...rest] = elementDefinitions;
 
   if (!currentElementDefinition) return;
 
@@ -211,13 +223,13 @@ export const buildTree = (
     buildTree(rest, rootNode, currentElementNode, parentPath);
   } else {
     const parent = getParent(previousElementNode, rootNode);
-    if (parent) buildTree(elementsDefinition, rootNode, parent, parentPath);
+    if (parent) buildTree(elementDefinitions, rootNode, parent, parentPath);
   }
 };
 
 const useFhirResourceTreeData = (
   params: {
-    id: string;
+    definitionId: string;
     node?: ElementNode;
   },
   options?: { skip?: boolean }
@@ -225,7 +237,7 @@ const useFhirResourceTreeData = (
   root?: ElementNode;
   isLoading: boolean;
 } => {
-  const { id, node } = params;
+  const { definitionId, node } = params;
   const nodeId = node?.id;
   const nodePath = node?.path;
   const {
@@ -233,7 +245,7 @@ const useFhirResourceTreeData = (
     isLoading,
   } = useApiStructureDefinitionRetrieveQuery(
     {
-      id,
+      id: definitionId,
     },
     options
   );

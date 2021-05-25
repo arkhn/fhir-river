@@ -47,7 +47,7 @@ const FhirResourceTree = (): JSX.Element => {
   );
   const { root } = useFhirResourceTreeData(
     {
-      id: mapping?.definition_id ?? "",
+      definitionId: mapping?.definition_id ?? "",
     },
     { skip: !mapping }
   );
