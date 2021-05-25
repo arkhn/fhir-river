@@ -107,8 +107,9 @@ export const createElementNode = (
   };
 };
 
-const getChildrenChoices = (parentPath?: string) => (
-  elementDefinition: IElementDefinition
+const getChildrenChoices = (
+  elementDefinition: IElementDefinition,
+  parentPath?: string
 ): ElementNode[] =>
   elementDefinition.type?.map((type) =>
     createElementNode(
@@ -210,8 +211,9 @@ export const buildTree = (
   });
 
   if (currentElementNode.kind === "choice") {
-    currentElementNode.children = getChildrenChoices(parentPath)(
-      currentElementNode.definition
+    currentElementNode.children = getChildrenChoices(
+      currentElementNode.definition,
+      parentPath
     );
   }
 
