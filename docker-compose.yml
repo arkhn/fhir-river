@@ -134,12 +134,13 @@ services:
     restart: on-failure
     # This port mapping is required by the containerized kafka
     ports:
-      - "9092:9092"
+      - "19092:19092"
     depends_on:
       - zookeeper
     environment:
-      - KAFKA_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONNECTIONS_FROM_HOST://:19092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
       - KAFKA_DELETE_TOPIC_ENABLE=true
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       # The following option can be used in local, but should not be used in production.
