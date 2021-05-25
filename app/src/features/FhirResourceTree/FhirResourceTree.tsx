@@ -54,7 +54,6 @@ const FhirResourceTree = (): JSX.Element => {
 
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
     const node = root && getNodeById(id, root);
-    console.log(node);
     if (node && node.kind === "primitive" && !node.isArray) {
       setSelectedNode(id);
     }

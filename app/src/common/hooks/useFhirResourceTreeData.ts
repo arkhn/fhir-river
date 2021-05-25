@@ -218,15 +218,16 @@ export const buildTree = (
 const useFhirResourceTreeData = (
   params: {
     id: string;
-    nodeId?: string;
-    nodePath?: string;
+    node?: ElementNode;
   },
   options?: { skip?: boolean }
 ): {
   root?: ElementNode;
   isLoading: boolean;
 } => {
-  const { id, nodeId, nodePath } = params;
+  const { id, node } = params;
+  const nodeId = node?.id;
+  const nodePath = node?.path;
   const {
     data: structureDefinition,
     isLoading,
