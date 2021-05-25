@@ -1,3 +1,5 @@
+from typing import List
+
 import pytest
 
 from django.urls import reverse
@@ -22,8 +24,22 @@ def test_retrieve_batch(api_client, batch, error):
     assert response.status_code == 200
 
 
-def test_delete_batch(api_client, batch):
-    url = reverse("batches-detail", kwargs={"pk": batch})
+@pytest.fixture
+def api_batch_factory(api_client):
+    """Batch factory to test the underlying topics."""
+
+    def _create_batch(resources: List[str]):
+        url = reverse("batches-list")
+        data = {"resources": [{"resource_id": id_} for id_ in resources]}
+        response = api_client.post(url, data, format="json")
+        return response.json()["id"]
+
+    yield _create_batch
+
+
+def test_delete_batch(api_client, api_batch_factory):
+    batch_id = api_batch_factory(resources=["foo"])
+    url = reverse("batches-detail", kwargs={"pk": batch_id})
 
     response = api_client.delete(url)
 
