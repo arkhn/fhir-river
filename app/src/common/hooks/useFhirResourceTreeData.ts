@@ -113,21 +113,10 @@ export const createElementNode = (
   };
 };
 
-const getNewPath = (path: string): string => {
-  if (path.endsWith(`]`)) {
-    const splittedPath = path.split(".");
-    const lastPathElement = splittedPath.pop()?.split("[")[0];
-    if (lastPathElement) splittedPath.push(lastPathElement);
-    return splittedPath.join(".");
-  } else {
-    return path;
-  }
-};
-
 const createElementDefinition = (attribute: Attribute): IElementDefinition => {
   const elementDefinition: IElementDefinition = {
     path: attribute.path,
-    id: getNewPath(attribute.path),
+    id: attribute.path.split(/[[]\d+]$/).join(""),
     type: [{ code: attribute.definition_id }],
   };
   if (attribute.slice_name) elementDefinition.sliceName = attribute.slice_name;
