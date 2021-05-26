@@ -266,7 +266,6 @@ const addAttributesToTree = (
       );
       if (node) {
         node.children.push(attribute);
-        node.children.sort((a, b) => (a.path > b.path ? 1 : -1));
       }
     }
   });
@@ -280,12 +279,13 @@ const useFhirResourceTreeData = (
   options?: { skip?: boolean }
 ): {
   root?: ElementNode;
-  isStructureDefinitionLoading: boolean;
-  isAttributesLoading: boolean;
+  isLoading: boolean;
 } => {
   const { definitionId, node } = params;
-  const nodeId = node?.id;
-  const nodePath = node?.path;
+
+  const dispatch = useAppDispatch();
+  const root = useAppSelector(selectRoot);
+  const { mappingId } = useParams<{ mappingId?: string }>();
   const {
     data: structureDefinition,
     isLoading: isStructureDefinitionLoading,
@@ -295,13 +295,14 @@ const useFhirResourceTreeData = (
     },
     options
   );
-  const { mappingId } = useParams<{ mappingId?: string }>();
-  const dispatch = useAppDispatch();
-  const root = useAppSelector(selectRoot);
   const {
     data: attributes,
     isLoading: isAttributesLoading,
   } = useApiAttributesListQuery({ resource: mappingId });
+
+  const isLoading = isAttributesLoading && isStructureDefinitionLoading;
+  const nodeId = node?.id;
+  const nodePath = node?.path;
 
   const data = useMemo(() => {
     if (structureDefinition?.snapshot && attributes) {
@@ -326,7 +327,7 @@ const useFhirResourceTreeData = (
     }
   }, [nodeId, data, dispatch]);
 
-  return { root, isStructureDefinitionLoading, isAttributesLoading };
+  return { root, isLoading };
 };
 
 export default useFhirResourceTreeData;
