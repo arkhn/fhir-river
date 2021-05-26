@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 
 import pytest
@@ -10,7 +11,7 @@ pytestmark = [pytest.mark.django_db, pytest.mark.kafka]
 def test_create_batch(api_client):
     url = reverse("batches-list")
 
-    data = {"resources": [{"resource_id": "foo"}]}
+    data = {"resources": [{"resource_id": uuid.uuid4()}]}
     response = api_client.post(url, data, format="json")
 
     assert response.status_code == 201
@@ -38,7 +39,7 @@ def api_batch_factory(api_client):
 
 
 def test_delete_batch(api_client, api_batch_factory):
-    batch_id = api_batch_factory(resources=["foo"])
+    batch_id = api_batch_factory(resources=[uuid.uuid4()])
     url = reverse("batches-detail", kwargs={"pk": batch_id})
 
     response = api_client.delete(url)
