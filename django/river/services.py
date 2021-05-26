@@ -1,5 +1,6 @@
-from datetime import datetime
 from typing import List
+
+from django.utils import timezone
 
 from river import models
 from river.adapters.event_publisher import EventPublisher
@@ -32,7 +33,7 @@ def abort(batch: models.Batch, topics: TopicsHandler) -> None:
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics.delete(f"{base_topic}.{batch.id}")
 
-    batch.deleted_at = datetime.now()
+    batch.deleted_at = timezone.now()
     batch.save(update_fields=["deleted_at"])
 
 
