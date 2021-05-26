@@ -59,7 +59,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
               isArrayItem={elementNode.isArray}
             />
           ))
-        : !isPrimitive && <div key="stub" />}
+        : !isPrimitive && !elementNode.isArray && <></>}
     </MuiTreeItem>
   );
 };
