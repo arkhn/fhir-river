@@ -225,7 +225,6 @@ export const buildTree = (
   parentPath?: string
 ): void => {
   const [currentElementDefinition, ...rest] = elementDefinitions;
-
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
@@ -244,12 +243,16 @@ export const buildTree = (
     );
   }
 
-  if (
-    isElementNodeChildOf(currentElementNode, previousElementNode) &&
-    (!previousElementNode.isArray || rootNode === previousElementNode)
-  ) {
-    previousElementNode.children.push(currentElementNode);
-    buildTree(rest, rootNode, currentElementNode, parentPath);
+  if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
+    if (
+      previousElementNode.isArray &&
+      previousElementNode.type === "BackboneElement"
+    ) {
+      buildTree(rest, rootNode, previousElementNode, parentPath);
+    } else {
+      previousElementNode.children.push(currentElementNode);
+      buildTree(rest, rootNode, currentElementNode, parentPath);
+    }
   } else {
     const parent = getParent(previousElementNode, rootNode);
     if (parent) buildTree(elementDefinitions, rootNode, parent, parentPath);
@@ -313,9 +316,9 @@ const useFhirResourceTreeData = (
 
   useEffect(() => {
     if (data) {
-      data && dispatch(setNodeChildren({ data, nodeId, dataAttributes }));
+      data && dispatch(setNodeChildren({ data, nodeId }));
     }
-  }, [nodeId, data, dispatch, dataAttributes]);
+  }, [nodeId, data, dispatch]);
 
   return { root, isStructureDefinitionLoading, isAttributesLoading };
 };

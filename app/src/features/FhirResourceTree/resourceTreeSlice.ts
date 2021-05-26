@@ -23,32 +23,16 @@ type ResourceTreeSliceState = {
 
 const initialState: ResourceTreeSliceState = {};
 
-export const getNode = (
-  get: "path" | "id",
-  path: string,
+export const getNodeById = (
+  id: string,
   root: ElementNode
 ): ElementNode | undefined => {
-  if (root[get] === path) return root;
+  if (root.id === id) return root;
   for (const next of root.children) {
-    const result = getNode(get, path, next);
+    const result = getNodeById(id, next);
     if (result) return result;
   }
   return undefined;
-};
-
-const addDataAttributes = (
-  dataAttributes: ElementNode[],
-  data: ElementNode
-) => {
-  dataAttributes.forEach((attribute) => {
-    if (attribute.definition.path) {
-      const node = getNode("path", attribute.definition.path, data);
-      if (node) {
-        node.children.push(attribute);
-        node.children.sort((a, b) => (a.path > b.path ? 1 : -1));
-      }
-    }
-  });
 };
 
 const resourceTreeSlice = createSlice({
@@ -57,24 +41,14 @@ const resourceTreeSlice = createSlice({
   reducers: {
     setNodeChildren: (
       state,
-      {
-        payload,
-      }: PayloadAction<{
-        nodeId?: string;
-        data: ElementNode;
-        dataAttributes?: ElementNode[];
-      }>
+      { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
     ) => {
-      const { nodeId, data, dataAttributes } = payload;
+      const { nodeId, data } = payload;
       if (!nodeId) {
-        dataAttributes && addDataAttributes(dataAttributes, data);
         state.root = data;
       } else if (state.root) {
-        const node = getNode("id", nodeId, state.root);
-        if (node) {
-          node.children = data.children;
-          dataAttributes && addDataAttributes(dataAttributes, node);
-        }
+        const node = getNodeById(nodeId, state.root);
+        if (node) node.children = data.children;
       }
     },
   },
