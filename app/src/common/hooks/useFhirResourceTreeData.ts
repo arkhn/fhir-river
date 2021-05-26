@@ -116,7 +116,7 @@ export const createElementNode = (
 const createElementDefinition = (attribute: Attribute): IElementDefinition => {
   const elementDefinition: IElementDefinition = {
     path: attribute.path,
-    id: attribute.path.split(/[[]\d+]$/).join(""),
+    id: attribute.path.split(/[[]\d+]/).join(""),
     type: [{ code: attribute.definition_id }],
   };
   if (attribute.slice_name) elementDefinition.sliceName = attribute.slice_name;
@@ -259,7 +259,11 @@ const addAttributesToTree = (
 ) => {
   attributeNodes.forEach((attribute) => {
     if (attribute.definition.path) {
-      const node = getNode("path", attribute.definition.path, rootNode);
+      const node = getNode(
+        "path",
+        attribute.path.split(/[[]\d+]$/).join(""),
+        rootNode
+      );
       if (node) {
         node.children.push(attribute);
         node.children.sort((a, b) => (a.path > b.path ? 1 : -1));
@@ -309,7 +313,6 @@ const useFhirResourceTreeData = (
       const attributeNodes = attributes.map((attribute) => {
         const elementDefinition = createElementDefinition(attribute);
         const newElementNode = createElementNode(elementDefinition, {});
-        newElementNode.definition.path = newElementNode.definition.id;
         return newElementNode;
       });
       addAttributesToTree(rootNode, attributeNodes);
