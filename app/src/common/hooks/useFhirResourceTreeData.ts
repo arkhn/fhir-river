@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { createElement, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import {
   IElementDefinition,
@@ -21,6 +20,7 @@ import {
   selectRoot,
   setNodeChildren,
   ElementKind,
+  getNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   useApiStructureDefinitionRetrieveQuery,
@@ -259,6 +259,26 @@ export const buildTree = (
   }
 };
 
+/**
+ * Add Attributes to RootNode array elements
+ * @param rootNode Root of the ElementNode tree
+ * @param attributeNodes attributes to add to RootNode
+ */
+const addAttributesToTree = (
+  rootNode: ElementNode,
+  attributeNodes: ElementNode[]
+) => {
+  attributeNodes.forEach((attribute) => {
+    if (attribute.definition.path) {
+      const node = getNode("path", attribute.definition.path, rootNode);
+      if (node) {
+        node.children.push(attribute);
+        node.children.sort((a, b) => (a.path > b.path ? 1 : -1));
+      }
+    }
+  });
+};
+
 const useFhirResourceTreeData = (
   params: {
     definitionId: string;
@@ -291,28 +311,22 @@ const useFhirResourceTreeData = (
   } = useApiAttributesListQuery({ resource: mappingId });
 
   const data = useMemo(() => {
-    if (structureDefinition?.snapshot) {
+    if (structureDefinition?.snapshot && attributes) {
       const elementDefinitions = structureDefinition.snapshot.element;
       const rootNode = createElementNode(elementDefinitions[0], {
         parentPath: nodePath,
       });
       buildTree(elementDefinitions.slice(1), rootNode, rootNode, nodePath);
-      return rootNode;
-    }
-  }, [structureDefinition, nodePath]);
-
-  const dataAttributes = useMemo(() => {
-    if (attributes) {
-      const elementNodes: ElementNode[] = [];
-      attributes.forEach((attribute) => {
+      const attributeNodes = attributes.map((attribute) => {
         const elementDefinition = createElementDefinition(attribute);
         const newElementNode = createElementNode(elementDefinition, {});
         newElementNode.definition.path = newElementNode.definition.id;
-        elementNodes.push(newElementNode);
+        return newElementNode;
       });
-      return elementNodes;
+      addAttributesToTree(rootNode, attributeNodes);
+      return rootNode;
     }
-  }, [attributes]);
+  }, [structureDefinition, nodePath, attributes]);
 
   useEffect(() => {
     if (data) {
