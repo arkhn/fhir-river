@@ -189,7 +189,6 @@ const getParent = (
  * @param elementDefinitions Array of ElementDefinition form which the ElementNode tree is built
  * @param rootNode Root of the ElementNode tree
  * @param previousElementNode Previous generated ElementNode which has been set in the tree
- * @param parentPath Path used to prefix new nodes paths
  */
 export const buildTree = (
   elementDefinitions: IElementDefinition[],
