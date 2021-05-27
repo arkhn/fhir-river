@@ -23,13 +23,14 @@ type ResourceTreeSliceState = {
 
 const initialState: ResourceTreeSliceState = {};
 
-export const getNodeById = (
-  id: string,
+export const getNode = (
+  get: "path" | "id",
+  path: string,
   root: ElementNode
 ): ElementNode | undefined => {
-  if (root.id === id) return root;
+  if (root[get] === path) return root;
   for (const next of root.children) {
-    const result = getNodeById(id, next);
+    const result = getNode(get, path, next);
     if (result) return result;
   }
   return undefined;
@@ -47,7 +48,7 @@ const resourceTreeSlice = createSlice({
       if (!nodeId) {
         state.root = data;
       } else if (state.root) {
-        const node = getNodeById(nodeId, state.root);
+        const node = getNode("id", nodeId, state.root);
         if (node) node.children = data.children;
       }
     },

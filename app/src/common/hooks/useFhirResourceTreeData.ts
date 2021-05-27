@@ -5,6 +5,7 @@ import {
   IElementDefinition_Type,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
 import upperFirst from "lodash/upperFirst";
+import { useParams } from "react-router";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -19,8 +20,13 @@ import {
   selectRoot,
   setNodeChildren,
   ElementKind,
+  getNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
-import { useApiStructureDefinitionRetrieveQuery } from "services/api/endpoints";
+import {
+  useApiStructureDefinitionRetrieveQuery,
+  useApiAttributesListQuery,
+} from "services/api/endpoints";
+import { Attribute } from "services/api/generated/api.generated";
 
 const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
   if (elementDefinition.base && elementDefinition.base.path) {
@@ -105,6 +111,16 @@ export const createElementNode = (
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
   };
+};
+
+const createElementDefinition = (attribute: Attribute): IElementDefinition => {
+  const elementDefinition: IElementDefinition = {
+    path: attribute.path,
+    id: attribute.path.split(/[[]\d+]/).join(""),
+    type: [{ code: attribute.definition_id }],
+  };
+  if (attribute.slice_name) elementDefinition.sliceName = attribute.slice_name;
+  return elementDefinition;
 };
 
 const getChildrenChoices = (
@@ -196,7 +212,6 @@ export const buildTree = (
   previousElementNode: ElementNode
 ): void => {
   const [currentElementDefinition, ...rest] = elementDefinitions;
-
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
@@ -215,16 +230,43 @@ export const buildTree = (
     );
   }
 
-  if (
-    isElementNodeChildOf(currentElementNode, previousElementNode) &&
-    (!previousElementNode.isArray || rootNode === previousElementNode)
-  ) {
-    previousElementNode.children.push(currentElementNode);
-    buildTree(rest, rootNode, currentElementNode);
+  if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
+    if (
+      previousElementNode.isArray &&
+      previousElementNode.type === "BackboneElement"
+    ) {
+      buildTree(rest, rootNode, previousElementNode);
+    } else {
+      previousElementNode.children.push(currentElementNode);
+      buildTree(rest, rootNode, currentElementNode);
+    }
   } else {
     const parent = getParent(previousElementNode, rootNode);
     if (parent) buildTree(elementDefinitions, rootNode, parent);
   }
+};
+
+/**
+ * Add Attributes to RootNode array elements
+ * @param rootNode Root of the ElementNode tree
+ * @param attributeNodes attributes to add to RootNode
+ */
+const addAttributesToTree = (
+  rootNode: ElementNode,
+  attributeNodes: ElementNode[]
+) => {
+  attributeNodes.forEach((attribute) => {
+    if (attribute.definition.path) {
+      const node = getNode(
+        "path",
+        attribute.path.split(/[[]\d+]$/).join(""),
+        rootNode
+      );
+      if (node) {
+        node.children.push(attribute);
+      }
+    }
+  });
 };
 
 const useFhirResourceTreeData = (
@@ -238,30 +280,44 @@ const useFhirResourceTreeData = (
   isLoading: boolean;
 } => {
   const { definitionId, node } = params;
-  const nodeId = node?.id;
-  const nodePath = node?.path;
+
+  const dispatch = useAppDispatch();
+  const root = useAppSelector(selectRoot);
+  const { mappingId } = useParams<{ mappingId?: string }>();
   const {
     data: structureDefinition,
-    isLoading,
+    isLoading: isStructureDefinitionLoading,
   } = useApiStructureDefinitionRetrieveQuery(
     {
       id: definitionId,
     },
     options
   );
-  const dispatch = useAppDispatch();
-  const root = useAppSelector(selectRoot);
+  const {
+    data: attributes,
+    isLoading: isAttributesLoading,
+  } = useApiAttributesListQuery({ resource: mappingId });
+
+  const isLoading = isAttributesLoading && isStructureDefinitionLoading;
+  const nodeId = node?.id;
+  const nodePath = node?.path;
 
   const data = useMemo(() => {
-    if (structureDefinition?.snapshot) {
+    if (structureDefinition?.snapshot && attributes) {
       const elementDefinitions = structureDefinition.snapshot.element;
       const rootNode = createElementNode(elementDefinitions[0], {
         parentPath: nodePath,
       });
       buildTree(elementDefinitions.slice(1), rootNode, rootNode);
+      const attributeNodes = attributes.map((attribute) => {
+        const elementDefinition = createElementDefinition(attribute);
+        const newElementNode = createElementNode(elementDefinition, {});
+        return newElementNode;
+      });
+      addAttributesToTree(rootNode, attributeNodes);
       return rootNode;
     }
-  }, [structureDefinition, nodePath]);
+  }, [structureDefinition, nodePath, attributes]);
 
   useEffect(() => {
     if (data) {
