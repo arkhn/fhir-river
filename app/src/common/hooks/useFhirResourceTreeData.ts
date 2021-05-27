@@ -21,6 +21,8 @@ import {
   setNodeChildren,
   ElementKind,
   getNode,
+  setAttributeNodes,
+  resetResourceTreeSliceState,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   useApiStructureDefinitionRetrieveQuery,
@@ -248,29 +250,6 @@ export const buildTree = (
   }
 };
 
-/**
- * Add Attributes to RootNode array elements
- * @param rootNode Root of the ElementNode tree
- * @param attributeNodes attributes to add to RootNode
- */
-const addAttributesToTree = (
-  rootNode: ElementNode,
-  attributeNodes: ElementNode[]
-) => {
-  attributeNodes.forEach((attribute) => {
-    if (attribute.definition.path) {
-      const node = getNode(
-        "path",
-        attribute.path.split(/[[]\d+]$/).join(""),
-        rootNode
-      );
-      if (node) {
-        node.children.push(attribute);
-      }
-    }
-  });
-};
-
 const useFhirResourceTreeData = (
   params: {
     definitionId: string;
@@ -308,21 +287,15 @@ const useFhirResourceTreeData = (
   const nodePath = node?.path;
 
   const data = useMemo(() => {
-    if (structureDefinition?.snapshot && attributes) {
+    if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element;
       const rootNode = createElementNode(elementDefinitions[0], {
         parentPath: nodePath,
       });
       buildTree(elementDefinitions.slice(1), rootNode, rootNode);
-      const attributeNodes = attributes.map((attribute) => {
-        const elementDefinition = createElementDefinition(attribute);
-        const newElementNode = createElementNode(elementDefinition, {});
-        return newElementNode;
-      });
-      addAttributesToTree(rootNode, attributeNodes);
       return rootNode;
     }
-  }, [structureDefinition, nodePath, attributes]);
+  }, [structureDefinition, nodePath]);
 
   const deleteItem = useCallback(async () => {
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
@@ -353,6 +326,26 @@ const useFhirResourceTreeData = (
       data && dispatch(setNodeChildren({ data, nodeId }));
     }
   }, [nodeId, data, dispatch]);
+
+  useEffect(() => {
+    if (attributes) {
+      const attributeNodes = attributes.map((attribute) => {
+        const elementDefinition = createElementDefinition(attribute);
+        return createElementNode(elementDefinition, {});
+      });
+      dispatch(setAttributeNodes({ attributeNodes }));
+    }
+  }, [dispatch, attributes]);
+
+  useEffect(
+    () => () => {
+      // Check on !node to call this only when the tree root in unmounted
+      if (!node) {
+        dispatch(resetResourceTreeSliceState());
+      }
+    },
+    [dispatch, node]
+  );
 
   return { root, isLoading, createItem, deleteItem };
 };

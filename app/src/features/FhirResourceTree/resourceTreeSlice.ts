@@ -1,5 +1,6 @@
 import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import differenceBy from "lodash/differenceBy";
 
 import { RootState } from "app/store";
 
@@ -19,9 +20,12 @@ export type ElementNode = {
 
 type ResourceTreeSliceState = {
   root?: ElementNode;
+  attributeNodesInTree: ElementNode[];
 };
 
-const initialState: ResourceTreeSliceState = {};
+const initialState: ResourceTreeSliceState = {
+  attributeNodesInTree: [],
+};
 
 export const getNode = (
   get: "path" | "id",
@@ -40,6 +44,10 @@ const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
+    resetResourceTreeSliceState: (state) => {
+      state.root = undefined;
+      state.attributeNodesInTree = [];
+    },
     setNodeChildren: (
       state,
       { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
@@ -52,11 +60,67 @@ const resourceTreeSlice = createSlice({
         if (node) node.children = data.children;
       }
     },
+    setAttributeNodes: (
+      state,
+      { payload }: PayloadAction<{ attributeNodes: ElementNode[] }>
+    ) => {
+      const { attributeNodes } = payload;
+      const { attributeNodesInTree, root } = state;
+      if (root) {
+        const nodesToRemove = differenceBy(
+          attributeNodesInTree,
+          attributeNodes,
+          (node) => node.path
+        );
+        const nodesToAdd = differenceBy(
+          attributeNodes,
+          attributeNodesInTree,
+          (node) => node.path
+        );
+
+        // Add attribute nodes to the tree
+        nodesToAdd.forEach((node) => {
+          const parent = getNode(
+            "path",
+            node.path.split(/[[]\d+]$/).join(""),
+            root as ElementNode
+          );
+          if (
+            parent &&
+            !parent.children.some(({ path }) => path === node.path)
+          ) {
+            parent.children.push(node);
+            attributeNodesInTree.push(node);
+          }
+        });
+
+        // Remove attribute nodes from the tree
+        nodesToRemove.forEach((node) => {
+          const parent = getNode(
+            "path",
+            node.path.split(/[[]\d+]$/).join(""),
+            root as ElementNode
+          );
+          if (parent) {
+            parent.children = parent.children.filter(
+              ({ path }) => path !== node.path
+            );
+            state.attributeNodesInTree = attributeNodesInTree.filter(
+              ({ path }) => path !== node.path
+            );
+          }
+        });
+      }
+    },
   },
 });
 
 export const selectRoot = (state: RootState): ElementNode | undefined =>
   state.resourceTree.root;
 
-export const { setNodeChildren } = resourceTreeSlice.actions;
+export const {
+  setNodeChildren,
+  setAttributeNodes,
+  resetResourceTreeSliceState,
+} = resourceTreeSlice.actions;
 export default resourceTreeSlice.reducer;
