@@ -21,6 +21,7 @@ def test_can_publish_and_subscribe():
     event = FooEvent(data="foo")
     publisher.publish("foo", event)
 
-    with subscriber.subscribe("foo"):
-        data = subscriber.poll()
+    with subscriber.subscribe(["foo"]):
+        topic, data = subscriber.poll()
+        assert topic == "foo"
         assert FooEvent(**data) == event
