@@ -45,9 +45,12 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { root } = useFhirResourceTreeData({
-    id: mapping?.definition_id ?? "",
-  });
+  const { root } = useFhirResourceTreeData(
+    {
+      definitionId: mapping?.definition_id ?? "",
+    },
+    { skip: !mapping }
+  );
 
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
     const node = root && getNodeById(id, root);

@@ -4,7 +4,7 @@ import {
   IElementDefinition,
   IElementDefinition_Type,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
-import camelCase from "lodash/camelCase";
+import upperFirst from "lodash/upperFirst";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -79,20 +79,28 @@ const computeType = (
 const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
   (max && (max === "*" || +max > 1) && !sliceName) || false;
 
-const createElementNode = (
+/**
+ * Creates an ElementNode from the corresponding ElementDefinition item
+ * @param elementDefinition Element of StructureDef's snapshot used to create an ElementNode
+ * @param params Set of index and parentPath used to generate the ElementNode path attribute
+ */
+export const createElementNode = (
   elementDefinition: IElementDefinition,
-  isArrayItem?: boolean
+  params: { index?: number; parentPath?: string }
 ): ElementNode => {
+  const { index, parentPath } = params;
+  const prefixPath = parentPath || elementDefinition.path?.split(".").shift();
+  const suffixPath = elementDefinition.path?.split(".").slice(1).join(".");
+  const elementPath = `${prefixPath}${
+    prefixPath && suffixPath && "."
+  }${suffixPath}${index !== undefined ? `[${index}]` : ""}`;
   return {
     id: uuid(),
     name: elementDefinition.id?.split(".").pop() ?? "",
     children: [],
-    path: elementDefinition.path ?? "",
+    path: elementPath,
     definition: elementDefinition,
-    isArray:
-      undefined !== isArrayItem
-        ? !isArrayItem
-        : isElementArray(elementDefinition),
+    isArray: index !== undefined ? false : isElementArray(elementDefinition),
     isSlice: !!elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
@@ -100,15 +108,22 @@ const createElementNode = (
 };
 
 const getChildrenChoices = (
-  elementDefinition: IElementDefinition
+  elementDefinition: IElementDefinition,
+  parentPath?: string
 ): ElementNode[] =>
   elementDefinition.type?.map((type) =>
-    createElementNode({
-      ...elementDefinition,
-      type: [{ code: computeType(type) }],
-      id: elementDefinition.id?.replace("[x]", camelCase(type.code) ?? ""),
-      path: elementDefinition.path?.replace("[x]", camelCase(type.code) ?? ""),
-    })
+    createElementNode(
+      {
+        ...elementDefinition,
+        type: [{ code: computeType(type) }],
+        id: elementDefinition.id?.replace("[x]", upperFirst(type.code) ?? ""),
+        path: elementDefinition.path?.replace(
+          "[x]",
+          upperFirst(type.code) ?? ""
+        ),
+      },
+      { parentPath }
+    )
   ) ?? [];
 
 const isSliceOf = (
@@ -169,12 +184,18 @@ const getParent = (
   return undefined;
 };
 
-const buildTree = (
-  elementsDefinition: IElementDefinition[],
+/**
+ * Mutates the `rootNode` argument to build the whole ElementNode tree
+ * @param elementDefinitions Array of ElementDefinition form which the ElementNode tree is built
+ * @param rootNode Root of the ElementNode tree
+ * @param previousElementNode Previous generated ElementNode which has been set in the tree
+ */
+export const buildTree = (
+  elementDefinitions: IElementDefinition[],
   rootNode: ElementNode,
   previousElementNode: ElementNode
 ): void => {
-  const [currentElementDefinition, ...rest] = elementsDefinition;
+  const [currentElementDefinition, ...rest] = elementDefinitions;
 
   if (!currentElementDefinition) return;
 
@@ -183,11 +204,14 @@ const buildTree = (
     return;
   }
 
-  const currentElementNode = createElementNode(currentElementDefinition);
+  const currentElementNode = createElementNode(currentElementDefinition, {
+    parentPath: rootNode.path,
+  });
 
   if (currentElementNode.kind === "choice") {
     currentElementNode.children = getChildrenChoices(
-      currentElementNode.definition
+      currentElementNode.definition,
+      rootNode.path
     );
   }
 
@@ -199,27 +223,29 @@ const buildTree = (
     buildTree(rest, rootNode, currentElementNode);
   } else {
     const parent = getParent(previousElementNode, rootNode);
-    if (parent) buildTree(elementsDefinition, rootNode, parent);
+    if (parent) buildTree(elementDefinitions, rootNode, parent);
   }
 };
 
 const useFhirResourceTreeData = (
   params: {
-    id: string;
-    nodeId?: string;
+    definitionId: string;
+    node?: ElementNode;
   },
   options?: { skip?: boolean }
 ): {
   root?: ElementNode;
   isLoading: boolean;
 } => {
-  const { id, nodeId } = params;
+  const { definitionId, node } = params;
+  const nodeId = node?.id;
+  const nodePath = node?.path;
   const {
     data: structureDefinition,
     isLoading,
   } = useApiStructureDefinitionRetrieveQuery(
     {
-      id,
+      id: definitionId,
     },
     options
   );
@@ -229,11 +255,13 @@ const useFhirResourceTreeData = (
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element;
-      const rootNode = createElementNode(elementDefinitions[0]);
+      const rootNode = createElementNode(elementDefinitions[0], {
+        parentPath: nodePath,
+      });
       buildTree(elementDefinitions.slice(1), rootNode, rootNode);
       return rootNode;
     }
-  }, [structureDefinition]);
+  }, [structureDefinition, nodePath]);
 
   useEffect(() => {
     if (data) {
