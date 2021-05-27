@@ -210,25 +210,24 @@ const getParent = (
 export const buildTree = (
   elementDefinitions: IElementDefinition[],
   rootNode: ElementNode,
-  previousElementNode: ElementNode,
-  parentPath?: string
+  previousElementNode: ElementNode
 ): void => {
   const [currentElementDefinition, ...rest] = elementDefinitions;
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
-    buildTree(rest, rootNode, previousElementNode, parentPath);
+    buildTree(rest, rootNode, previousElementNode);
     return;
   }
 
   const currentElementNode = createElementNode(currentElementDefinition, {
-    parentPath,
+    parentPath: rootNode.path,
   });
 
   if (currentElementNode.kind === "choice") {
     currentElementNode.children = getChildrenChoices(
       currentElementNode.definition,
-      parentPath
+      rootNode.path
     );
   }
 
@@ -237,14 +236,14 @@ export const buildTree = (
       previousElementNode.isArray &&
       previousElementNode.type === "BackboneElement"
     ) {
-      buildTree(rest, rootNode, previousElementNode, parentPath);
+      buildTree(rest, rootNode, previousElementNode);
     } else {
       previousElementNode.children.push(currentElementNode);
-      buildTree(rest, rootNode, currentElementNode, parentPath);
+      buildTree(rest, rootNode, currentElementNode);
     }
   } else {
     const parent = getParent(previousElementNode, rootNode);
-    if (parent) buildTree(elementDefinitions, rootNode, parent, parentPath);
+    if (parent) buildTree(elementDefinitions, rootNode, parent);
   }
 };
 
@@ -310,7 +309,7 @@ const useFhirResourceTreeData = (
       const rootNode = createElementNode(elementDefinitions[0], {
         parentPath: nodePath,
       });
-      buildTree(elementDefinitions.slice(1), rootNode, rootNode, nodePath);
+      buildTree(elementDefinitions.slice(1), rootNode, rootNode);
       const attributeNodes = attributes.map((attribute) => {
         const elementDefinition = createElementDefinition(attribute);
         const newElementNode = createElementNode(elementDefinition, {});
