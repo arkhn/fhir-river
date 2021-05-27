@@ -2,7 +2,7 @@ import json
 import logging
 import time
 from contextlib import contextmanager
-from typing import Dict, List
+from typing import Any, Dict, List, Tuple
 
 import confluent_kafka
 from confluent_kafka import KafkaError, KafkaException
@@ -54,12 +54,12 @@ class KafkaEventSubscriber(EventSubscriber):
         )
 
     @contextmanager
-    def subscribe(self, topic: str):
-        self._kafka_consumer.subscribe([topic])
+    def subscribe(self, topics: List[str]):
+        self._kafka_consumer.subscribe(topics)
         yield self
         self._kafka_consumer.close()
 
-    def poll(self):
+    def poll(self) -> Tuple[str, Any]:
         """Polls until a message's available for delivery"""
         while True:
             msg = self._kafka_consumer.poll(timeout=1.0)
@@ -69,8 +69,7 @@ class KafkaEventSubscriber(EventSubscriber):
                 logger.debug(error.str())
                 self._handle_error(error)
                 continue
-            data = json.loads(msg.value())
-            return data
+            return msg.topic(), json.loads(msg.value())
 
     def _handle_error(self, error: KafkaError):
         """Handles a KafkaError"""
