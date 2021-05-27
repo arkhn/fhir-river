@@ -10,8 +10,9 @@ import { ElementNode } from "./resourceTreeSlice";
 
 type TreeItemLabelProps = {
   elementNode: ElementNode;
-  onCreateItem: () => Promise<void>;
   isArrayItem?: boolean;
+  onCreateItem: () => Promise<void>;
+  onDeleteItem: () => Promise<void>;
 };
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -50,6 +51,7 @@ const useStyle = makeStyles((theme: Theme) => ({
 const TreeItemLabel = ({
   elementNode,
   isArrayItem,
+  onDeleteItem,
   onCreateItem,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
@@ -79,6 +81,7 @@ const TreeItemLabel = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    onDeleteItem();
   };
 
   const handleAddItemClick = (
