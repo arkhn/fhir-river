@@ -2,7 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from extractor.service import ExtractorService
+from extractor.service import bootstrap
 from utils.exporter import start_exporter
 
 logger = logging.getLogger(__name__)
@@ -13,5 +13,5 @@ class Command(BaseCommand):
         start_exporter()
 
         logger.info("Starting...")
-        app = ExtractorService.make_app()
-        app.run()
+        service = bootstrap()
+        service.run()
