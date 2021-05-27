@@ -26,6 +26,7 @@ import {
   useApiStructureDefinitionRetrieveQuery,
   useApiAttributesListQuery,
   useApiAttributesDestroyMutation,
+  useApiAttributesCreateMutation,
 } from "services/api/endpoints";
 import { Attribute } from "services/api/generated/api.generated";
 
@@ -206,30 +207,28 @@ const getParent = (
  * @param elementDefinitions Array of ElementDefinition form which the ElementNode tree is built
  * @param rootNode Root of the ElementNode tree
  * @param previousElementNode Previous generated ElementNode which has been set in the tree
- * @param parentPath Path used to prefix new nodes paths
  */
 export const buildTree = (
   elementDefinitions: IElementDefinition[],
   rootNode: ElementNode,
-  previousElementNode: ElementNode,
-  parentPath?: string
+  previousElementNode: ElementNode
 ): void => {
   const [currentElementDefinition, ...rest] = elementDefinitions;
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
-    buildTree(rest, rootNode, previousElementNode, parentPath);
+    buildTree(rest, rootNode, previousElementNode);
     return;
   }
 
   const currentElementNode = createElementNode(currentElementDefinition, {
-    parentPath,
+    parentPath: rootNode.path,
   });
 
   if (currentElementNode.kind === "choice") {
     currentElementNode.children = getChildrenChoices(
       currentElementNode.definition,
-      parentPath
+      rootNode.path
     );
   }
 
@@ -238,14 +237,14 @@ export const buildTree = (
       previousElementNode.isArray &&
       previousElementNode.type === "BackboneElement"
     ) {
-      buildTree(rest, rootNode, previousElementNode, parentPath);
+      buildTree(rest, rootNode, previousElementNode);
     } else {
       previousElementNode.children.push(currentElementNode);
-      buildTree(rest, rootNode, currentElementNode, parentPath);
+      buildTree(rest, rootNode, currentElementNode);
     }
   } else {
     const parent = getParent(previousElementNode, rootNode);
-    if (parent) buildTree(elementDefinitions, rootNode, parent, parentPath);
+    if (parent) buildTree(elementDefinitions, rootNode, parent);
   }
 };
 
@@ -282,6 +281,7 @@ const useFhirResourceTreeData = (
   root?: ElementNode;
   isLoading: boolean;
   deleteItem: () => Promise<void>;
+  createItem: () => Promise<void>;
 } => {
   const { definitionId, node } = params;
   const {
@@ -301,6 +301,7 @@ const useFhirResourceTreeData = (
     data: attributes,
     isLoading: isAttributesLoading,
   } = useApiAttributesListQuery({ resource: mappingId });
+  const [createAttribute] = useApiAttributesCreateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
   const nodeId = node?.id;
@@ -312,7 +313,7 @@ const useFhirResourceTreeData = (
       const rootNode = createElementNode(elementDefinitions[0], {
         parentPath: nodePath,
       });
-      buildTree(elementDefinitions.slice(1), rootNode, rootNode, nodePath);
+      buildTree(elementDefinitions.slice(1), rootNode, rootNode);
       const attributeNodes = attributes.map((attribute) => {
         const elementDefinition = createElementDefinition(attribute);
         const newElementNode = createElementNode(elementDefinition, {});
@@ -330,6 +331,22 @@ const useFhirResourceTreeData = (
       await deleteAttribute({ id: attributeToDelete.id }).unwrap();
     }
   }, [attributes, nodePath, deleteAttribute]);
+  const createItem = useCallback(async () => {
+    if (nodeId && root) {
+      const parentNode = getNode("id", nodeId, root);
+
+      if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
+        const attributePath = `${parentNode.path}[${parentNode.children.length}]`;
+        await createAttribute({
+          attributeRequest: {
+            definition_id: parentNode.type,
+            path: attributePath,
+            resource: mappingId,
+          },
+        }).unwrap();
+      }
+    }
+  }, [createAttribute, mappingId, nodeId, root]);
 
   useEffect(() => {
     if (data) {
@@ -337,7 +354,7 @@ const useFhirResourceTreeData = (
     }
   }, [nodeId, data, dispatch]);
 
-  return { root, isLoading, deleteItem };
+  return { root, isLoading, createItem, deleteItem };
 };
 
 export default useFhirResourceTreeData;

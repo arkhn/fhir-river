@@ -13,13 +13,6 @@ describe("BuildTree algorithm", () => {
     //Basic tree generation
     expect(rootNode.path).toBe(elementDefinitions[0].path);
     expect(rootNode.children[0].path).toBe(elementDefinitions[1].path);
-
-    buildTree(
-      elementDefinitions,
-      rootNode,
-      rootNode.children[0],
-      rootNode.children[0].path
-    );
   });
 
   it("Should concat correctly the paths", () => {
@@ -28,7 +21,7 @@ describe("BuildTree algorithm", () => {
     const rootNode = createElementNode(elementDefinitions[0], {
       parentPath,
     });
-    buildTree(elementDefinitions.slice(1), rootNode, rootNode, rootNode.path);
+    buildTree(elementDefinitions.slice(1), rootNode, rootNode);
 
     //Basic tree generation
     expect(rootNode.path).toBe(parentPath);
@@ -48,7 +41,7 @@ describe("BuildTree algorithm", () => {
       parentPath,
       index,
     });
-    buildTree(elementDefinitions.slice(1), rootNode, rootNode, rootNode.path);
+    buildTree(elementDefinitions.slice(1), rootNode, rootNode);
 
     //Basic tree generation
     expect(rootNode.path).toBe(`${parentPath}[${index}]`);

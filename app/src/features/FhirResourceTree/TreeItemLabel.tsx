@@ -11,6 +11,7 @@ import { ElementNode } from "./resourceTreeSlice";
 type TreeItemLabelProps = {
   elementNode: ElementNode;
   isArrayItem?: boolean;
+  onCreateItem: () => Promise<void>;
   onDeleteItem: () => Promise<void>;
 };
 
@@ -51,6 +52,7 @@ const TreeItemLabel = ({
   elementNode,
   isArrayItem,
   onDeleteItem,
+  onCreateItem,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
 
@@ -86,6 +88,7 @@ const TreeItemLabel = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    onCreateItem();
   };
 
   const handleAddExtensionClick = (

@@ -29,7 +29,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
   const [hasExpanded, setHasExpanded] = useState(false);
   const isPrimitive = elementNode.kind === "primitive";
   const isComplex = elementNode.kind === "complex";
-  const { deleteItem } = useFhirResourceTreeData(
+  const { createItem, deleteItem } = useFhirResourceTreeData(
     {
       definitionId: elementNode.type ?? "",
       node: elementNode,
@@ -53,6 +53,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
           isArrayItem={isArrayItem}
           elementNode={elementNode}
           onDeleteItem={deleteItem}
+          onCreateItem={createItem}
         />
       }
       onIconClick={handleIconClick}
@@ -66,7 +67,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
               isArrayItem={elementNode.isArray}
             />
           ))
-        : !isPrimitive && <div key="stub" />}
+        : !isPrimitive && !elementNode.isArray && <></>}
     </MuiTreeItem>
   );
 };

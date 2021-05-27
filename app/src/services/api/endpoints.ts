@@ -162,6 +162,9 @@ export const api = generatedApi
       apiAttributesDestroy: {
         invalidatesTags: invalidatesOne("Attributes"),
       },
+      apiAttributesCreate: {
+        invalidatesTags: invalidatesList("Attributes"),
+      },
       /**
        * Owners
        */
@@ -253,6 +256,7 @@ export const {
   // Attributes
   useApiAttributesListQuery,
   useApiAttributesDestroyMutation,
+  useApiAttributesCreateMutation,
   // Owners
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
