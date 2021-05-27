@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import {
   IElementDefinition,
@@ -25,6 +25,7 @@ import {
 import {
   useApiStructureDefinitionRetrieveQuery,
   useApiAttributesListQuery,
+  useApiAttributesCreateMutation,
 } from "services/api/endpoints";
 import { Attribute } from "services/api/generated/api.generated";
 
@@ -278,6 +279,7 @@ const useFhirResourceTreeData = (
 ): {
   root?: ElementNode;
   isLoading: boolean;
+  createItem: () => Promise<void>;
 } => {
   const { definitionId, node } = params;
 
@@ -297,6 +299,7 @@ const useFhirResourceTreeData = (
     data: attributes,
     isLoading: isAttributesLoading,
   } = useApiAttributesListQuery({ resource: mappingId });
+  const [createAttribute] = useApiAttributesCreateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
   const nodeId = node?.id;
@@ -319,13 +322,30 @@ const useFhirResourceTreeData = (
     }
   }, [structureDefinition, nodePath, attributes]);
 
+  const createItem = useCallback(async () => {
+    if (nodeId && root) {
+      const parentNode = getNode("id", nodeId, root);
+
+      if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
+        const attributePath = `${parentNode.path}[${parentNode.children.length}]`;
+        await createAttribute({
+          attributeRequest: {
+            definition_id: parentNode.type,
+            path: attributePath,
+            resource: mappingId,
+          },
+        }).unwrap();
+      }
+    }
+  }, [createAttribute, mappingId, nodeId, root]);
+
   useEffect(() => {
     if (data) {
       data && dispatch(setNodeChildren({ data, nodeId }));
     }
   }, [nodeId, data, dispatch]);
 
-  return { root, isLoading };
+  return { root, isLoading, createItem };
 };
 
 export default useFhirResourceTreeData;
