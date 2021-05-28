@@ -40,3 +40,7 @@ def test_abort(batch):
 
     assert batch.deleted_at is not None
     assert topics._topics == set()
+
+
+def test_retry(batch):
+    pass

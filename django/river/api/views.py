@@ -1,4 +1,5 @@
 from rest_framework import response, status, viewsets
+from rest_framework.decorators import action
 
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
@@ -32,3 +33,7 @@ class BatchViewSet(viewsets.ModelViewSet):
         abort(batch_instance, topics)
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(methods=["post"], detail=True)
+    def retry(self, request, *args, **kwargs):
+        raise NotImplementedError
