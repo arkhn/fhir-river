@@ -34,7 +34,13 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
       definitionId: elementNode.type ?? "",
       node: elementNode,
     },
-    { skip: !isComplex || !hasExpanded || elementNode.isArray }
+    {
+      skip:
+        !isComplex ||
+        !hasExpanded ||
+        elementNode.isArray ||
+        elementNode.type === "BackboneElement",
+    }
   );
 
   const handleIconClick = () => {

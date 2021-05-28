@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import differenceBy from "lodash/differenceBy";
 
 import { RootState } from "app/store";
+import { createElementNode } from "common/hooks/useFhirResourceTreeData";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
 
@@ -16,6 +17,7 @@ export type ElementNode = {
   type?: string;
   definition: IElementDefinition;
   children: ElementNode[];
+  backboneElementDefinitions: IElementDefinition[];
 };
 
 type ResourceTreeSliceState = {
@@ -91,6 +93,22 @@ const resourceTreeSlice = createSlice({
           ) {
             parent.children.push(node);
             attributeNodesInTree.push(node);
+
+            if (parent.isArray && parent.type === "BackboneElement") {
+              // Manually add children to the BackboneElement item
+              parent.backboneElementDefinitions.forEach((elementDefinition) => {
+                const childNode = createElementNode(
+                  {
+                    ...elementDefinition,
+                    path: `${node.path}.${elementDefinition.path
+                      ?.split(".")
+                      .pop()}`,
+                  },
+                  {}
+                );
+                node.children.push(childNode);
+              });
+            }
           }
         });
 
