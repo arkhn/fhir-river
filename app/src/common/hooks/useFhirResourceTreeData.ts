@@ -207,7 +207,7 @@ const getParent = (
 
 /**
  * Mutates the `rootNode` argument to build the whole ElementNode tree
- * @param elementDefinitions Array of ElementDefinition form which the ElementNode tree is built
+ * @param elementDefinitions Array of ElementDefinition from which the ElementNode tree is built
  * @param rootNode Root of the ElementNode tree
  * @param previousElementNode Previous generated ElementNode which has been set in the tree
  */
@@ -250,6 +250,24 @@ export const buildTree = (
   } else {
     const parent = getParent(previousElementNode, rootNode);
     if (parent) buildTree(elementDefinitions, rootNode, parent);
+  }
+};
+
+const findChildAttributes = (
+  attributeToDelete: Attribute,
+  attributes: Attribute[]
+): Attribute[] => {
+  const path = attributeToDelete.path;
+  return attributes.filter((attribute) => attribute.path.startsWith(path));
+};
+
+const computeChildPathIndex = (parent: ElementNode) => {
+  const childIndexes = parent.children
+    .map(({ path }) => path.match(/[[](\d+)]$/)?.[1])
+    .filter(Boolean)
+    .map((index) => +(index as string));
+  for (let i = 0; i <= parent.children.length; i++) {
+    if (!childIndexes.includes(i)) return i;
   }
 };
 
@@ -304,7 +322,12 @@ const useFhirResourceTreeData = (
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
 
     if (attributeToDelete) {
-      await deleteAttribute({ id: attributeToDelete.id }).unwrap();
+      const childAttributes =
+        attributes && findChildAttributes(attributeToDelete, attributes);
+      childAttributes &&
+        (await Promise.all(
+          childAttributes.map(({ id }) => deleteAttribute({ id }).unwrap())
+        ));
     }
   }, [attributes, nodePath, deleteAttribute]);
   const createItem = useCallback(async () => {
@@ -312,7 +335,8 @@ const useFhirResourceTreeData = (
       const parentNode = getNode("id", nodeId, root);
 
       if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
-        const attributePath = `${parentNode.path}[${parentNode.children.length}]`;
+        const pathIndex = computeChildPathIndex(parentNode);
+        const attributePath = `${parentNode.path}[${pathIndex}]`;
         await createAttribute({
           attributeRequest: {
             definition_id: parentNode.type,
