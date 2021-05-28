@@ -8,6 +8,7 @@ from django.urls import reverse
 pytestmark = [pytest.mark.django_db, pytest.mark.kafka]
 
 
+@pytest.mark.skip(reason="Needs pyrog-api")
 def test_create_batch(api_client):
     url = reverse("batches-list")
 
@@ -38,6 +39,7 @@ def api_batch_factory(api_client):
     yield _create_batch
 
 
+@pytest.mark.skip(reason="Needs pyrog-api")
 def test_delete_batch(api_client, api_batch_factory):
     batch_id = api_batch_factory(resources=[uuid.uuid4()])
     url = reverse("batches-detail", kwargs={"pk": batch_id})

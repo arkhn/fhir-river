@@ -11,6 +11,7 @@ from river.domain.events import BatchResource
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.skip(reason="Needs pyrog-api")
 def test_batch():
     topics = FakeTopics()
     publisher = FakeEventPublisher()
