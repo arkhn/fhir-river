@@ -16,6 +16,7 @@ ALL_OWNERS_FOR_DBTYPE = {
         "guest",
         "INFORMATION_SCHEMA",
         "sys",
+        "cdc",
         "db_owner",
         "db_accessadmin",
         "db_securityadmin",
