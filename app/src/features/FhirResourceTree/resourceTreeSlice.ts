@@ -27,6 +27,9 @@ const initialState: ResourceTreeSliceState = {
   attributeNodesInTree: [],
 };
 
+const computePathWithoutIndexes = (node: ElementNode) =>
+  node.path.split(/[[]\d+]$/).join("");
+
 export const getNode = (
   get: "path" | "id",
   path: string,
@@ -82,7 +85,7 @@ const resourceTreeSlice = createSlice({
         nodesToAdd.forEach((node) => {
           const parent = getNode(
             "path",
-            node.path.split(/[[]\d+]$/).join(""),
+            computePathWithoutIndexes(node),
             root as ElementNode
           );
           if (
@@ -98,7 +101,7 @@ const resourceTreeSlice = createSlice({
         nodesToRemove.forEach((node) => {
           const parent = getNode(
             "path",
-            node.path.split(/[[]\d+]$/).join(""),
+            computePathWithoutIndexes(node),
             root as ElementNode
           );
           if (parent) {
