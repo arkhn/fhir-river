@@ -242,7 +242,7 @@ export const buildTree = (
  * `Identifier[0].type.coding[3]` -> `Identifier[0].type.coding`
  * @param node
  */
-export const computePathWithoutIndexes = (node: ElementNode): string =>
+export const computePathWithoutIndexes = (node: { path: string }): string =>
   node.path.replace(/[[]\d+]$/, "");
 
 export const getNode = (

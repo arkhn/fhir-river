@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useMemo } from "react";
 
+import { difference } from "lodash";
 import { useParams } from "react-router";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import {
   ElementNode,
   selectRoot,
-  attributeNodeUpdate,
   treeNodeUpdate,
   resetResourceTreeSliceState,
+  attibuteNodesAdded,
+  attributeNodesDeleted,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   getNode,
@@ -22,6 +24,8 @@ import {
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
 } from "services/api/endpoints";
+
+import usePrevious from "./usePrevious";
 
 const useFhirResourceTreeData = (
   params: {
@@ -53,6 +57,7 @@ const useFhirResourceTreeData = (
     data: attributes,
     isLoading: isAttributesLoading,
   } = useApiAttributesListQuery({ resource: mappingId });
+  const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
@@ -101,14 +106,28 @@ const useFhirResourceTreeData = (
   }, [nodeId, data, dispatch]);
 
   useEffect(() => {
-    if (attributes) {
-      const attributeNodes = attributes.map((attribute) => {
-        const elementDefinition = createElementDefinition(attribute);
-        return createElementNode(elementDefinition, {});
-      });
-      dispatch(attributeNodeUpdate({ attributeNodes }));
+    // The attribute injections only need to happen from the tree root scope (ie if !node)
+    if (root && attributes && !node) {
+      const attributesToAdd = attributes.filter(
+        ({ path }) => !getNode("path", path, root)
+      );
+
+      if (attributesToAdd.length > 0) {
+        const attributeNodes = attributesToAdd.map((attribute) => {
+          const elementDefinition = createElementDefinition(attribute);
+          return createElementNode(elementDefinition, {});
+        });
+        dispatch(attibuteNodesAdded({ nodes: attributeNodes }));
+      }
+
+      if (prevAttributes) {
+        const attributesToRemove = difference(prevAttributes, attributes);
+        if (attributesToRemove.length > 0) {
+          dispatch(attributeNodesDeleted({ attributes: attributesToRemove }));
+        }
+      }
     }
-  }, [dispatch, attributes]);
+  }, [dispatch, attributes, prevAttributes, root, node]);
 
   useEffect(
     () => () => {
