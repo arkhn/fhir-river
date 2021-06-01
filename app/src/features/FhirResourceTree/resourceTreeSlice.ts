@@ -1,9 +1,14 @@
 import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import differenceBy from "lodash/differenceBy";
 
 import { RootState } from "app/store";
-import { createElementNode } from "common/hooks/useFhirResourceTreeData";
+import { Attribute } from "services/api/generated/api.generated";
+
+import {
+  createElementNode,
+  computePathWithoutIndexes,
+  getNode,
+} from "./resourceTreeUtils";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
 
@@ -29,19 +34,6 @@ const initialState: ResourceTreeSliceState = {
   attributeNodesInTree: [],
 };
 
-export const getNode = (
-  get: "path" | "id",
-  path: string,
-  root: ElementNode
-): ElementNode | undefined => {
-  if (root[get] === path) return root;
-  for (const next of root.children) {
-    const result = getNode(get, path, next);
-    if (result) return result;
-  }
-  return undefined;
-};
-
 const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
@@ -50,7 +42,7 @@ const resourceTreeSlice = createSlice({
       state.root = undefined;
       state.attributeNodesInTree = [];
     },
-    setNodeChildren: (
+    treeNodeUpdate: (
       state,
       { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
     ) => {
@@ -62,38 +54,20 @@ const resourceTreeSlice = createSlice({
         if (node) node.children = data.children;
       }
     },
-    setAttributeNodes: (
+    attibuteNodesAdded: (
       state,
-      { payload }: PayloadAction<{ attributeNodes: ElementNode[] }>
+      { payload }: PayloadAction<{ nodes: ElementNode[] }>
     ) => {
-      const { attributeNodes } = payload;
-      const { attributeNodesInTree, root } = state;
+      const { root } = state;
       if (root) {
-        const nodesToRemove = differenceBy(
-          attributeNodesInTree,
-          attributeNodes,
-          (node) => node.path
-        );
-        const nodesToAdd = differenceBy(
-          attributeNodes,
-          attributeNodesInTree,
-          (node) => node.path
-        );
-
-        // Add attribute nodes to the tree
-        nodesToAdd.forEach((node) => {
-          const parent = getNode(
-            "path",
-            node.path.split(/[[]\d+]$/).join(""),
-            root as ElementNode
-          );
+        const { nodes } = payload;
+        nodes.forEach((node) => {
+          const parent = getNode("path", computePathWithoutIndexes(node), root);
           if (
             parent &&
             !parent.children.some(({ path }) => path === node.path)
           ) {
             parent.children.push(node);
-            attributeNodesInTree.push(node);
-
             if (parent.isArray && parent.type === "BackboneElement") {
               // Manually add children to the BackboneElement item
               parent.backboneElementDefinitions.forEach((elementDefinition) => {
@@ -111,20 +85,24 @@ const resourceTreeSlice = createSlice({
             }
           }
         });
-
-        // Remove attribute nodes from the tree
-        nodesToRemove.forEach((node) => {
+      }
+    },
+    attributeNodesDeleted: (
+      state,
+      { payload }: PayloadAction<{ attributes: Attribute[] }>
+    ) => {
+      const { root } = state;
+      if (root) {
+        const { attributes } = payload;
+        attributes.forEach((attribute) => {
           const parent = getNode(
             "path",
-            node.path.split(/[[]\d+]$/).join(""),
-            root as ElementNode
+            computePathWithoutIndexes(attribute),
+            root
           );
           if (parent) {
             parent.children = parent.children.filter(
-              ({ path }) => path !== node.path
-            );
-            state.attributeNodesInTree = attributeNodesInTree.filter(
-              ({ path }) => path !== node.path
+              ({ path }) => path !== attribute.path
             );
           }
         });
@@ -137,8 +115,9 @@ export const selectRoot = (state: RootState): ElementNode | undefined =>
   state.resourceTree.root;
 
 export const {
-  setNodeChildren,
-  setAttributeNodes,
+  treeNodeUpdate,
   resetResourceTreeSliceState,
+  attibuteNodesAdded,
+  attributeNodesDeleted,
 } = resourceTreeSlice.actions;
 export default resourceTreeSlice.reducer;
