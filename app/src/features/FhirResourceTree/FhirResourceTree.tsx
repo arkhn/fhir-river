@@ -12,7 +12,7 @@ import { useParams } from "react-router-dom";
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
-import { getNode } from "./resourceTreeSlice";
+import { getNode } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 
 const useStyles = makeStyles((theme) => ({

@@ -4,6 +4,8 @@ import differenceBy from "lodash/differenceBy";
 
 import { RootState } from "app/store";
 
+import { computePathWithoutIndexes, getNode } from "./resourceTreeUtils";
+
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
 
 export type ElementNode = {
@@ -27,22 +29,6 @@ const initialState: ResourceTreeSliceState = {
   attributeNodesInTree: [],
 };
 
-const computePathWithoutIndexes = (node: ElementNode) =>
-  node.path.split(/[[]\d+]$/).join("");
-
-export const getNode = (
-  get: "path" | "id",
-  path: string,
-  root: ElementNode
-): ElementNode | undefined => {
-  if (root[get] === path) return root;
-  for (const next of root.children) {
-    const result = getNode(get, path, next);
-    if (result) return result;
-  }
-  return undefined;
-};
-
 const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
@@ -51,7 +37,7 @@ const resourceTreeSlice = createSlice({
       state.root = undefined;
       state.attributeNodesInTree = [];
     },
-    setNodeChildren: (
+    treeNodeUpdate: (
       state,
       { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
     ) => {
@@ -63,7 +49,7 @@ const resourceTreeSlice = createSlice({
         if (node) node.children = data.children;
       }
     },
-    setAttributeNodes: (
+    attributeNodeUpdate: (
       state,
       { payload }: PayloadAction<{ attributeNodes: ElementNode[] }>
     ) => {
@@ -83,11 +69,7 @@ const resourceTreeSlice = createSlice({
 
         // Add attribute nodes to the tree
         nodesToAdd.forEach((node) => {
-          const parent = getNode(
-            "path",
-            computePathWithoutIndexes(node),
-            root as ElementNode
-          );
+          const parent = getNode("path", computePathWithoutIndexes(node), root);
           if (
             parent &&
             !parent.children.some(({ path }) => path === node.path)
@@ -99,11 +81,7 @@ const resourceTreeSlice = createSlice({
 
         // Remove attribute nodes from the tree
         nodesToRemove.forEach((node) => {
-          const parent = getNode(
-            "path",
-            computePathWithoutIndexes(node),
-            root as ElementNode
-          );
+          const parent = getNode("path", computePathWithoutIndexes(node), root);
           if (parent) {
             parent.children = parent.children.filter(
               ({ path }) => path !== node.path
@@ -122,8 +100,8 @@ export const selectRoot = (state: RootState): ElementNode | undefined =>
   state.resourceTree.root;
 
 export const {
-  setNodeChildren,
-  setAttributeNodes,
+  treeNodeUpdate,
+  attributeNodeUpdate,
   resetResourceTreeSliceState,
 } = resourceTreeSlice.actions;
 export default resourceTreeSlice.reducer;
