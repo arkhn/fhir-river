@@ -270,8 +270,16 @@ export const findChildAttributes = (
   return attributes.filter((attribute) => attribute.path.startsWith(path));
 };
 
+/**
+ * Returns the first available index from the parent node path
+ * ie: if parent has 3 children and their path indexes are respectively 1, 2 & 3
+ * it will return 0.
+ * If all path indexes are taken by the parent children, returns parent.childen.length
+ * @param parent Parent node from which we want to create the child path
+ */
 export const computeChildPathIndex = (parent: ElementNode): number => {
   const childIndexes = parent.children
+    // /[[](\d+)]$/ => matches the last path index. ie: for Identifier[0].type.coding[4] => matches 4
     .map(({ path }) => path.match(/[[](\d+)]$/)?.[1])
     .filter(Boolean)
     .map((index) => +(index as string));
