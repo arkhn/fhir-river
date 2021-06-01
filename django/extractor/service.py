@@ -83,10 +83,11 @@ class ExtractHandler(Handler):
 
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
         db_connection = DBConnection(analysis.source_credentials)
-        extractor = Extractor(db_connection)
-        query = extractor.extract(analysis, primary_key_values)
+        with db_connection.session_scope() as session:
+            extractor = Extractor(session, db_connection.metadata)
+            query = extractor.extract(analysis, primary_key_values)
 
-        broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
+            broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
 
 
 class ExtractorService(Service):
