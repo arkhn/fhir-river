@@ -8,7 +8,6 @@ import {
   ElementNode,
   selectRoot,
   treeNodeUpdate,
-  resetResourceTreeSliceState,
   attibuteNodesAdded,
   attributeNodesDeleted,
 } from "features/FhirResourceTree/resourceTreeSlice";
@@ -128,16 +127,6 @@ const useFhirResourceTreeData = (
       }
     }
   }, [dispatch, attributes, prevAttributes, root, node]);
-
-  useEffect(
-    () => () => {
-      // Check on !node to call this only when the tree root in unmounted
-      if (!node) {
-        dispatch(resetResourceTreeSliceState());
-      }
-    },
-    [dispatch, node]
-  );
 
   return { root, isLoading, createItem, deleteItem };
 };

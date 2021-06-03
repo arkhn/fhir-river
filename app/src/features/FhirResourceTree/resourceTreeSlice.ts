@@ -22,21 +22,14 @@ export type ElementNode = {
 
 type ResourceTreeSliceState = {
   root?: ElementNode;
-  attributeNodesInTree: ElementNode[];
 };
 
-const initialState: ResourceTreeSliceState = {
-  attributeNodesInTree: [],
-};
+const initialState: ResourceTreeSliceState = {};
 
 const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
-    resetResourceTreeSliceState: (state) => {
-      state.root = undefined;
-      state.attributeNodesInTree = [];
-    },
     treeNodeUpdate: (
       state,
       { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
@@ -96,7 +89,6 @@ export const selectRoot = (state: RootState): ElementNode | undefined =>
 
 export const {
   treeNodeUpdate,
-  resetResourceTreeSliceState,
   attibuteNodesAdded,
   attributeNodesDeleted,
 } = resourceTreeSlice.actions;
