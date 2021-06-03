@@ -10,6 +10,10 @@ paths:
       description: ''
       parameters:
       - in: query
+        name: path
+        schema:
+          type: string
+      - in: query
         name: resource
         schema:
           type: string
