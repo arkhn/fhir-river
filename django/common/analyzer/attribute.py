@@ -1,25 +1,11 @@
 import logging
-from decimal import Decimal
 from typing import List
+
+from common.normalizers import normalize_to_bool, normalize_to_str
 
 from .input_group import InputGroup
 
 logger = logging.getLogger(__name__)
-
-
-def normalize_to_bool(value):
-    if value.lower() in ("true", "1"):
-        return True
-    elif value.lower() in ("false", "0"):
-        return False
-    raise ValueError(f"cannot cast {value} to boolean")
-
-
-def normalize_to_str(value):
-    if isinstance(value, float):
-        value = Decimal(value).normalize()
-        return format(value, "f")
-    return str(value)
 
 
 type_to_normalizer = {
