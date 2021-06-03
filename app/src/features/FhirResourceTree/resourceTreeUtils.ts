@@ -99,6 +99,7 @@ export const createElementNode = (
     isSlice: !!elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
+    backboneElementDefinitions: [],
   };
 };
 
@@ -226,6 +227,9 @@ export const buildTree = (
       previousElementNode.isArray &&
       previousElementNode.type === "BackboneElement"
     ) {
+      previousElementNode.backboneElementDefinitions.push(
+        currentElementDefinition
+      );
       buildTree(rest, rootNode, previousElementNode);
     } else {
       previousElementNode.children.push(currentElementNode);

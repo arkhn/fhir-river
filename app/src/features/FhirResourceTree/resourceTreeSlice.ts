@@ -4,7 +4,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import { Attribute } from "services/api/generated/api.generated";
 
-import { computePathWithoutIndexes, getNode } from "./resourceTreeUtils";
+import {
+  createElementNode,
+  computePathWithoutIndexes,
+  getNode,
+} from "./resourceTreeUtils";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
 
@@ -18,6 +22,7 @@ export type ElementNode = {
   type?: string;
   definition: IElementDefinition;
   children: ElementNode[];
+  backboneElementDefinitions: IElementDefinition[];
 };
 
 type ResourceTreeSliceState = {
@@ -56,6 +61,21 @@ const resourceTreeSlice = createSlice({
             !parent.children.some(({ path }) => path === node.path)
           ) {
             parent.children.push(node);
+            if (parent.isArray && parent.type === "BackboneElement") {
+              // Manually add children to the BackboneElement item
+              parent.backboneElementDefinitions.forEach((elementDefinition) => {
+                const childNode = createElementNode(
+                  {
+                    ...elementDefinition,
+                    path: `${node.path}.${elementDefinition.path
+                      ?.split(".")
+                      .pop()}`,
+                  },
+                  {}
+                );
+                node.children.push(childNode);
+              });
+            }
           }
         });
       }
