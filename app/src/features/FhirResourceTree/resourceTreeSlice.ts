@@ -2,6 +2,9 @@ import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "app/store";
+import { Attribute } from "services/api/generated/api.generated";
+
+import { computePathWithoutIndexes, getNode } from "./resourceTreeUtils";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
 
@@ -23,24 +26,11 @@ type ResourceTreeSliceState = {
 
 const initialState: ResourceTreeSliceState = {};
 
-export const getNode = (
-  get: "path" | "id",
-  path: string,
-  root: ElementNode
-): ElementNode | undefined => {
-  if (root[get] === path) return root;
-  for (const next of root.children) {
-    const result = getNode(get, path, next);
-    if (result) return result;
-  }
-  return undefined;
-};
-
 const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
-    setNodeChildren: (
+    treeNodeUpdate: (
       state,
       { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
     ) => {
@@ -52,11 +42,54 @@ const resourceTreeSlice = createSlice({
         if (node) node.children = data.children;
       }
     },
+    attibuteNodesAdded: (
+      state,
+      { payload }: PayloadAction<{ nodes: ElementNode[] }>
+    ) => {
+      const { root } = state;
+      if (root) {
+        const { nodes } = payload;
+        nodes.forEach((node) => {
+          const parent = getNode("path", computePathWithoutIndexes(node), root);
+          if (
+            parent &&
+            !parent.children.some(({ path }) => path === node.path)
+          ) {
+            parent.children.push(node);
+          }
+        });
+      }
+    },
+    attributeNodesDeleted: (
+      state,
+      { payload }: PayloadAction<{ attributes: Attribute[] }>
+    ) => {
+      const { root } = state;
+      if (root) {
+        const { attributes } = payload;
+        attributes.forEach((attribute) => {
+          const parent = getNode(
+            "path",
+            computePathWithoutIndexes(attribute),
+            root
+          );
+          if (parent) {
+            parent.children = parent.children.filter(
+              ({ path }) => path !== attribute.path
+            );
+          }
+        });
+      }
+    },
   },
 });
 
 export const selectRoot = (state: RootState): ElementNode | undefined =>
   state.resourceTree.root;
 
-export const { setNodeChildren } = resourceTreeSlice.actions;
+export const {
+  treeNodeUpdate,
+  attibuteNodesAdded,
+  attributeNodesDeleted,
+} = resourceTreeSlice.actions;
 export default resourceTreeSlice.reducer;

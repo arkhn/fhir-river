@@ -1,6 +1,6 @@
 import { structureDefinitionFactory } from "services/api/factory";
 
-import { buildTree, createElementNode } from "../useFhirResourceTreeData";
+import { buildTree, createElementNode } from "../resourceTreeUtils";
 
 const structureDefinition = structureDefinitionFactory.build();
 
