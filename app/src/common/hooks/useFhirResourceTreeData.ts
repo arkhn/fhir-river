@@ -16,6 +16,8 @@ import {
   buildTree,
   createElementDefinition,
   createElementNode,
+  findChildAttributes,
+  computeChildPathIndex,
 } from "features/FhirResourceTree/resourceTreeUtils";
 import {
   useApiStructureDefinitionRetrieveQuery,
@@ -78,7 +80,12 @@ const useFhirResourceTreeData = (
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
 
     if (attributeToDelete) {
-      await deleteAttribute({ id: attributeToDelete.id }).unwrap();
+      const childAttributes =
+        attributes && findChildAttributes(attributeToDelete, attributes);
+      childAttributes &&
+        (await Promise.all(
+          childAttributes.map(({ id }) => deleteAttribute({ id }).unwrap())
+        ));
     }
   }, [attributes, nodePath, deleteAttribute]);
   const createItem = useCallback(async () => {
@@ -86,7 +93,8 @@ const useFhirResourceTreeData = (
       const parentNode = getNode("id", nodeId, root);
 
       if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
-        const attributePath = `${parentNode.path}[${parentNode.children.length}]`;
+        const pathIndex = computeChildPathIndex(parentNode);
+        const attributePath = `${parentNode.path}[${pathIndex}]`;
         await createAttribute({
           attributeRequest: {
             definition_id: parentNode.type,
