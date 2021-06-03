@@ -1,5 +1,6 @@
 arkhn-monitoring==0.0.4
 asgiref==3.2.10
+chardet==3.0.4
 cleaning-scripts==0.2.31
 confluent-kafka==1.5.0
 cuid==0.3
