@@ -9,6 +9,7 @@ import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
 
+import { useAppDispatch, useAppSelector } from "app/store";
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 import {
   useApiAttributesCreateMutation,
@@ -16,6 +17,7 @@ import {
   useApiAttributesListQuery,
 } from "services/api/endpoints";
 
+import { nodeSelected } from "./resourceTreeSlice";
 import { getNode } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 
@@ -40,9 +42,12 @@ const useStyles = makeStyles((theme) => ({
 
 const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
-  const [selectedNode, setSelectedNode] = useState<string>("");
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
   const { mappingId } = useParams<{ mappingId?: string }>();
+  const dispatch = useAppDispatch();
+  const selectedNodeId = useAppSelector(
+    (state) => state.resourceTree.selectedNodeId
+  );
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
       id: mappingId ?? "",
@@ -64,7 +69,7 @@ const FhirResourceTree = (): JSX.Element => {
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
     const node = root && getNode("id", id, root);
     if (node && node.kind === "primitive" && !node.isArray) {
-      setSelectedNode(id);
+      dispatch(nodeSelected(id));
 
       if (
         node.type &&
@@ -102,7 +107,7 @@ const FhirResourceTree = (): JSX.Element => {
         </Typography>
       </div>
       <TreeView
-        selected={selectedNode}
+        selected={selectedNodeId ?? ""}
         expanded={expandedNodes}
         onNodeToggle={handleExpandNode}
         onNodeSelect={handleSelectNode}

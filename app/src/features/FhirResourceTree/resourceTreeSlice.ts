@@ -27,6 +27,7 @@ export type ElementNode = {
 
 type ResourceTreeSliceState = {
   root?: ElementNode;
+  selectedNodeId?: string;
 };
 
 const initialState: ResourceTreeSliceState = {};
@@ -35,6 +36,9 @@ const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
+    nodeSelected: (state, { payload }: PayloadAction<string>) => {
+      state.selectedNodeId = payload;
+    },
     treeNodeUpdate: (
       state,
       { payload }: PayloadAction<{ nodeId?: string; data: ElementNode }>
@@ -42,6 +46,7 @@ const resourceTreeSlice = createSlice({
       const { nodeId, data } = payload;
       if (!nodeId) {
         state.root = data;
+        delete state.selectedNodeId;
       } else if (state.root) {
         const node = getNode("id", nodeId, state.root);
         if (node) node.children = data.children;
@@ -106,8 +111,17 @@ const resourceTreeSlice = createSlice({
 
 export const selectRoot = (state: RootState): ElementNode | undefined =>
   state.resourceTree.root;
+export const selectSelectedNode = (
+  state: RootState
+): ElementNode | undefined => {
+  const { root, selectedNodeId } = state.resourceTree;
+  if (root && selectedNodeId) {
+    return getNode("id", selectedNodeId, root);
+  }
+};
 
 export const {
+  nodeSelected,
   treeNodeUpdate,
   attibuteNodesAdded,
   attributeNodesDeleted,
