@@ -3,7 +3,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Batches from "features/Batches/Batches";
+import Batches from "app/routes/Sources/Batches";
 import CreateMapping from "features/Mappings/Create/CreateMapping";
 import EditMapping from "features/Mappings/Edit/EditMapping";
 
