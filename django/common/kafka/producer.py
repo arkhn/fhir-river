@@ -3,6 +3,7 @@ import decimal
 import json
 import logging
 
+import chardet
 from confluent_kafka import Producer as KafkaProducer
 
 logger = logging.getLogger("kafka.producer")
@@ -17,11 +18,13 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         if isinstance(obj, bytes):
             # FIXME: this should be done differently, issue #376
-            # Python doesn't know how to serialize bytes
-            # We arbitrarily choose utf-8. Note that if we need to decode bytes another
+            # Python doesn't know how to serialize bytes so we use chardet to find the
+            # right encoding.
+            # Note that if we need to decode bytes another
             # way, we'll need to use a cleaning script that basically does
-            # val.encode("utf-8").decode("<your-encoding>")
-            return obj.decode("utf-8")
+            # val.encode("<detected-encoding>").decode("<your-encoding>")
+            detected_encoding = chardet.detect(obj)["encoding"]
+            return obj.decode(detected_encoding)
         return super().default(obj)
 
 
