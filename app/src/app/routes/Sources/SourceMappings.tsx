@@ -9,6 +9,7 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
+import { useHistory, useParams } from "react-router";
 
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
@@ -35,6 +36,12 @@ const useStyles = makeStyles((theme) => ({
 
 const SourceMappings = (): JSX.Element => {
   const classes = useStyles();
+  const history = useHistory();
+  const { sourceId } = useParams<{ sourceId?: string }>();
+
+  const handleLaunchClick = () => {
+    history.push(`/sources/${sourceId}/batches`);
+  };
 
   return (
     <>
@@ -65,6 +72,7 @@ const SourceMappings = (): JSX.Element => {
               startIcon={
                 <Icon icon={IconNames.FLAME} className={classes.icon} />
               }
+              onClick={handleLaunchClick}
             >
               <Typography>Launch ETL</Typography>
             </Button>
