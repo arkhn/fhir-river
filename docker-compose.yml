@@ -92,7 +92,7 @@ services:
       - LOG_LEVEL=DEBUG
       - DEBUG=True
       - SECRET_KEY=whatever
-      - PYROG_API_URL=http://pyrog-server:1000
+      - PYROG_API_URL=${PYROG_API_URL}
       - FHIR_API_URL=${FHIR_API_URL}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -158,7 +158,7 @@ services:
 volumes:
   db-data:
 
-networks:
-  default:
-    external:
-      name: arkhn_network
+#networks:
+#  default:
+#    external:
+#      name: arkhn_network
