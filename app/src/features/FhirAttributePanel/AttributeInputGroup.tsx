@@ -10,7 +10,7 @@ const AttributeInputGroup = ({
   inputGroup,
 }: AttributeInputGroupProps): JSX.Element => {
   console.log(inputGroup);
-  return <>{inputGroup.id}</>;
+  return <></>;
 };
 
 export default AttributeInputGroup;

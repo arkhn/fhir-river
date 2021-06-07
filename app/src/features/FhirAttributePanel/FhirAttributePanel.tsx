@@ -11,7 +11,6 @@ import {
   useApiAttributesListQuery,
   useApiInputGroupsListQuery,
 } from "services/api/endpoints";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useApiInputGroupsCreateMutation } from "services/api/generated/api.generated";
 
 import AttributeInputGroup from "./AttributeInputGroup";
