@@ -1,12 +1,19 @@
 import logging
+from decimal import Decimal
 from uuid import UUID, uuid5
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
+from common.normalizers import normalize_to_str
 from transformer.transform.dataframe import clean_data, merge_by_attributes
 from transformer.transform.fhir import build_fhir_object, build_metadata
 
 logger = logging.getLogger(__name__)
+
+
+def validate_primary_key_value(value):
+    if isinstance(value, float) and Decimal(value) % 1 != 0:
+        raise ValueError(f"primary key cannot be a decimal number, got {value}")
 
 
 def compute_fhir_object_id(mapping_id, primary_key_value) -> str:
@@ -17,7 +24,9 @@ def compute_fhir_object_id(mapping_id, primary_key_value) -> str:
     :return: UUIDv5
     """
     logical_reference = UUID(mapping_id, version=4)
-    return str(uuid5(logical_reference, str(primary_key_value)))
+    validate_primary_key_value(primary_key_value)
+    normalized_primary_key_value = normalize_to_str(primary_key_value)
+    return str(uuid5(logical_reference, normalized_primary_key_value))
 
 
 class Transformer:

@@ -10,7 +10,11 @@ import clsx from "clsx";
 import { useParams } from "react-router-dom";
 
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
-import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
+import {
+  useApiAttributesCreateMutation,
+  useApiResourcesRetrieveQuery,
+  useApiAttributesListQuery,
+} from "services/api/endpoints";
 
 import { getNode } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
@@ -51,11 +55,31 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mapping }
   );
+  const { data: mappingAttributes } = useApiAttributesListQuery(
+    { resource: mapping?.id ?? "" },
+    { skip: !mapping }
+  );
+  const [createAttribute] = useApiAttributesCreateMutation();
 
   const handleSelectNode = (_: React.ChangeEvent<unknown>, id: string) => {
     const node = root && getNode("id", id, root);
     if (node && node.kind === "primitive" && !node.isArray) {
       setSelectedNode(id);
+
+      if (
+        node.type &&
+        mapping &&
+        mappingAttributes &&
+        !mappingAttributes.find(({ path }) => path === node.path)
+      ) {
+        createAttribute({
+          attributeRequest: {
+            definition_id: node.type,
+            path: node.path,
+            resource: mapping.id,
+          },
+        });
+      }
     }
   };
   const handleExpandNode = (

@@ -1,5 +1,7 @@
 from unittest import mock
 
+import pytest
+
 from common.analyzer.analysis import Analysis
 from common.analyzer.attribute import Attribute
 from common.analyzer.cleaning_script import CleaningScript
@@ -9,6 +11,7 @@ from common.analyzer.input_group import InputGroup
 from common.analyzer.merging_script import MergingScript
 from common.analyzer.sql_column import SqlColumn
 from transformer.transform import Transformer
+from transformer.transform.transformer import compute_fhir_object_id
 
 
 def mock_get_script(*args):
@@ -18,6 +21,10 @@ def mock_get_script(*args):
         return args[0]
     else:
         return args[0] + args[1] + "merge"
+
+
+def mock_uuid5(*args):
+    return f"{args[0]}{args[1]}"
 
 
 @mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
@@ -176,3 +183,25 @@ def test_transform_with_condition_arrays(_, dict_map_code):
         "language": [{"code": "abc", "system": "SYS"}, {"system": "SYS"}, {"code": "fed", "system": "SYS"}],
         "resourceType": "Patient",
     }
+
+
+@mock.patch("transformer.transform.transformer.uuid5", mock_uuid5)
+def test_compute_fhir_object_id():
+    mapping_id = "b8efd322-3e38-4072-9c68-e62e15d84d13"
+    pk_value = 123
+    assert compute_fhir_object_id(mapping_id, pk_value) == f"{mapping_id}{pk_value}"
+
+
+@mock.patch("transformer.transform.transformer.uuid5", mock_uuid5)
+def test_compute_fhir_object_id_normalized():
+    mapping_id = "b8efd322-3e38-4072-9c68-e62e15d84d13"
+    pk_value = 123.0
+    assert compute_fhir_object_id(mapping_id, pk_value) == f"{mapping_id}123"
+
+
+@mock.patch("transformer.transform.transformer.uuid5", mock_uuid5)
+def test_compute_fhir_object_id_decimal():
+    mapping_id = "b8efd322-3e38-4072-9c68-e62e15d84d13"
+    pk_value = float(123.123)
+    with pytest.raises(ValueError, match=f"primary key cannot be a decimal number, got {pk_value}"):
+        compute_fhir_object_id(mapping_id, pk_value)
