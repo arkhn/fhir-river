@@ -141,7 +141,10 @@ export const api = createApi({
       ApiConditionsListApiResponse,
       ApiConditionsListApiArg
     >({
-      query: () => ({ url: `/api/conditions/` }),
+      query: (queryArg) => ({
+        url: `/api/conditions/`,
+        params: { input_group: queryArg.inputGroup },
+      }),
     }),
     apiConditionsCreate: build.mutation<
       ApiConditionsCreateApiResponse,
@@ -306,7 +309,10 @@ export const api = createApi({
       ApiInputGroupsListApiResponse,
       ApiInputGroupsListApiArg
     >({
-      query: () => ({ url: `/api/input-groups/` }),
+      query: (queryArg) => ({
+        url: `/api/input-groups/`,
+        params: { attribute: queryArg.attribute },
+      }),
     }),
     apiInputGroupsCreate: build.mutation<
       ApiInputGroupsCreateApiResponse,
@@ -354,7 +360,10 @@ export const api = createApi({
       }),
     }),
     apiInputsList: build.query<ApiInputsListApiResponse, ApiInputsListApiArg>({
-      query: () => ({ url: `/api/inputs/` }),
+      query: (queryArg) => ({
+        url: `/api/inputs/`,
+        params: { input_group: queryArg.inputGroup },
+      }),
     }),
     apiInputsCreate: build.mutation<
       ApiInputsCreateApiResponse,
@@ -722,7 +731,9 @@ export type ApiColumnsDestroyApiArg = {
   id: string;
 };
 export type ApiConditionsListApiResponse = /** status 200  */ Condition[];
-export type ApiConditionsListApiArg = {};
+export type ApiConditionsListApiArg = {
+  inputGroup?: string;
+};
 export type ApiConditionsCreateApiResponse = /** status 201  */ Condition;
 export type ApiConditionsCreateApiArg = {
   conditionRequest: ConditionRequest;
@@ -812,7 +823,9 @@ export type ApiFiltersDestroyApiArg = {
   id: string;
 };
 export type ApiInputGroupsListApiResponse = /** status 200  */ InputGroup[];
-export type ApiInputGroupsListApiArg = {};
+export type ApiInputGroupsListApiArg = {
+  attribute?: string;
+};
 export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup;
 export type ApiInputGroupsCreateApiArg = {
   inputGroupRequest: InputGroupRequest;
@@ -840,7 +853,9 @@ export type ApiInputGroupsDestroyApiArg = {
   id: string;
 };
 export type ApiInputsListApiResponse = /** status 200  */ Input[];
-export type ApiInputsListApiArg = {};
+export type ApiInputsListApiArg = {
+  inputGroup?: string;
+};
 export type ApiInputsCreateApiResponse = /** status 201  */ Input;
 export type ApiInputsCreateApiArg = {
   inputRequest: InputRequest;
