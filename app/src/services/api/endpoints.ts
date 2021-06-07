@@ -25,6 +25,7 @@ const tagTypes = [
   "Joins",
   "StructureDefinition",
   "ValueSets",
+  "InputGroups",
 ];
 
 export const api = generatedApi
@@ -225,6 +226,18 @@ export const api = generatedApi
       apiValueSetsRetrieve: {
         providesTags: providesOne("ValueSets"),
       },
+      /**
+       * InputGroups
+       */
+      apiInputGroupsList: {
+        providesTags: providesList("InputGroups"),
+      },
+      apiInputGroupsCreate: {
+        invalidatesTags: invalidatesList("InputGroups"),
+      },
+      apiInputGroupsDestroy: {
+        invalidatesTags: invalidatesOne("InputGroups"),
+      },
     },
   });
 
@@ -277,4 +290,8 @@ export const {
   useApiJoinsDestroyMutation,
   // ValueSets
   useApiValueSetsRetrieveQuery,
+  // InputGroups
+  useApiInputGroupsListQuery,
+  useApiInputGroupsCreateMutation,
+  useApiInputGroupsDestroyMutation,
 } = api;
