@@ -13,8 +13,8 @@ import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 import {
   useApiAttributesCreateMutation,
   useApiResourcesRetrieveQuery,
+  useApiAttributesListQuery,
 } from "services/api/endpoints";
-import { useApiAttributesListQuery } from "services/api/generated/api.generated";
 
 import { getNode } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
