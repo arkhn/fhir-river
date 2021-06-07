@@ -48,17 +48,17 @@ class AttributeFilterSet(filters.FilterSet):
 
 class InputGroupFilterSet(filters.FilterSet):
     class Meta:
-        model: models.InputGroup
-        fields: ["attribute"]
+        model = models.InputGroup
+        fields = ["attribute"]
 
 
 class InputFilterSet(filters.FilterSet):
     class Meta:
-        model: models.Input
-        fields: ["input_group"]
+        model = models.Input
+        fields = ["input_group"]
 
 
 class ConditionFilterSet(filters.FilterSet):
     class Meta:
-        model: models.Condition
-        fields: ["input_group"]
+        model = models.Condition
+        fields = ["input_group"]

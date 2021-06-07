@@ -373,6 +373,11 @@ paths:
     get:
       operationId: api_conditions_list
       description: ''
+      parameters:
+      - in: query
+        name: input_group
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -854,6 +859,11 @@ paths:
     get:
       operationId: api_input_groups_list
       description: ''
+      parameters:
+      - in: query
+        name: attribute
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1007,6 +1017,11 @@ paths:
     get:
       operationId: api_inputs_list
       description: ''
+      parameters:
+      - in: query
+        name: input_group
+        schema:
+          type: string
       tags:
       - api
       security:
