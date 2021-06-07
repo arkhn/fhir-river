@@ -70,5 +70,6 @@
   "cannotUndoAction": "This action cannot be undone.",
   "confirmDelete": "Yes, delete",
   "saveChanges": "Save changes",
-  "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}"
+  "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}",
+  "addGroup": "Add a group"
 }
