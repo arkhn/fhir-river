@@ -207,6 +207,194 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/batches/:
+    get:
+      operationId: api_batches_list
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Batch'
+          description: ''
+    post:
+      operationId: api_batches_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+  /api/batches/{id}/:
+    get:
+      operationId: api_batches_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    put:
+      operationId: api_batches_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    patch:
+      operationId: api_batches_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    delete:
+      operationId: api_batches_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/batches/{id}/retry/:
+    post:
+      operationId: api_batches_retry_create
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
   /api/columns/:
     get:
       operationId: api_columns_list
@@ -1928,6 +2116,45 @@ components:
       - definition_id
       - path
       - resource
+    Batch:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        deleted_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - deleted_at
+      - errors
+      - id
+      - updated_at
+    BatchRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRequest'
+          writeOnly: true
+      required:
+      - resources
     Column:
       type: object
       properties:
@@ -2102,6 +2329,55 @@ components:
       - password
       - port
       - source
+    Error:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        event:
+          type: string
+        message:
+          type: string
+        exception:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        deleted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        batch:
+          type: string
+      required:
+      - batch
+      - created_at
+      - deleted_at
+      - event
+      - id
+      - message
+      - updated_at
+    ErrorRequest:
+      type: object
+      properties:
+        event:
+          type: string
+        message:
+          type: string
+        exception:
+          type: string
+        batch:
+          type: string
+      required:
+      - batch
+      - event
+      - message
     Filter:
       type: object
       properties:
@@ -2293,6 +2569,14 @@ components:
           type: string
         resource:
           type: string
+    PatchedBatchRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRequest'
+          writeOnly: true
     PatchedColumnRequest:
       type: object
       properties:
@@ -2406,63 +2690,17 @@ components:
     Resource:
       type: object
       properties:
-        id:
-          type: string
-          readOnly: true
-        label:
-          type: string
-        primary_key_table:
-          type: string
-        primary_key_column:
-          type: string
-        definition_id:
-          type: string
-        logical_reference:
-          type: string
-          readOnly: true
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        source:
-          type: string
-        primary_key_owner:
+        resource_id:
           type: string
       required:
-      - created_at
-      - definition_id
-      - id
-      - logical_reference
-      - primary_key_column
-      - primary_key_owner
-      - primary_key_table
-      - source
-      - updated_at
+      - resource_id
     ResourceRequest:
       type: object
       properties:
-        label:
-          type: string
-        primary_key_table:
-          type: string
-        primary_key_column:
-          type: string
-        definition_id:
-          type: string
-        source:
-          type: string
-        primary_key_owner:
+        resource_id:
           type: string
       required:
-      - definition_id
-      - primary_key_column
-      - primary_key_owner
-      - primary_key_table
-      - source
+      - resource_id
     Source:
       type: object
       properties:
