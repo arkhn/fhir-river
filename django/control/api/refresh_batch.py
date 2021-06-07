@@ -9,11 +9,11 @@ from rest_framework.response import Response
 from django.conf import settings
 
 import redis
-from common.kafka.producer import Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
-from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka.admin import AdminClient
 from control.api.serializers import CreateBatchSerializer
+from control.batch_helper import create_kafka_topics, send_batch_events
 from topicleaner.service import TopicleanerHandler
 
 logger = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class RefreshBatchEndpoint(viewsets.ViewSet):
 
         batch_list = []
         for batch_id, batch_timestamp in batches.items():
-            batch_resource_ids = batch_counter_redis.smembers(f"batch:{batch_id}:resources")
+            batch_resource_ids = batch_counter_redis.smembers(f"refresh:{batch_id}:resources")
             batch_list.append(
                 {
                     "id": batch_id,
@@ -70,46 +70,72 @@ class RefreshBatchEndpoint(viewsets.ViewSet):
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
         batch_counter_redis.hset("refresh", batch_id, batch_timestamp)
-        batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
+        batch_counter_redis.sadd(f"refresh:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
-        new_topics = [
-            NewTopic(f"refresh.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"extract.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"transform.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"load.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-        ]
-        admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
-        admin_client.create_topics(new_topics)
+        new_topic_names = [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+        create_kafka_topics(
+            new_topic_names,
+            kafka_bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+            kafka_num_partitions=settings.KAFKA_NUM_PARTITIONS,
+            kafka_replication_factor=settings.KAFKA_REPLICATION_FACTOR,
+        )
 
         # Send event to the extractor
-        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
-        for resource_id in resource_ids:
-            event = {"batch_id": batch_id, "resource_id": resource_id}
-            try:
-                producer.produce_event(topic=f"refresh.{batch_id}", event=event)
-            except (KafkaException, ValueError) as err:
-                logger.exception(err)
-                # Clean the batch
-                TopicleanerHandler().delete_batch(batch_id)
-                return Response(
-                    {"id": batch_id, "error": "error while producing extract events"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+        try:
+            send_batch_events(batch_id, resource_ids, settings.KAFKA_BOOTSTRAP_SERVERS)
+        except (KafkaException, ValueError) as err:
+            logger.exception(err)
+            # Clean the batch
+            TopicleanerHandler().delete_batch(batch_id)
+            return Response(
+                {"id": batch_id, "error": "error while producing extract events"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, pk=None):
+        batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
+        # Create kafka topics for batch
+        new_topic_names = [f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"]
+        create_kafka_topics(
+            new_topic_names,
+            kafka_bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+            kafka_num_partitions=settings.KAFKA_NUM_PARTITIONS,
+            kafka_replication_factor=settings.KAFKA_REPLICATION_FACTOR,
+        )
+
+        # Send event to the extractor
+        batch_counter_redis = redis.Redis(
+            host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
+        )
+        resource_ids = batch_counter_redis.smembers(f"refresh:{pk}:resources")
+        try:
+            send_batch_events(pk, resource_ids, settings.KAFKA_BOOTSTRAP_SERVERS)
+        except (KafkaException, ValueError) as err:
+            logger.exception(err)
+            # Clean the batch
+            TopicleanerHandler().delete_batch(pk)
+            return Response(
+                {"id": pk, "error": "error while producing extract events"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        return Response({"id": pk, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
         # Delete kafka topics
         admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
-        admin_client.delete_topics([f"refresh.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"])
+        admin_client.delete_topics([f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"])
 
         # Delete keys from redis
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
         batch_counter_redis.hdel("refresh", pk)
-        batch_counter_redis.delete(f"batch:{pk}:resources")
+        batch_counter_redis.delete(f"refresh:{pk}:resources")
         batch_counter_redis.expire(f"batch:{pk}:counter", timedelta(weeks=2))
 
         mappings_redis = redis.Redis(

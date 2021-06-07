@@ -9,11 +9,11 @@ from rest_framework.response import Response
 from django.conf import settings
 
 import redis
-from common.kafka.producer import Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
-from confluent_kafka.admin import AdminClient, NewTopic
+from confluent_kafka.admin import AdminClient
 from control.api.serializers import CreateBatchSerializer
+from control.batch_helper import create_kafka_topics, send_batch_events
 from topicleaner.service import TopicleanerHandler
 
 logger = logging.getLogger(__name__)
@@ -75,29 +75,25 @@ class BatchEndpoint(viewsets.ViewSet):
         batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
-        new_topics = [
-            NewTopic(f"batch.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"extract.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"transform.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-            NewTopic(f"load.{batch_id}", settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR),
-        ]
-        admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
-        admin_client.create_topics(new_topics)
+        new_topic_names = [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+        create_kafka_topics(
+            new_topic_names,
+            kafka_bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
+            kafka_num_partitions=settings.KAFKA_NUM_PARTITIONS,
+            kafka_replication_factor=settings.KAFKA_REPLICATION_FACTOR,
+        )
 
         # Send event to the extractor
-        producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
-        for resource_id in resource_ids:
-            event = {"batch_id": batch_id, "resource_id": resource_id}
-            try:
-                producer.produce_event(topic=f"batch.{batch_id}", event=event)
-            except (KafkaException, ValueError) as err:
-                logger.exception(err)
-                # Clean the batch
-                TopicleanerHandler().delete_batch(batch_id)
-                return Response(
-                    {"id": batch_id, "error": "error while producing extract events"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
+        try:
+            send_batch_events(batch_id, resource_ids, settings.KAFKA_BOOTSTRAP_SERVERS)
+        except (KafkaException, ValueError) as err:
+            logger.exception(err)
+            # Clean the batch
+            TopicleanerHandler().delete_batch(batch_id)
+            return Response(
+                {"id": batch_id, "error": "error while producing extract events"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
