@@ -64,3 +64,18 @@ def test_delete_input_group(api_client, input_group):
     response = api_client.delete(url)
 
     assert response.status_code == 204
+
+
+def test_filter_input_groups_by_attribute(api_client, attribute_factory, input_group_factory):
+    url = reverse("input-groups-list")
+    first_attribute = attribute_factory()
+    second_attribute = attribute_factory()
+    first_attribute_input_groups = input_group_factory.create_batch(2, attribute=first_attribute)
+    input_group_factory.create_batch(3, attribute=second_attribute)
+
+    response = api_client.get(url, {"attribute": first_attribute.id})
+
+    assert response.status_code == 200
+    assert {input_group_data["id"] for input_group_data in response.json()} == {
+        input_group.id for input_group in first_attribute_input_groups
+    }
