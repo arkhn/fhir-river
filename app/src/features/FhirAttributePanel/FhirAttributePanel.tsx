@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import {
+  Button,
+  Container,
+  Divider,
+  Grid,
+  makeStyles,
+  Paper,
+  Typography,
+} from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
@@ -15,9 +23,17 @@ import { useApiInputGroupsCreateMutation } from "services/api/generated/api.gene
 
 import AttributeInputGroup from "./AttributeInputGroup";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: "none",
+  },
+  inputGroups: {
+    padding: theme.spacing(2),
+    margin: theme.spacing(2),
+    backgroundColor: theme.palette.background.default,
+  },
+  divider: {
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -52,10 +68,28 @@ const FhirAttributePanel = (): JSX.Element => {
 
   return (
     <>
-      {attributeInputGroups &&
-        attributeInputGroups.map((inputGroup) => (
-          <AttributeInputGroup key={inputGroup.id} inputGroup={inputGroup} />
-        ))}
+      <Paper className={classes.inputGroups} variant="outlined">
+        {attributeInputGroups &&
+          attributeInputGroups.map((inputGroup, index) => (
+            <>
+              <AttributeInputGroup
+                key={inputGroup.id}
+                inputGroup={inputGroup}
+              />
+              {index !== attributeInputGroups.length - 1 && (
+                <Divider className={classes.divider} />
+              )}
+            </>
+          ))}
+        <Button
+          size="small"
+          variant="outlined"
+          className={classes.button}
+          startIcon={<Add />}
+        >
+          <Typography>Add an input</Typography>
+        </Button>
+      </Paper>
       {attribute && (
         <Button
           size="small"
