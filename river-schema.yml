@@ -2151,10 +2151,24 @@ components:
         resources:
           type: array
           items:
-            $ref: '#/components/schemas/ResourceRequest'
+            $ref: '#/components/schemas/BatchResourceRequest'
           writeOnly: true
       required:
       - resources
+    BatchResource:
+      type: object
+      properties:
+        resource_id:
+          type: string
+      required:
+      - resource_id
+    BatchResourceRequest:
+      type: object
+      properties:
+        resource_id:
+          type: string
+      required:
+      - resource_id
     Column:
       type: object
       properties:
@@ -2575,7 +2589,7 @@ components:
         resources:
           type: array
           items:
-            $ref: '#/components/schemas/ResourceRequest'
+            $ref: '#/components/schemas/BatchResourceRequest'
           writeOnly: true
     PatchedColumnRequest:
       type: object
@@ -2690,17 +2704,63 @@ components:
     Resource:
       type: object
       properties:
-        resource_id:
+        id:
+          type: string
+          readOnly: true
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        source:
+          type: string
+        primary_key_owner:
           type: string
       required:
-      - resource_id
+      - created_at
+      - definition_id
+      - id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+      - source
+      - updated_at
     ResourceRequest:
       type: object
       properties:
-        resource_id:
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        source:
+          type: string
+        primary_key_owner:
           type: string
       required:
-      - resource_id
+      - definition_id
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+      - source
     Source:
       type: object
       properties:
