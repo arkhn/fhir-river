@@ -43,4 +43,4 @@ class AttributeFilterSet(filters.FilterSet):
 
     class Meta:
         model = models.Attribute
-        fields = ["resource", "source"]
+        fields = ["resource", "source", "path"]
