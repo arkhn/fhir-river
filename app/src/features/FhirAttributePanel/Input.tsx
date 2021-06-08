@@ -20,7 +20,7 @@ type InputProps = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  icons: {
+  icon: {
     height: theme.spacing(2),
     fill: theme.palette.getContrastText(theme.palette.background.paper),
     marginRight: theme.spacing(0.5),
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
-  div: {
+  inputContainer: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: "none",
   },
-  title: {
+  fromColumn: {
     backgroundColor: "#444444",
     color: "#fff",
     borderRadius: 4,
@@ -59,10 +59,12 @@ const Input = ({ input }: InputProps): JSX.Element => {
   };
 
   return (
-    <div className={classes.div}>
+    <div className={classes.inputContainer}>
       <Grid container alignItems="center" direction="row" spacing={1}>
         <Grid item>
-          <Typography className={classes.title}>{t("fromColumn")}</Typography>
+          <Typography className={classes.fromColumn}>
+            {t("fromColumn")}
+          </Typography>
         </Grid>
         <Grid item spacing={1} container className={classes.columnSelect}>
           <ColumnSelects
@@ -73,7 +75,7 @@ const Input = ({ input }: InputProps): JSX.Element => {
         <Grid item>
           <Button className={classes.button}>
             <div className={classes.function}>
-              <Icon icon={IconNames.FUNCTION} className={classes.icons} />
+              <Icon icon={IconNames.FUNCTION} className={classes.icon} />
               <Typography>{t("applyScript")}</Typography>
             </div>
           </Button>

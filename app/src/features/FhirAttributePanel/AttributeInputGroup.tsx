@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "flex-start",
     backgroundColor: theme.palette.background.default,
   },
-  div: {
+  inputContainer: {
     width: "100%",
   },
   button: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   deleteButton: {
     alignSelf: "flex-end",
   },
-  iconDelete: {
+  deleteIcon: {
     fill: theme.palette.getContrastText(theme.palette.background.paper),
   },
 }));
@@ -70,7 +70,7 @@ const AttributeInputGroup = ({
   return (
     <Paper className={classes.inputGroups} variant="outlined">
       {inputs.map((input) => (
-        <div key={input.id} className={classes.div}>
+        <div key={input.id} className={classes.inputContainer}>
           <Input input={input} />
         </div>
       ))}
@@ -88,7 +88,7 @@ const AttributeInputGroup = ({
         variant="outlined"
         className={clsx(classes.button, classes.deleteButton)}
         startIcon={
-          <Icon icon={IconNames.TRASH} className={classes.iconDelete} />
+          <Icon icon={IconNames.TRASH} className={classes.deleteIcon} />
         }
       >
         <Typography onClick={handleDeleteInputGroup}>
