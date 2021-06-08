@@ -1680,10 +1680,10 @@
     schema-utils "^2.6.5"
     source-map "^0.7.3"
 
-"@reduxjs/toolkit@^1.6.0-alpha.2":
-  version "1.6.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.6.0-alpha.2.tgz#f4ce4ac840f8e7cf72de4143b22213d8fd2638c4"
-  integrity sha512-sXCcJzKRTB6vFZ02g0MS07WE0UXHr23S/LqHaew/9W4ifx6e1Mg+J31dzCRAGLXS69sIW0V8LvssrMX9gjn04Q==
+"@reduxjs/toolkit@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.6.0.tgz#0a17c6941c57341f8b31e982352b495ab69d5add"
+  integrity sha512-eGL50G+Vj5AG5uD0lineb6rRtbs96M8+hxbcwkHpZ8LQcmt0Bm33WyBSnj5AweLkjQ7ZP+KFRDHiLMznljRQ3A==
   dependencies:
     immer "^9.0.1"
     redux "^4.1.0"
