@@ -1,19 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 
-import {
-  Button,
-  Container,
-  Divider,
-  Grid,
-  makeStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 import { useAppSelector } from "app/store";
+import AttributeInputGroup from "features/FhirAttributePanel/AttributeInputGroup";
 import { selectSelectedNode } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   useApiAttributesListQuery,
@@ -21,19 +13,9 @@ import {
 } from "services/api/endpoints";
 import { useApiInputGroupsCreateMutation } from "services/api/generated/api.generated";
 
-import AttributeInputGroup from "./AttributeInputGroup";
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   button: {
     textTransform: "none",
-  },
-  inputGroups: {
-    padding: theme.spacing(2),
-    margin: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
-  },
-  divider: {
-    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -68,28 +50,10 @@ const FhirAttributePanel = (): JSX.Element => {
 
   return (
     <>
-      <Paper className={classes.inputGroups} variant="outlined">
-        {attributeInputGroups &&
-          attributeInputGroups.map((inputGroup, index) => (
-            <>
-              <AttributeInputGroup
-                key={inputGroup.id}
-                inputGroup={inputGroup}
-              />
-              {index !== attributeInputGroups.length - 1 && (
-                <Divider className={classes.divider} />
-              )}
-            </>
-          ))}
-        <Button
-          size="small"
-          variant="outlined"
-          className={classes.button}
-          startIcon={<Add />}
-        >
-          <Typography>Add an input</Typography>
-        </Button>
-      </Paper>
+      {attributeInputGroups &&
+        attributeInputGroups.map((inputGroup) => (
+          <AttributeInputGroup key={inputGroup.id} inputGroup={inputGroup} />
+        ))}
       {attribute && (
         <Button
           size="small"

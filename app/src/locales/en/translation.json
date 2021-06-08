@@ -73,5 +73,7 @@
   "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}",
   "addGroup": "Add a group",
   "fromColumn": "From column",
-  "applyScript": "Apply script"
+  "deleteGroup": "Delete group",
+  "applyScript": "Apply script",
+  "addInput": "Add an input"
 }
