@@ -71,11 +71,15 @@ class AttributeViewSet(viewsets.ModelViewSet):
 class InputGroupViewSet(viewsets.ModelViewSet):
     queryset = models.InputGroup.objects.all()
     serializer_class = basic_serializers.InputGroupSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = filters.InputGroupFilterSet
 
 
 class InputViewSet(viewsets.ModelViewSet):
     queryset = models.Input.objects.all()
     serializer_class = basic_serializers.InputSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = filters.InputFilterSet
 
 
 class ColumnViewSet(viewsets.ModelViewSet):
@@ -95,6 +99,8 @@ class JoinViewSet(viewsets.ModelViewSet):
 class ConditionViewSet(viewsets.ModelViewSet):
     queryset = models.Condition.objects.all()
     serializer_class = basic_serializers.ConditionSerializer
+    filter_backends = [django_filters.DjangoFilterBackend]
+    filterset_class = filters.ConditionFilterSet
 
 
 class FilterViewSet(viewsets.ModelViewSet):
