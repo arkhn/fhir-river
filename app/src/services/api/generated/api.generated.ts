@@ -83,6 +83,67 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiBatchesList: build.query<
+      ApiBatchesListApiResponse,
+      ApiBatchesListApiArg
+    >({
+      query: () => ({ url: `/api/batches/` }),
+    }),
+    apiBatchesCreate: build.mutation<
+      ApiBatchesCreateApiResponse,
+      ApiBatchesCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/`,
+        method: "POST",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    apiBatchesRetrieve: build.query<
+      ApiBatchesRetrieveApiResponse,
+      ApiBatchesRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/batches/${queryArg.id}/` }),
+    }),
+    apiBatchesUpdate: build.mutation<
+      ApiBatchesUpdateApiResponse,
+      ApiBatchesUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    apiBatchesPartialUpdate: build.mutation<
+      ApiBatchesPartialUpdateApiResponse,
+      ApiBatchesPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedBatchRequest,
+      }),
+    }),
+    apiBatchesDestroy: build.mutation<
+      ApiBatchesDestroyApiResponse,
+      ApiBatchesDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiBatchesRetryCreate: build.mutation<
+      ApiBatchesRetryCreateApiResponse,
+      ApiBatchesRetryCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/retry/`,
+        method: "POST",
+        body: queryArg.batchRequest,
+      }),
+    }),
     apiColumnsList: build.query<
       ApiColumnsListApiResponse,
       ApiColumnsListApiArg
@@ -701,6 +762,40 @@ export type ApiBatchDestroyApiResponse = unknown;
 export type ApiBatchDestroyApiArg = {
   id: string;
 };
+export type ApiBatchesListApiResponse = /** status 200  */ Batch[];
+export type ApiBatchesListApiArg = {};
+export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
+export type ApiBatchesCreateApiArg = {
+  batchRequest: BatchRequest;
+};
+export type ApiBatchesRetrieveApiResponse = /** status 200  */ Batch;
+export type ApiBatchesRetrieveApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+};
+export type ApiBatchesUpdateApiResponse = /** status 200  */ Batch;
+export type ApiBatchesUpdateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  batchRequest: BatchRequest;
+};
+export type ApiBatchesPartialUpdateApiResponse = /** status 200  */ Batch;
+export type ApiBatchesPartialUpdateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  patchedBatchRequest: PatchedBatchRequest;
+};
+export type ApiBatchesDestroyApiResponse = unknown;
+export type ApiBatchesDestroyApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+};
+export type ApiBatchesRetryCreateApiResponse = /** status 200  */ Batch;
+export type ApiBatchesRetryCreateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  batchRequest: BatchRequest;
+};
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
   input?: string;
@@ -1044,6 +1139,32 @@ export type PatchedAttributeRequest = {
   definition_id?: string;
   resource?: string;
 };
+export type Error = {
+  id: string;
+  event: string;
+  message: string;
+  exception?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  batch: string;
+};
+export type Batch = {
+  id: string;
+  errors: Error[];
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+};
+export type ResourceRequest = {
+  resource_id: string;
+};
+export type BatchRequest = {
+  resources: ResourceRequest[];
+};
+export type PatchedBatchRequest = {
+  resources?: ResourceRequest[];
+};
 export type Column = {
   id: string;
   table: string;
@@ -1216,24 +1337,7 @@ export type PatchedOwnerRequest = {
   credential?: string;
 };
 export type Resource = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  logical_reference: string;
-  updated_at: string;
-  created_at: string;
-  source: string;
-  primary_key_owner: string;
-};
-export type ResourceRequest = {
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  source: string;
-  primary_key_owner: string;
+  resource_id: string;
 };
 export type PatchedResourceRequest = {
   label?: string;
@@ -1274,6 +1378,13 @@ export const {
   useApiBatchRetrieveQuery,
   useApiBatchCreateMutation,
   useApiBatchDestroyMutation,
+  useApiBatchesListQuery,
+  useApiBatchesCreateMutation,
+  useApiBatchesRetrieveQuery,
+  useApiBatchesUpdateMutation,
+  useApiBatchesPartialUpdateMutation,
+  useApiBatchesDestroyMutation,
+  useApiBatchesRetryCreateMutation,
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
   useApiColumnsRetrieveQuery,
