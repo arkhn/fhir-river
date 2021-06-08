@@ -8,6 +8,7 @@ class ResourceSerializer(serializers.Serializer):
 
 class CreateBatchSerializer(serializers.Serializer):
     resources = serializers.ListField(child=ResourceSerializer())
+    schedule_interval = serializers.CharField()
 
 
 class PreviewSerializer(serializers.Serializer):

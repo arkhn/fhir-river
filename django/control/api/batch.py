@@ -76,16 +76,11 @@ class BatchEndpoint(viewsets.ViewSet):
 
         # Create kafka topics for batch
         new_topic_names = [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
-        create_kafka_topics(
-            new_topic_names,
-            kafka_bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
-            kafka_num_partitions=settings.KAFKA_NUM_PARTITIONS,
-            kafka_replication_factor=settings.KAFKA_REPLICATION_FACTOR,
-        )
+        create_kafka_topics(new_topic_names)
 
         # Send event to the extractor
         try:
-            send_batch_events(batch_id, resource_ids, settings.KAFKA_BOOTSTRAP_SERVERS)
+            send_batch_events(batch_id, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch

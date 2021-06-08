@@ -12,14 +12,16 @@ import redis
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from confluent_kafka.admin import AdminClient
+from control.airflow_client import AirflowClient, AirflowQueryStatusCodeException
 from control.api.serializers import CreateBatchSerializer
 from control.batch_helper import create_kafka_topics, send_batch_events
+from requests.exceptions import HTTPError
 from topicleaner.service import TopicleanerHandler
 
 logger = logging.getLogger(__name__)
 
 
-class RefreshBatchEndpoint(viewsets.ViewSet):
+class UpdateBatchEndpoint(viewsets.ViewSet):
     def list(self, request):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST,
@@ -28,11 +30,11 @@ class RefreshBatchEndpoint(viewsets.ViewSet):
             decode_responses=True,
         )
 
-        batches = batch_counter_redis.hgetall("refresh")
+        batches = batch_counter_redis.hgetall("update-batch")
 
         batch_list = []
         for batch_id, batch_timestamp in batches.items():
-            batch_resource_ids = batch_counter_redis.smembers(f"refresh:{batch_id}:resources")
+            batch_resource_ids = batch_counter_redis.smembers(f"update-batch:{batch_id}:resources")
             batch_list.append(
                 {
                     "id": batch_id,
@@ -69,21 +71,15 @@ class RefreshBatchEndpoint(viewsets.ViewSet):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        batch_counter_redis.hset("refresh", batch_id, batch_timestamp)
-        batch_counter_redis.sadd(f"refresh:{batch_id}:resources", *resource_ids)
+        batch_counter_redis.hset("update-batch", batch_id, batch_timestamp)
+        batch_counter_redis.sadd(f"update-batch:{batch_id}:resources", *resource_ids)
 
-        # Create kafka topics for batch
-        new_topic_names = [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
-        create_kafka_topics(
-            new_topic_names,
-            kafka_bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
-            kafka_num_partitions=settings.KAFKA_NUM_PARTITIONS,
-            kafka_replication_factor=settings.KAFKA_REPLICATION_FACTOR,
-        )
-
-        # Send event to the extractor
         try:
-            send_batch_events(batch_id, resource_ids, settings.KAFKA_BOOTSTRAP_SERVERS)
+            # Create kafka topics for batch
+            new_topic_names = [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+            create_kafka_topics(new_topic_names)
+            # Send event to the extractor
+            send_batch_events(batch_id, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
@@ -93,27 +89,39 @@ class RefreshBatchEndpoint(viewsets.ViewSet):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+        # Update Airflow variable to create new DAG
+        # Give batch id (for the mapping) and freq of refresh in dict
+        airflow_client = AirflowClient()
+        try:
+            get_variable_resp = airflow_client.get(f"variables/{settings.AIRFLOW_UPDATE_VARIABLE}")
+            cur_update_variable_value = get_variable_resp.json()["value"]
+            new_update_variable_value = {batch_id: data["schedule_interval"], **cur_update_variable_value}
+
+            airflow_client.post("variables", json=new_update_variable_value)
+        except (HTTPError, AirflowQueryStatusCodeException):
+            return Response(
+                {"id": batch_id, "error": "error while updating Airflow variable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
     def retrieve(self, request, pk=None):
+        """Route used to create an "update" batch"""
         batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-        # Create kafka topics for batch
-        new_topic_names = [f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"]
-        create_kafka_topics(
-            new_topic_names,
-            kafka_bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
-            kafka_num_partitions=settings.KAFKA_NUM_PARTITIONS,
-            kafka_replication_factor=settings.KAFKA_REPLICATION_FACTOR,
-        )
-
-        # Send event to the extractor
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        resource_ids = batch_counter_redis.smembers(f"refresh:{pk}:resources")
+        resource_ids = batch_counter_redis.smembers(f"update-batch:{pk}:resources")
+
         try:
-            send_batch_events(pk, resource_ids, settings.KAFKA_BOOTSTRAP_SERVERS)
+            # Create kafka topics for batch
+            # TODO do we want to keep the batch between 2 updates?
+            new_topic_names = [f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"]
+            create_kafka_topics(new_topic_names)
+            # Send event to the extractor
+            send_batch_events(pk, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
@@ -134,8 +142,8 @@ class RefreshBatchEndpoint(viewsets.ViewSet):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        batch_counter_redis.hdel("refresh", pk)
-        batch_counter_redis.delete(f"refresh:{pk}:resources")
+        batch_counter_redis.hdel("update-batch", pk)
+        batch_counter_redis.delete(f"update-batch:{pk}:resources")
         batch_counter_redis.expire(f"batch:{pk}:counter", timedelta(weeks=2))
 
         mappings_redis = redis.Redis(
