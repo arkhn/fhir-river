@@ -1156,14 +1156,14 @@ export type Batch = {
   updated_at: string;
   deleted_at: string;
 };
-export type ResourceRequest = {
+export type BatchResourceRequest = {
   resource_id: string;
 };
 export type BatchRequest = {
-  resources: ResourceRequest[];
+  resources: BatchResourceRequest[];
 };
 export type PatchedBatchRequest = {
-  resources?: ResourceRequest[];
+  resources?: BatchResourceRequest[];
 };
 export type Column = {
   id: string;
@@ -1337,7 +1337,24 @@ export type PatchedOwnerRequest = {
   credential?: string;
 };
 export type Resource = {
-  resource_id: string;
+  id: string;
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  logical_reference: string;
+  updated_at: string;
+  created_at: string;
+  source: string;
+  primary_key_owner: string;
+};
+export type ResourceRequest = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  source: string;
+  primary_key_owner: string;
 };
 export type PatchedResourceRequest = {
   label?: string;
