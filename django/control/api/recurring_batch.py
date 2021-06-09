@@ -94,7 +94,6 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
             )
 
         # Update Airflow variable to create new DAG
-        # Give batch id (for the mapping) and freq of refresh in dict
         airflow_client = AirflowClient()
         try:
             get_variable_resp = airflow_client.get(f"variables/{settings.AIRFLOW_UPDATE_VARIABLE}")
@@ -134,4 +133,23 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         TopicleanerHandler().delete_batch(pk, str(BatchType.RECURRING))
+
+        # Update Airflow variable to remove the corresponding DAG
+        airflow_client = AirflowClient()
+        try:
+            get_variable_resp = airflow_client.get(f"variables/{settings.AIRFLOW_UPDATE_VARIABLE}")
+            update_variable_value = get_variable_resp.json()["value"]
+            popped = update_variable_value.pop(pk, None)
+            if popped is None:
+                return Response(
+                    {"id": pk, "error": f"{pk} not found in Airflow variable dict"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            airflow_client.post("variables", json=update_variable_value)
+        except (HTTPError, AirflowQueryStatusCodeException):
+            return Response(
+                {"id": pk, "error": "error while updating Airflow variable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
         return Response({"id": pk}, status=status.HTTP_200_OK)
