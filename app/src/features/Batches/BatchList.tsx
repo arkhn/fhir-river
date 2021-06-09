@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Accordion,
@@ -11,6 +11,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -30,13 +31,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const PAGE_SIZE = 10;
+
 const BatchList = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
 
+  const [page, setPage] = useState(1);
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
   const { data: batches, isLoading: isBatchesLoading } = useApiBatchesListQuery(
     {}
   );
+  const offset = (page - 1) * PAGE_SIZE;
+  const limit = offset + PAGE_SIZE;
+  const displayedBatches =
+    batches &&
+    batches
+      .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+      .slice(offset, limit);
 
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
@@ -47,8 +65,8 @@ const BatchList = (): JSX.Element => {
   if (isBatchesLoading) return <CircularProgress />;
   return (
     <>
-      {batches &&
-        batches
+      {displayedBatches &&
+        displayedBatches
           .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
           .map((batch) => (
             <Accordion key={`batch-${batch.id}`}>
@@ -73,6 +91,8 @@ const BatchList = (): JSX.Element => {
               </AccordionDetails>
             </Accordion>
           ))}
+      <Typography>Page: {page}</Typography>
+      <Pagination count={PAGE_SIZE} page={page} onChange={handlePageChange} />
     </>
   );
 };
