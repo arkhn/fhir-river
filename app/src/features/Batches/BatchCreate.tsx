@@ -8,10 +8,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
   useTheme,
 } from "@material-ui/core";
 import { makeStyles, Theme } from "@material-ui/core/styles";
 import PlayIcon from "@material-ui/icons/PlayCircleOutline";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import {
@@ -61,6 +63,7 @@ const getStyles = (resourceId: string, resources: Resource[], theme: Theme) => {
 const BatchCreate = (): JSX.Element => {
   const classes = useStyles();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const [selectedResources, setSelectedResources] = useState<Resource[]>([]);
 
@@ -146,7 +149,7 @@ const BatchCreate = (): JSX.Element => {
         endIcon={<PlayIcon />}
         onClick={handleBatchRun}
       >
-        Run
+        <Typography>{t("run")}</Typography>
       </Button>
     </>
   );
