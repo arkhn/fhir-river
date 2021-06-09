@@ -69,7 +69,7 @@ const SliceNameDialog = ({
       fullWidth
     >
       <>
-        <DialogTitle>{t("sliceName")}</DialogTitle>
+        <DialogTitle>{t("addSlice")}</DialogTitle>
         <DialogContent>
           <TextField
             variant="outlined"
@@ -77,6 +77,7 @@ const SliceNameDialog = ({
             fullWidth
             value={name}
             onChange={handleNameChange}
+            placeholder={t("sliceName")}
             autoFocus
           />
         </DialogContent>

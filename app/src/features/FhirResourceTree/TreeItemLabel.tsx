@@ -14,6 +14,7 @@ import {
   bindMenu,
   usePopupState,
 } from "material-ui-popup-state/hooks";
+import { useTranslation } from "react-i18next";
 
 import IconButton from "common/components/IconButton";
 
@@ -67,6 +68,7 @@ const TreeItemLabel = ({
   onCreateItem,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
+  const { t } = useTranslation();
   const popupState = usePopupState({
     variant: "popover",
     popupId: `popup-${elementNode.id}`,
@@ -167,13 +169,13 @@ const TreeItemLabel = ({
             <Menu {...bindMenu(popupState)}>
               <MenuItem>
                 <ListItemText
-                  primary={`Add item`}
+                  primary={t("addItem")}
                   onClick={handleAddItemClick}
                 />
               </MenuItem>
               <MenuItem>
                 <ListItemText
-                  primary={`Add slice`}
+                  primary={t("addSlice")}
                   onClick={handleSliceDialogOpen}
                 />
               </MenuItem>
