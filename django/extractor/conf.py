@@ -10,11 +10,11 @@ class Settings:
 
     @property
     def PRODUCED_TOPIC_PREFIX(self):
-        return getattr(settings, "PRODUCED_TOPIC_PREFIX", "extract.")
+        return getattr(settings, "PRODUCED_TOPIC_PREFIX", "extract")
 
     @property
     def CONSUMED_TOPICS(self):
-        return getattr(settings, "CONSUMED_TOPIC", "^batch\\..*")
+        return getattr(settings, "CONSUMED_TOPIC", "^trigger\\..*")
 
     @property
     def MAX_POLL_INTERVAL_MS(self):

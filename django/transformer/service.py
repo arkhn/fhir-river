@@ -56,6 +56,7 @@ class TransformHandler(Handler):
 
     def __call__(self, event: Event):
         batch_id = event.data["batch_id"]
+        batch_type = event.data["batch_type"]
         resource_id = event.data["resource_id"]
         record = event.data["record"]
 
@@ -77,10 +78,11 @@ class TransformHandler(Handler):
 
         try:
             self.producer.produce_event(
-                topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
+                topic=f"{conf.PRODUCED_TOPIC_PREFIX}.{batch_type}.{batch_id}",
                 event={
                     "fhir_object": resolved_fhir_instance,
                     "batch_id": batch_id,
+                    "batch_type": batch_type,
                     "resource_id": resource_id,
                 },
             )

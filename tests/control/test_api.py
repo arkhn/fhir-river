@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from unittest import mock
 
 # flake8: noqa
@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from django.urls import reverse
 
 import fakeredis
+from common.batch_types import BatchType
 from confluent_kafka.admin import NewTopic
 
 
@@ -179,10 +180,10 @@ def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redi
     batch_counter_redis.sadd.assert_has_calls([mock.call("batch:batch_id:resources", "id_a", "id_b", "id_c")])
 
     new_topics = [
-        NewTopic("batch.batch_id", 1, 1),
-        NewTopic("extract.batch_id", 1, 1),
-        NewTopic("transform.batch_id", 1, 1),
-        NewTopic("load.batch_id", 1, 1),
+        NewTopic(f"trigger.{BatchType.BATCH}.batch_id", 1, 1),
+        NewTopic(f"extract.{BatchType.BATCH}.batch_id", 1, 1),
+        NewTopic(f"transform.{BatchType.BATCH}.batch_id", 1, 1),
+        NewTopic(f"load.{BatchType.BATCH}.batch_id", 1, 1),
     ]
     admin_client.create_topics.assert_has_calls([mock.call(new_topics)])
 
@@ -196,9 +197,15 @@ def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redi
 
     producer.produce_event.assert_has_calls(
         [
-            mock.call(topic="batch.batch_id", event={"batch_id": "batch_id", "resource_id": "id_a"}),
-            mock.call(topic="batch.batch_id", event={"batch_id": "batch_id", "resource_id": "id_b"}),
-            mock.call(topic="batch.batch_id", event={"batch_id": "batch_id", "resource_id": "id_c"}),
+            mock.call(
+                topic=f"trigger.{BatchType.BATCH}.batch_id", event={"batch_id": "batch_id", "resource_id": "id_a"}
+            ),
+            mock.call(
+                topic=f"trigger.{BatchType.BATCH}.batch_id", event={"batch_id": "batch_id", "resource_id": "id_b"}
+            ),
+            mock.call(
+                topic=f"trigger.{BatchType.BATCH}.batch_id", event={"batch_id": "batch_id", "resource_id": "id_c"}
+            ),
         ]
     )
 
@@ -222,7 +229,18 @@ def test_delete_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClie
     assert response.data == {"id": "id"}
     assert response.status_code == 200
 
-    admin_client.delete_topics.assert_has_calls([mock.call(["batch.id", "extract.id", "transform.id", "load.id"])])
+    admin_client.delete_topics.assert_has_calls(
+        [
+            mock.call(
+                [
+                    f"trigger.{BatchType.BATCH}.id",
+                    f"extract.{BatchType.BATCH}.id",
+                    f"transform.{BatchType.BATCH}.id",
+                    f"load.{BatchType.BATCH}.id",
+                ]
+            )
+        ]
+    )
 
     batch_counter_redis.hdel.assert_has_calls([mock.call("batch", "id")])
     batch_counter_redis.delete.assert_has_calls([mock.call("batch:id:resources")])

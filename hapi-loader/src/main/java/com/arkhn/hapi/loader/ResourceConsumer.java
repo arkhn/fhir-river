@@ -16,7 +16,6 @@ import ca.uhn.fhir.parser.IParser;
 
 import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -68,6 +67,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @Timed(value = "time_load")
         public void listen(KafkaMessage message) {
             String batchId = message.getBatchId();
+            String batchType = message.getBatchType();
             String resourceId = message.getResourceId();
 
             IParser parser = myFhirContext.newJsonParser();
@@ -96,7 +96,8 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             // Send load event
             KafkaMessage loadMessage = new KafkaMessage();
             loadMessage.setBatchId(batchId);
-            producer.sendMessage(loadMessage, String.format("load.%s", batchId));
+            loadMessage.setBatchType(batchType);
+            producer.sendMessage(loadMessage, String.format("load.%s.%s", batchType, batchId));
 
             // Increment redis counter
             Jedis j = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());

@@ -23,7 +23,7 @@ def main(folder_path):
                         "batch_id": "batchId",
                         "resource_id": "rid",
                     }
-                    producer.produce(topic="transform.batchId", value=json.JSONEncoder().encode(event))
+                    producer.produce(topic="transform.batch.batchId", value=json.JSONEncoder().encode(event))
                     producer.poll(1)
 
 

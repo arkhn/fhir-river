@@ -14,8 +14,8 @@ def create_kafka_topics(topic_names):
     admin_client.create_topics(new_topics)
 
 
-def send_batch_events(batch_id, resource_ids):
+def send_batch_events(batch_id, batch_type, resource_ids):
     producer = Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS)
     for resource_id in resource_ids:
-        event = {"batch_id": batch_id, "resource_id": resource_id}
-        producer.produce_event(topic=f"batch.{batch_id}", event=event)
+        event = {"batch_id": batch_id, "batch_type": batch_type, "resource_id": resource_id}
+        producer.produce_event(topic=f"batch.{batch_type}.{batch_id}", event=event)

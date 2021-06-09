@@ -48,10 +48,15 @@ class TopicleanerHandler(Handler):
 
         return True
 
-    def delete_batch(self, batch_id: str) -> None:
+    def delete_batch(self, batch_id: str, batch_type: str) -> None:
         # Delete kafka topics
         self.kafka_admin.delete_topics(
-            [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+            [
+                f"trigger.{batch_type}.{batch_id}",
+                f"extract.{batch_type}.{batch_id}",
+                f"transform.{batch_type}.{batch_id}",
+                f"load.{batch_type}.{batch_id}",
+            ]
         )
 
         # Delete redis keys
@@ -63,9 +68,10 @@ class TopicleanerHandler(Handler):
 
     def __call__(self, event: Event):
         batch_id = event.data["batch_id"]
+        batch_type = event.data["batch_type"]
 
         if self.is_end_of_batch(batch_id):
-            self.delete_batch(batch_id)
+            self.delete_batch(batch_id, batch_type)
 
 
 class TopicleanerService(Service):

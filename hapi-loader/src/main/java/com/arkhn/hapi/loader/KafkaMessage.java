@@ -7,6 +7,9 @@ public class KafkaMessage {
     @JsonProperty("batch_id")
     private String batchId;
 
+    @JsonProperty("batch_type")
+    private String batchType;
+
     @JsonProperty("resource_id")
     private String resourceId;
 
@@ -15,6 +18,10 @@ public class KafkaMessage {
 
     public String getBatchId() {
         return batchId;
+    }
+
+    public String getBatchType() {
+        return batchType;
     }
 
     public String getResourceId() {
@@ -27,6 +34,10 @@ public class KafkaMessage {
 
     public void setBatchId(String batchId) {
         this.batchId = batchId;
+    }
+
+    public void setBatchType(String batchType) {
+        this.batchType = batchType;
     }
 
     public void setFhirObject(JsonNode fhirObject) {

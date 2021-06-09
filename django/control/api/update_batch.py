@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.conf import settings
 
 import redis
+from common.batch_types import BatchType
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from control.airflow_client import AirflowClient, AirflowQueryStatusCodeException
@@ -75,14 +76,18 @@ class UpdateBatchEndpoint(viewsets.ViewSet):
 
         try:
             # Create kafka topics for batch
-            new_topic_names = [f"batch.{batch_id}", f"extract.{batch_id}", f"transform.{batch_id}", f"load.{batch_id}"]
+            new_topic_names = [
+                f"trigger.{BatchType.RECURRING}.{batch_id}",
+                f"extract.{BatchType.RECURRING}.{batch_id}",
+                f"transform.{BatchType.RECURRING}.{batch_id}",
+                f"load.{BatchType.RECURRING}.{batch_id}",
+            ]
             create_kafka_topics(new_topic_names)
-            # Send event to the extractor
-            send_batch_events(batch_id, resource_ids)
+            send_batch_events(batch_id, str(BatchType.RECURRING), resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
-            TopicleanerHandler().delete_batch(batch_id)
+            TopicleanerHandler().delete_batch(batch_id, str(BatchType.RECURRING))
             return Response(
                 {"id": batch_id, "error": "error while producing extract events"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -117,14 +122,18 @@ class UpdateBatchEndpoint(viewsets.ViewSet):
         try:
             # Create kafka topics for batch
             # TODO do we want to keep the batch between 2 updates?
-            new_topic_names = [f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"]
+            new_topic_names = [
+                f"trigger.{BatchType.RECURRING}.{pk}",
+                f"extract.{BatchType.RECURRING}.{pk}",
+                f"transform.{BatchType.RECURRING}.{pk}",
+                f"load.{BatchType.RECURRING}.{pk}",
+            ]
             create_kafka_topics(new_topic_names)
-            # Send event to the extractor
-            send_batch_events(pk, resource_ids)
+            send_batch_events(pk, BatchType.RECURRING, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
-            TopicleanerHandler().delete_batch(pk)
+            TopicleanerHandler().delete_batch(pk, str(BatchType.RECURRING))
             return Response(
                 {"id": pk, "error": "error while producing extract events"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -133,5 +142,5 @@ class UpdateBatchEndpoint(viewsets.ViewSet):
         return Response({"id": pk, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
-        TopicleanerHandler().delete_batch(pk)
+        TopicleanerHandler().delete_batch(pk, str(BatchType.RECURRING))
         return Response({"id": pk}, status=status.HTTP_200_OK)

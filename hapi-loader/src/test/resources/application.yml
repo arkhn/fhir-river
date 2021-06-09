@@ -1,5 +1,5 @@
 test:
-  topic: transform.batchId
+  topic: transform.batch.batchId
 
 spring:
   batch:

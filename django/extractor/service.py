@@ -22,10 +22,12 @@ def broadcast_events(
     analysis,
     producer: Producer,
     counter_client: redis.Redis,
-    batch_id=None,
+    received_event_data,
 ):
     resource_type = analysis.definition_id
     resource_id = analysis.resource_id
+    batch_id = received_event_data["batch_id"]
+    batch_type = received_event_data["batch_type"]
     count = 0
     list_records_from_db = Extractor.split_dataframe(dataframe, analysis)
     for record in list_records_from_db:
@@ -35,10 +37,14 @@ def broadcast_events(
             )
             event = dict()
             event["batch_id"] = batch_id
+            event["batch_type"] = batch_type
             event["resource_type"] = resource_type
             event["resource_id"] = resource_id
             event["record"] = record
-            producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
+            producer.produce_event(
+                topic=f"{conf.PRODUCED_TOPIC_PREFIX}.{batch_type}.{batch_id}",
+                event=event,
+            )
             count += 1
         except (KafkaException, ValueError) as err:
             if isinstance(err, KafkaException) and err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
@@ -87,7 +93,7 @@ class ExtractHandler(Handler):
             extractor = Extractor(session, db_connection.metadata)
             query = extractor.extract(analysis, primary_key_values)
 
-            broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
+            broadcast_events(query, analysis, self.producer, self.counter_redis, event.data)
 
 
 class ExtractorService(Service):
