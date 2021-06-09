@@ -17,9 +17,9 @@ import { useParams } from "react-router-dom";
 import {
   useApiSourcesRetrieveQuery,
   useApiResourcesListQuery,
+  useApiBatchesCreateMutation,
 } from "services/api/endpoints";
 import type { Resource } from "services/api/generated/api.generated";
-import { useApiBatchCreateMutation } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -79,7 +79,7 @@ const BatchCreate = (): JSX.Element => {
     { skip: !Boolean(id) }
   );
 
-  const [apiBatchCreate] = useApiBatchCreateMutation();
+  const [apiBatchCreate] = useApiBatchesCreateMutation();
 
   const handleResourceSelectionChange = (
     event: React.ChangeEvent<{
