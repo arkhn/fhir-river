@@ -4,8 +4,6 @@ from django.conf import settings
 from common.kafka.producer import Producer
 from confluent_kafka.admin import AdminClient, NewTopic
 
-# KAFKA
-
 
 def create_kafka_topics(topic_names):
     new_topics = [
