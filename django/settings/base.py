@@ -31,7 +31,7 @@ VERSION_NAME = os.environ.get("VERSION_NAME", None)
 VERSION_SHA = os.environ.get("VERSION_SHA", None)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY", "secret")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG modifies the app behaviour. For instance:
