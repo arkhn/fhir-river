@@ -29,6 +29,10 @@ def broadcast_events(
     batch_id = received_event_data["batch_id"]
     batch_type = received_event_data["batch_type"]
     count = 0
+    # FIXME: Can we do better? It's to make sure this counter is ok
+    # in the recurring case
+    counter_client.hset(f"{batch_type}:{batch_id}:counter", f"resource:{resource_id}:loaded", 0)
+
     list_records_from_db = Extractor.split_dataframe(dataframe, analysis)
     for record in list_records_from_db:
         try:
@@ -62,7 +66,7 @@ def broadcast_events(
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
-    counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+    counter_client.hset(f"{batch_type}:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
     logger.info(
         {
             "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",

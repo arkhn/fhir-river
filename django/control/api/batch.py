@@ -28,11 +28,11 @@ class BatchEndpoint(viewsets.ViewSet):
             decode_responses=True,
         )
 
-        batches = batch_counter_redis.hgetall("batch")
+        batches = batch_counter_redis.hgetall(str(BatchType.BATCH))
 
         batch_list = []
         for batch_id, batch_timestamp in batches.items():
-            batch_resource_ids = batch_counter_redis.smembers(f"batch:{batch_id}:resources")
+            batch_resource_ids = batch_counter_redis.smembers(f"{BatchType.BATCH}:{batch_id}:resources")
             batch_list.append(
                 {
                     "id": batch_id,
@@ -71,8 +71,8 @@ class BatchEndpoint(viewsets.ViewSet):
             port=settings.REDIS_COUNTER_PORT,
             db=settings.REDIS_COUNTER_DB,
         )
-        batch_counter_redis.hset("batch", batch_id, batch_timestamp)
-        batch_counter_redis.sadd(f"batch:{batch_id}:resources", *resource_ids)
+        batch_counter_redis.hset(str(BatchType.BATCH), batch_id, batch_timestamp)
+        batch_counter_redis.sadd(f"{BatchType.BATCH}:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
         new_topic_names = [

@@ -30,11 +30,11 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
             decode_responses=True,
         )
 
-        batches = batch_counter_redis.hgetall("update-batch")
+        batches = batch_counter_redis.hgetall(str(BatchType.RECURRING))
 
         batch_list = []
         for batch_id, batch_timestamp in batches.items():
-            batch_resource_ids = batch_counter_redis.smembers(f"update-batch:{batch_id}:resources")
+            batch_resource_ids = batch_counter_redis.smembers(f"{BatchType.RECURRING}:{batch_id}:resources")
             batch_list.append(
                 {
                     "id": batch_id,
@@ -71,8 +71,8 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        batch_counter_redis.hset("update-batch", batch_id, batch_timestamp)
-        batch_counter_redis.sadd(f"update-batch:{batch_id}:resources", *resource_ids)
+        batch_counter_redis.hset(str(BatchType.RECURRING), batch_id, batch_timestamp)
+        batch_counter_redis.sadd(f"{BatchType.RECURRING}:{batch_id}:resources", *resource_ids)
 
         try:
             # Create kafka topics for batch
@@ -116,7 +116,7 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        resource_ids = batch_counter_redis.smembers(f"update-batch:{pk}:resources")
+        resource_ids = batch_counter_redis.smembers(f"{BatchType.RECURRING}:{pk}:resources")
 
         try:
             send_batch_events(pk, BatchType.RECURRING, resource_ids)
