@@ -9,6 +9,11 @@ import {
   MenuItem,
   Typography,
 } from "@material-ui/core";
+import {
+  bindTrigger,
+  bindMenu,
+  usePopupState,
+} from "material-ui-popup-state/hooks";
 
 import IconButton from "common/components/IconButton";
 
@@ -62,7 +67,10 @@ const TreeItemLabel = ({
   onCreateItem,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const popupState = usePopupState({
+    variant: "popover",
+    popupId: `popup-${elementNode.id}`,
+  });
   const [isSliceDialogOpen, setSliceDialogOpen] = useState(false);
 
   let iconName: IconName | null = null;
@@ -99,21 +107,14 @@ const TreeItemLabel = ({
     e.stopPropagation();
   };
 
-  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSliceDialogOpen = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleSliceDialogOpen = () => {
-    handleMenuClose();
+    popupState.close();
     setSliceDialogOpen(true);
   };
 
-  const handleSliceDialogClose = () => {
+  const handleSliceDialogClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setSliceDialogOpen(false);
   };
 
@@ -123,9 +124,13 @@ const TreeItemLabel = ({
 
   const handleAddItemClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
-    onCreateItem().then(() => {
-      handleMenuClose();
-    });
+    popupState.close();
+    onCreateItem();
+  };
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    popupState.open(e);
   };
 
   return (
@@ -153,7 +158,27 @@ const TreeItemLabel = ({
           <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
         )}
         {elementNode.isArray && (
-          <IconButton icon={IconNames.ADD} onClick={handleMenuClick} />
+          <>
+            <IconButton
+              icon={IconNames.ADD}
+              {...bindTrigger(popupState)}
+              onClick={handleMenuClick}
+            />
+            <Menu {...bindMenu(popupState)}>
+              <MenuItem>
+                <ListItemText
+                  primary={`Add item`}
+                  onClick={handleAddItemClick}
+                />
+              </MenuItem>
+              <MenuItem>
+                <ListItemText
+                  primary={`Add slice`}
+                  onClick={handleSliceDialogOpen}
+                />
+              </MenuItem>
+            </Menu>
+          </>
         )}
         {elementNode.kind === "complex" && !elementNode.isArray && (
           <IconButton
@@ -162,28 +187,6 @@ const TreeItemLabel = ({
           />
         )}
       </div>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        getContentAnchorEl={null}
-        variant="menu"
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-      >
-        <MenuItem>
-          <ListItemText primary={`Add item`} onClick={handleAddItemClick} />
-        </MenuItem>
-        <MenuItem>
-          <ListItemText primary={`Add slice`} onClick={handleSliceDialogOpen} />
-        </MenuItem>
-      </Menu>
       <SliceNameDialog
         onSubmit={handleAddSlice}
         open={isSliceDialogOpen}

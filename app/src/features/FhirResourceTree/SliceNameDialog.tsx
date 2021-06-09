@@ -33,8 +33,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type SliceNameDialogProps = Omit<DialogProps, "onSubmit"> & {
+type SliceNameDialogProps = Omit<DialogProps, "onSubmit" | "onClose"> & {
   onSubmit: (name: string) => void;
+  onClose?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
 const SliceNameDialog = ({
@@ -51,13 +52,13 @@ const SliceNameDialog = ({
   ) => {
     setName(event.target.value);
   };
-  const handleClose = () => {
+  const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
     setName("");
-    props.onClose && props.onClose({}, "escapeKeyDown");
+    props.onClose && props.onClose(e);
   };
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     onSubmit(name);
-    handleClose();
+    handleClose(e);
   };
 
   return (

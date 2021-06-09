@@ -4,15 +4,14 @@ import { Icon, IconName, MaybeElement } from "@blueprintjs/core";
 import {
   IconButton as MuiIconButton,
   makeStyles,
-  Theme,
+  IconButtonProps as MuiIconButtonProps,
 } from "@material-ui/core";
 
-type IconButtonProps = {
+type IconButtonProps = MuiIconButtonProps & {
   icon: IconName | MaybeElement;
-  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 };
 
-const useStyle = makeStyles((theme: Theme) => ({
+const useStyle = makeStyles((theme) => ({
   icon: {
     display: "flex",
     justifyContent: "center",
@@ -25,13 +24,16 @@ const useStyle = makeStyles((theme: Theme) => ({
   },
 }));
 
-const IconButton = ({ icon, onClick }: IconButtonProps): JSX.Element => {
+const IconButton = ({
+  icon,
+  ...iconButtonProps
+}: IconButtonProps): JSX.Element => {
   const classes = useStyle();
   return (
     <MuiIconButton
       size="small"
       className={classes.labelEndIcons}
-      onClick={onClick}
+      {...iconButtonProps}
     >
       <Icon className={classes.icon} icon={icon} iconSize={15} />
     </MuiIconButton>
