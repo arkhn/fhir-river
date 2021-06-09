@@ -4,18 +4,26 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   CircularProgress,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import CancelIcon from "@material-ui/icons/Cancel";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
-import { useApiBatchesListQuery } from "services/api/endpoints";
+import {
+  useApiBatchesDestroyMutation,
+  useApiBatchesListQuery,
+} from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
+  },
+  button: {
+    margin: theme.spacing(3),
   },
 }));
 
@@ -25,6 +33,12 @@ const BatchList = (): JSX.Element => {
   const { data: batches, isLoading: isBatchesLoading } = useApiBatchesListQuery(
     {}
   );
+
+  const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
+
+  const handleBatchCancel = (batchId: string) => {
+    apiBatchesDestroy({ id: batchId });
+  };
 
   if (isBatchesLoading) return <CircularProgress />;
   return (
@@ -38,6 +52,15 @@ const BatchList = (): JSX.Element => {
               id="panel1a-header"
             >
               <Typography className={classes.heading}>#{batch.id}</Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                endIcon={<CancelIcon />}
+                onClick={() => handleBatchCancel(batch.id)}
+              >
+                Cancel
+              </Button>
             </AccordionSummary>
             <AccordionDetails>
               <Typography>
