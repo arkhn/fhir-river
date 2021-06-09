@@ -22,32 +22,6 @@ export const providesList = <T extends string>(type: T): ProvidesListFn<T> => (
     ? [...results.map(({ id }) => ({ type, id })), { type, id: "LIST" }]
     : [{ type, id: "LIST" }];
 
-type ProvidesFhirBundleFn<T> = <
-  Results extends { entry?: { resource?: { id?: string } }[] },
-  Error extends FetchBaseQueryError
->(
-  results?: Results,
-  error?: Error
-) => CacheList<T, string>;
-
-export const providesFhirBundle = <T extends string>(
-  type: T
-): ProvidesFhirBundleFn<T> => (results, _error) =>
-  results?.entry
-    ? [
-        ...results.entry
-          .map(
-            (entry) =>
-              !!entry.resource?.id && {
-                type,
-                id: entry.resource.id,
-              }
-          )
-          .filter((item): item is { id: string; type: T } => Boolean(item)),
-        { type, id: "LIST" },
-      ]
-    : [{ type, id: "LIST" }];
-
 type ProvidesOneFn<T> = <
   Result,
   Error extends FetchBaseQueryError,
