@@ -120,15 +120,6 @@ class UpdateBatchEndpoint(viewsets.ViewSet):
         resource_ids = batch_counter_redis.smembers(f"update-batch:{pk}:resources")
 
         try:
-            # Create kafka topics for batch
-            # TODO do we want to keep the batch between 2 updates?
-            new_topic_names = [
-                f"trigger.{BatchType.RECURRING}.{pk}",
-                f"extract.{BatchType.RECURRING}.{pk}",
-                f"transform.{BatchType.RECURRING}.{pk}",
-                f"load.{BatchType.RECURRING}.{pk}",
-            ]
-            create_kafka_topics(new_topic_names)
             send_batch_events(pk, BatchType.RECURRING, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
