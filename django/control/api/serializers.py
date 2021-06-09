@@ -10,7 +10,7 @@ class CreateBatchSerializer(serializers.Serializer):
     resources = serializers.ListField(child=ResourceSerializer())
 
 
-class CreateUpdateBatchSerializer(serializers.Serializer):
+class CreateRecurringBatchSerializer(serializers.Serializer):
     resources = serializers.ListField(child=ResourceSerializer())
     schedule_interval = serializers.CharField()
 

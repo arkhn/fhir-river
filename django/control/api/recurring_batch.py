@@ -13,7 +13,7 @@ from common.batch_types import BatchType
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from control.airflow_client import AirflowClient, AirflowQueryStatusCodeException
-from control.api.serializers import CreateUpdateBatchSerializer
+from control.api.serializers import CreateRecurringBatchSerializer
 from control.batch_helper import create_kafka_topics, send_batch_events
 from requests.exceptions import HTTPError
 from topicleaner.service import TopicleanerHandler
@@ -21,7 +21,7 @@ from topicleaner.service import TopicleanerHandler
 logger = logging.getLogger(__name__)
 
 
-class UpdateBatchEndpoint(viewsets.ViewSet):
+class RecurringBatchEndpoint(viewsets.ViewSet):
     def list(self, request):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST,
@@ -47,7 +47,7 @@ class UpdateBatchEndpoint(viewsets.ViewSet):
 
     def create(self, request):
         # TODO check errors when writing to redis?
-        serializer = CreateUpdateBatchSerializer(data=request.data)
+        serializer = CreateRecurringBatchSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
