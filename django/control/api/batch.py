@@ -1,7 +1,7 @@
 import json
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from rest_framework import status, viewsets
 from rest_framework.response import Response
@@ -11,7 +11,6 @@ from django.conf import settings
 import redis
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
-from confluent_kafka.admin import AdminClient
 from control.api.serializers import CreateBatchSerializer
 from control.batch_helper import create_kafka_topics, send_batch_events
 from topicleaner.service import TopicleanerHandler
@@ -93,24 +92,5 @@ class BatchEndpoint(viewsets.ViewSet):
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
-        # Delete kafka topics
-        admin_client = AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
-        admin_client.delete_topics([f"batch.{pk}", f"extract.{pk}", f"transform.{pk}", f"load.{pk}"])
-
-        # Delete keys from redis
-        batch_counter_redis = redis.Redis(
-            host=settings.REDIS_COUNTER_HOST,
-            port=settings.REDIS_COUNTER_PORT,
-            db=settings.REDIS_COUNTER_DB,
-        )
-        batch_counter_redis.hdel("batch", pk)
-        batch_counter_redis.delete(f"batch:{pk}:resources")
-        batch_counter_redis.expire(f"batch:{pk}:counter", timedelta(weeks=2))
-
-        mappings_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
-        )
-        for key in mappings_redis.scan_iter(f"{pk}:*"):
-            mappings_redis.delete(key)
-
+        TopicleanerHandler().delete_batch(pk)
         return Response({"id": pk}, status=status.HTTP_200_OK)
