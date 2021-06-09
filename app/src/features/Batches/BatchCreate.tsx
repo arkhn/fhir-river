@@ -37,9 +37,6 @@ const useStyles = makeStyles((theme) => ({
   chip: {
     margin: 2,
   },
-  noLabel: {
-    marginTop: theme.spacing(3),
-  },
 }));
 
 const ITEM_HEIGHT = 48;
