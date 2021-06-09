@@ -100,6 +100,8 @@ const BatchCreate = (): JSX.Element => {
         })),
       },
     });
+
+    setSelectedResources([]);
   };
 
   return (
