@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from django.conf import settings
 
 import redis
-from common.batch_types import BatchType
+from common import batch_types
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from control.airflow_client import AirflowClient, AirflowQueryStatusCodeException
@@ -30,11 +30,11 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
             decode_responses=True,
         )
 
-        batches = batch_counter_redis.hgetall(str(BatchType.RECURRING))
+        batches = batch_counter_redis.hgetall(batch_types.RECURRING)
 
         batch_list = []
         for batch_id, batch_timestamp in batches.items():
-            batch_resource_ids = batch_counter_redis.smembers(f"{BatchType.RECURRING}:{batch_id}:resources")
+            batch_resource_ids = batch_counter_redis.smembers(f"{batch_types.RECURRING}:{batch_id}:resources")
             batch_list.append(
                 {
                     "id": batch_id,
@@ -71,23 +71,23 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        batch_counter_redis.hset(str(BatchType.RECURRING), batch_id, batch_timestamp)
-        batch_counter_redis.sadd(f"{BatchType.RECURRING}:{batch_id}:resources", *resource_ids)
+        batch_counter_redis.hset(batch_types.RECURRING, batch_id, batch_timestamp)
+        batch_counter_redis.sadd(f"{batch_types.RECURRING}:{batch_id}:resources", *resource_ids)
 
         try:
             # Create kafka topics for batch
             new_topic_names = [
-                f"trigger.{BatchType.RECURRING}.{batch_id}",
-                f"extract.{BatchType.RECURRING}.{batch_id}",
-                f"transform.{BatchType.RECURRING}.{batch_id}",
-                f"load.{BatchType.RECURRING}.{batch_id}",
+                f"trigger.{batch_types.RECURRING}.{batch_id}",
+                f"extract.{batch_types.RECURRING}.{batch_id}",
+                f"transform.{batch_types.RECURRING}.{batch_id}",
+                f"load.{batch_types.RECURRING}.{batch_id}",
             ]
             create_kafka_topics(new_topic_names)
-            send_batch_events(batch_id, str(BatchType.RECURRING), resource_ids)
+            send_batch_events(batch_id, batch_types.RECURRING, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
-            TopicleanerHandler().delete_batch(batch_id, str(BatchType.RECURRING))
+            TopicleanerHandler().delete_batch(batch_id, batch_types.RECURRING)
             return Response(
                 {"id": batch_id, "error": "error while producing extract events"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -116,14 +116,14 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
         batch_counter_redis = redis.Redis(
             host=settings.REDIS_COUNTER_HOST, port=settings.REDIS_COUNTER_PORT, db=settings.REDIS_COUNTER_DB
         )
-        resource_ids = batch_counter_redis.smembers(f"{BatchType.RECURRING}:{pk}:resources")
+        resource_ids = batch_counter_redis.smembers(f"{batch_types.RECURRING}:{pk}:resources")
 
         try:
-            send_batch_events(pk, BatchType.RECURRING, resource_ids)
+            send_batch_events(pk, batch_types.RECURRING, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
-            TopicleanerHandler().delete_batch(pk, str(BatchType.RECURRING))
+            TopicleanerHandler().delete_batch(pk, batch_types.RECURRING)
             return Response(
                 {"id": pk, "error": "error while producing extract events"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -132,7 +132,7 @@ class RecurringBatchEndpoint(viewsets.ViewSet):
         return Response({"id": pk, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
-        TopicleanerHandler().delete_batch(pk, str(BatchType.RECURRING))
+        TopicleanerHandler().delete_batch(pk, batch_types.RECURRING)
 
         # Update Airflow variable to remove the corresponding DAG
         airflow_client = AirflowClient()

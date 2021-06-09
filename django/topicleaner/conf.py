@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from common.batch_types import BatchType
+from common import batch_types
 
 # Set default configuration for topicleaner
 
@@ -12,7 +12,7 @@ class Settings:
 
     @property
     def CONSUMED_TOPICS(self):
-        return getattr(settings, "CONSUMED_TOPICS", f"^load\\.{BatchType.BATCH}\\..*")
+        return getattr(settings, "CONSUMED_TOPICS", f"^load\\.{batch_types.BATCH}\\..*")
 
 
 conf = Settings()

@@ -27,8 +27,8 @@ def test_encode_datetime():
     assert encoded == "2020-10-10T12:12:12"
 
 
-@mock.patch("control.api.views.Extractor")
-@mock.patch("control.api.views.fetch_resource_mapping")
+@mock.patch("control.api.preview.Extractor")
+@mock.patch("control.api.preview.fetch_resource_mapping")
 @mock.patch("common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
 def test_serde_and_clean_bytes(mock_fetch_mapping, mock_extractor, api_client):
     extractor = mock.MagicMock()

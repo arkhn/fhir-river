@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from django.conf import settings
 
 import redis
-from common.batch_types import BatchType
+from common import batch_types
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from control.api.serializers import CreateBatchSerializer
@@ -28,11 +28,11 @@ class BatchEndpoint(viewsets.ViewSet):
             decode_responses=True,
         )
 
-        batches = batch_counter_redis.hgetall(str(BatchType.BATCH))
+        batches = batch_counter_redis.hgetall(batch_types.BATCH)
 
         batch_list = []
         for batch_id, batch_timestamp in batches.items():
-            batch_resource_ids = batch_counter_redis.smembers(f"{BatchType.BATCH}:{batch_id}:resources")
+            batch_resource_ids = batch_counter_redis.smembers(f"{batch_types.BATCH}:{batch_id}:resources")
             batch_list.append(
                 {
                     "id": batch_id,
@@ -71,25 +71,25 @@ class BatchEndpoint(viewsets.ViewSet):
             port=settings.REDIS_COUNTER_PORT,
             db=settings.REDIS_COUNTER_DB,
         )
-        batch_counter_redis.hset(str(BatchType.BATCH), batch_id, batch_timestamp)
-        batch_counter_redis.sadd(f"{BatchType.BATCH}:{batch_id}:resources", *resource_ids)
+        batch_counter_redis.hset(batch_types.BATCH, batch_id, batch_timestamp)
+        batch_counter_redis.sadd(f"{batch_types.BATCH}:{batch_id}:resources", *resource_ids)
 
         # Create kafka topics for batch
         new_topic_names = [
-            f"trigger.{BatchType.BATCH}.{batch_id}",
-            f"extract.{BatchType.BATCH}.{batch_id}",
-            f"transform.{BatchType.BATCH}.{batch_id}",
-            f"load.{BatchType.BATCH}.{batch_id}",
+            f"trigger.{batch_types.BATCH}.{batch_id}",
+            f"extract.{batch_types.BATCH}.{batch_id}",
+            f"transform.{batch_types.BATCH}.{batch_id}",
+            f"load.{batch_types.BATCH}.{batch_id}",
         ]
         create_kafka_topics(new_topic_names)
 
         # Send event to the extractor
         try:
-            send_batch_events(batch_id, str(BatchType.BATCH), resource_ids)
+            send_batch_events(batch_id, batch_types.BATCH, resource_ids)
         except (KafkaException, ValueError) as err:
             logger.exception(err)
             # Clean the batch
-            TopicleanerHandler().delete_batch(batch_id, str(BatchType.BATCH))
+            TopicleanerHandler().delete_batch(batch_id, batch_types.BATCH)
             return Response(
                 {"id": batch_id, "error": "error while producing extract events"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -98,5 +98,5 @@ class BatchEndpoint(viewsets.ViewSet):
         return Response({"id": batch_id, "timestamp": batch_timestamp}, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None):
-        TopicleanerHandler().delete_batch(pk, str(BatchType.BATCH))
+        TopicleanerHandler().delete_batch(pk, batch_types.BATCH)
         return Response({"id": pk}, status=status.HTTP_200_OK)

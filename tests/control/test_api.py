@@ -6,15 +6,13 @@ from rest_framework.test import APIClient
 
 from django.urls import reverse
 
-import fakeredis
-from common.batch_types import BatchType
+from common import batch_types
 from confluent_kafka.admin import NewTopic
 
 
-@mock.patch("control.api.views.redis.Redis", return_value=fakeredis.FakeStrictRedis())
-@mock.patch("control.api.views.Extractor")
-@mock.patch("control.api.views.fetch_resource_mapping")
-def test_preview_endpoint(mock_fetch_mapping, mock_extractor, mock_redis, api_client: APIClient, preview_mapping):
+@mock.patch("control.api.preview.Extractor")
+@mock.patch("control.api.preview.fetch_resource_mapping")
+def test_preview_endpoint(mock_fetch_mapping, mock_extractor, api_client: APIClient, preview_mapping):
     extractor = mock.MagicMock()
     extractor.split_dataframe.return_value = [
         {
@@ -60,12 +58,9 @@ def test_preview_endpoint(mock_fetch_mapping, mock_extractor, mock_redis, api_cl
     }
 
 
-@mock.patch("control.api.views.redis.Redis", return_value=fakeredis.FakeStrictRedis())
-@mock.patch("control.api.views.Extractor")
-@mock.patch("control.api.views.fetch_resource_mapping")
-def test_preview_endpoint_with_error(
-    mock_fetch_mapping, mock_extractor, mock_redis, api_client: APIClient, erroneous_mapping
-):
+@mock.patch("control.api.preview.Extractor")
+@mock.patch("control.api.preview.fetch_resource_mapping")
+def test_preview_endpoint_with_error(mock_fetch_mapping, mock_extractor, api_client: APIClient, erroneous_mapping):
     extractor = mock.MagicMock()
     extractor.split_dataframe.return_value = [
         {
@@ -109,7 +104,7 @@ def test_preview_endpoint_with_error(
     }
 
 
-@mock.patch("control.api.views.redis.Redis")
+@mock.patch("control.api.batch.redis.Redis")
 def test_get_batch_endpoint(mock_redis, api_client: APIClient):
     batch_counter_redis = mock.MagicMock()
     batch_counter_redis.hgetall.return_value = {
@@ -141,12 +136,12 @@ def test_get_batch_endpoint(mock_redis, api_client: APIClient):
     ]
 
 
-@mock.patch("control.api.views.redis.Redis")
-@mock.patch("control.api.views.AdminClient")
-@mock.patch("control.api.views.Producer")
-@mock.patch("control.api.views.uuid.uuid4", return_value="batch_id")
+@mock.patch("control.api.batch.redis.Redis")
+@mock.patch("control.batch_helper.AdminClient")
+@mock.patch("control.batch_helper.Producer")
+@mock.patch("control.api.batch.uuid.uuid4", return_value="batch_id")
 @mock.patch(
-    "control.api.views.fetch_resource_mapping",
+    "control.api.batch.fetch_resource_mapping",
     side_effect=[{"mapping_1": "mapping_1"}, {"mapping_2": "mapping_2"}, {"mapping_3": "mapping_3"}],
 )
 def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redis, api_client: APIClient):
@@ -180,10 +175,10 @@ def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redi
     batch_counter_redis.sadd.assert_has_calls([mock.call("batch:batch_id:resources", "id_a", "id_b", "id_c")])
 
     new_topics = [
-        NewTopic(f"trigger.{BatchType.BATCH}.batch_id", 1, 1),
-        NewTopic(f"extract.{BatchType.BATCH}.batch_id", 1, 1),
-        NewTopic(f"transform.{BatchType.BATCH}.batch_id", 1, 1),
-        NewTopic(f"load.{BatchType.BATCH}.batch_id", 1, 1),
+        NewTopic(f"trigger.{batch_types.BATCH}.batch_id", 1, 1),
+        NewTopic(f"extract.{batch_types.BATCH}.batch_id", 1, 1),
+        NewTopic(f"transform.{batch_types.BATCH}.batch_id", 1, 1),
+        NewTopic(f"load.{batch_types.BATCH}.batch_id", 1, 1),
     ]
     admin_client.create_topics.assert_has_calls([mock.call(new_topics)])
 
@@ -198,13 +193,16 @@ def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redi
     producer.produce_event.assert_has_calls(
         [
             mock.call(
-                topic=f"trigger.{BatchType.BATCH}.batch_id", event={"batch_id": "batch_id", "resource_id": "id_a"}
+                topic=f"trigger.{batch_types.BATCH}.batch_id",
+                event={"batch_id": "batch_id", "batch_type": "batch", "resource_id": "id_a"},
             ),
             mock.call(
-                topic=f"trigger.{BatchType.BATCH}.batch_id", event={"batch_id": "batch_id", "resource_id": "id_b"}
+                topic=f"trigger.{batch_types.BATCH}.batch_id",
+                event={"batch_id": "batch_id", "batch_type": "batch", "resource_id": "id_b"},
             ),
             mock.call(
-                topic=f"trigger.{BatchType.BATCH}.batch_id", event={"batch_id": "batch_id", "resource_id": "id_c"}
+                topic=f"trigger.{batch_types.BATCH}.batch_id",
+                event={"batch_id": "batch_id", "batch_type": "batch", "resource_id": "id_c"},
             ),
         ]
     )
@@ -212,8 +210,8 @@ def test_create_batch_endpoint(_, __, mock_producer, mock_kafka_admin, mock_redi
     assert response.status_code == 200
 
 
-@mock.patch("control.api.views.redis.Redis")
-@mock.patch("control.api.views.AdminClient")
+@mock.patch("control.api.batch.redis.Redis")
+@mock.patch("topicleaner.service.AdminClient")
 def test_delete_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClient):
     batch_counter_redis = mock.MagicMock()
     mappings_redis = mock.MagicMock()
@@ -233,10 +231,10 @@ def test_delete_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClie
         [
             mock.call(
                 [
-                    f"trigger.{BatchType.BATCH}.id",
-                    f"extract.{BatchType.BATCH}.id",
-                    f"transform.{BatchType.BATCH}.id",
-                    f"load.{BatchType.BATCH}.id",
+                    f"trigger.{batch_types.BATCH}.id",
+                    f"extract.{batch_types.BATCH}.id",
+                    f"transform.{batch_types.BATCH}.id",
+                    f"load.{batch_types.BATCH}.id",
                 ]
             )
         ]
@@ -248,8 +246,8 @@ def test_delete_batch_endpoint(mock_kafka_admin, mock_redis, api_client: APIClie
     mappings_redis.delete.assert_has_calls([mock.call("id:r_1"), mock.call("id:r_2"), mock.call("id:r_3")])
 
 
-@mock.patch("control.api.views.getmembers")
-@mock.patch("control.api.views.getdoc")
+@mock.patch("control.api.scripts.getmembers")
+@mock.patch("control.api.scripts.getdoc")
 def test_list_scripts_endpoint(mock_getdoc, mock_getmembers, api_client: APIClient):
     mock_getmembers.side_effect = [
         [("module1", None), ("module2", None)],
