@@ -75,5 +75,8 @@
   "fromColumn": "From column",
   "deleteGroup": "Delete group",
   "applyScript": "Apply script",
-  "addInput": "Add an input"
+  "addInput": "Add input",
+  "static": "Static",
+  "fromAColumn": "From a column",
+  "addCondition": "Add a condition"
 }

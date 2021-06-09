@@ -13,9 +13,13 @@ import {
 } from "services/api/endpoints";
 import { useApiInputGroupsCreateMutation } from "services/api/generated/api.generated";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: "none",
+    marginTop: theme.spacing(2),
+  },
+  container: {
+    padding: theme.spacing(2),
   },
 }));
 
@@ -49,7 +53,7 @@ const FhirAttributePanel = (): JSX.Element => {
   };
 
   return (
-    <>
+    <div className={classes.container}>
       {attributeInputGroups &&
         attributeInputGroups.map((inputGroup) => (
           <AttributeInputGroup key={inputGroup.id} inputGroup={inputGroup} />
@@ -65,7 +69,7 @@ const FhirAttributePanel = (): JSX.Element => {
           <Typography>{t("addGroup")}</Typography>
         </Button>
       )}
-    </>
+    </div>
   );
 };
 

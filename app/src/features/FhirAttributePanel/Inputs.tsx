@@ -13,10 +13,14 @@ import { CloseRounded } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 import ColumnSelects from "features/Columns/ColumnSelect";
-import { Column } from "services/api/generated/api.generated";
+import { useApiInputsDestroyMutation } from "services/api/endpoints";
+import {
+  Column,
+  Input as InputType,
+} from "services/api/generated/api.generated";
 
 type InputProps = {
-  input: Partial<Column>;
+  input: InputType;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -29,13 +33,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
-  inputContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing(1),
-    width: "100%",
-  },
   button: {
     textTransform: "none",
   },
@@ -46,20 +43,31 @@ const useStyles = makeStyles((theme) => ({
     padding: "4px 8px",
   },
   columnSelect: { width: "fit-content" },
+  inputContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(1),
+    width: "100%",
+  },
 }));
 
 const Input = ({ input }: InputProps): JSX.Element => {
   const [mappingColumn, setMappingColumn] = useState<Partial<Column>>({});
   const { t } = useTranslation();
   const classes = useStyles();
-  console.log(input);
+  const [deleteInput] = useApiInputsDestroyMutation();
 
-  const handleDeleteInput = () => {
-    //
+  const handleDeleteInput = async () => {
+    try {
+      await deleteInput({ id: input.id });
+    } catch (error) {
+      //
+    }
   };
 
   return (
-    <div className={classes.inputContainer}>
+    <div className={classes.inputContainer} key={input.id}>
       <Grid container alignItems="center" direction="row" spacing={1}>
         <Grid item>
           <Typography className={classes.fromColumn}>
