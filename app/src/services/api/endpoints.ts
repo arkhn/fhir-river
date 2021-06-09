@@ -25,6 +25,7 @@ const tagTypes = [
   "Joins",
   "StructureDefinition",
   "ValueSets",
+  "Batches",
 ];
 
 export const api = generatedApi
@@ -225,6 +226,18 @@ export const api = generatedApi
       apiValueSetsRetrieve: {
         providesTags: providesOne("ValueSets"),
       },
+      /**
+       * Batches
+       */
+      apiBatchesCreate: {
+        invalidatesTags: invalidatesList("Batches"),
+      },
+      apiBatchesList: {
+        providesTags: providesList("Batches"),
+      },
+      apiBatchesDestroy: {
+        invalidatesTags: invalidatesOne("Batches"),
+      },
     },
   });
 
@@ -277,4 +290,8 @@ export const {
   useApiJoinsDestroyMutation,
   // ValueSets
   useApiValueSetsRetrieveQuery,
+  // Batches
+  useApiBatchesCreateMutation,
+  useApiBatchesListQuery,
+  useApiBatchesDestroyMutation,
 } = api;
