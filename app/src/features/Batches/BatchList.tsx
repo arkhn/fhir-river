@@ -11,6 +11,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { useTranslation } from "react-i18next";
 
 import {
   useApiBatchesDestroyMutation,
@@ -31,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 const BatchList = (): JSX.Element => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const { data: batches, isLoading: isBatchesLoading } = useApiBatchesListQuery(
     {}
@@ -63,7 +65,7 @@ const BatchList = (): JSX.Element => {
                   endIcon={<CancelIcon />}
                   onClick={() => handleBatchCancel(batch.id)}
                 >
-                  Cancel
+                  <Typography>{t("cancel")}</Typography>
                 </Button>
               </AccordionSummary>
               <AccordionDetails>
