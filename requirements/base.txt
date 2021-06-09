@@ -5,7 +5,7 @@ cleaning-scripts==0.2.31
 confluent-kafka==1.5.0
 cuid==0.3
 cx-Oracle==7.1.2
-Django==3.1.8
+Django==3.1.10
 django-cors-headers==3.7.0
 django-filter==2.4.0
 django-revproxy==0.10.0
