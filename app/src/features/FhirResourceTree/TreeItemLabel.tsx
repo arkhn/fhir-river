@@ -136,65 +136,63 @@ const TreeItemLabel = ({
   };
 
   return (
-    <>
-      <div className={classes.treeItemContainer}>
-        {iconName && (
-          <Icon className={classes.icon} icon={iconName} iconSize={15} />
-        )}
-        <Typography
-          className={classes.treeItemTitle}
-          display="inline"
-          color="textPrimary"
-        >
-          {elementNode.name}
-        </Typography>
-        <Typography
-          display="inline"
-          variant="subtitle2"
-          color="textSecondary"
-          className={classes.treeItemType}
-        >
-          {elementNode.type}
-        </Typography>
-        {isArrayItem && (
-          <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
-        )}
-        {elementNode.isArray && (
-          <>
-            <IconButton
-              icon={IconNames.ADD}
-              {...bindTrigger(popupState)}
-              onClick={handleMenuClick}
-            />
-            <Menu {...bindMenu(popupState)}>
-              <MenuItem>
-                <ListItemText
-                  primary={t("addItem")}
-                  onClick={handleAddItemClick}
-                />
-              </MenuItem>
-              <MenuItem>
-                <ListItemText
-                  primary={t("addSlice")}
-                  onClick={handleSliceDialogOpen}
-                />
-              </MenuItem>
-            </Menu>
-          </>
-        )}
-        {elementNode.kind === "complex" && !elementNode.isArray && (
+    <div className={classes.treeItemContainer}>
+      {iconName && (
+        <Icon className={classes.icon} icon={iconName} iconSize={15} />
+      )}
+      <Typography
+        className={classes.treeItemTitle}
+        display="inline"
+        color="textPrimary"
+      >
+        {elementNode.name}
+      </Typography>
+      <Typography
+        display="inline"
+        variant="subtitle2"
+        color="textSecondary"
+        className={classes.treeItemType}
+      >
+        {elementNode.type}
+      </Typography>
+      {isArrayItem && (
+        <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
+      )}
+      {elementNode.isArray && (
+        <>
           <IconButton
-            icon={IconNames.CODE_BLOCK}
-            onClick={handleAddExtensionClick}
+            icon={IconNames.ADD}
+            {...bindTrigger(popupState)}
+            onClick={handleMenuClick}
           />
-        )}
-      </div>
-      <SliceNameDialog
-        onSubmit={handleAddSlice}
-        open={isSliceDialogOpen}
-        onClose={handleSliceDialogClose}
-      />
-    </>
+          <Menu {...bindMenu(popupState)}>
+            <MenuItem>
+              <ListItemText
+                primary={t("addItem")}
+                onClick={handleAddItemClick}
+              />
+            </MenuItem>
+            <MenuItem>
+              <ListItemText
+                primary={t("addSlice")}
+                onClick={handleSliceDialogOpen}
+              />
+            </MenuItem>
+          </Menu>
+          <SliceNameDialog
+            onSubmit={handleAddSlice}
+            open={isSliceDialogOpen}
+            onClose={handleSliceDialogClose}
+          />
+        </>
+      )}
+      {elementNode.kind === "complex" && !elementNode.isArray && (
+        <IconButton
+          icon={IconNames.CODE_BLOCK}
+          onClick={handleAddExtensionClick}
+        />
+      )}
+    </div>
   );
 };
 
