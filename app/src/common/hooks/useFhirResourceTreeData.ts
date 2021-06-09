@@ -38,7 +38,7 @@ const useFhirResourceTreeData = (
   root?: ElementNode;
   isLoading: boolean;
   deleteItem: () => Promise<void>;
-  createItem: () => Promise<void>;
+  createItem: (sliceName?: string) => Promise<void>;
 } => {
   const { definitionId, node } = params;
   const {
@@ -88,23 +88,27 @@ const useFhirResourceTreeData = (
         ));
     }
   }, [attributes, nodePath, deleteAttribute]);
-  const createItem = useCallback(async () => {
-    if (nodeId && root) {
-      const parentNode = getNode("id", nodeId, root);
+  const createItem = useCallback(
+    async (sliceName?: string) => {
+      if (nodeId && root) {
+        const parentNode = getNode("id", nodeId, root);
 
-      if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
-        const pathIndex = computeChildPathIndex(parentNode);
-        const attributePath = `${parentNode.path}[${pathIndex}]`;
-        await createAttribute({
-          attributeRequest: {
-            definition_id: parentNode.type,
-            path: attributePath,
-            resource: mappingId,
-          },
-        }).unwrap();
+        if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
+          const pathIndex = computeChildPathIndex(parentNode);
+          const attributePath = `${parentNode.path}[${pathIndex}]`;
+          await createAttribute({
+            attributeRequest: {
+              definition_id: parentNode.type,
+              path: attributePath,
+              resource: mappingId,
+              slice_name: sliceName,
+            },
+          }).unwrap();
+        }
       }
-    }
-  }, [createAttribute, mappingId, nodeId, root]);
+    },
+    [createAttribute, mappingId, nodeId, root]
+  );
 
   useEffect(() => {
     if (data) {
