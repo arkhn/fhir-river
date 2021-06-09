@@ -17,6 +17,8 @@ import {
   useApiBatchesListQuery,
 } from "services/api/endpoints";
 
+import BatchErrors from "./BatchErrors";
+
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -44,33 +46,31 @@ const BatchList = (): JSX.Element => {
   return (
     <>
       {batches &&
-        batches.map((batch) => (
-          <Accordion key={`batch-${batch.id}`}>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography className={classes.heading}>#{batch.id}</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                endIcon={<CancelIcon />}
-                onClick={() => handleBatchCancel(batch.id)}
+        batches
+          .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+          .map((batch) => (
+            <Accordion key={`batch-${batch.id}`}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
               >
-                Cancel
-              </Button>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                eget.
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        ))}
+                <Typography className={classes.heading}>#{batch.id}</Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  endIcon={<CancelIcon />}
+                  onClick={() => handleBatchCancel(batch.id)}
+                >
+                  Cancel
+                </Button>
+              </AccordionSummary>
+              <AccordionDetails>
+                <BatchErrors errors={batch.errors} />
+              </AccordionDetails>
+            </Accordion>
+          ))}
     </>
   );
 };
