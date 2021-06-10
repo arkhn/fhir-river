@@ -111,24 +111,25 @@ const useFhirResourceTreeData = (
     [createAttribute, mappingId, nodeId, root]
   );
   const addExtension = useCallback(async () => {
-    if (node && node.kind === "complex") {
-      const extensionArrayNode = node.children.find(
-        ({ type }) => type === "Extension"
-      );
+    const extensionArrayNode =
+      node && node.kind === "complex"
+        ? node.children.find(({ type }) => type === "Extension")
+        : root
+        ? root.children.find(({ type }) => type === "Extension")
+        : undefined;
 
-      if (extensionArrayNode && extensionArrayNode.type && mappingId) {
-        const pathIndex = computeChildPathIndex(extensionArrayNode);
-        const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
-        await createAttribute({
-          attributeRequest: {
-            definition_id: extensionArrayNode.type,
-            path: attributePath,
-            resource: mappingId,
-          },
-        }).unwrap();
-      }
+    if (extensionArrayNode && extensionArrayNode.type && mappingId) {
+      const pathIndex = computeChildPathIndex(extensionArrayNode);
+      const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
+      await createAttribute({
+        attributeRequest: {
+          definition_id: extensionArrayNode.type,
+          path: attributePath,
+          resource: mappingId,
+        },
+      }).unwrap();
     }
-  }, [createAttribute, mappingId, node]);
+  }, [createAttribute, mappingId, node, root]);
 
   useEffect(() => {
     if (data) {
