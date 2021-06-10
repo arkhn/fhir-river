@@ -66,31 +66,29 @@ const BatchList = (): JSX.Element => {
   return (
     <>
       {displayedBatches &&
-        displayedBatches
-          .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
-          .map((batch) => (
-            <Accordion key={`batch-${batch.id}`}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
+        displayedBatches.map((batch) => (
+          <Accordion key={`batch-${batch.id}`}>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography className={classes.heading}>#{batch.id}</Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.button}
+                endIcon={<CancelIcon />}
+                onClick={() => handleBatchCancel(batch.id)}
               >
-                <Typography className={classes.heading}>#{batch.id}</Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  endIcon={<CancelIcon />}
-                  onClick={() => handleBatchCancel(batch.id)}
-                >
-                  <Typography>{t("cancel")}</Typography>
-                </Button>
-              </AccordionSummary>
-              <AccordionDetails>
-                <BatchErrors errors={batch.errors} />
-              </AccordionDetails>
-            </Accordion>
-          ))}
+                <Typography>{t("cancel")}</Typography>
+              </Button>
+            </AccordionSummary>
+            <AccordionDetails>
+              <BatchErrors errors={batch.errors} />
+            </AccordionDetails>
+          </Accordion>
+        ))}
       <Typography>Page: {page}</Typography>
       <Pagination count={PAGE_SIZE} page={page} onChange={handlePageChange} />
     </>
