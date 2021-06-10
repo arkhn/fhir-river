@@ -45,16 +45,19 @@ const BatchList = (): JSX.Element => {
     setPage(value);
   };
 
-  const { data: batches, isLoading: isBatchesLoading } = useApiBatchesListQuery(
-    {}
-  );
   const offset = (page - 1) * PAGE_SIZE;
   const limit = offset + PAGE_SIZE;
-  const displayedBatches =
-    batches &&
-    batches
-      .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
-      .slice(offset, limit);
+  const { batches, isBatchesLoading } = useApiBatchesListQuery(
+    {},
+    {
+      selectFromResult: ({ data, isLoading }) => ({
+        batches: data
+          ?.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+          .slice(offset, limit),
+        isBatchesLoading: isLoading,
+      }),
+    }
+  );
 
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
@@ -65,8 +68,8 @@ const BatchList = (): JSX.Element => {
   if (isBatchesLoading) return <CircularProgress />;
   return (
     <>
-      {displayedBatches &&
-        displayedBatches.map((batch) => (
+      {batches &&
+        batches.map((batch) => (
           <Accordion key={`batch-${batch.id}`}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
