@@ -30,6 +30,7 @@
     "i18next-browser-languagedetector": "^6.0.1",
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.21",
+    "material-ui-popup-state": "^1.8.3",
     "node-fetch": "^2.6.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

@@ -89,14 +89,17 @@ export const createElementNode = (
   const elementPath = `${prefixPath}${
     prefixPath && suffixPath && "."
   }${suffixPath}${index !== undefined ? `[${index}]` : ""}`;
+  const elementName = `${elementDefinition.id?.split(".").pop() ?? ""}${
+    elementDefinition.sliceName ? `:${elementDefinition.sliceName}` : ""
+  }`;
   return {
     id: uuid(),
-    name: elementDefinition.id?.split(".").pop() ?? "",
+    name: elementName,
     children: [],
     path: elementPath,
     definition: elementDefinition,
     isArray: index !== undefined ? false : isElementArray(elementDefinition),
-    isSlice: !!elementDefinition.sliceName,
+    sliceName: elementDefinition.sliceName,
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
     backboneElementDefinitions: [],
@@ -108,6 +111,7 @@ export const createElementDefinition = (
 ): IElementDefinition => {
   const elementDefinition: IElementDefinition = {
     path: attribute.path,
+    sliceName: attribute.slice_name,
     id: attribute.path.split(/[[]\d+]/).join(""),
     type: [{ code: attribute.definition_id }],
   };

@@ -18,7 +18,7 @@ export type ElementNode = {
   path: string;
   kind?: ElementKind;
   isArray: boolean;
-  isSlice: boolean;
+  sliceName?: string;
   type?: string;
   definition: IElementDefinition;
   children: ElementNode[];
