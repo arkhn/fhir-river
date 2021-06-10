@@ -12,6 +12,7 @@ import TreeItemLabel from "./TreeItemLabel";
 type TreeItemProps = {
   elementNode: ElementNode;
   isArrayItem?: boolean;
+  hasParentExpanded?: boolean;
 };
 
 const useStyle = makeStyles(() => ({
@@ -27,7 +28,11 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
-const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
+const TreeItem = ({
+  elementNode,
+  isArrayItem,
+  hasParentExpanded,
+}: TreeItemProps): JSX.Element => {
   const classes = useStyle();
 
   const isNodeHidden =
@@ -45,7 +50,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
     {
       skip:
         !isComplex ||
-        !hasExpanded ||
+        !hasParentExpanded ||
         elementNode.isArray ||
         elementNode.type === "BackboneElement",
     }
@@ -80,6 +85,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
               key={node.id}
               elementNode={node}
               isArrayItem={elementNode.isArray}
+              hasParentExpanded={hasExpanded}
             />
           ))
         : !isPrimitive && !elementNode.isArray && <></>}
