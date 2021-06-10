@@ -92,7 +92,9 @@ const BatchList = (): JSX.Element => {
             </AccordionDetails>
           </Accordion>
         ))}
-      <Typography>Page: {page}</Typography>
+      <Typography>
+        {t("page")}: {page}
+      </Typography>
       <Pagination count={PAGE_SIZE} page={page} onChange={handlePageChange} />
     </>
   );
