@@ -26,6 +26,7 @@ type TreeItemLabelProps = {
   isArrayItem?: boolean;
   onCreateItem: (sliceName?: string) => Promise<void>;
   onDeleteItem: () => Promise<void>;
+  onAddExtension: () => Promise<void>;
 };
 
 const useStyle = makeStyles((theme) => ({
@@ -66,6 +67,7 @@ const TreeItemLabel = ({
   isArrayItem,
   onDeleteItem,
   onCreateItem,
+  onAddExtension,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -107,6 +109,7 @@ const TreeItemLabel = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    onAddExtension();
   };
 
   const handleSliceDialogOpen = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -158,7 +161,7 @@ const TreeItemLabel = ({
       {isArrayItem && (
         <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
       )}
-      {elementNode.isArray && (
+      {elementNode.isArray && elementNode.type !== "Extension" && (
         <>
           <IconButton
             icon={IconNames.ADD}

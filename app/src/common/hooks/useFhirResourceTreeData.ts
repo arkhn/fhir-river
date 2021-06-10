@@ -38,6 +38,7 @@ const useFhirResourceTreeData = (
   root?: ElementNode;
   isLoading: boolean;
   deleteItem: () => Promise<void>;
+  addExtension: () => Promise<void>;
   createItem: (sliceName?: string) => Promise<void>;
 } => {
   const { definitionId, node } = params;
@@ -109,6 +110,25 @@ const useFhirResourceTreeData = (
     },
     [createAttribute, mappingId, nodeId, root]
   );
+  const addExtension = useCallback(async () => {
+    if (node && node.kind === "complex") {
+      const extensionArrayNode = node.children.find(
+        ({ type }) => type === "Extension"
+      );
+
+      if (extensionArrayNode && extensionArrayNode.type && mappingId) {
+        const pathIndex = computeChildPathIndex(extensionArrayNode);
+        const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
+        await createAttribute({
+          attributeRequest: {
+            definition_id: extensionArrayNode.type,
+            path: attributePath,
+            resource: mappingId,
+          },
+        }).unwrap();
+      }
+    }
+  }, [createAttribute, mappingId, node]);
 
   useEffect(() => {
     if (data) {
@@ -140,7 +160,7 @@ const useFhirResourceTreeData = (
     }
   }, [dispatch, attributes, prevAttributes, root, node]);
 
-  return { root, isLoading, createItem, deleteItem };
+  return { root, isLoading, createItem, deleteItem, addExtension };
 };
 
 export default useFhirResourceTreeData;
