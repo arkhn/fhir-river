@@ -78,7 +78,6 @@
   "cannotUndoAction": "This action cannot be undone.",
   "confirmDelete": "Yes, delete",
   "saveChanges": "Save changes",
-  "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}",
   "errors": "{{count}} errors recorded",
   "run": "Run",
   "id": "ID",
@@ -86,7 +85,8 @@
   "message": "Messsage",
   "exception": "Exception",
   "createdAt": "Created at",
-  "deletedAt": "Stopped at"
+  "deletedAt": "Stopped at",
+  "page": "Page",
   "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}",
   "addGroup": "Add a group",
   "fromColumn": "From column",
