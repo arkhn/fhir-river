@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 def get_env_array_value(key: str, default: list = list):
-    return os.environ.get(key) and os.environ.get(key).split(",") or default
+    return os.environ.get(key) and os.environ.get(key).split(",") or default or []
 
 
 def get_env_bool_value(key: str, default: bool):
@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     "core",
     "extractor",
     "transformer",
-    "control",
     "topicleaner",
     "pagai",
     "pyrog",
@@ -278,6 +277,7 @@ REDIS_REFERENCES_DB = os.environ.get("REDIS_REFERENCES_DB", 0)
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 KAFKA_NUM_PARTITIONS = int(os.environ.get("KAFKA_NUM_PARTITIONS", 1))
 KAFKA_REPLICATION_FACTOR = int(os.environ.get("KAFKA_REPLICATION_FACTOR", 1))
+KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL", 15 * 60 * 1000))
 
 # API URLs
 

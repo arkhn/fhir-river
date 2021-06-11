@@ -4,8 +4,8 @@ from confluent_kafka import KafkaError, KafkaException
 
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
+from common.service.errors import BatchCancelled
 from common.service.service import Service
-from extractor.conf import conf
 from extractor.extract import Extractor
 from river.adapters.decr_counter import DecrementingCounter, RedisDecrementingCounter
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
@@ -33,9 +33,9 @@ def broadcast_events(
                 {"message": "One record from extract", "resource_id": resource_id},
             )
             event = events.ExtractedRecord(batch_id, resource_type, resource_id, record)
-            publisher.publish(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
+            publisher.publish(topic=f"extract.{batch_id}", event=event)
             count += 1
-        except (KafkaException, ValueError) as err:
+        except KafkaException as err:
             if isinstance(err, KafkaException) and err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                 logger.warning(
                     {
@@ -44,10 +44,7 @@ def broadcast_events(
                         "batch_id": batch_id,
                     }
                 )
-            else:
-                logger.exception(err)
-            # return early to avoid setting the counter in redis
-            return
+            raise BatchCancelled(batch_id)
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
@@ -77,7 +74,7 @@ def batch_resource_handler(
 
 
 def bootstrap(
-    subscriber=KafkaEventSubscriber(group_id=conf.CONSUMER_GROUP_ID),
+    subscriber=KafkaEventSubscriber(group_id="extractor"),
     mappings_repo=RedisMappingsRepository(),
     counter=RedisDecrementingCounter(),
     publisher=KafkaEventPublisher(),

@@ -15,3 +15,8 @@ class BatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Batch
         fields = "__all__"
+
+
+class PreviewSerializer(serializers.Serializer):
+    resource_id = serializers.CharField()
+    primary_key_values = serializers.ListField(child=serializers.JSONField())

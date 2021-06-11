@@ -37,7 +37,6 @@ def test_create_instance(mock_datetime):
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
     assert actual == {
-        "id": actual["id"],
         "identifier": [{"value": "A"}],
         "birthDate": "2000-10-10",
         "maritalStatus": {"coding": [{"code": "D"}]},
@@ -86,7 +85,6 @@ def test_build_nested_arrays(mock_datetime):
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
     assert actual == {
-        "id": actual["id"],
         "identifier": [{"value": "123"}],
         "status": "active",
         "lineItem": [{"priceComponent": [{"factor": "F1", "type": "T1"}, {"factor": "F2", "type": "T2"}]}],
@@ -112,7 +110,6 @@ def test_build_nested_arrays(mock_datetime):
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
     assert actual == {
-        "id": actual["id"],
         "identifier": [{"value": "123"}],
         "status": "active",
         "lineItem": [
@@ -132,7 +129,6 @@ def test_build_nested_arrays(mock_datetime):
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
     assert actual == {
-        "id": actual["id"],
         "identifier": [{"value": "123"}],
         "status": "active",
         "lineItem": [
@@ -163,7 +159,6 @@ def test_build_nested_arrays(mock_datetime):
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
     assert actual == {
-        "id": actual["id"],
         "identifier": [{"value": "123"}],
         "status": "active",
         "lineItem": [
@@ -202,14 +197,14 @@ def test_conditions_have_filtered_one_value(mock_datetime):
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
-    assert actual == {"id": actual["id"], "status": "active"}
+    assert actual == {"status": "active"}
 
     # No value left
     row = {attr_status.path: [None, None]}
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
-    assert actual == {"id": actual["id"]}
+    assert actual == {}
 
 
 @mock.patch("transformer.transform.fhir.datetime", autospec=True)
