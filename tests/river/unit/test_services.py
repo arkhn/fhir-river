@@ -2,11 +2,12 @@ import uuid
 
 import pytest
 
-from river import models, services
+from river import models
 from river.adapters.event_publisher import FakeEventPublisher
 from river.adapters.mappings import FakeMappingsRepository
 from river.adapters.topics import FakeTopics
 from river.domain.events import BatchResource
+from river.services import abort, batch, preview
 
 pytestmark = pytest.mark.django_db
 
@@ -18,7 +19,7 @@ def test_batch():
     resources = [str(uuid.uuid4()) for _ in range(5)]
     mappings_repo = FakeMappingsRepository(mappings={id: {} for id in resources})
 
-    batch_instance = services.batch(resources, topics, publisher, mappings_repo)
+    batch_instance = batch(resources, topics, publisher, mappings_repo)
 
     assert batch_instance is not None
     assert models.Batch.objects.filter(id=batch_instance.id).exists()
@@ -36,7 +37,7 @@ def test_abort(batch):
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 
-    services.abort(batch, topics)
+    abort(batch, topics)
 
     assert batch.deleted_at is not None
     assert topics._topics == set()
@@ -44,3 +45,11 @@ def test_abort(batch):
 
 def test_retry(batch):
     pass
+
+
+def test_preview(users_to_patients_mapping):
+    mappings_repo = FakeMappingsRepository(mappings={"foo": users_to_patients_mapping})
+
+    documents, errors = preview("foo", None, mappings=mappings_repo)
+
+    assert len(errors) == 0
