@@ -69,7 +69,10 @@ const useFhirResourceTreeData = (
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element;
-      const rootNode = createElementNode(elementDefinitions[0], {
+      const elementDefinition = elementDefinitions[0];
+      if (!elementDefinition) return null;
+
+      const rootNode = createElementNode(elementDefinition, {
         parentPath: nodePath,
       });
       buildTree(elementDefinitions.slice(1), rootNode, rootNode);

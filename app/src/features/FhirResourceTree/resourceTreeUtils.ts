@@ -27,14 +27,14 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
     }
 
     const baseResource = parsedPath[0];
-    return omittedResources.includes(baseResource);
+    return omittedResources.includes(baseResource ?? "");
   }
   return false;
 };
 
 const getKind = (elementDefinition: IElementDefinition): ElementKind => {
   const { type: types } = elementDefinition;
-  const type = types?.length === 1 && types?.[0].code;
+  const type = types?.length === 1 && types?.[0]?.code;
 
   if (
     (type && primitiveTypes.includes(type)) ||
@@ -66,7 +66,7 @@ const computeType = (
   // by the extension of type "structuredefinition-fhir-type" (see "type" of Observation.id for example).
   if (primitive) return primitive.valueUrl;
   if (elementType.profile && elementType.profile.length > 0) {
-    return elementType.profile[0].split("/").pop();
+    return elementType.profile[0]?.split("/").pop();
   }
   return elementType.code;
 };

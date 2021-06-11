@@ -170,7 +170,7 @@ const CreateMapping = (): JSX.Element => {
                 filterRequest: {
                   ...filter,
                   resource: createdMapping.id,
-                  sql_column: createdColumns[index].id,
+                  sql_column: createdColumns[index]?.id ?? "",
                 } as FilterRequest,
               }).unwrap();
             })
@@ -184,7 +184,7 @@ const CreateMapping = (): JSX.Element => {
               );
               return createJoin({
                 joinRequest: {
-                  column: createdColumns[index].id,
+                  column: createdColumns[index]?.id ?? "",
                 } as JoinRequest,
               }).unwrap();
             })
@@ -197,7 +197,7 @@ const CreateMapping = (): JSX.Element => {
               return createColumn({
                 columnRequest: {
                   ...column,
-                  join: createdJoins[index].id,
+                  join: createdJoins[index]?.id ?? "",
                 } as ColumnRequest,
               }).unwrap();
             })

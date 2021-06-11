@@ -37,7 +37,7 @@ import {
   useApiResourcesUpdateMutation,
 } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
-import {
+import type {
   ColumnRequest,
   CredentialRequest,
   FilterRequest,
@@ -165,7 +165,7 @@ const EditMapping = (): JSX.Element => {
                 filterRequest: {
                   ...filter,
                   resource: resource.id,
-                  sql_column: createdOrUpdatedColumns[index].id,
+                  sql_column: createdOrUpdatedColumns[index]?.id ?? "",
                 } as FilterRequest,
               }).unwrap();
             } else if (!isEqual(filter, prevFilter)) {
@@ -198,7 +198,7 @@ const EditMapping = (): JSX.Element => {
               // Join is created
               return createJoin({
                 joinRequest: {
-                  column: createdOrUpdatedColumns[index].id,
+                  column: createdOrUpdatedColumns[index]?.id ?? "",
                 } as JoinRequest,
               }).unwrap();
             } else if (!isEqual(prevJoin, join)) {
@@ -227,7 +227,7 @@ const EditMapping = (): JSX.Element => {
               return createColumn({
                 columnRequest: {
                   ...column,
-                  join: createdOrUpdatedJoins[index].id,
+                  join: createdOrUpdatedJoins[index]?.id ?? "",
                 } as ColumnRequest,
               }).unwrap();
             } else if (!isEqual(prevColumn, column)) {
