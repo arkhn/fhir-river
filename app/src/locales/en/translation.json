@@ -78,5 +78,8 @@
   "addInput": "Add input",
   "static": "Static",
   "fromAColumn": "From a column",
-  "addCondition": "Add a condition"
+  "addCondition": "Add a condition",
+  "addSlice": "Add slice",
+  "addItem": "Add item",
+  "sliceName": "Slice name"
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core";
 import { TreeItem as MuiTreeItem } from "@material-ui/lab";
+import clsx from "clsx";
 
 import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
 
@@ -11,6 +12,7 @@ import TreeItemLabel from "./TreeItemLabel";
 type TreeItemProps = {
   elementNode: ElementNode;
   isArrayItem?: boolean;
+  hasParentExpanded?: boolean;
 };
 
 const useStyle = makeStyles(() => ({
@@ -21,15 +23,26 @@ const useStyle = makeStyles(() => ({
       paddingLeft: 10,
     },
   },
+  hidden: {
+    display: "none",
+  },
 }));
 
-const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
+const TreeItem = ({
+  elementNode,
+  isArrayItem,
+  hasParentExpanded,
+}: TreeItemProps): JSX.Element => {
   const classes = useStyle();
 
+  const isNodeHidden =
+    elementNode.type === "Extension" &&
+    elementNode.isArray &&
+    elementNode.children.length === 0;
   const [hasExpanded, setHasExpanded] = useState(false);
   const isPrimitive = elementNode.kind === "primitive";
   const isComplex = elementNode.kind === "complex";
-  const { createItem, deleteItem } = useFhirResourceTreeData(
+  const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
     {
       definitionId: elementNode.type ?? "",
       node: elementNode,
@@ -37,7 +50,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
     {
       skip:
         !isComplex ||
-        !hasExpanded ||
+        !hasParentExpanded ||
         elementNode.isArray ||
         elementNode.type === "BackboneElement",
     }
@@ -53,13 +66,14 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
   return (
     <MuiTreeItem
       nodeId={elementNode.id}
-      classes={{ root: classes.root }}
+      className={clsx(classes.root, { [classes.hidden]: isNodeHidden })}
       label={
         <TreeItemLabel
           isArrayItem={isArrayItem}
           elementNode={elementNode}
           onDeleteItem={deleteItem}
           onCreateItem={createItem}
+          onAddExtension={addExtension}
         />
       }
       onIconClick={handleIconClick}
@@ -71,6 +85,7 @@ const TreeItem = ({ elementNode, isArrayItem }: TreeItemProps): JSX.Element => {
               key={node.id}
               elementNode={node}
               isArrayItem={elementNode.isArray}
+              hasParentExpanded={hasExpanded}
             />
           ))
         : !isPrimitive && !elementNode.isArray && <></>}

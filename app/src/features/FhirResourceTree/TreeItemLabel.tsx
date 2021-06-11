@@ -14,6 +14,7 @@ import {
   bindMenu,
   usePopupState,
 } from "material-ui-popup-state/hooks";
+import { useTranslation } from "react-i18next";
 
 import IconButton from "common/components/IconButton";
 
@@ -25,6 +26,7 @@ type TreeItemLabelProps = {
   isArrayItem?: boolean;
   onCreateItem: (sliceName?: string) => Promise<void>;
   onDeleteItem: () => Promise<void>;
+  onAddExtension: () => Promise<void>;
 };
 
 const useStyle = makeStyles((theme) => ({
@@ -65,8 +67,10 @@ const TreeItemLabel = ({
   isArrayItem,
   onDeleteItem,
   onCreateItem,
+  onAddExtension,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
+  const { t } = useTranslation();
   const popupState = usePopupState({
     variant: "popover",
     popupId: `popup-${elementNode.id}`,
@@ -105,6 +109,7 @@ const TreeItemLabel = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    onAddExtension();
   };
 
   const handleSliceDialogOpen = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -134,65 +139,63 @@ const TreeItemLabel = ({
   };
 
   return (
-    <>
-      <div className={classes.treeItemContainer}>
-        {iconName && (
-          <Icon className={classes.icon} icon={iconName} iconSize={15} />
-        )}
-        <Typography
-          className={classes.treeItemTitle}
-          display="inline"
-          color="textPrimary"
-        >
-          {elementNode.name}
-        </Typography>
-        <Typography
-          display="inline"
-          variant="subtitle2"
-          color="textSecondary"
-          className={classes.treeItemType}
-        >
-          {elementNode.type}
-        </Typography>
-        {isArrayItem && (
-          <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
-        )}
-        {elementNode.isArray && (
-          <>
-            <IconButton
-              icon={IconNames.ADD}
-              {...bindTrigger(popupState)}
-              onClick={handleMenuClick}
-            />
-            <Menu {...bindMenu(popupState)}>
-              <MenuItem>
-                <ListItemText
-                  primary={`Add item`}
-                  onClick={handleAddItemClick}
-                />
-              </MenuItem>
-              <MenuItem>
-                <ListItemText
-                  primary={`Add slice`}
-                  onClick={handleSliceDialogOpen}
-                />
-              </MenuItem>
-            </Menu>
-          </>
-        )}
-        {elementNode.kind === "complex" && !elementNode.isArray && (
+    <div className={classes.treeItemContainer}>
+      {iconName && (
+        <Icon className={classes.icon} icon={iconName} iconSize={15} />
+      )}
+      <Typography
+        className={classes.treeItemTitle}
+        display="inline"
+        color="textPrimary"
+      >
+        {elementNode.name}
+      </Typography>
+      <Typography
+        display="inline"
+        variant="subtitle2"
+        color="textSecondary"
+        className={classes.treeItemType}
+      >
+        {elementNode.type}
+      </Typography>
+      {isArrayItem && (
+        <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
+      )}
+      {elementNode.isArray && elementNode.type !== "Extension" && (
+        <>
           <IconButton
-            icon={IconNames.CODE_BLOCK}
-            onClick={handleAddExtensionClick}
+            icon={IconNames.ADD}
+            {...bindTrigger(popupState)}
+            onClick={handleMenuClick}
           />
-        )}
-      </div>
-      <SliceNameDialog
-        onSubmit={handleAddSlice}
-        open={isSliceDialogOpen}
-        onClose={handleSliceDialogClose}
-      />
-    </>
+          <Menu {...bindMenu(popupState)}>
+            <MenuItem>
+              <ListItemText
+                primary={t("addItem")}
+                onClick={handleAddItemClick}
+              />
+            </MenuItem>
+            <MenuItem>
+              <ListItemText
+                primary={t("addSlice")}
+                onClick={handleSliceDialogOpen}
+              />
+            </MenuItem>
+          </Menu>
+          <SliceNameDialog
+            onSubmit={handleAddSlice}
+            open={isSliceDialogOpen}
+            onClose={handleSliceDialogClose}
+          />
+        </>
+      )}
+      {elementNode.kind === "complex" && !elementNode.isArray && (
+        <IconButton
+          icon={IconNames.CODE_BLOCK}
+          onClick={handleAddExtensionClick}
+        />
+      )}
+    </div>
   );
 };
 
