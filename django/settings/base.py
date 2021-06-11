@@ -67,7 +67,6 @@ INSTALLED_APPS = [
     "core",
     "extractor",
     "transformer",
-    "control",
     "topicleaner",
     "pagai",
     "pyrog",
