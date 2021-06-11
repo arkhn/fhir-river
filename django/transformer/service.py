@@ -7,7 +7,7 @@ from common.errors import OperationOutcome
 from common.service.service import Service
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
 from river.adapters.event_subscriber import KafkaEventSubscriber
-from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
+from river.adapters.mappings import APIMappingsRepository, MappingsRepository
 from river.domain import events
 from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
@@ -87,7 +87,7 @@ def extracted_record_handler(
 
 def bootstrap(
     subscriber=KafkaEventSubscriber(group_id="transformer"),
-    mappings_repo=RedisMappingsRepository(),
+    mappings_repo=APIMappingsRepository(),
     publisher=KafkaEventPublisher(),
 ) -> Service:
     analyzer = Analyzer()
