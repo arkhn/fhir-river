@@ -50,6 +50,7 @@ class KafkaEventSubscriber(EventSubscriber):
                 # Here we refresh the list of consumed topics every 5s.
                 "topic.metadata.refresh.interval.ms": 5000,
                 "auto.offset.reset": "earliest",
+                "max.poll.interval.ms": settings.KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL,
             }
         )
 
