@@ -1,5 +1,7 @@
 import functools
 import inspect
+import json
+from datetime import timedelta
 
 import redis
 
@@ -7,7 +9,7 @@ from django.conf import settings
 
 
 class CacheBackend:
-    def set(self, key: str, value):
+    def set(self, key: str, value, **kwargs):
         raise NotImplementedError
 
     def get(self, key: str):
@@ -15,7 +17,7 @@ class CacheBackend:
 
 
 class InMemoryCacheBackend(dict):
-    def set(self, key: str, value):
+    def set(self, key: str, value, **kwargs):
         self[key] = value
 
 
@@ -27,17 +29,18 @@ class RedisCacheBackend:
             db=settings.REDIS_DB,
         )
 
-    def set(self, key: str, value):
-        self._client.set(key, value)
+    def set(self, key: str, value, expire_after: timedelta = None):
+        self._client.set(key, json.dumps(value), px=expire_after)
 
     def get(self, key: str):
-        return self._client.get(key)
+        raw = self._client.get(key)
+        return json.loads(raw) if raw is not None else None
 
 
 CACHE_BACKENDS = {"redis": RedisCacheBackend, "memory": InMemoryCacheBackend}
 
 
-def cache(key_param: str, backend: str = "redis"):
+def cache(key_param: str, backend: str = "redis", expire_after: timedelta = None):
     def _decorator(func):
         backend_str = backend or getattr(settings, "CACHE_BACKEND", "redis")
         backend_instance = CACHE_BACKENDS[backend_str]()
@@ -54,7 +57,7 @@ def cache(key_param: str, backend: str = "redis"):
                 return cached
 
             ret = func(*args, **kwargs)
-            backend_instance.set(key, ret)
+            backend_instance.set(key, ret, expire_after=expire_after)
             return ret
 
         return _cached_func
