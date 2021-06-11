@@ -18,12 +18,12 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppSelector } from "app/store";
 import Alert from "common/components/Alert";
-import useEditMapping from "common/hooks/useEditMapping";
 import { columnSelectors } from "features/Columns/columnSlice";
 import { filterSelectors } from "features/Filters/filterSlice";
 import { joinSelectors } from "features/Joins/joinSlice";
 import TableStep from "features/Mappings/Create/TableStep";
 import { resourceSelectors } from "features/Mappings/resourceSlice";
+import useEditMapping from "features/Mappings/useEditMapping";
 import {
   useApiColumnsCreateMutation,
   useApiColumnsUpdateMutation,

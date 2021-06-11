@@ -26,7 +26,7 @@ import {
   useApiAttributesCreateMutation,
 } from "services/api/endpoints";
 
-import usePrevious from "./usePrevious";
+import usePrevious from "../../common/hooks/usePrevious";
 
 const useFhirResourceTreeData = (
   params: {
@@ -70,7 +70,7 @@ const useFhirResourceTreeData = (
     if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element;
       const elementDefinition = elementDefinitions[0];
-      if (!elementDefinition) return null;
+      if (!elementDefinition) return undefined;
 
       const rootNode = createElementNode(elementDefinition, {
         parentPath: nodePath,
@@ -133,9 +133,7 @@ const useFhirResourceTreeData = (
   }, [createAttribute, mappingId, node, root]);
 
   useEffect(() => {
-    if (data) {
-      data && dispatch(treeNodeUpdate({ data, nodeId }));
-    }
+    if (data) dispatch(treeNodeUpdate({ data, nodeId }));
   }, [nodeId, data, dispatch]);
 
   useEffect(() => {

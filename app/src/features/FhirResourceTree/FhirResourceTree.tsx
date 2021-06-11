@@ -14,7 +14,7 @@ import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
 
-import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
+import useFhirResourceTreeData from "features/FhirResourceTree/useFhirResourceTreeData";
 import {
   useApiAttributesCreateMutation,
   useApiResourcesRetrieveQuery,

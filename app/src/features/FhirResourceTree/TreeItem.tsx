@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core";
 import { TreeItem as MuiTreeItem } from "@material-ui/lab";
 import clsx from "clsx";
 
-import useFhirResourceTreeData from "common/hooks/useFhirResourceTreeData";
+import useFhirResourceTreeData from "features/FhirResourceTree/useFhirResourceTreeData";
 
 import { ElementNode } from "./resourceTreeSlice";
 import TreeItemLabel from "./TreeItemLabel";
