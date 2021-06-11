@@ -1,5 +1,6 @@
 import functools
 import inspect
+import json
 from datetime import timedelta
 
 import redis
@@ -29,10 +30,11 @@ class RedisCacheBackend:
         )
 
     def set(self, key: str, value, expire_after: timedelta = None):
-        self._client.set(key, value, px=expire_after)
+        self._client.set(key, json.dumps(value), px=expire_after)
 
     def get(self, key: str):
-        return self._client.get(key)
+        raw = self._client.get(key)
+        return json.loads(raw) if raw is not None else None
 
 
 CACHE_BACKENDS = {"redis": RedisCacheBackend, "memory": InMemoryCacheBackend}
