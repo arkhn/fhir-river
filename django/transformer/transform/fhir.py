@@ -94,7 +94,7 @@ def build_fhir_object(row, path_attributes_map):
                 insert_in_fhir_object(fhir_object, remove_index(array_path), sub_fhir_object=array)
             arrays_done.add(array_path)
 
-    return fhir_object
+    return dict(fhir_object)
 
 
 def handle_array_attributes(attributes_in_array, row):
