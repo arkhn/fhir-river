@@ -4,6 +4,7 @@ import { difference } from "lodash";
 import { useParams } from "react-router";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import usePrevious from "common/hooks/usePrevious";
 import {
   ElementNode,
   selectRoot,
@@ -25,8 +26,6 @@ import {
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
 } from "services/api/endpoints";
-
-import usePrevious from "../../common/hooks/usePrevious";
 
 const useFhirResourceTreeData = (
   params: {
