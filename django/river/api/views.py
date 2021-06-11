@@ -1,6 +1,9 @@
+from inspect import getdoc, getmembers, isfunction, ismodule
+
 from rest_framework import generics, response, status, viewsets
 from rest_framework.decorators import action
 
+import scripts
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.mappings import APIMappingsRepository
@@ -52,3 +55,13 @@ class PreviewEndpoint(generics.CreateAPIView):
         documents, errors = preview(resource_id, primary_key_values, mappings_repo)
 
         return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
+
+
+class ScriptsEndpoint(generics.ListAPIView):
+    def list(self, request):
+        res = []
+        for module_name, module in getmembers(scripts, ismodule):
+            for script_name, script in getmembers(module, isfunction):
+                doc = getdoc(script)
+                res.append({"name": script_name, "description": doc, "category": module_name})
+        return response.Response(res, status=status.HTTP_200_OK)
