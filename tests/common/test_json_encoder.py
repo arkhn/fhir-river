@@ -4,7 +4,7 @@ from unittest import mock
 
 from django.urls import reverse
 
-from common.kafka.producer import CustomJSONEncoder
+from utils.json import CustomJSONEncoder
 
 
 def mock_get_script(_name):

@@ -7,6 +7,7 @@ import confluent_kafka
 from django.conf import settings
 
 from river.domain.events import Event
+from utils.json import CustomJSONEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ class KafkaEventPublisher(EventPublisher):
     def publish(self, topic: str, event: Event):
         self._kafka_producer.produce(
             topic=topic,
-            value=json.dumps(dataclasses.asdict(event)),
+            value=json.dumps(dataclasses.asdict(event), cls=CustomJSONEncoder),
             callback=lambda err, msg: logger.debug("Message delivered")
             if err is None
             else logger.error(f"Message {event} delivery failed with error {err} for topic {msg.topic()}"),
