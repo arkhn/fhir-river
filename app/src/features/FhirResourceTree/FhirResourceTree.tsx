@@ -14,7 +14,6 @@ import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useParams } from "react-router-dom";
 
-import useFhirResourceTreeData from "features/FhirResourceTree/useFhirResourceTreeData";
 import {
   useApiAttributesCreateMutation,
   useApiResourcesRetrieveQuery,
@@ -23,6 +22,7 @@ import {
 
 import { getNode } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
+import useFhirResourceTreeData from "./useFhirResourceTreeData";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
