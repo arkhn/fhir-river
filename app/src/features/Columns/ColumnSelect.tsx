@@ -50,12 +50,19 @@ const ColumnSelects = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId?: string }>();
+
   const { data: credentials } = useApiCredentialsListQuery({
     source: sourceId,
   });
-  const { data: credentialOwners } = useApiOwnersListQuery({
-    credential: credentials?.[0]?.id,
-  });
+  const { data: credentialOwners } = useApiOwnersListQuery(
+    {
+      credential: credentials?.[0]?.id,
+    },
+    {
+      skip: !Boolean(credentials?.[0]),
+    }
+  );
+
   const { table, column, owner: ownerId } = pendingColumn;
   const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
   const schema = selectedOwner?.schema as Record<string, string[]>;
