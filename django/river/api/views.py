@@ -20,10 +20,13 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer = serializers.BatchSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        resource_ids = data["resources"]
 
-        resource_ids = [resource_data["resource_id"] for resource_data in data["resources"]]
-
-        topics, event_publisher, mappings_repo = KafkaTopics(), KafkaEventPublisher(), APIMappingsRepository()
+        topics, event_publisher, mappings_repo = (
+            KafkaTopics(),
+            KafkaEventPublisher(),
+            APIMappingsRepository(),
+        )
         batch_instance = batch(resource_ids, topics, event_publisher, mappings_repo)
 
         serializer = serializers.BatchSerializer(batch_instance)
