@@ -1,5 +1,3 @@
-import uuid
-
 import pytest
 
 from common.analyzer import Analyzer
@@ -12,20 +10,19 @@ from river.domain.events import BatchEvent, ExtractedRecord
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.skip(reason="Needs more work")
-def test_batch_resource_handler(batch, patient_mapping):
-    resource_id = str(uuid.uuid4())
+def test_batch_resource_handler(batch, users_to_patients_mapping):
+    resource_id = users_to_patients_mapping["id"]
     event = BatchEvent(batch_id=batch.id, resource_id=resource_id)
     publisher, counter, mappings_repo = (
         FakeEventPublisher(),
         FakeDecrementingCounter(),
-        FakeMappingsRepository({resource_id: patient_mapping}),
+        FakeMappingsRepository({resource_id: users_to_patients_mapping}),
     )
     analyzer = Analyzer()
 
     batch_resource_handler(event, publisher, counter, analyzer, mappings_repo)
 
-    assert publisher._events == {
-        ExtractedRecord(batch_id=batch.id, resource_type="", resource_id=resource_id, record="")
-    }
-    assert counter.get(f"{batch.id}:{resource_id}") == 10
+    assert f"extract.{batch.id}" in publisher._events
+    assert len(publisher._events[f"extract.{batch.id}"]) > 0
+    assert all([isinstance(event, ExtractedRecord) for event in publisher._events[f"extract.{batch.id}"]])
+    assert counter.get(f"{batch.id}:{resource_id}") == len(publisher._events[f"extract.{batch.id}"])
