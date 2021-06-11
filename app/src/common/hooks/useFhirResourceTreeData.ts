@@ -111,12 +111,10 @@ const useFhirResourceTreeData = (
     [createAttribute, mappingId, nodeId, root]
   );
   const addExtension = useCallback(async () => {
-    const extensionArrayNode =
-      node && node.kind === "complex"
-        ? node.children.find(({ type }) => type === "Extension")
-        : root
-        ? root.children.find(({ type }) => type === "Extension")
-        : undefined;
+    const parentNode = node ?? root;
+    const extensionArrayNode = parentNode?.children.find(
+      ({ type }) => type === "Extension"
+    );
 
     if (extensionArrayNode && extensionArrayNode.type && mappingId) {
       const pathIndex = computeChildPathIndex(extensionArrayNode);
