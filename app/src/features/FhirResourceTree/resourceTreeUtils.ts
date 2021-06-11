@@ -27,7 +27,7 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
     }
 
     const baseResource = parsedPath[0];
-    return omittedResources.includes(baseResource ?? "");
+    return baseResource ? omittedResources.includes(baseResource) : false;
   }
   return false;
 };
