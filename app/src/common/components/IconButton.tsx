@@ -20,7 +20,7 @@ const useStyle = makeStyles((theme) => ({
   },
   labelEndIcons: {
     display: "none",
-    marginRight: 4,
+    marginRight: theme.spacing(0.5),
   },
 }));
 

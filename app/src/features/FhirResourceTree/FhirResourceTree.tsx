@@ -2,7 +2,12 @@ import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import {
+  Container,
+  IconButton,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView } from "@material-ui/lab";
@@ -21,8 +26,9 @@ import TreeItem from "./TreeItem";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
+    fill: theme.palette.text.secondary,
     color: theme.palette.text.secondary,
-    marginRight: theme.spacing(1),
+    paddingInline: theme.spacing(0.5),
   },
   flameIcon: {
     fill: "#CC7831",
@@ -34,7 +40,9 @@ const useStyles = makeStyles((theme) => ({
     paddingBlock: theme.spacing(2),
   },
   headerTitle: {
+    paddingLeft: theme.spacing(1),
     fontWeight: 500,
+    flex: 1,
   },
 }));
 
@@ -49,7 +57,7 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { root } = useFhirResourceTreeData(
+  const { root, addExtension } = useFhirResourceTreeData(
     {
       definitionId: mapping?.definition_id ?? "",
     },
@@ -88,6 +96,9 @@ const FhirResourceTree = (): JSX.Element => {
   ) => {
     setExpandedNodes(nodeIds);
   };
+  const handleAddExtensionClick = () => {
+    addExtension();
+  };
 
   return (
     <Container>
@@ -100,6 +111,13 @@ const FhirResourceTree = (): JSX.Element => {
         <Typography className={classes.headerTitle} color="textPrimary">
           {mapping?.definition_id}
         </Typography>
+        <IconButton onClick={handleAddExtensionClick} size="small">
+          <Icon
+            className={classes.icon}
+            icon={IconNames.CODE_BLOCK}
+            iconSize={15}
+          />
+        </IconButton>
       </div>
       <TreeView
         selected={selectedNode}
@@ -110,7 +128,7 @@ const FhirResourceTree = (): JSX.Element => {
         defaultExpandIcon={<ChevronRightIcon />}
       >
         {root?.children.map((node) => (
-          <TreeItem key={node.id} elementNode={node} />
+          <TreeItem key={node.id} elementNode={node} hasParentExpanded />
         ))}
       </TreeView>
     </Container>
