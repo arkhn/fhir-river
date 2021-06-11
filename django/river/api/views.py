@@ -1,4 +1,4 @@
-from rest_framework import response, status, viewsets
+from rest_framework import generics, response, status, viewsets
 from rest_framework.decorators import action
 
 from river import models
@@ -6,7 +6,7 @@ from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.mappings import APIMappingsRepository
 from river.adapters.topics import KafkaTopics
 from river.api import serializers
-from river.services import abort, batch
+from river.services import abort, batch, preview
 
 
 class BatchViewSet(viewsets.ModelViewSet):
@@ -37,3 +37,18 @@ class BatchViewSet(viewsets.ModelViewSet):
     @action(methods=["post"], detail=True)
     def retry(self, request, *args, **kwargs):
         raise NotImplementedError
+
+
+class PreviewEndpoint(generics.CreateAPIView):
+    def create(self, request):
+        serializer = serializers.PreviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        resource_id = data["resource_id"]
+        primary_key_values = data["primary_key_values"]
+
+        mappings_repo = APIMappingsRepository()
+
+        documents, errors = preview(resource_id, primary_key_values, mappings_repo)
+
+        return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
