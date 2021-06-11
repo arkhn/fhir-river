@@ -10,8 +10,8 @@ import { selectSelectedNode } from "features/FhirResourceTree/resourceTreeSlice"
 import {
   useApiAttributesListQuery,
   useApiInputGroupsListQuery,
+  useApiInputGroupsCreateMutation,
 } from "services/api/endpoints";
-import { useApiInputGroupsCreateMutation } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   button: {

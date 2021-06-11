@@ -21,11 +21,11 @@ import {
 import { useTranslation } from "react-i18next";
 
 import {
-  InputGroup,
   useApiInputGroupsDestroyMutation,
   useApiInputsCreateMutation,
   useApiInputsListQuery,
-} from "services/api/generated/api.generated";
+} from "services/api/endpoints";
+import { InputGroup } from "services/api/generated/api.generated";
 
 import Input from "./Inputs";
 
