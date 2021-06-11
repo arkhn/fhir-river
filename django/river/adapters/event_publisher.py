@@ -18,13 +18,13 @@ class EventPublisher:
 
 class FakeEventPublisher(EventPublisher):
     def __init__(self):
-        self._events: dict[str, set] = {}
+        self._events: dict[str, list] = {}
 
     def publish(self, topic: str, event: Event):
         if topic in self._events:
-            self._events[topic].add(event)
+            self._events[topic].append(event)
         else:
-            self._events[topic] = {event}
+            self._events[topic] = [event]
 
 
 class KafkaEventPublisher(EventPublisher):
