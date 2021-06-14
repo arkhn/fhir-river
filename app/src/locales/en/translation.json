@@ -100,5 +100,7 @@
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
+  "useThisGroupIf": "Use this group if...",
+  "resources": "Resources"
   "condition": "Condition"
 }

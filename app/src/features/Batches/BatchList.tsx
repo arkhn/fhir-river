@@ -22,12 +22,20 @@ import {
 import BatchErrors from "./BatchErrors";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
   button: {
-    margin: theme.spacing(3),
+    margin: theme.spacing(1),
+    marginTop: "auto",
+  },
+  pagination: {
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -51,9 +59,11 @@ const BatchList = (): JSX.Element => {
     {},
     {
       selectFromResult: ({ data, isLoading }) => ({
-        batches: data
-          ?.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
-          .slice(offset, limit),
+        batches:
+          data &&
+          [...data]
+            .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+            .slice(offset, limit),
         isBatchesLoading: isLoading,
       }),
     }
@@ -76,26 +86,34 @@ const BatchList = (): JSX.Element => {
               aria-controls="panel1a-content"
               id="panel1a-header"
             >
-              <Typography className={classes.heading}>#{batch.id}</Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                endIcon={<CancelIcon />}
-                onClick={() => handleBatchCancel(batch.id)}
-              >
-                <Typography>{t("cancel")}</Typography>
-              </Button>
+              <div className={classes.root}>
+                <Typography className={classes.heading}>
+                  {batch.created_at}
+                </Typography>
+                {!batch.deleted_at && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    endIcon={<CancelIcon />}
+                    onClick={() => handleBatchCancel(batch.id)}
+                  >
+                    <Typography>{t("cancel")}</Typography>
+                  </Button>
+                )}
+              </div>
             </AccordionSummary>
             <AccordionDetails>
-              <BatchErrors errors={batch.errors} />
+              <BatchErrors batch={batch} />
             </AccordionDetails>
           </Accordion>
         ))}
-      <Typography>
-        {t("page")}: {page}
-      </Typography>
-      <Pagination count={PAGE_SIZE} page={page} onChange={handlePageChange} />
+      <Pagination
+        className={classes.pagination}
+        count={Math.ceil((batches?.length ?? 1) / PAGE_SIZE)}
+        page={page}
+        onChange={handlePageChange}
+      />
     </>
   );
 };

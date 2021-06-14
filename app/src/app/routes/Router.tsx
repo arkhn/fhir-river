@@ -3,14 +3,14 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import Batches from "app/routes/Sources/Batches";
+import Batches from "app/routes/Sources/Batches/Batches";
 import CreateMapping from "features/Mappings/Create/CreateMapping";
 import EditMapping from "features/Mappings/Edit/EditMapping";
 
 import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
-import Mappings from "./Mappings";
 import PageNotFound from "./PageNotFound";
+import Mappings from "./Sources/Mappings/Mappings";
 import SourceMappings from "./Sources/SourceMappings";
 import Sources from "./Sources/Sources";
 
