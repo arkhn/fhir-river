@@ -79,5 +79,5 @@
   "exception": "Exception",
   "createdAt": "Created at",
   "deletedAt": "Stopped at",
-  "page": "Page"
+  "resources": "Resources"
 }

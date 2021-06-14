@@ -17,20 +17,24 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import {
-  useApiSourcesRetrieveQuery,
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
 } from "services/api/endpoints";
 import type { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
     maxWidth: 300,
   },
   button: {
-    margin: theme.spacing(3),
+    margin: theme.spacing(1),
+    marginTop: "auto",
   },
   chips: {
     display: "flex",
@@ -52,9 +56,9 @@ const MenuProps = {
   },
 };
 
-const getStyles = (resourceId: string, resources: Resource[], theme: Theme) => {
+const getStyles = (resourceId: string, resourceIds: string[], theme: Theme) => {
   return {
-    fontWeight: resources.find(({ id }) => resourceId === id)
+    fontWeight: resourceIds.includes(resourceId)
       ? theme.typography.fontWeightRegular
       : theme.typography.fontWeightMedium,
   };
@@ -65,14 +69,9 @@ const BatchCreate = (): JSX.Element => {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const [selectedResources, setSelectedResources] = useState<Resource[]>([]);
+  const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
-
-  const { data: source } = useApiSourcesRetrieveQuery(
-    { id },
-    { skip: !Boolean(id) }
-  );
 
   const { data: resources } = useApiResourcesListQuery(
     { source: id },
@@ -87,57 +86,62 @@ const BatchCreate = (): JSX.Element => {
       value: unknown;
     }>
   ) => {
-    setSelectedResources(event.target.value as Resource[]);
+    setSelectedResourceIds(event.target.value as string[]);
   };
 
   const handleBatchRun = () => {
-    if (!selectedResources.length) return;
+    if (!selectedResourceIds.length) return;
 
     apiBatchCreate({
       batchRequest: {
-        resources: selectedResources.map(({ id }) => ({
+        resources: selectedResourceIds.map((id) => ({
           resource_id: id,
         })),
       },
     });
 
-    setSelectedResources([]);
+    setSelectedResourceIds([]);
   };
 
   return (
-    <>
+    <div className={classes.root}>
       <FormControl className={classes.formControl}>
-        <InputLabel id="demo-mutiple-chip-label">
-          {source?.name ?? ""}
-        </InputLabel>
+        <InputLabel id="demo-mutiple-chip-label">{t("resources")}</InputLabel>
         <Select
           labelId="demo-mutiple-chip-label"
           id="demo-mutiple-chip"
           multiple
-          value={selectedResources}
+          value={selectedResourceIds}
           onChange={handleResourceSelectionChange}
           input={<Input id="select-multiple-chip" />}
           renderValue={(selected) => (
             <div className={classes.chips}>
-              {(selected as Resource[]).map((resource) => (
-                <Chip
-                  key={resource.id}
-                  label={resource.label}
-                  className={classes.chip}
-                />
-              ))}
+              {(selected as string[])
+                .map<Resource | undefined>((resourceId) =>
+                  resources?.find(({ id }) => resourceId === id)
+                )
+                .map(
+                  (resource) =>
+                    resource && (
+                      <Chip
+                        key={`resource-selected-${resource.id}`}
+                        label={`${resource.definition_id} - ${resource.label}`}
+                        className={classes.chip}
+                      />
+                    )
+                )}
             </div>
           )}
           MenuProps={MenuProps}
         >
           {resources &&
-            resources.map(({ id, definition_id }) => (
+            resources.map(({ id, definition_id, label }) => (
               <MenuItem
-                key={definition_id}
-                value={definition_id}
-                style={getStyles(id, selectedResources, theme)}
+                key={`resource-option-${id}`}
+                value={id}
+                style={getStyles(id, selectedResourceIds, theme)}
               >
-                {definition_id}
+                {definition_id} - {label}
               </MenuItem>
             ))}
         </Select>
@@ -151,7 +155,7 @@ const BatchCreate = (): JSX.Element => {
       >
         <Typography>{t("run")}</Typography>
       </Button>
-    </>
+    </div>
   );
 };
 
