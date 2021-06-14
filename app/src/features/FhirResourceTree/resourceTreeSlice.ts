@@ -23,6 +23,7 @@ export type ElementNode = {
   definition: IElementDefinition;
   children: ElementNode[];
   backboneElementDefinitions: IElementDefinition[];
+  isRequired?: boolean;
 };
 
 type ResourceTreeSliceState = {

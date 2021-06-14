@@ -103,6 +103,8 @@ export const createElementNode = (
     kind: getKind(elementDefinition),
     type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
     backboneElementDefinitions: [],
+    isRequired:
+      elementDefinition.min !== undefined && elementDefinition.min > 0,
   };
 };
 
@@ -291,4 +293,14 @@ export const computeChildPathIndex = (parent: ElementNode): number => {
     if (!childIndexes.includes(i)) return i;
   }
   return parent.children.length;
+};
+
+export const isTreeElementNodeRequired = (node: ElementNode): boolean => {
+  if (node.isRequired) return true;
+
+  for (const next of node.children) {
+    const result = isTreeElementNodeRequired(next);
+    if (result) return result;
+  }
+  return false;
 };
