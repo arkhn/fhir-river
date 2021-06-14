@@ -27,7 +27,7 @@ import {
 } from "services/api/endpoints";
 import { InputGroup } from "services/api/generated/api.generated";
 
-import Input from "./Inputs";
+import Input from "./Input";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
@@ -74,14 +74,12 @@ const AttributeInputGroup = ({
   const { data: inputs } = useApiInputsListQuery({ inputGroup: inputGroup.id });
 
   const handleDeleteInputGroup = async () => {
-    if (inputGroup) {
-      try {
-        await deleteInputGroups({
-          id: inputGroup.id,
-        }).unwrap();
-      } catch (e) {
-        //
-      }
+    try {
+      await deleteInputGroups({
+        id: inputGroup.id,
+      }).unwrap();
+    } catch (e) {
+      //
     }
   };
 

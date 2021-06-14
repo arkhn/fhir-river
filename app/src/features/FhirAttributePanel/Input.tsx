@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Input = ({ input }: InputProps): JSX.Element => {
-  const [mappingColumn, setMappingColumn] = useState<Partial<Column>>({});
+  const [inputColumn, setInputColumn] = useState<Partial<Column>>({});
   const { t } = useTranslation();
   const classes = useStyles();
   const [deleteInput] = useApiInputsDestroyMutation();
@@ -76,8 +76,8 @@ const Input = ({ input }: InputProps): JSX.Element => {
         </Grid>
         <Grid item spacing={1} container className={classes.columnSelect}>
           <ColumnSelects
-            pendingColumn={mappingColumn}
-            onChange={setMappingColumn}
+            pendingColumn={inputColumn}
+            onChange={setInputColumn}
           />
         </Grid>
         <Grid item>
