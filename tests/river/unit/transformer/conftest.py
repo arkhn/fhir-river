@@ -1,7 +1,7 @@
-from pytest import fixture
+import pytest
 
 
-@fixture
+@pytest.fixture
 def identifier():
     return {
         "system": "http://terminology.arkhn.org/mimic_id/3fd9abb2-c4dc-4dc7-a2f8-888d5714aac4",
@@ -9,7 +9,7 @@ def identifier():
     }
 
 
-@fixture
+@pytest.fixture
 def patient():
     return {
         "id": "pat1",
@@ -53,7 +53,7 @@ def patient():
     }
 
 
-@fixture(scope="session")
+@pytest.fixture(scope="session")
 def dict_map_code():
     return {
         "ABC": "abc",
@@ -62,7 +62,7 @@ def dict_map_code():
     }
 
 
-@fixture(scope="session")
+@pytest.fixture(scope="session")
 def dict_map_gender():
     return {
         "M": "male",
@@ -70,7 +70,7 @@ def dict_map_gender():
     }
 
 
-@fixture(scope="session")
+@pytest.fixture(scope="session")
 def dict_map_identifier():
     return {
         "1": "A",
