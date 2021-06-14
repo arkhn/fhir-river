@@ -6,6 +6,7 @@ import {
   AccordionSummary,
   Button,
   CircularProgress,
+  Container,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -104,7 +105,12 @@ const BatchList = (): JSX.Element => {
               </div>
             </AccordionSummary>
             <AccordionDetails>
-              <BatchErrors batch={batch} />
+              <Container>
+                <Typography>
+                  <b>ID</b>: {batch.id}
+                </Typography>
+                <BatchErrors batch={batch} />
+              </Container>
             </AccordionDetails>
           </Accordion>
         ))}
