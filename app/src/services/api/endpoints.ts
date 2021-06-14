@@ -161,6 +161,9 @@ export const api = generatedApi
       apiAttributesList: {
         providesTags: providesList("Attributes"),
       },
+      apiAttributesRetrieve: {
+        providesTags: providesOne("Attributes"),
+      },
       apiAttributesDestroy: {
         invalidatesTags: invalidatesOne("Attributes"),
       },
@@ -281,6 +284,7 @@ export const {
   useApiResourcesDestroyMutation,
   // Attributes
   useApiAttributesListQuery,
+  useApiAttributesRetrieveQuery,
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
   // Owners

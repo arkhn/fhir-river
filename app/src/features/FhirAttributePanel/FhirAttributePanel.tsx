@@ -3,12 +3,11 @@ import React from "react";
 import { Button, makeStyles, Typography } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router";
 
-import { useAppSelector } from "app/store";
 import AttributeInputGroup from "features/FhirAttributePanel/AttributeInputGroup";
-import { selectSelectedNode } from "features/FhirResourceTree/resourceTreeSlice";
 import {
-  useApiAttributesListQuery,
+  useApiAttributesRetrieveQuery,
   useApiInputGroupsListQuery,
   useApiInputGroupsCreateMutation,
 } from "services/api/endpoints";
@@ -26,12 +25,11 @@ const useStyles = makeStyles((theme) => ({
 const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const selectedNode = useAppSelector(selectSelectedNode);
-  const { data } = useApiAttributesListQuery(
-    { path: selectedNode?.path ?? "" },
-    { skip: !selectedNode }
+  const { attributeId } = useParams<{ attributeId?: string }>();
+  const { data: attribute } = useApiAttributesRetrieveQuery(
+    { id: attributeId ?? "" },
+    { skip: !attributeId }
   );
-  const attribute = data?.[0];
   const { data: attributeInputGroups } = useApiInputGroupsListQuery(
     { attribute: attribute?.id ?? "" },
     { skip: !attribute }
