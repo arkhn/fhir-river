@@ -4,6 +4,7 @@ import { difference } from "lodash";
 import { useParams } from "react-router";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import usePrevious from "common/hooks/usePrevious";
 import {
   ElementNode,
   selectRoot,
@@ -25,8 +26,6 @@ import {
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
 } from "services/api/endpoints";
-
-import usePrevious from "./usePrevious";
 
 const useFhirResourceTreeData = (
   params: {
@@ -69,7 +68,10 @@ const useFhirResourceTreeData = (
   const data = useMemo(() => {
     if (structureDefinition?.snapshot) {
       const elementDefinitions = structureDefinition.snapshot.element;
-      const rootNode = createElementNode(elementDefinitions[0], {
+      const elementDefinition = elementDefinitions[0];
+      if (!elementDefinition) return undefined;
+
+      const rootNode = createElementNode(elementDefinition, {
         parentPath: nodePath,
       });
       buildTree(elementDefinitions.slice(1), rootNode, rootNode);
@@ -130,9 +132,7 @@ const useFhirResourceTreeData = (
   }, [createAttribute, mappingId, node, root]);
 
   useEffect(() => {
-    if (data) {
-      data && dispatch(treeNodeUpdate({ data, nodeId }));
-    }
+    if (data) dispatch(treeNodeUpdate({ data, nodeId }));
   }, [nodeId, data, dispatch]);
 
   useEffect(() => {

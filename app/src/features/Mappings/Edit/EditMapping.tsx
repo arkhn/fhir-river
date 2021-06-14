@@ -18,12 +18,12 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppSelector } from "app/store";
 import Alert from "common/components/Alert";
-import useEditMapping from "common/hooks/useEditMapping";
 import { columnSelectors } from "features/Columns/columnSlice";
 import { filterSelectors } from "features/Filters/filterSlice";
 import { joinSelectors } from "features/Joins/joinSlice";
 import TableStep from "features/Mappings/Create/TableStep";
 import { resourceSelectors } from "features/Mappings/resourceSlice";
+import useEditMapping from "features/Mappings/useEditMapping";
 import {
   useApiColumnsCreateMutation,
   useApiColumnsUpdateMutation,
@@ -37,7 +37,7 @@ import {
   useApiResourcesUpdateMutation,
 } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
-import {
+import type {
   ColumnRequest,
   CredentialRequest,
   FilterRequest,
@@ -165,7 +165,7 @@ const EditMapping = (): JSX.Element => {
                 filterRequest: {
                   ...filter,
                   resource: resource.id,
-                  sql_column: createdOrUpdatedColumns[index].id,
+                  sql_column: createdOrUpdatedColumns[index]?.id ?? "",
                 } as FilterRequest,
               }).unwrap();
             } else if (!isEqual(filter, prevFilter)) {
@@ -198,7 +198,7 @@ const EditMapping = (): JSX.Element => {
               // Join is created
               return createJoin({
                 joinRequest: {
-                  column: createdOrUpdatedColumns[index].id,
+                  column: createdOrUpdatedColumns[index]?.id ?? "",
                 } as JoinRequest,
               }).unwrap();
             } else if (!isEqual(prevJoin, join)) {
@@ -227,7 +227,7 @@ const EditMapping = (): JSX.Element => {
               return createColumn({
                 columnRequest: {
                   ...column,
-                  join: createdOrUpdatedJoins[index].id,
+                  join: createdOrUpdatedJoins[index]?.id ?? "",
                 } as ColumnRequest,
               }).unwrap();
             } else if (!isEqual(prevColumn, column)) {

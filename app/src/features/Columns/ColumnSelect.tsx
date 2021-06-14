@@ -50,10 +50,19 @@ const ColumnSelects = ({
   const classes = useStyles();
   const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId?: string }>();
-  const { data: credential } = useApiCredentialsListQuery({ source: sourceId });
-  const { data: credentialOwners } = useApiOwnersListQuery({
-    credential: credential?.[0].id,
+
+  const { data: credentials } = useApiCredentialsListQuery({
+    source: sourceId,
   });
+  const { data: credentialOwners } = useApiOwnersListQuery(
+    {
+      credential: credentials?.[0]?.id,
+    },
+    {
+      skip: !Boolean(credentials?.[0]),
+    }
+  );
+
   const { table, column, owner: ownerId } = pendingColumn;
   const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
   const schema = selectedOwner?.schema as Record<string, string[]>;
@@ -91,7 +100,7 @@ const ColumnSelects = ({
 
   const tableOptions = getTableOptions(credentialOwners);
   const [columns, setColumns] = useState<string[]>(
-    table && schema ? schema[table] : []
+    table && table in schema ? schema[table] ?? [] : []
   );
 
   const isTableSelected = !!table;
@@ -138,7 +147,7 @@ const ColumnSelects = ({
             column: undefined,
           });
       }
-      setColumns(schema[table]);
+      setColumns(schema[table] ?? []);
     }
   }, [schema, hasTableChanged, pendingColumn, table, onChange]);
 
@@ -148,8 +157,8 @@ const ColumnSelects = ({
         <Autocomplete
           className={classes.autocomplete}
           options={tableOptions}
-          groupBy={(option) => option.label.split("/")[0]}
-          getOptionLabel={(option) => option.label.split("/")[1]}
+          groupBy={(option) => option.label.split("/")[0] ?? ""}
+          getOptionLabel={(option) => option.label.split("/")[1] ?? ""}
           getOptionSelected={({ id }) => id === ownerTable?.id}
           value={ownerTable}
           onChange={handleOwnerTableChange}
