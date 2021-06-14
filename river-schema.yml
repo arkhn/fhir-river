@@ -166,47 +166,6 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/batch/:
-    get:
-      operationId: api_batch_retrieve
-      description: ''
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      responses:
-        '200':
-          description: No response body
-    post:
-      operationId: api_batch_create
-      description: ''
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      responses:
-        '201':
-          description: No response body
-  /api/batch/{id}/:
-    delete:
-      operationId: api_batch_destroy
-      description: ''
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      responses:
-        '204':
-          description: No response body
   /api/batches/:
     get:
       operationId: api_batches_list
@@ -1666,7 +1625,7 @@ paths:
       - cookieAuth: []
       - basicAuth: []
       responses:
-        '201':
+        '200':
           description: No response body
   /api/resources/:
     get:
@@ -2139,36 +2098,24 @@ components:
           type: string
           format: date-time
           readOnly: true
+        resources:
+          type: object
+          additionalProperties: {}
       required:
       - created_at
       - deleted_at
       - errors
       - id
+      - resources
       - updated_at
     BatchRequest:
       type: object
       properties:
         resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchResourceRequest'
-          writeOnly: true
+          type: object
+          additionalProperties: {}
       required:
       - resources
-    BatchResource:
-      type: object
-      properties:
-        resource_id:
-          type: string
-      required:
-      - resource_id
-    BatchResourceRequest:
-      type: object
-      properties:
-        resource_id:
-          type: string
-      required:
-      - resource_id
     Column:
       type: object
       properties:
@@ -2587,10 +2534,8 @@ components:
       type: object
       properties:
         resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/BatchResourceRequest'
-          writeOnly: true
+          type: object
+          additionalProperties: {}
     PatchedColumnRequest:
       type: object
       properties:

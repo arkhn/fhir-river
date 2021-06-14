@@ -58,27 +58,6 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiBatchRetrieve: build.query<
-      ApiBatchRetrieveApiResponse,
-      ApiBatchRetrieveApiArg
-    >({
-      query: () => ({ url: `/api/batch/` }),
-    }),
-    apiBatchCreate: build.mutation<
-      ApiBatchCreateApiResponse,
-      ApiBatchCreateApiArg
-    >({
-      query: () => ({ url: `/api/batch/`, method: "POST" }),
-    }),
-    apiBatchDestroy: build.mutation<
-      ApiBatchDestroyApiResponse,
-      ApiBatchDestroyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batch/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
     apiBatchesList: build.query<
       ApiBatchesListApiResponse,
       ApiBatchesListApiArg
@@ -740,14 +719,6 @@ export type ApiAttributesDestroyApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
 };
-export type ApiBatchRetrieveApiResponse = unknown;
-export type ApiBatchRetrieveApiArg = {};
-export type ApiBatchCreateApiResponse = unknown;
-export type ApiBatchCreateApiArg = {};
-export type ApiBatchDestroyApiResponse = unknown;
-export type ApiBatchDestroyApiArg = {
-  id: string;
-};
 export type ApiBatchesListApiResponse = /** status 200  */ Batch[];
 export type ApiBatchesListApiArg = {};
 export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
@@ -1134,15 +1105,19 @@ export type Batch = {
   created_at: string;
   updated_at: string;
   deleted_at: string;
-};
-export type BatchResourceRequest = {
-  resource_id: string;
+  resources: {
+    [key: string]: any;
+  };
 };
 export type BatchRequest = {
-  resources: BatchResourceRequest[];
+  resources: {
+    [key: string]: any;
+  };
 };
 export type PatchedBatchRequest = {
-  resources?: BatchResourceRequest[];
+  resources?: {
+    [key: string]: any;
+  };
 };
 export type Column = {
   id: string;
@@ -1371,9 +1346,6 @@ export const {
   useApiAttributesUpdateMutation,
   useApiAttributesPartialUpdateMutation,
   useApiAttributesDestroyMutation,
-  useApiBatchRetrieveQuery,
-  useApiBatchCreateMutation,
-  useApiBatchDestroyMutation,
   useApiBatchesListQuery,
   useApiBatchesCreateMutation,
   useApiBatchesRetrieveQuery,
