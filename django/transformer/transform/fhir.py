@@ -140,7 +140,9 @@ def handle_array_attributes(attributes_in_array, row):
     ):
         # If we have a nested array and all values outside of it
         # come from the primary table or are 1:1 joins
-        array.append(build_fhir_object(row, attributes_in_array))
+        element = build_fhir_object(row, attributes_in_array)
+        if element is not None and element != {}:
+            array.append(element)
 
     else:
         for index in range(max_df_col_length):
