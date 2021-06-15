@@ -52,7 +52,6 @@ const Router = (): JSX.Element => {
             <MappingHeader />
             <Mapping />
           </Route>
-
           <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
             <EditMapping />
           </Route>
