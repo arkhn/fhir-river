@@ -2,9 +2,9 @@ import logging
 from typing import Callable, Dict
 
 from arkhn_monitoring import Timer
-from common.analyzer.attribute import Attribute
-from common.analyzer.sql_column import SqlColumn
-from extractor.errors import ImproperMappingError
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.sql_column import SqlColumn
+from river.extractor.errors import ImproperMappingError
 from sqlalchemy import Column as AlchemyColumn
 from sqlalchemy import Table, and_
 from sqlalchemy.orm import Query, aliased

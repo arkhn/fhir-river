@@ -3,7 +3,7 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from django.conf import settings
 
 import requests
-from common.errors import OperationOutcome
+from river.common.errors import OperationOutcome
 
 filter_fragments = """
 fragment entireColumn on Column {

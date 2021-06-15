@@ -2,7 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from extractor.service import bootstrap
+from river.extractor.service import bootstrap
 from utils.exporter import start_exporter
 
 logger = logging.getLogger(__name__)

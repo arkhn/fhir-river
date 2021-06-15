@@ -5,16 +5,16 @@ from django.utils import timezone
 
 from fhir.resources import construct_fhir_element
 
-from common.analyzer import Analyzer
-from common.database_connection.db_connection import DBConnection
-from extractor.extract import Extractor
 from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.mappings import MappingsRepository
 from river.adapters.topics import TopicsHandler
+from river.common.analyzer import Analyzer
+from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchResource
-from transformer.transform import Transformer
+from river.extractor.extractor import Extractor
+from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
 

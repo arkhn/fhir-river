@@ -2,15 +2,15 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
-from common.analyzer import Analyzer
-from common.errors import OperationOutcome
-from common.service.service import Service
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
 from river.adapters.event_subscriber import KafkaEventSubscriber
 from river.adapters.mappings import APIMappingsRepository, MappingsRepository
+from river.common.analyzer import Analyzer
+from river.common.errors import OperationOutcome
+from river.common.service.service import Service
 from river.domain import events
-from transformer.reference_binder import ReferenceBinder
-from transformer.transform import Transformer
+from river.transformer.reference_binder import ReferenceBinder
+from river.transformer.transformer import Transformer
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,12 @@
 from uuid import uuid4
 
-from common.analyzer import Analyzer
-from common.analyzer.attribute import Attribute
-from common.analyzer.condition import Condition
-from common.analyzer.input_group import InputGroup
-from common.analyzer.sql_column import SqlColumn
-from common.analyzer.sql_filter import SqlFilter
-from common.analyzer.sql_join import SqlJoin
+from river.common.analyzer import Analyzer
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.condition import Condition
+from river.common.analyzer.input_group import InputGroup
+from river.common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.sql_filter import SqlFilter
+from river.common.analyzer.sql_join import SqlJoin
 
 
 def test_load_cached_analysis(patient_mapping):

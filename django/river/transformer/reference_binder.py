@@ -2,8 +2,8 @@ import logging
 from typing import List
 
 from dotty_dict import dotty
-from transformer.errors import IncompleteIdentifierError
-from transformer.transform.transformer import compute_fhir_object_id
+from river.transformer.errors import IncompleteIdentifierError
+from river.transformer.transformer import compute_fhir_object_id
 
 logger = logging.getLogger(__name__)
 UUID_LENGTH = 36

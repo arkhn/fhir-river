@@ -1,4 +1,4 @@
-from common.mapping.fetch_mapping import fetch_resource_mapping
+from river.common.mapping.fetch_mapping import fetch_resource_mapping
 from utils.caching import cache
 
 

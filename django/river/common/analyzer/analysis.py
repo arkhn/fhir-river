@@ -1,8 +1,8 @@
 from typing import Dict, List
 
-from common.analyzer.attribute import Attribute
-from common.analyzer.sql_column import SqlColumn
-from common.analyzer.sql_filter import SqlFilter
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.sql_filter import SqlFilter
 
 
 class Analysis:

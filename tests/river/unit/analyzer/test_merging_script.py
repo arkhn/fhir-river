@@ -1,6 +1,6 @@
 from unittest import mock
 
-from common.analyzer.merging_script import MergingScript
+from river.common.analyzer.merging_script import MergingScript
 
 
 def test_merging_script_init():
@@ -14,7 +14,7 @@ def concat(*values):
     return "_".join(values)
 
 
-@mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=concat)
+@mock.patch("river.common.analyzer.merging_script.scripts.get_script", return_value=concat)
 def test_merging_script_apply(_):
     merging_script = MergingScript("concat")
 

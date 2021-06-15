@@ -1,9 +1,9 @@
 from unittest import mock
 
-from common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.sql_column import SqlColumn
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
 def test_dataframe_column_name(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hashhash"
 

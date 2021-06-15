@@ -2,7 +2,7 @@ import re
 from collections import defaultdict
 from datetime import datetime
 
-from common.analyzer.attribute import Attribute
+from river.common.analyzer.attribute import Attribute
 
 ARKHN_SOURCE_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/source"
 ARKHN_RESOURCE_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/resource"

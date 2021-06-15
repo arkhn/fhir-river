@@ -1,7 +1,7 @@
 from unittest import mock
 
-from common.analyzer.attribute import Attribute
-from common.analyzer.input_group import InputGroup
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.input_group import InputGroup
 
 
 def test_cast_type_string():
@@ -28,7 +28,7 @@ def test_cast_type_number():
     assert group.static_inputs == [123]
 
 
-@mock.patch("common.analyzer.attribute.logger")
+@mock.patch("river.common.analyzer.attribute.logger")
 def test_cast_type_fail(mock_logger):
     attr_str = Attribute("age", definition_id="integer")
     group = InputGroup(id_="id", attribute=attr_str)

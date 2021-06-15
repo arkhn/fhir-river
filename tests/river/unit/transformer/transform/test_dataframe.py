@@ -1,13 +1,13 @@
 from unittest import mock
 
-from common.analyzer.attribute import Attribute
-from common.analyzer.cleaning_script import CleaningScript
-from common.analyzer.concept_map import ConceptMap
-from common.analyzer.condition import CONDITION_FLAG, Condition
-from common.analyzer.input_group import InputGroup
-from common.analyzer.merging_script import MergingScript
-from common.analyzer.sql_column import SqlColumn
-from transformer.transform import dataframe
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.cleaning_script import CleaningScript
+from river.common.analyzer.concept_map import ConceptMap
+from river.common.analyzer.condition import CONDITION_FLAG, Condition
+from river.common.analyzer.input_group import InputGroup
+from river.common.analyzer.merging_script import MergingScript
+from river.common.analyzer.sql_column import SqlColumn
+from river.transformer import dataframe
 
 
 def mock_get_script(*args):
@@ -19,8 +19,8 @@ def mock_get_script(*args):
         return f"{args[0]}{args[1]}merge"
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
 def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
@@ -106,7 +106,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     assert cleaned_data == expected
 
 
-@mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
+@mock.patch("river.common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
 def test_merge_by_attributes(_):
     attr_name = Attribute("name")
     group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")])
@@ -178,7 +178,7 @@ def test_merge_by_attributes(_):
     assert actual == expected
 
 
-@mock.patch("common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
+@mock.patch("river.common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
 def test_merge_by_attributes_with_condition_arrays(_):
     attr_language = Attribute("language")
     attr_language.add_input_group(

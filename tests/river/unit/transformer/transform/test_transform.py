@@ -1,14 +1,14 @@
 from unittest import mock
 
-from common.analyzer.analysis import Analysis
-from common.analyzer.attribute import Attribute
-from common.analyzer.cleaning_script import CleaningScript
-from common.analyzer.concept_map import ConceptMap
-from common.analyzer.condition import Condition
-from common.analyzer.input_group import InputGroup
-from common.analyzer.merging_script import MergingScript
-from common.analyzer.sql_column import SqlColumn
-from transformer.transform import Transformer
+from river.common.analyzer.analysis import Analysis
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.cleaning_script import CleaningScript
+from river.common.analyzer.concept_map import ConceptMap
+from river.common.analyzer.condition import Condition
+from river.common.analyzer.input_group import InputGroup
+from river.common.analyzer.merging_script import MergingScript
+from river.common.analyzer.sql_column import SqlColumn
+from river.transformer.transformer import Transformer
 
 
 def mock_get_script(*args):
@@ -20,7 +20,7 @@ def mock_get_script(*args):
         return args[0] + args[1] + "merge"
 
 
-@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
+@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
 def test_transform(_, dict_map_code):
 
     data = {
@@ -87,7 +87,7 @@ def test_transform(_, dict_map_code):
     }
 
 
-@mock.patch("common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
+@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
 def test_transform_with_condition_arrays(_, dict_map_code):
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],

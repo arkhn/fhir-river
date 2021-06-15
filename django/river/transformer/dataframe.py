@@ -1,9 +1,9 @@
 from collections import defaultdict
 from typing import List
 
-from common.analyzer.attribute import Attribute
-from common.analyzer.condition import CONDITION_FLAG
-from common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.condition import CONDITION_FLAG
+from river.common.analyzer.sql_column import SqlColumn
 
 
 def clean_data(data, attributes: List[Attribute], primary_key_col: SqlColumn, primary_key_value: str):

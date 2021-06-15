@@ -3,8 +3,8 @@ from uuid import UUID, uuid5
 
 from arkhn_monitoring import Timer
 from arkhn_monitoring.metrics import FAST_FN_BUCKETS
-from transformer.transform.dataframe import clean_data, merge_by_attributes
-from transformer.transform.fhir import build_fhir_object, build_metadata
+from river.transformer.dataframe import clean_data, merge_by_attributes
+from river.transformer.fhir import build_fhir_object, build_metadata
 
 logger = logging.getLogger(__name__)
 

@@ -4,8 +4,8 @@ from unittest import TestCase
 
 import pytest
 
-from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES, DBConnection
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from river.common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES, DBConnection
 
 pytestmark = pytest.mark.pagai
 

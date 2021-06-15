@@ -1,7 +1,7 @@
 import pytest
 
-from common.analyzer.condition import CONDITION_FLAG, CONDITION_RELATION_TO_FUNCTION, UNARY_RELATIONS, Condition
-from common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.condition import CONDITION_FLAG, CONDITION_RELATION_TO_FUNCTION, UNARY_RELATIONS, Condition
+from river.common.analyzer.sql_column import SqlColumn
 
 BINARY_RELATIONS = [rel for rel in CONDITION_RELATION_TO_FUNCTION.keys() if rel not in UNARY_RELATIONS]
 

@@ -1,6 +1,6 @@
 from os import getenv
 
-from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES
+from river.common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES
 
 DATABASES = {
     MSSQL: {

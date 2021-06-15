@@ -1,7 +1,7 @@
-from common.analyzer.attribute import Attribute
-from common.analyzer.condition import Condition
-from common.analyzer.input_group import InputGroup
-from common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.condition import Condition
+from river.common.analyzer.input_group import InputGroup
+from river.common.analyzer.sql_column import SqlColumn
 
 
 def test_add_condition():

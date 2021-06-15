@@ -2,16 +2,16 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
-from common.analyzer import Analyzer
-from common.database_connection.db_connection import DBConnection
-from common.service.errors import BatchCancelled
-from common.service.service import Service
-from extractor.extract import Extractor
 from river.adapters.decr_counter import DecrementingCounter, RedisDecrementingCounter
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
 from river.adapters.event_subscriber import KafkaEventSubscriber
 from river.adapters.mappings import APIMappingsRepository, MappingsRepository
+from river.common.analyzer import Analyzer
+from river.common.database_connection.db_connection import DBConnection
+from river.common.service.errors import BatchCancelled
+from river.common.service.service import Service
 from river.domain import events
+from river.extractor.extractor import Extractor
 
 logger = logging.getLogger(__name__)
 

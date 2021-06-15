@@ -2,9 +2,9 @@ from typing import List
 
 from rest_framework import serializers
 
-from common.database_connection.db_connection import DBConnection
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog import models
+from river.common.database_connection.db_connection import DBConnection
 
 
 class SourceSerializer(serializers.ModelSerializer):

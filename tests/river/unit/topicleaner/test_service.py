@@ -2,7 +2,7 @@ import pytest
 
 from river.adapters.decr_counter import FakeDecrementingCounter
 from river.adapters.topics import FakeTopics
-from topicleaner.service import clean
+from river.topicleaner.service import clean
 
 pytestmark = pytest.mark.django_db
 

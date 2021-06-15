@@ -1,4 +1,4 @@
-from common.service.event import Event
+from river.common.service.event import Event
 
 
 class Handler:

@@ -1,6 +1,6 @@
 from pytest import raises
 
-from common.database_connection.db_connection import DBConnection
+from river.common.database_connection.db_connection import DBConnection
 
 
 def test_build_db_url():

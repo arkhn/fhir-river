@@ -3,7 +3,7 @@ from pathlib import Path
 from pytest import raises
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
-from common.mapping import fetch_mapping
+from river.common.mapping import fetch_mapping
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 

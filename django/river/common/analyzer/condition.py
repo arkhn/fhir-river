@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Dict, List, NewType, Tuple, Union
 
-from common.analyzer.sql_column import SqlColumn
-from common.errors import OperationOutcome
+from river.common.analyzer.sql_column import SqlColumn
+from river.common.errors import OperationOutcome
 
 CONDITION_FLAG = "__condition__"
 

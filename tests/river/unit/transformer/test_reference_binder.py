@@ -2,8 +2,8 @@ from uuid import UUID
 
 import pytest
 
-from transformer.errors import IncompleteIdentifierError
-from transformer.reference_binder import ReferenceBinder
+from river.transformer.errors import IncompleteIdentifierError
+from river.transformer.reference_binder import ReferenceBinder
 
 
 def test_identifier_to_reference(identifier):

@@ -1,4 +1,4 @@
-from common.analyzer.concept_map import ConceptMap
+from river.common.analyzer.concept_map import ConceptMap
 
 
 def test_concept_map_apply(dict_map_gender):

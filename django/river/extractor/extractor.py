@@ -3,10 +3,10 @@ from collections import defaultdict
 from typing import Any, List, Optional
 
 from arkhn_monitoring import Timer
-from common.analyzer.analysis import Analysis
-from common.database_connection.db_connection import DBConnection
-from extractor.extract.query_builder import QueryBuilder
 from prometheus_client import Counter as PromCounter
+from river.common.analyzer.analysis import Analysis
+from river.common.database_connection.db_connection import DBConnection
+from river.extractor.query_builder import QueryBuilder
 from sqlalchemy.orm import Query
 
 logger = logging.getLogger(__name__)
