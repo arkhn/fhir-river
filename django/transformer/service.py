@@ -81,8 +81,6 @@ def extracted_record_handler(
                     "batch_id": event.batch_id,
                 }
             )
-    except ValueError as err:
-        logger.exception(err)
 
 
 def bootstrap(

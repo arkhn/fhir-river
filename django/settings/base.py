@@ -14,8 +14,8 @@ import os
 from pathlib import Path
 
 
-def get_env_array_value(key: str, default: list = list):
-    return os.environ.get(key) and os.environ.get(key).split(",") or default
+def get_env_array_value(key: str, default: list = None):
+    return os.environ.get(key) and os.environ.get(key).split(",") or default or []
 
 
 def get_env_bool_value(key: str, default: bool):
@@ -276,7 +276,7 @@ REDIS_REFERENCES_DB = os.environ.get("REDIS_REFERENCES_DB", 0)
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
 KAFKA_NUM_PARTITIONS = int(os.environ.get("KAFKA_NUM_PARTITIONS", 1))
 KAFKA_REPLICATION_FACTOR = int(os.environ.get("KAFKA_REPLICATION_FACTOR", 1))
-KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL", 900 * 1000))
+KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL", 15 * 60 * 1000))
 
 # API URLs
 
@@ -332,7 +332,7 @@ if SENTRY_ENABLED:
 
 # DRF Spectacular settings
 
-if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True":
+if get_env_bool_value("DRF_SPECTACULAR_ENABLED", default=False):
     INSTALLED_APPS += ["drf_spectacular"]
     REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
