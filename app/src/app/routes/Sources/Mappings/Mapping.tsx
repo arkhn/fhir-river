@@ -25,16 +25,14 @@ const useStyles = makeStyles((theme) => ({
 const Mapping = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <>
-      <div className={classes.body}>
-        <div className={clsx(classes.leftContainer, classes.scrollContainer)}>
-          <FhirResourceTree />
-        </div>
-        <div className={clsx(classes.rightContainer, classes.scrollContainer)}>
-          <FhirAttributePanel />
-        </div>
+    <div className={classes.body}>
+      <div className={clsx(classes.leftContainer, classes.scrollContainer)}>
+        <FhirResourceTree />
       </div>
-    </>
+      <div className={clsx(classes.rightContainer, classes.scrollContainer)}>
+        <FhirAttributePanel />
+      </div>
+    </div>
   );
 };
 
