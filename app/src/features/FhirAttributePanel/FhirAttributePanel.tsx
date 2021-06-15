@@ -26,7 +26,7 @@ const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { attributeId } = useParams<{ attributeId?: string }>();
-  const { data: attribute } = useApiAttributesRetrieveQuery(
+  const { data: attribute, isError } = useApiAttributesRetrieveQuery(
     { id: attributeId ?? "" },
     { skip: !attributeId }
   );
@@ -51,23 +51,30 @@ const FhirAttributePanel = (): JSX.Element => {
   };
 
   return (
-    <div className={classes.container}>
-      {attributeInputGroups &&
-        attributeInputGroups.map((inputGroup) => (
-          <AttributeInputGroup key={inputGroup.id} inputGroup={inputGroup} />
-        ))}
-      {attribute && (
-        <Button
-          size="small"
-          variant="outlined"
-          className={classes.button}
-          startIcon={<Add />}
-          onClick={handleCreateInputGroup}
-        >
-          <Typography>{t("addGroup")}</Typography>
-        </Button>
+    <>
+      {!isError && (
+        <div className={classes.container}>
+          {attributeInputGroups &&
+            attributeInputGroups.map((inputGroup) => (
+              <AttributeInputGroup
+                key={inputGroup.id}
+                inputGroup={inputGroup}
+              />
+            ))}
+          {attribute && (
+            <Button
+              size="small"
+              variant="outlined"
+              className={classes.button}
+              startIcon={<Add />}
+              onClick={handleCreateInputGroup}
+            >
+              <Typography>{t("addGroup")}</Typography>
+            </Button>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
