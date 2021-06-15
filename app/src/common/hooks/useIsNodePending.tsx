@@ -6,6 +6,7 @@ import { ElementNode } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   useApiAttributesListQuery,
   useApiInputGroupsListQuery,
+  useApiInputsListQuery,
 } from "services/api/endpoints";
 
 const useIsNodePending = (node: ElementNode): boolean => {
@@ -23,18 +24,29 @@ const useIsNodePending = (node: ElementNode): boolean => {
       skip: !attributes,
     }
   );
+  const { data: inputs } = useApiInputsListQuery({}, { skip: !inputGroups });
 
-  const attributesWithInputGroups = useMemo(() => {
-    if (attributes && inputGroups) {
-      return attributes.filter((attribute) =>
-        inputGroups.some((inputGroup) => inputGroup.attribute === attribute.id)
+  const inputGroupsWithInputs = useMemo(() => {
+    if (inputs && inputGroups) {
+      return inputGroups.filter((inputGroup) =>
+        inputs.some((input) => input.input_group === inputGroup.id)
       );
     }
-  }, [attributes, inputGroups]);
+  }, [inputs, inputGroups]);
+
+  const attributesWithInputs = useMemo(() => {
+    if (attributes && inputGroupsWithInputs) {
+      return attributes.filter((attribute) =>
+        inputGroupsWithInputs.some(
+          (inputGroup) => inputGroup.attribute === attribute.id
+        )
+      );
+    }
+  }, [attributes, inputGroupsWithInputs]);
 
   return (
-    attributesWithInputGroups !== undefined &&
-    attributesWithInputGroups.some(
+    attributesWithInputs !== undefined &&
+    attributesWithInputs.some(
       (attribute) =>
         attribute.path === node.path || attribute.path.startsWith(node.path)
     )
