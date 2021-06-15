@@ -5,16 +5,16 @@ from django.utils import timezone
 
 from fhir.resources import construct_fhir_element
 
-from common.analyzer import Analyzer
-from common.database_connection.db_connection import DBConnection
-from extractor.extract import Extractor
 from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.mappings import MappingsRepository
 from river.adapters.topics import TopicsHandler
+from river.common.analyzer import Analyzer
+from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchEvent
-from transformer.transform import Transformer
+from river.extractor.extractor import Extractor
+from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
 
@@ -59,32 +59,33 @@ def preview(
     analysis = analyzer.analyze(resource_mapping)
 
     db_connection = DBConnection(analysis.source_credentials)
-    extractor = Extractor(db_connection)
-    df = extractor.extract(analysis, primary_key_values)
+    with db_connection.session_scope() as session:
+        extractor = Extractor(session, db_connection.metadata)
+        df = extractor.extract(analysis, primary_key_values)
 
-    transformer = Transformer()
+        transformer = Transformer()
 
-    documents = []
-    errors = []
+        documents = []
+        errors = []
 
-    for row in extractor.split_dataframe(df, analysis):
-        # Encode and decode the row to mimic what happens when events are serialized
-        # to pass through kafka
-        row = json.JSONDecoder().decode(CustomJSONEncoder().encode(row))
-        primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
-        transformed_data = transformer.transform_data(row, analysis, primary_key_value)
-        document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)
-        documents.append(document)
-        resource_type = document.get("resourceType")
-        try:
-            construct_fhir_element(resource_type, document)
-        except ValidationError as e:
-            errors.extend(
-                [
-                    f"{err['msg'] or 'Validation error'}: "
-                    f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
-                    for err in e.errors()
-                ]
-            )
+        for row in extractor.split_dataframe(df, analysis):
+            # Encode and decode the row to mimic what happens when events are serialized
+            # to pass through kafka
+            row = json.JSONDecoder().decode(CustomJSONEncoder().encode(row))
+            primary_key_value = row[analysis.primary_key_column.dataframe_column_name()][0]
+            transformed_data = transformer.transform_data(row, analysis, primary_key_value)
+            document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)
+            documents.append(document)
+            resource_type = document.get("resourceType")
+            try:
+                construct_fhir_element(resource_type, document)
+            except ValidationError as e:
+                errors.extend(
+                    [
+                        f"{err['msg'] or 'Validation error'}: "
+                        f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
+                        for err in e.errors()
+                    ]
+                )
 
     return documents, errors

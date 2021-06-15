@@ -1,13 +1,13 @@
 from unittest import mock
 
-from common.analyzer.analysis import Analysis
-from common.analyzer.attribute import Attribute
-from common.analyzer.condition import Condition
-from common.analyzer.input_group import InputGroup
-from common.analyzer.sql_column import SqlColumn
-from common.analyzer.sql_filter import SqlFilter
-from common.analyzer.sql_join import SqlJoin
-from extractor.extract.query_builder import QueryBuilder
+from river.common.analyzer.analysis import Analysis
+from river.common.analyzer.attribute import Attribute
+from river.common.analyzer.condition import Condition
+from river.common.analyzer.input_group import InputGroup
+from river.common.analyzer.sql_column import SqlColumn
+from river.common.analyzer.sql_filter import SqlFilter
+from river.common.analyzer.sql_join import SqlJoin
+from river.extractor.query_builder import QueryBuilder
 from sqlalchemy import Column, MetaData, Table
 from sqlalchemy.orm.query import Query
 
@@ -42,8 +42,8 @@ def make_query_builder(analysis, pk_values=None):
     return QueryBuilder(session, None, analysis, pk_values)
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_sqlalchemy_query(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
@@ -127,8 +127,8 @@ def test_sqlalchemy_query(mock_sha1):
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_2hop_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
@@ -170,8 +170,8 @@ def test_2hop_joins(mock_sha1):
     )
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_1and2hop_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
@@ -227,8 +227,8 @@ def test_1and2hop_joins(mock_sha1):
     )
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_duplicated_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
@@ -305,8 +305,8 @@ def test_duplicated_joins(mock_sha1):
     )
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_apply_filters(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
     analysis = Analysis()
@@ -339,8 +339,8 @@ def test_apply_filters(mock_sha1):
     }
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_apply_filters_single_value(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
     analysis = Analysis()
@@ -360,8 +360,8 @@ def test_apply_filters_single_value(mock_sha1):
     assert query.statement.compile().params == {"param_1": 123}
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_filters_with_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
     analysis = Analysis()
@@ -397,8 +397,8 @@ def test_filters_with_joins(mock_sha1):
     assert query.statement.compile().params == {"param_1": "2150-08-29"}
 
 
-@mock.patch("common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("extractor.extract.query_builder.Table", mock_table)
+@mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
+@mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_conditions_with_joins(mock_sha1):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 

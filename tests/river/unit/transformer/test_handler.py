@@ -1,12 +1,12 @@
 import pytest
 
-from common.analyzer import Analyzer
 from river.adapters.event_publisher import FakeEventPublisher
 from river.adapters.mappings import FakeMappingsRepository
+from river.common.analyzer import Analyzer
 from river.domain.events import ExtractedRecord, TransformedRecord
-from transformer.reference_binder import ReferenceBinder
-from transformer.service import extracted_record_handler
-from transformer.transform import Transformer
+from river.transformer.reference_binder import ReferenceBinder
+from river.transformer.service import extracted_record_handler
+from river.transformer.transformer import Transformer
 
 pytestmark = pytest.mark.django_db
 

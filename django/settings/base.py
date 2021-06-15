@@ -66,9 +66,6 @@ INSTALLED_APPS = [
     "sentry",
     # 1st parties
     "core",
-    "extractor",
-    "transformer",
-    "topicleaner",
     "pagai",
     "pyrog",
     "river",

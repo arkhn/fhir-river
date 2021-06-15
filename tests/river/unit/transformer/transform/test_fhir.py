@@ -2,8 +2,8 @@ from unittest import mock
 
 from pytest import mark, raises
 
-from common.analyzer.attribute import Attribute
-from transformer.transform import ARKHN_RESOURCE_CODE_SYSTEM, ARKHN_SOURCE_CODE_SYSTEM, fhir
+from river.common.analyzer.attribute import Attribute
+from river.transformer import fhir
 
 
 class mockdatetime:
@@ -11,7 +11,7 @@ class mockdatetime:
         return "now"
 
 
-@mock.patch("transformer.transform.fhir.datetime", autospec=True)
+@mock.patch("river.transformer.fhir.datetime", autospec=True)
 def test_create_instance(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
@@ -56,7 +56,7 @@ def test_non_list_from_list(path):
         fhir.build_fhir_object(row, path_attributes_map)
 
 
-@mock.patch("transformer.transform.fhir.datetime", autospec=True)
+@mock.patch("river.transformer.fhir.datetime", autospec=True)
 def test_build_nested_arrays(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
@@ -168,7 +168,7 @@ def test_build_nested_arrays(mock_datetime):
     }
 
 
-@mock.patch("transformer.transform.fhir.datetime", autospec=True)
+@mock.patch("river.transformer.fhir.datetime", autospec=True)
 def test_no_empty_subobjects(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
@@ -184,7 +184,7 @@ def test_no_empty_subobjects(mock_datetime):
     assert actual == {"id": actual["id"], "status": "active"}
 
 
-@mock.patch("transformer.transform.fhir.datetime", autospec=True)
+@mock.patch("river.transformer.transform.fhir.datetime", autospec=True)
 def test_conditions_have_filtered_one_value(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
@@ -207,7 +207,7 @@ def test_conditions_have_filtered_one_value(mock_datetime):
     assert actual == {}
 
 
-@mock.patch("transformer.transform.fhir.datetime", autospec=True)
+@mock.patch("river.transformer.fhir.datetime", autospec=True)
 def test_build_metadata(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
@@ -224,8 +224,8 @@ def test_build_metadata(mock_datetime):
     assert metadata == {
         "lastUpdated": "now",
         "tag": [
-            {"system": ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
-            {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
+            {"system": fhir.ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
+            {"system": fhir.ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }
 
@@ -240,8 +240,8 @@ def test_build_metadata(mock_datetime):
         "lastUpdated": "now",
         "profile": ["u/r/l"],
         "tag": [
-            {"system": ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
-            {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
+            {"system": fhir.ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
+            {"system": fhir.ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }
 

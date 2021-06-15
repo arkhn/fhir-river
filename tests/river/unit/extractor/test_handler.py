@@ -1,11 +1,11 @@
 import pytest
 
-from common.analyzer import Analyzer
-from extractor.service import batch_resource_handler
 from river.adapters.decr_counter import FakeDecrementingCounter
 from river.adapters.event_publisher import FakeEventPublisher
 from river.adapters.mappings import FakeMappingsRepository
+from river.common.analyzer import Analyzer
 from river.domain.events import BatchEvent, ExtractedRecord
+from river.extractor.service import batch_resource_handler
 
 pytestmark = pytest.mark.django_db
 

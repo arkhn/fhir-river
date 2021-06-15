@@ -1,9 +1,13 @@
+import json
 import time
+from pathlib import Path
 
 import pytest
 from confluent_kafka import admin
 
 from django.conf import settings
+
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
 @pytest.fixture
@@ -52,3 +56,15 @@ def clear_topics(request):
 
     if request.node.get_closest_marker("kafka"):
         request.addfinalizer(_clear_topics)
+
+
+@pytest.fixture
+def patient_mapping():
+    with (DATA_FIXTURES_DIR / "patient_mapping.json").open() as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def users_to_patients_mapping():
+    with (DATA_FIXTURES_DIR / "users_to_patients_mapping.json").open() as f:
+        return json.load(f)
