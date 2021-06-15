@@ -53,9 +53,11 @@ class InputGroupFilterSet(filters.FilterSet):
 
 
 class InputFilterSet(filters.FilterSet):
+    attribute = filters.ModelChoiceFilter("input_group__attribute", queryset=models.Attribute.objects.all())
+
     class Meta:
         model = models.Input
-        fields = ["input_group"]
+        fields = ["input_group", "attribute"]
 
 
 class ConditionFilterSet(filters.FilterSet):
