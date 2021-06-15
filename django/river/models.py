@@ -8,7 +8,7 @@ class Batch(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
-    resources = models.JSONField()
+    resources = models.JSONField(blank=True, default=[])
 
 
 class Error(models.Model):

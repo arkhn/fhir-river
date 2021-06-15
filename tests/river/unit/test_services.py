@@ -12,7 +12,6 @@ from river.services import abort, batch, preview
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.skip(reason="Needs pyrog-api")
 def test_batch():
     topics = FakeTopics()
     publisher = FakeEventPublisher()
@@ -26,9 +25,9 @@ def test_batch():
     assert topics._topics == {
         f"{base_topic}.{batch_instance.id}" for base_topic in ["batch", "extract", "transform", "load"]
     }
-    assert publisher._events[f"batch.{batch_instance.id}"] == {
+    assert publisher._events[f"batch.{batch_instance.id}"] == [
         BatchResource(batch_id=batch_instance.id, resource_id=r) for r in resources
-    }
+    ]
     assert mappings_repo._seen == resources
 
 
