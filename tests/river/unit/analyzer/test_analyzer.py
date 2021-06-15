@@ -1,5 +1,4 @@
-import json
-from unittest import mock
+from uuid import uuid4
 
 from common.analyzer import Analyzer
 from common.analyzer.attribute import Attribute
@@ -10,39 +9,19 @@ from common.analyzer.sql_filter import SqlFilter
 from common.analyzer.sql_join import SqlJoin
 
 
-def test_load_cached_analysis_redis(patient_mapping):
-    fake_redis = "fake_redis"
-    analyzer = Analyzer(redis_client=fake_redis)
-    analyzer.redis = mock.MagicMock()
-    analyzer.redis.get.return_value = json.dumps(patient_mapping)
+def test_load_cached_analysis(patient_mapping):
+    batch_id, resource_id = (uuid4(), uuid4())
+    analyzer = Analyzer()
 
-    res = analyzer.load_cached_analysis("abc", "123")
+    res = analyzer.load_cached_analysis(batch_id, resource_id, patient_mapping)
 
     assert res.definition_id == "Patient"
     assert res.primary_key_column.table == "patients"
     assert res.primary_key_column.column == "row_id"
 
-    assert analyzer.analyses["abc:123"].definition_id == "Patient"
-    assert analyzer.analyses["abc:123"].primary_key_column.table == "patients"
-    assert analyzer.analyses["abc:123"].primary_key_column.column == "row_id"
-
-
-def test_load_cached_analysis_memory():
-    fake_redis = "fake_redis"
-    analyzer = Analyzer(redis_client=fake_redis)
-    analyzer.analyze = mock.MagicMock()
-
-    dummy_mapping = {"dummy": "mapping"}
-    analyzer.analyses["abc:123"] = dummy_mapping
-
-    res = analyzer.load_cached_analysis("abc", "123")
-
-    assert res == dummy_mapping
-    analyzer.analyze.assert_not_called()
-
 
 def test_get_primary_key():
-    analyzer = Analyzer(None)
+    analyzer = Analyzer()
 
     # With owner
     resource_mapping = {
