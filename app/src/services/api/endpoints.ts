@@ -25,6 +25,8 @@ const tagTypes = [
   "Joins",
   "StructureDefinition",
   "ValueSets",
+  "InputGroups",
+  "Inputs",
 ];
 
 export const api = generatedApi
@@ -159,6 +161,9 @@ export const api = generatedApi
       apiAttributesList: {
         providesTags: providesList("Attributes"),
       },
+      apiAttributesRetrieve: {
+        providesTags: providesOne("Attributes"),
+      },
       apiAttributesDestroy: {
         invalidatesTags: invalidatesOne("Attributes"),
       },
@@ -225,6 +230,30 @@ export const api = generatedApi
       apiValueSetsRetrieve: {
         providesTags: providesOne("ValueSets"),
       },
+      /**
+       * InputGroups
+       */
+      apiInputGroupsList: {
+        providesTags: providesList("InputGroups"),
+      },
+      apiInputGroupsCreate: {
+        invalidatesTags: invalidatesList("InputGroups"),
+      },
+      apiInputGroupsDestroy: {
+        invalidatesTags: invalidatesOne("InputGroups"),
+      },
+      /**
+       * Inputs
+       */
+      apiInputsList: {
+        providesTags: providesList("Inputs"),
+      },
+      apiInputsCreate: {
+        invalidatesTags: invalidatesList("Inputs"),
+      },
+      apiInputsDestroy: {
+        invalidatesTags: invalidatesOne("Inputs"),
+      },
     },
   });
 
@@ -255,6 +284,7 @@ export const {
   useApiResourcesDestroyMutation,
   // Attributes
   useApiAttributesListQuery,
+  useApiAttributesRetrieveQuery,
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
   // Owners
@@ -277,4 +307,12 @@ export const {
   useApiJoinsDestroyMutation,
   // ValueSets
   useApiValueSetsRetrieveQuery,
+  // InputGroups
+  useApiInputGroupsListQuery,
+  useApiInputGroupsCreateMutation,
+  useApiInputGroupsDestroyMutation,
+  // Inputs
+  useApiInputsListQuery,
+  useApiInputsCreateMutation,
+  useApiInputsDestroyMutation,
 } = api;
