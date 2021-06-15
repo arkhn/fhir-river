@@ -52,9 +52,10 @@ const useStyles = makeStyles((theme) => ({
 
 const MappingHeader = (): JSX.Element => {
   const history = useHistory();
-  const { sourceId, mappingId } = useParams<{
+  const { sourceId, mappingId, attributeId } = useParams<{
     sourceId?: string;
     mappingId?: string;
+    attributeId?: string;
   }>();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -84,6 +85,11 @@ const MappingHeader = (): JSX.Element => {
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
   };
+  const handlePreviewDisplay = () => {
+    history.push(
+      `/sources/${sourceId}/mappings/${mappingId}/attributes/${attributeId}/preview`
+    );
+  };
 
   return (
     <div className={classes.root}>
@@ -102,6 +108,7 @@ const MappingHeader = (): JSX.Element => {
         color="primary"
         variant="contained"
         startIcon={<PlayIcon />}
+        onClick={handlePreviewDisplay}
       >
         <Typography>{t("preview")}</Typography>
       </Button>
