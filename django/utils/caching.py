@@ -16,9 +16,15 @@ class CacheBackend:
         raise NotImplementedError
 
 
-class InMemoryCacheBackend(dict):
+class InMemoryCacheBackend(CacheBackend):
+    def __init__(self):
+        self._cache = {}
+
     def set(self, key: str, value, **kwargs):
-        self[key] = value
+        self._cache[key] = value
+
+    def get(self, key: str):
+        return self._cache.get(key, None)
 
 
 class RedisCacheBackend:
