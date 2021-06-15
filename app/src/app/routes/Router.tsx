@@ -5,11 +5,13 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import CreateMapping from "features/Mappings/Create/CreateMapping";
 import EditMapping from "features/Mappings/Edit/EditMapping";
+import Preview from "features/Preview/Preview";
 
 import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
-import Mapping from "./Mapping";
 import PageNotFound from "./PageNotFound";
+import Mapping from "./Sources/Mappings/Mapping";
+import MappingHeader from "./Sources/Mappings/MappingHeader";
 import SourceMappings from "./Sources/SourceMappings";
 import Sources from "./Sources/Sources";
 
@@ -36,14 +38,21 @@ const Router = (): JSX.Element => {
             <CreateMapping />
           </Route>
           <Route exact path="/sources/:sourceId/mappings/:mappingId">
+            <MappingHeader />
             <Mapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId/preview">
+            <MappingHeader />
+            <Preview />
           </Route>
           <Route
             exact
             path="/sources/:sourceId/mappings/:mappingId/attributes/:attributeId"
           >
+            <MappingHeader />
             <Mapping />
           </Route>
+
           <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
             <EditMapping />
           </Route>

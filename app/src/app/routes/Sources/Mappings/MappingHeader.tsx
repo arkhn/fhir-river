@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    height: "100%",
+    height: 100,
   },
   navContainer: {
     display: "flex",
@@ -52,10 +52,9 @@ const useStyles = makeStyles((theme) => ({
 
 const MappingHeader = (): JSX.Element => {
   const history = useHistory();
-  const { sourceId, mappingId, attributeId } = useParams<{
+  const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
-    attributeId?: string;
   }>();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -86,9 +85,7 @@ const MappingHeader = (): JSX.Element => {
     setDeleteDialogOpen(false);
   };
   const handlePreviewDisplay = () => {
-    history.push(
-      `/sources/${sourceId}/mappings/${mappingId}/attributes/${attributeId}/preview`
-    );
+    history.push(`/sources/${sourceId}/mappings/${mappingId}/preview`);
   };
 
   return (
