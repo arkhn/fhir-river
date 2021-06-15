@@ -1019,6 +1019,10 @@ paths:
       description: ''
       parameters:
       - in: query
+        name: attribute
+        schema:
+          type: string
+      - in: query
         name: input_group
         schema:
           type: string

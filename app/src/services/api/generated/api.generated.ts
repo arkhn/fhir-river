@@ -362,7 +362,10 @@ export const api = createApi({
     apiInputsList: build.query<ApiInputsListApiResponse, ApiInputsListApiArg>({
       query: (queryArg) => ({
         url: `/api/inputs/`,
-        params: { input_group: queryArg.inputGroup },
+        params: {
+          attribute: queryArg.attribute,
+          input_group: queryArg.inputGroup,
+        },
       }),
     }),
     apiInputsCreate: build.mutation<
@@ -681,7 +684,8 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse =
+  /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -749,7 +753,8 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse =
+  /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -781,7 +786,8 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse =
+  /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -841,7 +847,8 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse =
+  /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -854,6 +861,7 @@ export type ApiInputGroupsDestroyApiArg = {
 };
 export type ApiInputsListApiResponse = /** status 200  */ Input[];
 export type ApiInputsListApiArg = {
+  attribute?: string;
   inputGroup?: string;
 };
 export type ApiInputsCreateApiResponse = /** status 201  */ Input;
