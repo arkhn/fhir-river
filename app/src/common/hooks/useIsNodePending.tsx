@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+
 import { useParams } from "react-router";
 
 import { ElementNode } from "features/FhirResourceTree/resourceTreeSlice";
@@ -9,20 +11,34 @@ import {
 const useIsNodePending = (node: ElementNode): boolean => {
   const { mappingId } = useParams<{ mappingId?: string }>();
 
-  const { data: nodeAttributes } = useApiAttributesListQuery(
+  const { data: attributes } = useApiAttributesListQuery(
     {
       resource: mappingId ?? "",
-      path: node.path,
     },
     { skip: !mappingId }
   );
-  const nodeAttribute = nodeAttributes?.[0];
   const { data: inputGroups } = useApiInputGroupsListQuery(
-    { attribute: nodeAttribute?.id ?? "" },
-    { skip: !nodeAttribute }
+    {},
+    {
+      skip: !attributes,
+    }
   );
 
-  return inputGroups !== undefined && inputGroups.length > 0;
+  const attributesWithInputGroups = useMemo(() => {
+    if (attributes && inputGroups) {
+      return attributes.filter((attribute) =>
+        inputGroups.some((inputGroup) => inputGroup.attribute === attribute.id)
+      );
+    }
+  }, [attributes, inputGroups]);
+
+  return (
+    attributesWithInputGroups !== undefined &&
+    attributesWithInputGroups.some(
+      (attribute) =>
+        attribute.path === node.path || attribute.path.startsWith(node.path)
+    )
+  );
 };
 
 export default useIsNodePending;
