@@ -22,6 +22,8 @@ import {
 } from "services/api/endpoints";
 import type { Resource } from "services/api/generated/api.generated";
 
+import Alert from "../../common/components/Alert";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -71,6 +73,9 @@ const BatchCreate = (): JSX.Element => {
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
+  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const handleAlertClose = () => setAlert(undefined);
+
   const { sourceId: id } = useParams<{ sourceId: string }>();
 
   const { data: resources } = useApiResourcesListQuery(
@@ -89,18 +94,20 @@ const BatchCreate = (): JSX.Element => {
     setSelectedResourceIds(event.target.value as string[]);
   };
 
-  const handleBatchRun = () => {
-    if (!selectedResourceIds.length) return;
+  const handleBatchRun = async () => {
+    try {
+      await apiBatchCreate({
+        batchRequest: {
+          resources: selectedResourceIds.map((id) => ({
+            resource_id: id,
+          })),
+        },
+      });
 
-    apiBatchCreate({
-      batchRequest: {
-        resources: selectedResourceIds.map((id) => ({
-          resource_id: id,
-        })),
-      },
-    });
-
-    setSelectedResourceIds([]);
+      setSelectedResourceIds([]);
+    } catch (e) {
+      setAlert(e as string);
+    }
   };
 
   return (
@@ -149,12 +156,19 @@ const BatchCreate = (): JSX.Element => {
       <Button
         variant="contained"
         color="primary"
+        disabled={!selectedResourceIds.length}
         className={classes.button}
         endIcon={<PlayIcon />}
         onClick={handleBatchRun}
       >
         <Typography>{t("run")}</Typography>
       </Button>
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
+      />
     </div>
   );
 };
