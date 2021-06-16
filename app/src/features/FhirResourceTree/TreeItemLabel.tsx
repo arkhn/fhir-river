@@ -20,6 +20,7 @@ import IconButton from "common/components/IconButton";
 
 import { ElementNode } from "./resourceTreeSlice";
 import SliceNameDialog from "./SliceNameDialog";
+import TreeNodeBadge from "./TreeNodeBadge";
 
 type TreeItemLabelProps = {
   elementNode: ElementNode;
@@ -158,6 +159,7 @@ const TreeItemLabel = ({
       >
         {elementNode.type}
       </Typography>
+      <TreeNodeBadge elementNode={elementNode} />
       {isArrayItem && (
         <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
       )}
