@@ -62,7 +62,10 @@ export const api = createApi({
       ApiBatchesListApiResponse,
       ApiBatchesListApiArg
     >({
-      query: () => ({ url: `/api/batches/` }),
+      query: (queryArg) => ({
+        url: `/api/batches/`,
+        params: { limit: queryArg.limit, offset: queryArg.offset },
+      }),
     }),
     apiBatchesCreate: build.mutation<
       ApiBatchesCreateApiResponse,
@@ -719,8 +722,13 @@ export type ApiAttributesDestroyApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
 };
-export type ApiBatchesListApiResponse = /** status 200  */ Batch[];
-export type ApiBatchesListApiArg = {};
+export type ApiBatchesListApiResponse = /** status 200  */ PaginatedBatchList;
+export type ApiBatchesListApiArg = {
+  /** Number of results to return per page. */
+  limit?: number;
+  /** The initial index from which to return the results. */
+  offset?: number;
+};
 export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
 export type ApiBatchesCreateApiArg = {
   batchRequest: BatchRequest;
@@ -1108,6 +1116,12 @@ export type Batch = {
   resources: {
     [key: string]: any;
   };
+};
+export type PaginatedBatchList = {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: Batch[];
 };
 export type BatchRequest = {
   resources: {
