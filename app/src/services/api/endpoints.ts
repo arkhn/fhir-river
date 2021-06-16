@@ -7,6 +7,7 @@ import { Required } from "utility-types";
 
 import {
   providesList,
+  providesPaginatedList,
   providesOne,
   invalidatesList,
   invalidatesOne,
@@ -233,7 +234,7 @@ export const api = generatedApi
         invalidatesTags: invalidatesList("Batches"),
       },
       apiBatchesList: {
-        providesTags: providesList("Batches"),
+        providesTags: providesPaginatedList("Batches"),
       },
       apiBatchesDestroy: {
         invalidatesTags: invalidatesOne("Batches"),
