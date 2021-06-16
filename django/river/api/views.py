@@ -1,6 +1,6 @@
 from inspect import getdoc, getmembers, isfunction, ismodule
 
-from rest_framework import generics, response, status, viewsets
+from rest_framework import generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
 import scripts
@@ -15,6 +15,7 @@ from utils.caching import RedisCacheBackend
 class BatchViewSet(viewsets.ModelViewSet):
     queryset = models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
+    pagination_class = pagination.LimitOffsetPagination
 
     def create(self, request):
         serializer = serializers.BatchSerializer(data=request.data)
