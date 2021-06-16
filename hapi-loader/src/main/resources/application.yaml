@@ -27,7 +27,7 @@ spring:
   #      hibernate.search.default.indexbase: target/lucenefiles
   #      hibernate.search.lucene_version: lucene_current
   redis:
-    host: river-redis
+    host: redis
     port: 6379
     db_index: 2
   batch:
