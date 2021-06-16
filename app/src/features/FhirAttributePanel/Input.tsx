@@ -24,6 +24,7 @@ import {
 import {
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
+  useApiColumnsUpdateMutation,
   useApiInputsDestroyMutation,
 } from "services/api/endpoints";
 import {
@@ -70,6 +71,7 @@ const Input = ({ input }: InputProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const [deleteInput] = useApiInputsDestroyMutation();
   const [createColumn] = useApiColumnsCreateMutation();
+  const [updateColumn] = useApiColumnsUpdateMutation();
   const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
     input: input.id,
   });
@@ -97,16 +99,27 @@ const Input = ({ input }: InputProps): JSX.Element => {
     }
   };
 
-  const handleColumnChange = (column: PendingColumn) => {
+  const handleColumnChange = async (column: PendingColumn) => {
     if (column.id) {
       dispatch(columnUpdated({ id: column.id, changes: column }));
     }
 
-    if (column.pending) {
-      column.table &&
-        column.column &&
-        column.owner &&
-        createColumn({ columnRequest: column as ColumnRequest });
+    if (column.id && column.table && column.column && column.owner) {
+      const newColumn = column.pending
+        ? await createColumn({
+            columnRequest: column as ColumnRequest,
+          }).unwrap()
+        : await updateColumn({
+            id: column.id,
+            columnRequest: column as ColumnRequest,
+          }).unwrap();
+
+      dispatch(
+        columnUpdated({
+          id: column.id,
+          changes: { ...newColumn, pending: false },
+        })
+      );
     }
   };
 
