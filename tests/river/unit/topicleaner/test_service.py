@@ -8,7 +8,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_done_batch_is_cleaned(batch):
-    counters = FakeDecrementingCounter(counts={f"{batch.id}.{resource_id}": 0 for resource_id in batch.resources})
+    counters = FakeDecrementingCounter(counts={f"{batch.id}.{mapping['id']}": 0 for mapping in batch.mappings})
     topics = FakeTopics(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
@@ -19,7 +19,7 @@ def test_done_batch_is_cleaned(batch):
 
 
 def test_ongoing_batch_is_not_cleaned(batch):
-    counters = FakeDecrementingCounter(counts={f"{batch.id}.{resource_id}": 1 for resource_id in batch.resources})
+    counters = FakeDecrementingCounter(counts={f"{batch.id}.{mapping['id']}": 1 for mapping in batch.mappings})
     topics = FakeTopics(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
@@ -30,7 +30,7 @@ def test_ongoing_batch_is_not_cleaned(batch):
 
 
 def test_missing_counter_prevents_cleaning(batch):
-    counters = FakeDecrementingCounter(counts={f"{batch.id}.{resource_id}": 0 for resource_id in batch.resources[1:]})
+    counters = FakeDecrementingCounter(counts={f"{batch.id}.{mapping['id']}": 0 for mapping in batch.mappings[1:]})
     topics = FakeTopics(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )

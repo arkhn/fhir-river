@@ -17,8 +17,8 @@ class CacheBackend:
 
 
 class InMemoryCacheBackend(CacheBackend):
-    def __init__(self):
-        self._cache = {}
+    def __init__(self, init: dict = None):
+        self._cache = init or {}
 
     def set(self, key: str, value, **kwargs):
         self._cache[key] = value
@@ -27,7 +27,7 @@ class InMemoryCacheBackend(CacheBackend):
         return self._cache.get(key, None)
 
 
-class RedisCacheBackend:
+class RedisCacheBackend(CacheBackend):
     def __init__(self):
         self._client = redis.Redis(
             host=settings.REDIS_HOST,

@@ -6,10 +6,10 @@ from rest_framework.decorators import action
 import scripts
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
-from river.adapters.mappings import APIMappingsRepository
 from river.adapters.topics import KafkaTopics
 from river.api import serializers
 from river.services import abort, batch, preview
+from utils.caching import RedisCacheBackend
 
 
 class BatchViewSet(viewsets.ModelViewSet):
@@ -20,14 +20,10 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer = serializers.BatchSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        resource_ids = data["resources"]
+        mappings = data["mappings"]
 
-        topics, event_publisher, mappings_repo = (
-            KafkaTopics(),
-            KafkaEventPublisher(),
-            APIMappingsRepository(),
-        )
-        batch_instance = batch(resource_ids, topics, event_publisher, mappings_repo)
+        topics, event_publisher, cache = (KafkaTopics(), KafkaEventPublisher(), RedisCacheBackend())
+        batch_instance = batch(mappings, topics, event_publisher, cache)
 
         serializer = serializers.BatchSerializer(batch_instance)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -50,12 +46,10 @@ class PreviewEndpoint(generics.CreateAPIView):
         serializer = serializers.PreviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        resource_id = data["resource_id"]
+        mapping = data["mapping"]
         primary_key_values = data["primary_key_values"]
 
-        mappings_repo = APIMappingsRepository()
-
-        documents, errors = preview(resource_id, primary_key_values, mappings_repo)
+        documents, errors = preview(mapping, primary_key_values)
 
         return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 

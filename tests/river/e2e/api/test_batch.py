@@ -8,11 +8,10 @@ from django.urls import reverse
 pytestmark = [pytest.mark.django_db, pytest.mark.kafka]
 
 
-@pytest.mark.skip(reason="Needs pyrog-api")
-def test_create_batch(api_client):
+def test_create_batch(api_client, users_to_patients_mapping):
     url = reverse("batches-list")
 
-    data = {"resources": [{"resource_id": uuid.uuid4()}]}
+    data = {"mappings": [users_to_patients_mapping]}
     response = api_client.post(url, data, format="json")
 
     assert response.status_code == 201
@@ -27,19 +26,18 @@ def test_retrieve_batch(api_client, batch, error):
 
 
 @pytest.fixture
-def api_batch_factory(api_client):
+def api_batch_factory(api_client, users_to_patients_mapping):
     """Batch factory to test the underlying topics."""
 
     def _create_batch(resources: List[str]):
         url = reverse("batches-list")
-        data = {"resources": [{"resource_id": id_} for id_ in resources]}
+        data = {"mappings": [users_to_patients_mapping]}
         response = api_client.post(url, data, format="json")
         return response.json()["id"]
 
     yield _create_batch
 
 
-@pytest.mark.skip(reason="Needs pyrog-api")
 def test_delete_batch(api_client, api_batch_factory):
     batch_id = api_batch_factory(resources=[uuid.uuid4()])
     url = reverse("batches-detail", kwargs={"pk": batch_id})

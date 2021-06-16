@@ -22,7 +22,7 @@ def clean(counter: DecrementingCounter, topics: TopicsHandler):
     batches_to_delete = []
 
     for batch in current_batches:
-        resources_counters = [counter.get(f"{batch.id}.{resource_id}") for resource_id in batch.resources]
+        resources_counters = [counter.get(f"{batch.id}.{mapping['id']}") for mapping in batch.mappings]
         if all([counter is not None and counter <= 0 for counter in resources_counters]):
             batches_to_delete.append(batch)
 

@@ -2,16 +2,17 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
+from river import models
 from river.adapters.decr_counter import DecrementingCounter, RedisDecrementingCounter
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
 from river.adapters.event_subscriber import KafkaEventSubscriber
-from river.adapters.mappings import APIMappingsRepository, MappingsRepository
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.common.service.errors import BatchCancelled
 from river.common.service.service import Service
 from river.domain import events
 from river.extractor.extractor import Extractor
+from utils.caching import CacheBackend, RedisCacheBackend
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +63,12 @@ def batch_resource_handler(
     publisher: EventPublisher,
     counter: DecrementingCounter,
     analyzer: Analyzer,
-    mappings_repo: MappingsRepository,
+    cache: CacheBackend,
 ):
-    mapping = mappings_repo.get(event.resource_id)
+    # Get mapping from cache or from DB
+    mapping = cache.get(f"{event.batch_id}.{event.resource_id}")
+    if mapping is None:
+        mapping = next(m for m in models.Batch.objects.get(id=event.batch_id).mappings if m["id"] == event.resource_id)
     analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
     db_connection = DBConnection(analysis.source_credentials)
     extractor = Extractor(db_connection)
@@ -74,7 +78,7 @@ def batch_resource_handler(
 
 def bootstrap(
     subscriber=KafkaEventSubscriber(group_id="extractor"),
-    mappings_repo=APIMappingsRepository(),
+    cache=RedisCacheBackend(),
     counter=RedisDecrementingCounter(),
     publisher=KafkaEventPublisher(),
 ) -> Service:
@@ -86,7 +90,7 @@ def bootstrap(
             publisher=publisher,
             counter=counter,
             analyzer=analyzer,
-            mappings_repo=mappings_repo,
+            cache=cache,
         )
     }
 

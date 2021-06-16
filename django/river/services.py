@@ -8,31 +8,31 @@ from fhir.resources import construct_fhir_element
 from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
-from river.adapters.mappings import MappingsRepository
 from river.adapters.topics import TopicsHandler
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchResource
 from river.extractor.extractor import Extractor
 from river.transformer.transformer import Transformer
+from utils.caching import CacheBackend
 from utils.json import CustomJSONEncoder
 
 
 def batch(
-    resources: List[str], topics: TopicsHandler, publisher: EventPublisher, mappings: MappingsRepository
+    mappings: List[Any], topics: TopicsHandler, publisher: EventPublisher, cache: CacheBackend = None
 ) -> models.Batch:
-    batch_instance = models.Batch.objects.create()
+    batch_instance = models.Batch.objects.create(mappings=mappings)
 
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics.create(f"{base_topic}.{batch_instance.id}")
 
-    for resource_id in resources:
-        # Ensure the mapping exists
-        mappings.get(resource_id)
+    for mapping in mappings:
+        if cache:
+            cache.set(f"{batch_instance.id}.{mapping['id']}", mapping)
 
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
-            event=BatchResource(batch_id=batch_instance.id, resource_id=resource_id),
+            event=BatchResource(batch_id=batch_instance.id, resource_id=mapping["id"]),
         )
 
     return batch_instance
@@ -45,18 +45,16 @@ def abort(batch: models.Batch, topics: TopicsHandler) -> None:
     batch.deleted_at = timezone.now()
     batch.save(update_fields=["deleted_at"])
 
+    # FIXME: invalidate the cache
+
 
 def retry(batch: models.Batch) -> None:
     pass
 
 
-def preview(
-    resource_id: str, primary_key_values: Optional[list], mappings: MappingsRepository
-) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = mappings.get(resource_id)
-
+def preview(mapping: Any, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
     analyzer = Analyzer()
-    analysis = analyzer.analyze(resource_mapping)
+    analysis = analyzer.analyze(mapping)
 
     db_connection = DBConnection(analysis.source_credentials)
     extractor = Extractor(db_connection)

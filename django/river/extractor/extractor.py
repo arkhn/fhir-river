@@ -111,7 +111,7 @@ class Extractor:
                     resource_id=analysis.resource_id,
                     resource_type=analysis.definition_id,
                 ).inc()
-                yield acc
+                yield dict(acc)
                 acc = defaultdict(list)
             for key, value in zip(row.keys(), row):
                 acc[key].append(value)
@@ -130,4 +130,4 @@ class Extractor:
                 resource_id=analysis.resource_id,
                 resource_type=analysis.definition_id,
             ).inc()
-            yield acc
+            yield dict(acc)

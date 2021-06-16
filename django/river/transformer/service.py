@@ -2,15 +2,16 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
+from river import models
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
 from river.adapters.event_subscriber import KafkaEventSubscriber
-from river.adapters.mappings import APIMappingsRepository, MappingsRepository
 from river.common.analyzer import Analyzer
 from river.common.errors import OperationOutcome
 from river.common.service.service import Service
 from river.domain import events
 from river.transformer.reference_binder import ReferenceBinder
 from river.transformer.transformer import Transformer
+from utils.caching import CacheBackend, RedisCacheBackend
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +45,11 @@ def extracted_record_handler(
     analyzer: Analyzer,
     transformer: Transformer,
     binder: ReferenceBinder,
-    mappings_repo: MappingsRepository,
+    cache: CacheBackend,
 ):
-    mapping = mappings_repo.get(event.resource_id)
+    mapping = cache.get(f"{event.batch_id}.{event.resource_id}")
+    if mapping is None:
+        mapping = next(m for m in models.Batch.objects.get(id=event.batch_id).mappings if m["id"] == event.resource_id)
     analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
     fhir_object = transform_row(analysis, event.record, transformer=transformer)
 
@@ -85,8 +88,8 @@ def extracted_record_handler(
 
 def bootstrap(
     subscriber=KafkaEventSubscriber(group_id="transformer"),
-    mappings_repo=APIMappingsRepository(),
     publisher=KafkaEventPublisher(),
+    cache=RedisCacheBackend(),
 ) -> Service:
     analyzer = Analyzer()
     transformer = Transformer()
@@ -99,7 +102,7 @@ def bootstrap(
             analyzer=analyzer,
             transformer=transformer,
             binder=binder,
-            mappings_repo=mappings_repo,
+            cache=cache,
         )
     }
 
