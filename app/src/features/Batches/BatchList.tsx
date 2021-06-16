@@ -56,17 +56,11 @@ const BatchList = (): JSX.Element => {
 
   const offset = (page - 1) * PAGE_SIZE;
   const limit = offset + PAGE_SIZE;
-  const { batches, isBatchesLoading } = useApiBatchesListQuery(
-    {},
+  const { data: batches, isLoading: isBatchesLoading } = useApiBatchesListQuery(
     {
-      selectFromResult: ({ data, isLoading }) => ({
-        batches:
-          data &&
-          [...data]
-            .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
-            .slice(offset, limit),
-        isBatchesLoading: isLoading,
-      }),
+      limit,
+      offset,
+      ordering: "-created_at",
     }
   );
 
