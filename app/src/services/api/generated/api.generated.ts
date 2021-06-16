@@ -89,7 +89,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/columns/`,
-        params: { join: queryArg.join },
+        params: { input: queryArg.input, join: queryArg.join },
       }),
     }),
     apiColumnsCreate: build.mutation<
@@ -702,6 +702,7 @@ export type ApiBatchDestroyApiArg = {
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
+  input?: string;
   join?: string;
 };
 export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
