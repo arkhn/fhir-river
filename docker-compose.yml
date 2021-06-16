@@ -158,7 +158,7 @@ services:
 volumes:
   db-data:
 
-#networks:
-#  default:
-#    external:
-#      name: arkhn_network
+networks:
+  default:
+    external:
+      name: arkhn_network
