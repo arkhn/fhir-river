@@ -10,6 +10,7 @@ from utils.caching import InMemoryCacheBackend
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.skip(reason="Needs a fake source db.")
 def test_batch_resource_handler(batch, users_to_patients_mapping):
     resource_id = users_to_patients_mapping["id"]
     event = BatchResource(batch_id=batch.id, resource_id=resource_id)
