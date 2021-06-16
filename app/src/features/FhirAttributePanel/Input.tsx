@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -11,9 +11,19 @@ import {
 } from "@material-ui/core";
 import { CloseRounded } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
+import { v4 as uuid } from "uuid";
 
+import { useAppDispatch, useAppSelector } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelect";
-import { useApiInputsDestroyMutation } from "services/api/endpoints";
+import {
+  columnAdded,
+  columnUpdated,
+  columnSelectors,
+} from "features/Columns/columnSlice";
+import {
+  useApiColumnsListQuery,
+  useApiInputsDestroyMutation,
+} from "services/api/endpoints";
 import {
   Column,
   Input as InputType,
@@ -53,10 +63,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Input = ({ input }: InputProps): JSX.Element => {
-  const [inputColumn, setInputColumn] = useState<Partial<Column>>({});
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useAppDispatch();
   const [deleteInput] = useApiInputsDestroyMutation();
+  const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
+    input: input.id,
+  });
+  const inputColumn = useAppSelector((state) =>
+    columnSelectors
+      .selectAll(state)
+      .find((column) => column?.input === input.id)
+  );
+
+  useEffect(() => {
+    if (inputColumns && !inputColumn) {
+      if (inputColumns[0]) {
+        dispatch(columnAdded(inputColumns[0]));
+      } else if (isSuccess && inputColumns.length === 0) {
+        dispatch(columnAdded({ id: uuid(), input: input.id }));
+      }
+    }
+  }, [inputColumns, dispatch, inputColumn, input.id, isSuccess]);
 
   const handleDeleteInput = async () => {
     try {
@@ -66,8 +94,14 @@ const Input = ({ input }: InputProps): JSX.Element => {
     }
   };
 
+  const handleColumnChange = (column: Partial<Column>) => {
+    if (column.id) {
+      dispatch(columnUpdated({ id: column.id, changes: column }));
+    }
+  };
+
   return (
-    <div className={classes.inputContainer} key={input.id}>
+    <div className={classes.inputContainer}>
       <Grid container alignItems="center" direction="row" spacing={1}>
         <Grid item>
           <Typography className={classes.fromColumn}>
@@ -76,8 +110,8 @@ const Input = ({ input }: InputProps): JSX.Element => {
         </Grid>
         <Grid item spacing={1} container className={classes.columnSelect}>
           <ColumnSelects
-            pendingColumn={inputColumn}
-            onChange={setInputColumn}
+            pendingColumn={inputColumn ?? {}}
+            onChange={handleColumnChange}
           />
         </Grid>
         <Grid item>
