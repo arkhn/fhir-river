@@ -73,8 +73,8 @@ const BatchList = (): JSX.Element => {
   if (isBatchesLoading) return <CircularProgress />;
   return (
     <>
-      {batches &&
-        batches.map((batch) => (
+      {batches?.results &&
+        batches.results.map((batch) => (
           <Accordion key={`batch-${batch.id}`}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -110,7 +110,7 @@ const BatchList = (): JSX.Element => {
         ))}
       <Pagination
         className={classes.pagination}
-        count={Math.ceil((batches?.length ?? 1) / PAGE_SIZE)}
+        count={Math.ceil((batches?.results?.length ?? 1) / PAGE_SIZE)}
         page={page}
         onChange={handlePageChange}
       />
