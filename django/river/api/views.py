@@ -1,6 +1,6 @@
 from inspect import getdoc, getmembers, isfunction, ismodule
 
-from rest_framework import generics, pagination, response, status, viewsets
+from rest_framework import filters, generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
 import scripts
@@ -16,6 +16,8 @@ class BatchViewSet(viewsets.ModelViewSet):
     queryset = models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
     pagination_class = pagination.LimitOffsetPagination
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["created_at"]
 
     def create(self, request):
         serializer = serializers.BatchSerializer(data=request.data)

@@ -64,7 +64,11 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/batches/`,
-        params: { limit: queryArg.limit, offset: queryArg.offset },
+        params: {
+          limit: queryArg.limit,
+          offset: queryArg.offset,
+          ordering: queryArg.ordering,
+        },
       }),
     }),
     apiBatchesCreate: build.mutation<
@@ -728,6 +732,8 @@ export type ApiBatchesListApiArg = {
   limit?: number;
   /** The initial index from which to return the results. */
   offset?: number;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
 };
 export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
 export type ApiBatchesCreateApiArg = {
