@@ -38,6 +38,7 @@ import {
 } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 import type {
+  Column,
   ColumnRequest,
   CredentialRequest,
   FilterRequest,
@@ -145,7 +146,7 @@ const EditMapping = (): JSX.Element => {
               }).unwrap();
             } else {
               // Column is unchanged
-              return column;
+              return column as Column;
             }
           })
         );
@@ -241,7 +242,7 @@ const EditMapping = (): JSX.Element => {
               }).unwrap();
             } else {
               // Column is unchanged
-              return column;
+              return column as Column;
             }
           })
         );

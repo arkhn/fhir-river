@@ -19,13 +19,15 @@ import {
   columnAdded,
   columnUpdated,
   columnSelectors,
+  PendingColumn,
 } from "features/Columns/columnSlice";
 import {
   useApiColumnsListQuery,
+  useApiColumnsCreateMutation,
   useApiInputsDestroyMutation,
 } from "services/api/endpoints";
 import {
-  Column,
+  ColumnRequest,
   Input as InputType,
 } from "services/api/generated/api.generated";
 
@@ -67,6 +69,7 @@ const Input = ({ input }: InputProps): JSX.Element => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [deleteInput] = useApiInputsDestroyMutation();
+  const [createColumn] = useApiColumnsCreateMutation();
   const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
     input: input.id,
   });
@@ -79,9 +82,9 @@ const Input = ({ input }: InputProps): JSX.Element => {
   useEffect(() => {
     if (inputColumns && !inputColumn) {
       if (inputColumns[0]) {
-        dispatch(columnAdded(inputColumns[0]));
+        dispatch(columnAdded({ ...inputColumns[0], pending: false }));
       } else if (isSuccess && inputColumns.length === 0) {
-        dispatch(columnAdded({ id: uuid(), input: input.id }));
+        dispatch(columnAdded({ id: uuid(), input: input.id, pending: true }));
       }
     }
   }, [inputColumns, dispatch, inputColumn, input.id, isSuccess]);
@@ -94,9 +97,16 @@ const Input = ({ input }: InputProps): JSX.Element => {
     }
   };
 
-  const handleColumnChange = (column: Partial<Column>) => {
+  const handleColumnChange = (column: PendingColumn) => {
     if (column.id) {
       dispatch(columnUpdated({ id: column.id, changes: column }));
+    }
+
+    if (column.pending) {
+      column.table &&
+        column.column &&
+        column.owner &&
+        createColumn({ columnRequest: column as ColumnRequest });
     }
   };
 
