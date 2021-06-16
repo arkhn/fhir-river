@@ -72,7 +72,7 @@ const BatchList = (): JSX.Element => {
 
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
-  const handleBatchCancel = (batchId: string) => {
+  const handleBatchCancel = (batchId: string) => () => {
     apiBatchesDestroy({ id: batchId });
   };
 
@@ -97,7 +97,7 @@ const BatchList = (): JSX.Element => {
                     color="primary"
                     className={classes.button}
                     endIcon={<CancelIcon />}
-                    onClick={() => handleBatchCancel(batch.id)}
+                    onClick={handleBatchCancel(batch.id)}
                   >
                     <Typography>{t("cancel")}</Typography>
                   </Button>

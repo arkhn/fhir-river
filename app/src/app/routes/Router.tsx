@@ -10,7 +10,7 @@ import EditMapping from "features/Mappings/Edit/EditMapping";
 import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
 import PageNotFound from "./PageNotFound";
-import Mappings from "./Sources/Mappings/Mappings";
+import Mapping from "./Sources/Mappings/Mapping";
 import SourceMappings from "./Sources/SourceMappings";
 import Sources from "./Sources/Sources";
 
@@ -40,7 +40,7 @@ const Router = (): JSX.Element => {
             <CreateMapping />
           </Route>
           <Route exact path="/sources/:sourceId/mappings/:mappingId">
-            <Mappings />
+            <Mapping />
           </Route>
           <Route
             exact

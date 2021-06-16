@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Mappings = (): JSX.Element => {
+const Mapping = (): JSX.Element => {
   const classes = useStyles();
   return (
     <>
@@ -47,4 +47,4 @@ const Mappings = (): JSX.Element => {
   );
 };
 
-export default Mappings;
+export default Mapping;
