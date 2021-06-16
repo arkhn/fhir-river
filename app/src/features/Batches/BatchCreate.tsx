@@ -16,13 +16,12 @@ import PlayIcon from "@material-ui/icons/PlayCircleOutline";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
+import Alert from "common/components/Alert";
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
 } from "services/api/endpoints";
 import type { Resource } from "services/api/generated/api.generated";
-
-import Alert from "../../common/components/Alert";
 
 const useStyles = makeStyles((theme) => ({
   root: {
