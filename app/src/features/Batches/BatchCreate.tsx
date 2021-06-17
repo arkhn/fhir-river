@@ -86,7 +86,7 @@ const BatchCreate = (): JSX.Element => {
 
   const handleResourceSelectionChange = (
     event: React.ChangeEvent<{
-      name?: string | undefined;
+      name?: string;
       value: unknown;
     }>
   ) => {
@@ -101,7 +101,7 @@ const BatchCreate = (): JSX.Element => {
             resource_id: id,
           })),
         },
-      });
+      }).unwrap();
 
       setSelectedResourceIds([]);
     } catch (e) {
