@@ -21,7 +21,6 @@ import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
 } from "services/api/endpoints";
-import type { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -122,18 +121,18 @@ const BatchCreate = (): JSX.Element => {
           input={<Input id="select-multiple-chip" />}
           renderValue={(selected) => (
             <div className={classes.chips}>
-              {(selected as string[])
-                .map((resourceId) => {
-                   const resource = resources?.find(({ id }) => resourceId === id)
-                   return (
-                      resource && (
-                      <Chip
-                        key={`resource-selected-${resource.id}`}
-                        label={`${resource.definition_id} - ${resource.label}`}
-                        className={classes.chip}
-                      />
-                   )
-                })
+              {(selected as string[]).map((resourceId) => {
+                const resource = resources?.find(({ id }) => resourceId === id);
+                return (
+                  resource && (
+                    <Chip
+                      key={`resource-selected-${resource.id}`}
+                      label={`${resource.definition_id} - ${resource.label}`}
+                      className={classes.chip}
+                    />
+                  )
+                );
+              })}
             </div>
           )}
           MenuProps={MenuProps}
