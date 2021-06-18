@@ -9,10 +9,10 @@ import {
   MenuItem,
   Select,
   Typography,
-  useTheme,
 } from "@material-ui/core";
-import { makeStyles, Theme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import PlayIcon from "@material-ui/icons/PlayCircleOutline";
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
@@ -21,6 +21,9 @@ import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
 } from "services/api/endpoints";
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,31 +46,28 @@ const useStyles = makeStyles((theme) => ({
   chip: {
     margin: 2,
   },
+  mediumBold: {
+    fontWeight: theme.typography.fontWeightMedium,
+  },
+  regularBold: {
+    fontWeight: theme.typography.fontWeightRegular,
+  },
+  menuPaper: {
+    maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+    width: 250,
+  },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-const getStyles = (resourceId: string, resourceIds: string[], theme: Theme) => {
-  return {
-    fontWeight: resourceIds.includes(resourceId)
-      ? theme.typography.fontWeightRegular
-      : theme.typography.fontWeightMedium,
-  };
-};
-
 const BatchCreate = (): JSX.Element => {
-  const classes = useStyles();
-  const theme = useTheme();
   const { t } = useTranslation();
+
+  const classes = useStyles();
+
+  const MenuProps = {
+    PaperProps: {
+      className: classes.menuPaper,
+    },
+  };
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
@@ -142,7 +142,9 @@ const BatchCreate = (): JSX.Element => {
               <MenuItem
                 key={`resource-option-${id}`}
                 value={id}
-                className={clsx( classes.mediumBold, { [ classes.regularBold ] : resourceIds.includes(resourceId) } )}
+                className={clsx(classes.mediumBold, {
+                  [classes.regularBold]: selectedResourceIds.includes(id),
+                })}
               >
                 {definition_id} - {label}
               </MenuItem>
