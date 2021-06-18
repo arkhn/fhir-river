@@ -123,7 +123,9 @@ export const api = generatedApi
         invalidatesTags: invalidatesOne("Columns"),
       },
       apiColumnsDestroy: {
-        invalidatesTags: invalidatesOne("Columns"),
+        invalidatesTags: invalidatesOne("Columns", {
+          cascades: ["Joins", "Filters", "Conditions"],
+        }),
       },
       /**
        *  Sources
@@ -141,7 +143,19 @@ export const api = generatedApi
         invalidatesTags: invalidatesOne("Sources"),
       },
       apiSourcesDestroy: {
-        invalidatesTags: invalidatesOne("Sources"),
+        invalidatesTags: invalidatesOne("Sources", {
+          cascades: [
+            "Resources",
+            "Credentials",
+            "Filters",
+            "Owners",
+            "Attributes",
+            "Columns",
+            "InputGroups",
+            "Inputs",
+            "Conditions",
+          ],
+        }),
       },
       apiSourcesImportCreate: {
         invalidatesTags: invalidatesList("Sources"),
@@ -162,11 +176,24 @@ export const api = generatedApi
         invalidatesTags: invalidatesOne("Resources"),
       },
       apiResourcesDestroy: {
-        invalidatesTags: invalidatesOne("Resources"),
+        invalidatesTags: invalidatesOne("Resources", {
+          cascades: [
+            "Attributes",
+            "Filters",
+            "InputGroups",
+            "Inputs",
+            "Conditions",
+            "Columns",
+            "Joins",
+          ],
+        }),
       },
       /**
        * Attributes
        */
+      apiAttributesCreate: {
+        invalidatesTags: invalidatesList("Attributes"),
+      },
       apiAttributesList: {
         providesTags: providesList("Attributes"),
       },
@@ -174,10 +201,16 @@ export const api = generatedApi
         providesTags: providesOne("Attributes"),
       },
       apiAttributesDestroy: {
-        invalidatesTags: invalidatesOne("Attributes"),
-      },
-      apiAttributesCreate: {
-        invalidatesTags: invalidatesList("Attributes"),
+        invalidatesTags: invalidatesOne("Attributes", {
+          cascades: [
+            "InputGroups",
+            "Inputs",
+            "Conditions",
+            "Columns",
+            "Joins",
+            "Filters",
+          ],
+        }),
       },
       /**
        * Owners
@@ -192,7 +225,18 @@ export const api = generatedApi
         providesTags: providesOne("Owners"),
       },
       apiOwnersDestroy: {
-        invalidatesTags: invalidatesOne("Owners"),
+        invalidatesTags: invalidatesOne("Owners", {
+          cascades: [
+            "Resources",
+            "Columns",
+            "Attributes",
+            "InputGroups",
+            "Filters",
+            "Joins",
+            "Conditions",
+            "Inputs",
+          ],
+        }),
       },
       /**
        * Credentials
@@ -252,7 +296,9 @@ export const api = generatedApi
         invalidatesTags: invalidatesList("InputGroups"),
       },
       apiInputGroupsDestroy: {
-        invalidatesTags: invalidatesOne("InputGroups"),
+        invalidatesTags: invalidatesOne("InputGroups", {
+          cascades: ["Inputs", "Columns", "Joins", "Conditions", "Filters"],
+        }),
       },
       /**
        * Inputs
@@ -264,7 +310,9 @@ export const api = generatedApi
         invalidatesTags: invalidatesList("Inputs"),
       },
       apiInputsDestroy: {
-        invalidatesTags: invalidatesOne("Inputs"),
+        invalidatesTags: invalidatesOne("Inputs", {
+          cascades: ["Columns", "Conditions", "Filters", "Joins"],
+        }),
       },
       apiInputsUpdate: {
         invalidatesTags: invalidatesOne("Inputs"),

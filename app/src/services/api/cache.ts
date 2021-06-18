@@ -65,7 +65,7 @@ export const invalidatesList = <T extends string>(
   type: T
 ): InvalidatesListFn<T> => () => [{ type, id: "LIST" }];
 
-type InvalidatesOneFn<T> = <
+type InvalidatesOneFn<T, U extends unknown[]> = <
   Result,
   Error extends FetchBaseQueryError,
   Arg extends Item
@@ -73,8 +73,15 @@ type InvalidatesOneFn<T> = <
   result: Result | undefined,
   error: Error | undefined,
   arg: Arg
-) => [CacheItem<T, Arg["id"]>];
+) => [CacheItem<T, Arg["id"]>, ...CacheItem<U[number], "LIST">[]];
 
-export const invalidatesOne = <T extends string>(
-  type: T
-): InvalidatesOneFn<T> => (_result, _error, { id }) => [{ type, id }];
+export const invalidatesOne = <T extends string, U extends string[]>(
+  type: T,
+  options?: { cascades?: U }
+): InvalidatesOneFn<T, U> => (_result, _error, { id }) =>
+  options?.cascades
+    ? [
+        { type, id },
+        ...options.cascades.map((type) => ({ type, id: "LIST" as const })),
+      ]
+    : [{ type, id }];
