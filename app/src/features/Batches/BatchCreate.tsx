@@ -123,19 +123,17 @@ const BatchCreate = (): JSX.Element => {
           renderValue={(selected) => (
             <div className={classes.chips}>
               {(selected as string[])
-                .map<Resource | undefined>((resourceId) =>
-                  resources?.find(({ id }) => resourceId === id)
-                )
-                .map(
-                  (resource) =>
-                    resource && (
+                .map((resourceId) => {
+                   const resource = resources?.find(({ id }) => resourceId === id)
+                   return (
+                      resource && (
                       <Chip
                         key={`resource-selected-${resource.id}`}
                         label={`${resource.definition_id} - ${resource.label}`}
                         className={classes.chip}
                       />
-                    )
-                )}
+                   )
+                })
             </div>
           )}
           MenuProps={MenuProps}
