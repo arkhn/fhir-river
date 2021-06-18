@@ -17,6 +17,7 @@ import BackIcon from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import StepPanel from "common/components/Stepper/StepPanel";
@@ -34,14 +35,18 @@ import {
   useApiColumnsCreateMutation,
   useApiJoinsCreateMutation,
 } from "services/api/endpoints";
-import {
+import type {
   ResourceRequest,
   ColumnRequest,
   FilterRequest,
   JoinRequest,
 } from "services/api/generated/api.generated";
 
-import { resourcesRemoved, resourceSelectors } from "../resourceSlice";
+import {
+  resourcesRemoved,
+  resourceSelectors,
+  resourceAdded,
+} from "../resourceSlice";
 
 const FOOTER_HEIGHT = 150;
 
@@ -218,6 +223,14 @@ const CreateMapping = (): JSX.Element => {
     history.goBack();
   };
 
+  useEffect(() => {
+    dispatch(
+      resourceAdded({
+        id: uuid(),
+        source: sourceId,
+      })
+    );
+  }, []);
   useEffect(() => resetCreateMapping, [resetCreateMapping]);
 
   const handlePrevStep = () => {
