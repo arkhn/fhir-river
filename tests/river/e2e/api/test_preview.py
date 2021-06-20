@@ -7,11 +7,11 @@ from django.urls import reverse
 pytestmark = pytest.mark.django_db
 
 
-def test_preview(api_client, users_to_patients_mapping):
+def test_preview(api_client, mappings):
     url = reverse("preview")
 
     data = {
-        "mapping": users_to_patients_mapping,
+        "mapping": mappings,
         "primary_key_values": [uuid4()],
     }
     response = api_client.post(url, data, format="json")

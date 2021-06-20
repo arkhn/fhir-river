@@ -15,15 +15,16 @@ pytestmark = pytest.mark.django_db
 
 
 def test_extracted_resource_handler(batch):
+    mapping = batch.mappings["resources"][0]
     event = ExtractedRecord(
         batch_id=batch.id,
         resource_type="",
-        resource_id=batch.mappings[0]["id"],
+        resource_id=mapping["id"],
         record={"users_user_email_b77906f9": "didier@chloroquine.org"},
     )
     publisher, cache = (
         FakeEventPublisher(),
-        InMemoryCacheBackend({f"{batch.id}.{batch.mappings[0]['id']}": batch.mappings[0]}),
+        InMemoryCacheBackend({f"{batch.id}.{mapping['id']}": batch.mappings}),
     )
     analyzer = Analyzer()
     transformer = Transformer()
@@ -43,7 +44,7 @@ def test_extracted_resource_handler(batch):
     assert publisher._events[f"transform.{batch.id}"] == [
         TransformedRecord(
             batch_id=batch.id,
-            resource_id=batch.mappings[0]["id"],
+            resource_id=batch.mappings["resources"][0]["id"],
             fhir_object={
                 "active": True,
                 "id": "3c3c2451-68e2-5aab-8b49-2f278f7108da",

@@ -59,12 +59,19 @@ def clear_topics(request):
 
 
 @pytest.fixture
-def patient_mapping():
-    with (DATA_FIXTURES_DIR / "patient_mapping.json").open() as f:
-        return json.load(f)
+def load_mapping_fixture():
+    def _load_mapping(filename: str):
+        with (DATA_FIXTURES_DIR / filename).open() as f:
+            return json.load(f)
+
+    yield _load_mapping
 
 
 @pytest.fixture
-def users_to_patients_mapping():
-    with (DATA_FIXTURES_DIR / "users_to_patients_mapping.json").open() as f:
-        return json.load(f)
+def patient_mapping(load_mapping_fixture):
+    return load_mapping_fixture("patient_mapping.json")
+
+
+@pytest.fixture
+def mappings(load_mapping_fixture):
+    return load_mapping_fixture("users_to_patients_mapping.json")
