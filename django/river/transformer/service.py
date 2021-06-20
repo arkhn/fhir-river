@@ -9,6 +9,7 @@ from river.common.analyzer import Analyzer
 from river.common.errors import OperationOutcome
 from river.common.service.service import Service
 from river.domain import events
+from river.parsing import Source, as_old_mapping
 from river.transformer.reference_binder import ReferenceBinder
 from river.transformer.transformer import Transformer
 from utils.caching import CacheBackend, RedisCacheBackend
@@ -47,9 +48,11 @@ def extracted_record_handler(
     binder: ReferenceBinder,
     cache: CacheBackend,
 ):
-    mapping = cache.get(f"{event.batch_id}.{event.resource_id}")
-    if mapping is None:
-        mapping = next(m for m in models.Batch.objects.get(id=event.batch_id).mappings if m["id"] == event.resource_id)
+    mappings = cache.get(f"{event.batch_id}.{event.resource_id}")
+    if mappings is None:
+        mappings = models.Batch.objects.get(id=event.batch_id).mappings
+    mapping = as_old_mapping(Source(**mappings), event.resource_id)
+
     analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
     fhir_object = transform_row(analysis, event.record, transformer=transformer)
 

@@ -13,22 +13,21 @@ from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchResource
 from river.extractor.extractor import Extractor
+from river.parsing import Source, as_old_mapping
 from river.transformer.transformer import Transformer
 from utils.caching import CacheBackend
 from utils.json import CustomJSONEncoder
 
 
-def batch(
-    mappings: List[Any], topics: TopicsHandler, publisher: EventPublisher, cache: CacheBackend = None
-) -> models.Batch:
+def batch(mappings: Any, topics: TopicsHandler, publisher: EventPublisher, cache: CacheBackend = None) -> models.Batch:
     batch_instance = models.Batch.objects.create(mappings=mappings)
 
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics.create(f"{base_topic}.{batch_instance.id}")
 
-    for mapping in mappings:
+    for mapping in mappings["resources"]:
         if cache:
-            cache.set(f"{batch_instance.id}.{mapping['id']}", mapping)
+            cache.set(f"{batch_instance.id}.{mapping['id']}", mappings)
 
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
@@ -53,6 +52,10 @@ def retry(batch: models.Batch) -> None:
 
 
 def preview(mapping: Any, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
+    # This is a temporary hack to make all the existing analyzing code work with the new
+    # mapping format, which is simply the format used with the import/export
+    mapping = as_old_mapping(Source(**mapping), mapping["resources"][0]["id"])
+
     analyzer = Analyzer()
     analysis = analyzer.analyze(mapping)
 

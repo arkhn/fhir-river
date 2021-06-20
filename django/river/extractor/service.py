@@ -12,6 +12,7 @@ from river.common.service.errors import BatchCancelled
 from river.common.service.service import Service
 from river.domain import events
 from river.extractor.extractor import Extractor
+from river.parsing import Source, as_old_mapping
 from utils.caching import CacheBackend, RedisCacheBackend
 
 logger = logging.getLogger(__name__)
@@ -66,9 +67,11 @@ def batch_resource_handler(
     cache: CacheBackend,
 ):
     # Get mapping from cache or from DB
-    mapping = cache.get(f"{event.batch_id}.{event.resource_id}")
-    if mapping is None:
-        mapping = next(m for m in models.Batch.objects.get(id=event.batch_id).mappings if m["id"] == event.resource_id)
+    mappings = cache.get(f"{event.batch_id}.{event.resource_id}")
+    if mappings is None:
+        mappings = models.Batch.objects.get(id=event.batch_id).mappings
+    mapping = as_old_mapping(Source(**mappings), event.resource_id)
+
     analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
     db_connection = DBConnection(analysis.source_credentials)
     extractor = Extractor(db_connection)
