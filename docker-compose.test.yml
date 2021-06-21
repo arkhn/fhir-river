@@ -49,5 +49,7 @@ services:
       - TEST_MSSQL_LOGIN
       - TEST_MSSQL_PASSWORD
 
+      - SECRET_KEY=secret
+
 volumes:
   postgres-data:
