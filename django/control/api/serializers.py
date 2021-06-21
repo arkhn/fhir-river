@@ -6,8 +6,14 @@ class ResourceSerializer(serializers.Serializer):
     resource_type = serializers.CharField()
 
 
+class CreateMappingSerializer(serializers.Serializer):
+    resource_ids = serializers.ListField(child=serializers.CharField())
+    mapping_id = serializers.CharField()
+
+
 class CreateBatchSerializer(serializers.Serializer):
     resources = serializers.ListField(child=ResourceSerializer())
+    mapping_id = serializers.CharField()
 
 
 class PreviewSerializer(serializers.Serializer):

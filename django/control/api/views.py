@@ -14,18 +14,39 @@ from fhir.resources import construct_fhir_element
 import redis
 import scripts
 from common.analyzer import Analyzer
+from common.analyzer.analyzer import MappingUnavailable
 from common.database_connection.db_connection import DBConnection
 from common.kafka.producer import CustomJSONEncoder, Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
 from confluent_kafka import KafkaException
 from confluent_kafka.admin import AdminClient, NewTopic
-from control.api.serializers import CreateBatchSerializer, PreviewSerializer
+from control.api.serializers import CreateBatchSerializer, CreateMappingSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from pydantic import ValidationError
 from topicleaner.service import TopicleanerHandler
 from transformer.transform.transformer import Transformer
 
 logger = logging.getLogger(__name__)
+
+
+class MappingEndpoint(viewsets.ViewSet):
+    def create(self, request):
+        serializer = CreateMappingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
+
+        # Fetch mapping
+        mappings_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
+        )
+
+        for resource_id in data["resource_ids"]:
+            resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
+            mappings_redis.set(f"{data['mapping_id']}:{resource_id}", json.dumps(resource_mapping))
+
+        return Response({"mapping_id": data["mapping_id"]}, status=status.HTTP_200_OK)
 
 
 class BatchEndpoint(viewsets.ViewSet):
@@ -60,19 +81,25 @@ class BatchEndpoint(viewsets.ViewSet):
 
         resource_ids = [resource.get("resource_id") for resource in data["resources"]]
 
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
-
         batch_id = str(uuid.uuid4())
         batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
-        # Fetch mapping
         mappings_redis = redis.Redis(
             host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
         )
 
+        # Fetch mapping
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
         for resource_id in resource_ids:
-            resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
-            mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
+            if mapping_id := data["mapping_id"]:
+                # FIXME don't replicate in redis but send mapping_id in events instead?
+                resource_mapping = mappings_redis.get(f"{mapping_id}:{resource_id}")
+                if resource_mapping is None:
+                    raise MappingUnavailable(f"{mapping_id}:{resource_id}")
+                mappings_redis.set(f"{batch_id}:{resource_id}", resource_mapping)
+            else:
+                resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
+                mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
 
         # Add batch info to redis
         batch_counter_redis = redis.Redis(
