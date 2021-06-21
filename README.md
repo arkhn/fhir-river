@@ -143,6 +143,10 @@ being only what the value associated to the key `config`.
 
 Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.io/current/connect/references/restapi.html).
 
+## Diagrams
+
+- Go to [diagrams](./diagrams)
+
 ## Useful links
 
 - [Live Streams ETL](https://qconsf.com/sf2016/system/files/keynotes-slides/etl_is_dead_long-live_streams.pdf)
