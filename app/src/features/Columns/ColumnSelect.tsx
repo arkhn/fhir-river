@@ -120,6 +120,7 @@ const ColumnSelects = ({
           ...pendingColumn,
           table: _table,
           owner: _owner,
+          column: undefined,
         });
     }
   };
