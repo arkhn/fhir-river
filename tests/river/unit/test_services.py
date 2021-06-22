@@ -10,6 +10,7 @@ from river.domain.events import BatchEvent
 pytestmark = pytest.mark.django_db
 
 
+@pytest.mark.skip(reason="Needs pyrog-api")
 def test_batch():
     topics = FakeTopics()
     publisher = FakeEventPublisher()
@@ -36,3 +37,7 @@ def test_abort(batch):
 
     assert batch.deleted_at is not None
     assert topics._topics == set()
+
+
+def test_retry(batch):
+    pass

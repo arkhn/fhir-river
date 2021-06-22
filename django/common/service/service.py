@@ -1,11 +1,13 @@
 import logging
 import re
+import traceback
 from typing import Callable, Dict, Type
 
 from confluent_kafka.error import ConsumeError
 
 from river.adapters.event_subscriber import EventSubscriber
 from river.domain import events
+from river.models import Error
 
 logger = logging.getLogger(__name__)
 event_logger = logging.getLogger("river.event")
@@ -14,7 +16,11 @@ event_logger = logging.getLogger("river.event")
 class Service:
     """Stateful service"""
 
-    def __init__(self, subscriber: EventSubscriber, handlers: Dict[str, Callable[[Type[events.Event]], None]]) -> None:
+    def __init__(
+        self,
+        subscriber: EventSubscriber,
+        handlers: Dict[str, Callable[[Type[events.Event]], None]],
+    ) -> None:
         self.subscriber = subscriber
         self.handlers = handlers
 
@@ -36,6 +42,12 @@ class Service:
 
                 try:
                     self.handlers[topic](raw)
-                except Exception:
-                    event_logger.exception("Failed to process event")
+                except Exception as exc:
+                    event_logger.exception(f"Failed to process event: {raw} from {topic}")
+                    Error.objects.create(
+                        batch_id=raw["batch_id"],
+                        event=raw,
+                        message=str(exc),
+                        exception=traceback.format_exc(),
+                    )
                     continue
