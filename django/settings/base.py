@@ -318,7 +318,7 @@ elif OIDC_RP_SIGN_ALGO == "HS256":
 
 # Sentry
 
-SENTRY_ENABLED = os.environ.get("SENTRY_ENABLED") and os.environ.get("SENTRY_ENABLED") == "True" or False
+SENTRY_ENABLED = get_env_bool_value("SENTRY_ENABLED", False)
 
 if SENTRY_ENABLED:
     SENTRY = {
@@ -329,7 +329,7 @@ if SENTRY_ENABLED:
 
 # DRF Spectacular settings
 
-if os.environ.get("DRF_SPECTACULAR_ENABLED", False) == "True":
+if get_env_bool_value("DRF_SPECTACULAR_ENABLED", False):
     INSTALLED_APPS += ["drf_spectacular"]
     REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
