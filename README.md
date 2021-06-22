@@ -149,6 +149,8 @@ Note: More info regarding Kafka Connect REST API [here](https://docs.confluent.i
 
 ## Useful links
 
+- [Troubleshooting](./TROUBLESHOOTING.md)
+- [Contributing](./CONTRIBUTING.md)
 - [Live Streams ETL](https://qconsf.com/sf2016/system/files/keynotes-slides/etl_is_dead_long-live_streams.pdf)
 - [Getting Started with Kafka Connect](https://docs.confluent.io/current/connect/userguide.html)
 - [JDBC Source Connector](https://docs.confluent.io/current/connect/kafka-connect-jdbc/source-connector/index.html)
