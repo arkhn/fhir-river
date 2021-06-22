@@ -82,7 +82,7 @@
   "run": "Run",
   "id": "ID",
   "event": "Event",
-  "message": "Messsage",
+  "message": "Message",
   "exception": "Exception",
   "createdAt": "Created at",
   "deletedAt": "Stopped at",
@@ -101,6 +101,7 @@
   "addItem": "Add item",
   "sliceName": "Slice name",
   "useThisGroupIf": "Use this group if...",
-  "resources": "Resources"
-  "condition": "Condition"
+  "resources": "Resources",
+  "condition": "Condition",
+  "retry": "Retry"
 }
