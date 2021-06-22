@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Typography } from "@material-ui/core";
-import { DataGrid } from "@material-ui/data-grid";
+import { DataGrid, GridCellParams } from "@material-ui/data-grid";
 import { useTranslation } from "react-i18next";
 
 import type { Batch } from "services/api/generated/api.generated";
@@ -17,7 +17,14 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
     { field: "event", flex: 1, headerName: t("event") },
     { field: "message", flex: 1, headerName: t("message") },
     { field: "exception", flex: 1, headerName: t("exception") },
-    { field: "created_at", flex: 1, headerName: t("createdAt") },
+    {
+      field: "created_at",
+      flex: 1,
+      headerName: t("createdAt"),
+      renderCell: (params: GridCellParams) => {
+        return new Date(params.value as string).toLocaleString();
+      },
+    },
   ];
 
   return (
