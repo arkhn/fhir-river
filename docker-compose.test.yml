@@ -49,5 +49,12 @@ services:
       - TEST_MSSQL_LOGIN
       - TEST_MSSQL_PASSWORD
 
+      - DEBUG=True
+      - SECRET_KEY=USE_IN_TESTS_ONLY
+      - ALLOWED_HOSTS=*
+      - CORS_ALLOW_ALL_ORIGINS=True
+      - CORS_ALLOW_CREDENTIALS=True
+      - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
+
 volumes:
   postgres-data:
