@@ -2,6 +2,7 @@ from rest_framework import response, status, viewsets
 
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
+from river.adapters.mappings import APIMappingsRepository
 from river.adapters.topics import KafkaTopics
 from river.api import serializers
 from river.services import abort, batch
@@ -18,9 +19,8 @@ class BatchViewSet(viewsets.ModelViewSet):
 
         resource_ids = [resource_data["resource_id"] for resource_data in data["resources"]]
 
-        topics = KafkaTopics()
-        event_publisher = KafkaEventPublisher()
-        batch_instance = batch(resource_ids, topics, event_publisher)
+        topics, event_publisher, mappings_repo = KafkaTopics(), KafkaEventPublisher(), APIMappingsRepository()
+        batch_instance = batch(resource_ids, topics, event_publisher, mappings_repo)
 
         serializer = serializers.BatchSerializer(batch_instance)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
