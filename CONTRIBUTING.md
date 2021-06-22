@@ -49,7 +49,10 @@ python3.8 -m venv --prompt "river" .venv
 # 2. Activate the virtual env
 source .venv/bin/activate
 
-# 3. Install dev requirements
+# 3. Install unixodbc-dev package
+sudo apt install unixodbc-dev
+
+# 4. Install dev requirements
 pip install -r requirements/dev.txt
 ```
 
