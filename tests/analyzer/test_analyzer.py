@@ -11,12 +11,11 @@ from common.analyzer.sql_join import SqlJoin
 
 
 def test_load_cached_analysis_redis(patient_mapping):
-    fake_redis = "fake_redis"
-    analyzer = Analyzer(redis_client=fake_redis)
+    analyzer = Analyzer()
     analyzer.redis = mock.MagicMock()
     analyzer.redis.get.return_value = json.dumps(patient_mapping)
 
-    res = analyzer.load_cached_analysis("abc", "123")
+    res = analyzer.load_cached_analysis("abc", "123", patient_mapping)
 
     assert res.definition_id == "Patient"
     assert res.primary_key_column.table == "patients"
@@ -28,21 +27,20 @@ def test_load_cached_analysis_redis(patient_mapping):
 
 
 def test_load_cached_analysis_memory():
-    fake_redis = "fake_redis"
-    analyzer = Analyzer(redis_client=fake_redis)
+    analyzer = Analyzer()
     analyzer.analyze = mock.MagicMock()
 
     dummy_mapping = {"dummy": "mapping"}
     analyzer.analyses["abc:123"] = dummy_mapping
 
-    res = analyzer.load_cached_analysis("abc", "123")
+    res = analyzer.load_cached_analysis("abc", "123", dummy_mapping)
 
     assert res == dummy_mapping
     analyzer.analyze.assert_not_called()
 
 
 def test_get_primary_key():
-    analyzer = Analyzer(None)
+    analyzer = Analyzer()
 
     # With owner
     resource_mapping = {
