@@ -100,7 +100,7 @@ const ColumnSelects = ({
 
   const tableOptions = getTableOptions(credentialOwners);
   const [columns, setColumns] = useState<string[]>(
-    table && table in schema ? schema[table] ?? [] : []
+    table && schema && table in schema ? schema[table] ?? [] : []
   );
 
   const isTableSelected = !!table;
@@ -120,6 +120,7 @@ const ColumnSelects = ({
           ...pendingColumn,
           table: _table,
           owner: _owner,
+          column: undefined,
         });
     }
   };
