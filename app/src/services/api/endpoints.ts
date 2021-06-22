@@ -27,6 +27,7 @@ const tagTypes = [
   "ValueSets",
   "InputGroups",
   "Inputs",
+  "Conditions",
 ];
 
 export const api = generatedApi
@@ -257,6 +258,18 @@ export const api = generatedApi
       apiInputsUpdate: {
         invalidatesTags: invalidatesOne("Inputs"),
       },
+      /**
+       * Conditions
+       */
+      apiConditionsList: {
+        providesTags: providesList("Conditions"),
+      },
+      apiConditionsCreate: {
+        invalidatesTags: invalidatesList("Conditions"),
+      },
+      apiConditionsDestroy: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
     },
   });
 
@@ -319,4 +332,8 @@ export const {
   useApiInputsCreateMutation,
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
+  // Conditions
+  useApiConditionsListQuery,
+  useApiConditionsCreateMutation,
+  useApiConditionsDestroyMutation,
 } = api;

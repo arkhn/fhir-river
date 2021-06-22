@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -19,14 +19,23 @@ import {
   usePopupState,
 } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
+import { v4 as uuid } from "uuid";
 
+import { useAppDispatch, useAppSelector } from "app/store";
+import {
+  conditionAdded,
+  conditionsAdded,
+  conditionSelectors,
+} from "features/Conditions/conditionSlice";
 import {
   useApiInputGroupsDestroyMutation,
   useApiInputsCreateMutation,
   useApiInputsListQuery,
+  useApiConditionsListQuery,
 } from "services/api/endpoints";
 import { InputGroup } from "services/api/generated/api.generated";
 
+import Condition from "./Condition";
 import SqlInput from "./SqlInput";
 import StaticInput from "./StaticInput";
 
@@ -65,6 +74,8 @@ const AttributeInputGroup = ({
 }: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const dispatch = useAppDispatch();
+
   const popupState = usePopupState({
     variant: "popover",
     popupId: "popup",
@@ -72,6 +83,24 @@ const AttributeInputGroup = ({
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
   const [createInput] = useApiInputsCreateMutation();
   const { data: inputs } = useApiInputsListQuery({ inputGroup: inputGroup.id });
+  const conditions = useAppSelector((state) =>
+    conditionSelectors
+      .selectAll(state)
+      .filter((condition) => condition.input_group === inputGroup.id)
+  );
+  const { data: apiConditions } = useApiConditionsListQuery({
+    inputGroup: inputGroup.id,
+  });
+
+  useEffect(() => {
+    if (apiConditions && apiConditions.length > 0 && !conditions) {
+      dispatch(
+        conditionsAdded(
+          apiConditions.map((condition) => ({ ...condition, pending: false }))
+        )
+      );
+    }
+  }, [apiConditions, conditions, dispatch]);
 
   const handleDeleteInputGroup = async () => {
     try {
@@ -94,6 +123,12 @@ const AttributeInputGroup = ({
     } catch (error) {
       //
     }
+  };
+
+  const handleCreateCondition = () => {
+    dispatch(
+      conditionAdded({ id: uuid(), input_group: inputGroup.id, pending: true })
+    );
   };
 
   const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -146,12 +181,16 @@ const AttributeInputGroup = ({
           />
         </MenuItem>
       </Menu>
+      {conditions &&
+        conditions.map((condition) => (
+          <Condition condition={condition} key={condition.id} />
+        ))}
       <Button
         size="small"
         variant="outlined"
         className={clsx(classes.button, classes.buttonCondition)}
         startIcon={<Add />}
-        onClick={handleMenuClick}
+        onClick={handleCreateCondition}
       >
         <Typography>{t("addCondition")}</Typography>
       </Button>
