@@ -6,12 +6,10 @@ import {
   AccordionSummary,
   Button,
   CircularProgress,
-  Container,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import CancelIcon from "@material-ui/icons/Cancel";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { CancelOutlined, ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
@@ -23,17 +21,49 @@ import {
 import BatchErrors from "./BatchErrors";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  accordionSummaryContent: {
+    width: "100%",
     display: "flex",
-    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
+  accordionSummary: {
+    margin: 0,
+    minHeight: 56,
+    "& > .MuiAccordionSummary-content": {
+      minHeight: 56,
+      margin: 0,
+      transition: "none",
+      "&.Mui-expanded": {
+        minHeight: 56,
+      },
+    },
+    "&.MuiAccordionSummary-root": {
+      borderBottom: `1px solid ${theme.palette.background.default}`,
+      minHeight: 56,
+      margin: 0,
+      transition: "none",
+    },
   },
   button: {
-    margin: theme.spacing(1),
-    marginTop: "auto",
+    textTransform: "none",
+    marginLeft: theme.spacing(1),
+  },
+  accordionDetails: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: theme.spacing(0.5),
+  },
+  accordion: {
+    "&.Mui-expanded": {
+      margin: 0,
+      marginBottom: theme.spacing(0.5),
+    },
+    "&:before": {
+      display: "none",
+    },
+    borderRadius: theme.shape.borderRadius,
+    marginBottom: theme.spacing(0.5),
   },
   pagination: {
     marginTop: theme.spacing(1),
@@ -70,41 +100,62 @@ const BatchList = (): JSX.Element => {
     apiBatchesDestroy({ id: batchId });
   };
 
+  const handleBatchRetry = (batchId: string) => () => {
+    console.log(batchId);
+    console.log("hey");
+  };
+
   if (isBatchesLoading) return <CircularProgress />;
   return (
     <>
       {batches?.results &&
         batches.results.map((batch) => (
-          <Accordion key={`batch-${batch.id}`}>
+          <Accordion key={`batch-${batch.id}`} className={classes.accordion}>
             <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
+              className={classes.accordionSummary}
+              expandIcon={<ExpandMore />}
               aria-controls="panel1a-content"
               id="panel1a-header"
             >
-              <div className={classes.root}>
-                <Typography className={classes.heading}>
-                  {batch.created_at}
+              <div className={classes.accordionSummaryContent}>
+                <Typography>
+                  {new Date(batch.created_at).toLocaleString()}
                 </Typography>
-                {!batch.deleted_at && (
+                <div>
                   <Button
+                    className={classes.button}
                     variant="contained"
                     color="primary"
-                    className={classes.button}
-                    endIcon={<CancelIcon />}
-                    onClick={handleBatchCancel(batch.id)}
+                    startIcon={<Replay />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleBatchRetry(batch.id);
+                    }}
                   >
-                    <Typography>{t("cancel")}</Typography>
+                    <Typography>{t("retry")}</Typography>
                   </Button>
-                )}
+                  {!batch.deleted_at && (
+                    <Button
+                      className={classes.button}
+                      variant="contained"
+                      color="primary"
+                      startIcon={<CancelOutlined />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBatchCancel(batch.id);
+                      }}
+                    >
+                      <Typography>{t("cancel")}</Typography>
+                    </Button>
+                  )}
+                </div>
               </div>
             </AccordionSummary>
-            <AccordionDetails>
-              <Container>
-                <Typography>
-                  <b>ID</b>: {batch.id}
-                </Typography>
-                <BatchErrors batch={batch} />
-              </Container>
+            <AccordionDetails className={classes.accordionDetails}>
+              <Typography gutterBottom>
+                <b>ID</b> : {batch.id}
+              </Typography>
+              <BatchErrors batch={batch} />
             </AccordionDetails>
           </Accordion>
         ))}

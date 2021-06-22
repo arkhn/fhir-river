@@ -104,7 +104,7 @@ const BatchCreate = (): JSX.Element => {
 
       setSelectedResourceIds([]);
     } catch (e) {
-      setAlert(e as string);
+      setAlert(e.message);
     }
   };
 

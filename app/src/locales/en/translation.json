@@ -75,9 +75,10 @@
   "run": "Run",
   "id": "ID",
   "event": "Event",
-  "message": "Messsage",
+  "message": "Message",
   "exception": "Exception",
   "createdAt": "Created at",
   "deletedAt": "Stopped at",
-  "resources": "Resources"
+  "resources": "Resources",
+  "retry": "Retry"
 }
