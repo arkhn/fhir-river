@@ -94,6 +94,9 @@ services:
       - SECRET_KEY=whatever
       - PYROG_API_URL=http://pyrog-server:1000
       - FHIR_API_URL=${FHIR_API_URL}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       - REDIS_MAPPINGS_HOST=river-redis
       - REDIS_MAPPINGS_PORT=6379
       - REDIS_MAPPINGS_DB=1
