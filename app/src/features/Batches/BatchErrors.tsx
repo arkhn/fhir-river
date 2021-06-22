@@ -25,7 +25,13 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
       <Typography gutterBottom>
         {t("errors", { count: batch.errors.length })}
       </Typography>
-      <DataGrid autoHeight rows={batch.errors} columns={columns} pageSize={5} />
+      <DataGrid
+        showColumnRightBorder
+        autoHeight
+        rows={batch.errors}
+        columns={columns}
+        pageSize={5}
+      />
     </>
   );
 };
