@@ -254,6 +254,9 @@ export const api = generatedApi
       apiInputsDestroy: {
         invalidatesTags: invalidatesOne("Inputs"),
       },
+      apiInputsUpdate: {
+        invalidatesTags: invalidatesOne("Inputs"),
+      },
     },
   });
 
@@ -315,4 +318,5 @@ export const {
   useApiInputsListQuery,
   useApiInputsCreateMutation,
   useApiInputsDestroyMutation,
+  useApiInputsUpdateMutation,
 } = api;

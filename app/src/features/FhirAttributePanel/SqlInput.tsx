@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Input = ({ input }: InputProps): JSX.Element => {
+const SqlInput = ({ input }: InputProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
@@ -153,4 +153,4 @@ const Input = ({ input }: InputProps): JSX.Element => {
   );
 };
 
-export default Input;
+export default SqlInput;

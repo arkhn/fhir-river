@@ -27,7 +27,7 @@ import {
 } from "services/api/endpoints";
 import { InputGroup } from "services/api/generated/api.generated";
 
-import Input from "./Input";
+import StaticInput from "./StaticInput";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
@@ -107,7 +107,8 @@ const AttributeInputGroup = ({
   const classes = useStyles();
   return (
     <Paper className={classes.inputGroups} variant="outlined">
-      {inputs && inputs.map((input) => <Input input={input} key={input.id} />)}
+      {inputs &&
+        inputs.map((input) => <StaticInput input={input} key={input.id} />)}
       <Button
         {...bindTrigger(popupState)}
         size="small"
