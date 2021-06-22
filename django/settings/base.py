@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+from distutils.util import strtobool
 from pathlib import Path
 
 
@@ -19,7 +20,7 @@ def get_env_array_value(key: str, default: list = list):
 
 
 def get_env_bool_value(key: str, default: bool):
-    return os.environ.get(key) and os.environ.get(key) == "True" or default
+    return os.environ.get(key) and strtobool(os.environ.get(key).lower()) or default
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
