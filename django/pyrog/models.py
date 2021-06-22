@@ -101,7 +101,7 @@ class Input(models.Model):
     input_group = models.ForeignKey(InputGroup, related_name="inputs", on_delete=models.CASCADE)
     script = models.TextField(blank=True, default="")
     concept_map_id = models.TextField(blank=True, default="")
-    static_value = models.TextField(blank=True, default="")
+    static_value = models.TextField(blank=True, null=True, default="")
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
