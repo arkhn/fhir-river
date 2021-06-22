@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
   },
   accordion: {
     "&.Mui-expanded": {
@@ -118,7 +119,7 @@ const BatchList = (): JSX.Element => {
               id="panel1a-header"
             >
               <div className={classes.accordionSummaryContent}>
-                <Typography>
+                <Typography variant="subtitle2">
                   {new Date(batch.created_at).toLocaleString()}
                 </Typography>
                 <div>

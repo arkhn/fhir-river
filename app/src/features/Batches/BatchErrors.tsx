@@ -22,10 +22,10 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
 
   return (
     <>
-      <Typography>{t("errors", { count: batch.errors.length })}</Typography>
-      <div style={{ height: 400, width: "100%" }}>
-        <DataGrid rows={batch.errors} columns={columns} pageSize={5} />
-      </div>
+      <Typography gutterBottom>
+        {t("errors", { count: batch.errors.length })}
+      </Typography>
+      <DataGrid autoHeight rows={batch.errors} columns={columns} pageSize={5} />
     </>
   );
 };
