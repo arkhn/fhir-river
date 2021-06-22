@@ -7,6 +7,7 @@ import {
   Input,
   InputLabel,
   MenuItem,
+  MenuProps,
   Select,
   Typography,
 } from "@material-ui/core";
@@ -29,15 +30,18 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
+    marginBottom: theme.spacing(1),
   },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
-    maxWidth: 300,
+    width: "50%",
   },
   button: {
+    textTransform: "none",
     margin: theme.spacing(1),
     marginTop: "auto",
+    marginBottom: "auto",
   },
   chips: {
     display: "flex",
@@ -63,10 +67,19 @@ const BatchCreate = (): JSX.Element => {
 
   const classes = useStyles();
 
-  const MenuProps = {
+  const MenuProps: Partial<MenuProps> = {
     PaperProps: {
       className: classes.menuPaper,
     },
+    anchorOrigin: {
+      vertical: "top",
+      horizontal: "left",
+    },
+    transformOrigin: {
+      vertical: "top",
+      horizontal: "left",
+    },
+    getContentAnchorEl: null,
   };
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
@@ -113,6 +126,7 @@ const BatchCreate = (): JSX.Element => {
       <FormControl className={classes.formControl}>
         <InputLabel id="demo-mutiple-chip-label">{t("resources")}</InputLabel>
         <Select
+          variant="filled"
           labelId="demo-mutiple-chip-label"
           id="demo-mutiple-chip"
           multiple
@@ -126,6 +140,7 @@ const BatchCreate = (): JSX.Element => {
                 return (
                   resource && (
                     <Chip
+                      size="small"
                       key={`resource-selected-${resource.id}`}
                       label={`${resource.definition_id} - ${resource.label}`}
                       className={classes.chip}
@@ -156,7 +171,7 @@ const BatchCreate = (): JSX.Element => {
         color="primary"
         disabled={!selectedResourceIds.length}
         className={classes.button}
-        endIcon={<PlayIcon />}
+        startIcon={<PlayIcon />}
         onClick={handleBatchRun}
       >
         <Typography>{t("run")}</Typography>
