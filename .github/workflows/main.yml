@@ -5,7 +5,7 @@ on:
     paths-ignore:
       - 'app/**'
     branches:
-      - "main"
+      - main
     tags:
       - "v*"
   pull_request:
@@ -13,27 +13,22 @@ on:
       - 'app/**'
 
 jobs:
-  lint:
-    runs-on: ubuntu-18.04
-
-    steps:
-      - run: |
-          echo "noop"
   build-and-publish:
     runs-on: ubuntu-18.04
     steps:
       - id: docker_meta
-        name: Docker meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        name: Docker Metadata action
+        uses: docker/metadata-action@v3.3.0
+        with:
+          images: arkhn/river
+          tags: |
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+            type=sha
         # compute tags:
         # - always tag with a short commit SHA : (arkhn/image:sha-${GITHUB_SHA::7})
         # - always tag with the branch same (replacing '/' with '-')
         # - when a tag follows semver (eg: v1.2.3), tag with 'latest' and '1.2.3'
-        with:
-          images: arkhn/river
-          tag-sha: true
-          tag-semver: |
-            {{version}}
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
@@ -104,13 +99,14 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - id: docker_meta
-        name: Docker meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        name: Docker Metadata action
+        uses: docker/metadata-action@v3.3.0
         with:
           images: arkhn/hapi-river
-          tag-sha: true
-          tag-semver: |
-            {{version}}
+          tags: |
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+            type=sha
       - uses: actions/checkout@v2
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
