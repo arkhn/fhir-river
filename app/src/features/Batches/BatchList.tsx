@@ -103,7 +103,6 @@ const BatchList = (): JSX.Element => {
 
   const handleBatchRetry = (batchId: string) => () => {
     console.log(batchId);
-    console.log("hey");
   };
 
   if (isBatchesLoading) return <CircularProgress />;
