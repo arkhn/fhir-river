@@ -2181,6 +2181,7 @@ components:
           type: string
         static_value:
           type: string
+          nullable: true
         updated_at:
           type: string
           format: date-time
@@ -2237,6 +2238,7 @@ components:
           type: string
         static_value:
           type: string
+          nullable: true
         input_group:
           type: string
       required:
@@ -2390,6 +2392,7 @@ components:
           type: string
         static_value:
           type: string
+          nullable: true
         input_group:
           type: string
     PatchedJoinRequest:

@@ -681,7 +681,8 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse =
+  /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -750,7 +751,8 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse =
+  /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -782,7 +784,8 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse =
+  /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -842,7 +845,8 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse =
+  /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -1166,7 +1170,7 @@ export type Input = {
   id: string;
   script?: string;
   concept_map_id?: string;
-  static_value?: string;
+  static_value?: string | null;
   updated_at: string;
   created_at: string;
   input_group: string;
@@ -1174,13 +1178,13 @@ export type Input = {
 export type InputRequest = {
   script?: string;
   concept_map_id?: string;
-  static_value?: string;
+  static_value?: string | null;
   input_group: string;
 };
 export type PatchedInputRequest = {
   script?: string;
   concept_map_id?: string;
-  static_value?: string;
+  static_value?: string | null;
   input_group?: string;
 };
 export type Join = {
