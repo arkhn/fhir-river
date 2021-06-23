@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
+import differenceBy from "lodash/differenceBy";
 import {
   bindMenu,
   bindTrigger,
@@ -73,24 +74,35 @@ const AttributeInputGroup = ({
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
   const [createInput] = useApiInputsCreateMutation();
   const { data: inputs } = useApiInputsListQuery({ inputGroup: inputGroup.id });
+  const {
+    data: apiConditions,
+    isError,
+    isFetching,
+  } = useApiConditionsListQuery({
+    inputGroup: inputGroup.id,
+  });
   const conditions = useAppSelector((state) =>
     conditionSelectors
       .selectAll(state)
       .filter((condition) => condition.input_group === inputGroup.id)
   );
-  const { data: apiConditions } = useApiConditionsListQuery({
-    inputGroup: inputGroup.id,
-  });
 
   useEffect(() => {
-    if (apiConditions && apiConditions.length > 0 && !conditions) {
-      dispatch(
-        conditionsAdded(
-          apiConditions.map((condition) => ({ ...condition, pending: false }))
-        )
+    if (apiConditions && !isError && !isFetching) {
+      const conditionDiff = differenceBy(
+        apiConditions,
+        conditions,
+        (condition) => condition.id
       );
+      if (conditionDiff.length > 0) {
+        dispatch(
+          conditionsAdded(
+            conditionDiff.map((condition) => ({ ...condition, pending: false }))
+          )
+        );
+      }
     }
-  }, [apiConditions, conditions, dispatch]);
+  }, [apiConditions, conditions, dispatch, isError, isFetching]);
 
   const handleDeleteInputGroup = async () => {
     try {
@@ -117,7 +129,12 @@ const AttributeInputGroup = ({
 
   const handleCreateCondition = () => {
     dispatch(
-      conditionAdded({ id: uuid(), input_group: inputGroup.id, pending: true })
+      conditionAdded({
+        id: uuid(),
+        action: "INCLUDE",
+        input_group: inputGroup.id,
+        pending: true,
+      })
     );
   };
 

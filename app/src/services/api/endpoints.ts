@@ -114,6 +114,9 @@ export const api = generatedApi
       apiColumnsList: {
         providesTags: providesList("Columns"),
       },
+      apiColumnsRetrieve: {
+        providesTags: providesOne("Columns"),
+      },
       apiColumnsUpdate: {
         invalidatesTags: invalidatesOne("Columns"),
       },
@@ -267,6 +270,9 @@ export const api = generatedApi
       apiConditionsCreate: {
         invalidatesTags: invalidatesList("Conditions"),
       },
+      apiConditionsUpdate: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
       apiConditionsDestroy: {
         invalidatesTags: invalidatesOne("Conditions"),
       },
@@ -284,6 +290,7 @@ export const {
   //Columns
   useApiColumnsCreateMutation,
   useApiColumnsListQuery,
+  useApiColumnsRetrieveQuery,
   useApiColumnsUpdateMutation,
   useApiColumnsDestroyMutation,
   // Sources
@@ -335,5 +342,6 @@ export const {
   // Conditions
   useApiConditionsListQuery,
   useApiConditionsCreateMutation,
+  useApiConditionsUpdateMutation,
   useApiConditionsDestroyMutation,
 } = api;
