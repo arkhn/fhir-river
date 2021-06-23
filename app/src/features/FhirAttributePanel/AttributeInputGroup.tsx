@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
+  Grid,
   Button,
   ListItemText,
   makeStyles,
@@ -12,7 +13,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import clsx from "clsx";
 import {
   bindMenu,
   bindTrigger,
@@ -44,28 +44,18 @@ type AttributeInputGroupProps = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  inputGroups: {
+  inputGoupContainer: {
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.default,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
   },
   button: {
     textTransform: "none",
-    marginTop: theme.spacing(1),
-  },
-  buttonCondition: {
-    marginTop: theme.spacing(3),
   },
   buttonDelete: {
     alignSelf: "flex-end",
   },
   deleteIcon: {
     fill: theme.palette.getContrastText(theme.palette.background.paper),
-  },
-  menu: {
-    marginTop: theme.spacing(1),
   },
 }));
 
@@ -145,67 +135,83 @@ const AttributeInputGroup = ({
   };
 
   return (
-    <Paper className={classes.inputGroups} variant="outlined">
-      {inputs &&
-        inputs.map((input) =>
-          input.static_value === null ? (
-            <SqlInput input={input} key={input.id} />
-          ) : (
-            <StaticInput input={input} key={input.id} />
-          )
-        )}
-      <Button
-        {...bindTrigger(popupState)}
-        size="small"
-        variant={inputs && inputs.length === 0 ? "outlined" : "text"}
-        className={classes.button}
-        startIcon={<Add />}
-        onClick={handleMenuClick}
-      >
-        <Typography>{t("addInput")}</Typography>
-      </Button>
-      <Menu
-        className={classes.menu}
-        {...bindMenu(popupState)}
-        getContentAnchorEl={null}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
-      >
-        <MenuItem>
-          <ListItemText primary={t("static")} onClick={handleAddStaticInput} />
-        </MenuItem>
-        <MenuItem>
-          <ListItemText
-            primary={t("fromAColumn")}
-            onClick={handleAddSqlInput}
-          />
-        </MenuItem>
-      </Menu>
-      {conditions &&
-        conditions.map((condition) => (
-          <Condition condition={condition} key={condition.id} />
-        ))}
-      <Button
-        size="small"
-        variant="outlined"
-        className={clsx(classes.button, classes.buttonCondition)}
-        startIcon={<Add />}
-        onClick={handleCreateCondition}
-      >
-        <Typography>{t("addCondition")}</Typography>
-      </Button>
-      <Button
-        size="small"
-        variant="outlined"
-        className={clsx(classes.button, classes.buttonDelete)}
-        startIcon={
-          <Icon icon={IconNames.TRASH} className={classes.deleteIcon} />
-        }
-      >
-        <Typography onClick={handleDeleteInputGroup}>
-          {t("deleteGroup")}
-        </Typography>
-      </Button>
+    <Paper variant="outlined" className={classes.inputGoupContainer}>
+      <Grid container direction="column" spacing={1}>
+        <Grid item>
+          {inputs &&
+            inputs.map((input) =>
+              input.static_value === null ? (
+                <SqlInput input={input} key={input.id} />
+              ) : (
+                <StaticInput input={input} key={input.id} />
+              )
+            )}
+        </Grid>
+        <Grid item>
+          <Button
+            {...bindTrigger(popupState)}
+            size="small"
+            variant={inputs && inputs.length === 0 ? "outlined" : "text"}
+            className={classes.button}
+            startIcon={<Add />}
+            onClick={handleMenuClick}
+          >
+            <Typography>{t("addInput")}</Typography>
+          </Button>
+          <Menu
+            {...bindMenu(popupState)}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            transformOrigin={{ vertical: "top", horizontal: "left" }}
+          >
+            <MenuItem>
+              <ListItemText
+                primary={t("static")}
+                onClick={handleAddStaticInput}
+              />
+            </MenuItem>
+            <MenuItem>
+              <ListItemText
+                primary={t("fromAColumn")}
+                onClick={handleAddSqlInput}
+              />
+            </MenuItem>
+          </Menu>
+        </Grid>
+        <Grid item container direction="column" spacing={1}>
+          {conditions &&
+            conditions.map((condition) => (
+              <Condition condition={condition} key={condition.id} />
+            ))}
+        </Grid>
+        <Grid item>
+          <Button
+            size="small"
+            className={classes.button}
+            variant={
+              conditions && conditions.length === 0 ? "outlined" : "text"
+            }
+            startIcon={<Add />}
+            onClick={handleCreateCondition}
+          >
+            <Typography>{t("addCondition")}</Typography>
+          </Button>
+        </Grid>
+        <Grid item direction="row-reverse" container>
+          <Button
+            size="small"
+            variant="outlined"
+            className={classes.button}
+            startIcon={
+              <Icon icon={IconNames.TRASH} className={classes.deleteIcon} />
+            }
+          >
+            <Typography onClick={handleDeleteInputGroup}>
+              {t("deleteGroup")}
+            </Typography>
+          </Button>
+        </Grid>
+      </Grid>
     </Paper>
   );
 };
