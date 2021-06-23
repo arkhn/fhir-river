@@ -7,7 +7,6 @@ import {
   Input,
   InputLabel,
   MenuItem,
-  MenuProps,
   Select,
   Typography,
 } from "@material-ui/core";
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
   },
   chip: {
-    margin: 2,
+    margin: theme.spacing(0.25),
   },
   mediumBold: {
     fontWeight: theme.typography.fontWeightMedium,
@@ -66,21 +65,6 @@ const BatchCreate = (): JSX.Element => {
   const { t } = useTranslation();
 
   const classes = useStyles();
-
-  const MenuProps: Partial<MenuProps> = {
-    PaperProps: {
-      className: classes.menuPaper,
-    },
-    anchorOrigin: {
-      vertical: "top",
-      horizontal: "left",
-    },
-    transformOrigin: {
-      vertical: "top",
-      horizontal: "left",
-    },
-    getContentAnchorEl: null,
-  };
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
@@ -150,7 +134,20 @@ const BatchCreate = (): JSX.Element => {
               })}
             </div>
           )}
-          MenuProps={MenuProps}
+          MenuProps={{
+            PaperProps: {
+              className: classes.menuPaper,
+            },
+            anchorOrigin: {
+              vertical: "top",
+              horizontal: "left",
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "left",
+            },
+            getContentAnchorEl: null,
+          }}
         >
           {resources &&
             resources.map(({ id, definition_id, label }) => (
