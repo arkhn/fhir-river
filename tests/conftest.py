@@ -1,4 +1,9 @@
+import time
+
 import pytest
+from confluent_kafka import admin
+
+from django.conf import settings
 
 
 @pytest.fixture
@@ -21,3 +26,29 @@ def force_authenticate(request, api_client):
     elif request.node.get_closest_marker("as_other_user"):
         other_user = request.getfixturevalue("other_user")
         api_client.force_authenticate(other_user)
+
+
+@pytest.fixture(autouse=True)
+def clear_topics(request):
+    """Clear topics after each test marked with `kafka`."""
+
+    def _clear_topics():
+        admin_client = admin.AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
+
+        def list_active_topics():
+            return [topic for topic in admin_client.list_topics().topics if topic != "__consumer_offsets"]
+
+        active_topics = list_active_topics()
+
+        if len(active_topics) > 0:
+            admin_client.delete_topics(active_topics, operation_timeout=1)
+
+            # Wait for the topics to be deleted. Note: the futures returned by
+            # `delete_topics` are unreliable to determine whether the topic deletion
+            # has been propagated.
+            while len(active_topics) > 0:
+                time.sleep(0.1)
+                active_topics = list_active_topics()
+
+    if request.node.get_closest_marker("kafka"):
+        request.addfinalizer(_clear_topics)
