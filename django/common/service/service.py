@@ -1,48 +1,34 @@
 import logging
-import re
-from typing import Callable, Dict, Type
 
 from confluent_kafka.error import ConsumeError
 
-from river.adapters.event_subscriber import EventSubscriber
-from river.domain import events
+from common.kafka.consumer import Consumer
+from common.service.event import Event
+from common.service.handler import Handler
 
-logger = logging.getLogger(__name__)
 event_logger = logging.getLogger("river.event")
 
 
 class Service:
-    """
-    Stateful service
+    """Stateful service"""
 
-    Args:
-        subscriber(EventSubscriber): client consuming events
-        handlers(Dict[str, Callable[[Type[events.Event]]): a dict mapping topic patterns
-            (eg: regex) to handler functions
-    """
-
-    def __init__(self, subscriber: EventSubscriber, handlers: Dict[str, Callable[[Type[events.Event]], None]]) -> None:
-        self.subscriber = subscriber
-        self.handlers = handlers
+    def __init__(self, consumer: Consumer, handler: Handler) -> None:
+        self.consumer = consumer
+        self.handler = handler
 
     def run(self):
-        topics = list(self.handlers.keys())
-        with self.subscriber.subscribe(topics):
+        with self.consumer.subscribe() as subscription:
             while True:
                 try:
-                    topic, raw = self.subscriber.poll()
+                    data = subscription()
                 except ConsumeError as err:
-                    logger.error(err)
+                    logging.error(err)
                     raise err
 
-                try:
-                    # topic can be regexp
-                    topic = next(t for t in self.handlers.keys() if re.match(t, topic))
-                except StopIteration:
-                    logger.error(f"Unhandled topic: {topic}")
+                event = Event(data)
 
                 try:
-                    self.handlers[topic](raw)
+                    self.handler(event)
                 except Exception:
                     event_logger.exception("Failed to process event")
                     continue

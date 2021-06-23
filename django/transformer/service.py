@@ -1,8 +1,11 @@
+import json
 import logging
+
+import redis
+from confluent_kafka import KafkaError, KafkaException
 
 from django.conf import settings
 
-import redis
 from common.analyzer import Analyzer
 from common.errors import OperationOutcome
 from common.kafka.consumer import Consumer
@@ -10,12 +13,15 @@ from common.kafka.producer import Producer
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
-from confluent_kafka import KafkaError, KafkaException
 from transformer.conf import conf
 from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
 
 logger = logging.getLogger(__name__)
+
+
+class MappingUnavailable(Exception):
+    pass
 
 
 def transform_row(analysis, row, transformer: Transformer):
@@ -47,11 +53,13 @@ class TransformHandler(Handler):
         producer: Producer,
         transformer: Transformer,
         binder: ReferenceBinder,
+        mapping_redis: redis.Redis,
         analyzer: Analyzer,
     ) -> None:
         self.producer = producer
         self.transformer = transformer
         self.binder = binder
+        self.mapping_redis = mapping_redis
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
@@ -59,7 +67,17 @@ class TransformHandler(Handler):
         resource_id = event.data["resource_id"]
         record = event.data["record"]
 
-        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
+        serialized_mapping = self.mapping_redis.get(f"{batch_id}:{resource_id}")
+        if serialized_mapping is None:
+            logger.exception(
+                {
+                    "message": f"Mapping not found for batch {batch_id} and resource {resource_id}",
+                    "resource_id": resource_id,
+                },
+            )
+            raise MappingUnavailable(resource_id)
+        mapping = json.loads(serialized_mapping)
+        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id, mapping)
 
         fhir_object = transform_row(analysis, record, transformer=self.transformer)
 
@@ -115,11 +133,12 @@ class TransformerService(Service):
             port=settings.REDIS_MAPPINGS_PORT,
             db=settings.REDIS_MAPPINGS_DB,
         )
-        analyzer = Analyzer(redis_client=mapping_redis)
+        analyzer = Analyzer()
         handler = TransformHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
             transformer=Transformer(),
             binder=ReferenceBinder(),
+            mapping_redis=mapping_redis,
             analyzer=analyzer,
         )
         return Service(consumer, handler)
