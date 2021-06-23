@@ -28,6 +28,7 @@ import {
 import { InputGroup } from "services/api/generated/api.generated";
 
 import SqlInput from "./SqlInput";
+import StaticInput from "./StaticInput";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
@@ -63,12 +64,11 @@ const AttributeInputGroup = ({
   inputGroup,
 }: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
-
+  const classes = useStyles();
   const popupState = usePopupState({
     variant: "popover",
     popupId: "popup",
   });
-
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
   const [createInput] = useApiInputsCreateMutation();
   const { data: inputs } = useApiInputsListQuery({ inputGroup: inputGroup.id });
@@ -83,11 +83,12 @@ const AttributeInputGroup = ({
     }
   };
 
-  const handleCreateInput = async () => {
+  const handleCreateInput = async (isStatic: boolean) => {
     try {
       await createInput({
         inputRequest: {
           input_group: inputGroup.id,
+          static_value: isStatic ? "" : null,
         },
       });
     } catch (error) {
@@ -99,16 +100,25 @@ const AttributeInputGroup = ({
     popupState.open(e);
   };
 
-  const handleAddInput = () => {
-    handleCreateInput();
+  const handleAddSqlInput = () => {
+    handleCreateInput(false);
+    popupState.close();
+  };
+  const handleAddStaticInput = () => {
+    handleCreateInput(true);
     popupState.close();
   };
 
-  const classes = useStyles();
   return (
     <Paper className={classes.inputGroups} variant="outlined">
       {inputs &&
-        inputs.map((input) => <SqlInput input={input} key={input.id} />)}
+        inputs.map((input) =>
+          input.static_value === null ? (
+            <SqlInput input={input} key={input.id} />
+          ) : (
+            <StaticInput input={input} key={input.id} />
+          )
+        )}
       <Button
         {...bindTrigger(popupState)}
         size="small"
@@ -127,10 +137,13 @@ const AttributeInputGroup = ({
         transformOrigin={{ vertical: "top", horizontal: "left" }}
       >
         <MenuItem>
-          <ListItemText primary={t("static")} />
+          <ListItemText primary={t("static")} onClick={handleAddStaticInput} />
         </MenuItem>
         <MenuItem>
-          <ListItemText primary={t("fromAColumn")} onClick={handleAddInput} />
+          <ListItemText
+            primary={t("fromAColumn")}
+            onClick={handleAddSqlInput}
+          />
         </MenuItem>
       </Menu>
       <Button
