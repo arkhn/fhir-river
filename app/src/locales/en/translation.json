@@ -100,8 +100,10 @@
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
+  "clickOnAFireIcon": "Click on a",
+  "inOrderToPreview": "icon in order to preview a line as a FHIR instance",
+  "condition": "Condition",
   "useThisGroupIf": "Use this group if...",
   "resources": "Resources",
-  "condition": "Condition",
   "retry": "Retry"
 }
