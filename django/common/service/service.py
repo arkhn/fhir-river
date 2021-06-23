@@ -12,7 +12,14 @@ event_logger = logging.getLogger("river.event")
 
 
 class Service:
-    """Stateful service"""
+    """
+    Stateful service
+
+    Args:
+        subscriber(EventSubscriber): client consuming events
+        handlers(Dict[str, Callable[[Type[events.Event]]): a dict mapping topic patterns
+            (eg: regex) to handler functions
+    """
 
     def __init__(self, subscriber: EventSubscriber, handlers: Dict[str, Callable[[Type[events.Event]], None]]) -> None:
         self.subscriber = subscriber

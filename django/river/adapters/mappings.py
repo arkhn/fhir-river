@@ -3,6 +3,10 @@ from utils.caching import cache
 
 
 class MappingsRepository:
+    """This class is an abstraction that is used when we need to fetch a mapping.
+    It has a single method `get` with the mapping id as argument.
+    """
+
     def get(self, id: str):
         raise NotImplementedError
 

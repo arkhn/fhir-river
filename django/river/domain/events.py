@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 class Event:
@@ -7,10 +7,10 @@ class Event:
 
 
 @dataclass(frozen=True)
-class BatchResource(Event):
+class BatchEvent(Event):
     batch_id: str
     resource_id: str
-    primary_key_values: Optional[Any] = None
+    primary_key_values: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
@@ -18,4 +18,4 @@ class ExtractedRecord(Event):
     batch_id: str
     resource_type: str
     resource_id: str
-    record: Any
+    record: Dict[str, Any]

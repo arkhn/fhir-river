@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class EventSubscriber:
     @contextmanager
-    def subscribe(self, topic: str):
+    def subscribe(self, topics: List[str]):
         raise NotImplementedError
 
     def poll(self):
@@ -27,14 +27,16 @@ class FakeEventSubscriber(EventSubscriber):
         self._seen = []
 
     @contextmanager
-    def subscribe(self, topic: str):
-        self.topic = topic
+    def subscribe(self, topics: List[str]):
+        self.topics = topics
         yield self
 
     def poll(self):
-        curr = self._events[self.topic].pop(0)
-        self._seen.append(curr)
-        return curr
+        for topic in self.topics:
+            if topic_events := self._events[topic]:
+                curr = topic_events.pop(0)
+                self._seen.append(curr)
+                return curr
 
 
 class KafkaEventSubscriber(EventSubscriber):

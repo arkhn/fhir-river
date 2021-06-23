@@ -41,6 +41,13 @@ CACHE_BACKENDS = {"redis": RedisCacheBackend, "memory": InMemoryCacheBackend}
 
 
 def cache(key_param: str, backend: str = "redis", expire_after: timedelta = None):
+    """This function is used as a decorator to cache the result of a function
+
+    key_param: the param you want to use as a key for caching
+    backend: `redis` or `memory`
+    expire_after: select cache key TTL
+    """
+
     def _decorator(func):
         backend_str = backend or getattr(settings, "CACHE_BACKEND", "redis")
         backend_instance = CACHE_BACKENDS[backend_str]()
