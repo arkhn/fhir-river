@@ -48,7 +48,7 @@ class RedisMappingsRepository(MappingsRepository):
 
     def set(self, batch_id: str, resource_id: str, mapping: Any):
         key = build_repository_key(batch_id, resource_id)
-        self.mapping_redis.set(key, json.dumps(mapping))
+        self.mapping_redis.set(key, mapping)
 
     def get(self, batch_id: str, resource_id: str):
         key = build_repository_key(batch_id, resource_id)
