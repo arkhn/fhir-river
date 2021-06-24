@@ -107,9 +107,14 @@ const Preview = (): JSX.Element => {
     sourceId?: string;
     mappingId?: string;
   }>();
-  const { data: mapping } = useApiResourcesRetrieveQuery({
-    id: mappingId ?? "",
-  });
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    {
+      id: mappingId ?? "",
+    },
+    {
+      skip: !Boolean(mappingId),
+    }
+  );
   const [fhirInstance, setFhirInstance] = useState<
     typeof patientJson | undefined
   >(undefined);
