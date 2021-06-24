@@ -13,7 +13,7 @@ from fhir.resources import construct_fhir_element
 
 import redis
 import scripts
-from adapters.mappings import RedisMappingsRepository
+from river.adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.producer import CustomJSONEncoder, Producer

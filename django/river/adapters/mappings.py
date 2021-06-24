@@ -1,7 +1,10 @@
+import json
+import logging
 from typing import Any
 
-from common.mapping.fetch_mapping import fetch_resource_mapping
-from utils.caching import cache
+import redis
+
+logger = logging.getLogger(__name__)
 
 
 class MappingUnavailable(Exception):
@@ -35,7 +38,7 @@ class FakeMappingsRepository(MappingsRepository):
 
     def get(self, batch_id: str, resource_id: str):
         key = build_repository_key(batch_id, resource_id)
-        self._seen.append(ikeyd)
+        self._seen.append(key)
         return self._mappings[key]
 
 
@@ -45,7 +48,7 @@ class RedisMappingsRepository(MappingsRepository):
 
     def set(self, batch_id: str, resource_id: str, mapping: Any):
         key = build_repository_key(batch_id, resource_id)
-        self.mappings_redis.set(key, json.dumps(resource_mapping))
+        self.mapping_redis.set(key, json.dumps(mapping))
 
     def get(self, batch_id: str, resource_id: str):
         key = build_repository_key(batch_id, resource_id)

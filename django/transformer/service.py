@@ -1,4 +1,3 @@
-import json
 import logging
 
 import redis
@@ -6,7 +5,6 @@ from confluent_kafka import KafkaError, KafkaException
 
 from django.conf import settings
 
-from adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.errors import OperationOutcome
 from common.kafka.consumer import Consumer
@@ -14,6 +12,7 @@ from common.kafka.producer import Producer
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
+from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
 from transformer.conf import conf
 from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
@@ -38,7 +37,9 @@ def transform_row(analysis, row, transformer: Transformer):
         return fhir_document
 
     except Exception as e:
-        logger.exception({"message": str(e), **logging_extras},)
+        logger.exception(
+            {"message": str(e), **logging_extras},
+        )
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
 
@@ -77,9 +78,7 @@ class TransformHandler(Handler):
                 "definition_id": analysis.definition_id,
             },
         )
-        resolved_fhir_instance = self.binder.resolve_references(
-            fhir_object, analysis.reference_paths
-        )
+        resolved_fhir_instance = self.binder.resolve_references(fhir_object, analysis.reference_paths)
 
         try:
             self.producer.produce_event(

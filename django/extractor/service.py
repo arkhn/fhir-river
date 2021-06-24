@@ -1,4 +1,3 @@
-import json
 import logging
 
 import redis
@@ -6,7 +5,6 @@ from confluent_kafka import KafkaError, KafkaException
 
 from django.conf import settings
 
-from adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.consumer import Consumer
@@ -16,6 +14,7 @@ from common.service.handler import Handler
 from common.service.service import Service
 from extractor.conf import conf
 from extractor.extract import Extractor
+from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
 
 logger = logging.getLogger(__name__)
 
