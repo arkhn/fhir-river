@@ -6,6 +6,7 @@ from confluent_kafka import KafkaError, KafkaException
 
 from django.conf import settings
 
+from adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.errors import OperationOutcome
 from common.kafka.consumer import Consumer
@@ -18,10 +19,6 @@ from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
 
 logger = logging.getLogger(__name__)
-
-
-class MappingUnavailable(Exception):
-    pass
 
 
 def transform_row(analysis, row, transformer: Transformer):
@@ -41,9 +38,7 @@ def transform_row(analysis, row, transformer: Transformer):
         return fhir_document
 
     except Exception as e:
-        logger.exception(
-            {"message": str(e), **logging_extras},
-        )
+        logger.exception({"message": str(e), **logging_extras},)
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
 
@@ -53,13 +48,13 @@ class TransformHandler(Handler):
         producer: Producer,
         transformer: Transformer,
         binder: ReferenceBinder,
-        mapping_redis: redis.Redis,
+        mapping_repository: MappingsRepository,
         analyzer: Analyzer,
     ) -> None:
         self.producer = producer
         self.transformer = transformer
         self.binder = binder
-        self.mapping_redis = mapping_redis
+        self.mapping_repository = mapping_repository
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
@@ -67,16 +62,7 @@ class TransformHandler(Handler):
         resource_id = event.data["resource_id"]
         record = event.data["record"]
 
-        serialized_mapping = self.mapping_redis.get(f"{batch_id}:{resource_id}")
-        if serialized_mapping is None:
-            logger.exception(
-                {
-                    "message": f"Mapping not found for batch {batch_id} and resource {resource_id}",
-                    "resource_id": resource_id,
-                },
-            )
-            raise MappingUnavailable(resource_id)
-        mapping = json.loads(serialized_mapping)
+        mapping = self.mapping_repository.get(batch_id, resource_id)
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id, mapping)
 
         fhir_object = transform_row(analysis, record, transformer=self.transformer)
@@ -91,7 +77,9 @@ class TransformHandler(Handler):
                 "definition_id": analysis.definition_id,
             },
         )
-        resolved_fhir_instance = self.binder.resolve_references(fhir_object, analysis.reference_paths)
+        resolved_fhir_instance = self.binder.resolve_references(
+            fhir_object, analysis.reference_paths
+        )
 
         try:
             self.producer.produce_event(
@@ -133,12 +121,13 @@ class TransformerService(Service):
             port=settings.REDIS_MAPPINGS_PORT,
             db=settings.REDIS_MAPPINGS_DB,
         )
+        mapping_repository = RedisMappingsRepository(mapping_redis)
         analyzer = Analyzer()
         handler = TransformHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
             transformer=Transformer(),
             binder=ReferenceBinder(),
-            mapping_redis=mapping_redis,
+            mapping_repository=mapping_repository,
             analyzer=analyzer,
         )
         return Service(consumer, handler)

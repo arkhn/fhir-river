@@ -13,6 +13,7 @@ from fhir.resources import construct_fhir_element
 
 import redis
 import scripts
+from adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.producer import CustomJSONEncoder, Producer
@@ -69,10 +70,11 @@ class BatchEndpoint(viewsets.ViewSet):
         mappings_redis = redis.Redis(
             host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
         )
+        mappings_repository = RedisMappingsRepository(mappings_redis)
 
         for resource_id in resource_ids:
             resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
-            mappings_redis.set(f"{batch_id}:{resource_id}", json.dumps(resource_mapping))
+            mappings_repository.set(batch_id, resource_id, json.dumps(resource_mapping))
 
         # Add batch info to redis
         batch_counter_redis = redis.Redis(

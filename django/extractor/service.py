@@ -6,6 +6,7 @@ from confluent_kafka import KafkaError, KafkaException
 
 from django.conf import settings
 
+from adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.consumer import Consumer
@@ -17,10 +18,6 @@ from extractor.conf import conf
 from extractor.extract import Extractor
 
 logger = logging.getLogger(__name__)
-
-
-class MappingUnavailable(Exception):
-    pass
 
 
 def broadcast_events(
@@ -76,12 +73,12 @@ class ExtractHandler(Handler):
         self,
         producer: Producer,
         counter_redis: redis.Redis,
-        mapping_redis: redis.Redis,
+        mapping_repository: MappingsRepository,
         analyzer: Analyzer,
     ) -> None:
         self.producer = producer
         self.counter_redis = counter_redis
-        self.mapping_redis = mapping_redis
+        self.mapping_repository = mapping_repository
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
@@ -89,18 +86,9 @@ class ExtractHandler(Handler):
         resource_id = event.data["resource_id"]
         primary_key_values = event.data.get("primary_key_values", None)
 
-        serialized_mapping = self.mapping_redis.get(f"{batch_id}:{resource_id}")
-        if serialized_mapping is None:
-            logger.exception(
-                {
-                    "message": f"Mapping not found for batch {batch_id} and resource {resource_id}",
-                    "resource_id": resource_id,
-                },
-            )
-            raise MappingUnavailable(resource_id)
-        mapping = json.loads(serialized_mapping)
-
+        mapping = self.mapping_repository.get(batch_id, resource_id)
         analysis = self.analyzer.load_cached_analysis(batch_id, resource_id, mapping)
+
         db_connection = DBConnection(analysis.source_credentials)
         with db_connection.session_scope() as session:
             extractor = Extractor(session, db_connection.metadata)
@@ -130,11 +118,12 @@ class ExtractorService(Service):
             port=settings.REDIS_COUNTER_PORT,
             db=settings.REDIS_COUNTER_DB,
         )
+        mapping_repository = RedisMappingsRepository(mapping_redis)
         analyzer = Analyzer()
         handler = ExtractHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
             counter_redis=counter_redis,
-            mapping_redis=mapping_redis,
+            mapping_repository=mapping_repository,
             analyzer=analyzer,
         )
         return Service(consumer, handler)
