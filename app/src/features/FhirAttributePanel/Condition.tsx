@@ -186,13 +186,13 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
     if (condition.id) {
-      const value = event.target.value as ConditionRelationEnum;
-      const resetConditionValue = value === "NOTNULL" || value === "NULL";
+      const relation = event.target.value as ConditionRelationEnum;
+      const resetConditionValue = relation === "NOTNULL" || relation === "NULL";
       dispatch(
         conditionUpdated({
           id: condition.id,
           changes: {
-            relation: value,
+            relation,
             value: resetConditionValue ? "" : condition.value,
           },
         })
