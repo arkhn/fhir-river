@@ -131,7 +131,7 @@ const Preview = (): JSX.Element => {
     </IconButton>
   );
 
-  const handleFhirIconClick = (index: number) => {
+  const handleFhirIconClick = (index: number) => () => {
     const primarykey = mapping?.primary_key_table;
     if (primarykey) {
       const indexPrimaryKey = exploredData.fields.indexOf(primarykey);
@@ -173,7 +173,7 @@ const Preview = (): JSX.Element => {
               <TableRow hover key={uuid()} className={clsx(classes.rowBorder)}>
                 <TableCell
                   className={clsx(classes.fhirIconCell, classes.cellsTitle)}
-                  onClick={() => handleFhirIconClick(index)}
+                  onClick={handleFhirIconClick(index)}
                 >
                   <FhirIconCell />
                 </TableCell>
