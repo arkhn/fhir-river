@@ -15,14 +15,26 @@ import {
   TableBody,
   TablePagination,
   TableFooter,
+  Link as MuiLink,
+  LinkProps,
 } from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
-import { Resource } from "services/api/generated/api.generated";
-
 import apiAnswer from "./previewDataMock.json";
+import resource from "./PreviewResource.json";
+
+interface LinkRouterProps extends LinkProps {
+  to: string;
+  replace?: boolean;
+}
+
+const Link = (props: LinkRouterProps) => (
+  <MuiLink {...props} component={RouterLink} />
+);
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -75,26 +87,24 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${theme.palette.divider}`,
     padding: 0,
   },
+  link: {
+    alignSelf: "flex-start",
+    display: "flex",
+    alignItems: "center",
+  },
 }));
-
-const resource: Resource = {
-  created_at: "2021-06-07T12:05:35.185414+02:00",
-  definition_id: "Account",
-  id: "ckpmg7tqn00070qm44o1qd4uf",
-  label: "account",
-  logical_reference: "ckpmg7tqo00080qm40dc8snuv",
-  primary_key_column: "id",
-  primary_key_owner: "ckpmg74v800060qm4e2se653z",
-  primary_key_table: "auth_group",
-  source: "ckpmg6c0w00030qm4wj70fqbl",
-  updated_at: "2021-06-07T12:05:35.185334+02:00",
-};
 
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
+    mappingId?: string;
+  }>();
+
+  console.log(sourceId, mappingId);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
@@ -102,6 +112,7 @@ const Preview = (): JSX.Element => {
   ) => {
     setPage(newPage);
   };
+
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -129,6 +140,16 @@ const Preview = (): JSX.Element => {
 
   return (
     <Container className={classes.container} maxWidth="xl">
+      <Link
+        className={classes.link}
+        variant="h5"
+        color="textSecondary"
+        to={`/sources/${sourceId}/mappings/${mappingId}`}
+        gutterBottom
+      >
+        <ArrowBack />
+        {t("back")}
+      </Link>
       <TableContainer className={classes.table}>
         <Table size="small">
           <TableHead>
