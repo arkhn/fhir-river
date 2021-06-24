@@ -43,9 +43,6 @@ const Router = (): JSX.Element => {
           <Route exact path="/sources/:sourceId/mappings/:mappingId">
             <Mapping />
           </Route>
-          <Route exact path="/sources/:sourceId/mappings/:mappingId/preview">
-            <Preview />
-          </Route>
           <Route
             exact
             path="/sources/:sourceId/mappings/:mappingId/attributes/:attributeId"
@@ -54,6 +51,15 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
             <EditMapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId/preview">
+            <Preview />
+          </Route>
+          <Route
+            exact
+            path="/sources/:sourceId/mappings/:mappingId/attributes/:attributeId/preview"
+          >
+            <Preview />
           </Route>
           <Route>
             <PageNotFound />
