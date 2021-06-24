@@ -129,7 +129,9 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
                 changes: { ...newCondition, pending: false },
               })
             );
-          } catch (error) {}
+          } catch (error) {
+            console.error(error);
+          }
         } else {
           await updateCondition({
             id: condition.id,
@@ -171,7 +173,9 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
             })
           );
         }
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
   const handleDeleteCondition = async () => {
@@ -180,7 +184,9 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
         condition.id &&
         (await deleteCondition({ id: condition.id }));
       condition.id && dispatch(conditionRemoved(condition.id));
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleRelationChange = (
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
