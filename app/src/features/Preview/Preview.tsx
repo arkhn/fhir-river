@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -16,15 +16,19 @@ import {
   TableFooter,
   Link as MuiLink,
   LinkProps,
+  useMediaQuery,
 } from "@material-ui/core";
 import { ArrowBack } from "@material-ui/icons";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import ReactJson from "react-json-view";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
+import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
+
+import patientJson from "./PatientFhir.json";
 import exploredData from "./previewDataMock.json";
-import resource from "./PreviewResource.json";
 
 interface LinkRouterProps extends LinkProps {
   to: string;
@@ -48,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid ${theme.palette.divider}`,
     borderBottom: "none",
     borderCollapse: "separate",
+    marginBottom: theme.spacing(3),
   },
   icon: {
     width: theme.spacing(3),
@@ -71,7 +76,6 @@ const useStyles = makeStyles((theme) => ({
   },
   texts: {
     textAlign: "center",
-    margin: theme.spacing(4),
   },
   cellsTitle: {
     background: theme.palette.background.paper,
@@ -84,6 +88,16 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  jsonViewer: {
+    padding: 0,
+    border: `1px solid ${theme.palette.divider}`,
+
+    borderRadius: theme.shape.borderRadius,
+    "& > div": {
+      padding: theme.spacing(3),
+      borderRadius: theme.shape.borderRadius,
+    },
+  },
 }));
 
 const Preview = (): JSX.Element => {
@@ -93,6 +107,13 @@ const Preview = (): JSX.Element => {
     sourceId?: string;
     mappingId?: string;
   }>();
+  const { data: mapping } = useApiResourcesRetrieveQuery({
+    id: mappingId ?? "",
+  });
+  const [fhirInstance, setFhirInstance] = useState<
+    typeof patientJson | undefined
+  >(undefined);
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const FhirIconCell = () => (
     <IconButton size="small" className={classes.icon}>
@@ -105,10 +126,11 @@ const Preview = (): JSX.Element => {
   );
 
   const handleFhirIconClick = (index: number) => {
-    const primarykey = resource.primary_key_table;
+    const primarykey = mapping?.primary_key_table;
     if (primarykey) {
       const indexPrimaryKey = exploredData.fields.indexOf(primarykey);
       console.log(exploredData.rows[index]?.[indexPrimaryKey]);
+      setFhirInstance(patientJson);
     }
   };
 
@@ -156,13 +178,26 @@ const Preview = (): JSX.Element => {
           <TableFooter></TableFooter>
         </Table>
       </TableContainer>
-      <div className={classes.texts}>
-        <Typography>
-          {t("clickOnAFireIcon")}{" "}
-          <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
-          {t("inOrderToPreview")}
-        </Typography>
-      </div>
+      {!fhirInstance && (
+        <div className={classes.texts}>
+          <Typography>
+            {t("clickOnAFireIcon")}{" "}
+            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
+            {t("inOrderToPreview")}
+          </Typography>
+        </div>
+      )}
+      {fhirInstance && (
+        <Container className={classes.jsonViewer}>
+          <ReactJson
+            src={fhirInstance}
+            theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
+            collapsed={1}
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />
+        </Container>
+      )}
     </Container>
   );
 };
