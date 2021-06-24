@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
@@ -54,13 +54,15 @@ const FhirAttributePanel = (): JSX.Element => {
     <>
       {!isError && (
         <div className={classes.container}>
-          {attributeInputGroups &&
-            attributeInputGroups.map((inputGroup) => (
-              <AttributeInputGroup
-                key={inputGroup.id}
-                inputGroup={inputGroup}
-              />
-            ))}
+          <Grid container spacing={2} direction="column">
+            {attributeInputGroups &&
+              attributeInputGroups.map((inputGroup) => (
+                <AttributeInputGroup
+                  key={inputGroup.id}
+                  inputGroup={inputGroup}
+                />
+              ))}
+          </Grid>
           {attribute && (
             <Button
               size="small"
