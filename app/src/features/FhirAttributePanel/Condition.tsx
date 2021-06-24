@@ -117,15 +117,17 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
         condition.relation
       )
         if (condition.pending) {
-          const newCondition = await createCondition({
-            conditionRequest: condition as ConditionRequest,
-          }).unwrap();
-          dispatch(
-            conditionUpdated({
-              id: condition.id,
-              changes: { ...newCondition, pending: false },
-            })
-          );
+          try {
+            const newCondition = await createCondition({
+              conditionRequest: condition as ConditionRequest,
+            }).unwrap();
+            dispatch(
+              conditionUpdated({
+                id: condition.id,
+                changes: { ...newCondition, pending: false },
+              })
+            );
+          } catch (error) {}
         } else {
           await updateCondition({
             id: condition.id,
@@ -143,37 +145,40 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
     }
 
     if (column.id && column.table && column.column && column.owner) {
-      const newColumn = column.pending
-        ? await createColumn({
-            columnRequest: column as ColumnRequest,
-          }).unwrap()
-        : await updateColumn({
-            id: column.id,
-            columnRequest: column as ColumnRequest,
-          }).unwrap();
+      try {
+        const newColumn = column.pending
+          ? await createColumn({
+              columnRequest: column as ColumnRequest,
+            }).unwrap()
+          : await updateColumn({
+              id: column.id,
+              columnRequest: column as ColumnRequest,
+            }).unwrap();
 
-      dispatch(
-        columnUpdated({
-          id: column.id,
-          changes: { ...newColumn, pending: false },
-        })
-      );
-
-      if (condition.id && newColumn.id !== condition.column) {
         dispatch(
-          conditionUpdated({
-            id: condition.id,
-            changes: { column: newColumn.id },
+          columnUpdated({
+            id: column.id,
+            changes: { ...newColumn, pending: false },
           })
         );
-      }
+        if (condition.id && newColumn.id !== condition.column) {
+          dispatch(
+            conditionUpdated({
+              id: condition.id,
+              changes: { column: newColumn.id },
+            })
+          );
+        }
+      } catch (error) {}
     }
   };
   const handleDeleteCondition = async () => {
-    !condition.pending &&
-      condition.id &&
-      (await deleteCondition({ id: condition.id }));
-    condition.id && dispatch(conditionRemoved(condition.id));
+    try {
+      !condition.pending &&
+        condition.id &&
+        (await deleteCondition({ id: condition.id }));
+      condition.id && dispatch(conditionRemoved(condition.id));
+    } catch (error) {}
   };
   const handleRelationChange = (
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
