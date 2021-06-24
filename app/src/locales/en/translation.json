@@ -56,6 +56,13 @@
   ">=": "is greater than or equal",
   "<": "is lesser than",
   "<=": "is lesser than or equal",
+  "EQ": "==",
+  "GE": ">=",
+  "GT": ">",
+  "LE": "<=",
+  "LT": "<",
+  "NOTNULL": "is not null",
+  "NULL": "is null",
   "selectOperation": "Select operation",
   "typeValue": "Type value",
   "filterWithCount": "{{count}} filter",
@@ -81,5 +88,6 @@
   "addCondition": "Add a condition",
   "addSlice": "Add slice",
   "addItem": "Add item",
-  "sliceName": "Slice name"
+  "sliceName": "Slice name",
+  "useThisGroupIf": "Use this group if..."
 }

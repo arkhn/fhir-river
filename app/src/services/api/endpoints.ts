@@ -27,6 +27,7 @@ const tagTypes = [
   "ValueSets",
   "InputGroups",
   "Inputs",
+  "Conditions",
 ];
 
 export const api = generatedApi
@@ -112,6 +113,9 @@ export const api = generatedApi
       },
       apiColumnsList: {
         providesTags: providesList("Columns"),
+      },
+      apiColumnsRetrieve: {
+        providesTags: providesOne("Columns"),
       },
       apiColumnsUpdate: {
         invalidatesTags: invalidatesOne("Columns"),
@@ -257,6 +261,21 @@ export const api = generatedApi
       apiInputsUpdate: {
         invalidatesTags: invalidatesOne("Inputs"),
       },
+      /**
+       * Conditions
+       */
+      apiConditionsList: {
+        providesTags: providesList("Conditions"),
+      },
+      apiConditionsCreate: {
+        invalidatesTags: invalidatesList("Conditions"),
+      },
+      apiConditionsUpdate: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
+      apiConditionsDestroy: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
     },
   });
 
@@ -271,6 +290,7 @@ export const {
   //Columns
   useApiColumnsCreateMutation,
   useApiColumnsListQuery,
+  useApiColumnsRetrieveQuery,
   useApiColumnsUpdateMutation,
   useApiColumnsDestroyMutation,
   // Sources
@@ -319,4 +339,9 @@ export const {
   useApiInputsCreateMutation,
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
+  // Conditions
+  useApiConditionsListQuery,
+  useApiConditionsCreateMutation,
+  useApiConditionsUpdateMutation,
+  useApiConditionsDestroyMutation,
 } = api;
