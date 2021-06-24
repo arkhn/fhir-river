@@ -1,9 +1,5 @@
-import json
 import logging
-import os
 import re
-
-import redis
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -16,45 +12,21 @@ from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
 
-FHIR_API_URL = os.getenv("FHIR_API_URL")
-
 logger = logging.getLogger(__name__)
 
 
-class MappingUnavailable(Exception):
-    pass
-
-
 class Analyzer:
-    def __init__(self, redis_client: redis.Redis = None):
-        self.redis = redis_client
+    def __init__(self):
         # Store analyses
         self.analyses: dict = {}
 
         self._cur_analysis = Analysis()
 
-    def load_cached_analysis(self, batch_id, resource_id):
-        if self.redis is None:
-            raise Exception("Cannot use caching without a redis client")
-
+    def load_cached_analysis(self, batch_id, resource_id, mapping):
         cache_key = f"{batch_id}:{resource_id}"
         if cache_key in self.analyses:
             analysis = self.analyses[cache_key]
         else:
-            # Get mapping from redis
-            serialized_mapping = self.redis.get(cache_key)
-            # Raise error if mapping wasn't found
-            if serialized_mapping is None:
-                logger.exception(
-                    {
-                        "message": f"Mapping not found for batch {batch_id} and resource {resource_id}",
-                        "resource_id": resource_id,
-                    },
-                )
-                raise MappingUnavailable(resource_id)
-
-            # Turn serialized mapping into an object
-            mapping = json.loads(serialized_mapping)
             analysis = self.analyze(mapping)
 
             # Store analysis

@@ -1,8 +1,10 @@
 import logging
 
+import redis
+from confluent_kafka import KafkaError, KafkaException
+
 from django.conf import settings
 
-import redis
 from common.analyzer import Analyzer
 from common.errors import OperationOutcome
 from common.kafka.consumer import Consumer
@@ -10,7 +12,7 @@ from common.kafka.producer import Producer
 from common.service.event import Event
 from common.service.handler import Handler
 from common.service.service import Service
-from confluent_kafka import KafkaError, KafkaException
+from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
 from transformer.conf import conf
 from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
@@ -47,11 +49,13 @@ class TransformHandler(Handler):
         producer: Producer,
         transformer: Transformer,
         binder: ReferenceBinder,
+        mapping_repository: MappingsRepository,
         analyzer: Analyzer,
     ) -> None:
         self.producer = producer
         self.transformer = transformer
         self.binder = binder
+        self.mapping_repository = mapping_repository
         self.analyzer = analyzer
 
     def __call__(self, event: Event):
@@ -59,7 +63,8 @@ class TransformHandler(Handler):
         resource_id = event.data["resource_id"]
         record = event.data["record"]
 
-        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id)
+        mapping = self.mapping_repository.get(batch_id, resource_id)
+        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id, mapping)
 
         fhir_object = transform_row(analysis, record, transformer=self.transformer)
 
@@ -115,11 +120,13 @@ class TransformerService(Service):
             port=settings.REDIS_MAPPINGS_PORT,
             db=settings.REDIS_MAPPINGS_DB,
         )
-        analyzer = Analyzer(redis_client=mapping_redis)
+        mapping_repository = RedisMappingsRepository(mapping_redis)
+        analyzer = Analyzer()
         handler = TransformHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
             transformer=Transformer(),
             binder=ReferenceBinder(),
+            mapping_repository=mapping_repository,
             analyzer=analyzer,
         )
         return Service(consumer, handler)
