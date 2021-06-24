@@ -59,10 +59,12 @@ const StaticInput = ({ input }: InputProps): JSX.Element => {
 
   const handleInputBlur = async () => {
     if (staticValue !== input.static_value) {
-      await updateInput({
-        id: input.id,
-        inputRequest: { ...input, static_value: staticValue },
-      });
+      try {
+        await updateInput({
+          id: input.id,
+          inputRequest: { ...input, static_value: staticValue },
+        });
+      } catch (error) {}
     }
   };
 

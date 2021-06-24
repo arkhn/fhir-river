@@ -105,21 +105,23 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
     }
 
     if (column.id && column.table && column.column && column.owner) {
-      const newColumn = column.pending
-        ? await createColumn({
-            columnRequest: column as ColumnRequest,
-          }).unwrap()
-        : await updateColumn({
-            id: column.id,
-            columnRequest: column as ColumnRequest,
-          }).unwrap();
+      try {
+        const newColumn = column.pending
+          ? await createColumn({
+              columnRequest: column as ColumnRequest,
+            }).unwrap()
+          : await updateColumn({
+              id: column.id,
+              columnRequest: column as ColumnRequest,
+            }).unwrap();
 
-      dispatch(
-        columnUpdated({
-          id: column.id,
-          changes: { ...newColumn, pending: false },
-        })
-      );
+        dispatch(
+          columnUpdated({
+            id: column.id,
+            changes: { ...newColumn, pending: false },
+          })
+        );
+      } catch (error) {}
     }
   };
 
