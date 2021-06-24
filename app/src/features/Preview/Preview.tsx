@@ -103,9 +103,10 @@ const useStyles = makeStyles((theme) => ({
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId, mappingId } = useParams<{
+  const { sourceId, mappingId, attributeId } = useParams<{
     sourceId?: string;
     mappingId?: string;
+    attributeId?: string;
   }>();
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
@@ -145,7 +146,11 @@ const Preview = (): JSX.Element => {
         className={classes.link}
         variant="h5"
         color="textSecondary"
-        to={`/sources/${sourceId}/mappings/${mappingId}`}
+        to={
+          attributeId
+            ? `/sources/${sourceId}/mappings/${mappingId}/attributes/${attributeId}`
+            : `/sources/${sourceId}/mappings/${mappingId}`
+        }
         gutterBottom
       >
         <ArrowBack />
