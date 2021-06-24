@@ -89,6 +89,8 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
       .selectAll(state)
       .find((column) => column?.id === condition.column)
   );
+  const hideValueInput =
+    condition.relation === "NOTNULL" || condition.relation === "NULL";
 
   useEffect(() => {
     if (!conditionColumn) {
@@ -183,13 +185,19 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
   const handleRelationChange = (
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
-    if (condition.id)
+    if (condition.id) {
+      const value = event.target.value as ConditionRelationEnum;
+      const resetConditionValue = value === "NOTNULL" || value === "NULL";
       dispatch(
         conditionUpdated({
           id: condition.id,
-          changes: { relation: event.target.value as ConditionRelationEnum },
+          changes: {
+            relation: value,
+            value: resetConditionValue ? "" : condition.value,
+          },
         })
       );
+    }
   };
 
   const handleValueChange = (
@@ -234,13 +242,15 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
           />
         </Grid>
         <Grid item>
-          <TextField
-            value={condition.value ?? ""}
-            onChange={handleValueChange}
-            placeholder={t("typeValue")}
-            variant="outlined"
-            size="small"
-          />
+          {!hideValueInput && (
+            <TextField
+              value={condition.value ?? ""}
+              onChange={handleValueChange}
+              placeholder={t("typeValue")}
+              variant="outlined"
+              size="small"
+            />
+          )}
         </Grid>
       </Grid>
       <Grid item>
