@@ -123,7 +123,7 @@ const Preview = (): JSX.Element => {
     const primarykey = resource.primary_key_table;
     if (primarykey) {
       const indexPrimaryKey = apiAnswer.fields.indexOf(primarykey);
-      apiAnswer.rows[index]?.[indexPrimaryKey];
+      console.log(apiAnswer.rows[index]?.[indexPrimaryKey]);
     }
   };
 
