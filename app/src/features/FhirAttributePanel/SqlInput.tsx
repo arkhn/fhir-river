@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Input = ({ input }: InputProps): JSX.Element => {
+const SqlInput = ({ input }: InputProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
@@ -95,7 +95,7 @@ const Input = ({ input }: InputProps): JSX.Element => {
     try {
       await deleteInput({ id: input.id });
     } catch (error) {
-      //
+      console.error(error);
     }
   };
 
@@ -105,21 +105,25 @@ const Input = ({ input }: InputProps): JSX.Element => {
     }
 
     if (column.id && column.table && column.column && column.owner) {
-      const newColumn = column.pending
-        ? await createColumn({
-            columnRequest: column as ColumnRequest,
-          }).unwrap()
-        : await updateColumn({
-            id: column.id,
-            columnRequest: column as ColumnRequest,
-          }).unwrap();
+      try {
+        const newColumn = column.pending
+          ? await createColumn({
+              columnRequest: column as ColumnRequest,
+            }).unwrap()
+          : await updateColumn({
+              id: column.id,
+              columnRequest: column as ColumnRequest,
+            }).unwrap();
 
-      dispatch(
-        columnUpdated({
-          id: column.id,
-          changes: { ...newColumn, pending: false },
-        })
-      );
+        dispatch(
+          columnUpdated({
+            id: column.id,
+            changes: { ...newColumn, pending: false },
+          })
+        );
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -153,4 +157,4 @@ const Input = ({ input }: InputProps): JSX.Element => {
   );
 };
 
-export default Input;
+export default SqlInput;
