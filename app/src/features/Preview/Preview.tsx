@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -13,7 +13,6 @@ import {
   TableContainer,
   TableHead,
   TableBody,
-  TablePagination,
   TableFooter,
   Link as MuiLink,
   LinkProps,
@@ -24,7 +23,7 @@ import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
-import apiAnswer from "./previewDataMock.json";
+import exploredData from "./previewDataMock.json";
 import resource from "./PreviewResource.json";
 
 interface LinkRouterProps extends LinkProps {
@@ -80,13 +79,6 @@ const useStyles = makeStyles((theme) => ({
   rowBorder: {
     borderBottom: `1px solid ${theme.palette.divider}`,
   },
-  paginationTable: {
-    width: "100%",
-    borderRadius: `0 0 ${theme.shape.borderRadius}px ${theme.shape.borderRadius}px`,
-    borderTop: "none",
-    border: `1px solid ${theme.palette.divider}`,
-    padding: 0,
-  },
   link: {
     alignSelf: "flex-start",
     display: "flex",
@@ -97,28 +89,10 @@ const useStyles = makeStyles((theme) => ({
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
   }>();
-
-  console.log(sourceId, mappingId);
-
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const FhirIconCell = () => (
     <IconButton size="small" className={classes.icon}>
@@ -133,8 +107,8 @@ const Preview = (): JSX.Element => {
   const handleFhirIconClick = (index: number) => {
     const primarykey = resource.primary_key_table;
     if (primarykey) {
-      const indexPrimaryKey = apiAnswer.fields.indexOf(primarykey);
-      console.log(apiAnswer.rows[index]?.[indexPrimaryKey]);
+      const indexPrimaryKey = exploredData.fields.indexOf(primarykey);
+      console.log(exploredData.rows[index]?.[indexPrimaryKey]);
     }
   };
 
@@ -155,7 +129,7 @@ const Preview = (): JSX.Element => {
           <TableHead>
             <TableRow className={classes.cellsTitle}>
               <TableCell className={classes.cells}></TableCell>
-              {apiAnswer.fields.map((field) => (
+              {exploredData.fields.map((field) => (
                 <TableCell className={classes.cells} key={uuid()}>
                   {field}
                 </TableCell>
@@ -163,42 +137,25 @@ const Preview = (): JSX.Element => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {apiAnswer.rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((answer, index) => (
-                <TableRow
-                  hover
-                  key={uuid()}
-                  className={clsx(classes.rowBorder)}
+            {exploredData.rows.map((columnData, index) => (
+              <TableRow hover key={uuid()} className={clsx(classes.rowBorder)}>
+                <TableCell
+                  className={clsx(classes.fhirIconCell, classes.cellsTitle)}
+                  onClick={() => handleFhirIconClick(index)}
                 >
-                  <TableCell
-                    className={clsx(classes.fhirIconCell, classes.cellsTitle)}
-                    onClick={() => handleFhirIconClick(index)}
-                  >
-                    <FhirIconCell />
+                  <FhirIconCell />
+                </TableCell>
+                {columnData.map((an, i) => (
+                  <TableCell className={classes.cells} key={i}>
+                    {an}
                   </TableCell>
-                  {answer.map((an, i) => (
-                    <TableCell className={classes.cells} key={i}>
-                      {an}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
+                ))}
+              </TableRow>
+            ))}
           </TableBody>
           <TableFooter></TableFooter>
         </Table>
       </TableContainer>
-      <TablePagination
-        component="div"
-        size="small"
-        className={classes.paginationTable}
-        rowsPerPageOptions={[10, 20, 30]}
-        rowsPerPage={rowsPerPage}
-        count={apiAnswer.rows.length}
-        page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
-      />
       <div className={classes.texts}>
         <Typography>
           {t("clickOnAFireIcon")}{" "}
