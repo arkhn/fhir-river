@@ -52,9 +52,10 @@ const useStyles = makeStyles((theme) => ({
 
 const MappingHeader = (): JSX.Element => {
   const history = useHistory();
-  const { sourceId, mappingId } = useParams<{
+  const { sourceId, mappingId, attributeId } = useParams<{
     sourceId?: string;
     mappingId?: string;
+    attributeId?: string;
   }>();
   const { t } = useTranslation();
   const classes = useStyles();
@@ -85,7 +86,11 @@ const MappingHeader = (): JSX.Element => {
     setDeleteDialogOpen(false);
   };
   const handlePreviewDisplay = () => {
-    history.push(`/sources/${sourceId}/mappings/${mappingId}/preview`);
+    history.push(
+      attributeId
+        ? `/sources/${sourceId}/mappings/${mappingId}/attributes/${attributeId}/preview`
+        : `/sources/${sourceId}/mappings/${mappingId}/preview`
+    );
   };
 
   return (
