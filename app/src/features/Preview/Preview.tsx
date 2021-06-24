@@ -188,7 +188,7 @@ const Preview = (): JSX.Element => {
         </div>
       )}
       {fhirInstance && (
-        <Container className={classes.jsonViewer}>
+        <Container className={classes.jsonViewer} maxWidth="xl">
           <ReactJson
             src={fhirInstance}
             theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
