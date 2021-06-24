@@ -56,12 +56,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "4px 8px",
   },
   columnSelect: { width: "fit-content" },
-  inputContainer: {
+  iconButtonContainer: {
+    flex: 1,
     display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing(1),
-    width: "100%",
+    justifyContent: "flex-end",
   },
 }));
 
@@ -128,32 +126,32 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
   };
 
   return (
-    <div className={classes.inputContainer}>
-      <Grid container alignItems="center" direction="row" spacing={1}>
-        <Grid item>
-          <Typography className={classes.fromColumn}>
-            {t("fromColumn")}
-          </Typography>
-        </Grid>
-        <Grid item spacing={1} container className={classes.columnSelect}>
-          <ColumnSelects
-            pendingColumn={inputColumn ?? {}}
-            onChange={handleColumnChange}
-          />
-        </Grid>
-        <Grid item>
-          <Button className={classes.button}>
-            <div className={classes.function}>
-              <Icon icon={IconNames.FUNCTION} className={classes.icon} />
-              <Typography>{t("applyScript")}</Typography>
-            </div>
-          </Button>
-        </Grid>
+    <Grid item container alignItems="center" direction="row" spacing={1}>
+      <Grid item>
+        <Typography className={classes.fromColumn}>
+          {t("fromColumn")}
+        </Typography>
       </Grid>
-      <IconButton size="small" onClick={handleDeleteInput}>
-        <CloseRounded fontSize="small" />
-      </IconButton>
-    </div>
+      <Grid item spacing={1} container className={classes.columnSelect}>
+        <ColumnSelects
+          pendingColumn={inputColumn ?? {}}
+          onChange={handleColumnChange}
+        />
+      </Grid>
+      <Grid item>
+        <Button className={classes.button}>
+          <div className={classes.function}>
+            <Icon icon={IconNames.FUNCTION} className={classes.icon} />
+            <Typography>{t("applyScript")}</Typography>
+          </div>
+        </Button>
+      </Grid>
+      <Grid item className={classes.iconButtonContainer}>
+        <IconButton size="small" onClick={handleDeleteInput}>
+          <CloseRounded fontSize="small" />
+        </IconButton>
+      </Grid>
+    </Grid>
   );
 };
 

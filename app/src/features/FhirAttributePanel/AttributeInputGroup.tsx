@@ -158,7 +158,7 @@ const AttributeInputGroup = ({
     <Grid item className={classes.inputGoupContainer}>
       <Paper variant="outlined" className={classes.paper}>
         <Grid container direction="column" spacing={1}>
-          <Grid item>
+          <Grid item container spacing={1}>
             {inputs &&
               inputs.map((input) =>
                 input.static_value === null ? (

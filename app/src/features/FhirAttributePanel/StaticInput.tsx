@@ -20,19 +20,17 @@ type InputProps = {
   input: InputType;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   static: {
     backgroundColor: "#444444",
     color: "#fff",
     borderRadius: 4,
     padding: "4px 8px",
   },
-  inputContainer: {
+  iconButtonContainer: {
+    flex: 1,
     display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing(1),
-    width: "100%",
+    justifyContent: "flex-end",
   },
 }));
 
@@ -71,27 +69,27 @@ const StaticInput = ({ input }: InputProps): JSX.Element => {
   };
 
   return (
-    <div className={classes.inputContainer}>
-      <Grid container alignItems="center" direction="row" spacing={1}>
-        <Grid item>
-          <Typography className={classes.static}>{t("static")}</Typography>
-        </Grid>
-        <Grid item xs={10}>
-          <TextField
-            variant="outlined"
-            size="small"
-            fullWidth
-            placeholder={t("typeValue")}
-            value={staticValue}
-            onChange={handleStaticValueChange}
-            onBlur={handleInputBlur}
-          />
-        </Grid>
+    <Grid container item alignItems="center" direction="row" spacing={1}>
+      <Grid item>
+        <Typography className={classes.static}>{t("static")}</Typography>
       </Grid>
-      <IconButton size="small" onClick={handleDeleteInput}>
-        <CloseRounded fontSize="small" />
-      </IconButton>
-    </div>
+      <Grid item xs={10}>
+        <TextField
+          variant="outlined"
+          size="small"
+          fullWidth
+          placeholder={t("typeValue")}
+          value={staticValue}
+          onChange={handleStaticValueChange}
+          onBlur={handleInputBlur}
+        />
+      </Grid>
+      <Grid item className={classes.iconButtonContainer}>
+        <IconButton size="small" onClick={handleDeleteInput}>
+          <CloseRounded fontSize="small" />
+        </IconButton>
+      </Grid>
+    </Grid>
   );
 };
 
