@@ -95,7 +95,7 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
     try {
       await deleteInput({ id: input.id });
     } catch (error) {
-      //
+      console.error(error);
     }
   };
 
@@ -121,7 +121,9 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
             changes: { ...newColumn, pending: false },
           })
         );
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

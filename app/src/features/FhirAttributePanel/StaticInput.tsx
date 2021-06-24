@@ -47,7 +47,7 @@ const StaticInput = ({ input }: InputProps): JSX.Element => {
     try {
       await deleteInput({ id: input.id });
     } catch (error) {
-      //
+      console.error(error);
     }
   };
 
@@ -64,7 +64,9 @@ const StaticInput = ({ input }: InputProps): JSX.Element => {
           id: input.id,
           inputRequest: { ...input, static_value: staticValue },
         });
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
