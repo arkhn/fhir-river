@@ -11,12 +11,9 @@ services:
     environment:
       - ENV=dev
       - LOG_LEVEL=DEBUG
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-      - REDIS_COUNTER_HOST=river-redis
-      - REDIS_COUNTER_PORT=6379
-      - REDIS_COUNTER_DB=2
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river

@@ -1,20 +1,17 @@
 import logging
 
-import redis
 from confluent_kafka import KafkaError, KafkaException
-
-from django.conf import settings
 
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
-from common.kafka.consumer import Consumer
-from common.kafka.producer import Producer
-from common.service.event import Event
-from common.service.handler import Handler
 from common.service.service import Service
 from extractor.conf import conf
 from extractor.extract import Extractor
+from river.adapters.decr_counter import DecrementingCounter, RedisDecrementingCounter
+from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
+from river.adapters.event_subscriber import KafkaEventSubscriber
 from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
+from river.domain import events
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +19,8 @@ logger = logging.getLogger(__name__)
 def broadcast_events(
     dataframe,
     analysis,
-    producer: Producer,
-    counter_client: redis.Redis,
+    publisher: EventPublisher,
+    counter: DecrementingCounter,
     batch_id=None,
 ):
     resource_type = analysis.definition_id
@@ -35,12 +32,8 @@ def broadcast_events(
             logger.debug(
                 {"message": "One record from extract", "resource_id": resource_id},
             )
-            event = dict()
-            event["batch_id"] = batch_id
-            event["resource_type"] = resource_type
-            event["resource_id"] = resource_id
-            event["record"] = record
-            producer.produce_event(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
+            event = events.ExtractedRecord(batch_id, resource_type, resource_id, record)
+            publisher.publish(topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}", event=event)
             count += 1
         except (KafkaException, ValueError) as err:
             if isinstance(err, KafkaException) and err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
@@ -58,7 +51,7 @@ def broadcast_events(
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
-    counter_client.hset(f"batch:{batch_id}:counter", f"resource:{resource_id}:extracted", count)
+    counter.set(f"{batch_id}:{resource_id}", count)
     logger.info(
         {
             "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
@@ -67,62 +60,38 @@ def broadcast_events(
     )
 
 
-class ExtractHandler(Handler):
-    def __init__(
-        self,
-        producer: Producer,
-        counter_redis: redis.Redis,
-        mapping_repository: MappingsRepository,
-        analyzer: Analyzer,
-    ) -> None:
-        self.producer = producer
-        self.counter_redis = counter_redis
-        self.mapping_repository = mapping_repository
-        self.analyzer = analyzer
-
-    def __call__(self, event: Event):
-        batch_id = event.data["batch_id"]
-        resource_id = event.data["resource_id"]
-        primary_key_values = event.data.get("primary_key_values", None)
-
-        mapping = self.mapping_repository.get(batch_id, resource_id)
-        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id, mapping)
-
-        db_connection = DBConnection(analysis.source_credentials)
-        with db_connection.session_scope() as session:
-            extractor = Extractor(session, db_connection.metadata)
-            query = extractor.extract(analysis, primary_key_values)
-
-            broadcast_events(query, analysis, self.producer, self.counter_redis, batch_id)
+def batch_resource_handler(
+    event: events.BatchEvent,
+    publisher: EventPublisher,
+    counter: DecrementingCounter,
+    analyzer: Analyzer,
+    mappings_repo: MappingsRepository,
+):
+    mapping = mappings_repo.get(event.batch_id, event.resource_id)
+    analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
+    db_connection = DBConnection(analysis.source_credentials)
+    with db_connection.session_scope() as session:
+        extractor = Extractor(session, db_connection.metadata)
+        query = extractor.extract(analysis, event.primary_key_values)
+        broadcast_events(query, analysis, publisher, counter, event.batch_id)
 
 
-class ExtractorService(Service):
-    @classmethod
-    def make_app(cls):
-        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+def bootstrap(
+    subscriber=KafkaEventSubscriber(group_id=conf.CONSUMER_GROUP_ID),
+    mappings_repo=RedisMappingsRepository(),
+    counter=RedisDecrementingCounter(),
+    publisher=KafkaEventPublisher(),
+) -> Service:
+    analyzer = Analyzer()
 
-        consumer = Consumer(
-            broker=settings.KAFKA_BOOTSTRAP_SERVERS,
-            topics=conf.CONSUMED_TOPICS,
-            group_id=conf.CONSUMER_GROUP_ID,
-            config=config,
-        )
-        mapping_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST,
-            port=settings.REDIS_MAPPINGS_PORT,
-            db=settings.REDIS_MAPPINGS_DB,
-        )
-        counter_redis = redis.Redis(
-            host=settings.REDIS_COUNTER_HOST,
-            port=settings.REDIS_COUNTER_PORT,
-            db=settings.REDIS_COUNTER_DB,
-        )
-        mapping_repository = RedisMappingsRepository(mapping_redis)
-        analyzer = Analyzer()
-        handler = ExtractHandler(
-            producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
-            counter_redis=counter_redis,
-            mapping_repository=mapping_repository,
+    handlers = {
+        "^batch\\..*": lambda raw: batch_resource_handler(
+            event=events.BatchEvent(**raw),
+            publisher=publisher,
+            counter=counter,
             analyzer=analyzer,
+            mappings_repo=mappings_repo,
         )
-        return Service(consumer, handler)
+    }
+
+    return Service(subscriber, handlers)

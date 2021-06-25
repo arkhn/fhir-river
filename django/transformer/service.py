@@ -1,6 +1,5 @@
 import logging
 
-import redis
 from confluent_kafka import KafkaError, KafkaException
 
 from django.conf import settings
@@ -115,12 +114,7 @@ class TransformerService(Service):
             group_id=conf.CONSUMER_GROUP_ID,
             config=config,
         )
-        mapping_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST,
-            port=settings.REDIS_MAPPINGS_PORT,
-            db=settings.REDIS_MAPPINGS_DB,
-        )
-        mapping_repository = RedisMappingsRepository(mapping_redis)
+        mapping_repository = RedisMappingsRepository()
         analyzer = Analyzer()
         handler = TransformHandler(
             producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),

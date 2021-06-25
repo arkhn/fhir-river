@@ -4,6 +4,8 @@ from typing import Any
 
 import redis
 
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,8 +45,12 @@ class FakeMappingsRepository(MappingsRepository):
 
 
 class RedisMappingsRepository(MappingsRepository):
-    def __init__(self, mapping_redis: redis.Redis):
-        self.mapping_redis = mapping_redis
+    def __init__(self):
+        self.mapping_redis = redis.Redis(
+            host=settings.REDIS_MAPPINGS_HOST,
+            port=settings.REDIS_MAPPINGS_PORT,
+            db=settings.REDIS_MAPPINGS_DB,
+        )
 
     def set(self, batch_id: str, resource_id: str, mapping: Any):
         key = build_repository_key(batch_id, resource_id)

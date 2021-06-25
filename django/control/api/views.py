@@ -4,6 +4,9 @@ import uuid
 from datetime import datetime, timedelta
 from inspect import getdoc, getmembers, isfunction, ismodule
 
+import redis
+from confluent_kafka import KafkaException
+from confluent_kafka.admin import AdminClient, NewTopic
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -11,18 +14,15 @@ from django.conf import settings
 
 from fhir.resources import construct_fhir_element
 
-import redis
 import scripts
-from river.adapters.mappings import RedisMappingsRepository
 from common.analyzer import Analyzer
 from common.database_connection.db_connection import DBConnection
 from common.kafka.producer import CustomJSONEncoder, Producer
 from common.mapping.fetch_mapping import fetch_resource_mapping
-from confluent_kafka import KafkaException
-from confluent_kafka.admin import AdminClient, NewTopic
 from control.api.serializers import CreateBatchSerializer, PreviewSerializer
 from extractor.extract import Extractor
 from pydantic import ValidationError
+from river.adapters.mappings import RedisMappingsRepository
 from topicleaner.service import TopicleanerHandler
 from transformer.transform.transformer import Transformer
 
@@ -67,10 +67,7 @@ class BatchEndpoint(viewsets.ViewSet):
         batch_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
 
         # Fetch mapping
-        mappings_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST, port=settings.REDIS_MAPPINGS_PORT, db=settings.REDIS_MAPPINGS_DB
-        )
-        mappings_repository = RedisMappingsRepository(mappings_redis)
+        mappings_repository = RedisMappingsRepository()
 
         for resource_id in resource_ids:
             resource_mapping = fetch_resource_mapping(resource_id, authorization_header)
