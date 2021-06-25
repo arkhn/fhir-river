@@ -26,7 +26,11 @@ const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { attributeId } = useParams<{ attributeId?: string }>();
-  const { data: attribute, isError } = useApiAttributesRetrieveQuery(
+  const {
+    data: attribute,
+    isError,
+    isUninitialized,
+  } = useApiAttributesRetrieveQuery(
     { id: attributeId ?? "" },
     { skip: !attributeId }
   );
@@ -52,7 +56,7 @@ const FhirAttributePanel = (): JSX.Element => {
 
   return (
     <>
-      {!isError && (
+      {!isError && !isUninitialized && (
         <div className={classes.container}>
           <Grid container spacing={2} direction="column">
             {attributeInputGroups &&
