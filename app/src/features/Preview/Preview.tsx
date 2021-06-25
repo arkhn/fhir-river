@@ -16,7 +16,7 @@ import {
   useMediaQuery,
   Button,
 } from "@material-ui/core";
-import { ArrowBackIos } from "@material-ui/icons";
+import ArrowBack from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
@@ -138,7 +138,7 @@ const Preview = (): JSX.Element => {
     <Container className={classes.container} maxWidth="xl">
       <Button
         className={classes.button}
-        startIcon={<ArrowBackIos />}
+        startIcon={<ArrowBack />}
         onClick={handleCancelClick}
         disableRipple
       >
