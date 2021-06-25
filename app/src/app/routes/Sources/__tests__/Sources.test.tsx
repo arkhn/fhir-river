@@ -349,6 +349,7 @@ describe("Sources page", () => {
       screen.getByRole("button", { name: /source_1_edited menu/i })
     );
     userEvent.click(screen.getByRole("menuitem", { name: /delete/i }));
+    userEvent.click(screen.getByRole("button", { name: /yes, delete/i }));
 
     await waitForElementToBeRemoved(() => screen.getByText("source_1_edited"));
   });
