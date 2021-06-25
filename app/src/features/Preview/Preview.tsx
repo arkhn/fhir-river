@@ -13,31 +13,20 @@ import {
   TableContainer,
   TableHead,
   TableBody,
-  TableFooter,
-  Link as MuiLink,
-  LinkProps,
   useMediaQuery,
+  Button,
 } from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import { ArrowBackIos } from "@material-ui/icons";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
-import { Link as RouterLink, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
 import patientJson from "./PatientFhir.json";
 import exploredData from "./previewDataMock.json";
-
-interface LinkRouterProps extends LinkProps {
-  to: string;
-  replace?: boolean;
-}
-
-const Link = (props: LinkRouterProps) => (
-  <MuiLink {...props} component={RouterLink} />
-);
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -83,19 +72,24 @@ const useStyles = makeStyles((theme) => ({
   rowBorder: {
     borderBottom: `1px solid ${theme.palette.divider}`,
   },
-  link: {
-    alignSelf: "flex-start",
-    display: "flex",
-    alignItems: "center",
-  },
   jsonViewer: {
     padding: 0,
-    border: `1px solid ${theme.palette.divider}`,
-
+    width: "100%",
     borderRadius: theme.shape.borderRadius,
+    border: `1px solid ${theme.palette.divider}`,
     "& > div": {
       padding: theme.spacing(3),
       borderRadius: theme.shape.borderRadius,
+    },
+  },
+  button: {
+    alignSelf: "flex-start",
+    marginBottom: theme.spacing(2),
+    textTransform: "none",
+    color: theme.palette.text.secondary,
+    "&:hover": {
+      backgroundColor: "inherit",
+      color: theme.palette.text.primary,
     },
   },
 }));
@@ -103,10 +97,9 @@ const useStyles = makeStyles((theme) => ({
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId, mappingId, attributeId } = useParams<{
-    sourceId?: string;
+  const history = useHistory();
+  const { mappingId } = useParams<{
     mappingId?: string;
-    attributeId?: string;
   }>();
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
@@ -140,22 +133,20 @@ const Preview = (): JSX.Element => {
     }
   };
 
+  const handleCancelClick = () => {
+    history.goBack();
+  };
+
   return (
     <Container className={classes.container} maxWidth="xl">
-      <Link
-        className={classes.link}
-        variant="h5"
-        color="textSecondary"
-        to={
-          attributeId
-            ? `/sources/${sourceId}/mappings/${mappingId}/attributes/${attributeId}`
-            : `/sources/${sourceId}/mappings/${mappingId}`
-        }
-        gutterBottom
+      <Button
+        className={classes.button}
+        startIcon={<ArrowBackIos />}
+        onClick={handleCancelClick}
+        disableRipple
       >
-        <ArrowBack />
-        {t("back")}
-      </Link>
+        <Typography>{t("back")}</Typography>
+      </Button>
       <TableContainer className={classes.table}>
         <Table size="small">
           <TableHead>
@@ -177,15 +168,14 @@ const Preview = (): JSX.Element => {
                 >
                   <FhirIconCell />
                 </TableCell>
-                {columnData.map((an, i) => (
+                {columnData.map((cell, i) => (
                   <TableCell className={classes.cells} key={i}>
-                    {an}
+                    {cell}
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter></TableFooter>
         </Table>
       </TableContainer>
       {!fhirInstance && (
@@ -198,7 +188,7 @@ const Preview = (): JSX.Element => {
         </div>
       )}
       {fhirInstance && (
-        <Container className={classes.jsonViewer} maxWidth="xl">
+        <div className={classes.jsonViewer}>
           <ReactJson
             src={fhirInstance}
             theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
@@ -206,7 +196,7 @@ const Preview = (): JSX.Element => {
             displayObjectSize={false}
             displayDataTypes={false}
           />
-        </Container>
+        </div>
       )}
     </Container>
   );

@@ -13,7 +13,7 @@ import {
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
 import MappingNameDialog from "features/Mappings/Edit/MappingNameDialog";
@@ -52,13 +52,14 @@ const useStyles = makeStyles((theme) => ({
 
 const MappingHeader = (): JSX.Element => {
   const history = useHistory();
-  const { sourceId, mappingId, attributeId } = useParams<{
+  const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
-    attributeId?: string;
   }>();
   const { t } = useTranslation();
   const classes = useStyles();
+  const location = useLocation();
+  console.log(location);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isNameDialogOpen, setNameDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -85,12 +86,8 @@ const MappingHeader = (): JSX.Element => {
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
   };
-  const handlePreviewDisplay = () => {
-    history.push(
-      attributeId
-        ? `/sources/${sourceId}/mappings/${mappingId}/attributes/${attributeId}/preview`
-        : `/sources/${sourceId}/mappings/${mappingId}/preview`
-    );
+  const handlePreviewClick = () => {
+    history.push(`${location.pathname}/preview`);
   };
 
   return (
@@ -110,7 +107,7 @@ const MappingHeader = (): JSX.Element => {
         color="primary"
         variant="contained"
         startIcon={<PlayIcon />}
-        onClick={handlePreviewDisplay}
+        onClick={handlePreviewClick}
       >
         <Typography>{t("preview")}</Typography>
       </Button>

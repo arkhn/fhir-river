@@ -6,10 +6,12 @@ import clsx from "clsx";
 import FhirAttributePanel from "features/FhirAttributePanel/FhirAttributePanel";
 import FhirResourceTree from "features/FhirResourceTree/FhirResourceTree";
 
+const HEADER_HEIGHT = 100;
+
 const useStyles = makeStyles((theme) => ({
   body: {
     display: "flex",
-    height: `calc(100vh - ${100 + theme.spacing(10)}px)`,
+    height: `calc(100vh - ${HEADER_HEIGHT + theme.spacing(10)}px)`,
   },
   leftContainer: {
     minWidth: 350,
