@@ -1,6 +1,12 @@
 import React from "react";
 
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
@@ -30,6 +36,7 @@ const FhirAttributePanel = (): JSX.Element => {
     data: attribute,
     isError,
     isUninitialized,
+    isFetching,
   } = useApiAttributesRetrieveQuery(
     { id: attributeId ?? "" },
     { skip: !attributeId }
@@ -53,6 +60,10 @@ const FhirAttributePanel = (): JSX.Element => {
       }
     }
   };
+
+  if (isFetching) {
+    return <CircularProgress />;
+  }
 
   return (
     <>
