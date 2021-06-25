@@ -59,7 +59,7 @@ const MappingHeader = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const location = useLocation();
-  console.log(location);
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isNameDialogOpen, setNameDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
