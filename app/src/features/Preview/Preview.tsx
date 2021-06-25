@@ -98,30 +98,17 @@ const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
-  const { data: mapping } = useApiResourcesRetrieveQuery(
-    {
-      id: mappingId ?? "",
-    },
-    {
-      skip: !Boolean(mappingId),
-    }
-  );
   const [fhirInstance, setFhirInstance] = useState<
     typeof patientJson | undefined
   >(undefined);
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  const FhirIconCell = () => (
-    <IconButton size="small" className={classes.icon}>
-      <Icon
-        icon={IconNames.FLAME}
-        iconSize={15}
-        className={classes.iconFlame}
-      />
-    </IconButton>
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !Boolean(mappingId) }
   );
 
   const handleFhirIconClick = (index: number) => () => {
@@ -136,6 +123,16 @@ const Preview = (): JSX.Element => {
   const handleCancelClick = () => {
     history.goBack();
   };
+
+  const FhirIconCell = () => (
+    <IconButton size="small" className={classes.icon}>
+      <Icon
+        icon={IconNames.FLAME}
+        iconSize={15}
+        className={classes.iconFlame}
+      />
+    </IconButton>
+  );
 
   return (
     <Container className={classes.container} maxWidth="xl">
