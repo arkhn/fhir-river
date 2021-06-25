@@ -5,7 +5,7 @@ import pytest
 from river import models, services
 from river.adapters.event_publisher import FakeEventPublisher
 from river.adapters.topics import FakeTopics
-from river.domain.events import BatchResource
+from river.domain.events import BatchEvent
 
 pytestmark = pytest.mark.django_db
 
@@ -23,7 +23,7 @@ def test_batch():
         f"{base_topic}.{batch_instance.id}" for base_topic in ["batch", "extract", "transform", "load"]
     }
     assert publisher._events[f"batch.{batch_instance.id}"] == {
-        BatchResource(batch_id=batch_instance.id, resource_id=r) for r in resources
+        BatchEvent(batch_id=batch_instance.id, resource_id=r) for r in resources
     }
 
 

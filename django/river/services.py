@@ -5,7 +5,7 @@ from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.mappings import MappingsRepository
 from river.adapters.topics import TopicsHandler
-from river.domain.events import BatchResource
+from river.domain.events import BatchEvent
 
 
 def batch(
@@ -22,7 +22,7 @@ def batch(
 
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
-            event=BatchResource(batch_id=batch_instance.id, resource_id=resource_id),
+            event=BatchEvent(batch_id=batch_instance.id, resource_id=resource_id),
         )
 
     return batch_instance
