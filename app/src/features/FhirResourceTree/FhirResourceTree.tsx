@@ -137,7 +137,7 @@ const FhirResourceTree = (): JSX.Element => {
           iconSize={15}
         />
         <Typography className={classes.headerTitle} color="textPrimary">
-          {mapping?.definition_id}
+          {root?.name}
         </Typography>
         <IconButton onClick={handleAddExtensionClick} size="small">
           <Icon
