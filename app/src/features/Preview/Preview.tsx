@@ -25,7 +25,7 @@ import { v4 as uuid } from "uuid";
 
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 
-import patientJson from "./PatientFhir.json";
+import previewJson from "./PatientFhir.json";
 import exploredData from "./previewDataMock.json";
 
 const useStyles = makeStyles((theme) => ({
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   rowBorder: {
     borderBottom: `1px solid ${theme.palette.divider}`,
   },
-  jsonViewer: {
+  preview: {
     padding: 0,
     width: "100%",
     borderRadius: theme.shape.borderRadius,
@@ -102,9 +102,9 @@ const Preview = (): JSX.Element => {
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
-  const [fhirInstance, setFhirInstance] = useState<
-    typeof patientJson | undefined
-  >(undefined);
+  const [preview, setPreview] = useState<typeof previewJson | undefined>(
+    undefined
+  );
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
@@ -116,7 +116,7 @@ const Preview = (): JSX.Element => {
     if (primarykey) {
       const indexPrimaryKey = exploredData.fields.indexOf(primarykey);
       console.log(exploredData.rows[index]?.[indexPrimaryKey]);
-      setFhirInstance(patientJson);
+      setPreview(previewJson);
     }
   };
 
@@ -175,7 +175,7 @@ const Preview = (): JSX.Element => {
           </TableBody>
         </Table>
       </TableContainer>
-      {!fhirInstance && (
+      {!preview && (
         <div className={classes.texts}>
           <Typography>
             {t("clickOnAFireIcon")}{" "}
@@ -184,10 +184,10 @@ const Preview = (): JSX.Element => {
           </Typography>
         </div>
       )}
-      {fhirInstance && (
-        <div className={classes.jsonViewer}>
+      {preview && (
+        <div className={classes.preview}>
           <ReactJson
-            src={fhirInstance}
+            src={preview}
             theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
             collapsed={1}
             displayObjectSize={false}
