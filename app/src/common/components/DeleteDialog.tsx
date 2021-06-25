@@ -15,17 +15,10 @@ import {
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import Alert from "common/components/Alert";
-
 type DeleteDialogProps = MuiDialogProps & {
   title: string;
-  loading: boolean;
-  onDelete: React.MouseEventHandler<HTMLButtonElement> | undefined;
-  alert?: string;
-  onAlertClose: (
-    event?: React.SyntheticEvent<Element, Event> | undefined,
-    reason?: string | undefined
-  ) => void;
+  loading?: boolean;
+  onDelete?: React.MouseEventHandler;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -55,8 +48,6 @@ const DeleteDialog = ({
   title,
   onDelete,
   loading,
-  alert,
-  onAlertClose,
   ...props
 }: DeleteDialogProps): JSX.Element => {
   const classes = useStyles();
@@ -97,12 +88,6 @@ const DeleteDialog = ({
           )}
         </Button>
       </DialogActions>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={onAlertClose}
-        message={alert}
-      />
     </Dialog>
   );
 };

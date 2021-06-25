@@ -62,7 +62,6 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
 
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [alert, setAlert] = useState<string | undefined>(undefined);
 
   const [
     deleteSource,
@@ -93,7 +92,6 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
     setDeleteDialogOpen(true);
   };
 
-  const handleAlertClose = () => setAlert(undefined);
   return (
     <>
       <Card
@@ -156,8 +154,6 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
       </Menu>
       <DeleteDialog
         title={t("deleteSourcePrompt", { sourceName: source.name })}
-        onAlertClose={handleAlertClose}
-        alert={alert}
         open={isDeleteDialogOpen}
         onClose={handleDeleteDialogClose}
         onDelete={handleDeleteSource}

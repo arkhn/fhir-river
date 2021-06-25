@@ -6,6 +6,7 @@ import { head } from "lodash";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
+import Alert from "common/components/Alert";
 import DeleteDialog from "common/components/DeleteDialog";
 import { useApiResourcesDestroyMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
@@ -25,6 +26,7 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
   ] = useApiResourcesDestroyMutation({});
 
   const handleAlertClose = () => setAlert(undefined);
+
   const handleDelete = async () => {
     if (mappingId) {
       try {
@@ -44,15 +46,21 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
   };
 
   return (
-    <DeleteDialog
-      {...props}
-      title={t("deleteMappingPrompt")}
-      onClose={handleClose}
-      onDelete={handleDelete}
-      loading={isDeleteLoading}
-      alert={alert}
-      onAlertClose={handleAlertClose}
-    />
+    <>
+      <DeleteDialog
+        {...props}
+        title={t("deleteMappingPrompt")}
+        onClose={handleClose}
+        onDelete={handleDelete}
+        loading={isDeleteLoading}
+      />
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
+      />
+    </>
   );
 };
 
