@@ -157,7 +157,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
         open={isDeleteDialogOpen}
         onClose={handleDeleteDialogClose}
         onDelete={handleDeleteSource}
-        loading={isDeleteLoading}
+        isLoading={isDeleteLoading}
       />
     </>
   );

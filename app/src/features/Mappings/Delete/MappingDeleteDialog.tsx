@@ -52,7 +52,7 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
         title={t("deleteMappingPrompt")}
         onClose={handleClose}
         onDelete={handleDelete}
-        loading={isDeleteLoading}
+        isLoading={isDeleteLoading}
       />
       <Alert
         severity="error"

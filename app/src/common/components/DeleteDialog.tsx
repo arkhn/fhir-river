@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 
 type DeleteDialogProps = MuiDialogProps & {
   title: string;
-  loading?: boolean;
+  isLoading?: boolean;
   onDelete?: React.MouseEventHandler;
 };
 
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 const DeleteDialog = ({
   title,
   onDelete,
-  loading,
+  isLoading,
   ...props
 }: DeleteDialogProps): JSX.Element => {
   const classes = useStyles();
@@ -81,7 +81,7 @@ const DeleteDialog = ({
           variant="contained"
           onClick={onDelete}
         >
-          {loading ? (
+          {isLoading ? (
             <CircularProgress />
           ) : (
             <Typography color="textPrimary">{t("confirmDelete")}</Typography>
