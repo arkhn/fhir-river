@@ -74,6 +74,7 @@
   "mappingName": "Mapping name",
   "confirm": "Confirm",
   "deleteMappingPrompt": "Are you sure you want to delete this mapping ?",
+  "deleteSourcePrompt": "Are you sure you want to delete the source {{sourceName}} ?",
   "cannotUndoAction": "This action cannot be undone.",
   "confirmDelete": "Yes, delete",
   "saveChanges": "Save changes",
