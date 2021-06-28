@@ -1,6 +1,12 @@
 import React from "react";
 
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
@@ -26,7 +32,12 @@ const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { attributeId } = useParams<{ attributeId?: string }>();
-  const { data: attribute, isError } = useApiAttributesRetrieveQuery(
+  const {
+    data: attribute,
+    isError,
+    isUninitialized,
+    isFetching,
+  } = useApiAttributesRetrieveQuery(
     { id: attributeId ?? "" },
     { skip: !attributeId }
   );
@@ -50,9 +61,13 @@ const FhirAttributePanel = (): JSX.Element => {
     }
   };
 
+  if (isFetching) {
+    return <CircularProgress />;
+  }
+
   return (
     <>
-      {!isError && (
+      {!isError && !isUninitialized && (
         <div className={classes.container}>
           <Grid container spacing={2} direction="column">
             {attributeInputGroups &&
