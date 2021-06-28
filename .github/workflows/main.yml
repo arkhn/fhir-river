@@ -153,6 +153,6 @@ jobs:
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",
-              "hapi_loader": "${{ steps.docker-tag.outputs.docker-version }}"
+              "hapi_loader": "${{ steps.docker-tag.outputs.docker-version }}",
               "testy": "fix-batch_routes"
             }
