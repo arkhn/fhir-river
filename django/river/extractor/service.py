@@ -2,10 +2,10 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
-from river.adapters.decr_counter import DecrementingCounter, RedisDecrementingCounter
 from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
 from river.adapters.event_subscriber import KafkaEventSubscriber
 from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
+from river.adapters.progression_counter import ProgressionCounter, RedisProgressionCounter
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.common.service.errors import BatchCancelled
@@ -20,7 +20,7 @@ def broadcast_events(
     dataframe,
     analysis,
     publisher: EventPublisher,
-    counter: DecrementingCounter,
+    counter: ProgressionCounter,
     batch_id=None,
 ):
     resource_type = analysis.definition_id
@@ -48,7 +48,7 @@ def broadcast_events(
 
     # Initialize a batch counter in Redis. For each resource_id, it sets
     # the number of produced records
-    counter.set(f"{batch_id}:{resource_id}", count)
+    counter.set_extracted(f"{batch_id}:{resource_id}", count)
     logger.info(
         {
             "message": f"Batch {batch_id} size is {count} for resource type {analysis.definition_id}",
@@ -60,11 +60,11 @@ def broadcast_events(
 def batch_resource_handler(
     event: events.BatchEvent,
     publisher: EventPublisher,
-    counter: DecrementingCounter,
+    counter: ProgressionCounter,
     analyzer: Analyzer,
     mappings_repo: MappingsRepository,
 ):
-    mapping = mappings_repo.get(event.resource_id)
+    mapping = mappings_repo.get(event.batch_id, event.resource_id)
     analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:
@@ -76,7 +76,7 @@ def batch_resource_handler(
 def bootstrap(
     subscriber=KafkaEventSubscriber(group_id="extractor"),
     mappings_repo=RedisMappingsRepository(),
-    counter=RedisDecrementingCounter(),
+    counter=RedisProgressionCounter(),
     publisher=KafkaEventPublisher(),
 ) -> Service:
     analyzer = Analyzer()
