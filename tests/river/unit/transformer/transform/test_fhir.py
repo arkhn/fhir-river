@@ -181,10 +181,10 @@ def test_no_empty_subobjects(mock_datetime):
 
     actual = fhir.build_fhir_object(row, path_attributes_map)
 
-    assert actual == {"id": actual["id"], "status": "active"}
+    assert actual == {"status": "active"}
 
 
-@mock.patch("river.transformer.transform.fhir.datetime", autospec=True)
+@mock.patch("river.transformer.fhir.datetime", autospec=True)
 def test_conditions_have_filtered_one_value(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 

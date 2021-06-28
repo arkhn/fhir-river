@@ -184,21 +184,21 @@ def test_transform_with_condition_arrays(_, dict_map_code):
     }
 
 
-@mock.patch("transformer.transform.transformer.uuid5", mock_uuid5)
+@mock.patch("river.transformer.transformer.uuid5", mock_uuid5)
 def test_compute_fhir_object_id():
     mapping_id = "b8efd322-3e38-4072-9c68-e62e15d84d13"
     pk_value = 123
     assert compute_fhir_object_id(mapping_id, pk_value) == f"{mapping_id}{pk_value}"
 
 
-@mock.patch("transformer.transform.transformer.uuid5", mock_uuid5)
+@mock.patch("river.transformer.transformer.uuid5", mock_uuid5)
 def test_compute_fhir_object_id_normalized():
     mapping_id = "b8efd322-3e38-4072-9c68-e62e15d84d13"
     pk_value = 123.0
     assert compute_fhir_object_id(mapping_id, pk_value) == f"{mapping_id}123"
 
 
-@mock.patch("transformer.transform.transformer.uuid5", mock_uuid5)
+@mock.patch("river.transformer.transformer.uuid5", mock_uuid5)
 def test_compute_fhir_object_id_decimal():
     mapping_id = "b8efd322-3e38-4072-9c68-e62e15d84d13"
     pk_value = float(123.123)
