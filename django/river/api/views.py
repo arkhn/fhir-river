@@ -22,11 +22,9 @@ class BatchViewSet(viewsets.ModelViewSet):
         data = serializer.validated_data
         resource_ids = data["resources"]
 
-        topics, event_publisher, mappings_repo = (
-            KafkaTopics(),
-            KafkaEventPublisher(),
-            RedisMappingsRepository(),
-        )
+        topics = KafkaTopics()
+        event_publisher = KafkaEventPublisher()
+        mappings_repo = RedisMappingsRepository()
         batch_instance = batch(resource_ids, topics, event_publisher, mappings_repo)
 
         serializer = serializers.BatchSerializer(batch_instance)

@@ -42,6 +42,7 @@ def test_abort(batch):
     assert topics._topics == set()
 
 
+@pytest.mark.skip(reason="feature not implemented yet")
 def test_retry(batch):
     pass
 
