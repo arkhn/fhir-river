@@ -12,13 +12,13 @@ class DecrementingCounter:
     def decr(self, id: str):
         raise NotImplementedError
 
-    def get(self, id: str) -> int:
+    def get(self, id: str) -> Optional[int]:
         raise NotImplementedError
 
 
 class FakeDecrementingCounter(DecrementingCounter):
-    def __init__(self):
-        self._count = {}
+    def __init__(self, counts=dict()):
+        self._count = counts
 
     def set(self, id: str, value: int):
         self._count = {id: value}
@@ -26,8 +26,8 @@ class FakeDecrementingCounter(DecrementingCounter):
     def decr(self, id: str):
         self._count[id] -= 1
 
-    def get(self, id: str) -> int:
-        return self._count[id]
+    def get(self, id: str) -> Optional[int]:
+        return self._count[id] if id in self._count else None
 
 
 class RedisDecrementingCounter(DecrementingCounter):

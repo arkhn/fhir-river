@@ -2,17 +2,13 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
-from django.conf import settings
-
 from common.analyzer import Analyzer
 from common.errors import OperationOutcome
-from common.kafka.consumer import Consumer
-from common.kafka.producer import Producer
-from common.service.event import Event
-from common.service.handler import Handler
 from common.service.service import Service
+from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
+from river.adapters.event_subscriber import KafkaEventSubscriber
 from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
-from transformer.conf import conf
+from river.domain import events
 from transformer.reference_binder import ReferenceBinder
 from transformer.transform import Transformer
 
@@ -42,85 +38,71 @@ def transform_row(analysis, row, transformer: Transformer):
         raise OperationOutcome(f"Failed to transform {row}:\n{e}") from e
 
 
-class TransformHandler(Handler):
-    def __init__(
-        self,
-        producer: Producer,
-        transformer: Transformer,
-        binder: ReferenceBinder,
-        mapping_repository: MappingsRepository,
-        analyzer: Analyzer,
-    ) -> None:
-        self.producer = producer
-        self.transformer = transformer
-        self.binder = binder
-        self.mapping_repository = mapping_repository
-        self.analyzer = analyzer
+def extracted_record_handler(
+    event: events.ExtractedRecord,
+    publisher: EventPublisher,
+    analyzer: Analyzer,
+    transformer: Transformer,
+    binder: ReferenceBinder,
+    mappings_repo: MappingsRepository,
+):
+    mapping = mappings_repo.get(event.resource_id)
+    analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
+    fhir_object = transform_row(analysis, event.record, transformer=transformer)
 
-    def __call__(self, event: Event):
-        batch_id = event.data["batch_id"]
-        resource_id = event.data["resource_id"]
-        record = event.data["record"]
+    # Resolve references
+    logger.debug(
+        {
+            "message": f"Resolving references {analysis.reference_paths} for resource {fhir_object['id']}",
+            "batch_id": event.batch_id,
+            "resource_id": event.resource_id,
+            "label": analysis.label,
+            "definition_id": analysis.definition_id,
+        },
+    )
+    resolved_fhir_instance = binder.resolve_references(fhir_object, analysis.reference_paths)
 
-        mapping = self.mapping_repository.get(batch_id, resource_id)
-        analysis = self.analyzer.load_cached_analysis(batch_id, resource_id, mapping)
-
-        fhir_object = transform_row(analysis, record, transformer=self.transformer)
-
-        # Resolve references
-        logger.debug(
-            {
-                "message": f"Resolving references {analysis.reference_paths} for resource {fhir_object['id']}",
-                "batch_id": batch_id,
-                "resource_id": resource_id,
-                "label": analysis.label,
-                "definition_id": analysis.definition_id,
-            },
+    try:
+        outgoing_event = events.TransformedRecord(
+            batch_id=event.batch_id,
+            resource_id=event.resource_id,
+            fhir_object=resolved_fhir_instance,
         )
-        resolved_fhir_instance = self.binder.resolve_references(fhir_object, analysis.reference_paths)
-
-        try:
-            self.producer.produce_event(
-                topic=f"{conf.PRODUCED_TOPIC_PREFIX}{batch_id}",
-                event={
-                    "fhir_object": resolved_fhir_instance,
-                    "batch_id": batch_id,
-                    "resource_id": resource_id,
-                },
+        publisher.publish(
+            topic=f"transform.{event.batch_id}",
+            event=outgoing_event,
+        )
+    except KafkaException as err:
+        if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+            logger.warning(
+                {
+                    "message": "The current batch has been cancelled",
+                    "resource_id": event.resource_id,
+                    "batch_id": event.batch_id,
+                }
             )
-        except KafkaException as err:
-            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
-                logger.warning(
-                    {
-                        "message": "The current batch has been cancelled",
-                        "resource_id": resource_id,
-                        "batch_id": batch_id,
-                    }
-                )
-            else:
-                logger.exception(err)
-        except ValueError as err:
-            logger.exception(err)
+    except ValueError as err:
+        logger.exception(err)
 
 
-class TransformerService(Service):
-    @classmethod
-    def make_app(cls):
-        config = {"max.poll.interval.ms": conf.MAX_POLL_INTERVAL_MS}
+def bootstrap(
+    subscriber=KafkaEventSubscriber(group_id="transformer"),
+    mappings_repo=RedisMappingsRepository(),
+    publisher=KafkaEventPublisher(),
+) -> Service:
+    analyzer = Analyzer()
+    transformer = Transformer()
+    binder = ReferenceBinder()
 
-        consumer = Consumer(
-            broker=settings.KAFKA_BOOTSTRAP_SERVERS,
-            topics=conf.CONSUMED_TOPICS,
-            group_id=conf.CONSUMER_GROUP_ID,
-            config=config,
-        )
-        mapping_repository = RedisMappingsRepository()
-        analyzer = Analyzer()
-        handler = TransformHandler(
-            producer=Producer(broker=settings.KAFKA_BOOTSTRAP_SERVERS),
-            transformer=Transformer(),
-            binder=ReferenceBinder(),
-            mapping_repository=mapping_repository,
+    handlers = {
+        "^extract\\..*": lambda raw: extracted_record_handler(
+            event=events.ExtractedRecord(**raw),
+            publisher=publisher,
             analyzer=analyzer,
+            transformer=transformer,
+            binder=binder,
+            mappings_repo=mappings_repo,
         )
-        return Service(consumer, handler)
+    }
+
+    return Service(subscriber, handlers)
