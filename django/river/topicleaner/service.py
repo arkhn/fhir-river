@@ -5,19 +5,19 @@ from django.utils import timezone
 
 from river import models
 from river.adapters.progression_counter import ProgressionCounter, RedisProgressionCounter
-from river.adapters.topics import KafkaTopics, TopicsHandler
+from river.adapters.topics import KafkaTopicsManager, TopicsManager
 
 logger = logging.getLogger(__name__)
 
 
-def teardown_after_batch(batch: models.Batch, topics: TopicsHandler):
+def teardown_after_batch(batch: models.Batch, topics: TopicsManager):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics.delete(f"{base_topic}.{batch.id}")
 
     # FIXME: do we actually care about redis ?
 
 
-def clean(counter: ProgressionCounter, topics: TopicsHandler):
+def clean(counter: ProgressionCounter, topics: TopicsManager):
     current_batches = models.Batch.objects.filter(deleted_at__isnull=True)
     batches_to_delete = []
 
@@ -40,7 +40,7 @@ def clean(counter: ProgressionCounter, topics: TopicsHandler):
         logger.info(f"Batch {batch} deleted.")
 
 
-def run(counter=RedisProgressionCounter(), topics=KafkaTopics):
+def run(counter=RedisProgressionCounter(), topics=KafkaTopicsManager):
     while True:
         clean(counter=counter, topics=topics)
         sleep(1)

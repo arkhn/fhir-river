@@ -3,7 +3,7 @@ from confluent_kafka import admin, error
 from django.conf import settings
 
 
-class TopicsHandler:
+class TopicsManager:
     def create(self, topic: str):
         raise NotImplementedError
 
@@ -11,7 +11,7 @@ class TopicsHandler:
         raise NotImplementedError
 
 
-class FakeTopics(TopicsHandler):
+class FakeTopicsManager(TopicsManager):
     def __init__(self, topics=list()):
         self._topics = set(topics)
 
@@ -22,7 +22,7 @@ class FakeTopics(TopicsHandler):
         self._topics.remove(topic)
 
 
-class KafkaTopics(TopicsHandler):
+class KafkaTopicsManager(TopicsManager):
     def __init__(self):
         self._admin_client = admin.AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
 

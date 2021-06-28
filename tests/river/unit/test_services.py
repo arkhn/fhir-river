@@ -5,7 +5,7 @@ import pytest
 from river import models
 from river.adapters.event_publisher import FakeEventPublisher
 from river.adapters.mappings import FakeMappingsRepository
-from river.adapters.topics import FakeTopics
+from river.adapters.topics import FakeTopicsManager
 from river.domain.events import BatchEvent
 from river.services import abort, batch, preview
 
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_batch():
-    topics = FakeTopics()
+    topics = FakeTopicsManager()
     publisher = FakeEventPublisher()
     resources = [str(uuid.uuid4()) for _ in range(5)]
     mappings_repo = FakeMappingsRepository(mappings={id: {} for id in resources})
@@ -32,7 +32,7 @@ def test_batch():
 
 
 def test_abort(batch):
-    topics = FakeTopics(
+    topics = FakeTopicsManager(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 

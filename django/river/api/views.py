@@ -7,7 +7,7 @@ import scripts
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.mappings import RedisMappingsRepository
-from river.adapters.topics import KafkaTopics
+from river.adapters.topics import KafkaTopicsManager
 from river.api import serializers
 from river.services import abort, batch, preview
 
@@ -22,10 +22,10 @@ class BatchViewSet(viewsets.ModelViewSet):
         data = serializer.validated_data
         resource_ids = data["resources"]
 
-        topics = KafkaTopics()
+        topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
         mappings_repo = RedisMappingsRepository()
-        batch_instance = batch(resource_ids, topics, event_publisher, mappings_repo)
+        batch_instance = batch(resource_ids, topics_manager, event_publisher, mappings_repo)
 
         serializer = serializers.BatchSerializer(batch_instance)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -33,8 +33,8 @@ class BatchViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         batch_instance = self.get_object()
 
-        topics = KafkaTopics()
-        abort(batch_instance, topics)
+        topics_manager = KafkaTopicsManager()
+        abort(batch_instance, topics_manager)
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 

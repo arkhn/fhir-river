@@ -4,7 +4,7 @@ from river.adapters.progression_counter import RedisProgressionCounter
 
 
 @pytest.mark.redis
-def test_can_decr_counter():
+def test_progression_counter():
     counter = RedisProgressionCounter()
 
     counter.set_extracted("foo", 10)

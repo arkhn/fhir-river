@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.mappings import MappingsRepository
-from river.adapters.topics import TopicsHandler
+from river.adapters.topics import TopicsManager
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchEvent
@@ -19,12 +19,12 @@ from utils.json import CustomJSONEncoder
 
 
 def batch(
-    resources: List[str], topics: TopicsHandler, publisher: EventPublisher, mappings: MappingsRepository
+    resources: List[str], topics_manager: TopicsManager, publisher: EventPublisher, mappings: MappingsRepository
 ) -> models.Batch:
     batch_instance = models.Batch.objects.create()
 
     for base_topic in ["batch", "extract", "transform", "load"]:
-        topics.create(f"{base_topic}.{batch_instance.id}")
+        topics_manager.create(f"{base_topic}.{batch_instance.id}")
 
     for resource_id in resources:
         # Ensure the mapping exists
@@ -38,9 +38,9 @@ def batch(
     return batch_instance
 
 
-def abort(batch: models.Batch, topics: TopicsHandler) -> None:
+def abort(batch: models.Batch, topics_manager: TopicsManager) -> None:
     for base_topic in ["batch", "extract", "transform", "load"]:
-        topics.delete(f"{base_topic}.{batch.id}")
+        topics_manager.delete(f"{base_topic}.{batch.id}")
 
     batch.deleted_at = timezone.now()
     batch.save(update_fields=["deleted_at"])

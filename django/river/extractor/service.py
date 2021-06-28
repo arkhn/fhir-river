@@ -36,7 +36,7 @@ def broadcast_events(
             publisher.publish(topic=f"extract.{batch_id}", event=event)
             count += 1
         except KafkaException as err:
-            if isinstance(err, KafkaException) and err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+            if err.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
                 logger.warning(
                     {
                         "message": "The current batch has been cancelled",
