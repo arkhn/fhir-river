@@ -1,6 +1,7 @@
 import dataclasses
 import json
 import logging
+from typing import Dict
 
 import confluent_kafka
 
@@ -19,7 +20,7 @@ class EventPublisher:
 
 class FakeEventPublisher(EventPublisher):
     def __init__(self):
-        self._events: dict[str, list] = {}
+        self._events: Dict[str, list] = {}
 
     def publish(self, topic: str, event: Event):
         if topic in self._events:
