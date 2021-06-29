@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 import redis
 
@@ -30,7 +30,7 @@ class FakeProgressionCounter(ProgressionCounter):
             self._count[id]["loaded"] = 0
         self._count[id]["loaded"] += 1
 
-    def get(self, id: str) -> Optional[int]:
+    def get(self, id: str) -> Tuple[Optional[int], Optional[int]]:
         return self._count.get(id, {}).get("extracted"), self._count.get(id, {}).get("loaded")
 
 
@@ -48,7 +48,7 @@ class RedisProgressionCounter(ProgressionCounter):
     def increment_loaded(self, id: str):
         self._client.hincrby("loaded_counters", id, 1)
 
-    def get(self, id: str) -> Optional[int]:
+    def get(self, id: str) -> Tuple[Optional[int], Optional[int]]:
         raw_extracted = self._client.hget("extracted_counters", id)
         raw_loaded = self._client.hget("loaded_counters", id)
         extracted = int(raw_extracted) if raw_extracted else None
