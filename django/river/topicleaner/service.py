@@ -40,7 +40,7 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
         logger.info(f"Batch {batch} deleted.")
 
 
-def run(counter=RedisProgressionCounter(), topics=KafkaTopicsManager):
+def run(counter=RedisProgressionCounter(), topics=KafkaTopicsManager()):
     while True:
         clean(counter=counter, topics=topics)
         sleep(1)
