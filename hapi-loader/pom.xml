@@ -189,12 +189,6 @@
             <version>1.8.4</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.fluentd</groupId>
-            <artifactId>fluent-logger</artifactId>
-            <version>0.3.4</version>
-        </dependency>
-
         <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
