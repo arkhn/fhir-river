@@ -7,6 +7,7 @@ import scripts
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.mappings import RedisMappingsRepository
+from river.adapters.pyrog_client import APIPyrogClient
 from river.adapters.topics import KafkaTopicsManager
 from river.api import serializers
 from river.services import abort, batch, preview
@@ -21,11 +22,13 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         resource_ids = data["resources"]
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
+        pyrog_client = APIPyrogClient(authorization_header)
         mappings_repo = RedisMappingsRepository()
-        batch_instance = batch(resource_ids, topics_manager, event_publisher, mappings_repo)
+        batch_instance = batch(resource_ids, topics_manager, event_publisher, pyrog_client, mappings_repo)
 
         serializer = serializers.BatchSerializer(batch_instance)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -50,10 +53,11 @@ class PreviewEndpoint(generics.CreateAPIView):
         data = serializer.validated_data
         resource_id = data["resource_id"]
         primary_key_values = data["primary_key_values"]
+        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        mappings_repo = RedisMappingsRepository()
+        pyrog_client = APIPyrogClient(authorization_header)
 
-        documents, errors = preview(resource_id, primary_key_values, mappings_repo)
+        documents, errors = preview(resource_id, primary_key_values, pyrog_client)
 
         return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 

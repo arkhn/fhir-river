@@ -19,10 +19,8 @@ def test_extracted_resource_handler(batch, users_to_patients_mapping):
         resource_id=resource_id,
         record={"users_user_email_b77906f9": "didier@chloroquine.org"},
     )
-    publisher, mappings_repo = (
-        FakeEventPublisher(),
-        FakeMappingsRepository({resource_id: users_to_patients_mapping}),
-    )
+    publisher = FakeEventPublisher()
+    mappings_repo = FakeMappingsRepository({f"{batch.id}:{resource_id}": users_to_patients_mapping})
     analyzer = Analyzer()
     transformer = Transformer()
     binder = ReferenceBinder()

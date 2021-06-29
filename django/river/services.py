@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.mappings import MappingsRepository
+from river.adapters.pyrog_client import PyrogClient
 from river.adapters.topics import TopicsManager
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
@@ -19,7 +20,12 @@ from utils.json import CustomJSONEncoder
 
 
 def batch(
-    resources: List[str], topics_manager: TopicsManager, publisher: EventPublisher, mappings: MappingsRepository
+    resources: List[str],
+    topics_manager: TopicsManager,
+    publisher: EventPublisher,
+    # FIXME remove this when the DB is shared
+    pyrog_client: PyrogClient,
+    mappings: MappingsRepository,
 ) -> models.Batch:
     batch_instance = models.Batch.objects.create()
 
@@ -27,8 +33,8 @@ def batch(
         topics_manager.create(f"{base_topic}.{batch_instance.id}")
 
     for resource_id in resources:
-        # Ensure the mapping exists
-        mappings.get(batch_instance.id, resource_id)
+        resource_mapping = pyrog_client.fetch_mapping(resource_id)
+        mappings.set(batch_instance.id, resource_id, json.dumps(resource_mapping))
 
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
@@ -51,10 +57,9 @@ def retry(batch: models.Batch) -> None:
 
 
 def preview(
-    resource_id: str, primary_key_values: Optional[list], mappings: MappingsRepository
+    resource_id: str, primary_key_values: Optional[list], pyrog_client: PyrogClient
 ) -> Tuple[List[Any], List[Any]]:
-    # FIXME: missing batch_id
-    resource_mapping = mappings.get(resource_id)
+    resource_mapping = pyrog_client.fetch_mapping(resource_id)
 
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_mapping)

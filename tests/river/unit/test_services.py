@@ -5,6 +5,7 @@ import pytest
 from river import models
 from river.adapters.event_publisher import FakeEventPublisher
 from river.adapters.mappings import FakeMappingsRepository
+from river.adapters.pyrog_client import FakePyrogClient
 from river.adapters.topics import FakeTopicsManager
 from river.domain.events import BatchEvent
 from river.services import abort, batch, preview
@@ -16,9 +17,10 @@ def test_batch():
     topics = FakeTopicsManager()
     publisher = FakeEventPublisher()
     resources = [str(uuid.uuid4()) for _ in range(5)]
-    mappings_repo = FakeMappingsRepository(mappings={id: {} for id in resources})
+    pyrog_client = FakePyrogClient(mappings={id: {} for id in resources})
+    mappings_repo = FakeMappingsRepository()
 
-    batch_instance = batch(resources, topics, publisher, mappings_repo)
+    batch_instance = batch(resources, topics, publisher, pyrog_client, mappings_repo)
 
     assert batch_instance is not None
     assert models.Batch.objects.filter(id=batch_instance.id).exists()
@@ -28,7 +30,8 @@ def test_batch():
     assert publisher._events[f"batch.{batch_instance.id}"] == [
         BatchEvent(batch_id=batch_instance.id, resource_id=r) for r in resources
     ]
-    assert mappings_repo._seen == resources
+    assert pyrog_client._seen == resources
+    assert mappings_repo._mappings == {f"{batch_instance.id}:{resource_id}": "{}" for resource_id in resources}
 
 
 def test_abort(batch):
@@ -48,8 +51,9 @@ def test_retry(batch):
 
 
 def test_preview(users_to_patients_mapping):
-    mappings_repo = FakeMappingsRepository(mappings={"foo": users_to_patients_mapping})
+    pyrog_client = FakePyrogClient(mappings={"foo": users_to_patients_mapping})
 
-    documents, errors = preview("foo", None, mappings=mappings_repo)
+    documents, errors = preview("foo", None, pyrog_client=pyrog_client)
 
+    assert pyrog_client._seen == ["foo"]
     assert len(errors) == 0
