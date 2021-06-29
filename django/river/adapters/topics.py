@@ -1,6 +1,10 @@
+import logging
+
 from confluent_kafka import admin, error
 
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 
 class TopicsManager:
@@ -30,14 +34,16 @@ class KafkaTopicsManager(TopicsManager):
         ret = self._admin_client.create_topics(
             [admin.NewTopic(topic, settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR)]
         )
+        logger.debug(f"List of kafka topics: {self._admin_client.list_topics().topics}")
         try:
-            ret[topic].result(1)
+            ret[topic].result(10)
         except error.KafkaException as exc:
             raise Exception(exc)
 
     def delete(self, topic: str):
         ret = self._admin_client.delete_topics([topic])
+        logger.debug(f"List of kafka topics: {self._admin_client.list_topics().topics}")
         try:
-            ret[topic].result(1)
+            ret[topic].result(10)
         except error.KafkaException as exc:
             raise Exception(exc)
