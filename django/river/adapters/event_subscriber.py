@@ -71,7 +71,7 @@ class KafkaEventSubscriber(EventSubscriber):
                 logger.debug(error.str())
                 self._handle_error(error)
                 continue
-            return msg.topic(), json.loads(msg.value())
+            return msg.topic(), json.loads(msg.value(None))
 
     def _handle_error(self, error: KafkaError):
         """Handles a KafkaError"""

@@ -53,6 +53,7 @@ def retry(batch: models.Batch) -> None:
 def preview(
     resource_id: str, primary_key_values: Optional[list], mappings: MappingsRepository
 ) -> Tuple[List[Any], List[Any]]:
+    # FIXME: missing batch_id
     resource_mapping = mappings.get(resource_id)
 
     analyzer = Analyzer()

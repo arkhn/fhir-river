@@ -46,7 +46,7 @@ def extracted_record_handler(
     binder: ReferenceBinder,
     mappings_repo: MappingsRepository,
 ):
-    mapping = mappings_repo.get(event.resource_id)
+    mapping = mappings_repo.get(event.batch_id, event.resource_id)
     analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
     fhir_object = transform_row(analysis, event.record, transformer=transformer)
 
