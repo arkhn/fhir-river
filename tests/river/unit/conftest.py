@@ -4,9 +4,9 @@ import pytest
 @pytest.fixture(scope="session")
 def dict_map_code():
     return {
-        "ABCcleaned": "abc",
-        "DEFcleaned": "def",
-        "GHIcleaned": "ghi",
+        "ABC": "abc",
+        "DEF": "def",
+        "GHI": "ghi",
     }
 
 

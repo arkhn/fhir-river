@@ -10,18 +10,16 @@ from river.common.analyzer.sql_column import SqlColumn
 from river.transformer import dataframe
 
 
-def mock_get_script(*args):
-    if len(args) == 1:
-        return args[0].replace("dirty", "")
-    elif len(args) == 2:
-        return args[0]
-    else:
-        return f"{args[0]}{args[1]}merge"
+def mock_get_script(name):
+    if name == "merge":
+        return lambda *args: "".join(arg for arg in args if arg)
+    elif name == "clean":
+        return lambda arg: arg.replace("dirty", "")
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", return_value=mock_get_script)
-def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
+@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     data = {
@@ -36,7 +34,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean1"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean"))],
     )
     attr_name.add_input_group(group)
 
@@ -58,7 +56,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
                 "PUBLIC",
                 "ADMISSIONS",
                 "LANGUAGE",
-                cleaning_script=CleaningScript("clean1"),
+                cleaning_script=CleaningScript("clean"),
                 concept_map=ConceptMap(dict_map_gender, "id_cm_gender"),
             )
         ],
@@ -75,7 +73,7 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
                 "PUBLIC",
                 "ADMISSIONS",
                 "ID",
-                cleaning_script=CleaningScript("clean2"),
+                cleaning_script=CleaningScript("clean"),
                 concept_map=ConceptMap(dict_map_code, "id_cm_code"),
             )
         ],
@@ -87,27 +85,19 @@ def test_clean_data(_, mock_sha1, dict_map_gender, dict_map_code):
 
     cleaned_data = dataframe.clean_data(data, attributes, primary_key_column, "pk_val")
 
-    columns = [
-        ("name", "id_name", "PUBLIC_PATIENTS_NAME"),
-        ("id", "id_id", "PUBLIC_PATIENTS_ID"),
-        ("id", "id_id", "PUBLIC_PATIENTS_ID2"),
-        ("language", "id_language", "PUBLIC_ADMISSIONS_LANGUAGE"),
-        ("code", "id_code", "PUBLIC_ADMISSIONS_ID"),
-    ]
-
     expected = {
-        columns[0]: ["alice"],
-        columns[1]: ["id1"],
-        columns[2]: ["id21"],
-        columns[3]: ["male", "female", "female"],
-        columns[4]: ["abc", "def", "ghi"],
+        ("name", "id_name", "PUBLIC_PATIENTS_NAME"): ["alice"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID"): ["id1"],
+        ("id", "id_id", "PUBLIC_PATIENTS_ID2"): ["id21"],
+        ("language", "id_language", "PUBLIC_ADMISSIONS_LANGUAGE"): ["male", "female", "female"],
+        ("code", "id_code", "PUBLIC_ADMISSIONS_ID"): ["abc", "def", "ghi"],
     }
 
     assert cleaned_data == expected
 
 
-@mock.patch("river.common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
-def test_merge_by_attributes(_):
+@mock.patch("river.common.analyzer.merging_script.scripts.get_script", mock_get_script)
+def test_merge_by_attributes():
     attr_name = Attribute("name")
     group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")])
     attr_name.add_input_group(group)
@@ -117,7 +107,7 @@ def test_merge_by_attributes(_):
         id_="id_id",
         attribute=attr_id,
         columns=[SqlColumn("PUBLIC", "PATIENTS", "ID"), SqlColumn("PUBLIC", "PATIENTS", "ID2")],
-        static_inputs=["unknown"],
+        static_inputs=["id"],
         merging_script=MergingScript("merge"),
     )
     attr_id.add_input_group(group)
@@ -169,7 +159,7 @@ def test_merge_by_attributes(_):
     actual = dataframe.merge_by_attributes(data, attributes, "pk")
     expected = {
         "name": ["bob"],
-        "id": ["id1id21merge"],
+        "id": ["id1id21id"],
         "language": ["lang21", "lang22", "lang23", "lang24"],
         "admid": ["hadmid1", "hadmid2", "hadmid3", "hadmid4"],
         "static": ["static"],
@@ -178,8 +168,8 @@ def test_merge_by_attributes(_):
     assert actual == expected
 
 
-@mock.patch("river.common.analyzer.merging_script.scripts.get_script", return_value=mock_get_script)
-def test_merge_by_attributes_with_condition_arrays(_):
+@mock.patch("river.common.analyzer.merging_script.scripts.get_script", mock_get_script)
+def test_merge_by_attributes_with_condition_arrays():
     attr_language = Attribute("language")
     attr_language.add_input_group(
         InputGroup(
