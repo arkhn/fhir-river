@@ -28,7 +28,7 @@ def batch(
 
     for resource_id in resources:
         # Ensure the mapping exists
-        mappings.get(resource_id)
+        mappings.get(batch_instance.id, resource_id)
 
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
