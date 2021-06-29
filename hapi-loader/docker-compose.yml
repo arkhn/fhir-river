@@ -74,13 +74,6 @@ services:
     depends_on:
       - elasticsearch
 
-  fluentd:
-    image: arkhn/fluentd:latest
-    ports:
-      - 24224:24224
-    volumes:
-      - ./fluent.conf:/fluentd/etc/fluent.conf
-
 volumes:
   hapi-pgdata:
   hapi-eldata:

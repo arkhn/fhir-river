@@ -189,32 +189,15 @@ LOGGING = {
             "format": "{asctime} [{levelname:>8}] {filename:>15}:{lineno:3d} {message}",
             "style": "{",
         },
-        "fluentd": {
-            "()": "utils.log.FluentFormatter",
-            "format": {
-                "logger": "{name}",
-                "where": "{module}.{funcName}",
-                "level": "{levelname}",
-                "host": "{hostname}",
-            },
-            "style": "{",
-        },
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "default",
         },
-        "fluentd": {
-            "class": "fluent.handler.FluentHandler",
-            "formatter": "fluentd",
-            "tag": "river",
-            "host": os.environ.get("FLUENTD_HOST", "fluentd"),
-            "port": int(os.environ.get("FLUENTD_PORT", 24224)),
-        },
     },
     "root": {
-        "handlers": ["console", "fluentd"],
+        "handlers": ["console"],
         "level": os.environ.get("LOG_LEVEL", "INFO"),
     },
 }
