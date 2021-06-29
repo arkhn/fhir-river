@@ -31,19 +31,19 @@ class KafkaTopicsManager(TopicsManager):
         self._admin_client = admin.AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
 
     def create(self, topic: str):
-        ret = self._admin_client.create_topics(
+        future_topics = self._admin_client.create_topics(
             [admin.NewTopic(topic, settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR)]
         )
         logger.debug(f"List of kafka topics: {self._admin_client.list_topics().topics}")
         try:
-            ret[topic].result(10)
+            future_topics[topic].result(10)
         except error.KafkaException as exc:
             raise Exception(exc)
 
     def delete(self, topic: str):
-        ret = self._admin_client.delete_topics([topic])
+        future_deleted_topics = self._admin_client.delete_topics([topic])
         logger.debug(f"List of kafka topics: {self._admin_client.list_topics().topics}")
         try:
-            ret[topic].result(10)
+            future_deleted_topics[topic].result(10)
         except error.KafkaException as exc:
             raise Exception(exc)
