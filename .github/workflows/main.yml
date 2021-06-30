@@ -149,7 +149,7 @@ jobs:
           cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
           contextName: river-ci-${{ github.sha }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: main
+          deploymentRef: fix/topicleaner_env_vars
           debug: true
           versions: |
             {
