@@ -25,6 +25,7 @@ import {
   useApiAttributesListQuery,
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
+  useApiAttributesUpdateMutation,
 } from "services/api/endpoints";
 
 const useFhirResourceTreeData = (
@@ -61,6 +62,8 @@ const useFhirResourceTreeData = (
   } = useApiAttributesListQuery({ resource: mappingId });
   const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [updateAttribute] = useApiAttributesUpdateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
   const nodeId = node?.id;
@@ -92,6 +95,7 @@ const useFhirResourceTreeData = (
         ));
     }
   }, [attributes, nodePath, deleteAttribute]);
+
   const createItem = useCallback(
     async (sliceName?: string) => {
       if (nodeId && root) {
@@ -113,6 +117,7 @@ const useFhirResourceTreeData = (
     },
     [createAttribute, mappingId, nodeId, root]
   );
+
   const addExtension = useCallback(async () => {
     const parentNode = node ?? root;
     const extensionArrayNode = parentNode?.children.find(

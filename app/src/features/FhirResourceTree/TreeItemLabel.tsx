@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
@@ -27,6 +28,7 @@ const useStyle = makeStyles((theme) => ({
     height: "100%",
     "& button": {
       display: "none",
+      marginRight: theme.spacing(0.5),
     },
     "&:hover": {
       "& button": {
@@ -64,7 +66,6 @@ const TreeItemLabel = ({
   onAddExtension,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { t } = useTranslation();
   const popupState = usePopupState({
     variant: "popover",
@@ -152,17 +153,43 @@ const TreeItemLabel = ({
       >
         {elementNode.type}
       </Typography>
+      {elementNode.kind === "complex" && !elementNode.isArray && (
+        <Tooltip title={t("addExtension").toString()} arrow>
+          <div>
+            <IconButton
+              icon={IconNames.CODE_BLOCK}
+              onClick={handleAddExtensionClick}
+            />
+          </div>
+        </Tooltip>
+      )}
       {isArrayItem && (
-        <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
+        <>
+          <Tooltip
+            title={
+              elementNode.sliceName
+                ? t("deleteSlice").toString()
+                : t("deleteItem").toString()
+            }
+            arrow
+          >
+            <div>
+              <IconButton
+                icon={IconNames.TRASH}
+                onClick={handleDeleteItemClick}
+              />
+            </div>
+          </Tooltip>
+        </>
       )}
       {elementNode.isArray && elementNode.type !== "Extension" && (
         <>
-          <Tooltip title={t("addItem") as string} arrow>
+          <Tooltip title={t("addItem").toString()} arrow>
             <div>
               <IconButton icon={IconNames.ADD} onClick={handleAddItemClick} />
             </div>
           </Tooltip>
-          <Tooltip title={t("addSlice") as string} arrow>
+          <Tooltip title={t("addSlice").toString()} arrow>
             <div>
               <IconButton
                 icon={IconNames.PIE_CHART}
@@ -176,16 +203,6 @@ const TreeItemLabel = ({
             onClose={handleSliceDialogClose}
           />
         </>
-      )}
-      {elementNode.kind === "complex" && !elementNode.isArray && (
-        <Tooltip title={t("addExtension") as string} arrow>
-          <div>
-            <IconButton
-              icon={IconNames.CODE_BLOCK}
-              onClick={handleAddExtensionClick}
-            />
-          </div>
-        </Tooltip>
       )}
       <TreeNodeBadge elementNode={elementNode} />
     </div>

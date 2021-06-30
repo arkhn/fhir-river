@@ -18,10 +18,6 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "center",
     fill: theme.palette.icons.resourceTree.light,
   },
-  labelEndIcons: {
-    display: "none",
-    marginRight: theme.spacing(0.5),
-  },
 }));
 
 const IconButton = ({
@@ -30,11 +26,7 @@ const IconButton = ({
 }: IconButtonProps): JSX.Element => {
   const classes = useStyle();
   return (
-    <MuiIconButton
-      size="small"
-      className={classes.labelEndIcons}
-      {...iconButtonProps}
-    >
+    <MuiIconButton size="small" {...iconButtonProps}>
       <Icon className={classes.icon} icon={icon} iconSize={15} />
     </MuiIconButton>
   );
