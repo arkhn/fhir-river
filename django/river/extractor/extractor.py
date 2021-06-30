@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from typing import Any, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 from arkhn_monitoring import Timer
 from prometheus_client import Counter as PromCounter
@@ -85,7 +85,7 @@ class Extractor:
 
     @staticmethod
     @Timer("time_extractor_split", "time to split dataframe")
-    def split_dataframe(df: Query, analysis: Analysis):
+    def split_dataframe(df: Query, analysis: Analysis) -> Generator[Dict[str, list], None, None]:
         # Find primary key column
         logger.info(
             {
@@ -111,7 +111,7 @@ class Extractor:
                     resource_id=analysis.resource_id,
                     resource_type=analysis.definition_id,
                 ).inc()
-                yield acc
+                yield dict(acc)
                 acc = defaultdict(list)
             for key, value in zip(row.keys(), row):
                 acc[key].append(value)
@@ -124,10 +124,9 @@ class Extractor:
                 "you provided are not present in the database or the mapping "
                 "is erroneous."
             )
-            return []
         else:
             counter_extract_instances.labels(
                 resource_id=analysis.resource_id,
                 resource_type=analysis.definition_id,
             ).inc()
-            yield acc
+            yield dict(acc)
