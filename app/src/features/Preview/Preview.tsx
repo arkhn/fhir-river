@@ -108,14 +108,16 @@ const Preview = (): JSX.Element => {
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
-    { skip: !Boolean(mappingId) }
+    { skip: mappingId === undefined }
   );
 
   const handleFhirIconClick = (index: number) => () => {
     const primarykey = mapping?.primary_key_table;
     if (primarykey) {
       const indexPrimaryKey = exploredData.fields.indexOf(primarykey);
-      console.log(exploredData.rows[index]?.[indexPrimaryKey]);
+      // when api will have this functionality, we will need to implement this function
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const exploredRow = exploredData.rows[index]?.[indexPrimaryKey];
       setPreview(previewJson);
     }
   };
@@ -175,16 +177,7 @@ const Preview = (): JSX.Element => {
           </TableBody>
         </Table>
       </TableContainer>
-      {!preview && (
-        <div className={classes.texts}>
-          <Typography>
-            {t("clickOnAFireIcon")}{" "}
-            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
-            {t("inOrderToPreview")}
-          </Typography>
-        </div>
-      )}
-      {preview && (
+      {preview ? (
         <div className={classes.preview}>
           <ReactJson
             src={preview}
@@ -193,6 +186,14 @@ const Preview = (): JSX.Element => {
             displayObjectSize={false}
             displayDataTypes={false}
           />
+        </div>
+      ) : (
+        <div className={classes.texts}>
+          <Typography>
+            {t("clickOnAFireIcon")}{" "}
+            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
+            {t("inOrderToPreview")}
+          </Typography>
         </div>
       )}
     </Container>
