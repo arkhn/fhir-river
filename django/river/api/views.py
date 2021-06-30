@@ -18,9 +18,10 @@ class BatchViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BatchSerializer
 
     def create(self, request):
-        serializer = serializers.BatchSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
         resource_ids = data["resources"]
@@ -33,7 +34,7 @@ class BatchViewSet(viewsets.ModelViewSet):
         batch_instance = batch(resource_ids, topics_manager, event_publisher, pyrog_client, mappings_repo)
 
         serializer = serializers.BatchSerializer(batch_instance)
-        return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+        return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
         batch_instance = self.get_object()
