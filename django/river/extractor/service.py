@@ -30,7 +30,13 @@ def broadcast_events(
     for record in list_records_from_db:
         try:
             logger.debug(
-                {"message": "One record from extract", "resource_id": resource_id},
+                {
+                    "message": "One record from extract",
+                    "batch_id": batch_id,
+                    "resource_type": resource_type,
+                    "resource_id": resource_id,
+                    "record": record,
+                },
             )
             event = events.ExtractedRecord(batch_id, resource_type, resource_id, record)
             publisher.publish(topic=f"extract.{batch_id}", event=event)
