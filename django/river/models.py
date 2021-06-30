@@ -1,3 +1,4 @@
+from django.contrib.postgres import fields
 from django.db import models
 
 from cuid import cuid
@@ -8,7 +9,7 @@ class Batch(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
-    resources = models.JSONField(blank=True, default=list)
+    resources = fields.ArrayField(models.TextField(), size=None, default=list)
 
 
 class Error(models.Model):
