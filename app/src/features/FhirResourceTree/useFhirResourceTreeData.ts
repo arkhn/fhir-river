@@ -62,7 +62,6 @@ const useFhirResourceTreeData = (
   } = useApiAttributesListQuery({ resource: mappingId });
   const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [updateAttribute] = useApiAttributesUpdateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
