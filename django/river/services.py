@@ -20,15 +20,14 @@ from utils.json import CustomJSONEncoder
 
 
 def batch(
+    batch_instance: models.Batch,
     resources: List[str],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
     # FIXME remove this when the DB is shared
     pyrog_client: PyrogClient,
     mappings: MappingsRepository,
-) -> models.Batch:
-    batch_instance = models.Batch.objects.create()
-
+):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_instance.id}")
 
@@ -40,8 +39,6 @@ def batch(
             topic=f"batch.{batch_instance.id}",
             event=BatchEvent(batch_id=batch_instance.id, resource_id=resource_id),
         )
-
-    return batch_instance
 
 
 def abort(batch: models.Batch, topics_manager: TopicsManager) -> None:
