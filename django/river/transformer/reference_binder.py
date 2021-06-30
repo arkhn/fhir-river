@@ -20,7 +20,7 @@ def get_resource_id(fhir_instance):
 
 
 class ReferenceBinder:
-    def resolve_references(self, unresolved_fhir_object, reference_paths: List[List[str]]):
+    def resolve_references(self, unresolved_fhir_object, reference_paths: List[List[str]]) -> dict:
         fhir_object = dotty(unresolved_fhir_object)
         resource_id = get_resource_id(unresolved_fhir_object)
 
@@ -43,7 +43,7 @@ class ReferenceBinder:
                     }
                 )
 
-        return fhir_object.to_dict()
+        return dict(fhir_object.to_dict())
 
     def bind_existing_reference(self, fhir_object, reference_path: List[str]):
         resource_id = get_resource_id(fhir_object)

@@ -26,4 +26,4 @@ class ExtractedRecord(Event):
 class TransformedRecord(Event):
     batch_id: str
     resource_id: str
-    fhir_object: Any
+    fhir_object: dict
