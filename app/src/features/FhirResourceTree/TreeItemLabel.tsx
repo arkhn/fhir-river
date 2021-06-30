@@ -2,18 +2,8 @@ import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconName, IconNames } from "@blueprintjs/icons";
-import {
-  ListItemText,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@material-ui/core";
-import {
-  bindTrigger,
-  bindMenu,
-  usePopupState,
-} from "material-ui-popup-state/hooks";
+import { makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { usePopupState } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
 
 import IconButton from "common/components/IconButton";
@@ -35,6 +25,9 @@ const useStyle = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     height: "100%",
+    "& button": {
+      display: "none",
+    },
     "&:hover": {
       "& button": {
         display: "flex",
@@ -71,6 +64,7 @@ const TreeItemLabel = ({
   onAddExtension,
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { t } = useTranslation();
   const popupState = usePopupState({
     variant: "popover",
@@ -113,7 +107,9 @@ const TreeItemLabel = ({
     onAddExtension();
   };
 
-  const handleSliceDialogOpen = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleSliceDialogOpen = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.stopPropagation();
     popupState.close();
     setSliceDialogOpen(true);
@@ -128,15 +124,12 @@ const TreeItemLabel = ({
     onCreateItem(name);
   };
 
-  const handleAddItemClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleAddItemClick = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.stopPropagation();
     popupState.close();
     onCreateItem();
-  };
-
-  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    popupState.open(e);
   };
 
   return (
@@ -159,31 +152,24 @@ const TreeItemLabel = ({
       >
         {elementNode.type}
       </Typography>
-      <TreeNodeBadge elementNode={elementNode} />
       {isArrayItem && (
         <IconButton icon={IconNames.TRASH} onClick={handleDeleteItemClick} />
       )}
       {elementNode.isArray && elementNode.type !== "Extension" && (
         <>
-          <IconButton
-            icon={IconNames.ADD}
-            {...bindTrigger(popupState)}
-            onClick={handleMenuClick}
-          />
-          <Menu {...bindMenu(popupState)}>
-            <MenuItem>
-              <ListItemText
-                primary={t("addItem")}
-                onClick={handleAddItemClick}
-              />
-            </MenuItem>
-            <MenuItem>
-              <ListItemText
-                primary={t("addSlice")}
+          <Tooltip title={t("addItem") as string} arrow>
+            <div>
+              <IconButton icon={IconNames.ADD} onClick={handleAddItemClick} />
+            </div>
+          </Tooltip>
+          <Tooltip title={t("addSlice") as string} arrow>
+            <div>
+              <IconButton
+                icon={IconNames.PIE_CHART}
                 onClick={handleSliceDialogOpen}
               />
-            </MenuItem>
-          </Menu>
+            </div>
+          </Tooltip>
           <SliceNameDialog
             onSubmit={handleAddSlice}
             open={isSliceDialogOpen}
@@ -192,11 +178,16 @@ const TreeItemLabel = ({
         </>
       )}
       {elementNode.kind === "complex" && !elementNode.isArray && (
-        <IconButton
-          icon={IconNames.CODE_BLOCK}
-          onClick={handleAddExtensionClick}
-        />
+        <Tooltip title={t("addExtension") as string} arrow>
+          <div>
+            <IconButton
+              icon={IconNames.CODE_BLOCK}
+              onClick={handleAddExtensionClick}
+            />
+          </div>
+        </Tooltip>
       )}
+      <TreeNodeBadge elementNode={elementNode} />
     </div>
   );
 };

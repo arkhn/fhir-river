@@ -12,11 +12,12 @@ const useStyles = makeStyles((theme) => ({
   badgeContainer: {
     display: "flex",
     alignItems: "center",
-    paddingInline: theme.spacing(0.5),
+    paddingInlineEnd: theme.spacing(1.2),
+    paddingInlineStart: theme.spacing(0.5),
   },
   badge: {
-    height: theme.spacing(0.7),
-    width: theme.spacing(0.7),
+    height: theme.spacing(1),
+    width: theme.spacing(1),
     borderRadius: 5,
   },
   required: {
@@ -38,14 +39,18 @@ const TreeNodeBadge = ({ elementNode }: TreeNodeBadgeProps): JSX.Element => {
     elementNode,
   ]);
   return (
-    <div className={classes.badgeContainer}>
-      <div
-        className={clsx(classes.badge, {
-          [classes.required]: isRequired && !isPending,
-          [classes.pending]: isPending,
-        })}
-      />
-    </div>
+    <>
+      {(isRequired || isPending) && (
+        <div className={classes.badgeContainer}>
+          <div
+            className={clsx(classes.badge, {
+              [classes.required]: isRequired && !isPending,
+              [classes.pending]: isPending,
+            })}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
