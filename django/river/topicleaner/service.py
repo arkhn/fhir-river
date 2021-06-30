@@ -22,7 +22,7 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
     batches_to_delete = []
 
     for batch in current_batches:
-        resources_counters = [counter.get(f"{batch.id}.{resource_id}") for resource_id in batch.resources]
+        resources_counters = [counter.get(f"{batch.id}:{resource_id}") for resource_id in batch.resources]
         if all(
             [
                 counter_extracted is not None and counter_loaded is not None and counter_loaded >= counter_extracted
