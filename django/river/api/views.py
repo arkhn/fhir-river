@@ -20,6 +20,8 @@ class BatchViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = serializers.BatchSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
         data = serializer.validated_data
         resource_ids = data["resources"]
         authorization_header = request.META.get("HTTP_AUTHORIZATION")
