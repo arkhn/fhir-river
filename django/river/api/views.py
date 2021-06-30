@@ -17,7 +17,7 @@ class BatchViewSet(viewsets.ModelViewSet):
     queryset = models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
