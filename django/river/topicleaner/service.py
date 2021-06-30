@@ -31,7 +31,8 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
         ):
             batches_to_delete.append(batch)
 
-    logger.info(f"Deleting batches: {batches_to_delete}.")
+    if batches_to_delete:
+        logger.info(f"Deleting batches: {batches_to_delete}.")
 
     for batch in batches_to_delete:
         teardown_after_batch(batch, topics)
