@@ -34,16 +34,16 @@ class KafkaTopicsManager(TopicsManager):
         future_topics = self._admin_client.create_topics(
             [admin.NewTopic(topic, settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR)]
         )
-        logger.debug(f"List of kafka topics after addition: {self._admin_client.list_topics().topics}")
         try:
             future_topics[topic].result(10)
+            logger.debug(f"List of kafka topics after addition: {self._admin_client.list_topics().topics}")
         except error.KafkaException as exc:
             raise Exception(exc)
 
     def delete(self, topic: str):
         future_deleted_topics = self._admin_client.delete_topics([topic])
-        logger.debug(f"List of kafka topics after deletion: {self._admin_client.list_topics().topics}")
         try:
             future_deleted_topics[topic].result(10)
+            logger.debug(f"List of kafka topics after deletion: {self._admin_client.list_topics().topics}")
         except error.KafkaException as exc:
             logger.error(f"KafkaException while deleting topics: {str(exc)}")
