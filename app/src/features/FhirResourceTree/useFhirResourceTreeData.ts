@@ -25,7 +25,6 @@ import {
   useApiAttributesListQuery,
   useApiAttributesDestroyMutation,
   useApiAttributesCreateMutation,
-  useApiAttributesUpdateMutation,
 } from "services/api/endpoints";
 
 const useFhirResourceTreeData = (
@@ -62,7 +61,6 @@ const useFhirResourceTreeData = (
   } = useApiAttributesListQuery({ resource: mappingId });
   const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
-  const [updateAttribute] = useApiAttributesUpdateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
   const nodeId = node?.id;

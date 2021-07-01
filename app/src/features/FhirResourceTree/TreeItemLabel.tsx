@@ -165,11 +165,9 @@ const TreeItemLabel = ({
       {isArrayItem && (
         <>
           <Tooltip
-            title={
-              elementNode.sliceName
-                ? t("deleteSlice").toString()
-                : t("deleteItem").toString()
-            }
+            title={t(
+              elementNode.sliceName ? "deleteSlice" : "deleteItem"
+            ).toString()}
             arrow
           >
             <div>
