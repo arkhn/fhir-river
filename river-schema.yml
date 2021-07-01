@@ -2809,8 +2809,7 @@ components:
         primary_key_values:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            type: string
       required:
       - primary_key_values
       - resource_id
@@ -2822,8 +2821,7 @@ components:
         primary_key_values:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            type: string
       required:
       - primary_key_values
       - resource_id
