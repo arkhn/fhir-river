@@ -55,7 +55,10 @@ const FhirResourceTree = (): JSX.Element => {
     mappingId?: string;
     attributeId?: string;
   }>();
-  const { data: selectedAttribute } = useApiAttributesRetrieveQuery(
+  const {
+    data: selectedAttribute,
+    isUninitialized: isSelectedAttributeUninitialized,
+  } = useApiAttributesRetrieveQuery(
     { id: attributeId ?? "" },
     { skip: !attributeId }
   );
@@ -78,10 +81,10 @@ const FhirResourceTree = (): JSX.Element => {
   const [createAttribute] = useApiAttributesCreateMutation();
 
   const selectedNode = useMemo(() => {
-    if (selectedAttribute && root) {
+    if (!isSelectedAttributeUninitialized && selectedAttribute && root) {
       return getNode("path", selectedAttribute.path, root);
     }
-  }, [selectedAttribute, root]);
+  }, [selectedAttribute, root, isSelectedAttributeUninitialized]);
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
