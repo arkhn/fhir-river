@@ -8,7 +8,6 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-import Select from "common/components/Select";
 import usePrevious from "common/hooks/usePrevious";
 import {
   useApiCredentialsListQuery,
@@ -125,15 +124,13 @@ const ColumnSelects = ({
     }
   };
   const handleColumnChange = (
-    event: React.ChangeEvent<{
-      name?: string | undefined;
-      value: unknown;
-    }>
+    event: React.ChangeEvent<Record<string, never>>,
+    value: string
   ) => {
     onChange &&
       onChange({
         ...pendingColumn,
-        column: event.target.value as string,
+        column: value,
       });
   };
 
@@ -194,20 +191,39 @@ const ColumnSelects = ({
         />
       </Grid>
       <Grid item>
-        <Select
-          value={column ?? ""}
+        <Autocomplete
+          className={classes.autocomplete}
           options={columns}
-          emptyOption={t("selectColumn")}
+          value={column ?? ""}
           onChange={handleColumnChange}
-          startIcon={
-            <Icon
-              icon={IconNames.COLUMN_LAYOUT}
-              iconSize={15}
-              className={clsx(classes.icon, {
-                [classes.iconSelected]: isColumnSelected,
-              })}
+          selectOnFocus
+          openOnFocus
+          clearOnBlur
+          disableClearable
+          handleHomeEndKeys
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              size="small"
+              placeholder={t("selectColumn")}
+              InputProps={{
+                ...params.InputProps,
+                className: clsx(params.InputProps.className, {
+                  [classes.selected]: column !== undefined,
+                }),
+                startAdornment: (
+                  <Icon
+                    icon={IconNames.COLUMN_LAYOUT}
+                    iconSize={15}
+                    className={clsx(classes.icon, classes.autocompleteIcon, {
+                      [classes.iconSelected]: isColumnSelected,
+                    })}
+                  />
+                ),
+              }}
             />
-          }
+          )}
         />
       </Grid>
     </>
