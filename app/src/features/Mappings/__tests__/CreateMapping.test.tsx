@@ -103,13 +103,11 @@ describe("Mapping creation page", () => {
     await screen.findByText(/name mapping/i);
 
     // primary_key_table selection
-    userEvent.click(await screen.findByRole("textbox"));
+    userEvent.click(await screen.findByPlaceholderText(/select table/i));
     userEvent.click(await screen.findByRole("option", { name: /^table$/i }));
 
     // primary_key_column selection
-    userEvent.click(
-      await screen.findByRole("button", { name: /select column/i })
-    );
+    userEvent.click(await screen.findByPlaceholderText(/select column/i));
     userEvent.click(await screen.findByRole("option", { name: /^column$/i }));
 
     userEvent.click(await screen.findByRole("button", { name: /next/i }));
