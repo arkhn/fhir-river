@@ -26,6 +26,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -55,6 +56,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -78,6 +80,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -112,6 +115,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -145,6 +149,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -167,50 +172,202 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
-  /api/batch/:
+  /api/batches/:
     get:
-      operationId: api_batch_retrieve
+      operationId: api_batches_list
       description: ''
       tags:
       - api
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Batch'
+          description: ''
     post:
-      operationId: api_batch_create
+      operationId: api_batches_create
       description: ''
       tags:
       - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
-          description: No response body
-  /api/batch/{id}/:
-    delete:
-      operationId: api_batch_destroy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+  /api/batches/{id}/:
+    get:
+      operationId: api_batches_retrieve
       description: ''
       parameters:
       - in: path
         name: id
         schema:
           type: string
+        description: A unique value identifying this batch.
         required: true
       tags:
       - api
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    put:
+      operationId: api_batches_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    patch:
+      operationId: api_batches_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    delete:
+      operationId: api_batches_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
+  /api/batches/{id}/retry/:
+    post:
+      operationId: api_batches_retry_create
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
   /api/columns/:
     get:
       operationId: api_columns_list
@@ -229,6 +386,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -258,6 +416,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -281,6 +440,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -315,6 +475,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -348,6 +509,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -370,6 +532,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -387,6 +550,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -416,6 +580,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -439,6 +604,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -473,6 +639,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -506,6 +673,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -528,6 +696,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -540,6 +709,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           description: No response body
@@ -557,6 +727,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -586,6 +757,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -609,6 +781,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -643,6 +816,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -676,6 +850,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -698,6 +873,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -715,6 +891,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -744,6 +921,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -767,6 +945,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -801,6 +980,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -834,6 +1014,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -856,6 +1037,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -873,6 +1055,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -902,6 +1085,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -925,6 +1109,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -959,6 +1144,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -992,6 +1178,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1014,6 +1201,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -1031,6 +1219,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1060,6 +1249,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -1083,6 +1273,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1117,6 +1308,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1150,6 +1342,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1172,6 +1365,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -1189,6 +1383,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1218,6 +1413,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -1241,6 +1437,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1275,6 +1472,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1308,6 +1506,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1330,6 +1529,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -1347,6 +1547,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1376,6 +1577,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -1399,6 +1601,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1433,6 +1636,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1466,6 +1670,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1488,6 +1693,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -1497,12 +1703,29 @@ paths:
       description: ''
       tags:
       - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreviewRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
-        '201':
-          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preview'
+          description: ''
   /api/resources/:
     get:
       operationId: api_resources_list
@@ -1517,6 +1740,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1546,6 +1770,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -1569,6 +1794,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1603,6 +1829,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1636,6 +1863,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1658,6 +1886,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -1670,6 +1899,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           description: No response body
@@ -1682,6 +1912,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1711,6 +1942,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '201':
           content:
@@ -1734,6 +1966,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1768,6 +2001,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1801,6 +2035,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           content:
@@ -1823,6 +2058,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '204':
           description: No response body
@@ -1867,6 +2103,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           description: No response body
@@ -1879,6 +2116,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           description: No response body
@@ -1897,6 +2135,7 @@ paths:
       security:
       - cookieAuth: []
       - basicAuth: []
+      - {}
       responses:
         '200':
           description: No response body
@@ -1951,6 +2190,46 @@ components:
       - definition_id
       - path
       - resource
+    Batch:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        deleted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        resources:
+          type: array
+          items:
+            type: string
+      required:
+      - created_at
+      - deleted_at
+      - errors
+      - id
+      - updated_at
+    BatchRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            type: string
     Column:
       type: object
       properties:
@@ -2125,6 +2404,55 @@ components:
       - password
       - port
       - source
+    Error:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        event:
+          type: string
+        message:
+          type: string
+        exception:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        deleted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        batch:
+          type: string
+      required:
+      - batch
+      - created_at
+      - deleted_at
+      - event
+      - id
+      - message
+      - updated_at
+    ErrorRequest:
+      type: object
+      properties:
+        event:
+          type: string
+        message:
+          type: string
+        exception:
+          type: string
+        batch:
+          type: string
+      required:
+      - batch
+      - event
+      - message
     Filter:
       type: object
       properties:
@@ -2318,6 +2646,13 @@ components:
           type: string
         resource:
           type: string
+    PatchedBatchRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            type: string
     PatchedColumnRequest:
       type: object
       properties:
@@ -2429,6 +2764,32 @@ components:
           type: string
         version:
           type: string
+    Preview:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        primary_key_values:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - primary_key_values
+      - resource_id
+    PreviewRequest:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        primary_key_values:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - primary_key_values
+      - resource_id
     Resource:
       type: object
       properties:

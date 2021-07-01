@@ -50,9 +50,13 @@ class BatchViewSet(viewsets.ModelViewSet):
 
 
 class PreviewEndpoint(generics.CreateAPIView):
-    def create(self, request):
+    serializer_class = serializers.PreviewSerializer
+
+    def create(self, request, *args, **kwargs):
         serializer = serializers.PreviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        headers = self.get_success_headers(serializer.data)
+
         data = serializer.validated_data
         resource_id = data["resource_id"]
         primary_key_values = data["primary_key_values"]
@@ -62,11 +66,13 @@ class PreviewEndpoint(generics.CreateAPIView):
 
         documents, errors = preview(resource_id, primary_key_values, pyrog_client)
 
-        return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
+        return response.Response(
+            {"instances": documents, "errors": errors}, status=status.HTTP_201_CREATED, headers=headers
+        )
 
 
 class ScriptsEndpoint(generics.ListAPIView):
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
         res = []
         for module_name, module in getmembers(scripts, ismodule):
             for script_name, script in getmembers(module, isfunction):
