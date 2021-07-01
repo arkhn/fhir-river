@@ -6,6 +6,8 @@ from django.urls import reverse
 
 pytestmark = pytest.mark.django_db
 
+# TODO do some real testing
+
 
 @pytest.mark.skip(reason="Needs pyrog-api")
 def test_preview(api_client):

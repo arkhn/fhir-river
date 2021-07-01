@@ -50,6 +50,7 @@ def test_retry(batch):
     pass
 
 
+# TODO improve test to verify what's in documents
 def test_preview(users_to_patients_mapping):
     pyrog_client = FakePyrogClient(mappings={"foo": users_to_patients_mapping})
 

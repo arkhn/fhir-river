@@ -6,6 +6,8 @@ from django.urls import reverse
 
 pytestmark = [pytest.mark.django_db, pytest.mark.kafka]
 
+# TODO do some real testing
+
 
 @pytest.mark.skip(reason="Needs pyrog-api")
 def test_create_batch(api_client):
