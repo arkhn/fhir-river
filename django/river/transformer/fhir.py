@@ -12,6 +12,12 @@ def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)
 
 
+def recursive_defaultdict_to_dict(rec_default_dict):
+    if isinstance(rec_default_dict, defaultdict):
+        rec_default_dict = {k: recursive_defaultdict_to_dict(v) for k, v in rec_default_dict.items()}
+    return rec_default_dict
+
+
 def build_metadata(analysis):
     metadata = {}
 
@@ -94,7 +100,7 @@ def build_fhir_object(row, path_attributes_map):
                 insert_in_fhir_object(fhir_object, remove_index(array_path), sub_fhir_object=array)
             arrays_done.add(array_path)
 
-    return dict(fhir_object)
+    return recursive_defaultdict_to_dict(fhir_object)
 
 
 def handle_array_attributes(attributes_in_array, row):
