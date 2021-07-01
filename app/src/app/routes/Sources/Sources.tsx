@@ -7,6 +7,9 @@ import SourceDrawer from "features/Sources/SourceDrawer";
 import SourceGrid from "features/Sources/SourceGrid";
 
 const useStyles = makeStyles((theme) => ({
+  button: {
+    textTransform: "none",
+  },
   gridContainer: {
     flexGrow: 1,
     paddingTop: theme.spacing(5),
@@ -19,7 +22,11 @@ const Sources = (): JSX.Element => {
   return (
     <Container maxWidth="xl">
       <Grid className={classes.gridContainer} spacing={3} container>
-        <SourceCreate />
+        <SourceCreate
+          className={classes.button}
+          color="primary"
+          variant="contained"
+        />
       </Grid>
       <SourceGrid />
       <SourceDrawer />

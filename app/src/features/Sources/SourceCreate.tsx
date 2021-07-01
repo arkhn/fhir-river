@@ -1,32 +1,22 @@
 import React from "react";
 
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { Button, ButtonProps, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
 
 import { createSource } from "./sourceSlice";
 
-const useStyles = makeStyles(() => ({
-  button: {
-    textTransform: "none",
-  },
-}));
+type SourceCreateProps = ButtonProps;
 
-const SourceCreate = (): JSX.Element => {
-  const classes = useStyles();
+const SourceCreate = ({ ...buttonProps }: SourceCreateProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const handleCreateSource = () => dispatch(createSource());
 
   return (
-    <Button
-      className={classes.button}
-      color="primary"
-      variant="contained"
-      onClick={handleCreateSource}
-    >
+    <Button {...buttonProps} onClick={handleCreateSource}>
       <Typography>{t("newSource")}</Typography>
     </Button>
   );

@@ -13,11 +13,9 @@ import { CancelOutlined, ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
-import {
-  useApiBatchesDestroyMutation,
-  useApiBatchesListQuery,
-} from "services/api/endpoints";
+import { useApiBatchesListQuery } from "services/api/endpoints";
 
+import BatchCancel from "./BatchCancel";
 import BatchErrors from "./BatchErrors";
 
 const useStyles = makeStyles((theme) => ({
@@ -95,13 +93,8 @@ const BatchList = (): JSX.Element => {
     }
   );
 
-  const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
-
-  const handleBatchCancel = (batchId: string) => () => {
-    apiBatchesDestroy({ id: batchId });
-  };
-
   const handleBatchRetry = (batchId: string) => () => {
+    // TODO: batch retry is not implemented yet
     console.log(batchId);
   };
 
@@ -135,18 +128,13 @@ const BatchList = (): JSX.Element => {
                     <Typography>{t("retry")}</Typography>
                   </Button>
                   {!batch.deleted_at && (
-                    <Button
+                    <BatchCancel
+                      batch={batch}
                       className={classes.button}
                       variant="contained"
                       color="primary"
                       startIcon={<CancelOutlined />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleBatchCancel(batch.id);
-                      }}
-                    >
-                      <Typography>{t("cancel")}</Typography>
-                    </Button>
+                    />
                   )}
                 </div>
               </div>
