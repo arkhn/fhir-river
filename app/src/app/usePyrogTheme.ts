@@ -67,8 +67,6 @@ const usePyrogTheme = (): Theme => {
     [prefersDarkMode]
   );
 
-  console.log(theme);
-
   return theme;
 };
 
