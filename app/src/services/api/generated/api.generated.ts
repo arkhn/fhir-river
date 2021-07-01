@@ -563,7 +563,11 @@ export const api = createApi({
       ApiPreviewCreateApiResponse,
       ApiPreviewCreateApiArg
     >({
-      query: () => ({ url: `/api/preview/`, method: "POST" }),
+      query: (queryArg) => ({
+        url: `/api/preview/`,
+        method: "POST",
+        body: queryArg.previewRequest,
+      }),
     }),
     apiResourcesList: build.query<
       ApiResourcesListApiResponse,
@@ -1027,8 +1031,10 @@ export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
-export type ApiPreviewCreateApiResponse = unknown;
-export type ApiPreviewCreateApiArg = {};
+export type ApiPreviewCreateApiResponse = /** status 200  */ Preview;
+export type ApiPreviewCreateApiArg = {
+  previewRequest: PreviewRequest;
+};
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
   source?: string;
@@ -1140,9 +1146,7 @@ export type Batch = {
   created_at: string;
   updated_at: string;
   deleted_at: string;
-  resources: {
-    [key: string]: any;
-  };
+  resources?: string[];
 };
 export type PaginatedBatchList = {
   count?: number;
@@ -1151,14 +1155,10 @@ export type PaginatedBatchList = {
   results?: Batch[];
 };
 export type BatchRequest = {
-  resources: {
-    [key: string]: any;
-  };
+  resources?: string[];
 };
 export type PatchedBatchRequest = {
-  resources?: {
-    [key: string]: any;
-  };
+  resources?: string[];
 };
 export type Column = {
   id: string;
@@ -1330,6 +1330,14 @@ export type OwnerRequest = {
 export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
+};
+export type Preview = {
+  resource_id: string;
+  primary_key_values: string[];
+};
+export type PreviewRequest = {
+  resource_id: string;
+  primary_key_values: string[];
 };
 export type Resource = {
   id: string;
