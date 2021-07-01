@@ -37,9 +37,9 @@ class FakeProgressionCounter(ProgressionCounter):
 class RedisProgressionCounter(ProgressionCounter):
     def __init__(self):
         self._client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
+            host=settings.REDIS_COUNTER_HOST,
+            port=settings.REDIS_COUNTER_PORT,
+            db=settings.REDIS_COUNTER_DB,
         )
 
     def set_extracted(self, id: str, value: int):
