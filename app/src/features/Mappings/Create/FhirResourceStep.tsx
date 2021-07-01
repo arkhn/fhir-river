@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   flameIcon: {
-    fill: theme.palette.icons.fhir,
+    fill: theme.palette.icons.orange.main,
   },
 }));
 

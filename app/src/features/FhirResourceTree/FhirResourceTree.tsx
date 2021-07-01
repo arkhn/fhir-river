@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     paddingInline: theme.spacing(0.5),
   },
   flameIcon: {
-    fill: theme.palette.icons.fhir,
+    fill: theme.palette.icons.orange.main,
   },
   header: {
     display: "flex",

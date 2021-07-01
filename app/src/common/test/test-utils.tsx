@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 import { Router, Route, Switch } from "react-router-dom";
 
 import { store } from "app/store";
-import usePyrogTheme from "app/usePyrogTheme";
+import usePyrogTheme from "common/hooks/usePyrogTheme";
 
 import "locales/i18n";
 

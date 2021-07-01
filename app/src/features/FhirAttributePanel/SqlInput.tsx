@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
   fromColumn: {
     backgroundColor: theme.palette.grey[800],
-    color: theme.palette.common.white,
+    color: theme.palette.getContrastText(theme.palette.grey[800]),
     borderRadius: 4,
     padding: "4px 8px",
   },

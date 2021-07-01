@@ -5,25 +5,25 @@ import { createMuiTheme, useMediaQuery, Theme } from "@material-ui/core";
 declare module "@material-ui/core/styles/createPalette" {
   interface Palette {
     badges: {
-      required: string;
-      pending: string;
+      required: React.CSSProperties["color"];
+      pending: React.CSSProperties["color"];
     };
     icons: {
-      table: string;
-      disabled: string;
-      fhir: string;
+      table: React.CSSProperties["color"];
+      disabled: React.CSSProperties["color"];
+      orange: Palette["primary"];
       resourceTree: Palette["primary"];
     };
   }
   interface PaletteOptions {
     badges: {
-      required: string;
-      pending: string;
+      required: React.CSSProperties["color"];
+      pending: React.CSSProperties["color"];
     };
     icons: {
-      table: string;
-      disabled: string;
-      fhir: string;
+      table: React.CSSProperties["color"];
+      disabled: React.CSSProperties["color"];
+      orange: PaletteOptions["primary"];
       resourceTree: PaletteOptions["primary"];
     };
   }
@@ -56,7 +56,10 @@ const usePyrogTheme = (): Theme => {
           icons: {
             table: prefersDarkMode ? "#2f7ae2" : "#265EB1",
             disabled: "rgba(255, 255, 255, 0.5)",
-            fhir: "#CC7831",
+            orange: {
+              main: "#CC7831",
+              contrastText: "#fff",
+            },
             resourceTree: {
               main: prefersDarkMode ? "#FFFFFF" : "#464646",
               light: prefersDarkMode ? "#a0a0a0" : "#858585",

@@ -14,7 +14,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 
 import Router from "app/routes/Router";
-import usePyrogTheme from "app/usePyrogTheme";
+import usePyrogTheme from "common/hooks/usePyrogTheme";
 
 const useStyles = makeStyles(() => ({
   root: {
