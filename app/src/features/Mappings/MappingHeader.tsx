@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import {
-  Button,
   Divider,
   IconButton,
   makeStyles,
   Menu,
   MenuItem,
   ListItemText,
-  Typography,
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
-import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
+import Button from "common/components/Button";
 import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
 import MappingNameDialog from "features/Mappings/Edit/MappingNameDialog";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
@@ -99,11 +99,11 @@ const MappingHeader = (): JSX.Element => {
       </div>
       <Button
         className={classes.button}
-        color="primary"
         variant="contained"
-        startIcon={<PlayIcon />}
+        color="primary"
+        startIcon={<Icon icon={IconNames.PLAY} />}
       >
-        <Typography>{t("preview")}</Typography>
+        {t("preview")}
       </Button>
       <Menu
         anchorEl={anchorEl}
