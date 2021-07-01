@@ -159,6 +159,28 @@ const useFhirResourceTreeData = (
     }
   }, [dispatch, attributes, prevAttributes, root, node]);
 
+  // Add attribute items to array nodes
+  useEffect(() => {
+    const addItemToEmptyArray = async () => {
+      if (
+        node &&
+        node.isArray &&
+        attributes &&
+        node.type !== "Extension" &&
+        node.children.length === 0
+      ) {
+        const hasNodeChildren = attributes.some(({ path }) =>
+          path.startsWith(node.path)
+        );
+
+        if (!hasNodeChildren) {
+          await createItem();
+        }
+      }
+    };
+    addItemToEmptyArray();
+  }, [node, attributes, createItem]);
+
   return { root, isLoading, createItem, deleteItem, addExtension };
 };
 
