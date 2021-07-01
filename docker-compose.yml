@@ -31,9 +31,9 @@ services:
     environment:
       - ENV=dev
       - LOG_LEVEL=DEBUG
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river
@@ -53,12 +53,9 @@ services:
       - ENV=prod
       - LOG_LEVEL=INFO
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-      - REDIS_COUNTER_HOST=river-redis
-      - REDIS_COUNTER_PORT=6379
-      - REDIS_COUNTER_DB=2
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
 
   db:
     image: postgres:12
@@ -91,15 +88,9 @@ services:
       - SECRET_KEY=whatever
       - PYROG_API_URL=http://pyrog-server:1000
       - FHIR_API_URL=${FHIR_API_URL}
-      - REDIS_HOST=redis
+      - REDIS_HOST=river-redis
       - REDIS_PORT=6379
       - REDIS_DB=0
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-      - REDIS_COUNTER_HOST=river-redis
-      - REDIS_COUNTER_PORT=6379
-      - REDIS_COUNTER_DB=2
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river

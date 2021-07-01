@@ -43,7 +43,7 @@ class ReferenceBinder:
                     }
                 )
 
-        return dict(fhir_object.to_dict())
+        return fhir_object.to_dict()
 
     def bind_existing_reference(self, fhir_object, reference_path: List[str]):
         resource_id = get_resource_id(fhir_object)

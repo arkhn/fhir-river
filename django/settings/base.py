@@ -257,18 +257,6 @@ REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 REDIS_DB = int(os.environ.get("REDIS_DB", 0))
 
-REDIS_COUNTER_HOST = os.environ.get("REDIS_COUNTER_HOST", "redis")
-REDIS_COUNTER_PORT = int(os.environ.get("REDIS_COUNTER_PORT", 6379))
-REDIS_COUNTER_DB = os.environ.get("REDIS_COUNTER_DB", 2)
-
-REDIS_MAPPINGS_HOST = os.environ.get("REDIS_MAPPINGS_HOST", "redis")
-REDIS_MAPPINGS_PORT = int(os.environ.get("REDIS_MAPPINGS_PORT", 6379))
-REDIS_MAPPINGS_DB = os.environ.get("REDIS_MAPPINGS_DB", 1)
-
-REDIS_REFERENCES_HOST = os.environ.get("REDIS_REFERENCES_HOST", "redis")
-REDIS_REFERENCES_PORT = int(os.environ.get("REDIS_REFERENCES_PORT", 6379))
-REDIS_REFERENCES_DB = os.environ.get("REDIS_REFERENCES_DB", 0)
-
 # Kafka
 
 KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")

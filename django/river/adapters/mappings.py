@@ -47,9 +47,9 @@ class FakeMappingsRepository(MappingsRepository):
 class RedisMappingsRepository(MappingsRepository):
     def __init__(self):
         self.mapping_redis = redis.Redis(
-            host=settings.REDIS_MAPPINGS_HOST,
-            port=settings.REDIS_MAPPINGS_PORT,
-            db=settings.REDIS_MAPPINGS_DB,
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB,
         )
 
     def set(self, batch_id: str, resource_id: str, mapping: Any):

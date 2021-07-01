@@ -26,14 +26,14 @@ def batch(
     publisher: EventPublisher,
     # FIXME remove this when the DB is shared
     pyrog_client: PyrogClient,
-    mappings: MappingsRepository,
+    mappings_repo: MappingsRepository,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_instance.id}")
 
     for resource_id in resources:
         resource_mapping = pyrog_client.fetch_mapping(resource_id)
-        mappings.set(batch_instance.id, resource_id, json.dumps(resource_mapping))
+        mappings_repo.set(batch_instance.id, resource_id, json.dumps(resource_mapping))
 
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
