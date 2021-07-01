@@ -21,9 +21,8 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
       field: "created_at",
       flex: 1,
       headerName: t("createdAt"),
-      renderCell: (params: GridCellParams) => {
-        return new Date(params.value as string).toLocaleString();
-      },
+      renderCell: (params: GridCellParams) =>
+        new Date(params.value as string).toLocaleString(),
     },
   ];
 
