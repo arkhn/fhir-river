@@ -16,7 +16,7 @@ const useStyle = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fill: theme.palette.text.secondary,
+    fill: theme.palette.icons.resourceTree.light,
   },
   labelEndIcons: {
     display: "none",

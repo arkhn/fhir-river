@@ -45,7 +45,7 @@ const useStyle = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fill: theme.palette.text.primary,
+    fill: theme.palette.icons.resourceTree.main,
   },
   treeItemTitle: {
     marginLeft: theme.spacing(1),

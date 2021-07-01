@@ -19,10 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     paddingRight: theme.spacing(1),
-    fill: theme.palette.text.disabled,
-  },
-  iconSelected: {
-    fill: theme.palette.secondary.main,
+    fill: theme.palette.icons.disabled,
   },
   inputSelected: {
     fontWeight: 500,
