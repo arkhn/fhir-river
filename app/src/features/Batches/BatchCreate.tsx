@@ -152,9 +152,10 @@ const BatchCreate = (): JSX.Element => {
               <MenuItem
                 key={`resource-option-${id}`}
                 value={id}
-                className={clsx(classes.mediumBold, {
-                  [classes.regularBold]: selectedResourceIds.includes(id),
-                })}
+                classes={{
+                  root: classes.mediumBold,
+                  selected: classes.regularBold,
+                }}
               >
                 {definition_id} - {label}
               </MenuItem>
