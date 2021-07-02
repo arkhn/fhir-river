@@ -10,9 +10,10 @@ declare module "@material-ui/core/styles/createPalette" {
     };
     icons: {
       table: Palette["primary"];
-      disabled: Palette["primary"];
-      orange: Palette["primary"];
       resourceTree: Palette["primary"];
+    };
+    orange: Palette["primary"] & {
+      transparent: Palette["primary"];
     };
   }
   interface PaletteOptions {
@@ -22,9 +23,10 @@ declare module "@material-ui/core/styles/createPalette" {
     };
     icons: {
       table: PaletteOptions["primary"];
-      disabled: PaletteOptions["primary"];
-      orange: PaletteOptions["primary"];
       resourceTree: PaletteOptions["primary"];
+    };
+    orange: PaletteOptions["primary"] & {
+      transparent: PaletteOptions["primary"];
     };
   }
 }
@@ -53,12 +55,15 @@ const usePyrogTheme = (): Theme => {
           secondary: {
             main: "#ff9033",
           },
+          orange: {
+            main: "#CC7831",
+            transparent: {
+              main: "hsla(27, 100%, 50%, 0.24)",
+              light: "hsla(27, 100%, 50%, 0.16)",
+            },
+          },
           icons: {
             table: { main: prefersDarkMode ? "#2f7ae2" : "#265EB1" },
-            disabled: { main: "rgba(255, 255, 255, 0.5)" },
-            orange: {
-              main: "#CC7831",
-            },
             resourceTree: {
               main: prefersDarkMode ? "#FFFFFF" : "#464646",
               light: prefersDarkMode ? "#a0a0a0" : "#858585",

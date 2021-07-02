@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     height: 16,
   },
   flameIcon: {
-    fill: theme.palette.icons.orange.main,
+    fill: theme.palette.orange.main,
     marginRight: theme.spacing(0.5),
   },
   tableIcon: {
