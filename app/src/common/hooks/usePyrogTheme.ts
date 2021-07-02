@@ -5,24 +5,24 @@ import { createMuiTheme, useMediaQuery, Theme } from "@material-ui/core";
 declare module "@material-ui/core/styles/createPalette" {
   interface Palette {
     badges: {
-      required: React.CSSProperties["color"];
-      pending: React.CSSProperties["color"];
+      required: Palette["primary"];
+      pending: Palette["primary"];
     };
     icons: {
-      table: React.CSSProperties["color"];
-      disabled: React.CSSProperties["color"];
+      table: Palette["primary"];
+      disabled: Palette["primary"];
       orange: Palette["primary"];
       resourceTree: Palette["primary"];
     };
   }
   interface PaletteOptions {
     badges: {
-      required: React.CSSProperties["color"];
-      pending: React.CSSProperties["color"];
+      required: PaletteOptions["primary"];
+      pending: PaletteOptions["primary"];
     };
     icons: {
-      table: React.CSSProperties["color"];
-      disabled: React.CSSProperties["color"];
+      table: PaletteOptions["primary"];
+      disabled: PaletteOptions["primary"];
       orange: PaletteOptions["primary"];
       resourceTree: PaletteOptions["primary"];
     };
@@ -36,8 +36,8 @@ const usePyrogTheme = (): Theme => {
       createMuiTheme({
         palette: {
           badges: {
-            required: "red",
-            pending: "orange",
+            required: { main: "red" },
+            pending: { main: "orange" },
           },
           text: {
             primary: prefersDarkMode ? "#FFFFFF" : "#464646",
@@ -54,11 +54,10 @@ const usePyrogTheme = (): Theme => {
             main: "#ff9033",
           },
           icons: {
-            table: prefersDarkMode ? "#2f7ae2" : "#265EB1",
-            disabled: "rgba(255, 255, 255, 0.5)",
+            table: { main: prefersDarkMode ? "#2f7ae2" : "#265EB1" },
+            disabled: { main: "rgba(255, 255, 255, 0.5)" },
             orange: {
               main: "#CC7831",
-              contrastText: "#fff",
             },
             resourceTree: {
               main: prefersDarkMode ? "#FFFFFF" : "#464646",

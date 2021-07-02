@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     fill: theme.palette.text.disabled,
   },
   iconSelected: {
-    fill: theme.palette.icons.table,
+    fill: theme.palette.icons.table.main,
   },
 }));
 
