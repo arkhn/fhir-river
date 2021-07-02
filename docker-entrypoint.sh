@@ -13,8 +13,8 @@ if [[ "$#" -gt 0 ]]; then
 else
   # Skip static files collection (not used)
   # python django/manage.py collectstatic --no-input
-  python django/manage.py migrate
   if [[ "${ENV}" == "dev" ]]; then
+    python django/manage.py migrate
     python django/manage.py createsuperuser --no-input || echo "Skipping."
     python django/manage.py runserver 0.0.0.0:8000
   else
