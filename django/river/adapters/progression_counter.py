@@ -77,7 +77,7 @@ class FakeProgressionCounter(ProgressionCounter):
 
 
 class RedisProgressionCounter(ProgressionCounter):
-    """ProgressionCounter using an in-memory dict as a data structure.
+    """ProgressionCounter using two Redis hashes to record extract and load
 
     Attributes:
         _client (redis.Redis): The redis client used to access the backend redis DB.
