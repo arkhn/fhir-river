@@ -22,7 +22,10 @@ const BatchCancel = ({
 
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
-  const handleBatchCancel = (batchId: string) => async () => {
+  const handleBatchCancel = (batchId: string) => async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
     try {
       await apiBatchesDestroy({ id: batchId }).unwrap();
     } catch (e) {
@@ -32,13 +35,7 @@ const BatchCancel = ({
 
   return (
     <>
-      <Button
-        {...buttonProps}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleBatchCancel(batch.id);
-        }}
-      >
+      <Button {...buttonProps} onClick={handleBatchCancel(batch.id)}>
         <Typography>{t("cancel")}</Typography>
       </Button>
       <Alert
