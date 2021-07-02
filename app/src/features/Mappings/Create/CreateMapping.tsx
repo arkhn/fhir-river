@@ -230,7 +230,7 @@ const CreateMapping = (): JSX.Element => {
         source: sourceId,
       })
     );
-  }, []);
+  }, [dispatch, sourceId]);
   useEffect(() => resetCreateMapping, [resetCreateMapping]);
 
   const handlePrevStep = () => {
