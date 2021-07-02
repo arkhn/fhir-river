@@ -52,9 +52,6 @@ const usePyrogTheme = (): Theme => {
             dark: "#2d8273",
             contrastText: "#FFFFFF",
           },
-          secondary: {
-            main: "#ff9033",
-          },
           orange: {
             main: "#CC7831",
             transparent: {
