@@ -44,4 +44,4 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
 def run(counter=RedisProgressionCounter(), topics=KafkaTopicsManager()):
     while True:
         clean(counter=counter, topics=topics)
-        sleep(1)
+        sleep(10)
