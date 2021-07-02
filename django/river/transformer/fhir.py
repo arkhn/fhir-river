@@ -12,7 +12,16 @@ def recursive_defaultdict():
     return defaultdict(recursive_defaultdict)
 
 
-def recursive_defaultdict_to_dict(rec_default_dict):
+def recursive_defaultdict_to_dict(rec_default_dict) -> dict:
+    """recursive_defaultdict_to_dict converts recursively a defaultdict to a dict
+
+    This helper is useful because dataclasses.asdict method used by KafkaEventPublisher
+    doesn't support defaultdict according to this bug
+    https://bugs.python.org/issue35540
+
+    :param rec_default_dict: a defaultdict
+    :return: a dict
+    """
     if isinstance(rec_default_dict, defaultdict):
         rec_default_dict = {k: recursive_defaultdict_to_dict(v) for k, v in rec_default_dict.items()}
     return rec_default_dict
