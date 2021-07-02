@@ -9,7 +9,6 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import { CloseRounded } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
@@ -38,28 +37,28 @@ type InputProps = {
 
 const useStyles = makeStyles((theme) => ({
   icon: {
-    height: theme.spacing(2),
     fill: theme.palette.getContrastText(theme.palette.background.paper),
-    marginRight: theme.spacing(0.5),
-  },
-  function: {
-    display: "flex",
-    alignItems: "center",
   },
   button: {
     textTransform: "none",
-  },
-  fromColumn: {
-    backgroundColor: theme.palette.grey[800],
-    color: theme.palette.getContrastText(theme.palette.grey[800]),
-    borderRadius: 4,
-    padding: "4px 8px",
   },
   columnSelect: { width: "fit-content" },
   iconButtonContainer: {
     flex: 1,
     display: "flex",
     justifyContent: "flex-end",
+  },
+  iconButton: {
+    "& > span > span": {
+      height: theme.spacing(2),
+    },
+    border: `1px solid ${
+      theme.palette.type === "dark"
+        ? theme.palette.grey[600]
+        : theme.palette.grey[300]
+    }`,
+    borderRadius: 5,
+    padding: theme.spacing(1),
   },
 }));
 
@@ -127,11 +126,6 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
 
   return (
     <Grid item container alignItems="center" direction="row" spacing={1}>
-      <Grid item>
-        <Typography className={classes.fromColumn}>
-          {t("fromColumn")}
-        </Typography>
-      </Grid>
       <Grid item spacing={1} container className={classes.columnSelect}>
         <ColumnSelects
           pendingColumn={inputColumn ?? {}}
@@ -139,16 +133,23 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
         />
       </Grid>
       <Grid item>
-        <Button className={classes.button}>
-          <div className={classes.function}>
+        <Button
+          size="small"
+          className={classes.button}
+          startIcon={
             <Icon icon={IconNames.FUNCTION} className={classes.icon} />
-            <Typography>{t("applyScript")}</Typography>
-          </div>
+          }
+        >
+          <Typography>{t("applyScript")}</Typography>
         </Button>
       </Grid>
       <Grid item className={classes.iconButtonContainer}>
-        <IconButton size="small" onClick={handleDeleteInput}>
-          <CloseRounded fontSize="small" />
+        <IconButton
+          size="small"
+          className={classes.iconButton}
+          onClick={handleDeleteInput}
+        >
+          <Icon icon={IconNames.TRASH} className={classes.icon} />
         </IconButton>
       </Grid>
     </Grid>
