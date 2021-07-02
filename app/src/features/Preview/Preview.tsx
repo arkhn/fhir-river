@@ -22,7 +22,6 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useHistory, useParams } from "react-router-dom";
-import { v4 as uuid } from "uuid";
 
 import Alert from "common/components/Alert";
 import {
@@ -196,8 +195,11 @@ const Preview = (): JSX.Element => {
             <TableRow className={classes.cellsTitle}>
               <TableCell className={classes.cells} />
               {exploration &&
-                (exploration as Exploration).fields.map((field) => (
-                  <TableCell className={classes.cells} key={uuid()}>
+                (exploration as Exploration).fields.map((field, index) => (
+                  <TableCell
+                    className={classes.cells}
+                    key={`exploration-field-${index}`}
+                  >
                     {field}
                   </TableCell>
                 ))}
@@ -208,7 +210,7 @@ const Preview = (): JSX.Element => {
               {(exploration as Exploration).rows.map((columnData, index) => (
                 <TableRow
                   hover
-                  key={uuid()}
+                  key={`exploration-row-${index}`}
                   className={clsx(classes.rowBorder)}
                 >
                   <TableCell
