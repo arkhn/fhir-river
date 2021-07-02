@@ -15,6 +15,7 @@ import {
   TableBody,
   useMediaQuery,
   Button,
+  CircularProgress,
 } from "@material-ui/core";
 import ArrowBack from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
@@ -23,10 +24,13 @@ import ReactJson from "react-json-view";
 import { useHistory, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
-import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
-
-import previewJson from "./PatientFhir.json";
-import exploredData from "./previewDataMock.json";
+import Alert from "common/components/Alert";
+import {
+  useApiResourcesRetrieveQuery,
+  usePagaiExploreRetrieveQuery,
+  useApiOwnersRetrieveQuery,
+  useApiPreviewCreateMutation,
+} from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -94,6 +98,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Exploration = { fields: string[]; rows: string[][] };
+
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -102,7 +108,11 @@ const Preview = (): JSX.Element => {
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
-  const [preview, setPreview] = useState<typeof previewJson | undefined>(
+
+  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const handleAlertClose = () => setAlert(undefined);
+
+  const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
     undefined
   );
 
@@ -111,14 +121,47 @@ const Preview = (): JSX.Element => {
     { skip: mappingId === undefined }
   );
 
-  const handleFhirIconClick = (index: number) => () => {
-    const primarykey = mapping?.primary_key_table;
-    if (primarykey) {
-      const indexPrimaryKey = exploredData.fields.indexOf(primarykey);
-      // when api will have this functionality, we will need to implement this function
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const exploredRow = exploredData.rows[index]?.[indexPrimaryKey];
-      setPreview(previewJson);
+  const { data: owner } = useApiOwnersRetrieveQuery(
+    {
+      id: mapping?.primary_key_owner ?? "",
+    },
+    { skip: mapping === undefined }
+  );
+
+  const {
+    data: exploration,
+    isLoading: isExplorationLoading,
+  } = usePagaiExploreRetrieveQuery(
+    {
+      resourceId: mapping?.id ?? "",
+      owner: owner?.name ?? "",
+      table: mapping?.primary_key_table ?? "",
+    },
+    { skip: mapping === undefined || owner === undefined }
+  );
+
+  const [apiPreviewCreate] = useApiPreviewCreateMutation();
+
+  const handleFhirIconClick = (index: number) => async () => {
+    const primaryKey = mapping?.primary_key_table;
+    if (exploration && primaryKey && mapping) {
+      const indexPrimaryKey = (exploration as Exploration).fields.indexOf(
+        primaryKey
+      );
+      const primaryKeyValue = (exploration as Exploration).rows[index]?.[
+        indexPrimaryKey
+      ];
+      try {
+        const previewResult = await apiPreviewCreate({
+          previewRequest: {
+            resource_id: mapping?.id,
+            primary_key_values: [primaryKeyValue ?? ""],
+          },
+        });
+        setPreview(previewResult);
+      } catch (e) {
+        setAlert(e.message);
+      }
     }
   };
 
@@ -136,6 +179,7 @@ const Preview = (): JSX.Element => {
     </IconButton>
   );
 
+  if (isExplorationLoading) return <CircularProgress />;
   return (
     <Container className={classes.container} maxWidth="xl">
       <Button
@@ -150,31 +194,44 @@ const Preview = (): JSX.Element => {
         <Table size="small">
           <TableHead>
             <TableRow className={classes.cellsTitle}>
-              <TableCell className={classes.cells}></TableCell>
-              {exploredData.fields.map((field) => (
-                <TableCell className={classes.cells} key={uuid()}>
-                  {field}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {exploredData.rows.map((columnData, index) => (
-              <TableRow hover key={uuid()} className={clsx(classes.rowBorder)}>
-                <TableCell
-                  className={clsx(classes.fhirIconCell, classes.cellsTitle)}
-                  onClick={handleFhirIconClick(index)}
-                >
-                  <FhirIconCell />
-                </TableCell>
-                {columnData.map((cell, i) => (
-                  <TableCell className={classes.cells} key={i}>
-                    {cell}
+              <TableCell className={classes.cells} />
+              {exploration &&
+                (exploration as Exploration).fields.map((field) => (
+                  <TableCell className={classes.cells} key={uuid()}>
+                    {field}
                   </TableCell>
                 ))}
-              </TableRow>
-            ))}
-          </TableBody>
+            </TableRow>
+          </TableHead>
+          {exploration && (
+            <TableBody>
+              {(exploration as Exploration).rows.map((columnData, index) => (
+                <TableRow
+                  hover
+                  key={uuid()}
+                  className={clsx(classes.rowBorder)}
+                >
+                  <TableCell
+                    className={clsx(classes.fhirIconCell, classes.cellsTitle)}
+                    onClick={handleFhirIconClick(index)}
+                  >
+                    <FhirIconCell />
+                  </TableCell>
+                  <Alert
+                    severity="error"
+                    open={!!alert}
+                    onClose={handleAlertClose}
+                    message={alert}
+                  />
+                  {columnData.map((cell, i) => (
+                    <TableCell className={classes.cells} key={i}>
+                      {cell}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
       </TableContainer>
       {preview ? (
