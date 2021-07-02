@@ -91,5 +91,5 @@
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
-  "useThisGroupIf": "Use this group if..."
+  "condition": "Condition"
 }

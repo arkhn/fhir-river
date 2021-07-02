@@ -15,6 +15,7 @@ declare module "@material-ui/core/styles/createPalette" {
     orange: Palette["primary"] & {
       transparent: Palette["primary"];
     };
+    purple: Palette["primary"];
   }
   interface PaletteOptions {
     badges: {
@@ -28,6 +29,7 @@ declare module "@material-ui/core/styles/createPalette" {
     orange: PaletteOptions["primary"] & {
       transparent: PaletteOptions["primary"];
     };
+    purple: PaletteOptions["primary"];
   }
 }
 
@@ -58,6 +60,9 @@ const usePyrogTheme = (): Theme => {
               main: "hsla(27, 100%, 50%, 0.24)",
               light: "hsla(27, 100%, 50%, 0.16)",
             },
+          },
+          purple: {
+            main: "#71227D",
           },
           icons: {
             table: { main: prefersDarkMode ? "#2f7ae2" : "#265EB1" },
