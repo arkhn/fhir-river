@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(0.5),
   },
   pagination: {
-    margin: `${theme.spacing(1)}px 0px`,
+    margin: theme.spacing(1, 0),
   },
 }));
 
