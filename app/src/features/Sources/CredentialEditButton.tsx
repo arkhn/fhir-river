@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Button, ButtonProps, Typography } from "@material-ui/core";
+import { ButtonProps } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
 import { useAppDispatch } from "app/store";
+import Button from "common/components/Button";
 import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
 
 import { editCredential } from "./sourceSlice";
@@ -24,11 +25,7 @@ const CredentialEditButton = ({
     if (source) dispatch(editCredential(source));
   };
 
-  return (
-    <Button {...buttonProps} onClick={handleSourceEdit}>
-      <Typography>Database settings</Typography>
-    </Button>
-  );
+  return <Button {...buttonProps} onClick={handleSourceEdit} />;
 };
 
 export default CredentialEditButton;

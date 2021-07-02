@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Button,
   Dialog,
   DialogProps as MuiDialogProps,
   DialogTitle,
@@ -9,11 +8,12 @@ import {
   DialogContentText,
   DialogActions,
   makeStyles,
-  Typography,
   CircularProgress,
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+
+import Button from "./Button";
 
 type DeleteDialogProps = MuiDialogProps & {
   title: string;
@@ -27,17 +27,12 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(2),
-    textTransform: "none",
-  },
-  previousButton: {
-    color: theme.palette.text.secondary,
-    "&:hover": {
-      backgroundColor: "inherit",
-      color: theme.palette.text.primary,
-    },
   },
   error: {
     backgroundColor: theme.palette.error.main,
+    "& .MuiTypography-body1": {
+      color: theme.palette.primary.contrastText,
+    },
     "&:hover": {
       backgroundColor: theme.palette.error.dark,
     },
@@ -70,22 +65,19 @@ const DeleteDialog = ({
       </DialogContent>
       <DialogActions>
         <Button
-          className={clsx(classes.button, classes.previousButton)}
+          className={classes.button}
           disableRipple
           onClick={handleClose}
+          color="inherit"
         >
-          <Typography>{t("cancel")}</Typography>
+          {t("cancel")}
         </Button>
         <Button
           className={clsx(classes.button, classes.error)}
           variant="contained"
           onClick={onDelete}
         >
-          {isLoading ? (
-            <CircularProgress />
-          ) : (
-            <Typography color="textPrimary">{t("confirmDelete")}</Typography>
-          )}
+          {isLoading ? <CircularProgress /> : t("confirmDelete")}
         </Button>
       </DialogActions>
     </Dialog>

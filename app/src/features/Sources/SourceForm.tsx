@@ -2,18 +2,14 @@ import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
-import {
-  Button,
-  CircularProgress,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import { isEqual } from "lodash";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 import {
   useApiSourcesCreateMutation,
   useApiSourcesUpdateMutation,
@@ -120,10 +116,10 @@ const SourceForm = (): JSX.Element => {
           >
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
+            ) : source ? (
+              t("updateSource")
             ) : (
-              <Typography>
-                {source ? t("updateSource") : t("createSource")}
-              </Typography>
+              t("createSource")
             )}
           </Button>
         }

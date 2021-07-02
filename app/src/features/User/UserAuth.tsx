@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Button,
   CircularProgress,
   Divider,
   makeStyles,
@@ -10,15 +9,13 @@ import {
 import { ExitToApp } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import {
   useApiUserRetrieveQuery,
   useOidcLogoutMutation,
 } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
-  button: {
-    textTransform: "none",
-  },
   icon: {
     marginRight: theme.spacing(1),
     fill: theme.palette.text.secondary,
@@ -49,7 +46,7 @@ const UserAuth = (): JSX.Element | null => {
         <Divider orientation="vertical" className={classes.verticalDivider} />
         <Button
           onClick={handleLogout}
-          className={classes.button}
+          color="inherit"
           startIcon={<ExitToApp className={classes.icon} />}
         >
           <Typography color="textSecondary">{t("logout")}</Typography>

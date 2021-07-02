@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import {
   Container,
   CircularProgress,
-  Button,
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import BackIcon from "@material-ui/icons/ArrowBackIos";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import clsx from "clsx";
 import differenceBy from "lodash/differenceBy";
 import head from "lodash/head";
 import isEqual from "lodash/isEqual";
@@ -18,6 +17,7 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { useAppSelector } from "app/store";
 import Alert from "common/components/Alert";
+import Button from "common/components/Button";
 import { columnSelectors } from "features/Columns/columnSlice";
 import { filterSelectors } from "features/Filters/filterSlice";
 import { joinSelectors } from "features/Joins/joinSlice";
@@ -48,17 +48,6 @@ import type {
 const useStyles = makeStyles((theme) => ({
   contentContainer: {
     paddingBlock: theme.spacing(4),
-  },
-  button: {
-    textTransform: "none",
-  },
-  previousButton: {
-    margin: theme.spacing(2),
-    color: theme.palette.text.secondary,
-    "&:hover": {
-      backgroundColor: "inherit",
-      color: theme.palette.text.primary,
-    },
   },
 }));
 
@@ -302,12 +291,12 @@ const EditMapping = (): JSX.Element => {
   return (
     <>
       <Button
-        className={clsx(classes.button, classes.previousButton)}
-        startIcon={<BackIcon />}
+        startIcon={<Icon icon={IconNames.CHEVRON_LEFT} />}
+        color="inherit"
         onClick={handleCancelClick}
         disableRipple
       >
-        <Typography>{t("cancel")}</Typography>
+        {t("cancel")}
       </Button>
       <Container maxWidth="lg">
         {isLoading ? (
@@ -321,17 +310,12 @@ const EditMapping = (): JSX.Element => {
               <TableStep mapping={mapping} />
             </div>
             <Button
-              className={classes.button}
               onClick={handleEditSubmit}
               variant="contained"
               color="primary"
               disabled={isEditLoading}
             >
-              {isEditLoading ? (
-                <CircularProgress />
-              ) : (
-                <Typography>{t("saveChanges")}</Typography>
-              )}
+              {isEditLoading ? <CircularProgress /> : t("saveChanges")}
             </Button>
           </>
         ) : (

@@ -6,19 +6,15 @@ import React, {
   useState,
 } from "react";
 
-import {
-  CircularProgress,
-  Container,
-  Button,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
-import BackIcon from "@material-ui/icons/ArrowBackIos";
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+import { CircularProgress, Container, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 import StepPanel from "common/components/Stepper/StepPanel";
 import { columnSelectors, columnsRemoved } from "features/Columns/columnSlice";
 import { filterSelectors, filtersRemoved } from "features/Filters/filterSlice";
@@ -63,14 +59,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(2),
-    textTransform: "none",
-  },
-  previousButton: {
-    color: theme.palette.text.secondary,
-    "&:hover": {
-      backgroundColor: "inherit",
-      color: theme.palette.text.primary,
-    },
   },
   absolute: {
     position: "absolute",
@@ -231,16 +219,13 @@ const CreateMapping = (): JSX.Element => {
   return (
     <>
       <Button
-        className={clsx(
-          classes.button,
-          classes.previousButton,
-          classes.absolute
-        )}
-        startIcon={<BackIcon />}
+        className={clsx(classes.button, classes.absolute)}
+        startIcon={<Icon icon={IconNames.CHEVRON_LEFT} />}
         onClick={handleCancelClick}
         disableRipple
+        color="inherit"
       >
-        <Typography>{t("cancel")}</Typography>
+        {t("cancel")}
       </Button>
       <Container className={classes.rootContainer} maxWidth="lg">
         <MappingCreationStepper ref={stepperRef} activeStep={activeStep} />
@@ -268,11 +253,12 @@ const CreateMapping = (): JSX.Element => {
       </Container>
       <div className={classes.footerContainer}>
         <Button
-          className={clsx(classes.button, classes.previousButton)}
+          className={classes.button}
           onClick={handlePrevStep}
           disableRipple
+          color="inherit"
         >
-          <Typography>{t("previousStep")}</Typography>
+          {t("previousStep")}
         </Button>
         <Button
           className={classes.button}
@@ -284,7 +270,7 @@ const CreateMapping = (): JSX.Element => {
           {isCreateMappingLoading ? (
             <CircularProgress color="inherit" size={23} />
           ) : (
-            <Typography>{t("next")}</Typography>
+            t("next")
           )}
         </Button>
       </div>

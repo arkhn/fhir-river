@@ -2,14 +2,10 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Button,
-  Container,
-  Grid,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { Container, Grid, makeStyles } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
@@ -24,17 +20,12 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(0.5),
-    backgroundColor: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    textTransform: "none",
-  },
-  icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
   },
 }));
 
 const SourceMappings = (): JSX.Element => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -43,30 +34,28 @@ const SourceMappings = (): JSX.Element => {
           <NavigationBreadcrumbs />
           <Grid>
             <CredentialEditButton
-              size="small"
               variant="contained"
               className={classes.button}
-              startIcon={<Icon icon={IconNames.COG} className={classes.icon} />}
-            />
-            <Button
-              size="small"
-              variant="contained"
-              className={classes.button}
-              startIcon={
-                <Icon icon={IconNames.EXPORT} className={classes.icon} />
-              }
+              color="secondary"
+              startIcon={<Icon icon={IconNames.COG} />}
             >
-              <Typography>Export mapping</Typography>
+              {t("databaseSettings")}
+            </CredentialEditButton>
+            <Button
+              variant="contained"
+              color="secondary"
+              className={classes.button}
+              startIcon={<Icon icon={IconNames.EXPORT} />}
+            >
+              {t("exportMapping")}
             </Button>
             <Button
-              size="small"
               variant="contained"
+              color="secondary"
               className={classes.button}
-              startIcon={
-                <Icon icon={IconNames.FLAME} className={classes.icon} />
-              }
+              startIcon={<Icon icon={IconNames.FLAME} />}
             >
-              <Typography>Launch ETL</Typography>
+              {t("launchEtl")}
             </Button>
           </Grid>
         </div>

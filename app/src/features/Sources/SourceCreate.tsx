@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Button, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
+import Button from "common/components/Button";
 
 import { createSource } from "./sourceSlice";
 
@@ -27,7 +28,7 @@ const SourceCreate = (): JSX.Element => {
       variant="contained"
       onClick={handleCreateSource}
     >
-      <Typography>{t("newSource")}</Typography>
+      {t("newSource")}
     </Button>
   );
 };

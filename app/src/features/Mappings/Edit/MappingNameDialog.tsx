@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 
 import {
-  Button,
   CircularProgress,
   Dialog,
   DialogProps,
@@ -10,15 +9,14 @@ import {
   TextField,
   DialogActions,
   makeStyles,
-  Typography,
 } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import clsx from "clsx";
 import { head } from "lodash";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
+import Button from "common/components/Button";
 import {
   useApiResourcesRetrieveQuery,
   useApiResourcesUpdateMutation,
@@ -32,14 +30,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(2),
-    textTransform: "none",
-  },
-  previousButton: {
-    color: theme.palette.text.secondary,
-    "&:hover": {
-      backgroundColor: "inherit",
-      color: theme.palette.text.primary,
-    },
   },
 }));
 
@@ -122,11 +112,12 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
           </DialogContent>
           <DialogActions>
             <Button
-              className={clsx(classes.button, classes.previousButton)}
+              className={classes.button}
+              color="inherit"
               disableRipple
               onClick={handleClose}
             >
-              <Typography>{t("cancel")}</Typography>
+              {t("cancel")}
             </Button>
             <Button
               className={classes.button}
@@ -135,11 +126,7 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
               onClick={handleSubmit}
               disabled={isUpdateLoading}
             >
-              {isUpdateLoading ? (
-                <CircularProgress />
-              ) : (
-                <Typography>{t("confirm")}</Typography>
-              )}
+              {isUpdateLoading ? <CircularProgress /> : t("confirm")}
             </Button>
           </DialogActions>
           <Alert

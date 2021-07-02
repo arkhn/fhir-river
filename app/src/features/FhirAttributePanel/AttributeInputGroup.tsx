@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
-  Grid,
   Button,
+  Grid,
   ListItemText,
   makeStyles,
   Menu,

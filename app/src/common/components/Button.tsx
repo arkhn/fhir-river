@@ -1,23 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 
 import {
   Button as MuiButton,
-  makeStyles,
-  ButtonProps as MuiButtonProps,
+  ButtonProps,
   withStyles,
 } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
 
-type ButtonProps = MuiButtonProps & {
-  //
-};
-
 export const EditedButton = withStyles((theme) => ({
   root: {
+    endIcon: {
+      fill: theme.palette.text.primary,
+    },
     textTransform: "none",
-    boxShadow: theme.shadows[0],
-    "&:hover": { boxShadow: theme.shadows[0] },
     "& .MuiButton-startIcon": {
       height: 12,
       display: "flex",
@@ -26,34 +21,36 @@ export const EditedButton = withStyles((theme) => ({
       fill: "#fff",
     },
   },
-}))(MuiButton);
-
-const useStyle = makeStyles((theme) => ({
-  button: {
-    border: `1px solid `,
-  },
-  inherit: {},
-  primary: {
+  containedPrimary: {
     border: `1px solid ${theme.palette.primary.dark}`,
   },
-  secondary: {
+  containedSecondary: {
     border: `1px solid ${theme.palette.secondary.dark}`,
     "&:hover": {
-      border: `1px solid ${theme.palette.secondary.main}`,
+      border: `1px solid ${theme.palette.secondary.dark}`,
+    },
+    "& .MuiButton-startIcon": {
+      fill: theme.palette.secondary.contrastText,
     },
   },
-  default: {},
-}));
+  colorInherit: {
+    "& .MuiButton-startIcon": {
+      fill: theme.palette.text.secondary,
+    },
+    color: theme.palette.text.secondary,
+    "&:hover": {
+      backgroundColor: "inherit",
+      color: theme.palette.text.primary,
+      "& .MuiButton-startIcon": {
+        fill: theme.palette.text.primary,
+      },
+    },
+  },
+}))(MuiButton);
 
 const Button = ({ ...buttonProps }: ButtonProps): JSX.Element => {
-  const classes = useStyle(buttonProps.color);
-  const { startIcon, color } = buttonProps;
   return (
-    <EditedButton
-      variant="contained"
-      {...buttonProps}
-      className={classes[color ?? "default"]}
-    >
+    <EditedButton disableElevation {...buttonProps}>
       <Typography>{buttonProps.children}</Typography>
     </EditedButton>
   );

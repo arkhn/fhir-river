@@ -2,11 +2,13 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 import AttributeIcon from "@material-ui/icons/LocalOffer";
+import { useTranslation } from "react-i18next";
 import { useParams, useHistory } from "react-router";
 import { v4 as uuid } from "uuid";
 
+import Button from "common/components/Button";
 import {
   useApiResourcesListQuery,
   useApiAttributesListQuery,
@@ -21,9 +23,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
   },
-  button: {
-    textTransform: "none",
-  },
   icon: {
     width: 16,
     height: 16,
@@ -36,6 +35,7 @@ const MappingsToolbar = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const { sourceId } = useParams<{ sourceId?: string }>();
 
@@ -63,11 +63,10 @@ const MappingsToolbar = (): JSX.Element => {
         <Button
           color="primary"
           variant="contained"
-          className={classes.button}
           size="small"
           onClick={handleCreateMappingClick}
         >
-          <Typography>New mapping</Typography>
+          {t("newMapping")}
         </Button>
       </Grid>
       <Grid item className={classes.rowContainer}>

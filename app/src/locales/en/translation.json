@@ -91,5 +91,10 @@
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
-  "condition": "Condition"
+  "condition": "Condition",
+  "useThisGroupIf": "Use this group if...",
+  "databaseSettings": "Database Settings",
+  "exportMapping": "Export mapping",
+  "launchEtl": "Launch ETL",
+  "newMapping": "New mapping"
 }

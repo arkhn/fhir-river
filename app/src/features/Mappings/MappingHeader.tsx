@@ -31,9 +31,6 @@ const useStyles = makeStyles((theme) => ({
   navContainer: {
     display: "flex",
   },
-  button: {
-    textTransform: "none",
-  },
   delete: {
     color: theme.palette.error.light,
   },
@@ -98,7 +95,6 @@ const MappingHeader = (): JSX.Element => {
         </IconButton>
       </div>
       <Button
-        className={classes.button}
         variant="contained"
         color="primary"
         startIcon={<Icon icon={IconNames.PLAY} />}
