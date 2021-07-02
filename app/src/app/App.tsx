@@ -11,10 +11,10 @@ import "@fontsource/roboto/700-italic.css";
 
 import { ThemeProvider } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { makeStyles, createMuiTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { makeStyles } from "@material-ui/core/styles";
 
 import Router from "app/routes/Router";
+import usePyrogTheme from "common/hooks/usePyrogTheme";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -24,29 +24,7 @@ const useStyles = makeStyles(() => ({
 
 const App = (): JSX.Element => {
   const classes = useStyles();
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const theme = React.useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          text: {
-            primary: prefersDarkMode ? "#FFFFFF" : "#464646",
-            secondary: prefersDarkMode ? "#a0a0a0" : "#858585",
-          },
-          type: prefersDarkMode ? "dark" : "light",
-          primary: {
-            main: "#60b2a2",
-            light: "#92e4d3",
-            dark: "#2d8273",
-            contrastText: "#FFFFFF",
-          },
-          secondary: {
-            main: prefersDarkMode ? "#2f7ae2" : "#265EB1",
-          },
-        },
-      }),
-    [prefersDarkMode]
-  );
+  const theme = usePyrogTheme();
 
   return (
     <ThemeProvider theme={theme}>

@@ -20,10 +20,10 @@ type InputProps = {
   input: InputType;
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   static: {
-    backgroundColor: "#444444",
-    color: "#fff",
+    backgroundColor: theme.palette.grey[800],
+    color: theme.palette.getContrastText(theme.palette.grey[800]),
     borderRadius: 4,
     padding: "4px 8px",
   },

@@ -14,12 +14,20 @@ type TreeItemProps = {
   hasParentExpanded?: boolean;
 };
 
-const useStyle = makeStyles(() => ({
+const useStyle = makeStyles((theme) => ({
   root: {
     "& .MuiTreeItem-content .MuiTreeItem-label": {
       borderRadius: 4,
-      height: 32,
-      paddingLeft: 10,
+      padding: `0px ${theme.spacing(1)}px`,
+      height: theme.spacing(4),
+    },
+    "&.MuiTreeItem-root.Mui-selected > .MuiTreeItem-content ": {
+      "& .MuiTreeItem-label": {
+        backgroundColor: theme.palette.orange.transparent.light,
+      },
+      "& .MuiTreeItem-label:hover, .MuiTreeItem-root.Mui-selected:focus > .MuiTreeItem-content .MuiTreeItem-label": {
+        backgroundColor: theme.palette.orange.transparent.main,
+      },
     },
   },
   hidden: {

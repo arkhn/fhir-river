@@ -27,12 +27,11 @@ import useFhirResourceTreeData from "./useFhirResourceTreeData";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
-    fill: theme.palette.text.secondary,
-    color: theme.palette.text.secondary,
+    fill: theme.palette.icons.resourceTree.light,
     paddingInline: theme.spacing(0.5),
   },
   flameIcon: {
-    fill: "#CC7831",
+    fill: theme.palette.orange.main,
   },
   header: {
     display: "flex",

@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
   },
   flameIcon: {
-    fill: "#CC7831",
+    fill: theme.palette.orange.main,
     margin: 0,
   },
 }));

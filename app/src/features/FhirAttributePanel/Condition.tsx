@@ -61,8 +61,8 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   badgeLabel: {
-    backgroundColor: "#CC7831",
-    color: "#fff",
+    backgroundColor: theme.palette.orange.main,
+    color: theme.palette.orange.contrastText,
     borderRadius: 4,
     paddingInline: theme.spacing(1),
     paddingBlock: theme.spacing(0.5),

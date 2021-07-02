@@ -20,10 +20,10 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
   },
   required: {
-    backgroundColor: "red",
+    backgroundColor: theme.palette.badges.required.main,
   },
   pending: {
-    backgroundColor: "orange",
+    backgroundColor: theme.palette.badges.pending.main,
   },
 }));
 

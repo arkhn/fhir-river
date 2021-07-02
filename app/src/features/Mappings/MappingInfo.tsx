@@ -20,11 +20,11 @@ const useStyles = makeStyles((theme) => ({
     height: 16,
   },
   flameIcon: {
-    fill: "#CC7831",
+    fill: theme.palette.orange.main,
     marginRight: theme.spacing(0.5),
   },
   tableIcon: {
-    fill: theme.palette.secondary.main,
+    fill: theme.palette.icons.table.main,
     marginRight: theme.spacing(1),
   },
   text: {

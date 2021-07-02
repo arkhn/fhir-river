@@ -9,7 +9,7 @@ import UserAuth from "features/User/UserAuth";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
-    backgroundColor: "#444444",
+    backgroundColor: theme.palette.grey[800],
   },
   logo: {
     height: 27,
