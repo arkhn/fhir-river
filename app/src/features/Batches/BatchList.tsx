@@ -93,7 +93,10 @@ const BatchList = (): JSX.Element => {
     }
   );
 
-  const handleBatchRetry = (batchId: string) => () => {
+  const handleBatchRetry = (batchId: string) => (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
     // TODO: batch retry is not implemented yet
     console.log(batchId);
   };
@@ -120,10 +123,7 @@ const BatchList = (): JSX.Element => {
                     variant="contained"
                     color="primary"
                     startIcon={<Replay />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleBatchRetry(batch.id);
-                    }}
+                    onClick={handleBatchRetry(batch.id)}
                   >
                     <Typography>{t("retry")}</Typography>
                   </Button>
