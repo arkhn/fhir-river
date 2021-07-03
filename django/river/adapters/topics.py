@@ -27,6 +27,8 @@ class FakeTopicsManager(TopicsManager):
 
 
 class KafkaTopicsManager(TopicsManager):
+    """ KafkaTopicsManager handles creation and deletion of Kafka topics """
+
     def __init__(self):
         self._admin_client = admin.AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
 
