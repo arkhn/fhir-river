@@ -309,6 +309,12 @@ SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
     ],
+    "ENUM_NAME_OVERRIDES": {
+        # dedicated Enum or models.Choices class
+        "FilterRelationEnum": "pyrog.models.Filter.Relation",
+        # choices is an attribute of class CurrencyContainer containing a list of tuples
+        "ConditionRelationEnum": "pyrog.models.Condition.Relation",
+    },
     "COMPONENT_SPLIT_REQUEST": True,
     "TITLE": "River API",
     "DESCRIPTION": "Arkhn's River API",

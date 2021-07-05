@@ -1190,7 +1190,7 @@ export type PatchedColumnRequest = {
   owner?: string;
 };
 export type ActionEnum = "INCLUDE" | "EXCLUDE";
-export type Relation925Enum =
+export type ConditionRelationEnum =
   | "EQ"
   | "GT"
   | "GE"
@@ -1202,21 +1202,21 @@ export type Condition = {
   id: string;
   action: ActionEnum;
   value?: string;
-  relation?: Relation925Enum;
+  relation?: ConditionRelationEnum;
   column: string;
   input_group: string;
 };
 export type ConditionRequest = {
   action: ActionEnum;
   value?: string;
-  relation?: Relation925Enum;
+  relation?: ConditionRelationEnum;
   column: string;
   input_group: string;
 };
 export type PatchedConditionRequest = {
   action?: ActionEnum;
   value?: string;
-  relation?: Relation925Enum;
+  relation?: ConditionRelationEnum;
   column?: string;
   input_group?: string;
 };
@@ -1252,22 +1252,22 @@ export type PatchedCredentialRequest = {
   model?: ModelEnum;
   source?: string;
 };
-export type Relation3a6Enum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
+export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
 export type Filter = {
   id: string;
-  relation: Relation3a6Enum;
+  relation: FilterRelationEnum;
   value?: string;
   resource: string;
   sql_column: string;
 };
 export type FilterRequest = {
-  relation: Relation3a6Enum;
+  relation: FilterRelationEnum;
   value?: string;
   resource: string;
   sql_column: string;
 };
 export type PatchedFilterRequest = {
-  relation?: Relation3a6Enum;
+  relation?: FilterRelationEnum;
   value?: string;
   resource?: string;
   sql_column?: string;
@@ -1398,7 +1398,7 @@ export type _Condition = {
   action: ActionEnum;
   column: string;
   value?: string;
-  relation?: Relation925Enum;
+  relation?: ConditionRelationEnum;
 };
 export type _InputGroup = {
   merging_script?: string;
@@ -1412,7 +1412,7 @@ export type _Attribute = {
   input_groups?: _InputGroup[];
 };
 export type _Filter = {
-  relation: Relation3a6Enum;
+  relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
@@ -1466,7 +1466,7 @@ export type _ConditionRequest = {
   action: ActionEnum;
   column: string;
   value?: string;
-  relation?: Relation925Enum;
+  relation?: ConditionRelationEnum;
 };
 export type _InputGroupRequest = {
   merging_script?: string;
@@ -1480,7 +1480,7 @@ export type _AttributeRequest = {
   input_groups?: _InputGroupRequest[];
 };
 export type _FilterRequest = {
-  relation: Relation3a6Enum;
+  relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
