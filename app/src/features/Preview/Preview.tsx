@@ -215,12 +215,6 @@ const Preview = (): JSX.Element => {
                       />
                     </IconButton>
                   </TableCell>
-                  <Alert
-                    severity="error"
-                    open={!!alert}
-                    onClose={handleAlertClose}
-                    message={alert}
-                  />
                   {columnData.map((cell, i) => (
                     <TableCell className={classes.cells} key={i}>
                       {cell}
@@ -232,6 +226,12 @@ const Preview = (): JSX.Element => {
           )}
         </Table>
       </TableContainer>
+      <Alert
+        severity="error"
+        open={!!alert}
+        onClose={handleAlertClose}
+        message={alert}
+      />
       {preview ? (
         <div className={classes.preview}>
           <ReactJson
