@@ -31,6 +31,8 @@ import {
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
 
+import MappingHeader from "../../app/routes/Sources/Mappings/MappingHeader";
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -170,88 +172,92 @@ const Preview = (): JSX.Element => {
 
   if (isExplorationLoading) return <CircularProgress />;
   return (
-    <Container className={classes.container} maxWidth="xl">
-      <Button
-        className={classes.button}
-        startIcon={<ArrowBack />}
-        onClick={handleCancelClick}
-        disableRipple
-      >
-        <Typography>{t("back")}</Typography>
-      </Button>
-      <TableContainer className={classes.table}>
-        <Table size="small">
-          <TableHead>
-            <TableRow className={classes.cellsTitle}>
-              <TableCell className={classes.cells} />
-              {exploration &&
-                (exploration as Exploration).fields.map((field, index) => (
-                  <TableCell
-                    className={classes.cells}
-                    key={`exploration-field-${index}`}
-                  >
-                    {field}
-                  </TableCell>
-                ))}
-            </TableRow>
-          </TableHead>
-          {exploration && (
-            <TableBody>
-              {(exploration as Exploration).rows.map((columnData, index) => (
-                <TableRow
-                  hover
-                  key={`exploration-row-${index}`}
-                  className={classes.rowBorder}
-                >
-                  <TableCell
-                    className={clsx(classes.fhirIconCell, classes.cellsTitle)}
-                    onClick={handleFhirIconClick(index)}
-                  >
-                    <IconButton size="small" className={classes.icon}>
-                      <Icon
-                        icon={IconNames.FLAME}
-                        iconSize={15}
-                        className={classes.iconFlame}
-                      />
-                    </IconButton>
-                  </TableCell>
-                  {columnData.map((cell, i) => (
-                    <TableCell className={classes.cells} key={i}>
-                      {cell}
+    <>
+      <MappingHeader />
+
+      <Container className={classes.container} maxWidth="xl">
+        <Button
+          className={classes.button}
+          startIcon={<ArrowBack />}
+          onClick={handleCancelClick}
+          disableRipple
+        >
+          <Typography>{t("back")}</Typography>
+        </Button>
+        <TableContainer className={classes.table}>
+          <Table size="small">
+            <TableHead>
+              <TableRow className={classes.cellsTitle}>
+                <TableCell className={classes.cells} />
+                {exploration &&
+                  (exploration as Exploration).fields.map((field, index) => (
+                    <TableCell
+                      className={classes.cells}
+                      key={`exploration-field-${index}`}
+                    >
+                      {field}
                     </TableCell>
                   ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          )}
-        </Table>
-      </TableContainer>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
-      />
-      {preview ? (
-        <div className={classes.preview}>
-          <ReactJson
-            src={preview}
-            theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
-            collapsed={1}
-            displayObjectSize={false}
-            displayDataTypes={false}
-          />
-        </div>
-      ) : (
-        <div className={classes.texts}>
-          <Typography>
-            {t("clickOnAFireIcon")}{" "}
-            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
-            {t("inOrderToPreview")}
-          </Typography>
-        </div>
-      )}
-    </Container>
+              </TableRow>
+            </TableHead>
+            {exploration && (
+              <TableBody>
+                {(exploration as Exploration).rows.map((columnData, index) => (
+                  <TableRow
+                    hover
+                    key={`exploration-row-${index}`}
+                    className={classes.rowBorder}
+                  >
+                    <TableCell
+                      className={clsx(classes.fhirIconCell, classes.cellsTitle)}
+                      onClick={handleFhirIconClick(index)}
+                    >
+                      <IconButton size="small" className={classes.icon}>
+                        <Icon
+                          icon={IconNames.FLAME}
+                          iconSize={15}
+                          className={classes.iconFlame}
+                        />
+                      </IconButton>
+                    </TableCell>
+                    {columnData.map((cell, i) => (
+                      <TableCell className={classes.cells} key={i}>
+                        {cell}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            )}
+          </Table>
+        </TableContainer>
+        <Alert
+          severity="error"
+          open={!!alert}
+          onClose={handleAlertClose}
+          message={alert}
+        />
+        {preview ? (
+          <div className={classes.preview}>
+            <ReactJson
+              src={preview}
+              theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
+              collapsed={1}
+              displayObjectSize={false}
+              displayDataTypes={false}
+            />
+          </div>
+        ) : (
+          <div className={classes.texts}>
+            <Typography>
+              {t("clickOnAFireIcon")}{" "}
+              <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
+              {t("inOrderToPreview")}
+            </Typography>
+          </div>
+        )}
+      </Container>
+    </>
   );
 };
 

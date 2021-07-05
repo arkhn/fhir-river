@@ -6,6 +6,8 @@ import clsx from "clsx";
 import FhirAttributePanel from "features/FhirAttributePanel/FhirAttributePanel";
 import FhirResourceTree from "features/FhirResourceTree/FhirResourceTree";
 
+import MappingHeader from "./MappingHeader";
+
 const HEADER_HEIGHT = 100;
 
 const useStyles = makeStyles((theme) => ({
@@ -27,14 +29,18 @@ const useStyles = makeStyles((theme) => ({
 const Mapping = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <div className={classes.body}>
-      <div className={clsx(classes.leftContainer, classes.scrollContainer)}>
-        <FhirResourceTree />
+    <>
+      <MappingHeader />
+
+      <div className={classes.body}>
+        <div className={clsx(classes.leftContainer, classes.scrollContainer)}>
+          <FhirResourceTree />
+        </div>
+        <div className={clsx(classes.rightContainer, classes.scrollContainer)}>
+          <FhirAttributePanel />
+        </div>
       </div>
-      <div className={clsx(classes.rightContainer, classes.scrollContainer)}>
-        <FhirAttributePanel />
-      </div>
-    </div>
+    </>
   );
 };
 
