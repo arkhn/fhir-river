@@ -1,8 +1,15 @@
-from typing import Optional, Tuple
+from dataclasses import dataclass
+from typing import Optional
 
 import redis
 
 from django.conf import settings
+
+
+@dataclass(frozen=True)
+class Progression:
+    extracted: int
+    loaded: int
 
 
 class ProgressionCounter:
@@ -29,7 +36,7 @@ class ProgressionCounter:
     def increment_loaded(self, id: str):
         raise NotImplementedError
 
-    def get(self, id: str) -> Optional[int]:
+    def get(self, id: str) -> Optional[Progression]:
         raise NotImplementedError
 
 
@@ -62,7 +69,7 @@ class FakeProgressionCounter(ProgressionCounter):
             self._count[id]["loaded"] = 0
         self._count[id]["loaded"] += 1
 
-    def get(self, id: str) -> Tuple[Optional[int], Optional[int]]:
+    def get(self, id: str) -> Optional[Progression]:
         """Gets both counters for the specified key.
 
         Args:
@@ -73,7 +80,14 @@ class FakeProgressionCounter(ProgressionCounter):
                 the number of loaded resources (or None if not found).
 
         """
-        return self._count.get(id, {}).get("extracted"), self._count.get(id, {}).get("loaded")
+        counters = self._count.get(id)
+        if not counters:
+            return None
+
+        extracted = counters.get("extracted")
+        loaded = counters.get("loaded")
+
+        return Progression(extracted=extracted, loaded=loaded)
 
 
 class RedisProgressionCounter(ProgressionCounter):
@@ -99,7 +113,7 @@ class RedisProgressionCounter(ProgressionCounter):
         """Increments by 1 the value corresponding to the number of loaded resources."""
         self._client.hincrby("loaded_counters", id, 1)
 
-    def get(self, id: str) -> Tuple[Optional[int], Optional[int]]:
+    def get(self, id: str) -> Optional[Progression]:
         """Gets both counters for the specified key.
 
         Args:
@@ -114,4 +128,5 @@ class RedisProgressionCounter(ProgressionCounter):
         raw_loaded = self._client.hget("loaded_counters", id)
         extracted = int(raw_extracted) if raw_extracted else None
         loaded = int(raw_loaded) if raw_loaded else None
-        return extracted, loaded
+
+        return Progression(extracted=extracted, loaded=loaded)
