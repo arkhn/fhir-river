@@ -5,9 +5,9 @@ import ArrowBack from "@material-ui/icons/ArrowBackIos";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 
-type SourceEditButtonProps = ButtonProps;
+type BackButtonProps = ButtonProps;
 
-const BackButton = ({ ...buttonProps }: SourceEditButtonProps): JSX.Element => {
+const BackButton = ({ ...buttonProps }: BackButtonProps): JSX.Element => {
   const { t } = useTranslation();
   const history = useHistory();
 
