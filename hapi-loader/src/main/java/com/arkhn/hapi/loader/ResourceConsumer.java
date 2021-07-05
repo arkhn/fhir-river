@@ -101,7 +101,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             // Increment redis counter
             Jedis j = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
             j.select(redisCounterProperties.getDb_index());
-            j.hincrBy(String.format("batch:%s:counter", batchId), String.format("resource:%s:loaded", resourceId), 1);
+            j.hincrBy("loaded_counters", String.format("%s:%s", batchId, resourceId), 1);
 
             // TODO: error handling
 

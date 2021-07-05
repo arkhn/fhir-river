@@ -1,11 +1,11 @@
 from rest_framework import status, views
 from rest_framework.response import Response
 
-from common.analyzer import Analyzer
-from common.database_connection.db_connection import DBConnection
-from common.mapping.fetch_mapping import fetch_resource_with_filters
 from pagai.api.serializers import CredentialsSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from river.common.analyzer import Analyzer
+from river.common.database_connection.db_connection import DBConnection
+from river.common.mapping.fetch_mapping import fetch_resource_with_filters
 
 
 class OwnersListView(views.APIView):

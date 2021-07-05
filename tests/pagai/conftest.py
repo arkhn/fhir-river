@@ -3,7 +3,7 @@ import os.path as osp
 import pytest
 
 import pandas as pd
-from common.database_connection.db_connection import DB_DRIVERS, URL_SUFFIXES
+from river.common.database_connection.db_connection import DB_DRIVERS, URL_SUFFIXES
 from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy.exc import NoSuchTableError
 

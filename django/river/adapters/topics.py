@@ -1,9 +1,13 @@
+import logging
+
 from confluent_kafka import admin, error
 
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
 
-class TopicsHandler:
+
+class TopicsManager:
     def create(self, topic: str):
         raise NotImplementedError
 
@@ -11,7 +15,7 @@ class TopicsHandler:
         raise NotImplementedError
 
 
-class FakeTopics(TopicsHandler):
+class FakeTopicsManager(TopicsManager):
     def __init__(self, topics=list()):
         self._topics = set(topics)
 
@@ -22,22 +26,26 @@ class FakeTopics(TopicsHandler):
         self._topics.remove(topic)
 
 
-class KafkaTopics(TopicsHandler):
+class KafkaTopicsManager(TopicsManager):
+    """ KafkaTopicsManager handles creation and deletion of Kafka topics """
+
     def __init__(self):
         self._admin_client = admin.AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
 
     def create(self, topic: str):
-        ret = self._admin_client.create_topics(
+        future_topics = self._admin_client.create_topics(
             [admin.NewTopic(topic, settings.KAFKA_NUM_PARTITIONS, settings.KAFKA_REPLICATION_FACTOR)]
         )
         try:
-            ret[topic].result(1)
+            future_topics[topic].result(10)
+            logger.debug(f"List of kafka topics after addition: {self._admin_client.list_topics().topics}")
         except error.KafkaException as exc:
             raise Exception(exc)
 
     def delete(self, topic: str):
-        ret = self._admin_client.delete_topics([topic])
+        future_deleted_topics = self._admin_client.delete_topics([topic])
         try:
-            ret[topic].result(1)
+            future_deleted_topics[topic].result(10)
+            logger.debug(f"List of kafka topics after deletion: {self._admin_client.list_topics().topics}")
         except error.KafkaException as exc:
-            raise Exception(exc)
+            logger.error(f"KafkaException while deleting topics: {str(exc)}")

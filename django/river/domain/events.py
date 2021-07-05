@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 
+@dataclass(frozen=True)
 class Event:
     pass
 
@@ -19,3 +20,10 @@ class ExtractedRecord(Event):
     resource_type: str
     resource_id: str
     record: Dict[str, Any]
+
+
+@dataclass(frozen=True)
+class TransformedRecord(Event):
+    batch_id: str
+    resource_id: str
+    fhir_object: dict
