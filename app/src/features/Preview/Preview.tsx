@@ -136,7 +136,7 @@ const Preview = (): JSX.Element => {
       owner: owner?.name ?? "",
       table: mapping?.primary_key_table ?? "",
     },
-    { skip: mapping === undefined || owner === undefined }
+    { skip: !mapping || !owner }
   );
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
