@@ -144,11 +144,11 @@ const Preview = (): JSX.Element => {
   const handleFhirIconClick = (index: number) => async () => {
     const primaryKey = mapping?.primary_key_table;
     if (exploration && primaryKey && mapping) {
-      const indexPrimaryKey = (exploration as Exploration).fields.indexOf(
+      const primaryKeyIndex = (exploration as Exploration).fields.indexOf(
         primaryKey
       );
       const primaryKeyValue = (exploration as Exploration).rows[index]?.[
-        indexPrimaryKey
+        primaryKeyIndex
       ];
       try {
         const previewResult = await apiPreviewCreate({
@@ -156,7 +156,7 @@ const Preview = (): JSX.Element => {
             resource_id: mapping?.id,
             primary_key_values: [primaryKeyValue ?? ""],
           },
-        });
+        }).unwrap();
         setPreview(previewResult);
       } catch (e) {
         setAlert(e.message);
@@ -167,16 +167,6 @@ const Preview = (): JSX.Element => {
   const handleCancelClick = () => {
     history.goBack();
   };
-
-  const FhirIconCell = () => (
-    <IconButton size="small" className={classes.icon}>
-      <Icon
-        icon={IconNames.FLAME}
-        iconSize={15}
-        className={classes.iconFlame}
-      />
-    </IconButton>
-  );
 
   if (isExplorationLoading) return <CircularProgress />;
   return (
@@ -217,7 +207,13 @@ const Preview = (): JSX.Element => {
                     className={clsx(classes.fhirIconCell, classes.cellsTitle)}
                     onClick={handleFhirIconClick(index)}
                   >
-                    <FhirIconCell />
+                    <IconButton size="small" className={classes.icon}>
+                      <Icon
+                        icon={IconNames.FLAME}
+                        iconSize={15}
+                        className={classes.iconFlame}
+                      />
+                    </IconButton>
                   </TableCell>
                   <Alert
                     severity="error"
