@@ -16,7 +16,12 @@ const SourceCreate = ({ ...buttonProps }: SourceCreateProps): JSX.Element => {
   const handleCreateSource = () => dispatch(createSource());
 
   return (
-    <Button {...buttonProps} onClick={handleCreateSource}>
+    <Button
+      {...buttonProps}
+      color="primary"
+      variant="contained"
+      onClick={handleCreateSource}
+    >
       <Typography>{t("newSource")}</Typography>
     </Button>
   );

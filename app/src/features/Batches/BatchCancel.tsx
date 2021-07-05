@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { Button, ButtonProps, Typography } from "@material-ui/core";
+import { CancelOutlined } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 import Alert from "common/components/Alert";
@@ -35,7 +36,13 @@ const BatchCancel = ({
 
   return (
     <>
-      <Button {...buttonProps} onClick={handleBatchCancel(batch.id)}>
+      <Button
+        {...buttonProps}
+        variant="contained"
+        color="primary"
+        startIcon={<CancelOutlined />}
+        onClick={handleBatchCancel(batch.id)}
+      >
         <Typography>{t("cancel")}</Typography>
       </Button>
       <Alert

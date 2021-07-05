@@ -22,11 +22,7 @@ const Sources = (): JSX.Element => {
   return (
     <Container maxWidth="xl">
       <Grid className={classes.gridContainer} spacing={3} container>
-        <SourceCreate
-          className={classes.button}
-          color="primary"
-          variant="contained"
-        />
+        <SourceCreate className={classes.button} />
       </Grid>
       <SourceGrid />
       <SourceDrawer />

@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { CancelOutlined, ExpandMore, Replay } from "@material-ui/icons";
+import { ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
@@ -128,13 +128,7 @@ const BatchList = (): JSX.Element => {
                     <Typography>{t("retry")}</Typography>
                   </Button>
                   {!batch.deleted_at && (
-                    <BatchCancel
-                      batch={batch}
-                      className={classes.button}
-                      variant="contained"
-                      color="primary"
-                      startIcon={<CancelOutlined />}
-                    />
+                    <BatchCancel batch={batch} className={classes.button} />
                   )}
                 </div>
               </div>
