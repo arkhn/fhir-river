@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(3),
   },
   iconFlame: {
-    fill: "#CC7831",
+    fill: theme.palette.orange.main,
   },
   fhirIconCell: {
     boxShadow: `inset -1px 0 0 ${theme.palette.divider}`,
