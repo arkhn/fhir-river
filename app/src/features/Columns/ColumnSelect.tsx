@@ -58,7 +58,7 @@ const ColumnSelects = ({
       credential: credentials?.[0]?.id,
     },
     {
-      skip: credentials?.[0] === undefined,
+      skip: !credentials?.[0],
     }
   );
 
