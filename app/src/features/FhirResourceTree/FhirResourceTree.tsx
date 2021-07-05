@@ -19,6 +19,7 @@ import {
   useApiResourcesRetrieveQuery,
   useApiAttributesListQuery,
   useApiAttributesRetrieveQuery,
+  useApiInputGroupsCreateMutation,
 } from "services/api/endpoints";
 
 import { getNode } from "./resourceTreeUtils";
@@ -76,6 +77,7 @@ const FhirResourceTree = (): JSX.Element => {
     { skip: !mapping }
   );
   const [createAttribute] = useApiAttributesCreateMutation();
+  const [createInputGroup] = useApiInputGroupsCreateMutation();
 
   const selectedNode = useMemo(() => {
     if (selectedAttribute && root) {
@@ -100,16 +102,22 @@ const FhirResourceTree = (): JSX.Element => {
         ({ path }) => path === node.path
       );
       if (!selectedNodeAttribute) {
-        const attribute = await createAttribute({
-          attributeRequest: {
-            definition_id: node.type,
-            path: node.path,
-            resource: mapping.id,
-          },
-        }).unwrap();
-        history.push(
-          `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
-        );
+        try {
+          const attribute = await createAttribute({
+            attributeRequest: {
+              definition_id: node.type,
+              path: node.path,
+              resource: mapping.id,
+            },
+          }).unwrap();
+          createInputGroup({ inputGroupRequest: { attribute: attribute.id } });
+          history.push(
+            `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
+          );
+        } catch (error) {
+          // TODO: Handle errors nicely
+          console.error(error);
+        }
       } else {
         history.push(
           `/sources/${sourceId}/mappings/${mappingId}/attributes/${selectedNodeAttribute.id}`
