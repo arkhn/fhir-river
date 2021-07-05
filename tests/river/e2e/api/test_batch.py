@@ -4,19 +4,25 @@ import pytest
 
 from django.urls import reverse
 
+from river import models
+
 pytestmark = [pytest.mark.django_db, pytest.mark.kafka]
 
 # TODO do some real testing
 
 
-@pytest.mark.skip(reason="Needs pyrog-api")
 def test_create_batch(api_client):
     url = reverse("batches-list")
 
-    data = {"resources": [{"resource_id": "foo"}]}
+    data = {"resources": ["foo", "bar"]}
     response = api_client.post(url, data, format="json")
 
     assert response.status_code == 201
+
+    # Check that the batch have been created
+    batches = models.Batch.objects.all()
+    assert len(batches) == 1
+    assert batches[0].resources == ["foo", "bar"]
 
 
 def test_retrieve_batch(api_client, batch, error):
