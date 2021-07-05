@@ -59,10 +59,11 @@ const resourceTreeSlice = createSlice({
           const parent = getNode("path", computePathWithoutIndexes(node), root);
           if (
             parent &&
+            parent.isArray &&
             !parent.children.some(({ path }) => path === node.path)
           ) {
             parent.children.push(node);
-            if (parent.isArray && parent.type === "BackboneElement") {
+            if (parent.type === "BackboneElement") {
               // Manually add children to the BackboneElement item
               parent.backboneElementDefinitions.forEach((elementDefinition) => {
                 const childNode = createElementNode(

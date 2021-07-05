@@ -57,6 +57,7 @@ const useFhirResourceTreeData = (
   const {
     data: attributes,
     isLoading: isAttributesLoading,
+    isFetching: isAttributesFetching,
   } = useApiAttributesListQuery({ resource: mappingId });
   const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
@@ -167,7 +168,8 @@ const useFhirResourceTreeData = (
         node.isArray &&
         attributes &&
         node.type !== "Extension" &&
-        node.children.length === 0
+        node.children.length === 0 &&
+        !isAttributesFetching
       ) {
         const hasNodeChildren = attributes.some(({ path }) =>
           path.startsWith(node.path)
@@ -179,7 +181,8 @@ const useFhirResourceTreeData = (
       }
     };
     addItemToEmptyArray();
-  }, [node, attributes, createItem]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [node, attributes, isAttributesFetching]);
 
   return { root, isLoading, createItem, deleteItem, addExtension };
 };
