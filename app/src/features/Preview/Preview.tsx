@@ -124,7 +124,7 @@ const Preview = (): JSX.Element => {
     {
       id: mapping?.primary_key_owner ?? "",
     },
-    { skip: mapping === undefined }
+    { skip: !mapping }
   );
 
   const {
