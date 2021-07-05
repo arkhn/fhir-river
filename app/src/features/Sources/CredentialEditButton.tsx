@@ -18,7 +18,7 @@ const CredentialEditButton = ({
   const { sourceId: id } = useParams<{ sourceId: string }>();
   const { data: source } = useApiSourcesRetrieveQuery(
     { id },
-    { skip: id === undefined }
+    { skip: !id }
   );
   const handleSourceEdit = () => {
     if (source) dispatch(editCredential(source));
