@@ -14,17 +14,16 @@ import {
   TableHead,
   TableBody,
   useMediaQuery,
-  Button,
   CircularProgress,
 } from "@material-ui/core";
-import ArrowBack from "@material-ui/icons/ArrowBackIos";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
 import Alert from "common/components/Alert";
+import BackButton from "common/components/BackButton";
 import {
   useApiResourcesRetrieveQuery,
   usePagaiExploreRetrieveQuery,
@@ -103,7 +102,6 @@ type Exploration = { fields: string[]; rows: string[][] };
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const history = useHistory();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { mappingId } = useParams<{
     mappingId?: string;
@@ -165,24 +163,14 @@ const Preview = (): JSX.Element => {
     }
   };
 
-  const handleCancelClick = () => {
-    history.goBack();
-  };
-
   if (isExplorationLoading) return <CircularProgress />;
   return (
     <>
       <MappingHeader />
 
       <Container className={classes.container} maxWidth="xl">
-        <Button
-          className={classes.button}
-          startIcon={<ArrowBack />}
-          onClick={handleCancelClick}
-          disableRipple
-        >
-          <Typography>{t("back")}</Typography>
-        </Button>
+        <BackButton className={classes.button} />
+
         <TableContainer className={classes.table}>
           <Table size="small">
             <TableHead>

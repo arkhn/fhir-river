@@ -20,6 +20,7 @@
   "host": "Host",
   "port": "Port",
   "database": "Database",
+  "databaseSettings": "Database settings",
   "username": "Username",
   "password": "Password",
   "vendor": "Vendor",
