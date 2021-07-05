@@ -2079,6 +2079,59 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sources/{id}/export/:
+    get:
+      operationId: api_sources_export_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this source.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mapping'
+          description: ''
+  /api/sources/import/:
+    post:
+      operationId: api_sources_import_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MappingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MappingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MappingRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mapping'
+          description: ''
   /api/user/:
     get:
       operationId: api_user_retrieve
@@ -2314,7 +2367,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
+          $ref: '#/components/schemas/Relation925Enum'
         column:
           type: string
         input_group:
@@ -2324,16 +2377,6 @@ components:
       - column
       - id
       - input_group
-    ConditionRelationEnum:
-      enum:
-      - EQ
-      - GT
-      - GE
-      - LT
-      - LE
-      - NOTNULL
-      - 'NULL'
-      type: string
     ConditionRequest:
       type: object
       properties:
@@ -2342,7 +2385,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
+          $ref: '#/components/schemas/Relation925Enum'
         column:
           type: string
         input_group:
@@ -2497,7 +2540,7 @@ components:
           type: string
           readOnly: true
         relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
+          $ref: '#/components/schemas/Relation3a6Enum'
         value:
           type: string
         resource:
@@ -2509,21 +2552,11 @@ components:
       - relation
       - resource
       - sql_column
-    FilterRelationEnum:
-      enum:
-      - '='
-      - <>
-      - IN
-      - '>'
-      - '>='
-      - <
-      - <=
-      type: string
     FilterRequest:
       type: object
       properties:
         relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
+          $ref: '#/components/schemas/Relation3a6Enum'
         value:
           type: string
         resource:
@@ -2636,6 +2669,40 @@ components:
           type: string
       required:
       - column
+    Mapping:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Resource'
+          default: []
+        credential:
+          $ref: '#/components/schemas/_Credential'
+      required:
+      - credential
+      - name
+    MappingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ResourceRequest'
+          default: []
+        credential:
+          $ref: '#/components/schemas/_CredentialRequest'
+      required:
+      - credential
+      - name
     ModelEnum:
       enum:
       - MSSQL
@@ -2733,7 +2800,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
+          $ref: '#/components/schemas/Relation925Enum'
         column:
           type: string
         input_group:
@@ -2761,7 +2828,7 @@ components:
       type: object
       properties:
         relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
+          $ref: '#/components/schemas/Relation3a6Enum'
         value:
           type: string
         resource:
@@ -2845,6 +2912,26 @@ components:
       required:
       - primary_key_values
       - resource_id
+    Relation3a6Enum:
+      enum:
+      - '='
+      - <>
+      - IN
+      - '>'
+      - '>='
+      - <
+      - <=
+      type: string
+    Relation925Enum:
+      enum:
+      - EQ
+      - GT
+      - GE
+      - LT
+      - LE
+      - NOTNULL
+      - 'NULL'
+      type: string
     Resource:
       type: object
       properties:
@@ -2963,6 +3050,350 @@ components:
       - email
       - id
       - username
+    _Attribute:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputGroup'
+          default: []
+      required:
+      - definition_id
+      - path
+    _AttributeRequest:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputGroupRequest'
+          default: []
+      required:
+      - definition_id
+      - path
+    _Column:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Join'
+          default: []
+      required:
+      - column
+      - id
+      - table
+    _ColumnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/_JoinRequest'
+          default: []
+      required:
+      - column
+      - id
+      - table
+    _Condition:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        column:
+          type: string
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/Relation925Enum'
+      required:
+      - action
+      - column
+    _ConditionRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        column:
+          type: string
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/Relation925Enum'
+      required:
+      - action
+      - column
+    _Credential:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Owner'
+          default: []
+      required:
+      - database
+      - host
+      - model
+      - port
+    _CredentialRequest:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/_OwnerRequest'
+          default: []
+      required:
+      - database
+      - host
+      - model
+      - port
+    _Filter:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/Relation3a6Enum'
+        value:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - sql_column
+    _FilterRequest:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/Relation3a6Enum'
+        value:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - sql_column
+    _Input:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        static_value:
+          type: string
+          nullable: true
+        column:
+          type: string
+          nullable: true
+      required:
+      - column
+    _InputGroup:
+      type: object
+      properties:
+        merging_script:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Input'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Condition'
+          default: []
+    _InputGroupRequest:
+      type: object
+      properties:
+        merging_script:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputRequest'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ConditionRequest'
+          default: []
+    _InputRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        static_value:
+          type: string
+          nullable: true
+        column:
+          type: string
+          nullable: true
+      required:
+      - column
+    _Join:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+      required:
+      - columns
+    _JoinRequest:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+      required:
+      - columns
+    _Owner:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schema:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Column'
+          default: []
+      required:
+      - id
+      - name
+    _OwnerRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schema:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ColumnRequest'
+          default: []
+      required:
+      - id
+      - name
+    _Resource:
+      type: object
+      properties:
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+          readOnly: true
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Attribute'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Filter'
+          default: []
+      required:
+      - definition_id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    _ResourceRequest:
+      type: object
+      properties:
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/_AttributeRequest'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/_FilterRequest'
+          default: []
+      required:
+      - definition_id
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
   securitySchemes:
     basicAuth:
       type: http

@@ -680,6 +680,22 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiSourcesExportRetrieve: build.query<
+      ApiSourcesExportRetrieveApiResponse,
+      ApiSourcesExportRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/sources/${queryArg.id}/export/` }),
+    }),
+    apiSourcesImportCreate: build.mutation<
+      ApiSourcesImportCreateApiResponse,
+      ApiSourcesImportCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sources/import/`,
+        method: "POST",
+        body: queryArg.mappingRequest,
+      }),
+    }),
     apiUserRetrieve: build.query<
       ApiUserRetrieveApiResponse,
       ApiUserRetrieveApiArg
@@ -1095,6 +1111,15 @@ export type ApiSourcesDestroyApiArg = {
   /** A unique value identifying this source. */
   id: string;
 };
+export type ApiSourcesExportRetrieveApiResponse = /** status 200  */ Mapping;
+export type ApiSourcesExportRetrieveApiArg = {
+  /** A unique value identifying this source. */
+  id: string;
+};
+export type ApiSourcesImportCreateApiResponse = /** status 200  */ Mapping;
+export type ApiSourcesImportCreateApiArg = {
+  mappingRequest: MappingRequest;
+};
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
 export type PagaiExploreRetrieveApiResponse = /** status 200  */ Exploration;
@@ -1185,7 +1210,7 @@ export type PatchedColumnRequest = {
   owner?: string;
 };
 export type ActionEnum = "INCLUDE" | "EXCLUDE";
-export type ConditionRelationEnum =
+export type Relation925Enum =
   | "EQ"
   | "GT"
   | "GE"
@@ -1197,21 +1222,21 @@ export type Condition = {
   id: string;
   action: ActionEnum;
   value?: string;
-  relation?: ConditionRelationEnum;
+  relation?: Relation925Enum;
   column: string;
   input_group: string;
 };
 export type ConditionRequest = {
   action: ActionEnum;
   value?: string;
-  relation?: ConditionRelationEnum;
+  relation?: Relation925Enum;
   column: string;
   input_group: string;
 };
 export type PatchedConditionRequest = {
   action?: ActionEnum;
   value?: string;
-  relation?: ConditionRelationEnum;
+  relation?: Relation925Enum;
   column?: string;
   input_group?: string;
 };
@@ -1247,22 +1272,22 @@ export type PatchedCredentialRequest = {
   model?: ModelEnum;
   source?: string;
 };
-export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
+export type Relation3a6Enum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
 export type Filter = {
   id: string;
-  relation: FilterRelationEnum;
+  relation: Relation3a6Enum;
   value?: string;
   resource: string;
   sql_column: string;
 };
 export type FilterRequest = {
-  relation: FilterRelationEnum;
+  relation: Relation3a6Enum;
   value?: string;
   resource: string;
   sql_column: string;
 };
 export type PatchedFilterRequest = {
-  relation?: FilterRelationEnum;
+  relation?: Relation3a6Enum;
   value?: string;
   resource?: string;
   sql_column?: string;
@@ -1383,6 +1408,141 @@ export type PatchedSourceRequest = {
   name?: string;
   version?: string;
 };
+export type _Input = {
+  script?: string;
+  concept_map_id?: string;
+  static_value?: string | null;
+  column: string | null;
+};
+export type _Condition = {
+  action: ActionEnum;
+  column: string;
+  value?: string;
+  relation?: Relation925Enum;
+};
+export type _InputGroup = {
+  merging_script?: string;
+  inputs?: _Input[];
+  conditions?: _Condition[];
+};
+export type _Attribute = {
+  path: string;
+  slice_name?: string;
+  definition_id: string;
+  input_groups?: _InputGroup[];
+};
+export type _Filter = {
+  relation: Relation3a6Enum;
+  value?: string;
+  sql_column: string;
+};
+export type _Resource = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  logical_reference: string;
+  primary_key_owner: string;
+  attributes?: _Attribute[];
+  filters?: _Filter[];
+};
+export type _Join = {
+  columns: string[];
+};
+export type _Column = {
+  id: string;
+  table: string;
+  column: string;
+  joins?: _Join[];
+};
+export type _Owner = {
+  id: string;
+  name: string;
+  schema?: {
+    [key: string]: any;
+  } | null;
+  columns?: _Column[];
+};
+export type _Credential = {
+  host: string;
+  port: number;
+  database: string;
+  model: ModelEnum;
+  owners?: _Owner[];
+};
+export type Mapping = {
+  name: string;
+  version?: string;
+  resources?: _Resource[];
+  credential: _Credential;
+};
+export type _InputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  static_value?: string | null;
+  column: string | null;
+};
+export type _ConditionRequest = {
+  action: ActionEnum;
+  column: string;
+  value?: string;
+  relation?: Relation925Enum;
+};
+export type _InputGroupRequest = {
+  merging_script?: string;
+  inputs?: _InputRequest[];
+  conditions?: _ConditionRequest[];
+};
+export type _AttributeRequest = {
+  path: string;
+  slice_name?: string;
+  definition_id: string;
+  input_groups?: _InputGroupRequest[];
+};
+export type _FilterRequest = {
+  relation: Relation3a6Enum;
+  value?: string;
+  sql_column: string;
+};
+export type _ResourceRequest = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  primary_key_owner: string;
+  attributes?: _AttributeRequest[];
+  filters?: _FilterRequest[];
+};
+export type _JoinRequest = {
+  columns: string[];
+};
+export type _ColumnRequest = {
+  id: string;
+  table: string;
+  column: string;
+  joins?: _JoinRequest[];
+};
+export type _OwnerRequest = {
+  id: string;
+  name: string;
+  schema?: {
+    [key: string]: any;
+  } | null;
+  columns?: _ColumnRequest[];
+};
+export type _CredentialRequest = {
+  host: string;
+  port: number;
+  database: string;
+  model: ModelEnum;
+  owners?: _OwnerRequest[];
+};
+export type MappingRequest = {
+  name: string;
+  version?: string;
+  resources?: _ResourceRequest[];
+  credential: _CredentialRequest;
+};
 export type User = {
   id: string;
   email: string;
@@ -1469,6 +1629,8 @@ export const {
   useApiSourcesUpdateMutation,
   useApiSourcesPartialUpdateMutation,
   useApiSourcesDestroyMutation,
+  useApiSourcesExportRetrieveQuery,
+  useApiSourcesImportCreateMutation,
   useApiUserRetrieveQuery,
   usePagaiExploreRetrieveQuery,
   usePagaiListOwnersCreateMutation,
