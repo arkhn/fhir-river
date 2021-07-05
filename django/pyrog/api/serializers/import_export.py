@@ -164,7 +164,7 @@ class _ResourceSerializer(serializers.ModelSerializer):
         ]
 
 
-class SourceSerializer(serializers.ModelSerializer):
+class MappingSerializer(serializers.ModelSerializer):
     resources = _ResourceSerializer(many=True, required=False, default=[])
     credential = _CredentialSerializer()
 
