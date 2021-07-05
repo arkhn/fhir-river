@@ -31,11 +31,11 @@ class SourceViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"], serializer_class=MappingSerializer, url_path="import")
     def import_mapping(self, request):
-        return self.create(self, request)
+        return self.create(request)
 
     @action(detail=True, methods=["get"], serializer_class=MappingSerializer, url_path="export")
     def export_mapping(self, request):
-        return self.retrieve(self, request)
+        return self.retrieve(request)
 
     def get_queryset(self):
         """Limit visibility of sources."""
