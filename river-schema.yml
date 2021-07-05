@@ -1909,7 +1909,7 @@ paths:
           description: No response body
   /api/scripts/:
     get:
-      operationId: api_scripts_retrieve
+      operationId: api_scripts_list
       description: ''
       tags:
       - api
@@ -1919,7 +1919,13 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scripts'
+          description: ''
   /api/sources/:
     get:
       operationId: api_sources_list
@@ -2992,6 +2998,19 @@ components:
       - primary_key_owner
       - primary_key_table
       - source
+    Scripts:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+      required:
+      - category
+      - description
+      - name
     Source:
       type: object
       properties:
