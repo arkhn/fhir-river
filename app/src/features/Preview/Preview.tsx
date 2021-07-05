@@ -211,7 +211,7 @@ const Preview = (): JSX.Element => {
                 <TableRow
                   hover
                   key={`exploration-row-${index}`}
-                  className={clsx(classes.rowBorder)}
+                  className={classes.rowBorder}
                 >
                   <TableCell
                     className={clsx(classes.fhirIconCell, classes.cellsTitle)}
