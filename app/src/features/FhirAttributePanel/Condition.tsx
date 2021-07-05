@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import {
   Grid,
   Typography,
@@ -7,7 +9,6 @@ import {
   makeStyles,
   TextField,
 } from "@material-ui/core";
-import { CloseRounded } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
@@ -61,11 +62,26 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   badgeLabel: {
-    backgroundColor: theme.palette.orange.main,
-    color: theme.palette.orange.contrastText,
+    backgroundColor: theme.palette.purple.main,
+    color: theme.palette.purple.contrastText,
     borderRadius: 4,
     paddingInline: theme.spacing(1),
     paddingBlock: theme.spacing(0.5),
+  },
+  icon: {
+    fill: theme.palette.getContrastText(theme.palette.background.paper),
+  },
+  iconButton: {
+    "& > span > span": {
+      height: theme.spacing(2),
+    },
+    border: `1px solid ${
+      theme.palette.type === "dark"
+        ? theme.palette.grey[600]
+        : theme.palette.grey[300]
+    }`,
+    borderRadius: 5,
+    padding: theme.spacing(1),
   },
 }));
 
@@ -229,7 +245,7 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
       <Grid container item xs={11} spacing={1} alignItems="center">
         <Grid item>
           <Typography className={classes.badgeLabel}>
-            {t("useThisGroupIf")}
+            {t("condition")}
           </Typography>
         </Grid>
         <ColumnSelects
@@ -260,8 +276,12 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
         </Grid>
       </Grid>
       <Grid item>
-        <IconButton size="small" onClick={handleDeleteCondition}>
-          <CloseRounded fontSize="small" />
+        <IconButton
+          size="small"
+          className={classes.iconButton}
+          onClick={handleDeleteCondition}
+        >
+          <Icon icon={IconNames.TRASH} className={classes.icon} />
         </IconButton>
       </Grid>
     </Grid>

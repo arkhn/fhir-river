@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 
-import {
-  Grid,
-  IconButton,
-  makeStyles,
-  Typography,
-  TextField,
-} from "@material-ui/core";
-import { CloseRounded } from "@material-ui/icons";
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -21,16 +17,36 @@ type InputProps = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  static: {
-    backgroundColor: theme.palette.grey[800],
-    color: theme.palette.getContrastText(theme.palette.grey[800]),
-    borderRadius: 4,
-    padding: "4px 8px",
-  },
   iconButtonContainer: {
     flex: 1,
     display: "flex",
     justifyContent: "flex-end",
+  },
+  icon: {
+    fill: theme.palette.getContrastText(theme.palette.background.paper),
+  },
+  iconButton: {
+    "& > span > span": {
+      height: theme.spacing(2),
+    },
+    border: `1px solid ${
+      theme.palette.type === "dark"
+        ? theme.palette.grey[600]
+        : theme.palette.grey[300]
+    }`,
+    borderRadius: 5,
+    padding: theme.spacing(1),
+  },
+  input: {
+    maxWidth: 534,
+  },
+  inputStartAdornment: {
+    fill: theme.palette.text.disabled,
+    marginRight: theme.spacing(1),
+    height: theme.spacing(2),
+  },
+  primaryColor: {
+    fill: theme.palette.primary.main,
   },
 }));
 
@@ -70,23 +86,35 @@ const StaticInput = ({ input }: InputProps): JSX.Element => {
 
   return (
     <Grid container item alignItems="center" direction="row" spacing={1}>
-      <Grid item>
-        <Typography className={classes.static}>{t("static")}</Typography>
-      </Grid>
       <Grid item xs={10}>
         <TextField
           variant="outlined"
           size="small"
           fullWidth
-          placeholder={t("typeValue")}
+          placeholder={t("typeStaticValueHere")}
           value={staticValue}
           onChange={handleStaticValueChange}
           onBlur={handleInputBlur}
+          InputProps={{
+            startAdornment: (
+              <Icon
+                icon={IconNames.ALIGN_LEFT}
+                className={clsx(classes.inputStartAdornment, {
+                  [classes.primaryColor]: !!staticValue,
+                })}
+              />
+            ),
+            className: classes.input,
+          }}
         />
       </Grid>
       <Grid item className={classes.iconButtonContainer}>
-        <IconButton size="small" onClick={handleDeleteInput}>
-          <CloseRounded fontSize="small" />
+        <IconButton
+          size="small"
+          className={classes.iconButton}
+          onClick={handleDeleteInput}
+        >
+          <Icon icon={IconNames.TRASH} className={classes.icon} />
         </IconButton>
       </Grid>
     </Grid>

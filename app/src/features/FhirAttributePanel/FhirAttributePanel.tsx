@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   container: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(4),
   },
 }));
 
@@ -69,7 +69,7 @@ const FhirAttributePanel = (): JSX.Element => {
     <>
       {!isError && !isUninitialized && (
         <div className={classes.container}>
-          <Grid container spacing={2} direction="column">
+          <Grid container spacing={4} direction="column">
             {attributeInputGroups &&
               attributeInputGroups.map((inputGroup) => (
                 <AttributeInputGroup

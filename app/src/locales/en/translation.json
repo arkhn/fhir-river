@@ -85,10 +85,11 @@
   "applyScript": "Apply script",
   "addInput": "Add input",
   "static": "Static",
+  "typeStaticValueHere": "Type static value here",
   "fromAColumn": "From a column",
   "addCondition": "Add a condition",
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
-  "useThisGroupIf": "Use this group if..."
+  "condition": "Condition"
 }
