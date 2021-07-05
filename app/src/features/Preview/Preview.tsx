@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useHistory, useParams } from "react-router-dom";
 
+import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
 import Alert from "common/components/Alert";
 import {
   useApiResourcesRetrieveQuery,
@@ -30,8 +31,6 @@ import {
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
-
-import MappingHeader from "../../app/routes/Sources/Mappings/MappingHeader";
 
 const useStyles = makeStyles((theme) => ({
   container: {
