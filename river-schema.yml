@@ -2367,7 +2367,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/Relation925Enum'
+          $ref: '#/components/schemas/ConditionRelationEnum'
         column:
           type: string
         input_group:
@@ -2377,6 +2377,16 @@ components:
       - column
       - id
       - input_group
+    ConditionRelationEnum:
+      enum:
+      - EQ
+      - GT
+      - GE
+      - LT
+      - LE
+      - NOTNULL
+      - 'NULL'
+      type: string
     ConditionRequest:
       type: object
       properties:
@@ -2385,7 +2395,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/Relation925Enum'
+          $ref: '#/components/schemas/ConditionRelationEnum'
         column:
           type: string
         input_group:
@@ -2540,7 +2550,7 @@ components:
           type: string
           readOnly: true
         relation:
-          $ref: '#/components/schemas/Relation3a6Enum'
+          $ref: '#/components/schemas/FilterRelationEnum'
         value:
           type: string
         resource:
@@ -2552,11 +2562,21 @@ components:
       - relation
       - resource
       - sql_column
+    FilterRelationEnum:
+      enum:
+      - '='
+      - <>
+      - IN
+      - '>'
+      - '>='
+      - <
+      - <=
+      type: string
     FilterRequest:
       type: object
       properties:
         relation:
-          $ref: '#/components/schemas/Relation3a6Enum'
+          $ref: '#/components/schemas/FilterRelationEnum'
         value:
           type: string
         resource:
@@ -2800,7 +2820,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/Relation925Enum'
+          $ref: '#/components/schemas/ConditionRelationEnum'
         column:
           type: string
         input_group:
@@ -2828,7 +2848,7 @@ components:
       type: object
       properties:
         relation:
-          $ref: '#/components/schemas/Relation3a6Enum'
+          $ref: '#/components/schemas/FilterRelationEnum'
         value:
           type: string
         resource:
@@ -2912,26 +2932,6 @@ components:
       required:
       - primary_key_values
       - resource_id
-    Relation3a6Enum:
-      enum:
-      - '='
-      - <>
-      - IN
-      - '>'
-      - '>='
-      - <
-      - <=
-      type: string
-    Relation925Enum:
-      enum:
-      - EQ
-      - GT
-      - GE
-      - LT
-      - LE
-      - NOTNULL
-      - 'NULL'
-      type: string
     Resource:
       type: object
       properties:
@@ -3130,7 +3130,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/Relation925Enum'
+          $ref: '#/components/schemas/ConditionRelationEnum'
       required:
       - action
       - column
@@ -3144,7 +3144,7 @@ components:
         value:
           type: string
         relation:
-          $ref: '#/components/schemas/Relation925Enum'
+          $ref: '#/components/schemas/ConditionRelationEnum'
       required:
       - action
       - column
@@ -3198,7 +3198,7 @@ components:
       type: object
       properties:
         relation:
-          $ref: '#/components/schemas/Relation3a6Enum'
+          $ref: '#/components/schemas/FilterRelationEnum'
         value:
           type: string
         sql_column:
@@ -3210,7 +3210,7 @@ components:
       type: object
       properties:
         relation:
-          $ref: '#/components/schemas/Relation3a6Enum'
+          $ref: '#/components/schemas/FilterRelationEnum'
         value:
           type: string
         sql_column:
