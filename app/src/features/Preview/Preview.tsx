@@ -117,7 +117,7 @@ const Preview = (): JSX.Element => {
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
-    { skip: mappingId === undefined }
+    { skip: !mappingId }
   );
 
   const { data: owner } = useApiOwnersRetrieveQuery(
