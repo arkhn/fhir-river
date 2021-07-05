@@ -1,7 +1,7 @@
 from rest_framework import status, views
 from rest_framework.response import Response
 
-from pagai.api.serializers import CredentialsSerializer
+from pagai.api.serializers import CredentialsSerializer, ExplorationSerializer
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
@@ -41,6 +41,9 @@ class OwnerSchemaView(views.APIView):
 
 
 class ExploreView(views.APIView):
+    def get_serializer_class(self):
+        return ExplorationSerializer
+
     def get(self, request, resource_id, owner, table):
         limit = int(request.GET.get("first", 10))
 

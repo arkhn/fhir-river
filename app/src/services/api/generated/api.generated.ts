@@ -1097,7 +1097,7 @@ export type ApiSourcesDestroyApiArg = {
 };
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
-export type PagaiExploreRetrieveApiResponse = unknown;
+export type PagaiExploreRetrieveApiResponse = /** status 200  */ Exploration;
 export type PagaiExploreRetrieveApiArg = {
   owner: string;
   resourceId: string;
@@ -1387,6 +1387,10 @@ export type User = {
   id: string;
   email: string;
   username: string;
+};
+export type Exploration = {
+  fields: string[];
+  rows: string[][];
 };
 export const {
   useApiAttributesListQuery,

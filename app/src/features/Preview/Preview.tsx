@@ -97,8 +97,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Exploration = { fields: string[]; rows: string[][] };
-
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -143,12 +141,8 @@ const Preview = (): JSX.Element => {
   const handleFhirIconClick = (index: number) => async () => {
     const primaryKey = mapping?.primary_key_table;
     if (exploration && primaryKey && mapping) {
-      const primaryKeyIndex = (exploration as Exploration).fields.indexOf(
-        primaryKey
-      );
-      const primaryKeyValue = (exploration as Exploration).rows[index]?.[
-        primaryKeyIndex
-      ];
+      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
+      const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
       try {
         const previewResult = await apiPreviewCreate({
           previewRequest: {
@@ -177,7 +171,7 @@ const Preview = (): JSX.Element => {
               <TableRow className={classes.cellsTitle}>
                 <TableCell className={classes.cells} />
                 {exploration &&
-                  (exploration as Exploration).fields.map((field, index) => (
+                  exploration.fields.map((field, index) => (
                     <TableCell
                       className={classes.cells}
                       key={`exploration-field-${index}`}
@@ -189,7 +183,7 @@ const Preview = (): JSX.Element => {
             </TableHead>
             {exploration && (
               <TableBody>
-                {(exploration as Exploration).rows.map((columnData, index) => (
+                {exploration.rows.map((columnData, index) => (
                   <TableRow
                     hover
                     key={`exploration-row-${index}`}

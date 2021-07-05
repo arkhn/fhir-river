@@ -2123,7 +2123,11 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exploration'
+          description: ''
   /pagai/list-owners/:
     post:
       operationId: pagai_list_owners_create
@@ -2470,6 +2474,22 @@ components:
       - batch
       - event
       - message
+    Exploration:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+        rows:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+      required:
+      - fields
+      - rows
     Filter:
       type: object
       properties:
