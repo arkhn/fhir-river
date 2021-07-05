@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 
 import pytest
+import redis
 from confluent_kafka import admin
 from factory import Factory
 from pytest_factoryboy import register
@@ -56,6 +57,18 @@ def clear_topics(request):
 
     if request.node.get_closest_marker("kafka"):
         request.addfinalizer(_clear_topics)
+
+
+@pytest.fixture(autouse=True)
+def clear_redis(request):
+    """Clear redis after each test marked with `redis`."""
+
+    def _clear_redis():
+        r = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
+        r.flushdb()
+
+    if request.node.get_closest_marker("redis"):
+        request.addfinalizer(_clear_redis)
 
 
 @pytest.fixture
