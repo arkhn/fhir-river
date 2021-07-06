@@ -99,11 +99,7 @@ class RedisProgressionCounter(ProgressionCounter):
     """
 
     def __init__(self):
-        self._client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
-        )
+        self._client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
     def set_extracted(self, id: str, value: int) -> None:
         """Sets the value corresponding to the number of extracted resources."""

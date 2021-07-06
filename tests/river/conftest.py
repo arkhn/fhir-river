@@ -33,6 +33,16 @@ def reset_factories_sequences():
         factory.reset_sequence()
 
 
+@pytest.fixture(scope="session")
+def kafka_admin():
+    return admin.AdminClient({"bootstrap.servers": settings.KAFKA_BOOTSTRAP_SERVERS})
+
+
+@pytest.fixture(scope="session")
+def redis_client():
+    return redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
+
+
 @pytest.fixture(autouse=True)
 def clear_topics(request):
     """Clear topics after each test marked with `kafka`."""
