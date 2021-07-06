@@ -9,17 +9,14 @@ import { Typography } from "@material-ui/core";
 
 export const EditedButton = withStyles((theme) => ({
   root: {
-    endIcon: {
-      fill: theme.palette.text.primary,
-    },
     textTransform: "none",
-    "& .MuiButton-startIcon": {
-      height: 12,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      fill: "#fff",
-    },
+  },
+  startIcon: {
+    height: 12,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fill: theme.palette.common.white,
   },
   containedPrimary: {
     border: `1px solid ${theme.palette.primary.dark}`,
@@ -32,6 +29,9 @@ export const EditedButton = withStyles((theme) => ({
     "& .MuiButton-startIcon": {
       fill: theme.palette.secondary.contrastText,
     },
+  },
+  disabled: {
+    border: "none",
   },
   colorInherit: {
     "& .MuiButton-startIcon": {

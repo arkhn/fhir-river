@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import {
   Breadcrumbs,
   LinkProps,
@@ -30,9 +32,20 @@ const Link = (props: LinkRouterProps) => (
 const useStyles = makeStyles((theme) => ({
   separator: {
     fontSize: theme.typography.h5.fontSize,
+    fill: theme.palette.text.secondary,
   },
   mainCrumb: {
     fontWeight: 500,
+  },
+  breadCrumbLinks: {
+    "&:hover": { textDecoration: "none", opacity: "0.6" },
+  },
+  icons: {
+    height: 12,
+    marginBottom: "-2px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 }));
 
@@ -63,13 +76,25 @@ const NavigationBreadcrumbs = (): JSX.Element => {
   };
 
   return (
-    <Breadcrumbs separator=">" classes={{ separator: classes.separator }}>
-      <Link variant="h5" color="textSecondary" to="/">
+    <Breadcrumbs
+      separator={
+        <Icon icon={IconNames.CHEVRON_RIGHT} className={classes.icons} />
+      }
+      classes={{ separator: classes.separator }}
+    >
+      <Link
+        variant="h5"
+        color="textSecondary"
+        to="/"
+        className={classes.breadCrumbLinks}
+      >
         {t("sources")}
       </Link>
       {source && (
         <Link
-          className={clsx({ [classes.mainCrumb]: source && !mapping })}
+          className={clsx(classes.breadCrumbLinks, {
+            [classes.mainCrumb]: source && !mapping,
+          })}
           variant="h5"
           color={mapping ? "textSecondary" : "textPrimary"}
           to={`/sources/${source.id}`}
