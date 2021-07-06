@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
 
 from django.conf import settings
 
@@ -6,7 +7,7 @@ from django_filters import rest_framework as django_filters
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
-from pyrog.api.serializers.import_export import SourceSerializer
+from pyrog.api.serializers.import_export import MappingSerializer
 from revproxy.views import ProxyView
 
 
@@ -26,11 +27,15 @@ class FhirProxyView(ProxyView):
 
 class SourceViewSet(viewsets.ModelViewSet):
     queryset = models.Source.objects.all()
+    serializer_class = basic_serializers.SourceSerializer
 
-    def get_serializer_class(self):
-        if self.request is not None and self.request.query_params.get("full", False):
-            return SourceSerializer
-        return basic_serializers.SourceSerializer
+    @action(detail=False, methods=["post"], serializer_class=MappingSerializer, url_path="import")
+    def import_mapping(self, request):
+        return self.create(request)
+
+    @action(detail=True, methods=["get"], serializer_class=MappingSerializer, url_path="export")
+    def export_mapping(self, request):
+        return self.retrieve(request)
 
     def get_queryset(self):
         """Limit visibility of sources."""

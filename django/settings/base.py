@@ -309,6 +309,10 @@ SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [
         "drf_spectacular.hooks.postprocess_schema_enums",
     ],
+    "ENUM_NAME_OVERRIDES": {
+        "FilterRelationEnum": "pyrog.models.Filter.Relation",
+        "ConditionRelationEnum": "pyrog.models.Condition.Relation",
+    },
     "COMPONENT_SPLIT_REQUEST": True,
     "TITLE": "River API",
     "DESCRIPTION": "Arkhn's River API",
