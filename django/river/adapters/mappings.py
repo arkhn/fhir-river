@@ -69,11 +69,7 @@ class RedisMappingsRepository(MappingsRepository):
     """
 
     def __init__(self):
-        self.mapping_redis = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
-        )
+        self.mapping_redis = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
     def set(self, batch_id: str, resource_id: str, mapping: Any):
         """Sets the mapping at the key built from batch_id and resource_id."""
