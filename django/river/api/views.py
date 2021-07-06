@@ -82,7 +82,5 @@ class ScriptsEndpoint(generics.ListAPIView):
         for module_name, module in getmembers(scripts, ismodule):
             for script_name, script in getmembers(module, isfunction):
                 doc = getdoc(script)
-                res.append(
-                    {"name": script_name, "description": doc if doc is not None else "", "category": module_name}
-                )
+                res.append({"name": script_name, "description": doc or "", "category": module_name})
         return response.Response(res, status=status.HTTP_200_OK)
