@@ -4,6 +4,7 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Container, Grid, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
+import { useHistory, useParams } from "react-router";
 
 import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
@@ -32,6 +33,12 @@ const useStyles = makeStyles((theme) => ({
 const SourceMappings = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const history = useHistory();
+  const { sourceId } = useParams<{ sourceId?: string }>();
+
+  const handleLaunchClick = () => {
+    history.push(`/sources/${sourceId}/batches`);
+  };
 
   return (
     <>
@@ -59,6 +66,7 @@ const SourceMappings = (): JSX.Element => {
             color="secondary"
             className={classes.button}
             startIcon={<Icon icon={IconNames.FLAME} />}
+            onClick={handleLaunchClick}
           >
             {t("launchEtl")}
           </Button>

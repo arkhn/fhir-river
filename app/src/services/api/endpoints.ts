@@ -7,6 +7,7 @@ import { Required } from "utility-types";
 
 import {
   providesList,
+  providesPaginatedList,
   providesOne,
   invalidatesList,
   invalidatesOne,
@@ -28,6 +29,7 @@ const tagTypes = [
   "InputGroups",
   "Inputs",
   "Conditions",
+  "Batches",
 ];
 
 export const api = generatedApi
@@ -183,6 +185,9 @@ export const api = generatedApi
       apiOwnersCreate: {
         invalidatesTags: invalidatesList("Owners"),
       },
+      apiOwnersRetrieve: {
+        providesTags: providesOne("Owners"),
+      },
       apiOwnersDestroy: {
         invalidatesTags: invalidatesOne("Owners"),
       },
@@ -276,6 +281,18 @@ export const api = generatedApi
       apiConditionsDestroy: {
         invalidatesTags: invalidatesOne("Conditions"),
       },
+      /**
+       * Batches
+       */
+      apiBatchesCreate: {
+        invalidatesTags: invalidatesList("Batches"),
+      },
+      apiBatchesList: {
+        providesTags: providesPaginatedList("Batches"),
+      },
+      apiBatchesDestroy: {
+        invalidatesTags: invalidatesOne("Batches"),
+      },
     },
   });
 
@@ -313,6 +330,7 @@ export const {
   // Owners
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
+  useApiOwnersRetrieveQuery,
   useApiOwnersDestroyMutation,
   // Credentials
   useApiCredentialsListQuery,
@@ -344,4 +362,11 @@ export const {
   useApiConditionsCreateMutation,
   useApiConditionsUpdateMutation,
   useApiConditionsDestroyMutation,
+  // Batches
+  useApiBatchesCreateMutation,
+  useApiBatchesListQuery,
+  useApiBatchesDestroyMutation,
+  // Pagai
+  usePagaiExploreRetrieveQuery,
+  useApiPreviewCreateMutation,
 } = api;

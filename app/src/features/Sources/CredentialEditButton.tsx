@@ -1,6 +1,7 @@
 import React from "react";
 
-import { ButtonProps } from "@material-ui/core";
+import { ButtonProps, Typography } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { useAppDispatch } from "app/store";
@@ -14,18 +15,20 @@ type SourceEditButtonProps = ButtonProps;
 const CredentialEditButton = ({
   ...buttonProps
 }: SourceEditButtonProps): JSX.Element => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
   const { sourceId: id } = useParams<{ sourceId: string }>();
-  const { data: source } = useApiSourcesRetrieveQuery(
-    { id },
-    { skip: !Boolean(id) }
-  );
+
+  const { data: source } = useApiSourcesRetrieveQuery({ id }, { skip: !id });
   const handleSourceEdit = () => {
     if (source) dispatch(editCredential(source));
   };
 
-  return <Button {...buttonProps} onClick={handleSourceEdit} />;
+  return (
+    <Button {...buttonProps} onClick={handleSourceEdit}>
+      <Typography>{t("databaseSettings")}</Typography>
+    </Button>
+  );
 };
 
 export default CredentialEditButton;

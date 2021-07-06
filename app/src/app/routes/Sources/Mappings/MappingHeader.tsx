@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import { useTranslation } from "react-i18next";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import Button from "common/components/Button";
 import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    height: "100%",
+    height: 100,
   },
   navContainer: {
     display: "flex",
@@ -51,6 +51,8 @@ const MappingHeader = (): JSX.Element => {
   }>();
   const { t } = useTranslation();
   const classes = useStyles();
+  const location = useLocation();
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isNameDialogOpen, setNameDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -77,6 +79,9 @@ const MappingHeader = (): JSX.Element => {
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
   };
+  const handlePreviewClick = () => {
+    history.push(`${location.pathname}/preview`);
+  };
 
   return (
     <div className={classes.root}>
@@ -94,6 +99,7 @@ const MappingHeader = (): JSX.Element => {
         variant="contained"
         color="primary"
         startIcon={<Icon icon={IconNames.PLAY} />}
+        onClick={handlePreviewClick}
       >
         {t("preview")}
       </Button>

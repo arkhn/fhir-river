@@ -1,6 +1,6 @@
 from inspect import getdoc, getmembers, isfunction, ismodule
 
-from rest_framework import generics, response, status, viewsets
+from rest_framework import filters, generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
 import scripts
@@ -16,6 +16,9 @@ from river.services import abort, batch, preview
 class BatchViewSet(viewsets.ModelViewSet):
     queryset = models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
+    pagination_class = pagination.LimitOffsetPagination
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["created_at"]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -72,10 +75,12 @@ class PreviewEndpoint(generics.CreateAPIView):
 
 
 class ScriptsEndpoint(generics.ListAPIView):
+    serializer_class = serializers.ScriptsSerializer
+
     def list(self, request, *args, **kwargs):
         res = []
         for module_name, module in getmembers(scripts, ismodule):
             for script_name, script in getmembers(module, isfunction):
                 doc = getdoc(script)
-                res.append({"name": script_name, "description": doc, "category": module_name})
+                res.append({"name": script_name, "description": doc or "", "category": module_name})
         return response.Response(res, status=status.HTTP_200_OK)

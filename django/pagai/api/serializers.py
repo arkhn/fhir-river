@@ -8,3 +8,8 @@ class CredentialsSerializer(serializers.Serializer):
     database = serializers.CharField()
     login = serializers.CharField()
     password = serializers.CharField()
+
+
+class ExplorationSerializer(serializers.Serializer):
+    fields = serializers.ListField(child=serializers.CharField())
+    rows = serializers.ListField(child=serializers.ListField(child=serializers.CharField()))
