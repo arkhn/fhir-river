@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Batches from "app/routes/Sources/Batches/Batches";
 import CreateMapping from "features/Mappings/Create/CreateMapping";
 import EditMapping from "features/Mappings/Edit/EditMapping";
+import Preview from "features/Preview/Preview";
 
 import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
@@ -50,6 +51,15 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
             <EditMapping />
+          </Route>
+          <Route exact path="/sources/:sourceId/mappings/:mappingId/preview">
+            <Preview />
+          </Route>
+          <Route
+            exact
+            path="/sources/:sourceId/mappings/:mappingId/attributes/:attributeId/preview"
+          >
+            <Preview />
           </Route>
           <Route>
             <PageNotFound />

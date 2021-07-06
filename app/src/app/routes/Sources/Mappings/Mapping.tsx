@@ -5,14 +5,12 @@ import clsx from "clsx";
 
 import FhirAttributePanel from "features/FhirAttributePanel/FhirAttributePanel";
 import FhirResourceTree from "features/FhirResourceTree/FhirResourceTree";
-import MappingHeader from "features/Mappings/MappingHeader";
+
+import MappingHeader from "./MappingHeader";
 
 const HEADER_HEIGHT = 100;
 
 const useStyles = makeStyles((theme) => ({
-  header: {
-    height: HEADER_HEIGHT,
-  },
   body: {
     display: "flex",
     height: `calc(100vh - ${HEADER_HEIGHT + theme.spacing(10)}px)`,
@@ -32,9 +30,8 @@ const Mapping = (): JSX.Element => {
   const classes = useStyles();
   return (
     <>
-      <div className={classes.header}>
-        <MappingHeader />
-      </div>
+      <MappingHeader />
+
       <div className={classes.body}>
         <div className={clsx(classes.leftContainer, classes.scrollContainer)}>
           <FhirResourceTree />

@@ -20,6 +20,7 @@
   "host": "Host",
   "port": "Port",
   "database": "Database",
+  "databaseSettings": "Database settings",
   "username": "Username",
   "password": "Password",
   "vendor": "Vendor",
@@ -100,8 +101,11 @@
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
+  "clickOnAFireIcon": "Click on a",
+  "condition": "Condition",
+  "inOrderToPreview": "icon in order to preview a line as a FHIR instance",
+  "back": "Back",
   "useThisGroupIf": "Use this group if...",
   "resources": "Resources",
-  "condition": "Condition",
   "retry": "Retry"
 }
