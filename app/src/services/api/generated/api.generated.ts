@@ -62,25 +62,72 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiBatchRetrieve: build.query<
-      ApiBatchRetrieveApiResponse,
-      ApiBatchRetrieveApiArg
-    >({
-      query: () => ({ url: `/api/batch/` }),
-    }),
-    apiBatchCreate: build.mutation<
-      ApiBatchCreateApiResponse,
-      ApiBatchCreateApiArg
-    >({
-      query: () => ({ url: `/api/batch/`, method: "POST" }),
-    }),
-    apiBatchDestroy: build.mutation<
-      ApiBatchDestroyApiResponse,
-      ApiBatchDestroyApiArg
+    apiBatchesList: build.query<
+      ApiBatchesListApiResponse,
+      ApiBatchesListApiArg
     >({
       query: (queryArg) => ({
-        url: `/api/batch/${queryArg.id}/`,
+        url: `/api/batches/`,
+        params: {
+          limit: queryArg.limit,
+          offset: queryArg.offset,
+          ordering: queryArg.ordering,
+        },
+      }),
+    }),
+    apiBatchesCreate: build.mutation<
+      ApiBatchesCreateApiResponse,
+      ApiBatchesCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/`,
+        method: "POST",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    apiBatchesRetrieve: build.query<
+      ApiBatchesRetrieveApiResponse,
+      ApiBatchesRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/batches/${queryArg.id}/` }),
+    }),
+    apiBatchesUpdate: build.mutation<
+      ApiBatchesUpdateApiResponse,
+      ApiBatchesUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    apiBatchesPartialUpdate: build.mutation<
+      ApiBatchesPartialUpdateApiResponse,
+      ApiBatchesPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedBatchRequest,
+      }),
+    }),
+    apiBatchesDestroy: build.mutation<
+      ApiBatchesDestroyApiResponse,
+      ApiBatchesDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/`,
         method: "DELETE",
+      }),
+    }),
+    apiBatchesRetryCreate: build.mutation<
+      ApiBatchesRetryCreateApiResponse,
+      ApiBatchesRetryCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/batches/${queryArg.id}/retry/`,
+        method: "POST",
+        body: queryArg.batchRequest,
       }),
     }),
     apiColumnsList: build.query<
@@ -516,7 +563,11 @@ export const api = createApi({
       ApiPreviewCreateApiResponse,
       ApiPreviewCreateApiArg
     >({
-      query: () => ({ url: `/api/preview/`, method: "POST" }),
+      query: (queryArg) => ({
+        url: `/api/preview/`,
+        method: "POST",
+        body: queryArg.previewRequest,
+      }),
     }),
     apiResourcesList: build.query<
       ApiResourcesListApiResponse,
@@ -693,13 +744,46 @@ export type ApiAttributesDestroyApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
 };
-export type ApiBatchRetrieveApiResponse = unknown;
-export type ApiBatchRetrieveApiArg = {};
-export type ApiBatchCreateApiResponse = unknown;
-export type ApiBatchCreateApiArg = {};
-export type ApiBatchDestroyApiResponse = unknown;
-export type ApiBatchDestroyApiArg = {
+export type ApiBatchesListApiResponse = /** status 200  */ PaginatedBatchList;
+export type ApiBatchesListApiArg = {
+  /** Number of results to return per page. */
+  limit?: number;
+  /** The initial index from which to return the results. */
+  offset?: number;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
+export type ApiBatchesCreateApiArg = {
+  batchRequest: BatchRequest;
+};
+export type ApiBatchesRetrieveApiResponse = /** status 200  */ Batch;
+export type ApiBatchesRetrieveApiArg = {
+  /** A unique value identifying this batch. */
   id: string;
+};
+export type ApiBatchesUpdateApiResponse = /** status 200  */ Batch;
+export type ApiBatchesUpdateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  batchRequest: BatchRequest;
+};
+export type ApiBatchesPartialUpdateApiResponse = /** status 200  */ Batch;
+export type ApiBatchesPartialUpdateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  patchedBatchRequest: PatchedBatchRequest;
+};
+export type ApiBatchesDestroyApiResponse = unknown;
+export type ApiBatchesDestroyApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+};
+export type ApiBatchesRetryCreateApiResponse = /** status 200  */ Batch;
+export type ApiBatchesRetryCreateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  batchRequest: BatchRequest;
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
@@ -947,8 +1031,10 @@ export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
-export type ApiPreviewCreateApiResponse = unknown;
-export type ApiPreviewCreateApiArg = {};
+export type ApiPreviewCreateApiResponse = /** status 200  */ Preview;
+export type ApiPreviewCreateApiArg = {
+  previewRequest: PreviewRequest;
+};
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
   source?: string;
@@ -1043,6 +1129,36 @@ export type PatchedAttributeRequest = {
   slice_name?: string;
   definition_id?: string;
   resource?: string;
+};
+export type Error = {
+  id: string;
+  event: string;
+  message: string;
+  exception?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  batch: string;
+};
+export type Batch = {
+  id: string;
+  errors: Error[];
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  resources?: string[];
+};
+export type PaginatedBatchList = {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: Batch[];
+};
+export type BatchRequest = {
+  resources?: string[];
+};
+export type PatchedBatchRequest = {
+  resources?: string[];
 };
 export type Column = {
   id: string;
@@ -1215,6 +1331,14 @@ export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
 };
+export type Preview = {
+  resource_id: string;
+  primary_key_values: string[];
+};
+export type PreviewRequest = {
+  resource_id: string;
+  primary_key_values: string[];
+};
 export type Resource = {
   id: string;
   label?: string;
@@ -1271,9 +1395,13 @@ export const {
   useApiAttributesUpdateMutation,
   useApiAttributesPartialUpdateMutation,
   useApiAttributesDestroyMutation,
-  useApiBatchRetrieveQuery,
-  useApiBatchCreateMutation,
-  useApiBatchDestroyMutation,
+  useApiBatchesListQuery,
+  useApiBatchesCreateMutation,
+  useApiBatchesRetrieveQuery,
+  useApiBatchesUpdateMutation,
+  useApiBatchesPartialUpdateMutation,
+  useApiBatchesDestroyMutation,
+  useApiBatchesRetryCreateMutation,
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
   useApiColumnsRetrieveQuery,

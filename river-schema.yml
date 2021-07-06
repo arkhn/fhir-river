@@ -180,6 +180,25 @@ paths:
     get:
       operationId: api_batches_list
       description: ''
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -191,9 +210,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Batch'
+                $ref: '#/components/schemas/PaginatedBatchList'
           description: ''
     post:
       operationId: api_batches_create
@@ -2635,6 +2652,26 @@ components:
       required:
       - credential
       - name
+    PaginatedBatchList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batch'
     PatchedAttributeRequest:
       type: object
       properties:
@@ -2772,8 +2809,7 @@ components:
         primary_key_values:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            type: string
       required:
       - primary_key_values
       - resource_id
@@ -2785,8 +2821,7 @@ components:
         primary_key_values:
           type: array
           items:
-            type: object
-            additionalProperties: {}
+            type: string
       required:
       - primary_key_values
       - resource_id

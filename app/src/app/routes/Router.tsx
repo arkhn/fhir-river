@@ -3,13 +3,14 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
+import Batches from "app/routes/Sources/Batches/Batches";
 import CreateMapping from "features/Mappings/Create/CreateMapping";
 import EditMapping from "features/Mappings/Edit/EditMapping";
 
 import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
-import Mapping from "./Mapping";
 import PageNotFound from "./PageNotFound";
+import Mapping from "./Sources/Mappings/Mapping";
 import SourceMappings from "./Sources/SourceMappings";
 import Sources from "./Sources/Sources";
 
@@ -31,6 +32,9 @@ const Router = (): JSX.Element => {
           </Route>
           <Route exact path="/sources/:sourceId">
             <SourceMappings />
+          </Route>
+          <Route exact path="/sources/:sourceId/batches">
+            <Batches />
           </Route>
           <Route exact path="/sources/:sourceId/mappings">
             <CreateMapping />

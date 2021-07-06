@@ -78,6 +78,15 @@
   "cannotUndoAction": "This action cannot be undone.",
   "confirmDelete": "Yes, delete",
   "saveChanges": "Save changes",
+  "errors": "{{count}} errors recorded",
+  "run": "Run",
+  "id": "ID",
+  "event": "Event",
+  "message": "Message",
+  "exception": "Exception",
+  "createdAt": "Created at",
+  "deletedAt": "Stopped at",
+  "page": "Page",
   "errorProfileUpload": "Error: uploaded profile is either not a StructureDefinition or is not of type {{originalType}}",
   "addGroup": "Add a group",
   "fromColumn": "From column",
@@ -91,5 +100,8 @@
   "addSlice": "Add slice",
   "addItem": "Add item",
   "sliceName": "Slice name",
-  "condition": "Condition"
+  "useThisGroupIf": "Use this group if...",
+  "resources": "Resources",
+  "condition": "Condition",
+  "retry": "Retry"
 }
