@@ -1,6 +1,38 @@
 import React from "react";
 
 import { createMuiTheme, useMediaQuery, Theme } from "@material-ui/core";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
+declare module "@material-ui/core/styles/createMixins" {
+  interface Mixins {
+    appbar: {
+      height: CSSProperties["height"];
+    };
+    breadcrumbBar: {
+      height: CSSProperties["height"];
+    };
+    icons: {
+      size: CSSProperties["height"] | CSSProperties["width"];
+    };
+    footer: {
+      height: CSSProperties["height"];
+    };
+  }
+
+  interface MixinsOptions {
+    appbar: {
+      height: CSSProperties["height"];
+    };
+    breadcrumbBar: {
+      height: CSSProperties["height"];
+    };
+    icons: {
+      size: CSSProperties["height"] | CSSProperties["width"];
+    };
+    footer: {
+      height: CSSProperties["height"];
+    };
+  }
+}
 
 declare module "@material-ui/core/styles/createPalette" {
   interface Palette {
@@ -40,6 +72,20 @@ const usePyrogTheme = (): Theme => {
       createMuiTheme({
         shape: {
           borderRadius: 6,
+        },
+        mixins: {
+          appbar: {
+            height: 64,
+          },
+          breadcrumbBar: {
+            height: 80,
+          },
+          icons: {
+            size: 16,
+          },
+          footer: {
+            height: 100,
+          },
         },
         palette: {
           badges: {

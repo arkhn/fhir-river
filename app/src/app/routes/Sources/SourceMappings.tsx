@@ -17,9 +17,15 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    height: theme.mixins.breadcrumbBar.height,
+    padding: theme.spacing(0, 5),
   },
   button: {
     margin: theme.spacing(0.5),
+  },
+  container: {
+    padding: theme.spacing(0, 7),
   },
 }));
 
@@ -29,40 +35,38 @@ const SourceMappings = (): JSX.Element => {
 
   return (
     <>
-      <Container maxWidth="xl">
-        <div className={classes.header}>
-          <NavigationBreadcrumbs />
-          <Grid>
-            <CredentialEditButton
-              variant="contained"
-              className={classes.button}
-              color="secondary"
-              startIcon={<Icon icon={IconNames.COG} />}
-            >
-              {t("databaseSettings")}
-            </CredentialEditButton>
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              startIcon={<Icon icon={IconNames.EXPORT} />}
-            >
-              {t("exportMapping")}
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              startIcon={<Icon icon={IconNames.FLAME} />}
-            >
-              {t("launchEtl")}
-            </Button>
-          </Grid>
-        </div>
-        <Container maxWidth="xl">
-          <MappingsToolbar />
-          <MappingsTable />
-        </Container>
+      <div className={classes.header}>
+        <NavigationBreadcrumbs />
+        <Grid>
+          <CredentialEditButton
+            variant="contained"
+            className={classes.button}
+            color="secondary"
+            startIcon={<Icon icon={IconNames.COG} />}
+          >
+            {t("databaseSettings")}
+          </CredentialEditButton>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<Icon icon={IconNames.EXPORT} />}
+          >
+            {t("exportMapping")}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<Icon icon={IconNames.FLAME} />}
+          >
+            {t("launchEtl")}
+          </Button>
+        </Grid>
+      </div>
+      <Container maxWidth="xl" className={classes.container}>
+        <MappingsToolbar />
+        <MappingsTable />
       </Container>
       <SourceDrawer />
     </>

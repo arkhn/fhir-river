@@ -11,13 +11,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     paddingTop: theme.spacing(5),
   },
+  container: {
+    padding: theme.spacing(0, 5),
+  },
 }));
 
 const Sources = (): JSX.Element => {
   const classes = useStyles();
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" className={classes.container}>
       <Grid className={classes.gridContainer} spacing={3} container>
         <SourceCreate />
       </Grid>

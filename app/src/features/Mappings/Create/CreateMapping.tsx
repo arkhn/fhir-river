@@ -39,11 +39,9 @@ import {
 
 import { resourcesRemoved, resourceSelectors } from "../resourceSlice";
 
-const FOOTER_HEIGHT = 150;
-
 const useStyles = makeStyles((theme) => ({
   footerContainer: {
-    height: FOOTER_HEIGHT,
+    height: theme.mixins.footer.height,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -51,7 +49,9 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   rootContainer: {
-    height: `calc(100vh - ${FOOTER_HEIGHT + theme.spacing(10)}px)`,
+    height: `calc(100vh - ${
+      Number(theme.mixins.footer.height) + Number(theme.mixins.appbar.height)
+    }px)`,
   },
   scrollContainer: {
     paddingTop: theme.spacing(8),

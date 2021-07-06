@@ -7,15 +7,15 @@ import FhirAttributePanel from "features/FhirAttributePanel/FhirAttributePanel";
 import FhirResourceTree from "features/FhirResourceTree/FhirResourceTree";
 import MappingHeader from "features/Mappings/MappingHeader";
 
-const HEADER_HEIGHT = 100;
-
 const useStyles = makeStyles((theme) => ({
   header: {
-    height: HEADER_HEIGHT,
+    height: theme.mixins.breadcrumbBar.height,
   },
   body: {
     display: "flex",
-    height: `calc(100vh - ${HEADER_HEIGHT + theme.spacing(10)}px)`,
+    height: `calc(100vh - ${
+      Number(theme.mixins.breadcrumbBar.height) + theme.spacing(10)
+    }px)`,
   },
   leftContainer: {
     minWidth: 350,

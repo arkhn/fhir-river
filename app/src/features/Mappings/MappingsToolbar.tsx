@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   icon: {
-    width: 16,
-    height: 16,
+    width: theme.mixins.icons.size,
+    height: theme.mixins.icons.size,
     marginRight: theme.spacing(0.5),
     fill: theme.palette.text.secondary,
   },
