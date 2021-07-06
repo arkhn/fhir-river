@@ -143,6 +143,9 @@ export const api = generatedApi
       apiSourcesDestroy: {
         invalidatesTags: invalidatesOne("Sources"),
       },
+      apiSourcesImportCreate: {
+        invalidatesTags: invalidatesList("Sources"),
+      },
       /**
        * Resources
        */
@@ -319,6 +322,7 @@ export const {
   useApiSourcesRetrieveQuery,
   useApiSourcesUpdateMutation,
   useApiSourcesDestroyMutation,
+  useApiSourcesImportCreateMutation,
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
