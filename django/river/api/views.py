@@ -75,10 +75,12 @@ class PreviewEndpoint(generics.CreateAPIView):
 
 
 class ScriptsEndpoint(generics.ListAPIView):
+    serializer_class = serializers.ScriptsSerializer
+
     def list(self, request, *args, **kwargs):
         res = []
         for module_name, module in getmembers(scripts, ismodule):
             for script_name, script in getmembers(module, isfunction):
                 doc = getdoc(script)
-                res.append({"name": script_name, "description": doc, "category": module_name})
+                res.append({"name": script_name, "description": doc or "", "category": module_name})
         return response.Response(res, status=status.HTTP_200_OK)

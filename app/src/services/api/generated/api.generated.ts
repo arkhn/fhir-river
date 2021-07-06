@@ -623,9 +623,9 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiScriptsRetrieve: build.query<
-      ApiScriptsRetrieveApiResponse,
-      ApiScriptsRetrieveApiArg
+    apiScriptsList: build.query<
+      ApiScriptsListApiResponse,
+      ApiScriptsListApiArg
     >({
       query: () => ({ url: `/api/scripts/` }),
     }),
@@ -1081,8 +1081,8 @@ export type ApiResourcesDestroyApiArg = {
   /** A unique value identifying this resource. */
   id: string;
 };
-export type ApiScriptsRetrieveApiResponse = unknown;
-export type ApiScriptsRetrieveApiArg = {};
+export type ApiScriptsListApiResponse = /** status 200  */ Scripts[];
+export type ApiScriptsListApiArg = {};
 export type ApiSourcesListApiResponse = /** status 200  */ Source[];
 export type ApiSourcesListApiArg = {};
 export type ApiSourcesCreateApiResponse = /** status 201  */ Source;
@@ -1392,6 +1392,11 @@ export type PatchedResourceRequest = {
   source?: string;
   primary_key_owner?: string;
 };
+export type Scripts = {
+  name: string;
+  description: string;
+  category: string;
+};
 export type Source = {
   id: string;
   name: string;
@@ -1622,7 +1627,7 @@ export const {
   useApiResourcesUpdateMutation,
   useApiResourcesPartialUpdateMutation,
   useApiResourcesDestroyMutation,
-  useApiScriptsRetrieveQuery,
+  useApiScriptsListQuery,
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
   useApiSourcesRetrieveQuery,

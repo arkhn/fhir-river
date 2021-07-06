@@ -34,7 +34,7 @@ class SourceViewSet(viewsets.ModelViewSet):
         return self.create(request)
 
     @action(detail=True, methods=["get"], serializer_class=MappingSerializer, url_path="export")
-    def export_mapping(self, request):
+    def export_mapping(self, request, pk=None):
         return self.retrieve(request)
 
     def get_queryset(self):
