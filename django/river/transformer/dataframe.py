@@ -76,7 +76,7 @@ def merge_by_attributes(data, attributes: List[Attribute], primary_key_value: st
         attribute2.path: values,
         ...
     }
-    where values are merged with the mergig scripts.
+    where values are merged with the merging scripts.
     """
     merged_data = defaultdict(list)
     for attribute in attributes:

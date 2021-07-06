@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-import scripts
+from common.scripts import get_script
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class MergingScript:
     def __init__(self, name: str):
         self.name = name
-        self.script = scripts.get_script(name)
+        self.script = get_script(name)
 
     def __eq__(self, operand) -> bool:
         return self.name == operand.name

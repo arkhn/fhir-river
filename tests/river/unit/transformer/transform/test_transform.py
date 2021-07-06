@@ -24,7 +24,8 @@ def mock_uuid5(*args):
     return f"{args[0]}{args[1]}"
 
 
-@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+@mock.patch("river.common.analyzer.cleaning_script.get_script", mock_get_script)
+@mock.patch("river.common.analyzer.merging_script.get_script", mock_get_script)
 def test_transform(dict_map_code):
 
     data = {
@@ -91,7 +92,7 @@ def test_transform(dict_map_code):
     }
 
 
-@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+@mock.patch("river.common.analyzer.cleaning_script.get_script", mock_get_script)
 def test_transform_with_condition_arrays(dict_map_code):
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],

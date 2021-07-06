@@ -18,7 +18,7 @@ def mock_get_script(name):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", mock_get_script)
+@mock.patch("river.common.analyzer.cleaning_script.get_script", mock_get_script)
 def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
@@ -96,7 +96,7 @@ def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
     assert cleaned_data == expected
 
 
-@mock.patch("river.common.analyzer.merging_script.scripts.get_script", mock_get_script)
+@mock.patch("river.common.analyzer.merging_script.get_script", mock_get_script)
 def test_merge_by_attributes():
     attr_name = Attribute("name")
     group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")])
@@ -168,7 +168,7 @@ def test_merge_by_attributes():
     assert actual == expected
 
 
-@mock.patch("river.common.analyzer.merging_script.scripts.get_script", mock_get_script)
+@mock.patch("river.common.analyzer.merging_script.get_script", mock_get_script)
 def test_merge_by_attributes_with_condition_arrays():
     attr_language = Attribute("language")
     attr_language.add_input_group(

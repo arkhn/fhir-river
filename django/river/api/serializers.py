@@ -20,9 +20,3 @@ class BatchSerializer(serializers.ModelSerializer):
 class PreviewSerializer(serializers.Serializer):
     resource_id = serializers.CharField()
     primary_key_values = serializers.ListField(child=serializers.CharField())
-
-
-class ScriptsSerializer(serializers.Serializer):
-    name = serializers.CharField()
-    description = serializers.CharField(allow_blank=True)
-    category = serializers.CharField()

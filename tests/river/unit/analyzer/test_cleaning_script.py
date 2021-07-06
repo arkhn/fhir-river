@@ -14,7 +14,7 @@ def capitalize(text):
     return text.upper()
 
 
-@mock.patch("river.common.analyzer.cleaning_script.scripts.get_script", return_value=capitalize)
+@mock.patch("river.common.analyzer.cleaning_script.get_script", return_value=capitalize)
 def test_cleaning_script_apply(_):
     cleaning_script = CleaningScript("capitalize")
 

@@ -14,7 +14,7 @@ def concat(*values):
     return "_".join(values)
 
 
-@mock.patch("river.common.analyzer.merging_script.scripts.get_script", return_value=concat)
+@mock.patch("river.common.analyzer.merging_script.get_script", return_value=concat)
 def test_merging_script_apply(_):
     merging_script = MergingScript("concat")
 
