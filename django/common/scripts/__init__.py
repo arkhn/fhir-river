@@ -1,9 +1,33 @@
-import importlib
-
-
-def get_script(name: str):
-    try:
-        module = importlib.import_module(f"common.scripts.{name}")
-        return getattr(module, name)
-    except AttributeError:
-        raise NameError("Script", name, "not found.")
+# flake8: noqa
+from .binary_to_bool_1 import *
+from .binary_to_bool_2 import *
+from .clean_address import *
+from .clean_codes import *
+from .clean_date import *
+from .clean_dateTime import *
+from .clean_instant import *
+from .clean_phone import *
+from .clean_quantity import *
+from .clean_time import *
+from .code_to_empty import *
+from .if_valid import *
+from .make_title import *
+from .map_2_true import *
+from .map_deceased import *
+from .map_family_situation import *
+from .map_gender import *
+from .map_gender_numeric import *
+from .map_intent import *
+from .map_marital_status import *
+from .map_permission import *
+from .map_priority import *
+from .map_status import *
+from .merge_concat import *
+from .merge_datetime import *
+from .merge_insee import *
+from .merge_status import *
+from .select_first_not_empty import *
+from .string_to_bool import *
+from .strip import *
+from .utils import *
+from .zero_to_empty import *

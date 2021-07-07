@@ -1,6 +1,8 @@
 import logging
 import re
 
+from river.adapters.scripts_repository import MemoryScriptsRepository, ScriptsRepository
+
 from .analysis import Analysis
 from .attribute import Attribute
 from .cleaning_script import CleaningScript
@@ -19,7 +21,7 @@ class Analyzer:
     def __init__(self):
         # Store analyses
         self.analyses: dict = {}
-
+        self.scripts_repo: ScriptsRepository = MemoryScriptsRepository()
         self._cur_analysis = Analysis()
 
     def load_cached_analysis(self, batch_id, resource_id, mapping):
@@ -121,7 +123,11 @@ class Analyzer:
                 cur_col = SqlColumn(sqlValue["owner"]["name"], sqlValue["table"], sqlValue["column"])
 
                 if input_["script"]:
-                    cur_col.cleaning_script = CleaningScript(input_["script"])
+                    try:
+                        script = self.scripts_repo.get(input_["script"])
+                        cur_col.cleaning_script = CleaningScript(script)
+                    except NameError as err:
+                        logger.exception(f"Error while fetching script {err}.")
 
                 if input_["conceptMapId"] and input_["conceptMap"]:
                     cur_col.concept_map = ConceptMap(input_["conceptMap"], input_["conceptMapId"])
@@ -152,7 +158,11 @@ class Analyzer:
             input_group.add_condition(condition)
 
         if mapping_group["mergingScript"]:
-            input_group.merging_script = MergingScript(mapping_group["mergingScript"])
+            try:
+                script = self.scripts_repo.get(mapping_group["mergingScript"])
+                input_group.merging_script = MergingScript(script)
+            except NameError as err:
+                logger.exception(f"Error while fetching script {err}.")
 
         return input_group
 

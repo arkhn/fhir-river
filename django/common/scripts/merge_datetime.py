@@ -1,4 +1,4 @@
-from common.scripts.custom.clean_dateTime import clean_dateTime
+from common.scripts import clean_dateTime
 
 
 def merge_datetime(*args):

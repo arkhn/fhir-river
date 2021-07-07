@@ -13,7 +13,7 @@ def clean_date(raw_input):  # noqa: C901
     date = None
 
     # Correct format
-    try:
+    try:  # nosec
         pattern = re.compile(
             r"([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)"
             r"(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1])(T([01][0-9]|2[0-3])"
@@ -22,8 +22,8 @@ def clean_date(raw_input):  # noqa: C901
         )
         full_match = re.fullmatch(raw_input, pattern)
         date = datetime.datetime.strptime(full_match.group(0)[0:10], "%Y-%m-%d")
-    except Exception:
-        return raw_input
+    except Exception:  # nosec
+        pass  # nosec
 
     formats = [
         "%Y%m%d%H%M",
@@ -41,7 +41,7 @@ def clean_date(raw_input):  # noqa: C901
         try:
             date = datetime.datetime.strptime(raw_input, fmt)
         except ValueError:
-            return raw_input
+            continue
 
     if date is None:
         return raw_input

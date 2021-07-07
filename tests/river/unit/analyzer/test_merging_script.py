@@ -1,22 +1,23 @@
-from unittest import mock
-
+from common.scripts.select_first_not_empty import select_first_not_empty
+from river.adapters.scripts_repository import Script
 from river.common.analyzer.merging_script import MergingScript
 
 
 def test_merging_script_init():
-    merging_script = MergingScript("select_first_not_empty")
+    script = Script(name="select_first_not_empty", func=select_first_not_empty, description=None, category=None)
+    merging_script = MergingScript(script)
 
-    assert merging_script.name == "select_first_not_empty"
-    assert merging_script.script.__name__ == "select_first_not_empty"
+    assert merging_script.script.name == "select_first_not_empty"
+    assert merging_script.script.func.__name__ == "select_first_not_empty"
 
 
 def concat(*values):
     return "_".join(values)
 
 
-@mock.patch("river.common.analyzer.merging_script.get_script", return_value=concat)
-def test_merging_script_apply(_):
-    merging_script = MergingScript("concat")
+def test_merging_script_apply():
+    script = Script(name="concat", func=concat, description=None, category=None)
+    merging_script = MergingScript(script)
 
     data = ["alice", "a"]
     static_values = ["djadja"]

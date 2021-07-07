@@ -1,22 +1,23 @@
-from unittest import mock
-
+from common.scripts.map_gender import map_gender
+from river.adapters.scripts_repository import Script
 from river.common.analyzer.cleaning_script import CleaningScript
 
 
 def test_cleaning_script_init():
-    cleaning_script = CleaningScript("map_gender")
+    script = Script(name="map_gender", func=map_gender, description=None, category=None)
+    cleaning_script = CleaningScript(script)
 
-    assert cleaning_script.name == "map_gender"
-    assert cleaning_script.script.__name__ == "map_gender"
+    assert cleaning_script.script.name == "map_gender"
+    assert cleaning_script.script.func.__name__ == "map_gender"
 
 
 def capitalize(text):
     return text.upper()
 
 
-@mock.patch("river.common.analyzer.cleaning_script.get_script", return_value=capitalize)
-def test_cleaning_script_apply(_):
-    cleaning_script = CleaningScript("capitalize")
+def test_cleaning_script_apply():
+    script = Script(name="capitalize", func=capitalize, description=None, category=None)
+    cleaning_script = CleaningScript(script)
 
     dataframe = {"pk_col": [1, 2, 3, 4], "df_col": ["alice", "bob", "carol", "denis"]}
 

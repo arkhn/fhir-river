@@ -2,6 +2,7 @@ from unittest import mock
 
 import pytest
 
+from river.adapters.scripts_repository import Script
 from river.common.analyzer.analysis import Analysis
 from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.cleaning_script import CleaningScript
@@ -13,21 +14,17 @@ from river.common.analyzer.sql_column import SqlColumn
 from river.transformer.transformer import Transformer, compute_fhir_object_id
 
 
-def mock_get_script(name):
-    if name == "merge":
-        return lambda *args: "".join(arg for arg in args if arg)
-    elif name == "clean":
-        return lambda arg: arg.replace("dirty", "")
-
-
 def mock_uuid5(*args):
     return f"{args[0]}{args[1]}"
 
 
-@mock.patch("river.common.analyzer.cleaning_script.get_script", mock_get_script)
-@mock.patch("river.common.analyzer.merging_script.get_script", mock_get_script)
 def test_transform(dict_map_code):
-
+    cleaning_script = CleaningScript(
+        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category=None)
+    )
+    merging_script = MergingScript(
+        Script(name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None, category=None)
+    )
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
         "PATIENTS_ID_0f208c2f": ["id1", "id1", "id1"],
@@ -39,7 +36,7 @@ def test_transform(dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=cleaning_script)],
     )
     attr_name.add_input_group(group)
 
@@ -52,12 +49,12 @@ def test_transform(dict_map_code):
                 "PUBLIC",
                 "ADMISSIONS",
                 "CODE",
-                cleaning_script=CleaningScript("clean"),
+                cleaning_script=cleaning_script,
                 concept_map=ConceptMap(dict_map_code, "id_cm_gender"),
             )
         ],
         static_inputs=["val"],
-        merging_script=MergingScript("merge"),
+        merging_script=merging_script,
     )
     attr_language.add_input_group(group)
 
@@ -92,8 +89,10 @@ def test_transform(dict_map_code):
     }
 
 
-@mock.patch("river.common.analyzer.cleaning_script.get_script", mock_get_script)
 def test_transform_with_condition_arrays(dict_map_code):
+    cleaning_script = CleaningScript(
+        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category=None)
+    )
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
         "PATIENTS_ID_0f208c2f": ["id1", "id1", "id1"],
@@ -110,7 +109,7 @@ def test_transform_with_condition_arrays(dict_map_code):
     group = InputGroup(
         id_="id_name",
         attribute=attr_name,
-        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=CleaningScript("clean"))],
+        columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME", cleaning_script=cleaning_script)],
     )
     attr_name.add_input_group(group)
 
