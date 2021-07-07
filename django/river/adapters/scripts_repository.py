@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from inspect import getdoc, getmembers, isfunction, ismodule
+from inspect import getdoc, getmembers, isfunction
 from typing import Callable
 
 from common import scripts
@@ -10,14 +10,13 @@ class Script:
     func: Callable
     name: str
     description: str
-    category: str
 
 
 class ScriptsRepository:
     """This class is used when we need to get a cleaning/merging script.
 
-    An ScriptsRepository is basically an abstraction over a read-only key-value store.
-    It should have a method `get`.
+    An ScriptsRepository is an abstraction for scripts retrieval.
+    It should have a `get` method.
     """
 
     def get(self, name: str) -> Script:
@@ -26,14 +25,16 @@ class ScriptsRepository:
 
 
 class MemoryScriptsRepository(ScriptsRepository):
+    """This class is the default implementation of a ScriptsRepository.
+
+    It uses the "inspect" python package to determine which scripts are available.
+    """
+
     def __init__(self):
         self.scripts = {}
-        for module_name, module in getmembers(scripts, ismodule):
-            for script_name, script in getmembers(module, isfunction):
-                doc = getdoc(script)
-                self.scripts[script_name] = Script(
-                    func=script, name=script_name, description=doc, category=module_name
-                )
+        for script_name, script in getmembers(scripts, isfunction):
+            doc = getdoc(script)
+            self.scripts[script_name] = Script(func=script, name=script_name, description=doc)
 
     def get(self, name: str) -> Script:
         """Gets the script at a specified key."""
