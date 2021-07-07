@@ -25,4 +25,3 @@ class PreviewSerializer(serializers.Serializer):
 class ScriptsSerializer(serializers.Serializer):
     name = serializers.CharField()
     description = serializers.CharField(allow_blank=True)
-    category = serializers.CharField()

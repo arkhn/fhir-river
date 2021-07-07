@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from dataclasses import dataclass
 from inspect import getdoc, getmembers, isfunction
 from typing import Callable
@@ -31,7 +32,7 @@ class MemoryScriptsRepository(ScriptsRepository):
     """
 
     def __init__(self):
-        self.scripts = {}
+        self.scripts = OrderedDict()
         for script_name, script in getmembers(scripts, isfunction):
             doc = getdoc(script)
             self.scripts[script_name] = Script(func=script, name=script_name, description=doc)
