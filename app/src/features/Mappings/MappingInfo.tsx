@@ -16,16 +16,16 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   icon: {
-    width: 16,
-    height: 16,
+    width: theme.mixins.icons.size,
+    height: theme.mixins.icons.size,
   },
   flameIcon: {
     fill: theme.palette.orange.main,
-    marginRight: theme.spacing(0.5),
+    marginRight: theme.spacing(0),
   },
   tableIcon: {
     fill: theme.palette.icons.table.main,
-    marginRight: theme.spacing(1),
+    marginRight: theme.spacing(0.5),
   },
   text: {
     margin: theme.spacing(0.5),

@@ -1,27 +1,27 @@
 import React, { useState } from "react";
 
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import {
-  Button,
   Divider,
   IconButton,
   makeStyles,
   Menu,
   MenuItem,
   ListItemText,
-  Typography,
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
-import PlayIcon from "@material-ui/icons/PlayArrow";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
+import Button from "common/components/Button";
 import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
 import MappingNameDialog from "features/Mappings/Edit/MappingNameDialog";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    paddingInline: theme.spacing(5),
+    padding: theme.spacing(0, 5),
     boxShadow: `0px 5px 5px ${theme.palette.divider}`,
     display: "flex",
     alignItems: "center",
@@ -31,9 +31,6 @@ const useStyles = makeStyles((theme) => ({
   navContainer: {
     display: "flex",
   },
-  button: {
-    textTransform: "none",
-  },
   delete: {
     color: theme.palette.error.light,
   },
@@ -41,11 +38,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: `0px 0px 10px ${theme.palette.divider}`,
     marginLeft: theme.spacing(1),
     paddingInline: theme.spacing(1),
-    border: `1px solid ${
-      theme.palette.type === "dark"
-        ? theme.palette.grey[600]
-        : theme.palette.grey[300]
-    }`,
+    border: `1px solid ${theme.palette.divider}`,
     borderRadius: 5,
   },
 }));
@@ -103,13 +96,12 @@ const MappingHeader = (): JSX.Element => {
         </IconButton>
       </div>
       <Button
-        className={classes.button}
-        color="primary"
         variant="contained"
-        startIcon={<PlayIcon />}
+        color="primary"
+        startIcon={<Icon icon={IconNames.PLAY} />}
         onClick={handlePreviewClick}
       >
-        <Typography>{t("preview")}</Typography>
+        {t("preview")}
       </Button>
       <Menu
         anchorEl={anchorEl}

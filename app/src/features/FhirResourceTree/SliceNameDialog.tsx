@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import {
-  Button,
   Dialog,
   DialogProps,
   DialogTitle,
@@ -11,8 +10,9 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+
+import Button from "common/components/Button";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,14 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(2),
-    textTransform: "none",
-  },
-  previousButton: {
-    color: theme.palette.text.secondary,
-    "&:hover": {
-      backgroundColor: "inherit",
-      color: theme.palette.text.primary,
-    },
   },
 }));
 
@@ -78,9 +70,10 @@ const SliceNameDialog = ({
       </DialogContent>
       <DialogActions>
         <Button
-          className={clsx(classes.button, classes.previousButton)}
+          className={classes.button}
           disableRipple
           onClick={handleClose}
+          color="inherit"
         >
           <Typography>{t("cancel")}</Typography>
         </Button>

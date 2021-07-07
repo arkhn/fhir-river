@@ -2,15 +2,11 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Button,
-  Container,
-  Grid,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { Container, Grid, makeStyles } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 
+import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
@@ -22,20 +18,21 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    height: theme.mixins.breadcrumbBar.height,
+    padding: theme.spacing(0, 5),
   },
   button: {
     margin: theme.spacing(0.5),
-    backgroundColor: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    textTransform: "none",
   },
-  icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
+  container: {
+    padding: theme.spacing(0, 7),
   },
 }));
 
 const SourceMappings = (): JSX.Element => {
   const classes = useStyles();
+  const { t } = useTranslation();
   const history = useHistory();
   const { sourceId } = useParams<{ sourceId?: string }>();
 
@@ -45,43 +42,39 @@ const SourceMappings = (): JSX.Element => {
 
   return (
     <>
-      <Container maxWidth="xl">
-        <div className={classes.header}>
-          <NavigationBreadcrumbs />
-          <Grid>
-            <CredentialEditButton
-              size="small"
-              variant="contained"
-              className={classes.button}
-              startIcon={<Icon icon={IconNames.COG} className={classes.icon} />}
-            />
-            <Button
-              size="small"
-              variant="contained"
-              className={classes.button}
-              startIcon={
-                <Icon icon={IconNames.EXPORT} className={classes.icon} />
-              }
-            >
-              <Typography>Export mapping</Typography>
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              className={classes.button}
-              startIcon={
-                <Icon icon={IconNames.FLAME} className={classes.icon} />
-              }
-              onClick={handleLaunchClick}
-            >
-              <Typography>Launch ETL</Typography>
-            </Button>
-          </Grid>
-        </div>
-        <Container maxWidth="xl">
-          <MappingsToolbar />
-          <MappingsTable />
-        </Container>
+      <div className={classes.header}>
+        <NavigationBreadcrumbs />
+        <Grid>
+          <CredentialEditButton
+            variant="contained"
+            className={classes.button}
+            color="secondary"
+            startIcon={<Icon icon={IconNames.COG} />}
+          >
+            {t("databaseSettings")}
+          </CredentialEditButton>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<Icon icon={IconNames.EXPORT} />}
+          >
+            {t("exportMapping")}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            className={classes.button}
+            startIcon={<Icon icon={IconNames.FLAME} />}
+            onClick={handleLaunchClick}
+          >
+            {t("launchEtl")}
+          </Button>
+        </Grid>
+      </div>
+      <Container maxWidth="xl" className={classes.container}>
+        <MappingsToolbar />
+        <MappingsTable />
       </Container>
       <SourceDrawer />
     </>

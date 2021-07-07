@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Button, Drawer, makeStyles, Typography } from "@material-ui/core";
+import { Drawer, makeStyles, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 
 import CredentialForm from "./CredentialForm";
 import CredentialOwnersSelect from "./CredentialOwnersSelect";
@@ -69,7 +70,7 @@ const SourceDrawer = (): JSX.Element => {
             fullWidth={false}
             onClick={handleDrawerClose}
           >
-            <Typography>{t("done")}</Typography>
+            {t("done")}
           </Button>
         </>
       )}

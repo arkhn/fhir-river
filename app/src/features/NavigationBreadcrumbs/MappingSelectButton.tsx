@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: "none",
     boxShadow: `0 1px 5px ${theme.palette.divider}`,
+    border: `1px solid ${theme.palette.divider}`,
   },
 }));
 

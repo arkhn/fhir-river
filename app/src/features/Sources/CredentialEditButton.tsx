@@ -1,10 +1,11 @@
 import React from "react";
 
-import { Button, ButtonProps, Typography } from "@material-ui/core";
+import { ButtonProps, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import { useAppDispatch } from "app/store";
+import Button from "common/components/Button";
 import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
 
 import { editCredential } from "./sourceSlice";

@@ -15,8 +15,8 @@ import type { Source } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
-    width: 12,
-    height: 12,
+    width: theme.spacing(3),
+    height: theme.spacing(3),
     marginRight: theme.spacing(1),
     "& path": {
       fill: theme.palette.text.secondary,

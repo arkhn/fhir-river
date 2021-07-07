@@ -4,13 +4,11 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
   Grid,
-  Button,
   ListItemText,
   makeStyles,
   Menu,
   MenuItem,
   Paper,
-  Typography,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import differenceBy from "lodash/differenceBy";
@@ -23,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 import {
   conditionAdded,
   conditionsAdded,
@@ -65,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row-reverse",
   },
   deleteIcon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
+    fill: theme.palette.text.primary,
   },
   buttonsContainer: {
     position: "relative",
@@ -187,7 +186,7 @@ const AttributeInputGroup = ({
                 startIcon={<Add />}
                 onClick={handleMenuClick}
               >
-                <Typography>{t("addInput")}</Typography>
+                {t("addInput")}
               </Button>
               <Menu
                 {...bindMenu(popupState)}
@@ -217,7 +216,7 @@ const AttributeInputGroup = ({
                 startIcon={<Add />}
                 onClick={handleCreateCondition}
               >
-                <Typography>{t("addCondition")}</Typography>
+                {t("addCondition")}
               </Button>
             </Grid>
             <Grid item className={classes.buttonDeleteContainer}>
@@ -230,7 +229,7 @@ const AttributeInputGroup = ({
                   <Icon icon={IconNames.TRASH} className={classes.deleteIcon} />
                 }
               >
-                <Typography>{t("deleteGroup")}</Typography>
+                {t("deleteGroup")}
               </Button>
             </Grid>
           </Grid>
