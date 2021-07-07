@@ -110,5 +110,6 @@
   "back": "Back",
   "useThisGroupIf": "Use this group if...",
   "resources": "Resources",
-  "retry": "Retry"
+  "retry": "Retry",
+  "mergingScript": "Merging script"
 }

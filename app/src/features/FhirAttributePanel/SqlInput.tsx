@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -8,7 +8,11 @@ import {
   IconButton,
   makeStyles,
   Typography,
+  CircularProgress,
+  Menu,
+  MenuItem,
 } from "@material-ui/core";
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
@@ -20,15 +24,19 @@ import {
   columnSelectors,
   PendingColumn,
 } from "features/Columns/columnSlice";
+import ScriptListItem from "features/Scripts/ScriptListItem";
 import {
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
   useApiColumnsUpdateMutation,
   useApiInputsDestroyMutation,
+  useApiInputsUpdateMutation,
 } from "services/api/endpoints";
 import {
   ColumnRequest,
   Input as InputType,
+  Scripts,
+  useApiScriptsListQuery,
 } from "services/api/generated/api.generated";
 
 type InputProps = {
@@ -37,7 +45,10 @@ type InputProps = {
 
 const useStyles = makeStyles((theme) => ({
   icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
+    fill: theme.palette.text.primary,
+  },
+  iconSelected: {
+    fill: theme.palette.primary.main,
   },
   button: {
     textTransform: "none",
@@ -60,23 +71,33 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     padding: theme.spacing(1),
   },
+  menuPopup: {
+    maxHeight: 300,
+  },
 }));
 
 const SqlInput = ({ input }: InputProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
   const [deleteInput] = useApiInputsDestroyMutation();
   const [createColumn] = useApiColumnsCreateMutation();
   const [updateColumn] = useApiColumnsUpdateMutation();
+  const [updateInput] = useApiInputsUpdateMutation();
   const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
     input: input.id,
   });
+  const { data: scripts, isLoading: isScriptsLoading } = useApiScriptsListQuery(
+    {}
+  );
   const inputColumn = useAppSelector((state) =>
     columnSelectors
       .selectAll(state)
       .find((column) => column?.input === input.id)
   );
+  const isInputScriptSelected = input.script !== "";
 
   useEffect(() => {
     if (inputColumns && !inputColumn) {
@@ -87,6 +108,14 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
       }
     }
   }, [inputColumns, dispatch, inputColumn, input.id, isSuccess]);
+
+  const handleMenuToggle = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleDeleteInput = async () => {
     try {
@@ -124,6 +153,21 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
     }
   };
 
+  const handleScriptChange = (script: Scripts) => async () => {
+    handleMenuClose();
+    if (input.script !== script.name) {
+      try {
+        await updateInput({
+          id: input.id,
+          inputRequest: { ...input, script: script.name },
+        });
+      } catch (error) {
+        // TODO: Handle errors nicely
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <Grid item container alignItems="center" direction="row" spacing={1}>
       <Grid item spacing={1} container className={classes.columnSelect}>
@@ -136,12 +180,46 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
         <Button
           size="small"
           className={classes.button}
+          onClick={handleMenuToggle}
+          color={isInputScriptSelected ? "primary" : "default"}
           startIcon={
-            <Icon icon={IconNames.FUNCTION} className={classes.icon} />
+            <Icon
+              icon={IconNames.FUNCTION}
+              className={clsx(classes.icon, {
+                [classes.iconSelected]: isInputScriptSelected,
+              })}
+            />
           }
         >
-          <Typography>{t("applyScript")}</Typography>
+          <Typography>
+            {isInputScriptSelected ? input.script : t("applyScript")}
+          </Typography>
         </Button>
+        <Menu
+          id="script-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleMenuClose}
+          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+          PaperProps={{
+            className: classes.menuPopup,
+          }}
+        >
+          {isScriptsLoading ? (
+            <CircularProgress />
+          ) : (
+            scripts &&
+            scripts.map((script, index) => (
+              <MenuItem
+                key={`${script.name}-${index}`}
+                onClick={handleScriptChange(script)}
+                selected={input.script === script.name}
+              >
+                <ScriptListItem script={script} />
+              </MenuItem>
+            ))
+          )}
+        </Menu>
       </Grid>
       <Grid item className={classes.iconButtonContainer}>
         <IconButton
