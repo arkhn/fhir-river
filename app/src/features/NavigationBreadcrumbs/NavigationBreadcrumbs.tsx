@@ -38,7 +38,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
   },
   breadCrumbLinks: {
-    "&:hover": { textDecoration: "none", opacity: "0.6" },
+    fontSize: "1.2rem",
+    "&:hover": {
+      textDecoration: "none",
+      opacity: "0.6",
+    },
   },
   icons: {
     height: 12,
@@ -78,7 +82,11 @@ const NavigationBreadcrumbs = (): JSX.Element => {
   return (
     <Breadcrumbs
       separator={
-        <Icon icon={IconNames.CHEVRON_RIGHT} className={classes.icons} />
+        <Icon
+          iconSize={14}
+          icon={IconNames.CHEVRON_RIGHT}
+          className={classes.icons}
+        />
       }
       classes={{ separator: classes.separator }}
     >

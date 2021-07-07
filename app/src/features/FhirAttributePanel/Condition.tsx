@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   badgeLabel: {
     backgroundColor: theme.palette.purple.main,
-    color: theme.palette.purple.contrastText,
+    color: theme.palette.common.white,
     borderRadius: theme.shape.borderRadius,
     paddingInline: theme.spacing(1),
     paddingBlock: theme.spacing(0.5),
