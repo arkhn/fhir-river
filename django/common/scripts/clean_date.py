@@ -22,7 +22,7 @@ def clean_date(raw_input):  # noqa: C901
         )
         full_match = re.fullmatch(raw_input, pattern)
         date = datetime.datetime.strptime(full_match.group(0)[0:10], "%Y-%m-%d")
-    except Exception:  # nosec
+    except Exception:
         pass  # nosec
 
     formats = [
