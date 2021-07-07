@@ -21,7 +21,7 @@ import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBrea
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(0, 5, 0, 5),
+    padding: theme.spacing(0, 5),
     boxShadow: `0px 5px 5px ${theme.palette.divider}`,
     display: "flex",
     alignItems: "center",

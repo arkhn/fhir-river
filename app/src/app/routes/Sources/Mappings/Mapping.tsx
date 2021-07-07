@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     height: `calc(100vh - ${
       Number(theme.mixins.breadcrumbBar.height) +
-      Number(theme.mixins.breadcrumbBar.height)
+      Number(theme.mixins.appbar.height)
     }px)`,
   },
   leftContainer: {

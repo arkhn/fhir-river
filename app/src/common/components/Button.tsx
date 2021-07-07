@@ -48,10 +48,10 @@ export const EditedButton = withStyles((theme) => ({
   },
 }))(MuiButton);
 
-const Button = ({ ...buttonProps }: ButtonProps): JSX.Element => {
+const Button = ({ children, ...buttonProps }: ButtonProps): JSX.Element => {
   return (
     <EditedButton disableElevation {...buttonProps}>
-      <Typography>{buttonProps.children}</Typography>
+      <Typography>{children}</Typography>
     </EditedButton>
   );
 };
