@@ -19,11 +19,9 @@ def mock_uuid5(*args):
 
 
 def test_transform(dict_map_code):
-    cleaning_script = CleaningScript(
-        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category=None)
-    )
+    cleaning_script = CleaningScript(Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None))
     merging_script = MergingScript(
-        Script(name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None, category=None)
+        Script(name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None)
     )
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
@@ -90,9 +88,7 @@ def test_transform(dict_map_code):
 
 
 def test_transform_with_condition_arrays(dict_map_code):
-    cleaning_script = CleaningScript(
-        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category=None)
-    )
+    cleaning_script = CleaningScript(Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None))
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
         "PATIENTS_ID_0f208c2f": ["id1", "id1", "id1"],

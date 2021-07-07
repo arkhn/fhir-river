@@ -41,4 +41,4 @@ class MemoryScriptsRepository(ScriptsRepository):
         try:
             return self.scripts[name]
         except KeyError:
-            raise NameError("Script", name, "not found.")
+            raise NameError(f"Script {name} not found.")
