@@ -21,3 +21,9 @@ class Error(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
+
+
+class Mapping(models.Model):
+    id = models.TextField(primary_key=True, default=cuid, editable=False)
+    snapshot = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
