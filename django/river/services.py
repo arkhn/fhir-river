@@ -8,7 +8,6 @@ from fhir.resources import construct_fhir_element
 from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
-from river.adapters.mappings import MappingsRepository
 from river.adapters.pyrog_client import PyrogClient
 from river.adapters.topics import TopicsManager
 from river.common.analyzer import Analyzer
@@ -19,22 +18,27 @@ from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
 
-def batch(
-    batch_instance: models.Batch,
-    resources: List[str],
-    topics_manager: TopicsManager,
-    publisher: EventPublisher,
+def build_mappings(
+    mappings,
     # FIXME remove this when the DB is shared
     pyrog_client: PyrogClient,
-    mappings_repo: MappingsRepository,
+):
+    for resource_id in mappings.keys():
+        if mappings[resource_id]:
+            continue
+        mappings[resource_id] = pyrog_client.fetch_mapping(resource_id)
+
+
+def batch(
+    batch_instance: models.Batch,
+    mappings: dict,
+    topics_manager: TopicsManager,
+    publisher: EventPublisher,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_instance.id}")
 
-    for resource_id in resources:
-        resource_mapping = pyrog_client.fetch_mapping(resource_id)
-        mappings_repo.set(batch_instance.id, resource_id, json.dumps(resource_mapping))
-
+    for resource_id in mappings.keys():
         publisher.publish(
             topic=f"batch.{batch_instance.id}",
             event=BatchEvent(batch_id=batch_instance.id, resource_id=resource_id),
