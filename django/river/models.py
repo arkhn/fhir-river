@@ -1,4 +1,3 @@
-from django.contrib.postgres import fields
 from django.db import models
 
 from cuid import cuid
@@ -6,10 +5,10 @@ from cuid import cuid
 
 class Batch(models.Model):
     id = models.TextField(primary_key=True, default=cuid, editable=False)
+    mappings = models.JSONField(default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
-    resources = fields.ArrayField(models.TextField(), size=None, default=list)
 
 
 class Error(models.Model):
@@ -21,9 +20,3 @@ class Error(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
-
-
-class Mapping(models.Model):
-    id = models.TextField(primary_key=True, default=cuid, editable=False)
-    snapshot = models.JSONField()
-    created_at = models.DateTimeField(auto_now_add=True)
