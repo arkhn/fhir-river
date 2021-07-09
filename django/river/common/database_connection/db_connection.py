@@ -38,6 +38,7 @@ class DBConnection:
         host = db_config["host"]
         port = db_config["port"]
         database = db_config["database"]
+        service_name = db_config.get("service")
 
         try:
             db_handler = DB_DRIVERS[model]
@@ -47,7 +48,8 @@ class DBConnection:
                 "db_config specifies the wrong database model. "
                 "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
             )
-
+        if service_name:
+            return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={service_name}"
         return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
     @contextmanager
