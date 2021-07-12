@@ -78,6 +78,7 @@ class ScriptsEndpoint(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         res = [
-            {"name": script.name, "description": script.description} for script in self.scripts_repo.scripts.values()
+            {"name": script.name, "description": script.description, "category": script.category}
+            for script in self.scripts_repo.scripts.values()
         ]
         return response.Response(res, status=status.HTTP_200_OK)
