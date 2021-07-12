@@ -60,9 +60,9 @@ class DBConnection:
         try:
             [connection_type, target_name] = database.split(":", 1)
             if connection_type == "service":
-                return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}&{url_suffix}"
+                return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}{url_suffix}"
             else:
-                raise NotImplementedError
+                raise NotImplementedError("db_config: bad connection type prefix in database attribute")
         except ValueError:
             return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
