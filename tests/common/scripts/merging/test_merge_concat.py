@@ -1,6 +1,6 @@
 import datetime
 
-from common.scripts import merge_concat
+from common.scripts.merging import merge_concat
 
 
 def test_merge_concat():

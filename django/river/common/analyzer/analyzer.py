@@ -1,7 +1,7 @@
 import logging
 import re
 
-from river.adapters.scripts_repository import MemoryScriptsRepository, ScriptsRepository
+from common.scripts import ScriptsRepository
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -21,7 +21,7 @@ class Analyzer:
     def __init__(self):
         # Store analyses
         self.analyses: dict = {}
-        self.scripts_repo: ScriptsRepository = MemoryScriptsRepository()
+        self.scripts_repo = ScriptsRepository()
         self._cur_analysis = Analysis()
 
     def load_cached_analysis(self, batch_id, resource_id, mapping):

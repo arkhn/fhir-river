@@ -1,4 +1,4 @@
-from common.scripts import make_title
+from common.scripts.cleaning import make_title
 
 
 def test_make_title():

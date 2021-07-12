@@ -1,6 +1,6 @@
 import logging
 
-from river.adapters.scripts_repository import Script
+from common.scripts import Script
 
 logger = logging.getLogger(__name__)
 

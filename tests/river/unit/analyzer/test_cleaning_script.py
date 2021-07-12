@@ -1,10 +1,10 @@
-from common.scripts.map_gender import map_gender
-from river.adapters.scripts_repository import Script
+from common.scripts import Script
+from common.scripts.cleaning import map_gender
 from river.common.analyzer.cleaning_script import CleaningScript
 
 
 def test_cleaning_script_init():
-    script = Script(name="map_gender", func=map_gender, description=None)
+    script = Script(name="map_gender", func=map_gender, description=None, category="cleaning")
     cleaning_script = CleaningScript(script)
 
     assert cleaning_script.script.name == "map_gender"
@@ -16,7 +16,7 @@ def capitalize(text):
 
 
 def test_cleaning_script_apply():
-    script = Script(name="capitalize", func=capitalize, description=None)
+    script = Script(name="capitalize", func=capitalize, description=None, category="cleaning")
     cleaning_script = CleaningScript(script)
 
     dataframe = {"pk_col": [1, 2, 3, 4], "df_col": ["alice", "bob", "carol", "denis"]}

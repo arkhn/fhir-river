@@ -1,4 +1,4 @@
-from common.scripts import clean_date
+from common.scripts.cleaning import clean_date
 
 
 def test_clean_date():

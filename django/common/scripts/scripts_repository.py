@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from inspect import getdoc, getmembers, isfunction
 from typing import Callable
 
-from common import scripts
+from common.scripts import cleaning, merging
 
 
 @dataclass(frozen=True)
@@ -11,31 +11,27 @@ class Script:
     func: Callable
     name: str
     description: str
+    category: str
 
 
 class ScriptsRepository:
     """This class is used when we need to get a cleaning/merging script.
-
-    An ScriptsRepository is an abstraction for scripts retrieval.
-    It should have a `get` method.
-    """
-
-    def get(self, name: str) -> Script:
-        """Gets the script with a specified name."""
-        raise NotImplementedError
-
-
-class MemoryScriptsRepository(ScriptsRepository):
-    """This class is the default implementation of a ScriptsRepository.
 
     It uses the "inspect" python package to determine which scripts are available.
     """
 
     def __init__(self):
         self.scripts = OrderedDict()
-        for script_name, script in getmembers(scripts, isfunction):
-            doc = getdoc(script)
-            self.scripts[script_name] = Script(func=script, name=script_name, description=doc)
+
+        for script_name, script in getmembers(cleaning, isfunction):
+            self.scripts[script_name] = Script(
+                func=script, name=script_name, description=getdoc(script), category="cleaning"
+            )
+
+        for script_name, script in getmembers(merging, isfunction):
+            self.scripts[script_name] = Script(
+                func=script, name=script_name, description=getdoc(script), category="merging"
+            )
 
     def get(self, name: str) -> Script:
         """Gets the script at a specified key."""

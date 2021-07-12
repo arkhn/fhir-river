@@ -1,4 +1,4 @@
-from common.scripts.clean_time import clean_time
+from common.scripts.cleaning import clean_time
 
 
 def test_clean_time():

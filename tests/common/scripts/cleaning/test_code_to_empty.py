@@ -1,4 +1,4 @@
-from common.scripts import code_to_empty
+from common.scripts.cleaning import code_to_empty
 
 
 def test_code_to_empty():

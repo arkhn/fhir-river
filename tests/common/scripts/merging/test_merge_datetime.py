@@ -1,4 +1,4 @@
-from common.scripts import merge_datetime
+from common.scripts.merging import merge_datetime
 
 
 def test_merge_datetime():

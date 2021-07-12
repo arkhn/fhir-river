@@ -1,6 +1,4 @@
-from common.scripts.if_valid import if_valid
-from common.scripts.make_title import make_title
-from common.scripts.strip import strip
+from common.scripts.cleaning import if_valid, make_title, strip
 
 
 def test_if_logic():

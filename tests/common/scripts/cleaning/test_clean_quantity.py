@@ -1,4 +1,4 @@
-from common.scripts.clean_quantity import clean_quantity
+from common.scripts.cleaning import clean_quantity
 
 
 def test_clean_quantity():

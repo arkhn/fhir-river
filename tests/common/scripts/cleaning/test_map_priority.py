@@ -1,4 +1,4 @@
-from common.scripts import map_priority
+from common.scripts.cleaning import map_priority
 
 
 def test_map_priority():

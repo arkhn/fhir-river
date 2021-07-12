@@ -1,4 +1,4 @@
-from common.scripts.clean_instant import clean_instant
+from common.scripts.cleaning import clean_instant
 
 
 def test_clean_instant():

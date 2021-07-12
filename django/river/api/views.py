@@ -1,11 +1,11 @@
 from rest_framework import filters, generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
+from common.scripts import ScriptsRepository
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.mappings import RedisMappingsRepository
 from river.adapters.pyrog_client import APIPyrogClient
-from river.adapters.scripts_repository import MemoryScriptsRepository, ScriptsRepository
 from river.adapters.topics import KafkaTopicsManager
 from river.api import serializers
 from river.services import abort, batch, preview
@@ -74,7 +74,7 @@ class PreviewEndpoint(generics.CreateAPIView):
 
 class ScriptsEndpoint(generics.ListAPIView):
     serializer_class = serializers.ScriptsSerializer
-    scripts_repo: ScriptsRepository = MemoryScriptsRepository()
+    scripts_repo = ScriptsRepository()
 
     def list(self, request, *args, **kwargs):
         res = [

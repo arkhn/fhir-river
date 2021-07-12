@@ -1,6 +1,6 @@
 from unittest import mock
 
-from river.adapters.scripts_repository import Script
+from common.scripts import Script
 from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.cleaning_script import CleaningScript
 from river.common.analyzer.concept_map import ConceptMap
@@ -13,7 +13,9 @@ from river.transformer import dataframe
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
 def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
-    cleaning_script = CleaningScript(Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None))
+    cleaning_script = CleaningScript(
+        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category="cleaning")
+    )
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     data = {
@@ -92,7 +94,9 @@ def test_clean_data(mock_sha1, dict_map_gender, dict_map_code):
 
 def test_merge_by_attributes():
     merging_script = MergingScript(
-        Script(name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None)
+        Script(
+            name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None, category="merging"
+        )
     )
     attr_name = Attribute("name")
     group = InputGroup(id_="id_name", attribute=attr_name, columns=[SqlColumn("PUBLIC", "PATIENTS", "NAME")])

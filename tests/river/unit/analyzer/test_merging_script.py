@@ -1,10 +1,10 @@
-from common.scripts.select_first_not_empty import select_first_not_empty
-from river.adapters.scripts_repository import Script
+from common.scripts import Script
+from common.scripts.merging import select_first_not_empty
 from river.common.analyzer.merging_script import MergingScript
 
 
 def test_merging_script_init():
-    script = Script(name="select_first_not_empty", func=select_first_not_empty, description=None)
+    script = Script(name="select_first_not_empty", func=select_first_not_empty, description=None, category="merging")
     merging_script = MergingScript(script)
 
     assert merging_script.script.name == "select_first_not_empty"
@@ -16,7 +16,7 @@ def concat(*values):
 
 
 def test_merging_script_apply():
-    script = Script(name="concat", func=concat, description=None)
+    script = Script(name="concat", func=concat, description=None, category="merging")
     merging_script = MergingScript(script)
 
     data = ["alice", "a"]

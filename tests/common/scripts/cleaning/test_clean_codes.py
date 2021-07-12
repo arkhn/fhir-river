@@ -1,4 +1,4 @@
-from common.scripts import clean_codes
+from common.scripts.cleaning import clean_codes
 
 
 def test_clean_codes():

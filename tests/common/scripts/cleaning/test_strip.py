@@ -1,4 +1,4 @@
-from common.scripts import strip
+from common.scripts.cleaning import strip
 
 
 def test_clean_identity():

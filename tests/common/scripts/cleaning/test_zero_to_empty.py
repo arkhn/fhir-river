@@ -1,4 +1,4 @@
-from common.scripts import zero_to_empty
+from common.scripts.cleaning import zero_to_empty
 
 
 def test_zero_to_empty():
