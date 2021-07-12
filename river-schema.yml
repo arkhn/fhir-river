@@ -2698,6 +2698,9 @@ components:
     Mapping:
       type: object
       properties:
+        id:
+          type: string
+          readOnly: true
         name:
           type: string
         version:
@@ -2711,6 +2714,7 @@ components:
           $ref: '#/components/schemas/_Credential'
       required:
       - credential
+      - id
       - name
     MappingRequest:
       type: object
