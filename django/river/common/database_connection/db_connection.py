@@ -50,7 +50,7 @@ class DBConnection:
         try:
             [connection_type, target_name] = database.split(":", 1)
             if connection_type == "service":
-                return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}"
+                return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}&{url_suffix}"
         except ValueError:
             return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
