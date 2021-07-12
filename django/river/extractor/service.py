@@ -71,7 +71,7 @@ def batch_resource_handler(
     mappings_repo: MappingsRepository,
 ):
     mapping = mappings_repo.get(event.batch_id, event.resource_id)
-    analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
+    analysis = analyzer.analyze(mapping)
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:
         extractor = Extractor(session, db_connection.metadata)
