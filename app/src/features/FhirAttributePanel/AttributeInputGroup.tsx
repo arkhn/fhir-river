@@ -27,11 +27,13 @@ import {
   conditionsAdded,
   conditionSelectors,
 } from "features/Conditions/conditionSlice";
+import MergingScript from "features/Scripts/MergingScript";
 import {
   useApiInputGroupsDestroyMutation,
   useApiInputsCreateMutation,
   useApiInputsListQuery,
   useApiConditionsListQuery,
+  useApiInputGroupsUpdateMutation,
 } from "services/api/endpoints";
 import { InputGroup } from "services/api/generated/api.generated";
 
@@ -87,6 +89,7 @@ const AttributeInputGroup = ({
     popupId: "popup",
   });
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
+  const [updateInputGroups] = useApiInputGroupsUpdateMutation();
   const [createInput] = useApiInputsCreateMutation();
   const { data: inputs } = useApiInputsListQuery({ inputGroup: inputGroup.id });
   const {
@@ -118,6 +121,15 @@ const AttributeInputGroup = ({
       }
     }
   }, [apiConditions, conditions, dispatch, isError, isFetching]);
+
+  useEffect(() => {
+    if (inputs && inputs.length <= 1 && inputGroup.merging_script !== "") {
+      updateInputGroups({
+        id: inputGroup.id,
+        inputGroupRequest: { ...inputGroup, merging_script: "" },
+      });
+    }
+  }, [inputs, inputGroup, updateInputGroups]);
 
   const handleDeleteInputGroup = async () => {
     try {
@@ -242,6 +254,9 @@ const AttributeInputGroup = ({
                   <StaticInput input={input} key={input.id} />
                 )
               )}
+            {inputs && inputs.length > 1 && (
+              <MergingScript inputGroup={inputGroup} />
+            )}
           </Grid>
           <Grid
             item

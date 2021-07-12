@@ -111,5 +111,6 @@
   "useThisGroupIf": "Use this group if...",
   "resources": "Resources",
   "retry": "Retry",
-  "mergingScript": "Merging script"
+  "mergingScript": "Merging script",
+  "selectScript": "Select script"
 }
