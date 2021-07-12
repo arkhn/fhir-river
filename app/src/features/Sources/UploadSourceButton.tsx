@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { ChangeEvent, useRef, useState } from "react";
 
 import { Button, Typography, makeStyles } from "@material-ui/core";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
 import Alert from "common/components/Alert";
 import { useApiSourcesImportCreateMutation } from "services/api/endpoints";
+import { apiValidationErrorFromResponse } from "services/api/errors";
 
 import { initSource } from "./sourceSlice";
 
@@ -37,14 +40,18 @@ const UploadSourceButton = (): JSX.Element => {
     if (content) {
       const parsedContent = JSON.parse(content as string);
       try {
-        await apiSourceImportCreate({ mappingRequest: parsedContent }).unwrap();
+        await apiSourceImportCreate({
+          mappingRequest: parsedContent,
+        }).unwrap();
         dispatch(initSource());
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
+      } catch (error) {
         // TODO: Handle errors nicely
         console.error(error);
-        if (error.data) {
-          const errorMessage = Object.entries(error.data).reduce(
+        const errorData = apiValidationErrorFromResponse(
+          error as FetchBaseQueryError
+        );
+        if (errorData) {
+          const errorMessage = Object.entries(errorData).reduce(
             (acc, [key, value]) => `${acc} ${key}: ${value}`,
             ""
           );
