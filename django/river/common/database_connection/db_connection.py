@@ -31,7 +31,17 @@ class DBConnection:
         self.metadata = MetaData(bind=self.engine)
 
     @staticmethod
-    def build_db_url(db_config):
+    def build_db_url(db_config) -> str:
+        """build the database connection url
+
+        In the case of a Oracle database, the database attribute may be suffixed
+        with "service:" if a service name is provided
+        https://docs.sqlalchemy.org/en/14/dialects/oracle.html#dsn-vs-hostname-connections
+
+        :param db_config: contains the credentials and the info
+        needed for the connection
+        :return: result string
+        """
         model = db_config["model"]
         login = db_config["login"]
         password = db_config["password"]
