@@ -10,11 +10,11 @@ from river.common.analyzer.sql_filter import SqlFilter
 from river.common.analyzer.sql_join import SqlJoin
 
 
-def test_load_cached_analysis_redis(patient_mapping):
+def test_cache_analysis_redis(patient_mapping):
     batch_id, resource_id = (uuid4(), uuid4())
     analyzer = Analyzer()
 
-    res = analyzer.load_cached_analysis(batch_id, resource_id, patient_mapping)
+    res = analyzer.cache_analysis(batch_id, resource_id, patient_mapping)
 
     assert res.definition_id == "Patient"
     assert res.primary_key_column.table == "patients"
@@ -24,19 +24,10 @@ def test_load_cached_analysis_redis(patient_mapping):
     assert analyzer.analyses[f"{batch_id}:{resource_id}"].primary_key_column.table == "patients"
     assert analyzer.analyses[f"{batch_id}:{resource_id}"].primary_key_column.column == "row_id"
 
+    cached_res = analyzer.load_analysis(batch_id, resource_id)
 
-def test_load_cached_analysis_memory():
-    batch_id, resource_id = (uuid4(), uuid4())
-    analyzer = Analyzer()
-    analyzer.analyze = mock.MagicMock()
-
-    dummy_mapping = {"dummy": "mapping"}
-    analyzer.analyses[f"{batch_id}:{resource_id}"] = dummy_mapping
-
-    res = analyzer.load_cached_analysis(batch_id, resource_id, dummy_mapping)
-
-    assert res == dummy_mapping
-    analyzer.analyze.assert_not_called()
+    assert cached_res is not None
+    assert cached_res == res
 
 
 def test_get_primary_key():

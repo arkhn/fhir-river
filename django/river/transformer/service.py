@@ -46,8 +46,10 @@ def extracted_record_handler(
     binder: ReferenceBinder,
     mappings_repo: MappingsRepository,
 ):
-    mapping = mappings_repo.get(event.batch_id, event.resource_id)
-    analysis = analyzer.load_cached_analysis(event.batch_id, event.resource_id, mapping)
+    analysis = analyzer.load_analysis(event.batch_id, event.resource_id)
+    if analysis is None:
+        mapping = mappings_repo.get(event.batch_id, event.resource_id)
+        analysis = analyzer.cache_analysis(event.batch_id, event.resource_id, mapping)
     fhir_object = transform_row(analysis, event.record, transformer=transformer)
 
     # Resolve references
