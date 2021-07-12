@@ -34,7 +34,7 @@ class DBConnection:
     def build_db_url(db_config) -> str:
         """build the database connection url
 
-        In the case of a Oracle database, the database attribute may be suffixed
+        In the case of an Oracle database, the database attribute may be suffixed
         with "service:" if a service name is provided
         https://docs.sqlalchemy.org/en/14/dialects/oracle.html#dsn-vs-hostname-connections
 
@@ -61,6 +61,8 @@ class DBConnection:
             [connection_type, target_name] = database.split(":", 1)
             if connection_type == "service":
                 return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}&{url_suffix}"
+            else:
+                raise NotImplementedError
         except ValueError:
             return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
