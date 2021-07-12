@@ -1,5 +1,6 @@
 import logging
 import re
+from typing import Optional
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -22,7 +23,7 @@ class Analyzer:
 
         self._cur_analysis = Analysis()
 
-    def load_cached_analysis(self, batch_id, resource_id, mapping):
+    def cache_analysis(self, batch_id, resource_id, mapping) -> Analysis:
         cache_key = f"{batch_id}:{resource_id}"
         if cache_key in self.analyses:
             analysis = self.analyses[cache_key]
@@ -33,6 +34,10 @@ class Analyzer:
             self.analyses[cache_key] = analysis
 
         return analysis
+
+    def load_analysis(self, batch_id, resource_id) -> Optional[Analysis]:
+        cache_key = f"{batch_id}:{resource_id}"
+        return self.analyses.get(cache_key)
 
     def analyze(self, resource_mapping):
         self._cur_analysis = Analysis()
