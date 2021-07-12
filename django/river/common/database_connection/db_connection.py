@@ -47,10 +47,12 @@ class DBConnection:
                 "db_config specifies the wrong database model. "
                 "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
             )
-        [connection_type, target_name] = database.split(":", 1)
-        if connection_type == "service":
-            return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}"
-        return f"{db_handler}://{login}:{password}@{host}:{port}/{target_name}{url_suffix}"
+        try:
+            [connection_type, target_name] = database.split(":", 1)
+            if connection_type == "service":
+                return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}"
+        except ValueError:
+            return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
     @contextmanager
     def session_scope(self):
