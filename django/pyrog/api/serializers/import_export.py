@@ -170,7 +170,7 @@ class MappingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = ["id", "name", "version", "resources", "credential"]
+        fields = "__all__"
 
     def create(self, validated_data):
         """Create Source and related models from the validated representation.
