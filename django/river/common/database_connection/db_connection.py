@@ -31,7 +31,17 @@ class DBConnection:
         self.metadata = MetaData(bind=self.engine)
 
     @staticmethod
-    def build_db_url(db_config):
+    def build_db_url(db_config) -> str:
+        """build the database connection url
+
+        In the case of an Oracle database, the database attribute may be suffixed
+        with "service:" if a service name is provided
+        https://docs.sqlalchemy.org/en/14/dialects/oracle.html#dsn-vs-hostname-connections
+
+        :param db_config: contains the credentials and the info
+        needed for the connection
+        :return: result string
+        """
         model = db_config["model"]
         login = db_config["login"]
         password = db_config["password"]
@@ -47,8 +57,14 @@ class DBConnection:
                 "db_config specifies the wrong database model. "
                 "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
             )
-
-        return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
+        try:
+            [connection_type, target_name] = database.split(":", 1)
+            if connection_type == "service":
+                return f"{db_handler}://{login}:{password}@{host}:{port}/?service_name={target_name}{url_suffix}"
+            else:
+                raise NotImplementedError("db_config: bad connection type prefix in database attribute")
+        except ValueError:
+            return f"{db_handler}://{login}:{password}@{host}:{port}/{database}{url_suffix}"
 
     @contextmanager
     def session_scope(self):
