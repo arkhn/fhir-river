@@ -2,14 +2,12 @@ from unittest import mock
 
 import pytest
 
-from common.scripts import Script
+from common.scripts import CleaningScript, MergingScript
 from river.common.analyzer.analysis import Analysis
 from river.common.analyzer.attribute import Attribute
-from river.common.analyzer.cleaning_script import CleaningScript
 from river.common.analyzer.concept_map import ConceptMap
 from river.common.analyzer.condition import Condition
 from river.common.analyzer.input_group import InputGroup
-from river.common.analyzer.merging_script import MergingScript
 from river.common.analyzer.sql_column import SqlColumn
 from river.transformer.transformer import Transformer, compute_fhir_object_id
 
@@ -20,12 +18,10 @@ def mock_uuid5(*args):
 
 def test_transform(dict_map_code):
     cleaning_script = CleaningScript(
-        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category="cleaning")
+        name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category="cleaning"
     )
     merging_script = MergingScript(
-        Script(
-            name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None, category="merging"
-        ),
+        name="merge", func=lambda *args: "".join(arg for arg in args if arg), description=None, category="merging"
     )
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],
@@ -93,7 +89,7 @@ def test_transform(dict_map_code):
 
 def test_transform_with_condition_arrays(dict_map_code):
     cleaning_script = CleaningScript(
-        Script(name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category="merging")
+        name="clean", func=lambda arg: arg.replace("dirty", ""), description=None, category="merging"
     )
     data = {
         "PATIENTS_NAME_d944efcb": ["alicedirty", "alicedirty", "alicedirty"],

@@ -1,6 +1,6 @@
 import pytest
 
-from common.scripts import ScriptsRepository
+from common.scripts import ScriptNotFound, ScriptsRepository
 
 
 def test_scripts_repository():
@@ -12,5 +12,5 @@ def test_scripts_repository():
     assert string_to_bool.category == "cleaning"
     assert string_to_bool.func("true") is True
 
-    with pytest.raises(NameError, match="Script notfound not found."):
+    with pytest.raises(ScriptNotFound, match="Script notfound not found."):
         repo.get("notfound")

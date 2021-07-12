@@ -5,11 +5,9 @@ from common.scripts import ScriptsRepository
 
 from .analysis import Analysis
 from .attribute import Attribute
-from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
 from .condition import Condition
 from .input_group import InputGroup
-from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
@@ -124,8 +122,7 @@ class Analyzer:
 
                 if input_["script"]:
                     try:
-                        script = self.scripts_repo.get(input_["script"])
-                        cur_col.cleaning_script = CleaningScript(script)
+                        cur_col.cleaning_script = self.scripts_repo.get(input_["script"])
                     except NameError as err:
                         logger.exception(f"Error while fetching script {err}.")
 
@@ -159,8 +156,7 @@ class Analyzer:
 
         if mapping_group["mergingScript"]:
             try:
-                script = self.scripts_repo.get(mapping_group["mergingScript"])
-                input_group.merging_script = MergingScript(script)
+                input_group.merging_script = self.scripts_repo.get(mapping_group["mergingScript"])
             except NameError as err:
                 logger.exception(f"Error while fetching script {err}.")
 
