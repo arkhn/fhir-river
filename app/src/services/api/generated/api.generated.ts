@@ -11,6 +11,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/attributes/`,
         params: {
+          ordering: queryArg.ordering,
           path: queryArg.path,
           resource: queryArg.resource,
           source: queryArg.source,
@@ -136,7 +137,11 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/columns/`,
-        params: { input: queryArg.input, join: queryArg.join },
+        params: {
+          input: queryArg.input,
+          join: queryArg.join,
+          ordering: queryArg.ordering,
+        },
       }),
     }),
     apiColumnsCreate: build.mutation<
@@ -250,7 +255,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/credentials/`,
-        params: { source: queryArg.source },
+        params: { ordering: queryArg.ordering, source: queryArg.source },
       }),
     }),
     apiCredentialsCreate: build.mutation<
@@ -358,7 +363,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/input-groups/`,
-        params: { attribute: queryArg.attribute },
+        params: { attribute: queryArg.attribute, ordering: queryArg.ordering },
       }),
     }),
     apiInputGroupsCreate: build.mutation<
@@ -409,7 +414,10 @@ export const api = createApi({
     apiInputsList: build.query<ApiInputsListApiResponse, ApiInputsListApiArg>({
       query: (queryArg) => ({
         url: `/api/inputs/`,
-        params: { input_group: queryArg.inputGroup },
+        params: {
+          input_group: queryArg.inputGroup,
+          ordering: queryArg.ordering,
+        },
       }),
     }),
     apiInputsCreate: build.mutation<
@@ -460,7 +468,7 @@ export const api = createApi({
     apiJoinsList: build.query<ApiJoinsListApiResponse, ApiJoinsListApiArg>({
       query: (queryArg) => ({
         url: `/api/joins/`,
-        params: { column: queryArg.column },
+        params: { column: queryArg.column, ordering: queryArg.ordering },
       }),
     }),
     apiJoinsCreate: build.mutation<
@@ -575,7 +583,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/resources/`,
-        params: { source: queryArg.source },
+        params: { ordering: queryArg.ordering, source: queryArg.source },
       }),
     }),
     apiResourcesCreate: build.mutation<
@@ -633,7 +641,10 @@ export const api = createApi({
       ApiSourcesListApiResponse,
       ApiSourcesListApiArg
     >({
-      query: () => ({ url: `/api/sources/` }),
+      query: (queryArg) => ({
+        url: `/api/sources/`,
+        params: { ordering: queryArg.ordering },
+      }),
     }),
     apiSourcesCreate: build.mutation<
       ApiSourcesCreateApiResponse,
@@ -729,6 +740,8 @@ export const api = createApi({
 });
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
 export type ApiAttributesListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
   path?: string;
   resource?: string;
   source?: string;
@@ -805,6 +818,8 @@ export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
   input?: string;
   join?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
 };
 export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
 export type ApiColumnsCreateApiArg = {
@@ -867,6 +882,8 @@ export type ApiCoreVersionRetrieveApiResponse = unknown;
 export type ApiCoreVersionRetrieveApiArg = {};
 export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
   source?: string;
 };
 export type ApiCredentialsCreateApiResponse = /** status 201  */ Credential;
@@ -929,6 +946,8 @@ export type ApiFiltersDestroyApiArg = {
 export type ApiInputGroupsListApiResponse = /** status 200  */ InputGroup[];
 export type ApiInputGroupsListApiArg = {
   attribute?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
 };
 export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup;
 export type ApiInputGroupsCreateApiArg = {
@@ -960,6 +979,8 @@ export type ApiInputGroupsDestroyApiArg = {
 export type ApiInputsListApiResponse = /** status 200  */ Input[];
 export type ApiInputsListApiArg = {
   inputGroup?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
 };
 export type ApiInputsCreateApiResponse = /** status 201  */ Input;
 export type ApiInputsCreateApiArg = {
@@ -990,6 +1011,8 @@ export type ApiInputsDestroyApiArg = {
 export type ApiJoinsListApiResponse = /** status 200  */ Join[];
 export type ApiJoinsListApiArg = {
   column?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
 };
 export type ApiJoinsCreateApiResponse = /** status 201  */ Join;
 export type ApiJoinsCreateApiArg = {
@@ -1053,6 +1076,8 @@ export type ApiPreviewCreateApiArg = {
 };
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
   source?: string;
 };
 export type ApiResourcesCreateApiResponse = /** status 201  */ Resource;
@@ -1084,7 +1109,10 @@ export type ApiResourcesDestroyApiArg = {
 export type ApiScriptsListApiResponse = /** status 200  */ Scripts[];
 export type ApiScriptsListApiArg = {};
 export type ApiSourcesListApiResponse = /** status 200  */ Source[];
-export type ApiSourcesListApiArg = {};
+export type ApiSourcesListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
 export type ApiSourcesCreateApiResponse = /** status 201  */ Source;
 export type ApiSourcesCreateApiArg = {
   sourceRequest: SourceRequest;
@@ -1168,10 +1196,12 @@ export type Error = {
 export type Batch = {
   id: string;
   errors: Error[];
+  mappings?: {
+    [key: string]: any;
+  };
   created_at: string;
   updated_at: string;
   deleted_at: string;
-  resources?: string[];
 };
 export type PaginatedBatchList = {
   count?: number;
@@ -1180,10 +1210,14 @@ export type PaginatedBatchList = {
   results?: Batch[];
 };
 export type BatchRequest = {
-  resources?: string[];
+  mappings?: {
+    [key: string]: any;
+  };
 };
 export type PatchedBatchRequest = {
-  resources?: string[];
+  mappings?: {
+    [key: string]: any;
+  };
 };
 export type Column = {
   id: string;
@@ -1356,63 +1390,6 @@ export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
 };
-export type Preview = {
-  resource_id: string;
-  primary_key_values: string[];
-};
-export type PreviewRequest = {
-  resource_id: string;
-  primary_key_values: string[];
-};
-export type Resource = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  logical_reference: string;
-  updated_at: string;
-  created_at: string;
-  source: string;
-  primary_key_owner: string;
-};
-export type ResourceRequest = {
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  source: string;
-  primary_key_owner: string;
-};
-export type PatchedResourceRequest = {
-  label?: string;
-  primary_key_table?: string;
-  primary_key_column?: string;
-  definition_id?: string;
-  source?: string;
-  primary_key_owner?: string;
-};
-export type Scripts = {
-  name: string;
-  description: string;
-  category: string;
-};
-export type Source = {
-  id: string;
-  name: string;
-  version?: string;
-  updated_at: string;
-  created_at: string;
-  users: string[];
-};
-export type SourceRequest = {
-  name: string;
-  version?: string;
-};
-export type PatchedSourceRequest = {
-  name?: string;
-  version?: string;
-};
 export type _Input = {
   script?: string;
   concept_map_id?: string;
@@ -1485,6 +1462,10 @@ export type Mapping = {
   created_at: string;
   users: string[];
 };
+export type Preview = {
+  mapping: Mapping;
+  primary_key_values: string[];
+};
 export type _InputRequest = {
   script?: string;
   concept_map_id?: string;
@@ -1550,6 +1531,59 @@ export type MappingRequest = {
   resources?: _ResourceRequest[];
   credential: _CredentialRequest;
   name: string;
+  version?: string;
+};
+export type PreviewRequest = {
+  mapping: MappingRequest;
+  primary_key_values: string[];
+};
+export type Resource = {
+  id: string;
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  logical_reference: string;
+  updated_at: string;
+  created_at: string;
+  source: string;
+  primary_key_owner: string;
+};
+export type ResourceRequest = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  source: string;
+  primary_key_owner: string;
+};
+export type PatchedResourceRequest = {
+  label?: string;
+  primary_key_table?: string;
+  primary_key_column?: string;
+  definition_id?: string;
+  source?: string;
+  primary_key_owner?: string;
+};
+export type Scripts = {
+  name: string;
+  description: string;
+  category: string;
+};
+export type Source = {
+  id: string;
+  name: string;
+  version?: string;
+  updated_at: string;
+  created_at: string;
+  users: string[];
+};
+export type SourceRequest = {
+  name: string;
+  version?: string;
+};
+export type PatchedSourceRequest = {
+  name?: string;
   version?: string;
 };
 export type User = {
