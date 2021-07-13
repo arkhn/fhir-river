@@ -30,6 +30,7 @@ import {
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
+import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -101,7 +102,8 @@ const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const { mappingId } = useParams<{
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
     mappingId?: string;
   }>();
 
@@ -110,6 +112,27 @@ const Preview = (): JSX.Element => {
 
   const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
     undefined
+  );
+
+  const {
+    mappings,
+    refetch: refetchMappings,
+  } = useApiSourcesExportRetrieveQuery(
+    { id: sourceId ?? "" },
+    {
+      skip: !sourceId,
+      selectFromResult: ({ data: mappings }) => {
+        const resource = mappings?.resources?.find(
+          ({ id }) => id === mappingId
+        );
+        return {
+          mappings: mappings && {
+            ...mappings,
+            resources: resource && [resource],
+          },
+        };
+      },
+    }
   );
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
@@ -143,16 +166,21 @@ const Preview = (): JSX.Element => {
     if (exploration && primaryKey && mapping) {
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
       const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
-      try {
-        const previewResult = await apiPreviewCreate({
-          previewRequest: {
-            resource_id: mapping?.id,
-            primary_key_values: [primaryKeyValue ?? ""],
-          },
-        }).unwrap();
-        setPreview(previewResult);
-      } catch (e) {
-        setAlert(e.message);
+
+      refetchMappings();
+
+      if (mappings) {
+        try {
+          const previewResult = await apiPreviewCreate({
+            previewRequest: {
+              mapping: mappings,
+              primary_key_values: [primaryKeyValue ?? ""],
+            },
+          }).unwrap();
+          setPreview(previewResult);
+        } catch (e) {
+          setAlert(e.message);
+        }
       }
     }
   };

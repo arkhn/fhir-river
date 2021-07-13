@@ -23,6 +23,10 @@ import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
 } from "services/api/endpoints";
+import {
+  useApiSourcesExportRetrieveQuery,
+  Mapping,
+} from "services/api/generated/api.generated";
 
 const ITEM_HEIGHT = 48;
 
@@ -87,6 +91,11 @@ const BatchCreate = (): JSX.Element => {
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
 
+  const {
+    data: mappings,
+    refetch: refetchMappings,
+  } = useApiSourcesExportRetrieveQuery({ id });
+
   const { data: resources } = useApiResourcesListQuery(
     { source: id },
     { skip: !Boolean(id) }
@@ -95,16 +104,26 @@ const BatchCreate = (): JSX.Element => {
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
   const handleBatchRun = async () => {
-    try {
-      await apiBatchCreate({
-        batchRequest: {
-          resources: selectedResourceIds,
-        },
-      }).unwrap();
+    refetchMappings();
 
-      setSelectedResourceIds([]);
-    } catch (e) {
-      setAlert(e.message as string);
+    if (mappings) {
+      const filteredMappings: Mapping = {
+        ...mappings,
+        resources: mappings.resources?.filter(({ id }) =>
+          selectedResourceIds.includes(id)
+        ),
+      };
+      try {
+        await apiBatchCreate({
+          batchRequest: {
+            mappings: filteredMappings,
+          },
+        }).unwrap();
+
+        setSelectedResourceIds([]);
+      } catch (e) {
+        setAlert(e.message as string);
+      }
     }
   };
 

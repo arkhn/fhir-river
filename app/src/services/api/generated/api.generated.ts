@@ -1419,6 +1419,7 @@ export type _Filter = {
   sql_column: string;
 };
 export type _Resource = {
+  id: string;
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
