@@ -9,7 +9,7 @@ class Priority(Enum):
 
 
 def map_priority(raw_input):
-    """Map int to ServiceRequest.priority (0: stat, 1: asap, 2: urgent, 3+ routine)"""
+    """Map int to ServiceRequest.priority (1: stat, 2: asap, 3: urgent, else: routine)"""
     mapping = {
         "1": Priority.STAT.value,
         "2": Priority.ASAP.value,
