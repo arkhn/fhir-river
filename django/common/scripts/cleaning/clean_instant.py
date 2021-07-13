@@ -20,6 +20,8 @@ def clean_instant(raw_input):  # noqa: C901
         "%Y%m%d%H%M",
         "%Y-%m-%d %H:%M:%S",
         "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%d %H:%M:%S.%f",
+        "%Y-%m-%dT%H:%M:%S.%f",
     ]
     for fmt in formats:
         try:
