@@ -10,7 +10,7 @@ import Alert from "common/components/Alert";
 import { useApiSourcesImportCreateMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 
-import { initSource } from "./sourceSlice";
+import { sourceEdited } from "./sourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   fileInput: {
@@ -40,10 +40,16 @@ const UploadSourceButton = (): JSX.Element => {
     if (content) {
       const parsedContent = JSON.parse(content as string);
       try {
-        await apiSourceImportCreate({
+        const {
+          created_at,
+          id,
+          name,
+          updated_at,
+          users,
+        } = await apiSourceImportCreate({
           mappingRequest: parsedContent,
         }).unwrap();
-        dispatch(initSource());
+        dispatch(sourceEdited({ created_at, id, name, updated_at, users }));
       } catch (error) {
         // TODO: Handle errors nicely
         console.error(error);
