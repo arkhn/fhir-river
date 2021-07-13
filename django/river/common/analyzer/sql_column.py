@@ -1,6 +1,7 @@
 import hashlib
 
-from .cleaning_script import CleaningScript
+from common.scripts import CleaningScript
+
 from .concept_map import ConceptMap
 
 

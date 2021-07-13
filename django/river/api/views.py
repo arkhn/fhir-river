@@ -1,9 +1,7 @@
-from inspect import getdoc, getmembers, isfunction, ismodule
-
 from rest_framework import filters, generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
-import scripts
+from common.scripts import ScriptsRepository
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.mappings import RedisMappingsRepository
@@ -76,11 +74,11 @@ class PreviewEndpoint(generics.CreateAPIView):
 
 class ScriptsEndpoint(generics.ListAPIView):
     serializer_class = serializers.ScriptsSerializer
+    scripts_repo = ScriptsRepository()
 
     def list(self, request, *args, **kwargs):
-        res = []
-        for module_name, module in getmembers(scripts, ismodule):
-            for script_name, script in getmembers(module, isfunction):
-                doc = getdoc(script)
-                res.append({"name": script_name, "description": doc or "", "category": module_name})
+        res = [
+            {"name": script.name, "description": script.description, "category": script.category}
+            for script in self.scripts_repo.scripts.values()
+        ]
         return response.Response(res, status=status.HTTP_200_OK)

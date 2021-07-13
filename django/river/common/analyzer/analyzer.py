@@ -2,13 +2,13 @@ import logging
 import re
 from typing import Optional
 
+from common.scripts import ScriptsRepository
+
 from .analysis import Analysis
 from .attribute import Attribute
-from .cleaning_script import CleaningScript
 from .concept_map import ConceptMap
 from .condition import Condition
 from .input_group import InputGroup
-from .merging_script import MergingScript
 from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
@@ -20,7 +20,7 @@ class Analyzer:
     def __init__(self):
         # Store analyses
         self.analyses: dict = {}
-
+        self.scripts_repo = ScriptsRepository()
         self._cur_analysis = Analysis()
 
     def cache_analysis(self, batch_id, resource_id, mapping) -> Analysis:
@@ -126,7 +126,10 @@ class Analyzer:
                 cur_col = SqlColumn(sqlValue["owner"]["name"], sqlValue["table"], sqlValue["column"])
 
                 if input_["script"]:
-                    cur_col.cleaning_script = CleaningScript(input_["script"])
+                    try:
+                        cur_col.cleaning_script = self.scripts_repo.get(input_["script"])
+                    except NameError as err:
+                        logger.exception(f"Error while fetching script {err}.")
 
                 if input_["conceptMapId"] and input_["conceptMap"]:
                     cur_col.concept_map = ConceptMap(input_["conceptMap"], input_["conceptMapId"])
@@ -157,7 +160,10 @@ class Analyzer:
             input_group.add_condition(condition)
 
         if mapping_group["mergingScript"]:
-            input_group.merging_script = MergingScript(mapping_group["mergingScript"])
+            try:
+                input_group.merging_script = self.scripts_repo.get(mapping_group["mergingScript"])
+            except NameError as err:
+                logger.exception(f"Error while fetching script {err}.")
 
         return input_group
 

@@ -1,7 +1,8 @@
 from typing import List
 
+from common.scripts import MergingScript
+
 from .condition import Condition
-from .merging_script import MergingScript
 from .sql_column import SqlColumn
 
 
