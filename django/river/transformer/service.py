@@ -2,13 +2,14 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
+from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.event_subscriber import EventSubscriber
 from river.common.analyzer import Analyzer
 from river.common.errors import OperationOutcome
 from river.common.service.service import Service
 from river.domain import events
-from river.models import Batch
+from river.parsing import Source, as_old_mapping
 from river.transformer.reference_binder import ReferenceBinder
 from river.transformer.transformer import Transformer
 
@@ -47,8 +48,8 @@ def extracted_record_handler(
 ):
     analysis = analyzer.load_analysis(event.batch_id, event.resource_id)
     if analysis is None:
-        batch = Batch.objects.get(pk=event.batch_id)
-        mapping = batch.mappings[event.resource_id]
+        batch = models.Batch.objects.get(id=event.batch_id)
+        mapping = as_old_mapping(Source(**batch.mappings), event.resource_id)
         analysis = analyzer.cache_analysis(event.batch_id, event.resource_id, mapping)
     fhir_object = transform_row(analysis, event.record, transformer=transformer)
 
