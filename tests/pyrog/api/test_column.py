@@ -3,6 +3,8 @@ from faker import Faker
 
 from django.urls import reverse
 
+from dateutil.parser import parse
+
 faker = Faker()
 
 pytestmark = pytest.mark.django_db
@@ -53,6 +55,10 @@ def test_list_columns(api_client, column_factory):
 
     assert response.status_code == 200
     assert len(response.data) == 3
+    assert all(
+        parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
+        for i in range(len(response.data) - 1)
+    )
 
 
 @pytest.mark.parametrize("table, column_field, status_code", [(faker.word(), faker.word(), 200)])
@@ -89,6 +95,7 @@ def test_filter_columns_by_join(api_client, join_factory, column_factory):
 
     assert response.status_code == 200
     assert {column_data["id"] for column_data in response.json()} == {column.id for column in first_join_columns}
+
 
 def test_filter_columns_by_input(api_client, input_factory, column_factory):
     url = reverse("columns-list")

@@ -1,5 +1,6 @@
 -r base.txt
 
+python-dateutil==2.8.1
 django-test-migrations==1.1.0
 factory-boy==3.2.0
 fakeredis==1.4.3

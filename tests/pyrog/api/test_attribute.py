@@ -3,6 +3,8 @@ from faker import Faker
 
 from django.urls import reverse
 
+from dateutil.parser import parse
+
 faker = Faker()
 
 pytestmark = pytest.mark.django_db
@@ -51,6 +53,10 @@ def test_list_attributes(api_client, attribute_factory):
 
     assert response.status_code == 200
     assert len(response.data) == 3
+    assert all(
+        parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
+        for i in range(len(response.data) - 1)
+    )
 
 
 def test_filter_attributes_by_resource(api_client, resource_factory, attribute_factory):
