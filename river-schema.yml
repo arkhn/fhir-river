@@ -9,6 +9,12 @@ paths:
       operationId: api_attributes_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: path
         schema:
@@ -398,6 +404,12 @@ paths:
         name: join
         schema:
           type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -735,6 +747,12 @@ paths:
       operationId: api_credentials_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -1067,6 +1085,12 @@ paths:
         name: attribute
         schema:
           type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1231,6 +1255,12 @@ paths:
         name: input_group
         schema:
           type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1393,6 +1423,12 @@ paths:
       parameters:
       - in: query
         name: column
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
         schema:
           type: string
       tags:
@@ -1748,6 +1784,12 @@ paths:
       operationId: api_resources_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -1930,6 +1972,13 @@ paths:
     get:
       operationId: api_sources_list
       description: ''
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -2281,6 +2330,9 @@ components:
           items:
             $ref: '#/components/schemas/Error'
           readOnly: true
+        mappings:
+          type: object
+          additionalProperties: {}
         created_at:
           type: string
           format: date-time
@@ -2293,10 +2345,6 @@ components:
           type: string
           format: date-time
           readOnly: true
-        resources:
-          type: array
-          items:
-            type: string
       required:
       - created_at
       - deleted_at
@@ -2306,10 +2354,9 @@ components:
     BatchRequest:
       type: object
       properties:
-        resources:
-          type: array
-          items:
-            type: string
+        mappings:
+          type: object
+          additionalProperties: {}
     Column:
       type: object
       properties:
@@ -2819,10 +2866,9 @@ components:
     PatchedBatchRequest:
       type: object
       properties:
-        resources:
-          type: array
-          items:
-            type: string
+        mappings:
+          type: object
+          additionalProperties: {}
     PatchedColumnRequest:
       type: object
       properties:
@@ -2937,27 +2983,27 @@ components:
     Preview:
       type: object
       properties:
-        resource_id:
-          type: string
+        mapping:
+          $ref: '#/components/schemas/Mapping'
         primary_key_values:
           type: array
           items:
             type: string
       required:
+      - mapping
       - primary_key_values
-      - resource_id
     PreviewRequest:
       type: object
       properties:
-        resource_id:
-          type: string
+        mapping:
+          $ref: '#/components/schemas/MappingRequest'
         primary_key_values:
           type: array
           items:
             type: string
       required:
+      - mapping
       - primary_key_values
-      - resource_id
     Resource:
       type: object
       properties:

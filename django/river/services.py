@@ -8,12 +8,12 @@ from fhir.resources import construct_fhir_element
 from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
-from river.adapters.pyrog_client import PyrogClient
 from river.adapters.topics import TopicsManager
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchEvent
 from river.extractor.extractor import Extractor
+from river.parsing import Source, as_old_mapping
 from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
@@ -46,10 +46,8 @@ def retry(batch: models.Batch) -> None:
     pass
 
 
-def preview(
-    resource_id: str, primary_key_values: Optional[list], pyrog_client: PyrogClient
-) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = pyrog_client.fetch_mapping(resource_id)
+def preview(mapping: dict, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
+    resource_mapping = as_old_mapping(Source(**mapping), mapping["resources"][0]["id"])
 
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_mapping)

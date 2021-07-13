@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from pyrog.api.serializers.import_export import MappingSerializer
 from river import models
 
 
@@ -18,7 +19,7 @@ class BatchSerializer(serializers.ModelSerializer):
 
 
 class PreviewSerializer(serializers.Serializer):
-    resource_id = serializers.CharField()
+    mapping = MappingSerializer()
     primary_key_values = serializers.ListField(child=serializers.CharField())
 
 

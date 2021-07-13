@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from common.scripts import ScriptsRepository
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
-from river.adapters.pyrog_client import APIPyrogClient
 from river.adapters.topics import KafkaTopicsManager
 from river.api import serializers
 from river.services import abort, batch, preview
@@ -55,13 +54,10 @@ class PreviewEndpoint(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
-        resource_id = data["resource_id"]
+        mapping = data["mapping"]
         primary_key_values = data["primary_key_values"]
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        pyrog_client = APIPyrogClient(authorization_header)
-
-        documents, errors = preview(resource_id, primary_key_values, pyrog_client)
+        documents, errors = preview(mapping, primary_key_values)
 
         return response.Response(
             {"instances": documents, "errors": errors}, status=status.HTTP_201_CREATED, headers=headers
