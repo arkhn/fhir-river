@@ -1,7 +1,6 @@
 import pytest
 
 from river.adapters.event_publisher import FakeEventPublisher
-from river.adapters.mappings import FakeMappingsRepository
 from river.common.analyzer import Analyzer
 from river.domain.events import ExtractedRecord, TransformedRecord
 from river.transformer.reference_binder import ReferenceBinder
@@ -20,7 +19,6 @@ def test_extracted_resource_handler(batch, users_to_patients_mapping):
         record={"users_user_email_b77906f9": "didier@chloroquine.org"},
     )
     publisher = FakeEventPublisher()
-    mappings_repo = FakeMappingsRepository({f"{batch.id}:{resource_id}": users_to_patients_mapping})
     analyzer = Analyzer()
     transformer = Transformer()
     binder = ReferenceBinder()
@@ -31,7 +29,6 @@ def test_extracted_resource_handler(batch, users_to_patients_mapping):
         analyzer=analyzer,
         transformer=transformer,
         binder=binder,
-        mappings_repo=mappings_repo,
     )
 
     assert f"transform.{batch.id}" in publisher._events
