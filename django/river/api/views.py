@@ -7,7 +7,7 @@ from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.pyrog_client import APIPyrogClient
 from river.adapters.topics import KafkaTopicsManager
 from river.api import serializers
-from river.services import abort, batch, build_mappings, preview
+from river.services import abort, batch, preview
 
 
 class BatchViewSet(viewsets.ModelViewSet):
@@ -20,18 +20,15 @@ class BatchViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        batch_instance = serializer.save()
 
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
-        pyrog_client = APIPyrogClient(authorization_header)
 
-        mappings = data["mappings"]
-        build_mappings(mappings, pyrog_client)
-        batch_instance = serializer.save()
+        data = serializer.validated_data
+        resources = data["mappings"]["resources"]
 
-        batch(batch_instance, mappings, topics_manager, event_publisher)
+        batch(batch_instance.id, resources, topics_manager, event_publisher)
 
         headers = self.get_success_headers(serializer.data)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

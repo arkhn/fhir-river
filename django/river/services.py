@@ -18,30 +18,19 @@ from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
 
-def build_mappings(
-    mappings,
-    # FIXME remove this when the DB is shared
-    pyrog_client: PyrogClient,
-):
-    for resource_id in mappings.keys():
-        if mappings[resource_id]:
-            continue
-        mappings[resource_id] = pyrog_client.fetch_mapping(resource_id)
-
-
 def batch(
-    batch_instance: models.Batch,
-    mappings: dict,
+    batch_id: str,
+    resources: List[dict],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
-        topics_manager.create(f"{base_topic}.{batch_instance.id}")
+        topics_manager.create(f"{base_topic}.{batch_id}")
 
-    for resource_id in mappings.keys():
+    for resource in resources:
         publisher.publish(
-            topic=f"batch.{batch_instance.id}",
-            event=BatchEvent(batch_id=batch_instance.id, resource_id=resource_id),
+            topic=f"batch.{batch_id}",
+            event=BatchEvent(batch_id=batch_id, resource_id=resource["id"]),
         )
 
 
