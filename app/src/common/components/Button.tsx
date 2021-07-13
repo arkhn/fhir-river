@@ -2,10 +2,9 @@ import React from "react";
 
 import {
   Button as MuiButton,
-  ButtonProps,
+  ButtonProps as MuiButtonProps,
   withStyles,
 } from "@material-ui/core";
-import { Typography } from "@material-ui/core";
 
 export const EditedButton = withStyles((theme) => ({
   root: {
@@ -48,12 +47,25 @@ export const EditedButton = withStyles((theme) => ({
   },
 }))(MuiButton);
 
-const Button = ({ children, ...buttonProps }: ButtonProps): JSX.Element => {
-  return (
-    <EditedButton disableElevation {...buttonProps}>
-      <Typography>{children}</Typography>
-    </EditedButton>
-  );
-};
+type ButtonProps<C extends React.ElementType> = MuiButtonProps<
+  C,
+  { component?: C }
+>;
+
+const Button = React.forwardRef(
+  <C extends React.ElementType>(
+    { children, ...buttonProps }: ButtonProps<C>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ref: any
+  ): JSX.Element => {
+    return (
+      <EditedButton disableElevation {...buttonProps} ref={ref}>
+        {children}
+      </EditedButton>
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export default Button;
