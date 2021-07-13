@@ -3,6 +3,8 @@ from faker import Faker
 
 from django.urls import reverse
 
+from dateutil.parser import parse
+
 faker = Faker()
 
 pytestmark = pytest.mark.django_db
@@ -111,6 +113,10 @@ def test_list_sources(api_client, user, other_user, source_factory):
     assert response.status_code == 200
     assert {source.id for source in user.sources.all()} == {item["id"] for item in response.data}
     assert all(source.id not in {item["id"] for item in response.data} for source in other_user.sources.all())
+    assert all(
+        parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
+        for i in range(len(response.data) - 1)
+    )
 
 
 def test_list_sources_unauthenticated(api_client, source):
