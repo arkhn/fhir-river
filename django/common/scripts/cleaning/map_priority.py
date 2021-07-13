@@ -16,7 +16,8 @@ def map_priority(raw_input):
         "3": Priority.URGENT.value,
         "4": Priority.ROUTINE.value,
     }
-    if str(raw_input) in mapping.keys():
+    try:
         return mapping[str(raw_input)]
-    else:
-        return mapping["4"]
+    except KeyError:
+        # if the code is unknown, use "ROUTINE" as default value
+        return Priority.ROUTINE.value
