@@ -117,9 +117,9 @@ const SourceForm = (): JSX.Element => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : source ? (
-              t("updateSource")
+              <Typography>{t("updateSource")}</Typography>
             ) : (
-              t("createSource")
+              <Typography>{t("createSource")}</Typography>
             )}
           </Button>
         }

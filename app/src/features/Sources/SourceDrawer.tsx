@@ -70,7 +70,7 @@ const SourceDrawer = (): JSX.Element => {
             fullWidth={false}
             onClick={handleDrawerClose}
           >
-            {t("done")}
+            <Typography>{t("done")}</Typography>
           </Button>
         </>
       )}
