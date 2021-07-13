@@ -54,10 +54,9 @@ class PreviewEndpoint(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
-        mapping = data["mapping"]
         primary_key_values = data["primary_key_values"]
 
-        documents, errors = preview(mapping, primary_key_values)
+        documents, errors = preview(data["mapping"], primary_key_values)
 
         return response.Response(
             {"instances": documents, "errors": errors}, status=status.HTTP_201_CREATED, headers=headers
