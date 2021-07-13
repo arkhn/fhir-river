@@ -2698,10 +2698,9 @@ components:
     Mapping:
       type: object
       properties:
-        name:
+        id:
           type: string
-        version:
-          type: string
+          readOnly: true
         resources:
           type: array
           items:
@@ -2709,16 +2708,33 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/_Credential'
-      required:
-      - credential
-      - name
-    MappingRequest:
-      type: object
-      properties:
         name:
           type: string
         version:
           type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        users:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - created_at
+      - credential
+      - id
+      - name
+      - updated_at
+      - users
+    MappingRequest:
+      type: object
+      properties:
         resources:
           type: array
           items:
@@ -2726,6 +2742,10 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/_CredentialRequest'
+        name:
+          type: string
+        version:
+          type: string
       required:
       - credential
       - name
