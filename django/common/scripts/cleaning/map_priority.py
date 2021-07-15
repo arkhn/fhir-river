@@ -9,14 +9,15 @@ class Priority(Enum):
 
 
 def map_priority(raw_input):
-    """Map int to ServiceRequest.priority (0: stat, 1: asap, 2: urgent, 3+ routine)"""
+    """Map int to ServiceRequest.priority (1: stat, 2: asap, 3: urgent, else: routine)"""
     mapping = {
-        "0": Priority.STAT.value,
-        "1": Priority.ASAP.value,
-        "2": Priority.URGENT.value,
-        "3": Priority.ROUTINE.value,
+        "1": Priority.STAT.value,
+        "2": Priority.ASAP.value,
+        "3": Priority.URGENT.value,
+        "4": Priority.ROUTINE.value,
     }
-    if str(raw_input) in mapping.keys():
+    try:
         return mapping[str(raw_input)]
-    else:
-        return mapping["3"]
+    except KeyError:
+        # if the code is unknown, use "ROUTINE" as default value
+        return Priority.ROUTINE.value
