@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Typography,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import differenceBy from "lodash/differenceBy";
@@ -198,7 +199,7 @@ const AttributeInputGroup = ({
                 startIcon={<Add />}
                 onClick={handleMenuClick}
               >
-                {t("addInput")}
+                <Typography>{t("addInput")}</Typography>
               </Button>
               <Menu
                 {...bindMenu(popupState)}
@@ -228,7 +229,7 @@ const AttributeInputGroup = ({
                 startIcon={<Add />}
                 onClick={handleCreateCondition}
               >
-                {t("addCondition")}
+                <Typography>{t("addCondition")}</Typography>
               </Button>
             </Grid>
             <Grid item className={classes.buttonDeleteContainer}>
@@ -241,7 +242,7 @@ const AttributeInputGroup = ({
                   <Icon icon={IconNames.TRASH} className={classes.deleteIcon} />
                 }
               >
-                {t("deleteGroup")}
+                <Typography>{t("deleteGroup")}</Typography>
               </Button>
             </Grid>
           </Grid>

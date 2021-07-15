@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   ListItemText,
+  Typography,
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import { useTranslation } from "react-i18next";
@@ -101,7 +102,7 @@ const MappingHeader = (): JSX.Element => {
         startIcon={<Icon icon={IconNames.PLAY} />}
         onClick={handlePreviewClick}
       >
-        {t("preview")}
+        <Typography>{t("preview")}</Typography>
       </Button>
       <Menu
         anchorEl={anchorEl}
