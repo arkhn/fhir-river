@@ -251,6 +251,9 @@ export const api = generatedApi
       apiInputGroupsDestroy: {
         invalidatesTags: invalidatesOne("InputGroups"),
       },
+      apiInputGroupsUpdate: {
+        invalidatesTags: invalidatesOne("InputGroups"),
+      },
       /**
        * Inputs
        */
@@ -352,6 +355,7 @@ export const {
   useApiInputGroupsListQuery,
   useApiInputGroupsCreateMutation,
   useApiInputGroupsDestroyMutation,
+  useApiInputGroupsUpdateMutation,
   // Inputs
   useApiInputsListQuery,
   useApiInputsCreateMutation,

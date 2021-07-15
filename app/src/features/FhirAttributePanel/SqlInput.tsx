@@ -2,14 +2,7 @@ import React, { useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Button,
-  Grid,
-  IconButton,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
-import { useTranslation } from "react-i18next";
+import { Grid, IconButton, makeStyles } from "@material-ui/core";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -20,15 +13,18 @@ import {
   columnSelectors,
   PendingColumn,
 } from "features/Columns/columnSlice";
+import CleaningScriptButton from "features/Scripts/CleaningScriptButton";
 import {
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
   useApiColumnsUpdateMutation,
   useApiInputsDestroyMutation,
+  useApiInputsUpdateMutation,
 } from "services/api/endpoints";
 import {
   ColumnRequest,
   Input as InputType,
+  Scripts,
 } from "services/api/generated/api.generated";
 
 type InputProps = {
@@ -37,7 +33,10 @@ type InputProps = {
 
 const useStyles = makeStyles((theme) => ({
   icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
+    fill: theme.palette.text.primary,
+  },
+  iconSelected: {
+    fill: theme.palette.primary.main,
   },
   button: {
     textTransform: "none",
@@ -60,15 +59,18 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     padding: theme.spacing(1),
   },
+  menuPopup: {
+    maxHeight: 300,
+  },
 }));
 
 const SqlInput = ({ input }: InputProps): JSX.Element => {
-  const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [deleteInput] = useApiInputsDestroyMutation();
   const [createColumn] = useApiColumnsCreateMutation();
   const [updateColumn] = useApiColumnsUpdateMutation();
+  const [updateInput] = useApiInputsUpdateMutation();
   const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
     input: input.id,
   });
@@ -124,6 +126,18 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
     }
   };
 
+  const handleScriptChange = async (script: Scripts) => {
+    try {
+      await updateInput({
+        id: input.id,
+        inputRequest: { ...input, script: script.name },
+      });
+    } catch (error) {
+      // TODO: Handle errors nicely
+      console.error(error);
+    }
+  };
+
   return (
     <Grid item container alignItems="center" direction="row" spacing={1}>
       <Grid item spacing={1} container className={classes.columnSelect}>
@@ -133,15 +147,10 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
         />
       </Grid>
       <Grid item>
-        <Button
-          size="small"
-          className={classes.button}
-          startIcon={
-            <Icon icon={IconNames.FUNCTION} className={classes.icon} />
-          }
-        >
-          <Typography>{t("applyScript")}</Typography>
-        </Button>
+        <CleaningScriptButton
+          scriptName={input.script}
+          onChange={handleScriptChange}
+        />
       </Grid>
       <Grid item className={classes.iconButtonContainer}>
         <IconButton
