@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Button from "common/components/Button";
+import FhirResourceAutocomplete from "common/components/FhirResourceAutocomplete";
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import {
   useApiInputsDestroyMutation,
@@ -125,46 +126,59 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   };
 
+  const handleFhirResourceAutocompleteChange = async (value: string) => {
+    if (value !== input.static_value) {
+      try {
+        await updateInput({
+          id: input.id,
+          inputRequest: { ...input, static_value: value },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <Grid container item alignItems="center" direction="row" spacing={1}>
-      {isNodeTypeURI && isNodeNameType ? (
-        <></>
-      ) : (
-        <>
-          <Grid item container alignItems="center" xs={10} spacing={2}>
-            <Grid item xs={7}>
-              <TextField
-                variant="outlined"
-                size="small"
-                fullWidth
-                placeholder={t("typeStaticValueHere")}
-                className={classes.input}
-                value={staticValue}
-                onChange={handleStaticValueChange}
-                onBlur={handleInputBlur}
-                InputProps={{
-                  startAdornment: (
-                    <Icon
-                      icon={IconNames.ALIGN_LEFT}
-                      className={clsx(classes.inputStartAdornment, {
-                        [classes.primaryColor]: !!staticValue,
-                      })}
-                    />
-                  ),
-                }}
-              />
-            </Grid>
-            {isNodeTypeURI && (
-              <Grid item>
-                <Button variant="outlined" onClick={handleGenerateURIClick}>
-                  {t("generateURI")}
-                </Button>
-              </Grid>
-            )}
+      <Grid item container alignItems="center" xs={10} spacing={2}>
+        <Grid item xs={7}>
+          {isNodeTypeURI && isNodeNameType ? (
+            <FhirResourceAutocomplete
+              value={input.static_value ?? ""}
+              onChange={handleFhirResourceAutocompleteChange}
+            />
+          ) : (
+            <TextField
+              variant="outlined"
+              size="small"
+              fullWidth
+              placeholder={t("typeStaticValueHere")}
+              className={classes.input}
+              value={staticValue}
+              onChange={handleStaticValueChange}
+              onBlur={handleInputBlur}
+              InputProps={{
+                startAdornment: (
+                  <Icon
+                    icon={IconNames.ALIGN_LEFT}
+                    className={clsx(classes.inputStartAdornment, {
+                      [classes.primaryColor]: !!staticValue,
+                    })}
+                  />
+                ),
+              }}
+            />
+          )}
+        </Grid>
+        {isNodeTypeURI && !isNodeNameType && (
+          <Grid item>
+            <Button variant="outlined" onClick={handleGenerateURIClick}>
+              {t("generateURI")}
+            </Button>
           </Grid>
-        </>
-      )}
-
+        )}
+      </Grid>
       <Grid item className={classes.iconButtonContainer}>
         <IconButton
           size="small"
