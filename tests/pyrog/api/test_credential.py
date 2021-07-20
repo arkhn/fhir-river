@@ -69,6 +69,16 @@ def test_retrieve_credential(api_client, credential):
     assert response.status_code == 200
 
 
+def test_retrieve_credential_without_password(api_client, credential_factory):
+    credential, *_ = credential_factory.create_batch(1, password="")
+    url = reverse("credentials-detail", kwargs={"pk": credential.id})
+
+    response = api_client.get(url)
+
+    assert response.data["available_owners"] == []
+    assert response.status_code == 200
+
+
 def test_list_credentials(api_client, credential_factory):
     url = reverse("credentials-list")
     credential_factory.create_batch(3)
