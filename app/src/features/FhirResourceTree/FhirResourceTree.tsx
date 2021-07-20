@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -14,11 +14,11 @@ import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useHistory, useParams } from "react-router-dom";
 
+import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import {
   useApiAttributesCreateMutation,
   useApiResourcesRetrieveQuery,
   useApiAttributesListQuery,
-  useApiAttributesRetrieveQuery,
   useApiInputGroupsCreateMutation,
 } from "services/api/endpoints";
 
@@ -51,18 +51,10 @@ const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
-  const { sourceId, mappingId, attributeId } = useParams<{
+  const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
-    attributeId?: string;
   }>();
-  const {
-    data: selectedAttribute,
-    isUninitialized: isSelectedAttributeUninitialized,
-  } = useApiAttributesRetrieveQuery(
-    { id: attributeId ?? "" },
-    { skip: !attributeId }
-  );
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
       id: mappingId ?? "",
@@ -81,12 +73,7 @@ const FhirResourceTree = (): JSX.Element => {
   );
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
-
-  const selectedNode = useMemo(() => {
-    if (!isSelectedAttributeUninitialized && selectedAttribute && root) {
-      return getNode("path", selectedAttribute.path, root);
-    }
-  }, [selectedAttribute, root, isSelectedAttributeUninitialized]);
+  const selectedNode = useGetSelectedNode();
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
