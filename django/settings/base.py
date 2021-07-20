@@ -249,8 +249,8 @@ KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_PO
 
 # API URLs
 
-PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
-FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
+PYROG_API_URL = os.environ.get("PYROG_API_URL", "http://pyrog-server:1000")
+FHIR_API_URL = os.environ.get("FHIR_API_URL", "http://fhir-api:2000")
 
 # Prometheus
 
