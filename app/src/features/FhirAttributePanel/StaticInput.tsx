@@ -1,16 +1,24 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 
+import Button from "common/components/Button";
+import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import {
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
 } from "services/api/endpoints";
-import { Input } from "services/api/generated/api.generated";
+import {
+  Input,
+  useApiSourcesExportRetrieveQuery,
+} from "services/api/generated/api.generated";
+
+const URI_STATIC_VALUE_PREFIX = "http://terminology.arkhn.org/";
 
 type StaticInputProps = {
   input: Input;
@@ -52,11 +60,29 @@ const useStyles = makeStyles((theme) => ({
 
 const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const { t } = useTranslation();
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
+    mappingId?: string;
+  }>();
   const classes = useStyles();
   const [staticValue, setStaticValue] = useState(input.static_value ?? "");
   const [deleteInput] = useApiInputsDestroyMutation();
   const [updateInput] = useApiInputsUpdateMutation();
-
+  const { data: mappings } = useApiSourcesExportRetrieveQuery(
+    { id: sourceId ?? "" },
+    { skip: !sourceId }
+  );
+  const currentMapping = useMemo(
+    () =>
+      mappings?.resources?.find(
+        // TODO : Fix Resource type by adding it {id: string} in river-schema.yml
+        (resource) => resource.id === mappingId
+      ),
+    [mappings, mappingId]
+  );
+  const selectedNode = useGetSelectedNode();
+  const isNodeTypeURI = selectedNode?.type === "uri";
+  const isNodeNameType = selectedNode?.name === "type";
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
@@ -84,30 +110,61 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   };
 
+  const handleGenerateURIClick = async () => {
+    if (currentMapping) {
+      const staticValue = `${URI_STATIC_VALUE_PREFIX}${currentMapping.logical_reference}`;
+      try {
+        await updateInput({
+          id: input.id,
+          inputRequest: { ...input, static_value: staticValue },
+        });
+        setStaticValue(staticValue);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   return (
     <Grid container item alignItems="center" direction="row" spacing={1}>
-      <Grid item xs={10}>
-        <TextField
-          variant="outlined"
-          size="small"
-          fullWidth
-          placeholder={t("typeStaticValueHere")}
-          value={staticValue}
-          onChange={handleStaticValueChange}
-          onBlur={handleInputBlur}
-          InputProps={{
-            startAdornment: (
-              <Icon
-                icon={IconNames.ALIGN_LEFT}
-                className={clsx(classes.inputStartAdornment, {
-                  [classes.primaryColor]: !!staticValue,
-                })}
+      {isNodeTypeURI && isNodeNameType ? (
+        <></>
+      ) : (
+        <>
+          <Grid item container alignItems="center" xs={10} spacing={2}>
+            <Grid item xs={7}>
+              <TextField
+                variant="outlined"
+                size="small"
+                fullWidth
+                placeholder={t("typeStaticValueHere")}
+                className={classes.input}
+                value={staticValue}
+                onChange={handleStaticValueChange}
+                onBlur={handleInputBlur}
+                InputProps={{
+                  startAdornment: (
+                    <Icon
+                      icon={IconNames.ALIGN_LEFT}
+                      className={clsx(classes.inputStartAdornment, {
+                        [classes.primaryColor]: !!staticValue,
+                      })}
+                    />
+                  ),
+                }}
               />
-            ),
-            className: classes.input,
-          }}
-        />
-      </Grid>
+            </Grid>
+            {isNodeTypeURI && (
+              <Grid item>
+                <Button variant="outlined" onClick={handleGenerateURIClick}>
+                  {t("generateURI")}
+                </Button>
+              </Grid>
+            )}
+          </Grid>
+        </>
+      )}
+
       <Grid item className={classes.iconButtonContainer}>
         <IconButton
           size="small"
