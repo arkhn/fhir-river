@@ -49,37 +49,37 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
-  unit-tests:
-    runs-on: ubuntu-18.04
-    needs: [build-and-publish]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - uses: docker/login-action@v1
-        name: login to arkhn registry
-        with:
-          username: ${{ secrets.DOCKER_LOGIN }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - id: docker-tag
-        run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
-      - id: tests
-        env:
-          IMAGE_TAG: ${{ steps.docker-tag.outputs.river-version }}
-          TEST_ORACLE_HOST: ${{ secrets.TEST_ORACLE_HOST }}
-          TEST_ORACLE_PORT: ${{ secrets.TEST_ORACLE_PORT }}
-          TEST_ORACLE_DB: ${{ secrets.TEST_ORACLE_DB }}
-          TEST_ORACLE_LOGIN: ${{ secrets.TEST_ORACLE_LOGIN }}
-          TEST_ORACLE_PASSWORD: ${{ secrets.TEST_ORACLE_PASSWORD }}
-          TEST_MSSQL_HOST: ${{ secrets.TEST_MSSQL_HOST }}
-          TEST_MSSQL_PORT: ${{ secrets.TEST_MSSQL_PORT }}
-          TEST_MSSQL_DB: ${{ secrets.TEST_MSSQL_DB }}
-          TEST_MSSQL_LOGIN: ${{ secrets.TEST_MSSQL_LOGIN }}
-          TEST_MSSQL_PASSWORD: ${{ secrets.TEST_MSSQL_PASSWORD }}
-        run: |
-          docker-compose -f ./docker-compose.test.yml up -d
-          docker-compose -f ./docker-compose.test.yml exec -T river pytest -vv -m "not django_db"
+  # unit-tests:
+  #   runs-on: ubuntu-18.04
+  #   needs: [build-and-publish]
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.8
+  #     - uses: docker/login-action@v1
+  #       name: login to arkhn registry
+  #       with:
+  #         username: ${{ secrets.DOCKER_LOGIN }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - id: docker-tag
+  #       run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
+  #     - id: tests
+  #       env:
+  #         IMAGE_TAG: ${{ steps.docker-tag.outputs.river-version }}
+  #         TEST_ORACLE_HOST: ${{ secrets.TEST_ORACLE_HOST }}
+  #         TEST_ORACLE_PORT: ${{ secrets.TEST_ORACLE_PORT }}
+  #         TEST_ORACLE_DB: ${{ secrets.TEST_ORACLE_DB }}
+  #         TEST_ORACLE_LOGIN: ${{ secrets.TEST_ORACLE_LOGIN }}
+  #         TEST_ORACLE_PASSWORD: ${{ secrets.TEST_ORACLE_PASSWORD }}
+  #         TEST_MSSQL_HOST: ${{ secrets.TEST_MSSQL_HOST }}
+  #         TEST_MSSQL_PORT: ${{ secrets.TEST_MSSQL_PORT }}
+  #         TEST_MSSQL_DB: ${{ secrets.TEST_MSSQL_DB }}
+  #         TEST_MSSQL_LOGIN: ${{ secrets.TEST_MSSQL_LOGIN }}
+  #         TEST_MSSQL_PASSWORD: ${{ secrets.TEST_MSSQL_PASSWORD }}
+  #       run: |
+  #         docker-compose -f ./docker-compose.test.yml up -d
+  #         docker-compose -f ./docker-compose.test.yml exec -T river pytest -vv -m "not django_db"
 
   test-hapi:
     runs-on: ubuntu-18.04
@@ -132,7 +132,7 @@ jobs:
   integration:
     runs-on: ubuntu-18.04
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
-    needs: [unit-tests, build-and-publish-hapi]
+    needs: [build-and-publish-hapi]
     steps:
       # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
       # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}
