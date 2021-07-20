@@ -21,6 +21,12 @@ class CredentialSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_available_owners(self, obj) -> List[str]:
+        """
+        Introspects the database schema and returns the list of available owners
+        Returns an empty list if a connection parameter is empty.
+        """
+        if "" in [obj.login, obj.password, obj.host, obj.port, obj.database]:
+            return []
         try:
             db_connection = DBConnection(obj.__dict__)
             explorer = DatabaseExplorer(db_connection)

@@ -53,7 +53,7 @@ def test_filter_owners_by_credential(
 
     first_credential, second_credential = credential_factory.create_batch(2)
     first_credential_owners = owner_factory.create_batch(3, credential=first_credential)
-    owner_factory.create_batch(1, credential=second_credential)
+    owner_factory.create(credential=second_credential)
 
     response = api_client.get(url, {"credential": first_credential.id})
 
