@@ -2,7 +2,13 @@ import React, { useMemo, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -10,6 +16,7 @@ import { useParams } from "react-router-dom";
 import Button from "common/components/Button";
 import FhirResourceAutocomplete from "common/components/FhirResourceAutocomplete";
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
+import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
 import {
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
@@ -18,6 +25,8 @@ import {
   Input,
   useApiSourcesExportRetrieveQuery,
 } from "services/api/generated/api.generated";
+
+import ExistingURIDialog from "./ExistingURIDialog";
 
 const URI_STATIC_VALUE_PREFIX = "http://terminology.arkhn.org/";
 
@@ -67,6 +76,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   }>();
   const classes = useStyles();
   const [staticValue, setStaticValue] = useState(input.static_value ?? "");
+  const [isExistingURIDialogOpen, setExistingURIDialogOpen] = useState(false);
   const [deleteInput] = useApiInputsDestroyMutation();
   const [updateInput] = useApiInputsUpdateMutation();
   const { data: mappings } = useApiSourcesExportRetrieveQuery(
@@ -82,6 +92,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     [mappings, mappingId]
   );
   const selectedNode = useGetSelectedNode();
+  const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI();
   const isNodeTypeURI = selectedNode?.type === "uri";
   const isNodeNameType = selectedNode?.name === "type";
   const handleDeleteInput = async () => {
@@ -138,57 +149,89 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
       }
     }
   };
+  const handleExistingURIDialogOpen = () => {
+    setExistingURIDialogOpen(true);
+  };
+  const handleExistingURIDialogClose = () => {
+    setExistingURIDialogOpen(false);
+  };
+  const handleExistingURIDialogSubmit = async (mappingId: string) => {
+    const staticValue = `${URI_STATIC_VALUE_PREFIX}${mappingId}`;
+    try {
+      await updateInput({
+        id: input.id,
+        inputRequest: { ...input, static_value: staticValue },
+      });
+      setStaticValue(staticValue);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <Grid container item alignItems="center" direction="row" spacing={1}>
-      <Grid item container alignItems="center" xs={10} spacing={2}>
-        <Grid item xs={7}>
-          {isNodeTypeURI && isNodeNameType ? (
-            <FhirResourceAutocomplete
-              value={input.static_value ?? ""}
-              onChange={handleFhirResourceAutocompleteChange}
-            />
-          ) : (
-            <TextField
-              variant="outlined"
-              size="small"
-              fullWidth
-              placeholder={t("typeStaticValueHere")}
-              className={classes.input}
-              value={staticValue}
-              onChange={handleStaticValueChange}
-              onBlur={handleInputBlur}
-              InputProps={{
-                startAdornment: (
-                  <Icon
-                    icon={IconNames.ALIGN_LEFT}
-                    className={clsx(classes.inputStartAdornment, {
-                      [classes.primaryColor]: !!staticValue,
-                    })}
-                  />
-                ),
-              }}
-            />
+    <>
+      <Grid container item alignItems="center" direction="row" spacing={1}>
+        <Grid item container alignItems="center" xs={10} spacing={2}>
+          <Grid item xs={7}>
+            {isNodeTypeURI && isNodeNameType ? (
+              <FhirResourceAutocomplete
+                value={input.static_value ?? ""}
+                onChange={handleFhirResourceAutocompleteChange}
+              />
+            ) : (
+              <TextField
+                variant="outlined"
+                size="small"
+                fullWidth
+                placeholder={t("typeStaticValueHere")}
+                className={classes.input}
+                value={staticValue}
+                onChange={handleStaticValueChange}
+                onBlur={handleInputBlur}
+                InputProps={{
+                  startAdornment: (
+                    <Icon
+                      icon={IconNames.ALIGN_LEFT}
+                      className={clsx(classes.inputStartAdornment, {
+                        [classes.primaryColor]: !!staticValue,
+                      })}
+                    />
+                  ),
+                }}
+              />
+            )}
+          </Grid>
+          {isNodeTypeURI && !isNodeNameType && !isNodeReferenceSystemURI && (
+            <Grid item>
+              <Button variant="outlined" onClick={handleGenerateURIClick}>
+                <Typography>{t("generateURI")}</Typography>
+              </Button>
+            </Grid>
+          )}
+          {isNodeReferenceSystemURI && (
+            <Grid item>
+              <Button variant="outlined" onClick={handleExistingURIDialogOpen}>
+                <Typography>{t("chooseExistingURI")}</Typography>
+              </Button>
+            </Grid>
           )}
         </Grid>
-        {isNodeTypeURI && !isNodeNameType && (
-          <Grid item>
-            <Button variant="outlined" onClick={handleGenerateURIClick}>
-              {t("generateURI")}
-            </Button>
-          </Grid>
-        )}
+        <Grid item className={classes.iconButtonContainer}>
+          <IconButton
+            size="small"
+            className={classes.iconButton}
+            onClick={handleDeleteInput}
+          >
+            <Icon icon={IconNames.TRASH} className={classes.icon} />
+          </IconButton>
+        </Grid>
       </Grid>
-      <Grid item className={classes.iconButtonContainer}>
-        <IconButton
-          size="small"
-          className={classes.iconButton}
-          onClick={handleDeleteInput}
-        >
-          <Icon icon={IconNames.TRASH} className={classes.icon} />
-        </IconButton>
-      </Grid>
-    </Grid>
+      <ExistingURIDialog
+        open={isExistingURIDialogOpen}
+        onSubmit={handleExistingURIDialogSubmit}
+        onClose={handleExistingURIDialogClose}
+      />
+    </>
   );
 };
 
