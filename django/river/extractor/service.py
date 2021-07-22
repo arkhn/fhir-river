@@ -2,10 +2,10 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
-from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
-from river.adapters.event_subscriber import KafkaEventSubscriber
-from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
-from river.adapters.progression_counter import ProgressionCounter, RedisProgressionCounter
+from river.adapters.event_publisher import EventPublisher
+from river.adapters.event_subscriber import EventSubscriber
+from river.adapters.mappings import MappingsRepository
+from river.adapters.progression_counter import ProgressionCounter
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.common.service.errors import BatchCancelled
@@ -80,10 +80,10 @@ def batch_resource_handler(
 
 
 def bootstrap(
-    subscriber=KafkaEventSubscriber(group_id="extractor"),
-    mappings_repo=RedisMappingsRepository(),
-    counter=RedisProgressionCounter(),
-    publisher=KafkaEventPublisher(),
+    subscriber: EventSubscriber,
+    publisher: EventPublisher,
+    mappings_repo: MappingsRepository,
+    counter: ProgressionCounter,
 ) -> Service:
     analyzer = Analyzer()
 
