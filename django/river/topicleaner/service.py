@@ -4,8 +4,8 @@ from time import sleep
 from django.utils import timezone
 
 from river import models
-from river.adapters.progression_counter import ProgressionCounter, RedisProgressionCounter
-from river.adapters.topics import KafkaTopicsManager, TopicsManager
+from river.adapters.progression_counter import ProgressionCounter
+from river.adapters.topics import TopicsManager
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
         logger.info(f"Batch {batch} deleted.")
 
 
-def run(counter=RedisProgressionCounter(), topics=KafkaTopicsManager()):
+def run(counter: ProgressionCounter, topics: TopicsManager):
     while True:
         clean(counter=counter, topics=topics)
         sleep(10)

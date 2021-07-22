@@ -2,9 +2,9 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
-from river.adapters.event_publisher import EventPublisher, KafkaEventPublisher
-from river.adapters.event_subscriber import KafkaEventSubscriber
-from river.adapters.mappings import MappingsRepository, RedisMappingsRepository
+from river.adapters.event_publisher import EventPublisher
+from river.adapters.event_subscriber import EventSubscriber
+from river.adapters.mappings import MappingsRepository
 from river.common.analyzer import Analyzer
 from river.common.errors import OperationOutcome
 from river.common.service.service import Service
@@ -86,9 +86,9 @@ def extracted_record_handler(
 
 
 def bootstrap(
-    subscriber=KafkaEventSubscriber(group_id="transformer"),
-    mappings_repo=RedisMappingsRepository(),
-    publisher=KafkaEventPublisher(),
+    subscriber: EventSubscriber,
+    publisher: EventPublisher,
+    mappings_repo: MappingsRepository,
 ) -> Service:
     analyzer = Analyzer()
     transformer = Transformer()
