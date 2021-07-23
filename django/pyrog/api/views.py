@@ -43,6 +43,9 @@ class SourceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Limit visibility of sources."""
+        if self.request.user.is_superuser:
+            return self.queryset
+
         return self.queryset.filter(users=self.request.user)
 
     def perform_create(self, serializer):
