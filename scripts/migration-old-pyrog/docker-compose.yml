@@ -1,0 +1,78 @@
+version: "3.7"
+
+services:
+
+    old-pyrog:
+        image: arkhn/pyrog-server:3.0.3
+        depends_on:
+            - postgres
+            - redis
+        environment:
+            - POSTGRES_URL=postgresql://migrate:migrate@postgres:5432/migrate?schema=pyrog
+            - APP_SECRET=deadbeefdeadbeefdeadbeefdeadbeef
+            #   - FHIR_API_URL=http://jpaltime:8080/hapi/fhir
+            #   - PORT=1000
+            - REDIS_URL=redis://redis:6379
+            #   - RIVER_URL=http://river-api:8000
+            - OAUTH2_CLIENT_ID=pyrog
+            #   - TOKEN_INTROSPECTION_URL={{nginx_internal_url}}/hydra-admin/oauth2/introspect
+            #   - USER_INFO_URL={{nginx_internal_url}}/hydra/userinfo
+            - OAUTH2_TOKEN_URL=bla
+            - DEFINITIONS_DIR=/var/fhir/definitions
+            - ENV=test
+        volumes:
+            - ./definitions:/var/fhir/definitions 
+            - ./mappings:/srv/mappings
+
+    new-pyrog:
+        image: arkhn/river:migrate
+        restart: on-failure
+        ports:
+            - "8000:8000"
+        environment:
+            # - ENV=prod
+            # - UWSGI_USE_SOCKET=True
+            # - ADMIN_ENABLED={{ env == "dev" }}
+            # - LOG_LEVEL=INFO
+            # - USE_X_FORWARDED_HOST=True
+            - ALLOWED_HOSTS=localhost
+            - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
+            # - FHIR_API_URL={{nginx_public_url}}/hapi/fhir
+            - SECRET_KEY=any
+            # - STATIC_URL=/new_pyrog/django/static/
+            # - STATIC_ROOT=/var/www/static/pyrog-api
+            - POSTGRES_DB=migrate
+            - POSTGRES_USER=migrate
+            - POSTGRES_PASSWORD=migrate
+            - POSTGRES_HOST=postgres
+            - POSTGRES_PORT=5432
+            # - OIDC_RP_CLIENT_ID={{new_pyrog_django_oidc_client_id}}
+            # - OIDC_RP_CLIENT_SECRET={{new_pyrog_django_oidc_client_secret}}
+            # - OIDC_RP_EXTRA_SCOPES=read
+            - OIDC_RP_SIGN_ALGO=HS256
+            # - LOGIN_REDIRECT_URL={{nginx_public_url}}/new_pyrog/
+            # - LOGIN_REDIRECT_URL_FAILURE={{nginx_public_url}}/new_pyrog/error/
+            # - LOGOUT_REDIRECT_URL={{nginx_public_url}}/new_pyrog/
+            # - OIDC_OP_AUTHORIZATION_ENDPOINT={{nginx_public_url}}/oprovider/o/authorize/ # Public URL
+            # - OIDC_OP_TOKEN_ENDPOINT={{nginx_internal_url}}/oprovider/o/token/
+            # - OIDC_OP_USER_ENDPOINT={{nginx_internal_url}}/oprovider/o/userinfo/
+
+    postgres:
+        image: postgres:12
+        restart: on-failure
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_DB=migrate
+            - POSTGRES_USER=migrate
+            - POSTGRES_PASSWORD=migrate
+        volumes:
+            - db-data:/var/lib/postgresql/data
+
+    redis:
+        image: redis:5.0.7-alpine
+        ports:
+            - 6379:6379
+
+volumes:
+  db-data:
