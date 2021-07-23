@@ -32,4 +32,5 @@ docker-compose run \
 docker-compose up -d new-pyrog
 
 # Fetch the new mapping
-curl --user $SUPERUSER_EMAIL:$SUPERUSER_PASSWORD -X GET http://localhost:8000/api/sources/ckrgfiubg00092nl0u30ugf1u/export/ -o $OUTPUT_FILE
+# TODO use right mapping id
+curl --user $SUPERUSER_EMAIL:$SUPERUSER_PASSWORD -X GET http://localhost:8000/api/sources/$SOURCE_ID/export/
