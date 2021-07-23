@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 
 type CleaningScriptButtonType = {
   scriptName?: string;
-  onChange: (script: Scripts) => void;
+  onChange: (script: Scripts | null) => void;
 };
 
 const CleaningScriptButton = ({
@@ -75,9 +75,7 @@ const CleaningScriptButton = ({
 
   const handleScriptChange = (script: Scripts) => () => {
     handleMenuClose();
-    if (scriptName !== script.name) {
-      onChange && onChange(script);
-    }
+    onChange && onChange(scriptName !== script.name ? script : null);
   };
 
   return (
