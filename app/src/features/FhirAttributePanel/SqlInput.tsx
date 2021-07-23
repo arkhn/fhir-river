@@ -126,11 +126,11 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
     }
   };
 
-  const handleScriptChange = async (script: Scripts) => {
+  const handleScriptChange = async (script: Scripts | null) => {
     try {
       await updateInput({
         id: input.id,
-        inputRequest: { ...input, script: script.name },
+        inputRequest: { ...input, script: script ? script.name : "" },
       });
     } catch (error) {
       // TODO: Handle errors nicely
