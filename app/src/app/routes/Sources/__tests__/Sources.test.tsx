@@ -263,7 +263,6 @@ describe("Sources page", () => {
 
   test("the source mappings and attributes count", async () => {
     screen.getByText("2 mappings");
-    screen.getByText("3 attributes");
   });
 
   test("updating a source", async () => {
