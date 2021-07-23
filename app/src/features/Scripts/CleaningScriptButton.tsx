@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
   menuPopup: {
     maxHeight: 300,
   },
+  selectedMenuItem: {
+    backgroundColor: theme.palette.primary.light,
+  },
 }));
 
 type CleaningScriptButtonType = {
@@ -117,8 +120,12 @@ const CleaningScriptButton = ({
               key={`${script.name}-${index}`}
               onClick={handleScriptChange(script)}
               selected={scriptName === script.name}
+              classes={{ selected: classes.selectedMenuItem }}
             >
-              <ScriptListItem script={script} />
+              <ScriptListItem
+                script={script}
+                selected={scriptName === script.name}
+              />
             </MenuItem>
           ))
         )}
