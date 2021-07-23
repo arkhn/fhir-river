@@ -3,15 +3,11 @@ import React from "react";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
-import AttributeIcon from "@material-ui/icons/LocalOffer";
 import { useTranslation } from "react-i18next";
 import { useParams, useHistory } from "react-router";
 
 import Button from "common/components/Button";
-import {
-  useApiResourcesListQuery,
-  useApiAttributesListQuery,
-} from "services/api/endpoints";
+import { useApiResourcesListQuery } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
   rowContainer: {
@@ -35,7 +31,6 @@ const MappingsToolbar = (): JSX.Element => {
   const { sourceId } = useParams<{ sourceId?: string }>();
 
   const { data: mappings } = useApiResourcesListQuery({ source: sourceId });
-  const { data: attributes } = useApiAttributesListQuery({ source: sourceId });
 
   const handleCreateMappingClick = () => {
     history.push(`/sources/${sourceId}/mappings`);
@@ -66,12 +61,6 @@ const MappingsToolbar = (): JSX.Element => {
         />
         <Typography color="textSecondary">
           {mappings ? `${mappings.length} mappings` : "-"}
-        </Typography>
-      </Grid>
-      <Grid item className={classes.rowContainer}>
-        <AttributeIcon className={classes.icon} />
-        <Typography color="textSecondary">
-          {attributes ? `${attributes.length} attributes` : "-"}
         </Typography>
       </Grid>
     </Grid>
