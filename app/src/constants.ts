@@ -24,4 +24,12 @@ if (process.env.NODE_ENV === "production") {
   } = (window as EnhancedWindow).env);
 }
 
-export { PUBLIC_URL, API_URL, OIDC_LOGIN_URL, CSRF_COOKIE_NAME };
+const URI_STATIC_VALUE_PREFIX = "http://terminology.arkhn.org/";
+
+export {
+  PUBLIC_URL,
+  API_URL,
+  OIDC_LOGIN_URL,
+  CSRF_COOKIE_NAME,
+  URI_STATIC_VALUE_PREFIX,
+};
