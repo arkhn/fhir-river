@@ -92,7 +92,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     [mappings, mappingId]
   );
   const selectedNode = useGetSelectedNode();
-  const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI();
+  const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI(selectedNode);
   const isNodeTypeURI = selectedNode?.type === "uri";
   const isNodeNameType = selectedNode?.name === "type";
   const handleDeleteInput = async () => {
