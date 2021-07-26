@@ -74,6 +74,19 @@ def test_can_import_mapping(api_client, export_data):
 
 
 @pytest.mark.as_user
+@pytest.mark.export_data("valid/0003.json")
+def test_can_import_mapping_several_times(api_client, export_data):
+    url = reverse("sources-list")
+
+    response = api_client.post(url + "import/", export_data, format="json")
+    assert response.status_code == 201
+
+    # Change source name
+    export_data["name"] = "other_name"
+    response = api_client.post(url + "import/", export_data, format="json")
+
+
+@pytest.mark.as_user
 def test_retrieve_full_source(
     snapshot,
     reset_factories_sequences,
