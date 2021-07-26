@@ -186,7 +186,7 @@ const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
   );
 };
 
-const getParent = (
+export const getParent = (
   child: ElementNode,
   root: ElementNode
 ): ElementNode | undefined => {

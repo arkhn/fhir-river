@@ -1,33 +1,24 @@
 import { useAppSelector } from "app/store";
-import { selectRoot } from "features/FhirResourceTree/resourceTreeSlice";
-import { getNode } from "features/FhirResourceTree/resourceTreeUtils";
+import {
+  ElementNode,
+  selectRoot,
+} from "features/FhirResourceTree/resourceTreeSlice";
+import { getParent } from "features/FhirResourceTree/resourceTreeUtils";
 
-import useGetSelectedNode from "./useGetSelectedNode";
-
-const useIsNodeReferenceSystemURI = (): boolean => {
+const useIsNodeReferenceSystemURI = (node?: ElementNode): boolean => {
   const root = useAppSelector(selectRoot);
-  const selectedNode = useGetSelectedNode();
-  const isNodeTypeURIAndNameSystem =
-    selectedNode?.type === "uri" && selectedNode?.name === "system";
 
-  if (root && selectedNode && isNodeTypeURIAndNameSystem) {
-    const parentNodePath = selectedNode.path.replace(/[.][^.]+$/, "");
-    const parentNode = getNode("path", parentNodePath, root);
-
-    const isParentNodeIdentifier = parentNode?.type === "Identifier";
-
-    if (parentNode && isParentNodeIdentifier) {
-      const greatParentNodePath = parentNode.path.replace(/[.][^.]+$/, "");
-      const greatParentNode = getNode("path", greatParentNodePath, root);
-
-      const isGreatParentNodeTypeReference =
-        greatParentNode?.type === "Reference";
-
-      return isGreatParentNodeTypeReference;
-    }
+  if (!root || !node || node.type !== "uri" || node.name !== "system") {
+    return false;
   }
 
-  return false;
+  const parentNode = getParent(node, root);
+  if (!parentNode || parentNode.type !== "Identifier") {
+    return false;
+  }
+
+  const greatParentNode = getParent(parentNode, root);
+  return greatParentNode?.type === "Reference";
 };
 
 export default useIsNodeReferenceSystemURI;
