@@ -200,7 +200,10 @@ class MappingSerializer(serializers.ModelSerializer):
         for owner_data in owners_data:
             columns_data = owner_data.pop("columns")
 
-            owner = Owner.objects.create(credential=credential, **owner_data)
+            owner = Owner.objects.create(
+                credential=credential,
+                **{**owner_data, "id": None},  # Ignore provided `id` field
+            )
 
             owner_by_id[owner_data["id"]] = owner
 
@@ -210,7 +213,10 @@ class MappingSerializer(serializers.ModelSerializer):
             for column_data in columns_data:
                 joins_data = column_data.pop("joins")
 
-                column = Column.objects.create(owner=owner, **column_data)
+                column = Column.objects.create(
+                    owner=owner,
+                    **{**column_data, "id": None},  # Ignore provided `id` field
+                )
 
                 column_by_id[column_data["id"]] = column
 
