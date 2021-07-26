@@ -61,23 +61,21 @@ const ExistingURIDialog = ({
       name?: string | undefined;
       value: unknown;
     }>
-  ) => {
-    setSource(event.target.value as string);
-  };
+  ) => setSource(event.target.value as string);
+
   const handleMappingChange = (
     event: React.ChangeEvent<{
       name?: string | undefined;
       value: unknown;
     }>
-  ) => {
-    setMapping(event.target.value as string);
-  };
+  ) => setMapping(event.target.value as string);
+
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const selectedMapping = mappings?.resources?.find(
       ({ id }: _Resource & { id?: string }) => id === mapping
     );
     if (selectedMapping) {
-      onSubmit((selectedMapping as _Resource & { id?: string }).id ?? "");
+      onSubmit((selectedMapping as _Resource).logical_reference ?? "");
     }
     handleClose(e);
   };
