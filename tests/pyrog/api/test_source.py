@@ -65,10 +65,10 @@ def test_retrieve_source_forbidden(api_client, source):
 
 @pytest.mark.as_user
 @pytest.mark.export_data("valid/0003.json")
-def test_create_full_source(api_client, export_data):
+def test_can_import_mapping(api_client, export_data):
     url = reverse("sources-list")
 
-    response = api_client.post(url + "?full=True", export_data, format="json")
+    response = api_client.post(url + "import/", export_data, format="json")
 
     assert response.status_code == 201
 
