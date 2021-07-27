@@ -16,5 +16,7 @@ class Command(BaseCommand):
         start_exporter()
 
         logger.info("Starting...")
-        service = bootstrap(KafkaEventSubscriber(), KafkaEventPublisher(), RedisMappingsRepository())
+        service = bootstrap(
+            KafkaEventSubscriber(group_id="transformer"), KafkaEventPublisher(), RedisMappingsRepository()
+        )
         service.run()
