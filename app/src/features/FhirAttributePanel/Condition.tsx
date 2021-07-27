@@ -28,6 +28,7 @@ import {
   conditionUpdated,
   PendingCondition,
 } from "features/Conditions/conditionSlice";
+import ColumnJoinList from "features/Joins/ColumnJoinList";
 import {
   useApiColumnsCreateMutation,
   useApiColumnsRetrieveQuery,
@@ -86,6 +87,10 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     padding: theme.spacing(1),
   },
+  leftShift: {
+    paddingLeft: theme.spacing(5),
+    width: "100%",
+  },
 }));
 
 const Condition = ({ condition }: ConditionProps): JSX.Element => {
@@ -116,6 +121,11 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
       .selectAll(state)
       .find((column) => column?.id === condition.column)
   );
+  const isMappingPKTableAndConditionColumnTableDifferent =
+    conditionColumn?.table &&
+    mapping &&
+    (conditionColumn.owner !== mapping.primary_key_owner ||
+      conditionColumn.table !== mapping.primary_key_table);
   const hideValueInput =
     condition.relation === "NOTNULL" || condition.relation === "NULL";
 
@@ -257,55 +267,65 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
   }
 
   return (
-    <Grid
-      item
-      container
-      alignItems="center"
-      spacing={1}
-      justify="space-between"
-    >
-      <Grid container item xs={11} spacing={1} alignItems="center">
-        <Grid item>
-          <Typography className={classes.badgeLabel}>
-            {t("condition")}
-          </Typography>
-        </Grid>
-        <ColumnSelects
-          pendingColumn={conditionColumn ?? {}}
-          onChange={handleColumnChange}
-        />
-        <Grid item>
-          <Select
-            value={condition.relation ?? ""}
-            options={CONDITION_RELATIONS.map((relation) => ({
-              id: relation,
-              label: t(relation),
-            }))}
-            onChange={handleRelationChange}
-            emptyOption={t("selectOperation")}
+    <Grid item container direction="column" spacing={1}>
+      <Grid
+        item
+        container
+        alignItems="center"
+        spacing={1}
+        justify="space-between"
+      >
+        <Grid container item xs={11} spacing={1} alignItems="center">
+          <Grid item>
+            <Typography className={classes.badgeLabel}>
+              {t("condition")}
+            </Typography>
+          </Grid>
+          <ColumnSelects
+            pendingColumn={conditionColumn ?? {}}
+            onChange={handleColumnChange}
           />
+          <Grid item>
+            <Select
+              value={condition.relation ?? ""}
+              options={CONDITION_RELATIONS.map((relation) => ({
+                id: relation,
+                label: t(relation),
+              }))}
+              onChange={handleRelationChange}
+              emptyOption={t("selectOperation")}
+            />
+          </Grid>
+          <Grid item>
+            {!hideValueInput && (
+              <TextField
+                value={condition.value ?? ""}
+                onChange={handleValueChange}
+                placeholder={t("typeValue")}
+                variant="outlined"
+                size="small"
+              />
+            )}
+          </Grid>
         </Grid>
         <Grid item>
-          {!hideValueInput && (
-            <TextField
-              value={condition.value ?? ""}
-              onChange={handleValueChange}
-              placeholder={t("typeValue")}
-              variant="outlined"
-              size="small"
-            />
-          )}
+          <IconButton
+            size="small"
+            className={classes.iconButton}
+            onClick={handleDeleteCondition}
+          >
+            <Icon icon={IconNames.TRASH} className={classes.icon} />
+          </IconButton>
         </Grid>
       </Grid>
-      <Grid item>
-        <IconButton
-          size="small"
-          className={classes.iconButton}
-          onClick={handleDeleteCondition}
-        >
-          <Icon icon={IconNames.TRASH} className={classes.icon} />
-        </IconButton>
-      </Grid>
+      {isMappingPKTableAndConditionColumnTableDifferent &&
+        !conditionColumn?.pending && (
+          <Grid item container>
+            <div className={classes.leftShift}>
+              <ColumnJoinList column={conditionColumn} mapping={mapping} />
+            </div>
+          </Grid>
+        )}
     </Grid>
   );
 };
