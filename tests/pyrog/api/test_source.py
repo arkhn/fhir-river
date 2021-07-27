@@ -84,6 +84,10 @@ def test_can_import_mapping_several_times(api_client, export_data):
     # Change source name
     export_data["name"] = "other_name"
     response = api_client.post(url + "import/", export_data, format="json")
+    assert response.status_code == 201
+
+    response = api_client.get(url)
+    assert len(response.data) == 2
 
 
 @pytest.mark.as_user
