@@ -142,7 +142,8 @@ jobs:
         run: echo "::set-output name=docker-version::sha-${GITHUB_SHA::7}"
 
       - name: Provision, deploy and test
-        uses: docker://arkhn/testy-action:0.5.7
+        # uses: docker://arkhn/testy-action:0.5.7
+        uses: arkhn/testy-action@sv/missing-deployment-vars
         with:
           cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
           cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
@@ -151,7 +152,7 @@ jobs:
           dockerUsername: ${{ secrets.DOCKER_LOGIN }}
           dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: main
+          deploymentRef: sv/stop-pulling-testy
           debug: true
           versions: |
             {
