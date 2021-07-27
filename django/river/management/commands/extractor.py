@@ -18,6 +18,9 @@ class Command(BaseCommand):
 
         logger.info("Starting...")
         service = bootstrap(
-            KafkaEventSubscriber(), KafkaEventPublisher(), RedisMappingsRepository(), RedisProgressionCounter()
+            KafkaEventSubscriber(group_id="extractor"),
+            KafkaEventPublisher(),
+            RedisMappingsRepository(),
+            RedisProgressionCounter(),
         )
         service.run()
