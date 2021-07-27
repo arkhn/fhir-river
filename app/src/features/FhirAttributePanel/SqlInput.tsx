@@ -19,6 +19,7 @@ import {
   columnSelectors,
   PendingColumn,
 } from "features/Columns/columnSlice";
+import ColumnJoinList from "features/Joins/ColumnJoinList";
 import CleaningScriptButton from "features/Scripts/CleaningScriptButton";
 import {
   useApiColumnsListQuery,
@@ -69,6 +70,10 @@ const useStyles = makeStyles((theme) => ({
   menuPopup: {
     maxHeight: 300,
   },
+  leftShift: {
+    paddingLeft: theme.spacing(5),
+    width: "100%",
+  },
 }));
 
 const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
@@ -95,6 +100,12 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
       .selectAll(state)
       .find((column) => column?.input === input.id)
   );
+  const isMappingPKTableAndInputColumnTableDifferent =
+    inputColumn?.table &&
+    mapping &&
+    (inputColumn.owner !== mapping.primary_key_owner ||
+      inputColumn.table !== mapping.primary_key_table);
+
   useEffect(() => {
     if (inputColumns && !inputColumn && mapping) {
       if (inputColumns[0]) {
@@ -166,28 +177,37 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   }
 
   return (
-    <Grid item container alignItems="center" direction="row" spacing={1}>
-      <Grid item spacing={1} container className={classes.columnSelect}>
-        <ColumnSelects
-          pendingColumn={inputColumn ?? {}}
-          onChange={handleColumnChange}
-        />
+    <Grid item container direction="column" spacing={1}>
+      <Grid item container alignItems="center" spacing={1}>
+        <Grid item spacing={1} container className={classes.columnSelect}>
+          <ColumnSelects
+            pendingColumn={inputColumn ?? {}}
+            onChange={handleColumnChange}
+          />
+        </Grid>
+        <Grid item>
+          <CleaningScriptButton
+            scriptName={input.script}
+            onChange={handleScriptChange}
+          />
+        </Grid>
+        <Grid item className={classes.iconButtonContainer}>
+          <IconButton
+            size="small"
+            className={classes.iconButton}
+            onClick={handleDeleteInput}
+          >
+            <Icon icon={IconNames.TRASH} className={classes.icon} />
+          </IconButton>
+        </Grid>
       </Grid>
-      <Grid item>
-        <CleaningScriptButton
-          scriptName={input.script}
-          onChange={handleScriptChange}
-        />
-      </Grid>
-      <Grid item className={classes.iconButtonContainer}>
-        <IconButton
-          size="small"
-          className={classes.iconButton}
-          onClick={handleDeleteInput}
-        >
-          <Icon icon={IconNames.TRASH} className={classes.icon} />
-        </IconButton>
-      </Grid>
+      {isMappingPKTableAndInputColumnTableDifferent && !inputColumn?.pending && (
+        <Grid item container>
+          <div className={classes.leftShift}>
+            <ColumnJoinList column={inputColumn} mapping={mapping} />
+          </div>
+        </Grid>
+      )}
     </Grid>
   );
 };
