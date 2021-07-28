@@ -104,6 +104,9 @@ class Source(BaseModel):
     version: str
     resources: List[Resource]
     credential: Credential
+    created_at: str
+    updated_at: str
+    users: List[str]
 
 
 def as_old_mapping(source: Source, resource_id: str):
@@ -133,9 +136,15 @@ def as_old_mapping(source: Source, resource_id: str):
         "primaryKeyOwner": {"name": resource.primary_key_owner},
         "primaryKeyTable": resource.primary_key_table,
         "primaryKeyColumn": resource.primary_key_column,
-        "definitionId": None,  # TODO: ??
+        "definitionId": resource.definition_id,
+        "definition": {
+            "kind": "resource",
+            "derivation": "specialization",
+            "url": f"http://hl7.org/fhir/StructureDefinition/{resource.definition_id}",
+            "type": resource.definition_id,
+        },  # TODO: add this field to the exported mappings
         "source": {
-            "id": source.id,  # TODO: add this field to exported mappings
+            "id": source.id,
             "name": source.name,
             "version": source.version or None,
             "credential": {
@@ -184,7 +193,6 @@ def as_old_mapping(source: Source, resource_id: str):
             }
             for filter in resource.filters
         ],
-        "definition": dict(resource.definition),  # TODO: add this field to the exported mappings
     }
 
     return old_mapping
