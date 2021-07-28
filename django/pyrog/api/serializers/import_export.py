@@ -153,6 +153,7 @@ class _ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = [
+            "id",
             "label",
             "primary_key_table",
             "primary_key_column",
