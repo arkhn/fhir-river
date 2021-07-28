@@ -59,5 +59,5 @@ SOURCE_ID=$(echo $SOURCE_ID | jq -r ".[].id")
 # TODO use right mapping id
 curl --user $SUPERUSER_EMAIL:$SUPERUSER_PASSWORD -X GET http://localhost:8000/api/sources/$SOURCE_ID/export/ | jq > $OUTPUT_FILE
 
-# Stop running containers
-docker-compose stop
+# Remove all containers and volumes
+docker-compose down -v
