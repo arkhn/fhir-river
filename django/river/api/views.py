@@ -2,6 +2,7 @@ from rest_framework import filters, generics, pagination, response, status, view
 from rest_framework.decorators import action
 
 from common.scripts import ScriptsRepository
+from drf_spectacular.utils import extend_schema
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
@@ -45,11 +46,10 @@ class BatchViewSet(viewsets.ModelViewSet):
         raise NotImplementedError
 
 
+@extend_schema(request=serializers.PreviewRequestSerializer, responses={"201": serializers.PreviewResponseSerializer})
 class PreviewEndpoint(generics.CreateAPIView):
-    serializer_class = serializers.PreviewSerializer
-
     def create(self, request, *args, **kwargs):
-        serializer = serializers.PreviewSerializer(data=request.data)
+        serializer = serializers.PreviewRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         headers = self.get_success_headers(serializer.data)
 

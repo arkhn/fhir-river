@@ -18,9 +18,14 @@ class BatchSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PreviewSerializer(serializers.Serializer):
+class PreviewRequestSerializer(serializers.Serializer):
     mapping = MappingSerializer()
     primary_key_values = serializers.ListField(child=serializers.CharField())
+
+
+class PreviewResponseSerializer(serializers.Serializer):
+    instances = serializers.ListField(child=serializers.JSONField())
+    errors = serializers.ListField(child=serializers.CharField())
 
 
 class ScriptsSerializer(serializers.Serializer):

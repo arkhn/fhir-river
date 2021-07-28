@@ -1760,24 +1760,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/PreviewRequestRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/PreviewRequestRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/PreviewRequestRequest'
         required: true
       security:
       - cookieAuth: []
       - basicAuth: []
       - {}
       responses:
-        '200':
+        '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Preview'
+                $ref: '#/components/schemas/PreviewResponse'
           description: ''
   /api/resources/:
     get:
@@ -2980,19 +2980,7 @@ components:
           type: string
         version:
           type: string
-    Preview:
-      type: object
-      properties:
-        mapping:
-          $ref: '#/components/schemas/Mapping'
-        primary_key_values:
-          type: array
-          items:
-            type: string
-      required:
-      - mapping
-      - primary_key_values
-    PreviewRequest:
+    PreviewRequestRequest:
       type: object
       properties:
         mapping:
@@ -3004,6 +2992,21 @@ components:
       required:
       - mapping
       - primary_key_values
+    PreviewResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+      - errors
+      - instances
     Resource:
       type: object
       properties:
@@ -3422,6 +3425,9 @@ components:
     _Resource:
       type: object
       properties:
+        id:
+          type: string
+          readOnly: true
         label:
           type: string
         primary_key_table:
@@ -3447,6 +3453,7 @@ components:
           default: []
       required:
       - definition_id
+      - id
       - logical_reference
       - primary_key_column
       - primary_key_owner
