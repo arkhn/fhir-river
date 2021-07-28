@@ -78,7 +78,7 @@ class Resource(BaseModel):
     logical_reference: str
     attributes: List[Attribute] = []
     filters: List[Filter]
-    definition: Definition  # ?
+    definition: Optional[Definition] = None
 
 
 class Owner(BaseModel):
