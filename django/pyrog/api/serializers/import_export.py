@@ -239,7 +239,7 @@ class MappingSerializer(serializers.ModelSerializer):
             owner_data = resource_data.pop("primary_key_owner")
 
             owner = owner_by_id[owner_data]
-            resource = Resource.objects.create(primary_key_owner=owner, source=source, **resource_data)
+            resource = Resource.objects.create(primary_key_owner=owner, source=source, **{**resource_data, "id": None})
 
             for filter_data in filters_data:
                 column_data = filter_data.pop("sql_column")
