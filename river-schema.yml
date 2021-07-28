@@ -2203,38 +2203,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /pagai/explore/{resource_id}/{owner}/{table}/:
-    get:
-      operationId: pagai_explore_retrieve
+  /pagai/explore/:
+    post:
+      operationId: pagai_explore_create
       description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: resource_id
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: table
-        schema:
-          type: string
-        required: true
       tags:
       - pagai
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
       - {}
       responses:
-        '200':
+        '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Exploration'
+                $ref: '#/components/schemas/ExplorationResponse'
           description: ''
   /pagai/list-owners/:
     post:
@@ -2580,7 +2576,23 @@ components:
       - batch
       - event
       - message
-    Exploration:
+    ExplorationRequestRequest:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        mapping:
+          $ref: '#/components/schemas/MappingRequest'
+        owner:
+          type: string
+        table:
+          type: string
+      required:
+      - mapping
+      - owner
+      - resource_id
+      - table
+    ExplorationResponse:
       type: object
       properties:
         fields:
