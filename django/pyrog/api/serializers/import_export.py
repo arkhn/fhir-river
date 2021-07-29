@@ -26,9 +26,10 @@ from pyrog.models import (
     Resource,
     Source,
 )
+from users.api.serializers import UserSerializer
 
 
-class _ColumnField(serializers.PrimaryKeyRelatedField):
+class _ColumnField(serializers.Serializer):
     """PKRelatedField with default deserialization overriden.
 
     The default deserialization looks for an object with given id (the ``data``) in DB.
@@ -48,7 +49,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
         raise serializers.ValidationError("No associated Column.")
 
 
-class _OwnerField(serializers.PrimaryKeyRelatedField):
+class _OwnerField(serializers.Serializer):
     """PKRelatedField with default deserialization overriden.
 
     Cf ``_ColumField``.
@@ -126,6 +127,7 @@ class _ConditionSerializer(serializers.ModelSerializer):
 
 
 class _InputGroupSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
     inputs = _InputSerializer(many=True, required=False, default=[])
     conditions = _ConditionSerializer(many=True, required=False, default=[])
 
@@ -155,6 +157,7 @@ class _ResourceSerializer(serializers.ModelSerializer):
     primary_key_owner = _OwnerField()
     attributes = _AttributeSerializer(many=True, required=False, default=[])
     filters = _FilterSerializer(many=True, required=False, default=[])
+    logical_reference = serializers.CharField()
 
     class Meta:
         model = Resource
@@ -172,8 +175,10 @@ class _ResourceSerializer(serializers.ModelSerializer):
 
 
 class MappingSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
     resources = _ResourceSerializer(many=True, required=False, default=[])
     credential = _CredentialSerializer()
+    users = UserSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Source

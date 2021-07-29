@@ -105,9 +105,9 @@ class Source(BaseModel):
     version: str
     resources: List[Resource]
     credential: Credential
-    created_at: str
-    updated_at: str
-    users: List[str]
+    created_at: Optional[str]
+    updated_at: Optional[str]
+    users: Optional[List[str]]
 
 
 def as_old_mapping(source: Source, resource_id: str):
