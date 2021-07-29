@@ -234,6 +234,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/BatchRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -292,6 +293,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/BatchRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -380,6 +382,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/BatchRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2327,8 +2330,7 @@ components:
             $ref: '#/components/schemas/Error'
           readOnly: true
         mappings:
-          type: object
-          additionalProperties: {}
+          $ref: '#/components/schemas/Mapping'
         created_at:
           type: string
           format: date-time
@@ -2346,13 +2348,15 @@ components:
       - deleted_at
       - errors
       - id
+      - mappings
       - updated_at
     BatchRequest:
       type: object
       properties:
         mappings:
-          type: object
-          additionalProperties: {}
+          $ref: '#/components/schemas/MappingRequest'
+      required:
+      - mappings
     Column:
       type: object
       properties:
@@ -2916,8 +2920,7 @@ components:
       type: object
       properties:
         mappings:
-          type: object
-          additionalProperties: {}
+          $ref: '#/components/schemas/MappingRequest'
     PatchedColumnRequest:
       type: object
       properties:
