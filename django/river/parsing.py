@@ -114,7 +114,9 @@ def as_old_mapping(source: Source, resource_id: str):
 
     # Flatten owners->columns to search through all columns
     columns_by_id: Dict[str, Tuple[Column, Owner]] = {}
+    owners_by_id: Dict[str, Owner] = {}
     for owner in source.credential.owners:
+        owners_by_id[owner.id] = owner
         for column in owner.columns:
             columns_by_id[column.id] = (column, owner)
 
@@ -133,7 +135,7 @@ def as_old_mapping(source: Source, resource_id: str):
     old_mapping = {
         "id": resource.id,
         "logicalReference": resource.logical_reference,
-        "primaryKeyOwner": {"name": resource.primary_key_owner},
+        "primaryKeyOwner": {"name": owners_by_id[resource.primary_key_owner].name},
         "primaryKeyTable": resource.primary_key_table,
         "primaryKeyColumn": resource.primary_key_column,
         "definitionId": resource.definition_id,
@@ -166,7 +168,7 @@ def as_old_mapping(source: Source, resource_id: str):
                                 "conceptMapId": input_.concept_map_id or None,
                                 "conceptMap": None,  # TODO: ??
                                 "staticValue": input_.static_value,
-                                "sqlValue": serialize_column(input_.column) if input_.column != "" else None,
+                                "sqlValue": serialize_column(input_.column) if input_.column else None,
                             }
                             for input_ in input_group.inputs
                         ],
