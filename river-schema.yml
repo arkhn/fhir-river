@@ -2156,7 +2156,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mapping'
+                $ref: '#/components/schemas/MappingWithPartialCredential'
           description: ''
   /api/sources/import/:
     post:
@@ -2808,6 +2808,43 @@ components:
       required:
       - credential
       - name
+    MappingWithPartialCredential:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Resource'
+          default: []
+        credential:
+          $ref: '#/components/schemas/_PartialCredential'
+        name:
+          type: string
+        version:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        users:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - created_at
+      - credential
+      - id
+      - name
+      - updated_at
+      - users
     ModelEnum:
       enum:
       - MSSQL
@@ -3266,10 +3303,16 @@ components:
           items:
             $ref: '#/components/schemas/_Owner'
           default: []
+        login:
+          type: string
+        password:
+          type: string
       required:
       - database
       - host
+      - login
       - model
+      - password
       - port
     _CredentialRequest:
       type: object
@@ -3289,10 +3332,16 @@ components:
           items:
             $ref: '#/components/schemas/_OwnerRequest'
           default: []
+        login:
+          type: string
+        password:
+          type: string
       required:
       - database
       - host
+      - login
       - model
+      - password
       - port
     _Filter:
       type: object
@@ -3434,6 +3483,29 @@ components:
       required:
       - id
       - name
+    _PartialCredential:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/_Owner'
+          default: []
+      required:
+      - database
+      - host
+      - model
+      - port
     _Resource:
       type: object
       properties:
