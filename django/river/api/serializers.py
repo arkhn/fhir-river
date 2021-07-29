@@ -12,6 +12,7 @@ class ErrorSerializer(serializers.ModelSerializer):
 
 class BatchSerializer(serializers.ModelSerializer):
     errors = ErrorSerializer(many=True, read_only=True)
+    mappings = MappingSerializer()
 
     class Meta:
         model = models.Batch
