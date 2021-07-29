@@ -96,7 +96,7 @@ class _PartialCredentialSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Credential
-        fields = ["host", "port", "database", "model", "owners"]
+        fields = ["host", "port", "database", "model", "owners", "login", "password"]
 
 
 class _CredentialSerializer(_PartialCredentialSerializer):
@@ -131,7 +131,7 @@ class _InputGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InputGroup
-        fields = ["merging_script", "inputs", "conditions"]
+        fields = ["id", "merging_script", "inputs", "conditions"]
 
 
 class _AttributeSerializer(serializers.ModelSerializer):
@@ -262,7 +262,7 @@ class MappingSerializer(serializers.ModelSerializer):
                     inputs_data = input_group_data.pop("inputs")
                     conditions_data = input_group_data.pop("conditions")
 
-                    input_group = InputGroup.objects.create(attribute=attribute, **input_group_data)
+                    input_group = InputGroup.objects.create(attribute=attribute, **{**input_group_data, "id": None})
 
                     for input_data in inputs_data:
                         column_data = input_data.pop("column")
