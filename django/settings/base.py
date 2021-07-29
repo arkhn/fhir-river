@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd parties
+    "drf_spectacular",
     "rest_framework",
     "corsheaders",
     "django_filters",
@@ -301,9 +302,7 @@ if SENTRY_ENABLED:
 
 # DRF Spectacular settings
 
-if get_env_bool_value("DRF_SPECTACULAR_ENABLED", False):
-    INSTALLED_APPS += ["drf_spectacular"]
-    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
 SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [
