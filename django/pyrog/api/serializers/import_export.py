@@ -41,7 +41,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
 
-        for owner in self.root.initial_data["credential"]["owners"]:
+        for owner in self.root.initial_data["mappings"]["credential"]["owners"]:
             for column in owner["columns"]:
                 if column["id"] == data:
                     return data
@@ -59,7 +59,7 @@ class _OwnerField(serializers.PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
 
-        for owner in self.root.initial_data["credential"]["owners"]:
+        for owner in self.root.initial_data["mappings"]["credential"]["owners"]:
             if owner["id"] == data:
                 return data
         raise serializers.ValidationError("No associated Owner.")
@@ -96,7 +96,7 @@ class _PartialCredentialSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Credential
-        fields = ["host", "port", "database", "model", "owners", "login", "password"]
+        fields = ["host", "port", "database", "model", "owners"]
 
 
 class _CredentialSerializer(_PartialCredentialSerializer):
@@ -151,6 +151,7 @@ class _FilterSerializer(serializers.ModelSerializer):
 
 
 class _ResourceSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
     primary_key_owner = _OwnerField()
     attributes = _AttributeSerializer(many=True, required=False, default=[])
     filters = _FilterSerializer(many=True, required=False, default=[])
