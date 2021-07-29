@@ -91,12 +91,17 @@ class _OwnerSerializer(serializers.ModelSerializer):
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
 
-class _CredentialSerializer(serializers.ModelSerializer):
+class _PartialCredentialSerializer(serializers.ModelSerializer):
     owners = _OwnerSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Credential
         fields = ["host", "port", "database", "model", "owners"]
+
+
+class _CredentialSerializer(_PartialCredentialSerializer):
+    class Meta(_PartialCredentialSerializer.Meta):
+        fields = _PartialCredentialSerializer.Meta.fields + ["login", "password"]
 
 
 class _InputSerializer(serializers.ModelSerializer):
@@ -279,3 +284,7 @@ class MappingSerializer(serializers.ModelSerializer):
                         Condition.objects.create(input_group=input_group, column=column, **condition_data)
 
         return source
+
+
+class MappingWithPartialCredentialSerializer(MappingSerializer):
+    credential = _PartialCredentialSerializer()
