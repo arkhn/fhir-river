@@ -36,6 +36,7 @@ class Condition(BaseModel):
 
 
 class InputGroup(BaseModel):
+    id: str
     merging_script: str
     inputs: List[Input]
     conditions: List[Condition]
@@ -160,7 +161,7 @@ def as_old_mapping(source: Source, resource_id: str):
                 "definitionId": attribute.definition_id,
                 "inputGroups": [
                     {
-                        "id": "NOT_AN_ACTUAL_VALUE",  # TODO: add this field to exported mappings
+                        "id": input_group.id,
                         "mergingScript": input_group.merging_script or None,
                         "inputs": [
                             {
