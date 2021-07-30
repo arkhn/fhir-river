@@ -12,6 +12,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  mimic:
+    image: arkhn/mimic:latest
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - mimic-data:/var/lib/postgresql/data
+
   ora11:
     image: wnameless/oracle-xe-11g-r2
     ports:
@@ -85,3 +96,4 @@ services:
 
 volumes:
   postgres-data:
+  mimic-data:

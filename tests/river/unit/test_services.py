@@ -41,8 +41,7 @@ def test_retry(batch):
 
 
 # TODO improve test to verify what's in documents
-def test_preview(users_to_patients_mapping):
-    mapping = {"resources": [{"id": "foo"}]}
-    documents, errors = preview(mapping, None)
+def test_preview(mimic_mapping):
+    documents, errors = preview(mimic_mapping, None)
 
     assert len(errors) == 0
