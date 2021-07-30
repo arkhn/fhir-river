@@ -151,7 +151,7 @@ jobs:
           dockerUsername: ${{ secrets.DOCKER_LOGIN }}
           dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: jason/fix
+          deploymentRef: main
           debug: true
           versions: |
             {
