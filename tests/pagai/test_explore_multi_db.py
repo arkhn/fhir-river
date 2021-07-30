@@ -5,6 +5,7 @@ from unittest import TestCase
 import pytest
 
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.errors import ExplorationError
 from river.common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES, DBConnection
 
 pytestmark = pytest.mark.pagai
@@ -125,6 +126,13 @@ def test_get_owner_schema(db_config):
     explorer = DatabaseExplorer(db_connection)
     db_schema = explorer.get_owner_schema(db_config["owner"])
     verify_schema_structure(db_schema)
+
+
+def test_get_owner_schema_not_exist(db_config):
+    db_connection = DBConnection(db_config)
+    explorer = DatabaseExplorer(db_connection)
+    with pytest.raises(ExplorationError):
+        explorer.get_owner_schema("does_not_exist")
 
 
 def test_case_sensitivity(db_config):

@@ -115,6 +115,10 @@ class DatabaseExplorer:
         if self.db_schema.get(owner):
             return self.db_schema[owner]
 
+        # make sure owner exists
+        if owner not in self.get_owners():
+            raise ExplorationError(f"Table {owner} does not exist in database")
+
         schema = defaultdict(list)
 
         if self.db_connection._db_model in [ORACLE, ORACLE11]:
