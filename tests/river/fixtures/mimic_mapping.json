@@ -1,0 +1,3981 @@
+{
+  "id": "ckrowsirw00091lpd4jph0861",
+  "resources": [
+    {
+      "id": "ckrowsivi00181lpdfod4jpz8",
+      "label": "feat_1_extension+Observation(microbio)Ref",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "b8efd322-3e38-4072-9c68-e62e15d84d04",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "name[0].given[0]",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivi00201lpd03z5pv35",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Jean",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "name[0]",
+          "slice_name": "",
+          "definition_id": "HumanName",
+          "input_groups": []
+        },
+        {
+          "path": "name[0].given[1]",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivj00241lpd4qxsx1fh",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Georges",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsivj00271lpdxb4attec",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivj00311lpdqx45ld78",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivk00331lpd90d7gs6q"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsivk00341lpdq18opnas",
+      "label": "feat_10_merge_concat(photo.title)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "7b421f8c-0b62-46f3-96fb-8f182119d8a3",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "photo[0].title",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivk00361lpdb0v6t1gy",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivl00381lpddefpk74c"
+                },
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivl00401lpd2w0lohgq"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "photo[0]",
+          "slice_name": "",
+          "definition_id": "Attachment",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsivl00421lpdxxtqe8g4",
+      "label": "feat_9_double_unvalid_conditions(photo.title)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "30aca745-cb1e-470c-b066-704236cd177c",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "photo[0].title",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivm00441lpdup7b7fjq",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivm00461lpd48oops3d"
+                }
+              ],
+              "conditions": [
+                {
+                  "action": "INCLUDE",
+                  "column": "ckrowsivm00481lpdkl7hehy6",
+                  "value": "-1",
+                  "relation": "EQ"
+                }
+              ]
+            },
+            {
+              "id": "ckrowsivn00491lpdaq4ztqrg",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivn00511lpdix0xxhp8"
+                }
+              ],
+              "conditions": [
+                {
+                  "action": "INCLUDE",
+                  "column": "ckrowsivn00531lpdmt5k6kts",
+                  "value": "-1",
+                  "relation": "EQ"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivn00551lpdix21y0b7",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "(4)",
+                  "column": null
+                },
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivn00571lpdoiyar4a9"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "photo[0]",
+          "slice_name": "",
+          "definition_id": "Attachment",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsivo00611lpdpbecb796",
+      "label": "feat_3_simple_valid_condition(photo.title)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "5d47dcad-9429-4db8-8d9e-a104c7b7a668",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivp00651lpd7meb4l35",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivp00671lpd10zzcqvm"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsivp00691lpdivukw59e",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/5d47dcad-9429-4db8-8d9e-a104c7b7a668",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "photo[0].title",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivp00721lpdtjobryqa",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivq00741lpdo8k9jzwh"
+                }
+              ],
+              "conditions": [
+                {
+                  "action": "INCLUDE",
+                  "column": "ckrowsivq00761lpdhcmth94q",
+                  "value": "0",
+                  "relation": "GT"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "photo[0]",
+          "slice_name": "",
+          "definition_id": "Attachment",
+          "input_groups": []
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        }
+      ],
+      "filters": [
+        {
+          "relation": "=",
+          "value": "9467",
+          "sql_column": "ckrowsivp00631lpd8d9v6fss"
+        }
+      ]
+    },
+    {
+      "id": "ckrowsivr00791lpdh467vb3j",
+      "label": "feat_7_double_valid_condition(must choose the first one, on photo.title)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "52a67c03-879e-498a-bb55-c4eb8d4332e4",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "photo[0].title",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivr00811lpdo0ludtlr",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivr00831lpd6v4ctv7b"
+                }
+              ],
+              "conditions": [
+                {
+                  "action": "INCLUDE",
+                  "column": "ckrowsivs00851lpdp6f08h6t",
+                  "value": "-1",
+                  "relation": "GT"
+                }
+              ]
+            },
+            {
+              "id": "ckrowsivs00861lpd62zpgazj",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivs00881lpdifbkfoy1"
+                }
+              ],
+              "conditions": [
+                {
+                  "action": "INCLUDE",
+                  "column": "ckrowsivs00901lpd01kqe7dy",
+                  "value": "-1",
+                  "relation": "GT"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "path": "photo[0]",
+          "slice_name": "",
+          "definition_id": "Attachment",
+          "input_groups": []
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivt00931lpdjoajgz7a",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "(3)",
+                  "column": null
+                },
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivt00951lpde067j95e"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsivu00981lpdwla92awy",
+      "label": "feat_2_joins that fill lists of attributes patient.identifier",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "33684f2e-bb84-4863-baea-7f1f199e0dd4",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "identifier[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsivu01021lpdhqek2w7h",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/33684f2e-bb84-4863-baea-7f1f199e0dd4",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivu01051lpdxz8bzpnn",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivv01071lpdf54kqk41"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        }
+      ],
+      "filters": [
+        {
+          "relation": "=",
+          "value": "10059",
+          "sql_column": "ckrowsivu01001lpd7oirtx45"
+        }
+      ]
+    },
+    {
+      "id": "ckrowsivw01121lpdcvwrc7yt",
+      "label": "",
+      "primary_key_table": "admissions",
+      "primary_key_column": "row_id",
+      "definition_id": "Encounter",
+      "logical_reference": "5a9ba1c2-dfab-420c-96ff-b6fc6d63421b",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "subject",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "subject.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsivx01171lpdpllztrn0",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivx01191lpdlp3l49xy"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "status",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsivy01221lpdkka797p0",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "in-progress",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "class",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "serviceProvider.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": []
+        },
+        {
+          "path": "period",
+          "slice_name": "",
+          "definition_id": "Period",
+          "input_groups": []
+        },
+        {
+          "path": "period.end",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsivy01281lpdyxzf3t84",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_dateTime",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivy01301lpdfbl2xf64"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "class.code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsivz01321lpdeju8ljhd",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivz01341lpdbqwvim2u"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "period.start",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsivz01361lpdavor5hqs",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_dateTime",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsivz01381lpd114s5h4j"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiw001401lpdrcmggdgm",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Patient",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "location[0].location",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "location[0].location.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "location[0].location.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": []
+        },
+        {
+          "path": "location[0].location.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": []
+        },
+        {
+          "path": "location[0]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "location[0].location.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "location[0].location.display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "subject.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiw001501lpd3pjjsj5l",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/62248c11-1d3f-4071-bfa8-f640764a9f63",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "serviceProvider.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": []
+        },
+        {
+          "path": "serviceProvider.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "serviceProvider.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "diagnosis[0].condition.display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiw101561lpd08atig0h",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw101581lpdxr3gol91"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "diagnosis[0].condition",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "diagnosis[0]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "serviceProvider",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "type[0].coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": []
+        },
+        {
+          "path": "type[0].coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "type[0]",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "serviceProvider.display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiw101661lpdw40fgsbr",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw201681lpd4kuzcgol"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "relation": "=",
+          "value": "10011",
+          "sql_column": "ckrowsivw01141lpdqvzmgfmq"
+        }
+      ]
+    },
+    {
+      "id": "ckrowsiw401721lpdf2ejnwr7",
+      "label": "feat_6_join (maritalStatus, language code), script cleanDate (deceasedDateTime)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "62248c11-1d3f-4071-bfa8-f640764a9f63",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "telecom[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "telecom[0].system",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": []
+        },
+        {
+          "path": "telecom[0]",
+          "slice_name": "",
+          "definition_id": "ContactPoint",
+          "input_groups": []
+        },
+        {
+          "path": "contact[0].telecom[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "contact[0].telecom[0].system",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": []
+        },
+        {
+          "path": "contact[0].telecom[0]",
+          "slice_name": "",
+          "definition_id": "ContactPoint",
+          "input_groups": []
+        },
+        {
+          "path": "contact[0]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "name[0].family",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "name[0]",
+          "slice_name": "",
+          "definition_id": "HumanName",
+          "input_groups": []
+        },
+        {
+          "path": "name[0].given[0]",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "gender",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiw401841lpdz0nm0pui",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "map_gender",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw501861lpdd5psfmto"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "birthDate",
+          "slice_name": "",
+          "definition_id": "date",
+          "input_groups": [
+            {
+              "id": "ckrowsiw501881lpdqqjo1f8e",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_date",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw501901lpdvrudrbkb"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "maritalStatus.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiw501921lpd4galhwu5",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw601941lpd5fqzlzzc"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "maritalStatus.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "maritalStatus",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0].language.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0].language",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0].language.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiw702031lpdhurc9ud6",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw702051lpdeqausfsi"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "communication[0]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "deceasedDateTime",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsiw802111lpdg33dwfa6",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_date",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw802131lpdu2uhfwb1"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "maritalStatus.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiw802161lpd97oe92jq",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "(1)",
+                  "column": null
+                },
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiw802181lpduu1q1c1c"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsiwa02211lpdpmfieg2o",
+      "label": "feat_5_double_filter, concept_map (gender)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "d2086710-e08f-47cd-9a48-922a7aadc949",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "communication[0].language.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "maritalStatus.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": []
+        },
+        {
+          "path": "maritalStatus.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "maritalStatus",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0].language.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0].language",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "photo[0]",
+          "slice_name": "",
+          "definition_id": "Attachment",
+          "input_groups": []
+        },
+        {
+          "path": "gender",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwb02351lpdckurorqj",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "8d45157a-12c5-4da2-8b80-0c5607fa37d7",
+                  "static_value": null,
+                  "column": "ckrowsiwb02371lpdxrs5hlfb"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "birthDate",
+          "slice_name": "",
+          "definition_id": "date",
+          "input_groups": [
+            {
+              "id": "ckrowsiwc02391lpdcdiy7sci",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_date",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwc02411lpdkd0x5tul"
+                }
+              ],
+              "conditions": []
+            },
+            {
+              "id": "ckrowsiwc02421lpddx8ym9in",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_date",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwc02441lpdd5hnwarv"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "photo[0].title",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "maritalStatus.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "communication[0].language.text",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwc02481lpddvvh6tr8",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "test",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwd02511lpdyi56iwms",
+              "merging_script": "merge_concat",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwd02531lpd4emekkgt"
+                },
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwd02551lpdt84hd46j"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        }
+      ],
+      "filters": [
+        {
+          "relation": "=",
+          "value": "F",
+          "sql_column": "ckrowsiwa02251lpdidz68q3x"
+        },
+        {
+          "relation": ">",
+          "value": "0",
+          "sql_column": "ckrowsiwa02231lpd10wa0ay9"
+        }
+      ]
+    },
+    {
+      "id": "ckrowsiwe02571lpdfm3tc4qw",
+      "label": "feat_4_profile_slice(component, 2k instance on small mimic)",
+      "primary_key_table": "labevents",
+      "primary_key_column": "row_id",
+      "definition_id": "bp",
+      "logical_reference": "4f094677-5ca8-422f-93fd-bf4a9b55fb7f",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "component[0].code.coding[1].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwf02611lpdhhpvhvtz",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "8480-6",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[0].code.coding[1].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwf02641lpd8qrlrwtp",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://loinc.org",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[0].code.coding[1]",
+          "slice_name": "SBPCode",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "component[0].code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "component[0]",
+          "slice_name": "SystolicBP",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "component[0].valueQuantity.code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwg02701lpd8it83gqj",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "130",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[0].valueQuantity",
+          "slice_name": "",
+          "definition_id": "Quantity",
+          "input_groups": []
+        },
+        {
+          "path": "component[1].code.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwg02741lpd9c6ivreq",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://loinc.org",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[1].code.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "component[1].code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "component[1]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "component[1].code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwg02801lpdw0cukje3",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwg02821lpdkunedzt0"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[2].code.coding[1].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwh02841lpds15at86v",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://loinc.org",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[2].code.coding[1]",
+          "slice_name": "DBPCode",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "component[2].code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "component[2]",
+          "slice_name": "DiastolicBP",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "component[2].code.coding[1].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwh02901lpdmnl0yezc",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "8462-4",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[2].valueQuantity.value",
+          "slice_name": "",
+          "definition_id": "decimal",
+          "input_groups": [
+            {
+              "id": "ckrowsiwh02931lpddsosag7o",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "90",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[2].valueQuantity",
+          "slice_name": "",
+          "definition_id": "Quantity",
+          "input_groups": []
+        },
+        {
+          "path": "component[3].code.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwi02971lpdvfvk3x12",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://loinc.org",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[3].code.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "component[3].code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "component[3]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "component[1].valueString",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwi03031lpd8k2q4wrh",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwi03051lpdiznntz3f"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "component[3].code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwi03071lpdv8qssg5q",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwi03091lpdpn86x4gl"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "status",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwj03111lpddtkg1cso",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "registered",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "category[0].coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwj03141lpd8kh0gn9y",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "category[0].coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "category[0]",
+          "slice_name": "VSCat",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "category[0].coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwk03191lpdg8ldptru",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "vital-signs",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwk03221lpdix32g6pn",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://loinc.org",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0]",
+          "slice_name": "BPCode",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwk03271lpdng0kpbmj",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "85354-9",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwk03301lpdcurly9ow",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwl03321lpdp4mtq2ei"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier.system",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwl03341lpdukvmqm9k",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwl03371lpdb5rib8zh",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Patient",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "subject",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "effectiveDateTime",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsiwl03421lpd4v200di8",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_dateTime",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwl03441lpddejyou24"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "relation": "=",
+          "value": "10006",
+          "sql_column": "ckrowsiwf02591lpd2isl25y5"
+        }
+      ]
+    },
+    {
+      "id": "ckrowsiwn03451lpdlofp2gsn",
+      "label": "feat_11_joinOnFilter",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "29acb5f3-8fcb-4729-a2bf-d3a2a6a136cc",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "identifier[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwo03521lpdad388r2p",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/29acb5f3-8fcb-4729-a2bf-d3a2a6a136cc",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwp03561lpdknwog2im",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwp03581lpdr90ofip6"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "relation": "=",
+          "value": "EMERGENCY",
+          "sql_column": "ckrowsiwo03471lpdwz4h8qeg"
+        }
+      ]
+    },
+    {
+      "id": "ckrowsiwp03591lpd0fof00bs",
+      "label": "diagnosis",
+      "primary_key_table": "diagnoses_icd",
+      "primary_key_column": "row_id",
+      "definition_id": "Condition",
+      "logical_reference": "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "encounter",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "subject.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwq03621lpd3xsvcefq",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Patient",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "subject.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwq03661lpdvizospfm",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/62248c11-1d3f-4071-bfa8-f640764a9f63",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "subject.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwr03701lpdeqyuctos",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwr03721lpda9nuovt1"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwr03741lpdd17cxsjg",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://hl7.org/fhir/sid/icd-9",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwr03791lpdc5j155qb",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwr03811lpdc2fy51nf"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiws03831lpduhndc7cn",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiws03851lpdmyiw96wu"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwt03901lpdl6m9ol67",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Encounter",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwt03931lpd04z0suny",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/5a9ba1c2-dfab-420c-96ff-b6fc6d63421b",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwt03961lpdvsg9hax4",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwu03981lpdpayrzyxt"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.text",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwu04001lpdl04f4jdn",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwu04021lpdqyi9af0k"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "encounter.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwv04081lpdtcxkuouo",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwv04101lpd76t0kupj"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsiwx04111lpdp6ozsogz",
+      "label": "",
+      "primary_key_table": "procedures_icd",
+      "primary_key_column": "row_id",
+      "definition_id": "Procedure",
+      "logical_reference": "b9f9d9d2-f875-4d65-b723-2a51b43c6597",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "subject.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwx04131lpdk73uv2h2",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Patient",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwy04161lpdy71qpakx",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwy04181lpdv0rm5v6t"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "subject",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "code.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "encounter",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "encounter.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsiwy04241lpd33naelet",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwy04261lpdgex6jzs5"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwz04291lpdsocutatb",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsiwz04311lpdtr1yx7jr"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "encounter.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsiwz04341lpdn0lwiibb",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Encounter",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "status",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsiwz04371lpdju5gbkte",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "completed",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.text",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsix004401lpdlzikhfa6",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix004421lpdwk99uu9v"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsix104471lpdau3lj860",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix104491lpd6548ob7e"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix304541lpdsuv05mo7",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://hl7.org/fhir/sid/icd-9-cm",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix304571lpdbbsw8n18",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/62248c11-1d3f-4071-bfa8-f640764a9f63",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix304601lpdby6zocj8",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/5a9ba1c2-dfab-420c-96ff-b6fc6d63421b",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "performedDateTime",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsix404631lpdm4w52t5d",
+      "label": "microbiology",
+      "primary_key_table": "microbiologyevents",
+      "primary_key_column": "row_id",
+      "definition_id": "Observation",
+      "logical_reference": "33e3e75f-701b-4ac0-b9c2-f283f7df01e8",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "encounter.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix504651lpdj4dd1vy0",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Encounter",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "status",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsix504691lpd47nuex86",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "unknown",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "code.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsix604741lpdwm82r5w2",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix604761lpdnai5zz8u"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix604781lpdf8djgab3",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Patient",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "interpretation[0].coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsix604811lpd4ckw8o06",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix604831lpdxuvage1i"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "interpretation[0]",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "encounter",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "encounter.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsix704871lpd7wqn00n9",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix704891lpdwb3uw35t"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsix704911lpdg3psrs6o",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix804931lpdtnbz0rtq"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "subject.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsix804961lpdy7upud1c",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix804981lpdw0kl021r"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "effectiveDateTime",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsix805011lpdperz2wph",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_dateTime",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsix805031lpd7yoo5qej"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "code.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix905051lpdmce746f1",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://loinc.org",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "interpretation[0].coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "interpretation[0].coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "interpretation[0].coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix905101lpdf3l22tpv",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "category[0].coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsix905131lpdchwrwwva",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "laboratory",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "category[0].coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsix905161lpdze6p6fk1",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://hl7.org/fhir/ValueSet/observation-category",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "category[0].coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "category[0]",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "subject.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixa05211lpdgyyj5vew",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixa05241lpd7zsx2gii",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/5a9ba1c2-dfab-420c-96ff-b6fc6d63421b",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "category[0].text",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixa05271lpdat9dai39",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Microbiology Results",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsixb05291lpdt220scvk",
+      "label": "",
+      "primary_key_table": "caregivers",
+      "primary_key_column": "row_id",
+      "definition_id": "Practitioner",
+      "logical_reference": "739464c5-1594-41ba-9503-3d4e99cd0ad0",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "name[0].family",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "qualification[0].code.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsixc05321lpd6jdlcxqb",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixc05341lpdmlcxv7k7"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "qualification[0].code.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "qualification[0].code",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "qualification[0]",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "qualification[0].code.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixc05391lpd5prhar0p",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixd05411lpd8jl5jbvj"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "name[0]",
+          "slice_name": "",
+          "definition_id": "HumanName",
+          "input_groups": []
+        },
+        {
+          "path": "name[0].given[0]",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckrowsixd05441lpd7qes8ibq",
+      "label": "",
+      "primary_key_table": "prescriptions",
+      "primary_key_column": "row_id",
+      "definition_id": "MedicationRequest",
+      "logical_reference": "6233f5c4-f3e4-4cbb-ac15-4e692aa4f469",
+      "primary_key_owner": "22fc0858-a5a1-4151-909c-318004c2881c",
+      "attributes": [
+        {
+          "path": "dosageInstruction[0].doseAndRate[0].doseSimpleQuantity",
+          "slice_name": "",
+          "definition_id": "SimpleQuantity",
+          "input_groups": []
+        },
+        {
+          "path": "dosageInstruction[0].doseAndRate[0].doseSimpleQuantity.unit",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": []
+        },
+        {
+          "path": "subject",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "dispenseRequest.validityPeriod.start",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsixe05491lpd5mfxacfs",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_dateTime",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixe05511lpdyz4s30b3"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "dispenseRequest",
+          "slice_name": "",
+          "definition_id": "BackboneElement",
+          "input_groups": []
+        },
+        {
+          "path": "dosageInstruction[0].doseAndRate[0]",
+          "slice_name": "",
+          "definition_id": "Element",
+          "input_groups": []
+        },
+        {
+          "path": "subject.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixf05551lpdqjbm9pzq",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Patient",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixf05581lpdm34hewlf",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixf05601lpddu5t221p"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "dispenseRequest.validityPeriod",
+          "slice_name": "",
+          "definition_id": "Period",
+          "input_groups": []
+        },
+        {
+          "path": "dispenseRequest.validityPeriod.end",
+          "slice_name": "",
+          "definition_id": "dateTime",
+          "input_groups": [
+            {
+              "id": "ckrowsixf05641lpdql9c4idd",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "clean_dateTime",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixf05661lpdwnp4wfgr"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.type",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixg05681lpd8pnr5vu3",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "Encounter",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "encounter.identifier.value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixg05721lpdhu3nxczb",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixg05741lpd4cs0u9q8"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "intent",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsixh05771lpdb4hu9ukg",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "proposal",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "status",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsixh05801lpdlkjn44xg",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "active",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "medicationCodeableConcept.coding[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixh05831lpdzklr3qbj",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://hl7.org/fhir/sid/ndc",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "medicationCodeableConcept",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "medicationCodeableConcept.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsixh05871lpdeohl93sw",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixh05891lpdrw7qdoge"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "medicationCodeableConcept.text",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixi05911lpd9zr4srv2",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixi05931lpdemme1a9c"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "dosageInstruction[0].route.coding[0].code",
+          "slice_name": "",
+          "definition_id": "code",
+          "input_groups": [
+            {
+              "id": "ckrowsixi05951lpdqqenq3y2",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixi05971lpdm1qrydob"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "dosageInstruction[0].route",
+          "slice_name": "",
+          "definition_id": "CodeableConcept",
+          "input_groups": []
+        },
+        {
+          "path": "dosageInstruction[0].doseAndRate[0].doseSimpleQuantity.value",
+          "slice_name": "",
+          "definition_id": "decimal",
+          "input_groups": []
+        },
+        {
+          "path": "medicationCodeableConcept.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "dosageInstruction[0].route.coding[0]",
+          "slice_name": "",
+          "definition_id": "Coding",
+          "input_groups": []
+        },
+        {
+          "path": "dosageInstruction[0]",
+          "slice_name": "",
+          "definition_id": "Dosage",
+          "input_groups": []
+        },
+        {
+          "path": "medicationCodeableConcept.coding[0].display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixj06041lpdo2jenj53",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixj06061lpdaqb461zg"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixj06081lpd73goam08",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixj06101lpd1eqtiuip"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.display",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckrowsixk06121lpdmlzgwckg",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": null,
+                  "column": "ckrowsixk06141lpdxh97ifxa"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "subject.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixk06161lpdvisjxgme",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/62248c11-1d3f-4071-bfa8-f640764a9f63",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "encounter.identifier.system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckrowsixk06191lpdbmrr97z6",
+              "merging_script": "",
+              "inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "static_value": "http://terminology.arkhn.org/5a9ba1c2-dfab-420c-96ff-b6fc6d63421b",
+                  "column": null
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": []
+    }
+  ],
+  "credential": {
+    "host": "mimic",
+    "port": 5432,
+    "database": "mimic",
+    "model": "POSTGRES",
+    "owners": [
+      {
+        "id": "22fc0858-a5a1-4151-909c-318004c2881c",
+        "name": "public",
+        "schema": "{\"admissions\":[\"subject_id\",\"hospital_expire_flag\",\"marital_status\",\"has_chartevents_data\",\"admittime\",\"edouttime\",\"ethnicity\",\"hadm_id\",\"insurance\",\"admission_location\",\"admission_type\",\"language\",\"religion\",\"dischtime\",\"row_id\",\"discharge_location\",\"diagnosis\",\"edregtime\",\"deathtime\"],\"callout\":[\"row_id\",\"outcometime\",\"callout_service\",\"submit_careunit\",\"updatetime\",\"request_resp\",\"request_cdiff\",\"curr_wardid\",\"callout_status\",\"acknowledgetime\",\"discharge_wardid\",\"callout_outcome\",\"submit_wardid\",\"hadm_id\",\"request_vre\",\"request_mrsa\",\"createtime\",\"acknowledge_status\",\"subject_id\",\"firstreservationtime\",\"curr_careunit\",\"callout_wardid\",\"currentreservationtime\",\"request_tele\"],\"caregivers\":[\"description\",\"label\",\"cgid\",\"row_id\"],\"chartevents\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_1\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_10\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\"],\"chartevents_100\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_101\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_102\":[\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_103\":[\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_104\":[\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_105\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_106\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_107\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_108\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_109\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_11\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\"],\"chartevents_110\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_111\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_112\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_113\":[\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_114\":[\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_115\":[\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_116\":[\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_117\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_118\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_119\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_12\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_120\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_121\":[\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_122\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_123\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_124\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_125\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_126\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_127\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_128\":[\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_129\":[\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_13\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_130\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_131\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_132\":[\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_133\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_134\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_135\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_136\":[\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_137\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_138\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_139\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_14\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_140\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_141\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\"],\"chartevents_142\":[\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_143\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_144\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_145\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_146\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\"],\"chartevents_147\":[\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_148\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_149\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_15\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_150\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_151\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\"],\"chartevents_152\":[\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_153\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_154\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_155\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_156\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_157\":[\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_158\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_159\":[\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_16\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_160\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_161\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_162\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_163\":[\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_164\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\"],\"chartevents_165\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_166\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_167\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_168\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_169\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_17\":[\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_170\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_171\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_172\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_173\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_174\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_175\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_176\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_177\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_178\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_179\":[\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_18\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_180\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_181\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_182\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_183\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_184\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_185\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\"],\"chartevents_186\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_187\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_188\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_189\":[\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_19\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_190\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_191\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\"],\"chartevents_192\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_193\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_194\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_195\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_196\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_197\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_198\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_199\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_2\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_20\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_200\":[\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_201\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\"],\"chartevents_202\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\"],\"chartevents_203\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_204\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_205\":[\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_206\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_207\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\"],\"chartevents_21\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_22\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_23\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_24\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_25\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\"],\"chartevents_26\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_27\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_28\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_29\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_3\":[\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_30\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_31\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_32\":[\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_33\":[\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_34\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_35\":[\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_36\":[\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_37\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_38\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_39\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_4\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_40\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_41\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\"],\"chartevents_42\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_43\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_44\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_45\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_46\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_47\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_48\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_49\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_5\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\"],\"chartevents_50\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_51\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_52\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_53\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_54\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_55\":[\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_56\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_57\":[\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_58\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_59\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_6\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_60\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_61\":[\"storetime\",\"cgid\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_62\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_63\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_64\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\"],\"chartevents_65\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_66\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_67\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_68\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_69\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_7\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_70\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_71\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_72\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_73\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\"],\"chartevents_74\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_75\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_76\":[\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_77\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_78\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_79\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_8\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_80\":[\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_81\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_82\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\"],\"chartevents_83\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_84\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_85\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\"],\"chartevents_86\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_87\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_88\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_89\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_9\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_90\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_91\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_92\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_93\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_94\":[\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_95\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\"],\"chartevents_96\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_97\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_98\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_99\":[\"storetime\",\"cgid\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"cptevents\":[\"cpt_cd\",\"subsectionheader\",\"description\",\"chartdate\",\"row_id\",\"ticket_id_seq\",\"sectionheader\",\"cpt_suffix\",\"cpt_number\",\"subject_id\",\"costcenter\",\"hadm_id\"],\"d_cpt\":[\"sectionheader\",\"sectionrange\",\"category\",\"mincodeinsubsection\",\"codesuffix\",\"row_id\",\"maxcodeinsubsection\",\"subsectionrange\",\"subsectionheader\"],\"d_icd_diagnoses\":[\"short_title\",\"long_title\",\"icd9_code\",\"row_id\"],\"d_icd_procedures\":[\"row_id\",\"icd9_code\",\"long_title\",\"short_title\"],\"d_items\":[\"dbsource\",\"row_id\",\"param_type\",\"linksto\",\"itemid\",\"abbreviation\",\"label\",\"conceptid\",\"unitname\",\"category\"],\"d_labitems\":[\"label\",\"fluid\",\"itemid\",\"loinc_code\",\"row_id\",\"category\"],\"datetimeevents\":[\"charttime\",\"row_id\",\"value\",\"error\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valueuom\",\"icustay_id\",\"hadm_id\",\"stopped\",\"subject_id\",\"resultstatus\"],\"diagnoses_icd\":[\"icd9_code\",\"row_id\",\"subject_id\",\"hadm_id\",\"seq_num\"],\"drgcodes\":[\"hadm_id\",\"drg_type\",\"subject_id\",\"drg_mortality\",\"drg_severity\",\"row_id\",\"drg_code\",\"description\"],\"icustays\":[\"last_careunit\",\"first_wardid\",\"intime\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"first_careunit\",\"last_wardid\",\"row_id\",\"dbsource\",\"los\",\"outtime\"],\"inputevents_cv\":[\"row_id\",\"originalsite\",\"rate\",\"charttime\",\"originalrate\",\"cgid\",\"storetime\",\"itemid\",\"originalrateuom\",\"stopped\",\"originalamount\",\"newbottle\",\"icustay_id\",\"hadm_id\",\"linkorderid\",\"orderid\",\"originalroute\",\"originalamountuom\",\"subject_id\",\"amount\",\"amountuom\",\"rateuom\"],\"inputevents_mv\":[\"endtime\",\"secondaryordercategoryname\",\"cancelreason\",\"statusdescription\",\"totalamount\",\"linkorderid\",\"amountuom\",\"row_id\",\"totalamountuom\",\"storetime\",\"rateuom\",\"originalrate\",\"comments_editedby\",\"patientweight\",\"starttime\",\"comments_date\",\"amount\",\"comments_canceledby\",\"originalamount\",\"itemid\",\"isopenbag\",\"rate\",\"continueinnextdept\",\"hadm_id\",\"orderid\",\"ordercategoryname\",\"icustay_id\",\"ordercomponenttypedescription\",\"subject_id\",\"ordercategorydescription\",\"cgid\"],\"labevents\":[\"subject_id\",\"itemid\",\"hadm_id\",\"valuenum\",\"valueuom\",\"charttime\",\"row_id\",\"flag\",\"value\"],\"microbiologyevents\":[\"subject_id\",\"dilution_text\",\"hadm_id\",\"dilution_comparison\",\"interpretation\",\"chartdate\",\"isolate_num\",\"org_itemid\",\"spec_type_desc\",\"ab_name\",\"ab_itemid\",\"charttime\",\"org_name\",\"row_id\",\"dilution_value\",\"spec_itemid\"],\"noteevents\":[\"chartdate\",\"hadm_id\",\"subject_id\",\"description\",\"category\",\"iserror\",\"row_id\",\"cgid\",\"text\",\"charttime\",\"storetime\"],\"outputevents\":[\"charttime\",\"stopped\",\"newbottle\",\"storetime\",\"row_id\",\"itemid\",\"iserror\",\"subject_id\",\"hadm_id\",\"icustay_id\",\"cgid\",\"value\",\"valueuom\"],\"patients\":[\"dod\",\"row_id\",\"dod_hosp\",\"subject_id\",\"gender\",\"dob\",\"expire_flag\",\"dod_ssn\"],\"prescriptions\":[\"enddate\",\"form_val_disp\",\"dose_val_rx\",\"row_id\",\"drug_name_poe\",\"gsn\",\"formulary_drug_cd\",\"startdate\",\"drug\",\"drug_type\",\"drug_name_generic\",\"icustay_id\",\"dose_unit_rx\",\"prod_strength\",\"hadm_id\",\"subject_id\",\"form_unit_disp\",\"ndc\",\"route\"],\"procedureevents_mv\":[\"endtime\",\"secondaryordercategoryname\",\"comments_date\",\"cancelreason\",\"linkorderid\",\"valueuom\",\"row_id\",\"statusdescription\",\"storetime\",\"locationcategory\",\"continueinnextdept\",\"starttime\",\"value\",\"itemid\",\"comments_editedby\",\"location\",\"comments_canceledby\",\"orderid\",\"hadm_id\",\"icustay_id\",\"ordercategoryname\",\"subject_id\",\"ordercategorydescription\",\"isopenbag\",\"cgid\"],\"procedures_icd\":[\"subject_id\",\"seq_num\",\"hadm_id\",\"icd9_code\",\"row_id\"],\"services\":[\"subject_id\",\"transfertime\",\"hadm_id\",\"curr_service\",\"prev_service\",\"row_id\"],\"transfers\":[\"eventtype\",\"row_id\",\"prev_wardid\",\"dbsource\",\"intime\",\"outtime\",\"prev_careunit\",\"curr_careunit\",\"curr_wardid\",\"icustay_id\",\"hadm_id\",\"los\",\"subject_id\"]}",
+        "columns": [
+          {
+            "id": "ckrowsivk00331lpd90d7gs6q",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivl00381lpddefpk74c",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivl00401lpd2w0lohgq",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivm00461lpd48oops3d",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivm00481lpdkl7hehy6",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivn00511lpdix0xxhp8",
+            "table": "patients",
+            "column": "dob",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivn00531lpdmt5k6kts",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivn00571lpdoiyar4a9",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivp00671lpd10zzcqvm",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivq00741lpdo8k9jzwh",
+            "table": "patients",
+            "column": "dob",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivq00761lpdhcmth94q",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivp00631lpd8d9v6fss",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivr00831lpd6v4ctv7b",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivs00851lpdp6f08h6t",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivs00881lpdifbkfoy1",
+            "table": "patients",
+            "column": "dob",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivs00901lpd01kqe7dy",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivt00951lpde067j95e",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivv01071lpdf54kqk41",
+            "table": "admissions",
+            "column": "hadm_id",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsivv01101lpdyy13udok",
+                  "ckrowsivv01091lpds63yemv6"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsivv01101lpdyy13udok",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivv01091lpds63yemv6",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivu01001lpd7oirtx45",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivx01191lpdlp3l49xy",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivy01301lpdfbl2xf64",
+            "table": "admissions",
+            "column": "dischtime",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivz01341lpdbqwvim2u",
+            "table": "admissions",
+            "column": "admission_type",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivz01381lpd114s5h4j",
+            "table": "admissions",
+            "column": "admittime",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw101581lpdxr3gol91",
+            "table": "admissions",
+            "column": "diagnosis",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw201681lpd4kuzcgol",
+            "table": "services",
+            "column": "curr_service",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiw201711lpd83n0os5z",
+                  "ckrowsiw201701lpddgtv1zul"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiw201711lpd83n0os5z",
+            "table": "admissions",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw201701lpddgtv1zul",
+            "table": "services",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsivw01141lpdqvzmgfmq",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw501861lpdd5psfmto",
+            "table": "patients",
+            "column": "gender",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw501901lpdvrudrbkb",
+            "table": "patients",
+            "column": "dob",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw601941lpd5fqzlzzc",
+            "table": "admissions",
+            "column": "marital_status",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiw601971lpdsqqgimfl",
+                  "ckrowsiw601961lpds1c1o3je"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiw601971lpdsqqgimfl",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw601961lpds1c1o3je",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw702051lpdeqausfsi",
+            "table": "admissions",
+            "column": "language",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiw702081lpdsd5pw0dy",
+                  "ckrowsiw702071lpdqcilexzt"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiw702081lpdsd5pw0dy",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw702071lpdqcilexzt",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw802131lpdu2uhfwb1",
+            "table": "patients",
+            "column": "dod",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw802181lpduu1q1c1c",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwb02371lpdxrs5hlfb",
+            "table": "patients",
+            "column": "gender",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwc02411lpdkd0x5tul",
+            "table": "patients",
+            "column": "dob",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwc02441lpdd5hnwarv",
+            "table": "patients",
+            "column": "dod",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwd02531lpd4emekkgt",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwd02551lpdt84hd46j",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwa02251lpdidz68q3x",
+            "table": "patients",
+            "column": "gender",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwa02231lpd10wa0ay9",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwg02821lpdkunedzt0",
+            "table": "labevents",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwi03051lpdiznntz3f",
+            "table": "labevents",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwi03091lpdpn86x4gl",
+            "table": "labevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwl03321lpdp4mtq2ei",
+            "table": "labevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwl03441lpddejyou24",
+            "table": "labevents",
+            "column": "charttime",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwf02591lpd2isl25y5",
+            "table": "labevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwp03581lpdr90ofip6",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwo03471lpdwz4h8qeg",
+            "table": "admissions",
+            "column": "admission_type",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiwo03501lpdua4oxmco",
+                  "ckrowsiwo03491lpdwicstq8s"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiwo03501lpdua4oxmco",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwo03491lpdwicstq8s",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwr03721lpda9nuovt1",
+            "table": "diagnoses_icd",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwr03811lpdc2fy51nf",
+            "table": "diagnoses_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiws03851lpdmyiw96wu",
+            "table": "d_icd_diagnoses",
+            "column": "short_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiws03881lpde5nohoo5",
+                  "ckrowsiws03871lpdihmyatsi"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiws03881lpde5nohoo5",
+            "table": "diagnoses_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiws03871lpdihmyatsi",
+            "table": "d_icd_diagnoses",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwu03981lpdpayrzyxt",
+            "table": "diagnoses_icd",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwu04021lpdqyi9af0k",
+            "table": "d_icd_diagnoses",
+            "column": "long_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiwv04051lpd6t63oasj",
+                  "ckrowsiwu04041lpdjgs2z855"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiwv04051lpd6t63oasj",
+            "table": "diagnoses_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwu04041lpdjgs2z855",
+            "table": "d_icd_diagnoses",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwv04101lpd76t0kupj",
+            "table": "diagnoses_icd",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwy04181lpdv0rm5v6t",
+            "table": "procedures_icd",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwy04261lpdgex6jzs5",
+            "table": "procedures_icd",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwz04311lpdtr1yx7jr",
+            "table": "procedures_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix004421lpdwk99uu9v",
+            "table": "d_icd_procedures",
+            "column": "long_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsix004451lpdsw9rxwa4",
+                  "ckrowsix004441lpdkajjhe1r"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsix004451lpdsw9rxwa4",
+            "table": "procedures_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix004441lpdkajjhe1r",
+            "table": "d_icd_procedures",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix104491lpd6548ob7e",
+            "table": "d_icd_procedures",
+            "column": "short_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsix204521lpdjj7vodir",
+                  "ckrowsix204511lpdaegnzswy"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsix204521lpdjj7vodir",
+            "table": "procedures_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix204511lpdaegnzswy",
+            "table": "d_icd_procedures",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix604761lpdnai5zz8u",
+            "table": "microbiologyevents",
+            "column": "org_name",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix604831lpdxuvage1i",
+            "table": "microbiologyevents",
+            "column": "interpretation",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix704891lpdwb3uw35t",
+            "table": "microbiologyevents",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix804931lpdtnbz0rtq",
+            "table": "microbiologyevents",
+            "column": "org_itemid",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix804981lpdw0kl021r",
+            "table": "microbiologyevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix805031lpd7yoo5qej",
+            "table": "microbiologyevents",
+            "column": "chartdate",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixc05341lpdmlcxv7k7",
+            "table": "caregivers",
+            "column": "label",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixd05411lpd8jl5jbvj",
+            "table": "caregivers",
+            "column": "description",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixe05511lpdyz4s30b3",
+            "table": "prescriptions",
+            "column": "startdate",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixf05601lpddu5t221p",
+            "table": "prescriptions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixf05661lpdwnp4wfgr",
+            "table": "prescriptions",
+            "column": "enddate",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixg05741lpd4cs0u9q8",
+            "table": "prescriptions",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixh05891lpdrw7qdoge",
+            "table": "prescriptions",
+            "column": "ndc",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixi05931lpdemme1a9c",
+            "table": "prescriptions",
+            "column": "drug_name_generic",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixi05971lpdm1qrydob",
+            "table": "prescriptions",
+            "column": "route",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixj06061lpdaqb461zg",
+            "table": "prescriptions",
+            "column": "drug",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixj06101lpd1eqtiuip",
+            "table": "prescriptions",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixk06141lpdxh97ifxa",
+            "table": "prescriptions",
+            "column": "subject_id",
+            "joins": []
+          }
+        ]
+      }
+    ],
+    "login": "mimicuser",
+    "password": "u9VZruy54MfD6P"
+  },
+  "name": "mimic-small-testMapping - mimic-small-testMapping",
+  "version": "",
+  "updated_at": "2021-07-29T14:44:31.629000+02:00",
+  "created_at": "2021-07-29T14:44:31.628000+02:00",
+  "users": []
+}

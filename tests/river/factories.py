@@ -1,6 +1,14 @@
-from uuid import uuid4
+import json
+from pathlib import Path
 
 import factory
+
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+
+
+def mimic_mapping():
+    with (DATA_FIXTURES_DIR / "mimic_mapping.json").open() as f:
+        return json.load(f)
 
 
 class BatchFactory(factory.django.DjangoModelFactory):
@@ -8,7 +16,7 @@ class BatchFactory(factory.django.DjangoModelFactory):
         model = "river.Batch"
 
     id = factory.Sequence(lambda n: f"batch_id_{n:04d}")
-    resources = factory.Faker("pylist", value_types=[uuid4])
+    mappings = factory.LazyAttribute(lambda x: mimic_mapping())
 
 
 class ErrorFactory(factory.django.DjangoModelFactory):

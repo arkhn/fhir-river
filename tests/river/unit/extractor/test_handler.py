@@ -22,5 +22,5 @@ def test_batch_resource_handler(batch, users_to_patients_mapping):
     assert len(publisher._events[f"extract.{batch.id}"]) > 0
     assert all([isinstance(event, ExtractedRecord) for event in publisher._events[f"extract.{batch.id}"]])
     assert counter.get(f"{batch.id}:{resource_id}") == Progression(
-        extracted=len(publisher._events[f"extract.{batch.id}"]), loaded=None
+        extracted=len(publisher._events[f"extract.{batch.id}"]), loaded=None, failed=None
     )
