@@ -86,7 +86,7 @@ def test_filter_inputs_by_input_group(api_client, input_group_factory, input_fac
     first_input_group_inputs = input_factory.create_batch(2, input_group=first_input_group)
     input_factory.create_batch(3, input_group=second_input_group)
 
-    response = api_client.get(url, {"attribute": first_input_group.id})
+    response = api_client.get(url, {"input_group": first_input_group.id})
 
     assert response.status_code == 200
     assert {input_data["id"] for input_data in response.json()} == {input.id for input in first_input_group_inputs}
