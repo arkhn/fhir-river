@@ -6,6 +6,7 @@ import factory
 DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
+# FIXME: this should be declared as a fixture in conftest.py
 def mimic_mapping():
     with (DATA_FIXTURES_DIR / "mimic_mapping.json").open() as f:
         return json.load(f)
