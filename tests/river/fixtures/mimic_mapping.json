@@ -3330,9 +3330,9 @@
     }
   ],
   "credential": {
-    "host": "mimic",
-    "port": 5432,
-    "database": "mimic",
+    "host": "localhost",
+    "port": 15432,
+    "database": "test",
     "model": "POSTGRES",
     "owners": [
       {
@@ -3970,8 +3970,8 @@
         ]
       }
     ],
-    "login": "mimicuser",
-    "password": "u9VZruy54MfD6P"
+    "login": "test",
+    "password": "test"
   },
   "name": "mimic-small-testMapping - mimic-small-testMapping",
   "version": "",

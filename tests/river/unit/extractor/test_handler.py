@@ -9,8 +9,8 @@ from river.extractor.service import batch_resource_handler
 pytestmark = pytest.mark.django_db
 
 
-def test_batch_resource_handler(batch, users_to_patients_mapping):
-    resource_id = users_to_patients_mapping["id"]
+def test_batch_resource_handler(batch, mimic_mapping):
+    resource_id = mimic_mapping["resources"][0]["id"]
     event = BatchEvent(batch_id=batch.id, resource_id=resource_id)
     publisher = FakeEventPublisher()
     counter = FakeProgressionCounter()
