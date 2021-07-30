@@ -25,7 +25,7 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
         resources_progressions = [
             counter.get(f"{batch.id}:{resource['id']}") for resource in batch.mappings["resources"]
         ]
-        logging.info(f"PROGRESSION: {resources_progressions}")
+
         if all(
             [
                 progression is not None
