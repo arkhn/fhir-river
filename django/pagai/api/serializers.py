@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.mapping import MappingSerializer
 
 
 class CredentialsSerializer(serializers.Serializer):
