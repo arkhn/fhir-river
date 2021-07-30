@@ -51,13 +51,9 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         private KafkaProducer producer;
 
         @Autowired
-        private RedisCounterProperties redisCounterProperties;
-
-        private Jedis redisClient;
+        private Jedis redisCounter;
 
         ResourceListener() {
-            redisClient = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
-            redisClient.select(redisCounterProperties.getDb_index());
         }
 
         @KafkaHandler
@@ -72,7 +68,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 r = parser.parseResource(message.getFhirObject().toString());
             } catch (ca.uhn.fhir.parser.DataFormatException e) {
                 logger.error(String.format("Could not parse resource: %s", e.toString()));
-                redisClient.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
+                redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 return;
             }
 
@@ -84,7 +80,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 dao.update(r);
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e.toString()));
-                redisClient.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
+                redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 return;
             }
 
@@ -94,7 +90,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             producer.sendMessage(loadMessage, String.format("load.%s", batchId));
 
             // Increment redis counter
-            redisClient.hincrBy("loaded_counters", String.format("%s:%s", batchId, resourceId), 1);
+            redisCounter.hincrBy("loaded_counters", String.format("%s:%s", batchId, resourceId), 1);
 
             // TODO: error handling
 
