@@ -11,6 +11,8 @@ pytestmark = pytest.mark.django_db
 
 
 def test_extracted_resource_handler(batch, mimic_mapping):
+    # FIXME: use a dedicated fixture for the patient mapping
+    # instead of the first resource of mimic mappings.
     resource_id = mimic_mapping["resources"][0]["id"]
     event = ExtractedRecord(
         batch_id=batch.id,
