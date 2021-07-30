@@ -25,11 +25,13 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
         resources_progressions = [
             counter.get(f"{batch.id}:{resource['id']}") for resource in batch.mappings["resources"]
         ]
+        logging.info(f"PROGRESSION: {resources_progressions}")
         if all(
             [
-                progression.extracted is not None
+                progression is not None
+                and progression.extracted is not None
                 and progression.loaded is not None
-                and progression.loaded >= progression.extracted
+                and (progression.loaded + (progression.failed or 0)) >= progression.extracted
                 for progression in resources_progressions
             ]
         ):
