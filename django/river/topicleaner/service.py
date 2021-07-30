@@ -30,8 +30,7 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
             [
                 progression is not None
                 and progression.extracted is not None
-                and progression.loaded is not None
-                and (progression.loaded + (progression.failed or 0)) >= progression.extracted
+                and ((progression.loaded or 0) + (progression.failed or 0)) >= progression.extracted
                 for progression in resources_progressions
             ]
         ):
