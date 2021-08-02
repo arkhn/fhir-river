@@ -93,5 +93,5 @@ class MappingSerializer(serializers.Serializer):
     credential = _CredentialSerializer()
     users = _UserSerializer(many=True, required=False, default=[])
 
-    updated_at = serializers.DateTimeField()
-    created_at = serializers.DateTimeField()
+    updated_at = serializers.CharField()
+    created_at = serializers.CharField()
