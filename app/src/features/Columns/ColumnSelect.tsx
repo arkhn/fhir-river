@@ -76,7 +76,7 @@ const ColumnSelects = ({
     ? credentialOwners?.find(({ id }) => id === ownerId)
     : credentialOwners?.find(({ id }) => id === mapping?.primary_key_owner);
   const schema = selectedOwner?.schema as Record<string, string[]>;
-  const defaultValue =
+  const defaultValue: { id: string; label: string } =
     selectedOwner && mapping
       ? {
           id: `${selectedOwner.id}/${mapping.primary_key_table}`,
@@ -111,11 +111,14 @@ const ColumnSelects = ({
               })),
             ];
           },
-          [defaultValue]
+          defaultValue.id === "/" && defaultValue.label === "/"
+            ? [defaultValue]
+            : []
         );
   };
 
   const tableOptions = getTableOptions(credentialOwners);
+
   const [columns, setColumns] = useState<string[]>(
     table && schema && table in schema ? schema[table] ?? [] : []
   );
