@@ -117,7 +117,7 @@ class DatabaseExplorer:
 
         # make sure owner exists
         if owner not in self.get_owners():
-            raise ExplorationError(f"Table {owner} does not exist in database")
+            raise ExplorationError(f"Owner {owner} does not exist in database")
 
         schema = defaultdict(list)
 
