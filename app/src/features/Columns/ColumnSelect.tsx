@@ -70,7 +70,8 @@ const ColumnSelects = ({
     { skip: !mappingId }
   );
 
-  const { table, column, owner: ownerId } = pendingColumn;
+  const { table: pendingColumnTable, column, owner: ownerId } = pendingColumn;
+  const table = (pendingColumnTable || mapping?.primary_key_table) ?? undefined;
   const selectedOwner = ownerId
     ? credentialOwners?.find(({ id }) => id === ownerId)
     : credentialOwners?.find(({ id }) => id === mapping?.primary_key_owner);
