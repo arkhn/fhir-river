@@ -29,7 +29,7 @@ from pyrog.models import (
 from users.api.serializers import UserSerializer
 
 
-class _ColumnField(serializers.Serializer):
+class _ColumnField(serializers.PrimaryKeyRelatedField):
     """PKRelatedField with default deserialization overriden.
 
     The default deserialization looks for an object with given id (the ``data``) in DB.
@@ -49,7 +49,7 @@ class _ColumnField(serializers.Serializer):
         raise serializers.ValidationError("No associated Column.")
 
 
-class _OwnerField(serializers.Serializer):
+class _OwnerField(serializers.PrimaryKeyRelatedField):
     """PKRelatedField with default deserialization overriden.
 
     Cf ``_ColumField``.
