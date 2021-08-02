@@ -12,6 +12,7 @@ import usePrevious from "common/hooks/usePrevious";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
+  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 import type { Column, Owner } from "services/api/generated/api.generated";
 
@@ -48,7 +49,10 @@ const ColumnSelects = ({
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
+    mappingId?: string;
+  }>();
 
   const { data: credentials } = useApiCredentialsListQuery({
     source: sourceId,
@@ -61,14 +65,27 @@ const ColumnSelects = ({
       skip: !credentials?.[0],
     }
   );
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !mappingId }
+  );
 
   const { table, column, owner: ownerId } = pendingColumn;
-  const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
+  const selectedOwner = ownerId
+    ? credentialOwners?.find(({ id }) => id === ownerId)
+    : credentialOwners?.find(({ id }) => id === mapping?.primary_key_owner);
   const schema = selectedOwner?.schema as Record<string, string[]>;
-  const defaultValue = {
-    id: "/",
-    label: "/",
-  };
+  const defaultValue =
+    selectedOwner && mapping
+      ? {
+          id: `${selectedOwner.id}/${mapping.primary_key_table}`,
+          label: `${selectedOwner.name}/${mapping.primary_key_table}`,
+        }
+      : {
+          id: "/",
+          label: "/",
+        };
+
   const ownerTable =
     table && selectedOwner
       ? {
