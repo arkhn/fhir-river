@@ -67,7 +67,7 @@ class _FilterSerializer(serializers.Serializer):
     sql_column = serializers.CharField()
 
 
-class _ResourceSerializer(serializers.ModelSerializer):
+class _ResourceSerializer(serializers.Serializer):
     id = serializers.CharField()
     label = serializers.CharField(allow_blank=True)
     primary_key_table = serializers.CharField()
