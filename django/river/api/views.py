@@ -6,7 +6,7 @@ from drf_spectacular.utils import extend_schema
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
-from river.api import serializers
+from river.api.serializers import serializers
 from river.services import abort, batch, preview
 
 

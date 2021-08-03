@@ -2159,7 +2159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MappingWithPartialCredential'
+                $ref: '#/components/schemas/MappingWithPartialCredentialModel'
           description: ''
   /api/sources/import/:
     post:
@@ -2171,13 +2171,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MappingRequest'
+              $ref: '#/components/schemas/MappingModelRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/MappingRequest'
+              $ref: '#/components/schemas/MappingModelRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MappingRequest'
+              $ref: '#/components/schemas/MappingModelRequest'
         required: true
       security:
       - cookieAuth: []
@@ -2188,7 +2188,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mapping'
+                $ref: '#/components/schemas/MappingModel'
           description: ''
   /api/user/:
     get:
@@ -2763,7 +2763,10 @@ components:
       properties:
         id:
           type: string
-          readOnly: true
+        name:
+          type: string
+        version:
+          type: string
         resources:
           type: array
           items:
@@ -2771,6 +2774,39 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/_Credential'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/_User'
+          default: []
+        updated_at:
+          type: string
+        created_at:
+          type: string
+      required:
+      - created_at
+      - credential
+      - id
+      - name
+      - updated_at
+      - version
+    MappingModel:
+      type: object
+      properties:
+        id:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ResourceModel'
+          default: []
+        credential:
+          $ref: '#/components/schemas/_CredentialModel'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          default: []
         name:
           type: string
         version:
@@ -2783,21 +2819,46 @@ components:
           type: string
           format: date-time
           readOnly: true
-        users:
-          type: array
-          items:
-            type: string
-          readOnly: true
       required:
       - created_at
       - credential
       - id
       - name
       - updated_at
-      - users
+    MappingModelRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ResourceModelRequest'
+          default: []
+        credential:
+          $ref: '#/components/schemas/_CredentialModelRequest'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRequest'
+          default: []
+        name:
+          type: string
+        version:
+          type: string
+      required:
+      - credential
+      - id
+      - name
     MappingRequest:
       type: object
       properties:
+        id:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
         resources:
           type: array
           items:
@@ -2805,26 +2866,39 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/_CredentialRequest'
-        name:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/_UserRequest'
+          default: []
+        updated_at:
           type: string
-        version:
+        created_at:
           type: string
       required:
+      - created_at
       - credential
+      - id
       - name
-    MappingWithPartialCredential:
+      - updated_at
+      - version
+    MappingWithPartialCredentialModel:
       type: object
       properties:
         id:
           type: string
-          readOnly: true
         resources:
           type: array
           items:
-            $ref: '#/components/schemas/_Resource'
+            $ref: '#/components/schemas/_ResourceModel'
           default: []
         credential:
-          $ref: '#/components/schemas/_PartialCredential'
+          $ref: '#/components/schemas/_PartialCredentialModel'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          default: []
         name:
           type: string
         version:
@@ -2837,18 +2911,12 @@ components:
           type: string
           format: date-time
           readOnly: true
-        users:
-          type: array
-          items:
-            type: string
-          readOnly: true
       required:
       - created_at
       - credential
       - id
       - name
       - updated_at
-      - users
     ModelEnum:
       enum:
       - MSSQL
@@ -3190,6 +3258,22 @@ components:
       - email
       - id
       - username
+    UserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+      required:
+      - email
+      - username
     _Attribute:
       type: object
       properties:
@@ -3203,6 +3287,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/_InputGroup'
+          default: []
+      required:
+      - definition_id
+      - path
+      - slice_name
+    _AttributeModel:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputGroupModel'
+          default: []
+      required:
+      - definition_id
+      - path
+    _AttributeModelRequest:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputGroupModelRequest'
           default: []
       required:
       - definition_id
@@ -3224,6 +3343,7 @@ components:
       required:
       - definition_id
       - path
+      - slice_name
     _Column:
       type: object
       properties:
@@ -3237,6 +3357,42 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/_Join'
+          default: []
+      required:
+      - column
+      - id
+      - table
+    _ColumnModel:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/_JoinModel'
+          default: []
+      required:
+      - column
+      - id
+      - table
+    _ColumnModelRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/_JoinModelRequest'
           default: []
       required:
       - column
@@ -3274,6 +3430,36 @@ components:
       required:
       - action
       - column
+      - relation
+      - value
+    _ConditionModel:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        column:
+          type: string
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/ConditionRelationEnum'
+      required:
+      - action
+      - column
+    _ConditionModelRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        column:
+          type: string
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/ConditionRelationEnum'
+      required:
+      - action
+      - column
     _ConditionRequest:
       type: object
       properties:
@@ -3288,6 +3474,8 @@ components:
       required:
       - action
       - column
+      - relation
+      - value
     _Credential:
       type: object
       properties:
@@ -3295,8 +3483,6 @@ components:
           type: string
         port:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         database:
           type: string
         model:
@@ -3317,7 +3503,7 @@ components:
       - model
       - password
       - port
-    _CredentialRequest:
+    _CredentialModel:
       type: object
       properties:
         host:
@@ -3326,6 +3512,62 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/_OwnerModel'
+          default: []
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - database
+      - host
+      - login
+      - model
+      - password
+      - port
+    _CredentialModelRequest:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/_OwnerModelRequest'
+          default: []
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - database
+      - host
+      - login
+      - model
+      - password
+      - port
+    _CredentialRequest:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
         database:
           type: string
         model:
@@ -3358,6 +3600,31 @@ components:
       required:
       - relation
       - sql_column
+      - value
+    _FilterModel:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/FilterRelationEnum'
+        value:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - sql_column
+    _FilterModelRequest:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/FilterRelationEnum'
+        value:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - sql_column
     _FilterRequest:
       type: object
       properties:
@@ -3370,6 +3637,7 @@ components:
       required:
       - relation
       - sql_column
+      - value
     _Input:
       type: object
       properties:
@@ -3377,6 +3645,10 @@ components:
           type: string
         concept_map_id:
           type: string
+        concept_map:
+          type: object
+          additionalProperties: {}
+          nullable: true
         static_value:
           type: string
           nullable: true
@@ -3385,9 +3657,15 @@ components:
           nullable: true
       required:
       - column
+      - concept_map
+      - concept_map_id
+      - script
+      - static_value
     _InputGroup:
       type: object
       properties:
+        id:
+          type: string
         merging_script:
           type: string
         inputs:
@@ -3400,9 +3678,52 @@ components:
           items:
             $ref: '#/components/schemas/_Condition'
           default: []
+      required:
+      - id
+      - merging_script
+    _InputGroupModel:
+      type: object
+      properties:
+        id:
+          type: string
+        merging_script:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputModel'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ConditionModel'
+          default: []
+      required:
+      - id
+    _InputGroupModelRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        merging_script:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/_InputModelRequest'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ConditionModelRequest'
+          default: []
+      required:
+      - id
     _InputGroupRequest:
       type: object
       properties:
+        id:
+          type: string
         merging_script:
           type: string
         inputs:
@@ -3415,7 +3736,10 @@ components:
           items:
             $ref: '#/components/schemas/_ConditionRequest'
           default: []
-    _InputRequest:
+      required:
+      - id
+      - merging_script
+    _InputModel:
       type: object
       properties:
         script:
@@ -3430,7 +3754,63 @@ components:
           nullable: true
       required:
       - column
+    _InputModelRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        static_value:
+          type: string
+          nullable: true
+        column:
+          type: string
+          nullable: true
+      required:
+      - column
+    _InputRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        concept_map:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        static_value:
+          type: string
+          nullable: true
+        column:
+          type: string
+          nullable: true
+      required:
+      - column
+      - concept_map
+      - concept_map_id
+      - script
+      - static_value
     _Join:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+      required:
+      - columns
+    _JoinModel:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+      required:
+      - columns
+    _JoinModelRequest:
       type: object
       properties:
         columns:
@@ -3467,6 +3847,45 @@ components:
       required:
       - id
       - name
+      - schema
+    _OwnerModel:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schema:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ColumnModel'
+          default: []
+      required:
+      - id
+      - name
+    _OwnerModelRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        schema:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/_ColumnModelRequest'
+          default: []
+      required:
+      - id
+      - name
     _OwnerRequest:
       type: object
       properties:
@@ -3486,7 +3905,8 @@ components:
       required:
       - id
       - name
-    _PartialCredential:
+      - schema
+    _PartialCredentialModel:
       type: object
       properties:
         host:
@@ -3502,7 +3922,7 @@ components:
         owners:
           type: array
           items:
-            $ref: '#/components/schemas/_Owner'
+            $ref: '#/components/schemas/_OwnerModel'
           default: []
       required:
       - database
@@ -3514,7 +3934,6 @@ components:
       properties:
         id:
           type: string
-          readOnly: true
         label:
           type: string
         primary_key_table:
@@ -3523,9 +3942,6 @@ components:
           type: string
         definition_id:
           type: string
-        logical_reference:
-          type: string
-          readOnly: true
         primary_key_owner:
           type: string
         attributes:
@@ -3538,6 +3954,77 @@ components:
           items:
             $ref: '#/components/schemas/_Filter'
           default: []
+        logical_reference:
+          type: string
+      required:
+      - definition_id
+      - id
+      - label
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    _ResourceModel:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/_AttributeModel'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/_FilterModel'
+          default: []
+      required:
+      - definition_id
+      - id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    _ResourceModelRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/_AttributeModelRequest'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/_FilterModelRequest'
+          default: []
       required:
       - definition_id
       - id
@@ -3548,6 +4035,8 @@ components:
     _ResourceRequest:
       type: object
       properties:
+        id:
+          type: string
         label:
           type: string
         primary_key_table:
@@ -3568,11 +4057,44 @@ components:
           items:
             $ref: '#/components/schemas/_FilterRequest'
           default: []
+        logical_reference:
+          type: string
       required:
       - definition_id
+      - id
+      - label
+      - logical_reference
       - primary_key_column
       - primary_key_owner
       - primary_key_table
+    _User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+      required:
+      - email
+      - id
+      - username
+    _UserRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+      required:
+      - email
+      - id
+      - username
   securitySchemes:
     basicAuth:
       type: http

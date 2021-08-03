@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from pyrog.api.serializers.mapping import MappingSerializer
 from river import models
+from river.api.serializers.mapping import MappingSerializer
 
 
 class ErrorSerializer(serializers.ModelSerializer):
