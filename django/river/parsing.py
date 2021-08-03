@@ -24,6 +24,7 @@ class Column(BaseModel):
 class Input(BaseModel):
     script: str
     concept_map_id: str
+    concept_map: dict
     static_value: Any
     column: Optional[str]
 
@@ -167,7 +168,7 @@ def as_old_mapping(source: Source, resource_id: str):
                             {
                                 "script": input_.script or None,
                                 "conceptMapId": input_.concept_map_id or None,
-                                "conceptMap": None,  # TODO: ??
+                                "conceptMap": input_.concept_map or None,
                                 "staticValue": input_.static_value,
                                 "sqlValue": serialize_column(input_.column) if input_.column else None,
                             }
