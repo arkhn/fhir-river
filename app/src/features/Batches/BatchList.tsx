@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    padding: theme.spacing(1, 0),
   },
   accordionSummary: {
     margin: 0,
@@ -43,6 +44,12 @@ const useStyles = makeStyles((theme) => ({
       transition: "none",
     },
   },
+  accordionSummaryTitle: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   button: {
     textTransform: "none",
     marginLeft: theme.spacing(1),
@@ -52,6 +59,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     marginTop: theme.spacing(0.5),
     marginBottom: theme.spacing(1),
+  },
+  accordions: {
+    margin: theme.spacing(0, 5, 8, 5),
   },
   accordion: {
     "&.Mui-expanded": {
@@ -64,8 +74,27 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     marginBottom: theme.spacing(0.5),
   },
-  pagination: {
-    margin: theme.spacing(1, 0),
+  batchId: {
+    fontSize: theme.typography.subtitle2.fontSize,
+    backgroundColor: theme.palette.divider,
+    padding: theme.spacing(0, 0.5),
+    borderRadius: 3,
+    marginTop: theme.spacing(0.5),
+  },
+  paginationContainer: {
+    backgroundColor: theme.palette.background.default,
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    height: theme.spacing(7),
+    display: "flex",
+    alignItems: "center",
+    paddingLeft: theme.spacing(5),
+    borderTop: `1px solid ${theme.palette.divider}`,
+  },
+  endButtons: {
+    display: "flex",
   },
 }));
 
@@ -104,49 +133,67 @@ const BatchList = (): JSX.Element => {
   if (isBatchesLoading) return <CircularProgress />;
   return (
     <>
-      {batches?.results &&
-        batches.results.map((batch) => (
-          <Accordion key={`batch-${batch.id}`} className={classes.accordion}>
-            <AccordionSummary
-              className={classes.accordionSummary}
-              expandIcon={<ExpandMore />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <div className={classes.accordionSummaryContent}>
-                <Typography variant="subtitle2">
-                  {new Date(batch.created_at).toLocaleString()}
-                </Typography>
-                <div>
-                  <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Replay />}
-                    onClick={handleBatchRetry(batch.id)}
-                  >
-                    <Typography>{t("retry")}</Typography>
-                  </Button>
-                  {!batch.deleted_at && (
-                    <BatchCancel batch={batch} className={classes.button} />
-                  )}
+      <div className={classes.accordions}>
+        {batches?.results &&
+          batches.results.map((batch) => (
+            <Accordion key={`batch-${batch.id}`} className={classes.accordion}>
+              <AccordionSummary
+                className={classes.accordionSummary}
+                expandIcon={<ExpandMore />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
+                <div className={classes.accordionSummaryContent}>
+                  <div className={classes.accordionSummaryTitle}>
+                    <div>
+                      <Typography variant="subtitle2">
+                        {!batch.deleted_at && `⏳ In Progress...`}
+                        {batch.deleted_at &&
+                          batch.errors.length > 0 &&
+                          `⚠️ ${batch.errors.length} errors`}
+                        {batch.deleted_at &&
+                          batch.errors.length === 0 &&
+                          `✅ Success`}
+                      </Typography>
+                      <Typography className={classes.batchId}>
+                        {batch.id}
+                      </Typography>
+                    </div>
+                    <Typography variant="subtitle2">
+                      {new Date(batch.created_at)
+                        .toLocaleString()
+                        .split(",")
+                        .join(" -")}
+                    </Typography>
+                  </div>
+                  <div className={classes.endButtons}>
+                    <Button
+                      className={classes.button}
+                      variant="outlined"
+                      startIcon={<Replay />}
+                      onClick={handleBatchRetry(batch.id)}
+                    >
+                      <Typography>{t("retry")}</Typography>
+                    </Button>
+                    {!batch.deleted_at && (
+                      <BatchCancel batch={batch} className={classes.button} />
+                    )}
+                  </div>
                 </div>
-              </div>
-            </AccordionSummary>
-            <AccordionDetails className={classes.accordionDetails}>
-              <Typography gutterBottom>
-                <b>ID</b> : {batch.id}
-              </Typography>
-              <BatchErrors batch={batch} />
-            </AccordionDetails>
-          </Accordion>
-        ))}
-      <Pagination
-        className={classes.pagination}
-        count={Math.ceil((batches?.results?.length ?? 1) / PAGE_SIZE)}
-        page={page}
-        onChange={handlePageChange}
-      />
+              </AccordionSummary>
+              <AccordionDetails className={classes.accordionDetails}>
+                <BatchErrors batch={batch} />
+              </AccordionDetails>
+            </Accordion>
+          ))}
+      </div>
+      <div className={classes.paginationContainer}>
+        <Pagination
+          count={Math.ceil((batches?.results?.length ?? 1) / PAGE_SIZE)}
+          page={page}
+          onChange={handlePageChange}
+        />
+      </div>
     </>
   );
 };

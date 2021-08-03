@@ -1,6 +1,5 @@
 import React from "react";
 
-import { Typography } from "@material-ui/core";
 import { DataGrid, GridCellParams } from "@material-ui/data-grid";
 import { useTranslation } from "react-i18next";
 
@@ -27,18 +26,13 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
   ];
 
   return (
-    <>
-      <Typography gutterBottom>
-        {t("errors", { count: batch.errors.length })}
-      </Typography>
-      <DataGrid
-        showColumnRightBorder
-        autoHeight
-        rows={batch.errors}
-        columns={columns}
-        pageSize={5}
-      />
-    </>
+    <DataGrid
+      showColumnRightBorder
+      autoHeight
+      rows={batch.errors}
+      columns={columns}
+      pageSize={5}
+    />
   );
 };
 
