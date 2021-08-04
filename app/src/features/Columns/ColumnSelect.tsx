@@ -8,11 +8,12 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
+import { useAppSelector } from "app/store";
 import usePrevious from "common/hooks/usePrevious";
+import { resourceSelectors } from "features/Mappings/resourceSlice";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
-  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 import type { Column, Owner } from "services/api/generated/api.generated";
 
@@ -65,9 +66,9 @@ const ColumnSelects = ({
       skip: !credentials?.[0],
     }
   );
-  const { data: mapping } = useApiResourcesRetrieveQuery(
-    { id: mappingId ?? "" },
-    { skip: !mappingId }
+
+  const mapping = useAppSelector((state) =>
+    resourceSelectors.selectById(state, mappingId ?? "")
   );
 
   const { table: pendingColumnTable, column, owner: ownerId } = pendingColumn;
@@ -105,7 +106,7 @@ const ColumnSelects = ({
               })),
             ];
           },
-          [defaultValue]
+          ownerTable === defaultValue ? [defaultValue] : []
         );
   };
 
