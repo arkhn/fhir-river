@@ -24,7 +24,7 @@ class Column(BaseModel):
 class Input(BaseModel):
     script: str
     concept_map_id: str
-    concept_map: dict
+    concept_map: Optional[dict]
     static_value: Any
     column: Optional[str]
 
