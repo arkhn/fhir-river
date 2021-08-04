@@ -36,7 +36,7 @@ class _CredentialSerializer(serializers.Serializer):
 class _InputSerializer(serializers.Serializer):
     script = serializers.CharField(allow_blank=True)
     concept_map_id = serializers.CharField(allow_blank=True)
-    concept_map = serializers.JSONField(allow_null=True)
+    concept_map = serializers.JSONField(required=False)
     static_value = serializers.CharField(allow_null=True, allow_blank=True)
     column = serializers.CharField(allow_null=True)
 
