@@ -25,7 +25,8 @@ import {
 } from "services/api/endpoints";
 import {
   useApiSourcesExportRetrieveQuery,
-  Mapping,
+  MappingRequest,
+  useApiCredentialsListQuery,
 } from "services/api/generated/api.generated";
 
 const ITEM_HEIGHT = 48;
@@ -103,12 +104,32 @@ const BatchCreate = (): JSX.Element => {
 
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
+<<<<<<< HEAD
+=======
+  const { data: credentials } = useApiCredentialsListQuery({ source: id });
+  const credential = credentials?.[0];
+
+  const handleResourceSelectionChange = (
+    event: React.ChangeEvent<{
+      name?: string;
+      value: unknown;
+    }>
+  ) => {
+    setSelectedResourceIds(event.target.value as string[]);
+  };
+
+>>>>>>> 5bfe73cb (fix(app): batch create payload)
   const handleBatchRun = async () => {
     refetchMappings();
 
-    if (mappings) {
-      const filteredMappings: Mapping = {
+    if (mappings && credential) {
+      const filteredMappings: MappingRequest = {
         ...mappings,
+        credential: {
+          ...mappings.credential,
+          login: credential.login,
+          password: credential.password,
+        },
         resources: mappings.resources?.filter(({ id }) =>
           selectedResourceIds.includes(id)
         ),
