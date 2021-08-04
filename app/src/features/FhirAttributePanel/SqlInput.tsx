@@ -23,12 +23,12 @@ import {
 } from "services/api/endpoints";
 import {
   ColumnRequest,
-  Input as InputType,
+  Input,
   Scripts,
 } from "services/api/generated/api.generated";
 
-type InputProps = {
-  input: InputType;
+type SqlInputProps = {
+  input: Input;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SqlInput = ({ input }: InputProps): JSX.Element => {
+const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
   const [deleteInput] = useApiInputsDestroyMutation();

@@ -88,7 +88,10 @@ const BatchCreate = (): JSX.Element => {
 
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
-  const { data: credentials } = useApiCredentialsListQuery({ source: id });
+  const { data: credentials } = useApiCredentialsListQuery(
+    { source: id },
+    { skip: !id }
+  );
   const credential = credentials?.[0];
 
   const handleResourceSelectionChange = (

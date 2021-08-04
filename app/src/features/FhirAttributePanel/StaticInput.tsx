@@ -10,10 +10,10 @@ import {
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
 } from "services/api/endpoints";
-import { Input as InputType } from "services/api/generated/api.generated";
+import { Input } from "services/api/generated/api.generated";
 
-type InputProps = {
-  input: InputType;
+type StaticInputProps = {
+  input: Input;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const StaticInput = ({ input }: InputProps): JSX.Element => {
+const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [staticValue, setStaticValue] = useState(input.static_value ?? "");
