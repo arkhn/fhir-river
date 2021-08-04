@@ -76,16 +76,10 @@ const ColumnSelects = ({
     ? credentialOwners?.find(({ id }) => id === ownerId)
     : credentialOwners?.find(({ id }) => id === mapping?.primary_key_owner);
   const schema = selectedOwner?.schema as Record<string, string[]>;
-  const defaultValue: { id: string; label: string } =
-    selectedOwner && mapping
-      ? {
-          id: `${selectedOwner.id}/${mapping.primary_key_table}`,
-          label: `${selectedOwner.name}/${mapping.primary_key_table}`,
-        }
-      : {
-          id: "/",
-          label: "/",
-        };
+  const defaultValue = {
+    id: "/",
+    label: "/",
+  };
 
   const ownerTable =
     table && selectedOwner
@@ -111,9 +105,7 @@ const ColumnSelects = ({
               })),
             ];
           },
-          defaultValue.id === "/" && defaultValue.label === "/"
-            ? [defaultValue]
-            : []
+          [defaultValue]
         );
   };
 
@@ -178,7 +170,7 @@ const ColumnSelects = ({
           options={tableOptions}
           groupBy={(option) => option.label.split("/")[0] ?? ""}
           getOptionLabel={(option) => option.label.split("/")[1] ?? ""}
-          getOptionSelected={({ id }) => id === ownerTable?.id}
+          getOptionSelected={({ id }) => id === selectedOwner?.id}
           value={ownerTable}
           onChange={handleOwnerTableChange}
           selectOnFocus
