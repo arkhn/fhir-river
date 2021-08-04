@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -14,7 +14,6 @@ import {
   TableHead,
   TableBody,
   useMediaQuery,
-  CircularProgress,
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -26,11 +25,15 @@ import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
 import {
   useApiResourcesRetrieveQuery,
-  usePagaiExploreRetrieveQuery,
+  usePagaiExploreCreateMutation,
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
+  useApiCredentialsListQuery,
 } from "services/api/endpoints";
-import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
+import {
+  useApiSourcesExportRetrieveQuery,
+  ExplorationResponse,
+} from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -107,12 +110,21 @@ const Preview = (): JSX.Element => {
     mappingId?: string;
   }>();
 
+  const [exploration, setExploration] = useState<
+    ExplorationResponse | undefined
+  >(undefined);
+
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const handleAlertClose = () => setAlert(undefined);
 
   const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
     undefined
   );
+
+  const { data: credentials } = useApiCredentialsListQuery({
+    source: sourceId,
+  });
+  const credential = credentials?.[0];
 
   const {
     mappings,
@@ -126,10 +138,16 @@ const Preview = (): JSX.Element => {
           ({ id }) => id === mappingId
         );
         return {
-          mappings: mappings && {
-            ...mappings,
-            resources: resource && [resource],
-          },
+          mappings: mappings &&
+            credential && {
+              ...mappings,
+              credential: {
+                ...mappings.credential,
+                login: credential.login,
+                password: credential.password,
+              },
+              resources: resource && [resource],
+            },
         };
       },
     }
@@ -147,17 +165,29 @@ const Preview = (): JSX.Element => {
     { skip: !mapping }
   );
 
-  const {
-    data: exploration,
-    isLoading: isExplorationLoading,
-  } = usePagaiExploreRetrieveQuery(
-    {
-      resourceId: mapping?.id ?? "",
-      owner: owner?.name ?? "",
-      table: mapping?.primary_key_table ?? "",
-    },
-    { skip: !mapping || !owner }
-  );
+  const [pagaiExploreCreate] = usePagaiExploreCreateMutation();
+
+  useEffect(() => {
+    if (mappings && mapping && owner) {
+      const explore = async () => {
+        try {
+          const exploration = await pagaiExploreCreate({
+            explorationRequestRequest: {
+              resource_id: mapping?.id ?? "",
+              owner: owner?.name ?? "",
+              table: mapping?.primary_key_table ?? "",
+              mapping: mappings,
+            },
+          }).unwrap();
+          setExploration(exploration);
+        } catch (e) {
+          // TODO: handle error nicely
+          console.log(e);
+        }
+      };
+      explore();
+    }
+  }, [mapping, mappings, owner, pagaiExploreCreate]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
@@ -172,7 +202,7 @@ const Preview = (): JSX.Element => {
       if (mappings) {
         try {
           const previewResult = await apiPreviewCreate({
-            previewRequest: {
+            previewRequestRequest: {
               mapping: mappings,
               primary_key_values: [primaryKeyValue ?? ""],
             },
@@ -185,7 +215,6 @@ const Preview = (): JSX.Element => {
     }
   };
 
-  if (isExplorationLoading) return <CircularProgress />;
   return (
     <>
       <MappingHeader />

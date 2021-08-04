@@ -816,29 +816,29 @@ export type ApiBatchesRetryCreateApiArg = {
   id: string;
   batchRequest: BatchRequest;
 };
-export type ApiColumnsListApiResponse = /** status 200  */ Column2[];
+export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
   input?: string;
   join?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
 };
-export type ApiColumnsCreateApiResponse = /** status 201  */ Column2;
+export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
 export type ApiColumnsCreateApiArg = {
-  columnRequest: ColumnRequest2;
+  columnRequest: ColumnRequest;
 };
-export type ApiColumnsRetrieveApiResponse = /** status 200  */ Column2;
+export type ApiColumnsRetrieveApiResponse = /** status 200  */ Column;
 export type ApiColumnsRetrieveApiArg = {
   /** A unique value identifying this column. */
   id: string;
 };
-export type ApiColumnsUpdateApiResponse = /** status 200  */ Column2;
+export type ApiColumnsUpdateApiResponse = /** status 200  */ Column;
 export type ApiColumnsUpdateApiArg = {
   /** A unique value identifying this column. */
   id: string;
-  columnRequest: ColumnRequest2;
+  columnRequest: ColumnRequest;
 };
-export type ApiColumnsPartialUpdateApiResponse = /** status 200  */ Column2;
+export type ApiColumnsPartialUpdateApiResponse = /** status 200  */ Column;
 export type ApiColumnsPartialUpdateApiArg = {
   /** A unique value identifying this column. */
   id: string;
@@ -849,27 +849,27 @@ export type ApiColumnsDestroyApiArg = {
   /** A unique value identifying this column. */
   id: string;
 };
-export type ApiConditionsListApiResponse = /** status 200  */ Condition2[];
+export type ApiConditionsListApiResponse = /** status 200  */ Condition[];
 export type ApiConditionsListApiArg = {
   inputGroup?: string;
 };
-export type ApiConditionsCreateApiResponse = /** status 201  */ Condition2;
+export type ApiConditionsCreateApiResponse = /** status 201  */ Condition;
 export type ApiConditionsCreateApiArg = {
-  conditionRequest: ConditionRequest2;
+  conditionRequest: ConditionRequest;
 };
-export type ApiConditionsRetrieveApiResponse = /** status 200  */ Condition2;
+export type ApiConditionsRetrieveApiResponse = /** status 200  */ Condition;
 export type ApiConditionsRetrieveApiArg = {
   /** A unique value identifying this condition. */
   id: string;
 };
-export type ApiConditionsUpdateApiResponse = /** status 200  */ Condition2;
+export type ApiConditionsUpdateApiResponse = /** status 200  */ Condition;
 export type ApiConditionsUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
-  conditionRequest: ConditionRequest2;
+  conditionRequest: ConditionRequest;
 };
 export type ApiConditionsPartialUpdateApiResponse =
-  /** status 200  */ Condition2;
+  /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -882,29 +882,29 @@ export type ApiConditionsDestroyApiArg = {
 };
 export type ApiCoreVersionRetrieveApiResponse = unknown;
 export type ApiCoreVersionRetrieveApiArg = {};
-export type ApiCredentialsListApiResponse = /** status 200  */ Credential2[];
+export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
   /** Which field to use when ordering the results. */
   ordering?: string;
   source?: string;
 };
-export type ApiCredentialsCreateApiResponse = /** status 201  */ Credential2;
+export type ApiCredentialsCreateApiResponse = /** status 201  */ Credential;
 export type ApiCredentialsCreateApiArg = {
-  credentialRequest: CredentialRequest2;
+  credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsRetrieveApiResponse = /** status 200  */ Credential2;
+export type ApiCredentialsRetrieveApiResponse = /** status 200  */ Credential;
 export type ApiCredentialsRetrieveApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
-export type ApiCredentialsUpdateApiResponse = /** status 200  */ Credential2;
+export type ApiCredentialsUpdateApiResponse = /** status 200  */ Credential;
 export type ApiCredentialsUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
-  credentialRequest: CredentialRequest2;
+  credentialRequest: CredentialRequest;
 };
 export type ApiCredentialsPartialUpdateApiResponse =
-  /** status 200  */ Credential2;
+  /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -915,26 +915,26 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
-export type ApiFiltersListApiResponse = /** status 200  */ Filter2[];
+export type ApiFiltersListApiResponse = /** status 200  */ Filter[];
 export type ApiFiltersListApiArg = {
   resource?: string;
 };
-export type ApiFiltersCreateApiResponse = /** status 201  */ Filter2;
+export type ApiFiltersCreateApiResponse = /** status 201  */ Filter;
 export type ApiFiltersCreateApiArg = {
-  filterRequest: FilterRequest2;
+  filterRequest: FilterRequest;
 };
-export type ApiFiltersRetrieveApiResponse = /** status 200  */ Filter2;
+export type ApiFiltersRetrieveApiResponse = /** status 200  */ Filter;
 export type ApiFiltersRetrieveApiArg = {
   /** A unique value identifying this filter. */
   id: string;
 };
-export type ApiFiltersUpdateApiResponse = /** status 200  */ Filter2;
+export type ApiFiltersUpdateApiResponse = /** status 200  */ Filter;
 export type ApiFiltersUpdateApiArg = {
   /** A unique value identifying this filter. */
   id: string;
-  filterRequest: FilterRequest2;
+  filterRequest: FilterRequest;
 };
-export type ApiFiltersPartialUpdateApiResponse = /** status 200  */ Filter2;
+export type ApiFiltersPartialUpdateApiResponse = /** status 200  */ Filter;
 export type ApiFiltersPartialUpdateApiArg = {
   /** A unique value identifying this filter. */
   id: string;
@@ -945,29 +945,29 @@ export type ApiFiltersDestroyApiArg = {
   /** A unique value identifying this filter. */
   id: string;
 };
-export type ApiInputGroupsListApiResponse = /** status 200  */ InputGroup2[];
+export type ApiInputGroupsListApiResponse = /** status 200  */ InputGroup[];
 export type ApiInputGroupsListApiArg = {
   attribute?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
 };
-export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup2;
+export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup;
 export type ApiInputGroupsCreateApiArg = {
-  inputGroupRequest: InputGroupRequest2;
+  inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsRetrieveApiResponse = /** status 200  */ InputGroup2;
+export type ApiInputGroupsRetrieveApiResponse = /** status 200  */ InputGroup;
 export type ApiInputGroupsRetrieveApiArg = {
   /** A unique value identifying this input group. */
   id: string;
 };
-export type ApiInputGroupsUpdateApiResponse = /** status 200  */ InputGroup2;
+export type ApiInputGroupsUpdateApiResponse = /** status 200  */ InputGroup;
 export type ApiInputGroupsUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
-  inputGroupRequest: InputGroupRequest2;
+  inputGroupRequest: InputGroupRequest;
 };
 export type ApiInputGroupsPartialUpdateApiResponse =
-  /** status 200  */ InputGroup2;
+  /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -978,28 +978,28 @@ export type ApiInputGroupsDestroyApiArg = {
   /** A unique value identifying this input group. */
   id: string;
 };
-export type ApiInputsListApiResponse = /** status 200  */ Input2[];
+export type ApiInputsListApiResponse = /** status 200  */ Input[];
 export type ApiInputsListApiArg = {
   inputGroup?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
 };
-export type ApiInputsCreateApiResponse = /** status 201  */ Input2;
+export type ApiInputsCreateApiResponse = /** status 201  */ Input;
 export type ApiInputsCreateApiArg = {
-  inputRequest: InputRequest2;
+  inputRequest: InputRequest;
 };
-export type ApiInputsRetrieveApiResponse = /** status 200  */ Input2;
+export type ApiInputsRetrieveApiResponse = /** status 200  */ Input;
 export type ApiInputsRetrieveApiArg = {
   /** A unique value identifying this input. */
   id: string;
 };
-export type ApiInputsUpdateApiResponse = /** status 200  */ Input2;
+export type ApiInputsUpdateApiResponse = /** status 200  */ Input;
 export type ApiInputsUpdateApiArg = {
   /** A unique value identifying this input. */
   id: string;
-  inputRequest: InputRequest2;
+  inputRequest: InputRequest;
 };
-export type ApiInputsPartialUpdateApiResponse = /** status 200  */ Input2;
+export type ApiInputsPartialUpdateApiResponse = /** status 200  */ Input;
 export type ApiInputsPartialUpdateApiArg = {
   /** A unique value identifying this input. */
   id: string;
@@ -1010,28 +1010,28 @@ export type ApiInputsDestroyApiArg = {
   /** A unique value identifying this input. */
   id: string;
 };
-export type ApiJoinsListApiResponse = /** status 200  */ Join2[];
+export type ApiJoinsListApiResponse = /** status 200  */ Join[];
 export type ApiJoinsListApiArg = {
   column?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
 };
-export type ApiJoinsCreateApiResponse = /** status 201  */ Join2;
+export type ApiJoinsCreateApiResponse = /** status 201  */ Join;
 export type ApiJoinsCreateApiArg = {
-  joinRequest: JoinRequest2;
+  joinRequest: JoinRequest;
 };
-export type ApiJoinsRetrieveApiResponse = /** status 200  */ Join2;
+export type ApiJoinsRetrieveApiResponse = /** status 200  */ Join;
 export type ApiJoinsRetrieveApiArg = {
   /** A unique value identifying this join. */
   id: string;
 };
-export type ApiJoinsUpdateApiResponse = /** status 200  */ Join2;
+export type ApiJoinsUpdateApiResponse = /** status 200  */ Join;
 export type ApiJoinsUpdateApiArg = {
   /** A unique value identifying this join. */
   id: string;
-  joinRequest: JoinRequest2;
+  joinRequest: JoinRequest;
 };
-export type ApiJoinsPartialUpdateApiResponse = /** status 200  */ Join2;
+export type ApiJoinsPartialUpdateApiResponse = /** status 200  */ Join;
 export type ApiJoinsPartialUpdateApiArg = {
   /** A unique value identifying this join. */
   id: string;
@@ -1042,26 +1042,26 @@ export type ApiJoinsDestroyApiArg = {
   /** A unique value identifying this join. */
   id: string;
 };
-export type ApiOwnersListApiResponse = /** status 200  */ Owner2[];
+export type ApiOwnersListApiResponse = /** status 200  */ Owner[];
 export type ApiOwnersListApiArg = {
   credential?: string;
 };
-export type ApiOwnersCreateApiResponse = /** status 201  */ Owner2;
+export type ApiOwnersCreateApiResponse = /** status 201  */ Owner;
 export type ApiOwnersCreateApiArg = {
-  ownerRequest: OwnerRequest2;
+  ownerRequest: OwnerRequest;
 };
-export type ApiOwnersRetrieveApiResponse = /** status 200  */ Owner2;
+export type ApiOwnersRetrieveApiResponse = /** status 200  */ Owner;
 export type ApiOwnersRetrieveApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
-export type ApiOwnersUpdateApiResponse = /** status 200  */ Owner2;
+export type ApiOwnersUpdateApiResponse = /** status 200  */ Owner;
 export type ApiOwnersUpdateApiArg = {
   /** A unique value identifying this owner. */
   id: string;
-  ownerRequest: OwnerRequest2;
+  ownerRequest: OwnerRequest;
 };
-export type ApiOwnersPartialUpdateApiResponse = /** status 200  */ Owner2;
+export type ApiOwnersPartialUpdateApiResponse = /** status 200  */ Owner;
 export type ApiOwnersPartialUpdateApiArg = {
   /** A unique value identifying this owner. */
   id: string;
@@ -1076,28 +1076,28 @@ export type ApiPreviewCreateApiResponse = /** status 201  */ PreviewResponse;
 export type ApiPreviewCreateApiArg = {
   previewRequestRequest: PreviewRequestRequest;
 };
-export type ApiResourcesListApiResponse = /** status 200  */ Resource2[];
+export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
   /** Which field to use when ordering the results. */
   ordering?: string;
   source?: string;
 };
-export type ApiResourcesCreateApiResponse = /** status 201  */ Resource2;
+export type ApiResourcesCreateApiResponse = /** status 201  */ Resource;
 export type ApiResourcesCreateApiArg = {
-  resourceRequest: ResourceRequest2;
+  resourceRequest: ResourceRequest;
 };
-export type ApiResourcesRetrieveApiResponse = /** status 200  */ Resource2;
+export type ApiResourcesRetrieveApiResponse = /** status 200  */ Resource;
 export type ApiResourcesRetrieveApiArg = {
   /** A unique value identifying this resource. */
   id: string;
 };
-export type ApiResourcesUpdateApiResponse = /** status 200  */ Resource2;
+export type ApiResourcesUpdateApiResponse = /** status 200  */ Resource;
 export type ApiResourcesUpdateApiArg = {
   /** A unique value identifying this resource. */
   id: string;
-  resourceRequest: ResourceRequest2;
+  resourceRequest: ResourceRequest;
 };
-export type ApiResourcesPartialUpdateApiResponse = /** status 200  */ Resource2;
+export type ApiResourcesPartialUpdateApiResponse = /** status 200  */ Resource;
 export type ApiResourcesPartialUpdateApiArg = {
   /** A unique value identifying this resource. */
   id: string;
@@ -1151,7 +1151,7 @@ export type ApiSourcesImportCreateApiResponse = /** status 200  */ MappingModel;
 export type ApiSourcesImportCreateApiArg = {
   mappingModelRequest: MappingModelRequest;
 };
-export type ApiUserRetrieveApiResponse = /** status 200  */ User2;
+export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
 export type PagaiExploreCreateApiResponse =
   /** status 201  */ ExplorationResponse;
@@ -1195,7 +1195,7 @@ export type Error = {
   deleted_at: string;
   batch: string;
 };
-export type Input = {
+export type MappingInput = {
   script?: string;
   concept_map_id?: string;
   concept_map?: {
@@ -1213,69 +1213,69 @@ export type ConditionRelationEnum =
   | "LE"
   | "NOTNULL"
   | "NULL";
-export type Condition = {
+export type MappingCondition = {
   action: ActionEnum;
   column: string;
   value?: string;
   relation?: ConditionRelationEnum;
 };
-export type InputGroup = {
+export type MappingInputGroup = {
   id: string;
   merging_script?: string;
-  inputs?: Input[];
-  conditions?: Condition[];
+  inputs?: MappingInput[];
+  conditions?: MappingCondition[];
 };
-export type Attribute2 = {
+export type MappingAttribute = {
   path: string;
   slice_name?: string;
   definition_id: string;
-  input_groups?: InputGroup[];
+  input_groups?: MappingInputGroup[];
 };
 export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
-export type Filter = {
+export type MappingFilter = {
   relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
-export type Resource = {
+export type MappingResource = {
   id: string;
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
   primary_key_owner: string;
-  attributes?: Attribute2[];
-  filters?: Filter[];
+  attributes?: MappingAttribute[];
+  filters?: MappingFilter[];
   logical_reference: string;
 };
 export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
-export type Join = {
+export type MappingJoin = {
   columns: string[];
 };
-export type Column = {
+export type MappingColumn = {
   id: string;
   table: string;
   column: string;
-  joins?: Join[];
+  joins?: MappingJoin[];
 };
-export type Owner = {
+export type MappingOwner = {
   id: string;
   name: string;
   schema?: {
     [key: string]: any;
   } | null;
-  columns?: Column[];
+  columns?: MappingColumn[];
 };
-export type Credential = {
+export type MappingCredential = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: Owner[];
+  owners?: MappingOwner[];
   login: string;
   password: string;
 };
-export type User = {
+export type MappingUser = {
   id: string;
   email: string;
   username: string;
@@ -1284,9 +1284,9 @@ export type Mapping = {
   id: string;
   name: string;
   version?: string;
-  resources?: Resource[];
-  credential: Credential;
-  users?: User[];
+  resources?: MappingResource[];
+  credential: MappingCredential;
+  users?: MappingUser[];
   updated_at: string;
   created_at: string;
 };
@@ -1304,7 +1304,7 @@ export type PaginatedBatchList = {
   previous?: string | null;
   results?: Batch[];
 };
-export type InputRequest = {
+export type MappingInputRequest = {
   script?: string;
   concept_map_id?: string;
   concept_map?: {
@@ -1313,67 +1313,67 @@ export type InputRequest = {
   static_value?: string | null;
   column: string | null;
 };
-export type ConditionRequest = {
+export type MappingConditionRequest = {
   action: ActionEnum;
   column: string;
   value?: string;
   relation?: ConditionRelationEnum;
 };
-export type InputGroupRequest = {
+export type MappingInputGroupRequest = {
   id: string;
   merging_script?: string;
-  inputs?: InputRequest[];
-  conditions?: ConditionRequest[];
+  inputs?: MappingInputRequest[];
+  conditions?: MappingConditionRequest[];
 };
-export type AttributeRequest2 = {
+export type MappingAttributeRequest = {
   path: string;
   slice_name?: string;
   definition_id: string;
-  input_groups?: InputGroupRequest[];
+  input_groups?: MappingInputGroupRequest[];
 };
-export type FilterRequest = {
+export type MappingFilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
-export type ResourceRequest = {
+export type MappingResourceRequest = {
   id: string;
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
   primary_key_owner: string;
-  attributes?: AttributeRequest2[];
-  filters?: FilterRequest[];
+  attributes?: MappingAttributeRequest[];
+  filters?: MappingFilterRequest[];
   logical_reference: string;
 };
-export type JoinRequest = {
+export type MappingJoinRequest = {
   columns: string[];
 };
-export type ColumnRequest = {
+export type MappingColumnRequest = {
   id: string;
   table: string;
   column: string;
-  joins?: JoinRequest[];
+  joins?: MappingJoinRequest[];
 };
-export type OwnerRequest = {
+export type MappingOwnerRequest = {
   id: string;
   name: string;
   schema?: {
     [key: string]: any;
   } | null;
-  columns?: ColumnRequest[];
+  columns?: MappingColumnRequest[];
 };
-export type CredentialRequest = {
+export type MappingCredentialRequest = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: OwnerRequest[];
+  owners?: MappingOwnerRequest[];
   login: string;
   password: string;
 };
-export type UserRequest = {
+export type MappingUserRequest = {
   id: string;
   email: string;
   username: string;
@@ -1382,9 +1382,9 @@ export type MappingRequest = {
   id: string;
   name: string;
   version?: string;
-  resources?: ResourceRequest[];
-  credential: CredentialRequest;
-  users?: UserRequest[];
+  resources?: MappingResourceRequest[];
+  credential: MappingCredentialRequest;
+  users?: MappingUserRequest[];
   updated_at: string;
   created_at: string;
 };
@@ -1394,7 +1394,7 @@ export type BatchRequest = {
 export type PatchedBatchRequest = {
   mappings?: MappingRequest;
 };
-export type Column2 = {
+export type Column = {
   id: string;
   table: string;
   column: string;
@@ -1404,7 +1404,7 @@ export type Column2 = {
   input?: string | null;
   owner: string;
 };
-export type ColumnRequest2 = {
+export type ColumnRequest = {
   table: string;
   column: string;
   join?: string | null;
@@ -1418,7 +1418,7 @@ export type PatchedColumnRequest = {
   input?: string | null;
   owner?: string;
 };
-export type Condition2 = {
+export type Condition = {
   id: string;
   action: ActionEnum;
   value?: string;
@@ -1426,7 +1426,7 @@ export type Condition2 = {
   column: string;
   input_group: string;
 };
-export type ConditionRequest2 = {
+export type ConditionRequest = {
   action: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
@@ -1440,7 +1440,7 @@ export type PatchedConditionRequest = {
   column?: string;
   input_group?: string;
 };
-export type Credential2 = {
+export type Credential = {
   id: string;
   available_owners: string[];
   host: string;
@@ -1453,7 +1453,7 @@ export type Credential2 = {
   created_at: string;
   source: string;
 };
-export type CredentialRequest2 = {
+export type CredentialRequest = {
   host: string;
   port: number;
   database: string;
@@ -1471,14 +1471,14 @@ export type PatchedCredentialRequest = {
   model?: ModelEnum;
   source?: string;
 };
-export type Filter2 = {
+export type Filter = {
   id: string;
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
   sql_column: string;
 };
-export type FilterRequest2 = {
+export type FilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
@@ -1490,14 +1490,14 @@ export type PatchedFilterRequest = {
   resource?: string;
   sql_column?: string;
 };
-export type InputGroup2 = {
+export type InputGroup = {
   id: string;
   merging_script?: string;
   updated_at: string;
   created_at: string;
   attribute: string;
 };
-export type InputGroupRequest2 = {
+export type InputGroupRequest = {
   merging_script?: string;
   attribute: string;
 };
@@ -1505,7 +1505,7 @@ export type PatchedInputGroupRequest = {
   merging_script?: string;
   attribute?: string;
 };
-export type Input2 = {
+export type Input = {
   id: string;
   script?: string;
   concept_map_id?: string;
@@ -1514,7 +1514,7 @@ export type Input2 = {
   created_at: string;
   input_group: string;
 };
-export type InputRequest2 = {
+export type InputRequest = {
   script?: string;
   concept_map_id?: string;
   static_value?: string | null;
@@ -1526,19 +1526,19 @@ export type PatchedInputRequest = {
   static_value?: string | null;
   input_group?: string;
 };
-export type Join2 = {
+export type Join = {
   id: string;
   updated_at: string;
   created_at: string;
   column: string;
 };
-export type JoinRequest2 = {
+export type JoinRequest = {
   column: string;
 };
 export type PatchedJoinRequest = {
   column?: string;
 };
-export type Owner2 = {
+export type Owner = {
   id: string;
   name: string;
   schema: {
@@ -1546,7 +1546,7 @@ export type Owner2 = {
   };
   credential: string;
 };
-export type OwnerRequest2 = {
+export type OwnerRequest = {
   name: string;
   credential: string;
 };
@@ -1564,7 +1564,7 @@ export type PreviewRequestRequest = {
   mapping: MappingRequest;
   primary_key_values: string[];
 };
-export type Resource2 = {
+export type Resource = {
   id: string;
   label?: string;
   primary_key_table: string;
@@ -1576,7 +1576,7 @@ export type Resource2 = {
   source: string;
   primary_key_owner: string;
 };
-export type ResourceRequest2 = {
+export type ResourceRequest = {
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
@@ -1613,36 +1613,36 @@ export type PatchedSourceRequest = {
   name?: string;
   version?: string;
 };
-export type InputModel = {
+export type MappingInputModel = {
   script?: string;
   concept_map_id?: string;
   static_value?: string | null;
   column: string | null;
 };
-export type ConditionModel = {
+export type MappingConditionModel = {
   action: ActionEnum;
   column: string;
   value?: string;
   relation?: ConditionRelationEnum;
 };
-export type InputGroupModel = {
+export type MappingInputGroupModel = {
   id: string;
   merging_script?: string;
-  inputs?: InputModel[];
-  conditions?: ConditionModel[];
+  inputs?: MappingInputModel[];
+  conditions?: MappingConditionModel[];
 };
-export type AttributeModel = {
+export type MappingAttributeModel = {
   path: string;
   slice_name?: string;
   definition_id: string;
-  input_groups?: InputGroupModel[];
+  input_groups?: MappingInputGroupModel[];
 };
-export type FilterModel = {
+export type MappingFilterModel = {
   relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
-export type ResourceModel = {
+export type MappingResourceModel = {
   id: string;
   label?: string;
   primary_key_table: string;
@@ -1650,97 +1650,97 @@ export type ResourceModel = {
   definition_id: string;
   logical_reference: string;
   primary_key_owner: string;
-  attributes?: AttributeModel[];
-  filters?: FilterModel[];
+  attributes?: MappingAttributeModel[];
+  filters?: MappingFilterModel[];
 };
-export type JoinModel = {
+export type MappingJoinModel = {
   columns: string[];
 };
-export type ColumnModel = {
+export type MappingColumnModel = {
   id: string;
   table: string;
   column: string;
-  joins?: JoinModel[];
+  joins?: MappingJoinModel[];
 };
-export type OwnerModel = {
+export type MappingOwnerModel = {
   id: string;
   name: string;
   schema?: {
     [key: string]: any;
   } | null;
-  columns?: ColumnModel[];
+  columns?: MappingColumnModel[];
 };
-export type PartialCredentialModel = {
+export type MappingPartialCredentialModel = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: OwnerModel[];
+  owners?: MappingOwnerModel[];
 };
-export type User2 = {
+export type User = {
   id: string;
   email: string;
   username: string;
 };
 export type MappingWithPartialCredentialModel = {
   id: string;
-  resources?: ResourceModel[];
-  credential: PartialCredentialModel;
-  users?: User2[];
+  resources?: MappingResourceModel[];
+  credential: MappingPartialCredentialModel;
+  users?: User[];
   name: string;
   version?: string;
   updated_at: string;
   created_at: string;
 };
-export type CredentialModel = {
+export type MappingCredentialModel = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: OwnerModel[];
+  owners?: MappingOwnerModel[];
   login: string;
   password: string;
 };
 export type MappingModel = {
   id: string;
-  resources?: ResourceModel[];
-  credential: CredentialModel;
-  users?: User2[];
+  resources?: MappingResourceModel[];
+  credential: MappingCredentialModel;
+  users?: User[];
   name: string;
   version?: string;
   updated_at: string;
   created_at: string;
 };
-export type InputModelRequest = {
+export type MappingInputModelRequest = {
   script?: string;
   concept_map_id?: string;
   static_value?: string | null;
   column: string | null;
 };
-export type ConditionModelRequest = {
+export type MappingConditionModelRequest = {
   action: ActionEnum;
   column: string;
   value?: string;
   relation?: ConditionRelationEnum;
 };
-export type InputGroupModelRequest = {
+export type MappingInputGroupModelRequest = {
   id: string;
   merging_script?: string;
-  inputs?: InputModelRequest[];
-  conditions?: ConditionModelRequest[];
+  inputs?: MappingInputModelRequest[];
+  conditions?: MappingConditionModelRequest[];
 };
-export type AttributeModelRequest = {
+export type MappingAttributeModelRequest = {
   path: string;
   slice_name?: string;
   definition_id: string;
-  input_groups?: InputGroupModelRequest[];
+  input_groups?: MappingInputGroupModelRequest[];
 };
-export type FilterModelRequest = {
+export type MappingFilterModelRequest = {
   relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
-export type ResourceModelRequest = {
+export type MappingResourceModelRequest = {
   id: string;
   label?: string;
   primary_key_table: string;
@@ -1748,44 +1748,44 @@ export type ResourceModelRequest = {
   definition_id: string;
   logical_reference: string;
   primary_key_owner: string;
-  attributes?: AttributeModelRequest[];
-  filters?: FilterModelRequest[];
+  attributes?: MappingAttributeModelRequest[];
+  filters?: MappingFilterModelRequest[];
 };
-export type JoinModelRequest = {
+export type MappingJoinModelRequest = {
   columns: string[];
 };
-export type ColumnModelRequest = {
+export type MappingColumnModelRequest = {
   id: string;
   table: string;
   column: string;
-  joins?: JoinModelRequest[];
+  joins?: MappingJoinModelRequest[];
 };
-export type OwnerModelRequest = {
+export type MappingOwnerModelRequest = {
   id: string;
   name: string;
   schema?: {
     [key: string]: any;
   } | null;
-  columns?: ColumnModelRequest[];
+  columns?: MappingColumnModelRequest[];
 };
-export type CredentialModelRequest = {
+export type MappingCredentialModelRequest = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: OwnerModelRequest[];
+  owners?: MappingOwnerModelRequest[];
   login: string;
   password: string;
 };
-export type UserRequest2 = {
+export type UserRequest = {
   email: string;
   username: string;
 };
 export type MappingModelRequest = {
   id: string;
-  resources?: ResourceModelRequest[];
-  credential: CredentialModelRequest;
-  users?: UserRequest2[];
+  resources?: MappingResourceModelRequest[];
+  credential: MappingCredentialModelRequest;
+  users?: UserRequest[];
   name: string;
   version?: string;
 };

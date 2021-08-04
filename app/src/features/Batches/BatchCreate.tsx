@@ -104,9 +104,11 @@ const BatchCreate = (): JSX.Element => {
 
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
-<<<<<<< HEAD
-=======
-  const { data: credentials } = useApiCredentialsListQuery({ source: id });
+  const { data: credentials } = useApiCredentialsListQuery(
+    { source: id },
+    { skip: !id }
+  );
+
   const credential = credentials?.[0];
 
   const handleResourceSelectionChange = (
@@ -118,7 +120,6 @@ const BatchCreate = (): JSX.Element => {
     setSelectedResourceIds(event.target.value as string[]);
   };
 
->>>>>>> 5bfe73cb (fix(app): batch create payload)
   const handleBatchRun = async () => {
     refetchMappings();
 
