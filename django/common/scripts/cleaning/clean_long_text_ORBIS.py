@@ -2,7 +2,6 @@ import re
 
 from common.scripts import utils
 
-
 def clean_long_text_ORBIS(raw_input):
     """Remove special charater from long BLOB / CLOB text in ORBIS"""
     if utils.is_empty(raw_input):
@@ -30,13 +29,14 @@ def clean_long_text_ORBIS(raw_input):
         y = re.findall("\\\f:[\\d]{4}\\\\?", text)
         text = text.replace(x[0], "").replace(y[0], "")
 
-    if text[0].isalpha() == True:
-        if text[1].isalpha() == False:
+
+    if text[0].isalpha():
+        if not text[1].isalpha():
             x = re.findall("^(.{2})", text)
             text = text.replace(x[0], "")
 
-    if text[0].isalpha() == False:
-        if text[1].isalpha() == True:
+    if not text[0].isalpha():
+        if text[1].isalpha():
             x = re.findall("^(.{2})", text)
             text = text.replace(x[0], "")
 
@@ -45,4 +45,11 @@ def clean_long_text_ORBIS(raw_input):
         y = re.findall("\\\f:[\\d]{5}\\\\?", text)
         text = text.replace(x[0], "").replace(y[0], "")
 
+    if not text[0].isalpha():
+        if not text[1].isalpha():
+            x = re.findall("^(.{2})", text)
+            text = text.replace(x[0], "")
+
+
     return text
+
