@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -6,9 +6,11 @@ import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 
+import { useAppDispatch } from "app/store";
 import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
+import { resourcesRemoved } from "features/Mappings/resourceSlice";
 import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
 import CredentialEditButton from "features/Sources/CredentialEditButton";
 import SourceDrawer from "features/Sources/SourceDrawer";
@@ -37,6 +39,11 @@ const SourceMappings = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const { sourceId } = useParams<{ sourceId?: string }>();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(resourcesRemoved());
+  }, [dispatch]);
 
   const handleLaunchClick = () => {
     history.push(`/sources/${sourceId}/batches`);

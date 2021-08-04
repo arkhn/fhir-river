@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Button,
@@ -11,11 +11,14 @@ import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
+import { useAppDispatch } from "app/store";
 import AttributeInputGroup from "features/FhirAttributePanel/AttributeInputGroup";
+import { resourceAdded } from "features/Mappings/resourceSlice";
 import {
   useApiAttributesRetrieveQuery,
   useApiInputGroupsListQuery,
   useApiInputGroupsCreateMutation,
+  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +34,11 @@ const useStyles = makeStyles((theme) => ({
 const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { attributeId } = useParams<{ attributeId?: string }>();
+  const dispatch = useAppDispatch();
+  const { attributeId, mappingId } = useParams<{
+    attributeId?: string;
+    mappingId?: string;
+  }>();
   const {
     data: attribute,
     isError,
@@ -45,6 +52,15 @@ const FhirAttributePanel = (): JSX.Element => {
     { attribute: attribute?.id ?? "" },
     { skip: !attribute }
   );
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !mappingId }
+  );
+
+  useEffect(() => {
+    if (mapping) dispatch(resourceAdded(mapping));
+  }, [dispatch, mapping]);
+
   const [createInputGroup] = useApiInputGroupsCreateMutation();
 
   const handleCreateInputGroup = async () => {
