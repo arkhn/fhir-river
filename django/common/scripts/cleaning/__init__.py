@@ -9,7 +9,7 @@ from .clean_instant import clean_instant
 from .clean_phone import clean_phone
 from .clean_quantity import clean_quantity
 from .clean_time import clean_time
-from .clean_text_blob import clean_text_blob
+from .clean_long_text_ORBIS import clean_long_text_ORBIS
 from .code_to_empty import code_to_empty
 from .if_valid import if_valid
 from .make_title import make_title
