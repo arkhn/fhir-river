@@ -1196,12 +1196,12 @@ export type Error = {
   batch: string;
 };
 export type Input = {
-  script: string;
-  concept_map_id: string;
-  concept_map: {
+  script?: string;
+  concept_map_id?: string;
+  concept_map?: {
     [key: string]: any;
-  } | null;
-  static_value: string | null;
+  };
+  static_value?: string | null;
   column: string | null;
 };
 export type ActionEnum = "INCLUDE" | "EXCLUDE";
@@ -1216,30 +1216,30 @@ export type ConditionRelationEnum =
 export type Condition = {
   action: ActionEnum;
   column: string;
-  value: string;
-  relation: ConditionRelationEnum;
+  value?: string;
+  relation?: ConditionRelationEnum;
 };
 export type InputGroup = {
   id: string;
-  merging_script: string;
+  merging_script?: string;
   inputs?: Input[];
   conditions?: Condition[];
 };
 export type Attribute2 = {
   path: string;
-  slice_name: string;
+  slice_name?: string;
   definition_id: string;
   input_groups?: InputGroup[];
 };
 export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
 export type Filter = {
   relation: FilterRelationEnum;
-  value: string;
+  value?: string;
   sql_column: string;
 };
 export type Resource = {
   id: string;
-  label: string;
+  label?: string;
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
@@ -1261,7 +1261,7 @@ export type Column = {
 export type Owner = {
   id: string;
   name: string;
-  schema: {
+  schema?: {
     [key: string]: any;
   } | null;
   columns?: Column[];
@@ -1283,7 +1283,7 @@ export type User = {
 export type Mapping = {
   id: string;
   name: string;
-  version: string;
+  version?: string;
   resources?: Resource[];
   credential: Credential;
   users?: User[];
@@ -1305,40 +1305,40 @@ export type PaginatedBatchList = {
   results?: Batch[];
 };
 export type InputRequest = {
-  script: string;
-  concept_map_id: string;
-  concept_map: {
+  script?: string;
+  concept_map_id?: string;
+  concept_map?: {
     [key: string]: any;
-  } | null;
-  static_value: string | null;
+  };
+  static_value?: string | null;
   column: string | null;
 };
 export type ConditionRequest = {
   action: ActionEnum;
   column: string;
-  value: string;
-  relation: ConditionRelationEnum;
+  value?: string;
+  relation?: ConditionRelationEnum;
 };
 export type InputGroupRequest = {
   id: string;
-  merging_script: string;
+  merging_script?: string;
   inputs?: InputRequest[];
   conditions?: ConditionRequest[];
 };
 export type AttributeRequest2 = {
   path: string;
-  slice_name: string;
+  slice_name?: string;
   definition_id: string;
   input_groups?: InputGroupRequest[];
 };
 export type FilterRequest = {
   relation: FilterRelationEnum;
-  value: string;
+  value?: string;
   sql_column: string;
 };
 export type ResourceRequest = {
   id: string;
-  label: string;
+  label?: string;
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
@@ -1359,7 +1359,7 @@ export type ColumnRequest = {
 export type OwnerRequest = {
   id: string;
   name: string;
-  schema: {
+  schema?: {
     [key: string]: any;
   } | null;
   columns?: ColumnRequest[];
@@ -1381,7 +1381,7 @@ export type UserRequest = {
 export type MappingRequest = {
   id: string;
   name: string;
-  version: string;
+  version?: string;
   resources?: ResourceRequest[];
   credential: CredentialRequest;
   users?: UserRequest[];
