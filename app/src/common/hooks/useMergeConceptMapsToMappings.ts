@@ -85,7 +85,29 @@ const useMergeConceptMapsToMappings = (params: {
     }
   }
 
-  return conceptMapsById && mappings;
+  return (
+    mappings &&
+    conceptMapsById && {
+      ...mappings,
+      resources: mappings.resources?.map((resource) => ({
+        ...resource,
+        attributes: resource.attributes?.map((attribute) => ({
+          ...attribute,
+          input_groups: attribute.input_groups?.map((input_group) => ({
+            ...input_group,
+            inputs: input_group.inputs?.map((input) =>
+              input.concept_map_id && conceptMapsById
+                ? {
+                    ...input,
+                    concept_map: conceptMapsById[input.concept_map_id],
+                  }
+                : { ...input }
+            ),
+          })),
+        })),
+      })),
+    }
+  );
 };
 
 export default useMergeConceptMapsToMappings;
