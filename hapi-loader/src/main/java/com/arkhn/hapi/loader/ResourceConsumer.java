@@ -16,7 +16,6 @@ import ca.uhn.fhir.parser.IParser;
 
 import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
