@@ -41,7 +41,7 @@ class OwnerSchemaView(views.APIView):
 
 
 @extend_schema(
-    request=serializers.ExplorationRequestSerializer, responses={"200": serializers.ExplorationResponseSerializer}
+    request=serializers.ExplorationRequestSerializer, responses={"201": serializers.ExplorationResponseSerializer}
 )
 class ExploreView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
