@@ -213,12 +213,12 @@ const Preview = (): JSX.Element => {
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
       const primaryKeyValue = exploration.rows[previewIndex]?.[primaryKeyIndex];
 
-      if (mappings) {
+      if (mappingsWithConceptMaps) {
         const previewCreate = async () => {
           try {
             const previewResult = await apiPreviewCreate({
               previewRequestRequest: {
-                mapping: mappings,
+                mapping: mappingsWithConceptMaps,
                 primary_key_values: [primaryKeyValue ?? ""],
               },
             }).unwrap();
@@ -237,6 +237,7 @@ const Preview = (): JSX.Element => {
     isMappingsFetching,
     mapping,
     mappings,
+    mappingsWithConceptMaps,
     previewIndex,
   ]);
 
