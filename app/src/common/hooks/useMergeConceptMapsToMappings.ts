@@ -74,17 +74,6 @@ const useMergeConceptMapsToMappings = (params: {
     }
   );
 
-  for (const resource of mappings?.resources ?? []) {
-    for (const attribute of resource.attributes ?? []) {
-      for (const input_group of attribute.input_groups ?? []) {
-        for (const input of input_group.inputs ?? []) {
-          if (input.concept_map_id && conceptMapsById)
-            input.concept_map = conceptMapsById[input.concept_map_id];
-        }
-      }
-    }
-  }
-
   return (
     mappings &&
     conceptMapsById && {
