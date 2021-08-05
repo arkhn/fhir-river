@@ -184,8 +184,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          // TODO: handle error nicely
-          console.log(e);
+          setAlert(e.message);
         }
       };
       explore();
