@@ -111,6 +111,8 @@ const Preview = (): JSX.Element => {
     mappingId?: string;
   }>();
 
+  const [previewIndex, setPreviewIndex] = useState<number>(0);
+
   const [exploration, setExploration] = useState<
     ExplorationResponse | undefined
   >(undefined);
@@ -130,11 +132,12 @@ const Preview = (): JSX.Element => {
   const {
     mappings,
     refetch: refetchMappings,
+    isMappingsFetching,
   } = useApiSourcesExportRetrieveQuery(
     { id: sourceId ?? "" },
     {
       skip: !sourceId,
-      selectFromResult: ({ data: mappings }) => {
+      selectFromResult: ({ data: mappings, isFetching }) => {
         const resource = mappings?.resources?.find(
           ({ id }) => id === mappingId
         );
@@ -149,6 +152,7 @@ const Preview = (): JSX.Element => {
               },
               resources: resource && [resource],
             },
+          isMappingsFetching: isFetching,
         };
       },
     }
@@ -194,28 +198,47 @@ const Preview = (): JSX.Element => {
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
-    const primaryKey = mapping?.primary_key_table;
-    if (exploration && primaryKey && mapping) {
-      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
-      const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
+    refetchMappings();
+    setPreviewIndex(index);
+  };
 
-      refetchMappings();
+  useEffect(() => {
+    if (
+      Boolean(previewIndex) &&
+      !isMappingsFetching &&
+      exploration &&
+      mapping?.primary_key_table
+    ) {
+      const primaryKey = mapping?.primary_key_table;
+      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
+      const primaryKeyValue = exploration.rows[previewIndex]?.[primaryKeyIndex];
 
       if (mappings) {
-        try {
-          const previewResult = await apiPreviewCreate({
-            previewRequestRequest: {
-              mapping: mappings,
-              primary_key_values: [primaryKeyValue ?? ""],
-            },
-          }).unwrap();
-          setPreview(previewResult);
-        } catch (e) {
-          setAlert(e.message);
-        }
+        const previewCreate = async () => {
+          try {
+            const previewResult = await apiPreviewCreate({
+              previewRequestRequest: {
+                mapping: mappings,
+                primary_key_values: [primaryKeyValue ?? ""],
+              },
+            }).unwrap();
+            setPreview(previewResult);
+            setPreviewIndex(0);
+          } catch (e) {
+            setAlert(e.message);
+          }
+        };
+        previewCreate();
       }
     }
-  };
+  }, [
+    apiPreviewCreate,
+    exploration,
+    isMappingsFetching,
+    mapping,
+    mappings,
+    previewIndex,
+  ]);
 
   return (
     <>
