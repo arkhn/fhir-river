@@ -56,7 +56,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @Autowired
         private Jedis redisCounter;
 
-        private final Counter failedInsertions;
+        private Counter failedInsertions;
         private Counter successfulInsertions;
 
         ResourceListener(MeterRegistry registry) {
