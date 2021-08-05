@@ -2,18 +2,22 @@ import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Grid, makeStyles, TextField } from "@material-ui/core";
+import {
+  Grid,
+  makeStyles,
+  TextField,
+  CircularProgress,
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-import { useAppSelector } from "app/store";
 import usePrevious from "common/hooks/usePrevious";
-import { resourceSelectors } from "features/Mappings/resourceSlice";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
+  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 import type { Column, Owner } from "services/api/generated/api.generated";
 
@@ -67,8 +71,12 @@ const ColumnSelects = ({
     }
   );
 
-  const mapping = useAppSelector((state) =>
-    resourceSelectors.selectById(state, mappingId ?? "")
+  const {
+    data: mapping,
+    isLoading: mappingLoading,
+  } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !mappingId }
   );
 
   const { table: pendingColumnTable, column, owner: ownerId } = pendingColumn;
@@ -162,6 +170,10 @@ const ColumnSelects = ({
       setColumns(schema[table] ?? []);
     }
   }, [schema, hasTableChanged, pendingColumn, table, onChange]);
+
+  if (mappingLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <>
