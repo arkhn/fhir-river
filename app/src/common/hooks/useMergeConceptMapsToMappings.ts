@@ -48,29 +48,28 @@ const useMergeConceptMapsToMappings = (params: {
     {
       skip: !ids,
       selectFromResult: ({ data: conceptMaps }) => ({
-        conceptMapsById:
-          conceptMaps?.reduce(
-            (acc, conceptMap) =>
-              conceptMap.id
-                ? {
-                    [conceptMap.id]: conceptMap.group?.reduce(
-                      (acc, group) => ({
-                        ...group.element.reduce(
-                          (acc, el) =>
-                            el.code
-                              ? { [el.code]: el.target?.[0]?.code, ...acc }
-                              : acc,
-                          {} as Record<string, string | undefined>
-                        ),
-                        ...acc,
-                      }),
-                      {} as Record<string, string | undefined>
-                    ),
-                    ...acc,
-                  }
-                : acc,
-            {} as Record<string, Record<string, string | undefined> | undefined>
-          ) ?? {},
+        conceptMapsById: conceptMaps?.reduce(
+          (acc, conceptMap) =>
+            conceptMap.id
+              ? {
+                  [conceptMap.id]: conceptMap.group?.reduce(
+                    (acc, group) => ({
+                      ...group.element.reduce(
+                        (acc, el) =>
+                          el.code
+                            ? { [el.code]: el.target?.[0]?.code, ...acc }
+                            : acc,
+                        {} as Record<string, string | undefined>
+                      ),
+                      ...acc,
+                    }),
+                    {} as Record<string, string | undefined>
+                  ),
+                  ...acc,
+                }
+              : acc,
+          {} as Record<string, Record<string, string | undefined> | undefined>
+        ),
       }),
     }
   );
@@ -79,14 +78,14 @@ const useMergeConceptMapsToMappings = (params: {
     for (const attribute of resource.attributes ?? []) {
       for (const input_group of attribute.input_groups ?? []) {
         for (const input of input_group.inputs ?? []) {
-          if (input.concept_map_id)
+          if (input.concept_map_id && conceptMapsById)
             input.concept_map = conceptMapsById[input.concept_map_id];
         }
       }
     }
   }
 
-  return mappings;
+  return conceptMapsById && mappings;
 };
 
 export default useMergeConceptMapsToMappings;
