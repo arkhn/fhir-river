@@ -152,7 +152,6 @@ jobs:
           dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
           deploymentRef: main
-          debug: true
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",
