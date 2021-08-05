@@ -33,18 +33,13 @@ def clean_long_text_ORBIS(raw_input):
         x = re.findall("(.*)(?=\\f:[\\d]{5})", text)
         y = re.findall("\\\f:[\\d]{5}\\\\?", text)
         text = text.replace(x[0], "").replace(y[0], "")
-
+    
     else :
-        if not text[0].isalpha():
-            if not text[1].isalpha():
-                x = re.findall("^(.{2})", text)
-                text = text.replace(x[0], "")
-            else : 
-                x = re.findall("^(.{2})", text)
-                text = text.replace(x[0], "")
-        else :
-            if not text[1].isalpha():
-                x = re.findall("^(.{2})", text)
-                text = text.replace(x[0], "")
+        a=text[0].isalpha()
+        b=text[1].isalpha()
+        if (not a and (not b or b))or (a and not b):
+            x = re.findall("^(.{2})", text)
+            text = text.replace(x[0], "")
 
     return text
+

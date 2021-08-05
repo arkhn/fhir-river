@@ -66,12 +66,12 @@ Opérateur : Dr"""
 
     ### Remove special characters in Operatoire report
     raw_input7 = "\u0001\u0000_\u0000\u0001\u0000!\u0000Opérateur(s) : DUFFAS"
-    out_put7 = clean_long_text_ORBIS(raw_input6)
+    out_put7 = clean_long_text_ORBIS(raw_input7)
     assert out_put7 == """Opérateur(s) : DUFFAS"""
 
     ### Remove special characters in Operatoire report
     raw_input8 = "\u0001\u0000d\u0000\u0001\u0000,\u0000Opérateur(s) : DUFFAS"
-    out_put8 = clean_long_text_ORBIS(raw_input6)
+    out_put8 = clean_long_text_ORBIS(raw_input8)
     assert out_put8 == """Opérateur(s) : DUFFAS"""
 
     ### Remove special characters in Hospitalisation report
