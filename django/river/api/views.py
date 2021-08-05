@@ -46,9 +46,9 @@ class BatchViewSet(viewsets.ModelViewSet):
         raise NotImplementedError
 
 
-@extend_schema(request=serializers.PreviewRequestSerializer, responses={"201": serializers.PreviewResponseSerializer})
-class PreviewEndpoint(generics.CreateAPIView):
-    def create(self, request, *args, **kwargs):
+@extend_schema(request=serializers.PreviewRequestSerializer, responses={"200": serializers.PreviewResponseSerializer})
+class PreviewEndpoint(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
         serializer = serializers.PreviewRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         headers = self.get_success_headers(serializer.data)
@@ -59,7 +59,7 @@ class PreviewEndpoint(generics.CreateAPIView):
         documents, errors = preview(data["mapping"], primary_key_values)
 
         return response.Response(
-            {"instances": documents, "errors": errors}, status=status.HTTP_201_CREATED, headers=headers
+            {"instances": documents, "errors": errors}, status=status.HTTP_200_OK, headers=headers
         )
 
 
