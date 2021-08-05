@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Checkbox,
@@ -90,6 +90,8 @@ const BatchCreate = (): JSX.Element => {
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
+  const [batchStarting, setBatchStarting] = useState<boolean>(false);
+
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState<boolean>(false);
   const handleAlertClose = () => setAlert(undefined);
@@ -99,6 +101,7 @@ const BatchCreate = (): JSX.Element => {
   const {
     data: mappings,
     refetch: refetchMappings,
+    isFetching: isMappingsFetching,
   } = useApiSourcesExportRetrieveQuery({ id });
 
   const { data: credentials } = useApiCredentialsListQuery(
@@ -136,29 +139,42 @@ const BatchCreate = (): JSX.Element => {
     setSelectedResourceIds(event.target.value as string[]);
   };
 
-  const handleBatchRun = async () => {
+  const handleBatchRun = () => {
     refetchMappings();
+    setBatchStarting(true);
+  };
 
-    if (mappingsWithConceptMaps) {
+  useEffect(() => {
+    if (batchStarting && !isMappingsFetching && mappingsWithConceptMaps) {
       const filteredMappings: MappingRequest = {
         ...mappingsWithConceptMaps,
         resources: mappingsWithConceptMaps.resources?.filter(({ id }) =>
           selectedResourceIds.includes(id)
         ),
       };
-      try {
-        await apiBatchCreate({
-          batchRequest: {
-            mappings: filteredMappings,
-          },
-        }).unwrap();
+      const batchCreate = async () => {
+        try {
+          await apiBatchCreate({
+            batchRequest: {
+              mappings: filteredMappings,
+            },
+          }).unwrap();
 
-        setSelectedResourceIds([]);
-      } catch (e) {
-        setAlert(e.message as string);
-      }
+          setSelectedResourceIds([]);
+          setBatchStarting(false);
+        } catch (e) {
+          setAlert(e.message as string);
+        }
+      };
+      batchCreate();
     }
-  };
+  }, [
+    apiBatchCreate,
+    batchStarting,
+    isMappingsFetching,
+    mappingsWithConceptMaps,
+    selectedResourceIds,
+  ]);
 
   return (
     <div className={classes.root}>
