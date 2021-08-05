@@ -43,8 +43,8 @@ class OwnerSchemaView(views.APIView):
 @extend_schema(
     request=serializers.ExplorationRequestSerializer, responses={"200": serializers.ExplorationResponseSerializer}
 )
-class ExploreView(generics.CreateAPIView):
-    def create(self, request, *args, **kwargs):
+class ExploreView(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
         serializer = serializers.ExplorationRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         headers = self.get_success_headers(serializer.data)
