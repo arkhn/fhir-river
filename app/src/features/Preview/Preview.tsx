@@ -23,6 +23,7 @@ import { useParams } from "react-router-dom";
 import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
 import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
+import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
 import {
   useApiResourcesRetrieveQuery,
   usePagaiExploreCreateMutation,
@@ -153,6 +154,8 @@ const Preview = (): JSX.Element => {
     }
   );
 
+  const mappingsWithConceptMaps = useMergeConceptMapsToMappings({ mappings });
+
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
@@ -168,7 +171,7 @@ const Preview = (): JSX.Element => {
   const [pagaiExploreCreate] = usePagaiExploreCreateMutation();
 
   useEffect(() => {
-    if (mappings && mapping && owner) {
+    if (mappingsWithConceptMaps && mapping && owner) {
       const explore = async () => {
         try {
           const exploration = await pagaiExploreCreate({
@@ -176,7 +179,7 @@ const Preview = (): JSX.Element => {
               resource_id: mapping?.id ?? "",
               owner: owner?.name ?? "",
               table: mapping?.primary_key_table ?? "",
-              mapping: mappings,
+              mapping: mappingsWithConceptMaps,
             },
           }).unwrap();
           setExploration(exploration);
@@ -187,7 +190,7 @@ const Preview = (): JSX.Element => {
       };
       explore();
     }
-  }, [mapping, mappings, owner, pagaiExploreCreate]);
+  }, [mapping, mappingsWithConceptMaps, owner, pagaiExploreCreate]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 

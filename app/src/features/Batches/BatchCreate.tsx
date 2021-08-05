@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
+import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
@@ -81,18 +82,31 @@ const BatchCreate = (): JSX.Element => {
     refetch: refetchMappings,
   } = useApiSourcesExportRetrieveQuery({ id });
 
+  const { data: credentials } = useApiCredentialsListQuery(
+    { source: id },
+    { skip: !Boolean(id) }
+  );
+  const credential = credentials?.[0];
+  const mappingsWithCredentials = mappings &&
+    credential && {
+      ...mappings,
+      credential: {
+        ...mappings.credential,
+        login: credential.login,
+        password: credential.password,
+      },
+    };
+
+  const mappingsWithConceptMaps = useMergeConceptMapsToMappings({
+    mappings: mappingsWithCredentials,
+  });
+
   const { data: resources } = useApiResourcesListQuery(
     { source: id },
     { skip: !Boolean(id) }
   );
 
   const [apiBatchCreate] = useApiBatchesCreateMutation();
-
-  const { data: credentials } = useApiCredentialsListQuery(
-    { source: id },
-    { skip: !id }
-  );
-  const credential = credentials?.[0];
 
   const handleResourceSelectionChange = (
     event: React.ChangeEvent<{
@@ -106,15 +120,10 @@ const BatchCreate = (): JSX.Element => {
   const handleBatchRun = async () => {
     refetchMappings();
 
-    if (mappings && credential) {
+    if (mappingsWithConceptMaps) {
       const filteredMappings: MappingRequest = {
-        ...mappings,
-        credential: {
-          ...mappings.credential,
-          login: credential.login,
-          password: credential.password,
-        },
-        resources: mappings.resources?.filter(({ id }) =>
+        ...mappingsWithConceptMaps,
+        resources: mappingsWithConceptMaps.resources?.filter(({ id }) =>
           selectedResourceIds.includes(id)
         ),
       };
