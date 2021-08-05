@@ -88,7 +88,7 @@ const BatchCreate = (): JSX.Element => {
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
-  const [batchStarting, setBatchStarting] = useState<boolean>(false);
+  const [isBatchStarting, setIsBatchStarting] = useState<boolean>(false);
 
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState<boolean>(false);
@@ -139,11 +139,11 @@ const BatchCreate = (): JSX.Element => {
 
   const handleBatchRun = () => {
     refetchMappings();
-    setBatchStarting(true);
+    setIsBatchStarting(true);
   };
 
   useEffect(() => {
-    if (batchStarting && !isMappingsFetching && mappingsWithConceptMaps) {
+    if (isBatchStarting && !isMappingsFetching && mappingsWithConceptMaps) {
       const filteredMappings: MappingRequest = {
         ...mappingsWithConceptMaps,
         resources: mappingsWithConceptMaps.resources?.filter(({ id }) =>
@@ -159,7 +159,7 @@ const BatchCreate = (): JSX.Element => {
           }).unwrap();
 
           setSelectedResourceIds([]);
-          setBatchStarting(false);
+          setIsBatchStarting(false);
         } catch (e) {
           setAlert(e.message as string);
         }
@@ -168,7 +168,7 @@ const BatchCreate = (): JSX.Element => {
     }
   }, [
     apiBatchCreate,
-    batchStarting,
+    isBatchStarting,
     isMappingsFetching,
     mappingsWithConceptMaps,
     selectedResourceIds,
