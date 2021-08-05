@@ -26,12 +26,10 @@ import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMap
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
-} from "services/api/endpoints";
-import {
   useApiSourcesExportRetrieveQuery,
-  MappingRequest,
   useApiCredentialsListQuery,
-} from "services/api/generated/api.generated";
+} from "services/api/endpoints";
+import type { MappingRequest } from "services/api/generated/api.generated";
 
 const ITEM_HEIGHT = 48;
 
