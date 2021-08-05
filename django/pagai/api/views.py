@@ -41,7 +41,7 @@ class OwnerSchemaView(views.APIView):
 
 
 @extend_schema(
-    request=serializers.ExplorationRequestSerializer, responses={"201": serializers.ExplorationResponseSerializer}
+    request=serializers.ExplorationRequestSerializer, responses={"200": serializers.ExplorationResponseSerializer}
 )
 class ExploreView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
@@ -64,4 +64,4 @@ class ExploreView(generics.CreateAPIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR, headers=headers)
 
-        return Response(exploration, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(exploration, status=status.HTTP_200_OK, headers=headers)
