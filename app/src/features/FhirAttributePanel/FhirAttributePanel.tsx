@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import {
   Button,
@@ -11,14 +11,11 @@ import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
-import { useAppDispatch } from "app/store";
 import AttributeInputGroup from "features/FhirAttributePanel/AttributeInputGroup";
-import { resourceAdded } from "features/Mappings/resourceSlice";
 import {
   useApiAttributesRetrieveQuery,
   useApiInputGroupsListQuery,
   useApiInputGroupsCreateMutation,
-  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,15 +26,20 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(4),
   },
+  loader: {
+    display: "flex",
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 }));
 
 const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const dispatch = useAppDispatch();
-  const { attributeId, mappingId } = useParams<{
+  const { attributeId } = useParams<{
     attributeId?: string;
-    mappingId?: string;
   }>();
   const {
     data: attribute,
@@ -52,14 +54,6 @@ const FhirAttributePanel = (): JSX.Element => {
     { attribute: attribute?.id ?? "" },
     { skip: !attribute }
   );
-  const { data: mapping } = useApiResourcesRetrieveQuery(
-    { id: mappingId ?? "" },
-    { skip: !mappingId }
-  );
-
-  useEffect(() => {
-    if (mapping) dispatch(resourceAdded(mapping));
-  }, [dispatch, mapping]);
 
   const [createInputGroup] = useApiInputGroupsCreateMutation();
 
@@ -78,7 +72,11 @@ const FhirAttributePanel = (): JSX.Element => {
   };
 
   if (isFetching) {
-    return <CircularProgress />;
+    return (
+      <div className={classes.loader}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
