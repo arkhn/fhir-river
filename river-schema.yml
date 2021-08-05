@@ -3648,7 +3648,6 @@ components:
         concept_map:
           type: object
           additionalProperties: {}
-          nullable: true
         static_value:
           type: string
           nullable: true
@@ -3657,7 +3656,6 @@ components:
           nullable: true
       required:
       - column
-      - concept_map
       - concept_map_id
       - script
       - static_value
@@ -3779,7 +3777,6 @@ components:
         concept_map:
           type: object
           additionalProperties: {}
-          nullable: true
         static_value:
           type: string
           nullable: true
@@ -3788,7 +3785,6 @@ components:
           nullable: true
       required:
       - column
-      - concept_map
       - concept_map_id
       - script
       - static_value
