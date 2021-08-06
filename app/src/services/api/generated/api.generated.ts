@@ -1072,7 +1072,7 @@ export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
-export type ApiPreviewCreateApiResponse = /** status 201  */ PreviewResponse;
+export type ApiPreviewCreateApiResponse = /** status 200  */ PreviewResponse;
 export type ApiPreviewCreateApiArg = {
   previewRequestRequest: PreviewRequestRequest;
 };
@@ -1154,7 +1154,7 @@ export type ApiSourcesImportCreateApiArg = {
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
 export type PagaiExploreCreateApiResponse =
-  /** status 201  */ ExplorationResponse;
+  /** status 200  */ ExplorationResponse;
 export type PagaiExploreCreateApiArg = {
   explorationRequestRequest: ExplorationRequestRequest;
 };
