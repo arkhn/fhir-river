@@ -2,27 +2,27 @@ import json
 
 import pytest
 
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.import_export import MappingModelSerializer
 from pyrog.models import Attribute, Column, Condition, Filter, Input, InputGroup, Join, Resource, Source
 
 pytestmark = pytest.mark.django_db
 
 
 def test_validation(valid_export_data):
-    serializer = MappingSerializer(data=valid_export_data)
+    serializer = MappingModelSerializer(data=valid_export_data)
     if serializer.is_valid() is False:
         pytest.fail(json.dumps(serializer.errors))
 
 
 def test_validation_error(invalid_export_data):
-    serializer = MappingSerializer(data=invalid_export_data)
+    serializer = MappingModelSerializer(data=invalid_export_data)
     if serializer.is_valid() is True:
         pytest.fail()
 
 
 @pytest.mark.export_data("valid/0005.json")
 def test_create(export_data):
-    serializer = MappingSerializer(data=export_data)
+    serializer = MappingModelSerializer(data=export_data)
     serializer.is_valid()
     serializer.save()
 
