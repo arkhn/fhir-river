@@ -4,7 +4,7 @@ from common.scripts import utils
 
 
 def clean_long_text_ORBIS(raw_input):
-    """Remove special charater from long BLOB / CLOB text in ORBIS"""
+    """Remove special character from long BLOB / CLOB text in ORBIS"""
     if utils.is_empty(raw_input):
         return None
 
@@ -35,9 +35,8 @@ def clean_long_text_ORBIS(raw_input):
         y = re.findall("\\\f:[\\d]{5}\\\\?", text)
         text = text.replace(x[0], "").replace(y[0], "")
 
-    else:
-        if not (text[0].isalpha() and text[1].isalpha()):
-            x = re.findall("^(.{2})", text)
-            text = text.replace(x[0], "")
+    elif not (text[0].isalpha() and text[1].isalpha()):
+        x = re.findall("^(.{2})", text)
+        text = text.replace(x[0], "")
 
     return text
