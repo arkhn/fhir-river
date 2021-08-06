@@ -5,7 +5,7 @@ from cuid import cuid
 
 class Batch(models.Model):
     id = models.TextField(primary_key=True, default=cuid, editable=False)
-    mappings = models.JSONField(default=None)
+    mappings = models.JSONField(default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, editable=False)
