@@ -10,6 +10,7 @@ from django.conf import settings
 class Progression:
     extracted: int
     loaded: int
+    failed: int
 
 
 class ProgressionCounter:
@@ -26,6 +27,8 @@ class ProgressionCounter:
             resources
         - increment_loaded: increments by 1 the value corresponding to the number of
             loaded resources
+        - increment_failed: increments by 1 the value corresponding to the number of
+            failed resources
         - get: returns both counters for a specified key
 
     """
@@ -34,6 +37,9 @@ class ProgressionCounter:
         raise NotImplementedError
 
     def increment_loaded(self, id: str):
+        raise NotImplementedError
+
+    def increment_failed(self, id: str):
         raise NotImplementedError
 
     def get(self, id: str) -> Optional[Progression]:
@@ -47,8 +53,12 @@ class FakeProgressionCounter(ProgressionCounter):
         _count (dict of str: dict): The dict in which are stored the counters.
         It has the form:
             {
-                "key1": {"extracted": nb_extracted_1, "loaded": nb_loaded_1},
-                "key2": {"extracted": nb_extracted_2, "loaded": nb_loaded_2},
+                "key1": {"extracted": nb_extracted_1,
+                        "loaded": nb_loaded_1,
+                        "failed": nb_failed_2},
+                "key2": {"extracted": nb_extracted_2,
+                        "loaded": nb_loaded_2,
+                        "failed": nb_failed_3},
                 ...
             }
 
@@ -69,6 +79,14 @@ class FakeProgressionCounter(ProgressionCounter):
             self._count[id]["loaded"] = 0
         self._count[id]["loaded"] += 1
 
+    def increment_failed(self, id: str) -> None:
+        """Increments by 1 the value corresponding to the number of failed resources."""
+        if id not in self._count:
+            self._count[id] = {}
+        if "failed" not in self._count[id]:
+            self._count[id]["failed"] = 0
+        self._count[id]["failed"] += 1
+
     def get(self, id: str) -> Optional[Progression]:
         """Gets both counters for the specified key.
 
@@ -77,7 +95,8 @@ class FakeProgressionCounter(ProgressionCounter):
 
         Returns:
             A tuple with the number of extracted resources (or None if not found) and
-                the number of loaded resources (or None if not found).
+                and the number of loaded resources (or None if not found)
+                and the number of failed resources (or None if not found).
 
         """
         counters = self._count.get(id)
@@ -86,8 +105,9 @@ class FakeProgressionCounter(ProgressionCounter):
 
         extracted = counters.get("extracted")
         loaded = counters.get("loaded")
+        failed = counters.get("failed")
 
-        return Progression(extracted=extracted, loaded=loaded)
+        return Progression(extracted=extracted, loaded=loaded, failed=failed)
 
 
 class RedisProgressionCounter(ProgressionCounter):
@@ -109,6 +129,10 @@ class RedisProgressionCounter(ProgressionCounter):
         """Increments by 1 the value corresponding to the number of loaded resources."""
         self._client.hincrby("loaded_counters", id, 1)
 
+    def increment_failed(self, id: str) -> None:
+        """Increments by 1 the value corresponding to the number of failed resources."""
+        self._client.hincrby("failed_counters", id, 1)
+
     def get(self, id: str) -> Optional[Progression]:
         """Gets both counters for the specified key.
 
@@ -117,12 +141,15 @@ class RedisProgressionCounter(ProgressionCounter):
 
         Returns:
             A tuple with the number of extracted resources (or None if not found)
-                and the number of loaded resources (or None if not found).
+                and the number of loaded resources (or None if not found)
+                and the number of failed resources (or None if not found).
 
         """
         raw_extracted = self._client.hget("extracted_counters", id)
         raw_loaded = self._client.hget("loaded_counters", id)
+        raw_failed = self._client.hget("failed_counters", id)
         extracted = int(raw_extracted) if raw_extracted else None
         loaded = int(raw_loaded) if raw_loaded else None
+        failed = int(raw_failed) if raw_failed else None
 
-        return Progression(extracted=extracted, loaded=loaded)
+        return Progression(extracted=extracted, loaded=loaded, failed=failed)
