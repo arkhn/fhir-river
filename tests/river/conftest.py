@@ -88,6 +88,11 @@ def patient_mapping():
 
 
 @pytest.fixture
+def mimic_mapping():
+    return factories.mimic_mapping()
+
+
+@pytest.fixture
 def users_to_patients_mapping():
     with (DATA_FIXTURES_DIR / "users_to_patients_mapping.json").open() as f:
         return json.load(f)

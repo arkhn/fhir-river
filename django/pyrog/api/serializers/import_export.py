@@ -26,6 +26,7 @@ from pyrog.models import (
     Resource,
     Source,
 )
+from users.api.serializers import UserSerializer
 
 
 class _ColumnField(serializers.PrimaryKeyRelatedField):
@@ -41,7 +42,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
 
-        for owner in self.root.initial_data["credential"]["owners"]:
+        for owner in self.root.initial_data["mappings"]["credential"]["owners"]:
             for column in owner["columns"]:
                 if column["id"] == data:
                     return data
@@ -59,13 +60,13 @@ class _OwnerField(serializers.PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
 
-        for owner in self.root.initial_data["credential"]["owners"]:
+        for owner in self.root.initial_data["mappings"]["credential"]["owners"]:
             if owner["id"] == data:
                 return data
         raise serializers.ValidationError("No associated Owner.")
 
 
-class _JoinSerializer(serializers.ModelSerializer):
+class _JoinModelSerializer(serializers.ModelSerializer):
     columns = _ColumnField(many=True)
 
     class Meta:
@@ -73,8 +74,8 @@ class _JoinSerializer(serializers.ModelSerializer):
         fields = ["columns"]
 
 
-class _ColumnSerializer(serializers.ModelSerializer):
-    joins = _JoinSerializer(many=True, required=False, default=[])
+class _ColumnModelSerializer(serializers.ModelSerializer):
+    joins = _JoinModelSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Column
@@ -82,8 +83,8 @@ class _ColumnSerializer(serializers.ModelSerializer):
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
 
-class _OwnerSerializer(serializers.ModelSerializer):
-    columns = _ColumnSerializer(many=True, required=False, default=[])
+class _OwnerModelSerializer(serializers.ModelSerializer):
+    columns = _ColumnModelSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Owner
@@ -91,15 +92,20 @@ class _OwnerSerializer(serializers.ModelSerializer):
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
 
-class _CredentialSerializer(serializers.ModelSerializer):
-    owners = _OwnerSerializer(many=True, required=False, default=[])
+class _PartialCredentialModelSerializer(serializers.ModelSerializer):
+    owners = _OwnerModelSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Credential
         fields = ["host", "port", "database", "model", "owners"]
 
 
-class _InputSerializer(serializers.ModelSerializer):
+class _CredentialModelSerializer(_PartialCredentialModelSerializer):
+    class Meta(_PartialCredentialModelSerializer.Meta):
+        fields = _PartialCredentialModelSerializer.Meta.fields + ["login", "password"]
+
+
+class _InputModelSerializer(serializers.ModelSerializer):
     column = _ColumnField(allow_null=True)
 
     class Meta:
@@ -107,7 +113,7 @@ class _InputSerializer(serializers.ModelSerializer):
         fields = ["script", "concept_map_id", "static_value", "column"]
 
 
-class _ConditionSerializer(serializers.ModelSerializer):
+class _ConditionModelSerializer(serializers.ModelSerializer):
     column = _ColumnField()
 
     class Meta:
@@ -120,24 +126,25 @@ class _ConditionSerializer(serializers.ModelSerializer):
         ]
 
 
-class _InputGroupSerializer(serializers.ModelSerializer):
-    inputs = _InputSerializer(many=True, required=False, default=[])
-    conditions = _ConditionSerializer(many=True, required=False, default=[])
+class _InputGroupModelSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
+    inputs = _InputModelSerializer(many=True, required=False, default=[])
+    conditions = _ConditionModelSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = InputGroup
-        fields = ["merging_script", "inputs", "conditions"]
+        fields = ["id", "merging_script", "inputs", "conditions"]
 
 
-class _AttributeSerializer(serializers.ModelSerializer):
-    input_groups = _InputGroupSerializer(many=True, required=False, default=[])
+class _AttributeModelSerializer(serializers.ModelSerializer):
+    input_groups = _InputGroupModelSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Attribute
         fields = ["path", "slice_name", "definition_id", "input_groups"]
 
 
-class _FilterSerializer(serializers.ModelSerializer):
+class _FilterModelSerializer(serializers.ModelSerializer):
     sql_column = _ColumnField()
 
     class Meta:
@@ -145,14 +152,17 @@ class _FilterSerializer(serializers.ModelSerializer):
         fields = ["relation", "value", "sql_column"]
 
 
-class _ResourceSerializer(serializers.ModelSerializer):
+class _ResourceModelSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
     primary_key_owner = _OwnerField()
-    attributes = _AttributeSerializer(many=True, required=False, default=[])
-    filters = _FilterSerializer(many=True, required=False, default=[])
+    attributes = _AttributeModelSerializer(many=True, required=False, default=[])
+    filters = _FilterModelSerializer(many=True, required=False, default=[])
+    logical_reference = serializers.CharField()
 
     class Meta:
         model = Resource
         fields = [
+            "id",
             "label",
             "primary_key_table",
             "primary_key_column",
@@ -164,9 +174,11 @@ class _ResourceSerializer(serializers.ModelSerializer):
         ]
 
 
-class MappingSerializer(serializers.ModelSerializer):
-    resources = _ResourceSerializer(many=True, required=False, default=[])
-    credential = _CredentialSerializer()
+class MappingModelSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
+    resources = _ResourceModelSerializer(many=True, required=False, default=[])
+    credential = _CredentialModelSerializer()
+    users = UserSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Source
@@ -245,7 +257,7 @@ class MappingSerializer(serializers.ModelSerializer):
             owner_data = resource_data.pop("primary_key_owner")
 
             owner = owner_by_id[owner_data]
-            resource = Resource.objects.create(primary_key_owner=owner, source=source, **resource_data)
+            resource = Resource.objects.create(primary_key_owner=owner, source=source, **{**resource_data, "id": None})
 
             for filter_data in filters_data:
                 column_data = filter_data.pop("sql_column")
@@ -262,7 +274,7 @@ class MappingSerializer(serializers.ModelSerializer):
                     inputs_data = input_group_data.pop("inputs")
                     conditions_data = input_group_data.pop("conditions")
 
-                    input_group = InputGroup.objects.create(attribute=attribute, **input_group_data)
+                    input_group = InputGroup.objects.create(attribute=attribute, **{**input_group_data, "id": None})
 
                     for input_data in inputs_data:
                         column_data = input_data.pop("column")
@@ -284,3 +296,7 @@ class MappingSerializer(serializers.ModelSerializer):
                         Condition.objects.create(input_group=input_group, column=column, **condition_data)
 
         return source
+
+
+class MappingWithPartialCredentialModelSerializer(MappingModelSerializer):
+    credential = _PartialCredentialModelSerializer()
