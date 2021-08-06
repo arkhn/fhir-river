@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="batch",
             name="mappings",
-            field=models.JSONField(default=None),
+            field=models.JSONField(default=None, null=True),
         ),
     ]
