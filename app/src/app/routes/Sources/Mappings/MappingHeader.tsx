@@ -27,10 +27,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    height: 100,
+    height: theme.mixins.breadcrumbBar.height,
   },
   navContainer: {
     display: "flex",
+    padding: `0 ${theme.spacing(3)}px`,
   },
   delete: {
     color: theme.palette.error.light,

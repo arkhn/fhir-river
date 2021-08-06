@@ -10,7 +10,12 @@ import {
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink, useHistory, useParams } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useHistory,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 
 import {
   useApiSourcesRetrieveQuery,
@@ -61,6 +66,7 @@ const NavigationBreadcrumbs = (): JSX.Element => {
     sourceId?: string;
     mappingId?: string;
   }>();
+  const location = useLocation();
 
   const { data: source } = useApiSourcesRetrieveQuery(
     {
@@ -78,6 +84,8 @@ const NavigationBreadcrumbs = (): JSX.Element => {
   const handleMappingChange = (newMapping: Resource) => {
     history.push(`/sources/${sourceId}/mappings/${newMapping.id}`);
   };
+  const isEtl = location.pathname.endsWith("batches");
+  const isSource = sourceId && location.pathname.endsWith(sourceId);
 
   return (
     <Breadcrumbs
@@ -101,13 +109,25 @@ const NavigationBreadcrumbs = (): JSX.Element => {
       {source && (
         <Link
           className={clsx(classes.breadCrumbLinks, {
-            [classes.mainCrumb]: source && !mapping,
+            [classes.mainCrumb]: source && !mapping && !isEtl,
           })}
           variant="h5"
-          color={mapping ? "textSecondary" : "textPrimary"}
+          color={!isSource ? "textSecondary" : "textPrimary"}
           to={`/sources/${source.id}`}
         >
           {source.name}
+        </Link>
+      )}
+      {isEtl && (
+        <Link
+          className={clsx(classes.breadCrumbLinks, {
+            [classes.mainCrumb]: isEtl,
+          })}
+          variant="h5"
+          color={!isEtl ? "textSecondary" : "textPrimary"}
+          to={location.pathname}
+        >
+          ETL
         </Link>
       )}
       {source && mapping && (

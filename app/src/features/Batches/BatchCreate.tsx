@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
-    marginBottom: theme.spacing(1),
+    margin: theme.spacing(0, 4, 1, 4),
+    marginTop: `-${theme.spacing(3)}px`,
   },
   formControl: {
     margin: theme.spacing(1),

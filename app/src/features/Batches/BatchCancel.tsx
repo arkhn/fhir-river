@@ -38,8 +38,7 @@ const BatchCancel = ({
     <>
       <Button
         {...buttonProps}
-        variant="contained"
-        color="primary"
+        variant="outlined"
         startIcon={<CancelOutlined />}
         onClick={handleBatchCancel(batch.id)}
       >
