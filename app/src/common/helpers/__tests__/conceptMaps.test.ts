@@ -8,9 +8,9 @@ import {
 } from "common/helpers/conceptMaps";
 import { Mapping } from "services/api/generated/api.generated";
 
-import conceptMaps from "./data/conceptMaps.json";
-import mappings from "./data/mappings.json";
-import mappingsWithConceptMaps from "./data/mappingsWithConceptMaps.json";
+import conceptMaps from "../../test/data/conceptMaps.json";
+import mappings from "../../test/data/mappings.json";
+import mappingsWithConceptMaps from "../../test/data/mappingsWithConceptMaps.json";
 
 describe("concept maps", () => {
   test("getting concept map ids from a mapping", () => {
