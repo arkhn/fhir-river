@@ -6,11 +6,10 @@ import {
   mergeConceptMapsToMappings,
   CustomConceptMapById,
 } from "common/helpers/conceptMaps";
+import conceptMaps from "common/test/data/conceptMaps.json";
+import mappings from "common/test/data/mappings.json";
+import mappingsWithConceptMaps from "common/test/data/mappingsWithConceptMaps.json";
 import { Mapping } from "services/api/generated/api.generated";
-
-import conceptMaps from "../../test/data/conceptMaps.json";
-import mappings from "../../test/data/mappings.json";
-import mappingsWithConceptMaps from "../../test/data/mappingsWithConceptMaps.json";
 
 describe("concept maps", () => {
   test("getting concept map ids from a mapping", () => {
