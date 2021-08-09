@@ -10,7 +10,6 @@ django-filter==2.4.0
 django-revproxy==0.10.0
 djangorestframework==3.12.4
 dotty-dict==1.2.1
-drf-spectacular==0.14.0
 fhir.resources @ git+https://github.com/arkhn/fhir.resources@6.0.1#egg=fhir.resources
 hiredis==1.1.0
 jsonschema==3.0.2

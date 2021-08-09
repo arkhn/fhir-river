@@ -8,29 +8,36 @@ from fhir.resources import construct_fhir_element
 from pydantic import ValidationError
 from river import models
 from river.adapters.event_publisher import EventPublisher
+from river.adapters.mappings import MappingsRepository
+from river.adapters.pyrog_client import PyrogClient
 from river.adapters.topics import TopicsManager
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchEvent
 from river.extractor.extractor import Extractor
-from river.parsing import Source, as_old_mapping
 from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
 
 def batch(
-    batch_id: str,
-    resources: List[dict],
+    batch_instance: models.Batch,
+    resources: List[str],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
+    # FIXME remove this when the DB is shared
+    pyrog_client: PyrogClient,
+    mappings_repo: MappingsRepository,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
-        topics_manager.create(f"{base_topic}.{batch_id}")
+        topics_manager.create(f"{base_topic}.{batch_instance.id}")
 
-    for resource in resources:
+    for resource_id in resources:
+        resource_mapping = pyrog_client.fetch_mapping(resource_id)
+        mappings_repo.set(batch_instance.id, resource_id, json.dumps(resource_mapping))
+
         publisher.publish(
-            topic=f"batch.{batch_id}",
-            event=BatchEvent(batch_id=batch_id, resource_id=resource["id"]),
+            topic=f"batch.{batch_instance.id}",
+            event=BatchEvent(batch_id=batch_instance.id, resource_id=resource_id),
         )
 
 
@@ -46,8 +53,10 @@ def retry(batch: models.Batch) -> None:
     pass
 
 
-def preview(mapping: dict, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = as_old_mapping(Source(**mapping), mapping["resources"][0]["id"])
+def preview(
+    resource_id: str, primary_key_values: Optional[list], pyrog_client: PyrogClient
+) -> Tuple[List[Any], List[Any]]:
+    resource_mapping = pyrog_client.fetch_mapping(resource_id)
 
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_mapping)
