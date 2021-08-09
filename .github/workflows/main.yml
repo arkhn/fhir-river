@@ -155,5 +155,6 @@ jobs:
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",
-              "hapi_loader": "${{ steps.docker-tag.outputs.docker-version }}"
+              "hapi_loader": "${{ steps.docker-tag.outputs.docker-version }}",
+              "testy": "chore-revert_to_v028"
             }
