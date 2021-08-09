@@ -8,15 +8,11 @@ def test_progression_counter():
     counter = RedisProgressionCounter()
 
     counter.set_extracted("foo", 10)
-    assert counter.get("foo") == Progression(extracted=10, loaded=None, failed=None)
+    assert counter.get("foo") == Progression(extracted=10, loaded=None)
 
     counter.increment_loaded("foo")
-    assert counter.get("foo") == Progression(extracted=10, loaded=1, failed=None)
+    assert counter.get("foo") == Progression(extracted=10, loaded=1)
 
-    counter.increment_failed("foo")
-    assert counter.get("foo") == Progression(extracted=10, loaded=1, failed=1)
-
-    for _ in range(4):
+    for _ in range(5):
         counter.increment_loaded("foo")
-        counter.increment_failed("foo")
-    assert counter.get("foo") == Progression(extracted=10, loaded=5, failed=5)
+    assert counter.get("foo") == Progression(extracted=10, loaded=6)

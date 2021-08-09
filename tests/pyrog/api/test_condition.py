@@ -85,7 +85,7 @@ def test_filter_conditions_by_input_group(api_client, input_group_factory, condi
     first_input_group_conditions = condition_factory.create_batch(2, input_group=first_input_group)
     condition_factory.create_batch(3, input_group=second_input_group)
 
-    response = api_client.get(url, {"input_group": first_input_group.id})
+    response = api_client.get(url, {"attribute": first_input_group.id})
 
     assert response.status_code == 200
     assert {condition_data["id"] for condition_data in response.json()} == {

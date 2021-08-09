@@ -16,6 +16,7 @@ import ca.uhn.fhir.parser.IParser;
 
 import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -53,7 +54,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         private KafkaProducer producer;
 
         @Autowired
-        private Jedis redisCounter;
+        private RedisCounterProperties redisCounterProperties;
 
         private Counter failedInsertions;
         private Counter successfulInsertions;
@@ -75,7 +76,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 r = parser.parseResource(message.getFhirObject().toString());
             } catch (ca.uhn.fhir.parser.DataFormatException e) {
                 logger.error(String.format("Could not parse resource: %s", e.toString()));
-                redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 failedInsertions.increment();
                 return;
             }
@@ -89,7 +89,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 successfulInsertions.increment();
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e.toString()));
-                redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 failedInsertions.increment();
                 return;
             }
@@ -100,7 +99,9 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             producer.sendMessage(loadMessage, String.format("load.%s", batchId));
 
             // Increment redis counter
-            redisCounter.hincrBy("loaded_counters", String.format("%s:%s", batchId, resourceId), 1);
+            Jedis j = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
+            j.select(redisCounterProperties.getDb_index());
+            j.hincrBy("loaded_counters", String.format("%s:%s", batchId, resourceId), 1);
 
             // TODO: error handling
 

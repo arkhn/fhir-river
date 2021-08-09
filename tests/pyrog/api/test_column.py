@@ -101,10 +101,10 @@ def test_filter_columns_by_input(api_client, input_factory, column_factory):
     url = reverse("columns-list")
 
     first_input, second_input = input_factory.create_batch(2)
-    first_input_column = column_factory.create(input=first_input)
-    column_factory.create(input=second_input)
+    first_input_columns = column_factory.create_batch(2, input=first_input)
+    column_factory.create_batch(2, input=second_input)
 
     response = api_client.get(url, {"input": first_input.id})
 
     assert response.status_code == 200
-    assert {column_data["id"] for column_data in response.json()} == {first_input_column.id}
+    assert {column_data["id"] for column_data in response.json()} == {column.id for column in first_input_columns}

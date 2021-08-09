@@ -132,7 +132,7 @@ jobs:
   integration:
     runs-on: ubuntu-18.04
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
-    needs: [build-and-publish-hapi]
+    needs: [unit-tests, build-and-publish-hapi]
     steps:
       # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
       # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}
