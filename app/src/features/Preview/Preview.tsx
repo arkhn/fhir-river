@@ -204,7 +204,7 @@ const Preview = (): JSX.Element => {
 
   useEffect(() => {
     if (
-      Boolean(previewIndex) &&
+      previewIndex > 0 &&
       !isMappingsFetching &&
       exploration &&
       mapping?.primary_key_table
