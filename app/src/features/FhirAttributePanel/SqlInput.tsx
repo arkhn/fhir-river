@@ -104,7 +104,7 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
           columnAdded({
             id: uuid(),
             input: input.id,
-            pending: false,
+            pending: true,
             table: mapping.primary_key_table,
             owner: mapping.primary_key_owner,
           })
