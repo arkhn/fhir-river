@@ -128,7 +128,7 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
         dispatch(
           columnAdded({
             id: pendingColumnId,
-            pending: false,
+            pending: true,
             table: mapping.primary_key_table,
             owner: mapping.primary_key_owner,
           })
