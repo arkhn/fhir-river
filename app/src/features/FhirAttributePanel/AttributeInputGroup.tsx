@@ -44,7 +44,7 @@ import StaticInput from "./StaticInput";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
-  requireCondition: boolean;
+  isConditionRequired: boolean;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AttributeInputGroup = ({
   inputGroup,
-  requireCondition,
+  isConditionRequired,
 }: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -115,7 +115,7 @@ const AttributeInputGroup = ({
         conditions,
         (condition) => condition.id
       );
-      if (conditions.length === 0 && requireCondition) {
+      if (conditions.length === 0 && isConditionRequired) {
         dispatch(
           conditionAdded({
             id: uuid(),
@@ -139,7 +139,7 @@ const AttributeInputGroup = ({
     dispatch,
     isError,
     isFetching,
-    requireCondition,
+    isConditionRequired,
     inputGroup,
   ]);
 
