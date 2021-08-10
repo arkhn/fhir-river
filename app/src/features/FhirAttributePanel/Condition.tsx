@@ -8,6 +8,7 @@ import {
   IconButton,
   makeStyles,
   TextField,
+  CircularProgress,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -103,7 +104,10 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
     },
     { skip: !condition.column }
   );
-  const { data: mapping } = useApiResourcesRetrieveQuery(
+  const {
+    data: mapping,
+    isLoading: mappingLoading,
+  } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
   );
@@ -247,6 +251,10 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
         })
       );
   };
+
+  if (mappingLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Grid
