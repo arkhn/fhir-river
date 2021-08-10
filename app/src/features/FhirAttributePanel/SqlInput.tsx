@@ -2,7 +2,12 @@ import React, { useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Grid, IconButton, makeStyles } from "@material-ui/core";
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  CircularProgress,
+} from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
@@ -77,7 +82,10 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
   const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
     input: input.id,
   });
-  const { data: mapping } = useApiResourcesRetrieveQuery(
+  const {
+    data: mapping,
+    isLoading: mappingLoading,
+  } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
   );
@@ -152,6 +160,10 @@ const SqlInput = ({ input }: InputProps): JSX.Element => {
       console.error(error);
     }
   };
+
+  if (mappingLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Grid item container alignItems="center" direction="row" spacing={1}>
