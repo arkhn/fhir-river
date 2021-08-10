@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Grid,
-  makeStyles,
-  TextField,
-  CircularProgress,
-} from "@material-ui/core";
+import { Grid, makeStyles, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -17,7 +12,6 @@ import usePrevious from "common/hooks/usePrevious";
 import {
   useApiCredentialsListQuery,
   useApiOwnersListQuery,
-  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 import type { Column, Owner } from "services/api/generated/api.generated";
 
@@ -54,10 +48,7 @@ const ColumnSelects = ({
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
-    mappingId?: string;
-  }>();
+  const { sourceId } = useParams<{ sourceId?: string }>();
 
   const { data: credentials } = useApiCredentialsListQuery({
     source: sourceId,
@@ -71,25 +62,13 @@ const ColumnSelects = ({
     }
   );
 
-  const {
-    data: mapping,
-    isLoading: mappingLoading,
-  } = useApiResourcesRetrieveQuery(
-    { id: mappingId ?? "" },
-    { skip: !mappingId }
-  );
-
-  const { table: pendingColumnTable, column, owner: ownerId } = pendingColumn;
-  const table = (pendingColumnTable || mapping?.primary_key_table) ?? undefined;
-  const selectedOwner = ownerId
-    ? credentialOwners?.find(({ id }) => id === ownerId)
-    : credentialOwners?.find(({ id }) => id === mapping?.primary_key_owner);
+  const { table, column, owner: ownerId } = pendingColumn;
+  const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
   const schema = selectedOwner?.schema as Record<string, string[]>;
   const defaultValue = {
     id: "/",
     label: "/",
   };
-
   const ownerTable =
     table && selectedOwner
       ? {
@@ -114,12 +93,11 @@ const ColumnSelects = ({
               })),
             ];
           },
-          ownerTable === defaultValue ? [defaultValue] : []
+          [defaultValue]
         );
   };
 
   const tableOptions = getTableOptions(credentialOwners);
-
   const [columns, setColumns] = useState<string[]>(
     table && schema && table in schema ? schema[table] ?? [] : []
   );
@@ -171,10 +149,6 @@ const ColumnSelects = ({
     }
   }, [schema, hasTableChanged, pendingColumn, table, onChange]);
 
-  if (mappingLoading) {
-    return <CircularProgress />;
-  }
-
   return (
     <>
       <Grid item>
@@ -183,7 +157,7 @@ const ColumnSelects = ({
           options={tableOptions}
           groupBy={(option) => option.label.split("/")[0] ?? ""}
           getOptionLabel={(option) => option.label.split("/")[1] ?? ""}
-          getOptionSelected={({ id }) => id === selectedOwner?.id}
+          getOptionSelected={({ id }) => id === ownerTable?.id}
           value={ownerTable}
           onChange={handleOwnerTableChange}
           selectOnFocus
