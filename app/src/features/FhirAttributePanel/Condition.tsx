@@ -129,8 +129,8 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
           columnAdded({
             id: pendingColumnId,
             pending: false,
-            table: mapping?.primary_key_table,
-            owner: mapping?.primary_key_owner,
+            table: mapping.primary_key_table,
+            owner: mapping.primary_key_owner,
           })
         );
         condition.id &&
