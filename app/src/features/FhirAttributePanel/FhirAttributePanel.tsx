@@ -71,10 +71,11 @@ const FhirAttributePanel = (): JSX.Element => {
         <div className={classes.container}>
           <Grid container spacing={4} direction="column">
             {attributeInputGroups &&
-              attributeInputGroups.map((inputGroup) => (
+              attributeInputGroups.map((inputGroup, index) => (
                 <AttributeInputGroup
                   key={inputGroup.id}
                   inputGroup={inputGroup}
+                  isConditionRequired={index > 0}
                 />
               ))}
           </Grid>
