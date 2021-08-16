@@ -148,14 +148,14 @@ const NavigationBreadcrumbs = ({
           </Link>
         )}
         {source && mapping && (
-          <>
+          <div>
             <MappingSelectButton
               mapping={mapping}
               source={source}
               onChange={handleMappingChange}
             />
             {editMappingButton}
-          </>
+          </div>
         )}
       </Breadcrumbs>
       <div className={classes.children}>{props.children}</div>

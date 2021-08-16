@@ -38,7 +38,7 @@ const SourceMappings = (): JSX.Element => {
   };
 
   return (
-    <Container>
+    <Container maxWidth="xl">
       <NavigationBreadcrumbs>
         <CredentialEditButton
           variant="contained"

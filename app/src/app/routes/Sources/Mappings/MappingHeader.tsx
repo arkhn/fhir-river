@@ -85,7 +85,7 @@ const MappingHeader = (): JSX.Element => {
 
   return (
     <div className={classes.root}>
-      <Container>
+      <Container maxWidth="xl">
         <NavigationBreadcrumbs
           editMappingButton={
             <IconButton
