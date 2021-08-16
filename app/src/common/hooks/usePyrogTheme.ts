@@ -48,6 +48,7 @@ declare module "@material-ui/core/styles/createPalette" {
       transparent: Palette["primary"];
     };
     purple: Palette["primary"];
+    appBar: Palette["primary"];
   }
   interface PaletteOptions {
     badges: {
@@ -62,6 +63,7 @@ declare module "@material-ui/core/styles/createPalette" {
       transparent: PaletteOptions["primary"];
     };
     purple: PaletteOptions["primary"];
+    appBar: PaletteOptions["primary"];
   }
 }
 
@@ -88,6 +90,9 @@ const usePyrogTheme = (): Theme => {
           },
         },
         palette: {
+          appBar: {
+            main: prefersDarkMode ? "#424242" : "#383838",
+          },
           badges: {
             required: { main: "red" },
             pending: { main: "orange" },
