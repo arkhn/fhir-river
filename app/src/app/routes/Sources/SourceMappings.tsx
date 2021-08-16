@@ -2,7 +2,7 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Container, makeStyles, Typography } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 
@@ -16,19 +16,14 @@ import SourceDrawer from "features/Sources/SourceDrawer";
 import SourceExportButton from "./SourceExportButton";
 
 const useStyles = makeStyles((theme) => ({
-  header: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: theme.mixins.breadcrumbBar.height,
-    padding: theme.spacing(0, 5),
-  },
-  button: {
-    margin: theme.spacing(0.5),
-  },
   container: {
     padding: theme.spacing(0, 5),
+  },
+  breadcrumbsButtons: {
+    marginLeft: "auto",
+  },
+  button: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -43,36 +38,30 @@ const SourceMappings = (): JSX.Element => {
   };
 
   return (
-    <>
-      <Container maxWidth="xl">
-        <div className={classes.header}>
-          <NavigationBreadcrumbs />
-          <Grid>
-            <CredentialEditButton
-              variant="contained"
-              className={classes.button}
-              color="secondary"
-              startIcon={<Icon icon={IconNames.COG} />}
-            />
-            <SourceExportButton />
-            <Button
-              variant="contained"
-              color="secondary"
-              className={classes.button}
-              startIcon={<Icon icon={IconNames.FLAME} />}
-              onClick={handleLaunchClick}
-            >
-              <Typography>{t("launchETL")}</Typography>
-            </Button>
-          </Grid>
-        </div>
-        <Container maxWidth="xl" className={classes.container}>
-          <MappingsToolbar />
-          <MappingsTable />
-        </Container>
+    <Container>
+      <NavigationBreadcrumbs>
+        <CredentialEditButton
+          variant="contained"
+          color="secondary"
+          startIcon={<Icon icon={IconNames.COG} />}
+          className={classes.button}
+        />
+        <SourceExportButton className={classes.button} />
+        <Button
+          variant="contained"
+          color="secondary"
+          startIcon={<Icon icon={IconNames.FLAME} />}
+          onClick={handleLaunchClick}
+        >
+          <Typography>{t("launchETL")}</Typography>
+        </Button>
+      </NavigationBreadcrumbs>
+      <Container maxWidth="xl" className={classes.container}>
+        <MappingsToolbar />
+        <MappingsTable />
       </Container>
       <SourceDrawer />
-    </>
+    </Container>
   );
 };
 

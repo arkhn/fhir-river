@@ -7,6 +7,7 @@ import {
   LinkProps,
   Link as MuiLink,
   makeStyles,
+  BreadcrumbsProps as MuiBreadcrumbsProps,
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -56,9 +57,23 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  breadcrumbsContainer: {
+    display: "flex",
+    padding: `0 ${theme.spacing(5)}px`,
+    minHeight: theme.mixins.breadcrumbBar.height,
+    alignItems: "center",
+  },
+  children: { marginLeft: "auto" },
 }));
 
-const NavigationBreadcrumbs = (): JSX.Element => {
+type NavigationBreadcrumbsProps = MuiBreadcrumbsProps & {
+  editMappingButton?: JSX.Element;
+};
+
+const NavigationBreadcrumbs = ({
+  editMappingButton,
+  ...props
+}: NavigationBreadcrumbsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const history = useHistory();
@@ -88,56 +103,63 @@ const NavigationBreadcrumbs = (): JSX.Element => {
   const isSource = sourceId && location.pathname.endsWith(sourceId);
 
   return (
-    <Breadcrumbs
-      separator={
-        <Icon
-          iconSize={14}
-          icon={IconNames.CHEVRON_RIGHT}
-          className={classes.icons}
-        />
-      }
-      classes={{ separator: classes.separator }}
-    >
-      <Link
-        variant="h5"
-        color="textSecondary"
-        to="/"
-        className={classes.breadCrumbLinks}
+    <div className={classes.breadcrumbsContainer}>
+      <Breadcrumbs
+        {...props}
+        separator={
+          <Icon
+            iconSize={14}
+            icon={IconNames.CHEVRON_RIGHT}
+            className={classes.icons}
+          />
+        }
+        classes={{ separator: classes.separator }}
       >
-        {t("sources")}
-      </Link>
-      {source && (
         <Link
-          className={clsx(classes.breadCrumbLinks, {
-            [classes.mainCrumb]: source && !mapping && !isEtl,
-          })}
           variant="h5"
-          color={!isSource ? "textSecondary" : "textPrimary"}
-          to={`/sources/${source.id}`}
+          color="textSecondary"
+          to="/"
+          className={classes.breadCrumbLinks}
         >
-          {source.name}
+          {t("sources")}
         </Link>
-      )}
-      {isEtl && (
-        <Link
-          className={clsx(classes.breadCrumbLinks, {
-            [classes.mainCrumb]: isEtl,
-          })}
-          variant="h5"
-          color={!isEtl ? "textSecondary" : "textPrimary"}
-          to={location.pathname}
-        >
-          ETL
-        </Link>
-      )}
-      {source && mapping && (
-        <MappingSelectButton
-          mapping={mapping}
-          source={source}
-          onChange={handleMappingChange}
-        />
-      )}
-    </Breadcrumbs>
+        {source && (
+          <Link
+            className={clsx(classes.breadCrumbLinks, {
+              [classes.mainCrumb]: source && !mapping && !isEtl,
+            })}
+            variant="h5"
+            color={!isSource ? "textSecondary" : "textPrimary"}
+            to={`/sources/${source.id}`}
+          >
+            {source.name}
+          </Link>
+        )}
+        {isEtl && (
+          <Link
+            className={clsx(classes.breadCrumbLinks, {
+              [classes.mainCrumb]: isEtl,
+            })}
+            variant="h5"
+            color={!isEtl ? "textSecondary" : "textPrimary"}
+            to={location.pathname}
+          >
+            ETL
+          </Link>
+        )}
+        {source && mapping && (
+          <>
+            <MappingSelectButton
+              mapping={mapping}
+              source={source}
+              onChange={handleMappingChange}
+            />
+            {editMappingButton}
+          </>
+        )}
+      </Breadcrumbs>
+      <div className={classes.children}>{props.children}</div>
+    </div>
   );
 };
 

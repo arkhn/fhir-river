@@ -2,22 +2,19 @@ import React, { useRef } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { CircularProgress, Typography, makeStyles } from "@material-ui/core";
+import {
+  ButtonProps as MuiButtonProps,
+  CircularProgress,
+  Typography,
+} from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import Button from "common/components/Button";
 import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    margin: theme.spacing(0.5),
-  },
-}));
-
-const SourceExportButton = (): JSX.Element => {
+const SourceExportButton = ({ ...props }: MuiButtonProps): JSX.Element => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const exportButtonRef = useRef<HTMLAnchorElement | null>(null);
   const { sourceId } = useParams<{ sourceId?: string }>();
 
@@ -47,10 +44,10 @@ const SourceExportButton = (): JSX.Element => {
 
   return (
     <Button
+      {...props}
       component="a"
       variant="contained"
       color="secondary"
-      className={classes.button}
       startIcon={<Icon icon={IconNames.EXPORT} />}
       ref={exportButtonRef}
       disabled={isSerializedSourceLoading}

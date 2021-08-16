@@ -10,6 +10,7 @@ import {
   MenuItem,
   ListItemText,
   Typography,
+  Container,
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
 import { useTranslation } from "react-i18next";
@@ -22,26 +23,23 @@ import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBrea
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(0, 5),
     boxShadow: `0px 5px 5px ${theme.palette.divider}`,
-    display: "flex",
-    alignItems: "center",
     justifyContent: "space-between",
-    height: theme.mixins.breadcrumbBar.height,
-  },
-  navContainer: {
-    display: "flex",
-    padding: `0 ${theme.spacing(3)}px`,
   },
   delete: {
     color: theme.palette.error.light,
   },
   actionButton: {
     boxShadow: `0px 0px 10px ${theme.palette.divider}`,
-    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
     paddingInline: theme.spacing(1),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: 5,
+    height: 40,
+  },
+  previewButton: {
+    justifySelf: "flex-end",
+    marginLeft: "auto",
   },
 }));
 
@@ -87,24 +85,28 @@ const MappingHeader = (): JSX.Element => {
 
   return (
     <div className={classes.root}>
-      <div className={classes.navContainer}>
-        <NavigationBreadcrumbs />
-        <IconButton
-          onClick={handleMenuClick}
-          className={classes.actionButton}
-          size="small"
+      <Container>
+        <NavigationBreadcrumbs
+          editMappingButton={
+            <IconButton
+              onClick={handleMenuClick}
+              className={classes.actionButton}
+            >
+              <MoreIcon />
+            </IconButton>
+          }
         >
-          <MoreIcon />
-        </IconButton>
-      </div>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<Icon icon={IconNames.PLAY} />}
-        onClick={handlePreviewClick}
-      >
-        <Typography>{t("preview")}</Typography>
-      </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon icon={IconNames.PLAY} />}
+            onClick={handlePreviewClick}
+            className={classes.previewButton}
+          >
+            <Typography>{t("preview")}</Typography>
+          </Button>
+        </NavigationBreadcrumbs>
+      </Container>
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
