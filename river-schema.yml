@@ -915,6 +915,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/explore/:
+    post:
+      operationId: api_explore_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorationResponse'
+          description: ''
   /api/filters/:
     get:
       operationId: api_filters_list
@@ -1589,6 +1618,38 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/list-owners/:
+    post:
+      operationId: api_list_owners_create
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/owner-schema/{owner}/:
+    post:
+      operationId: api_owner_schema_create
+      description: ''
+      parameters:
+      - in: path
+        name: owner
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/owners/:
     get:
       operationId: api_owners_list
@@ -2206,67 +2267,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /pagai/explore/:
-    post:
-      operationId: pagai_explore_create
-      description: ''
-      tags:
-      - pagai
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExplorationRequestRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ExplorationRequestRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ExplorationRequestRequest'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExplorationResponse'
-          description: ''
-  /pagai/list-owners/:
-    post:
-      operationId: pagai_list_owners_create
-      description: ''
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
-  /pagai/owner-schema/{owner}/:
-    post:
-      operationId: pagai_owner_schema_create
-      description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
 components:
   schemas:
     ActionEnum:

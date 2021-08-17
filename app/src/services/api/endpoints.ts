@@ -386,6 +386,6 @@ export const {
   useApiBatchesListQuery,
   useApiBatchesDestroyMutation,
   // Pagai
-  usePagaiExploreCreateMutation,
+  useApiExploreCreateMutation,
   useApiPreviewCreateMutation,
 } = api;

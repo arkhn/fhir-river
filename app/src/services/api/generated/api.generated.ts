@@ -303,6 +303,16 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiExploreCreate: build.mutation<
+      ApiExploreCreateApiResponse,
+      ApiExploreCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/explore/`,
+        method: "POST",
+        body: queryArg.explorationRequestRequest,
+      }),
+    }),
     apiFiltersList: build.query<
       ApiFiltersListApiResponse,
       ApiFiltersListApiArg
@@ -516,6 +526,21 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiListOwnersCreate: build.mutation<
+      ApiListOwnersCreateApiResponse,
+      ApiListOwnersCreateApiArg
+    >({
+      query: () => ({ url: `/api/list-owners/`, method: "POST" }),
+    }),
+    apiOwnerSchemaCreate: build.mutation<
+      ApiOwnerSchemaCreateApiResponse,
+      ApiOwnerSchemaCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/owner-schema/${queryArg.owner}/`,
+        method: "POST",
+      }),
+    }),
     apiOwnersList: build.query<ApiOwnersListApiResponse, ApiOwnersListApiArg>({
       query: (queryArg) => ({
         url: `/api/owners/`,
@@ -713,31 +738,6 @@ export const api = createApi({
     >({
       query: () => ({ url: `/api/user/` }),
     }),
-    pagaiExploreCreate: build.mutation<
-      PagaiExploreCreateApiResponse,
-      PagaiExploreCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/pagai/explore/`,
-        method: "POST",
-        body: queryArg.explorationRequestRequest,
-      }),
-    }),
-    pagaiListOwnersCreate: build.mutation<
-      PagaiListOwnersCreateApiResponse,
-      PagaiListOwnersCreateApiArg
-    >({
-      query: () => ({ url: `/pagai/list-owners/`, method: "POST" }),
-    }),
-    pagaiOwnerSchemaCreate: build.mutation<
-      PagaiOwnerSchemaCreateApiResponse,
-      PagaiOwnerSchemaCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/pagai/owner-schema/${queryArg.owner}/`,
-        method: "POST",
-      }),
-    }),
   }),
 });
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
@@ -915,6 +915,11 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
+export type ApiExploreCreateApiResponse =
+  /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiArg = {
+  explorationRequestRequest: ExplorationRequestRequest;
+};
 export type ApiFiltersListApiResponse = /** status 200  */ Filter[];
 export type ApiFiltersListApiArg = {
   resource?: string;
@@ -1042,6 +1047,12 @@ export type ApiJoinsDestroyApiArg = {
   /** A unique value identifying this join. */
   id: string;
 };
+export type ApiListOwnersCreateApiResponse = unknown;
+export type ApiListOwnersCreateApiArg = {};
+export type ApiOwnerSchemaCreateApiResponse = unknown;
+export type ApiOwnerSchemaCreateApiArg = {
+  owner: string;
+};
 export type ApiOwnersListApiResponse = /** status 200  */ Owner[];
 export type ApiOwnersListApiArg = {
   credential?: string;
@@ -1153,17 +1164,6 @@ export type ApiSourcesImportCreateApiArg = {
 };
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
-export type PagaiExploreCreateApiResponse =
-  /** status 200  */ ExplorationResponse;
-export type PagaiExploreCreateApiArg = {
-  explorationRequestRequest: ExplorationRequestRequest;
-};
-export type PagaiListOwnersCreateApiResponse = unknown;
-export type PagaiListOwnersCreateApiArg = {};
-export type PagaiOwnerSchemaCreateApiResponse = unknown;
-export type PagaiOwnerSchemaCreateApiArg = {
-  owner: string;
-};
 export type Attribute = {
   id: string;
   path: string;
@@ -1470,6 +1470,16 @@ export type PatchedCredentialRequest = {
   password?: string;
   model?: ModelEnum;
   source?: string;
+};
+export type ExplorationResponse = {
+  fields: string[];
+  rows: string[][];
+};
+export type ExplorationRequestRequest = {
+  resource_id: string;
+  mapping: MappingRequest;
+  owner: string;
+  table: string;
 };
 export type Filter = {
   id: string;
@@ -1789,16 +1799,6 @@ export type MappingModelRequest = {
   name: string;
   version?: string;
 };
-export type ExplorationResponse = {
-  fields: string[];
-  rows: string[][];
-};
-export type ExplorationRequestRequest = {
-  resource_id: string;
-  mapping: MappingRequest;
-  owner: string;
-  table: string;
-};
 export const {
   useApiAttributesListQuery,
   useApiAttributesCreateMutation,
@@ -1832,6 +1832,7 @@ export const {
   useApiCredentialsUpdateMutation,
   useApiCredentialsPartialUpdateMutation,
   useApiCredentialsDestroyMutation,
+  useApiExploreCreateMutation,
   useApiFiltersListQuery,
   useApiFiltersCreateMutation,
   useApiFiltersRetrieveQuery,
@@ -1856,6 +1857,8 @@ export const {
   useApiJoinsUpdateMutation,
   useApiJoinsPartialUpdateMutation,
   useApiJoinsDestroyMutation,
+  useApiListOwnersCreateMutation,
+  useApiOwnerSchemaCreateMutation,
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersRetrieveQuery,
@@ -1879,7 +1882,4 @@ export const {
   useApiSourcesExportRetrieveQuery,
   useApiSourcesImportCreateMutation,
   useApiUserRetrieveQuery,
-  usePagaiExploreCreateMutation,
-  usePagaiListOwnersCreateMutation,
-  usePagaiOwnerSchemaCreateMutation,
 } = api;
