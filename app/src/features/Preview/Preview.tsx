@@ -26,7 +26,7 @@ import BackButton from "common/components/BackButton";
 import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
 import {
   useApiResourcesRetrieveQuery,
-  usePagaiExploreCreateMutation,
+  useApiExploreCreateMutation,
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
   useApiCredentialsListQuery,
@@ -172,7 +172,7 @@ const Preview = (): JSX.Element => {
     { skip: !mapping }
   );
 
-  const [pagaiExploreCreate] = usePagaiExploreCreateMutation();
+  const [pagaiExploreCreate] = useApiExploreCreateMutation();
 
   useEffect(() => {
     if (
