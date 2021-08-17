@@ -47,7 +47,6 @@ class ExploreView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = serializers.ExplorationRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
         limit = int(request.GET.get("first", 10))
@@ -62,6 +61,6 @@ class ExploreView(generics.GenericAPIView):
             explorer = DatabaseExplorer(db_connection)
             exploration = explorer.explore(data["owner"], data["table"], limit=limit, filters=analysis.filters)
         except Exception as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR, headers=headers)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(exploration, status=status.HTTP_200_OK, headers=headers)
+        return Response(exploration, status=status.HTTP_200_OK)
