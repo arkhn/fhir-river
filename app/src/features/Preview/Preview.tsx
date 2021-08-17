@@ -187,7 +187,6 @@ const Preview = (): JSX.Element => {
         try {
           const exploration = await pagaiExploreCreate({
             explorationRequestRequest: {
-              resource_id: mapping?.id ?? "",
               owner: owner?.name ?? "",
               table: mapping?.primary_key_table ?? "",
               mapping: mappingsWithConceptMaps,
