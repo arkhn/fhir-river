@@ -181,6 +181,8 @@ const Preview = (): JSX.Element => {
       owner &&
       exploration === undefined
     ) {
+      setExploration(null);
+
       const explore = async () => {
         try {
           const exploration = await pagaiExploreCreate({
@@ -194,7 +196,6 @@ const Preview = (): JSX.Element => {
           setExploration(exploration);
         } catch (e) {
           setAlert(e.message);
-          setExploration(null);
         }
       };
       explore();
@@ -219,23 +220,25 @@ const Preview = (): JSX.Element => {
       previewIndex > 0 &&
       !isMappingsFetching &&
       exploration &&
-      mapping?.primary_key_table
+      mapping?.primary_key_table &&
+      mappingsWithConceptMaps
     ) {
+      setPreviewIndex(0);
+
       const primaryKey = mapping?.primary_key_table;
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
       const primaryKeyValue = exploration.rows[previewIndex]?.[primaryKeyIndex];
 
-      if (mappingsWithConceptMaps) {
+      if (primaryKeyValue) {
         const previewCreate = async () => {
           try {
             const previewResult = await apiPreviewCreate({
               previewRequestRequest: {
                 mapping: mappingsWithConceptMaps,
-                primary_key_values: [primaryKeyValue ?? ""],
+                primary_key_values: [primaryKeyValue],
               },
             }).unwrap();
             setPreview(previewResult);
-            setPreviewIndex(0);
           } catch (e) {
             setAlert(e.message);
           }
