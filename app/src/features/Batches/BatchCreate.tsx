@@ -150,6 +150,9 @@ const BatchCreate = (): JSX.Element => {
           selectedResourceIds.includes(id)
         ),
       };
+      setSelectedResourceIds([]);
+      setIsBatchStarting(false);
+
       const batchCreate = async () => {
         try {
           await apiBatchCreate({
@@ -157,9 +160,6 @@ const BatchCreate = (): JSX.Element => {
               mappings: filteredMappings,
             },
           }).unwrap();
-
-          setSelectedResourceIds([]);
-          setIsBatchStarting(false);
         } catch (e) {
           setAlert(e.message as string);
         }

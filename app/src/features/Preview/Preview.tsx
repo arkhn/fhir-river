@@ -114,7 +114,7 @@ const Preview = (): JSX.Element => {
   const [previewIndex, setPreviewIndex] = useState<number>(0);
 
   const [exploration, setExploration] = useState<
-    ExplorationResponse | undefined
+    ExplorationResponse | null | undefined
   >(undefined);
 
   const [alert, setAlert] = useState<string | undefined>(undefined);
@@ -175,7 +175,12 @@ const Preview = (): JSX.Element => {
   const [pagaiExploreCreate] = usePagaiExploreCreateMutation();
 
   useEffect(() => {
-    if (mappingsWithConceptMaps && mapping && owner) {
+    if (
+      mappingsWithConceptMaps &&
+      mapping &&
+      owner &&
+      exploration === undefined
+    ) {
       const explore = async () => {
         try {
           const exploration = await pagaiExploreCreate({
@@ -189,11 +194,18 @@ const Preview = (): JSX.Element => {
           setExploration(exploration);
         } catch (e) {
           setAlert(e.message);
+          setExploration(null);
         }
       };
       explore();
     }
-  }, [mapping, mappingsWithConceptMaps, owner, pagaiExploreCreate]);
+  }, [
+    exploration,
+    mapping,
+    mappingsWithConceptMaps,
+    owner,
+    pagaiExploreCreate,
+  ]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
