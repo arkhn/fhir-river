@@ -19,7 +19,7 @@ import Alert from "common/components/Alert";
 import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
 import {
   useApiResourcesListQuery,
-  useApiBatchesCreateMutation,
+  useRiverBatchesCreateMutation,
   useApiSourcesExportRetrieveQuery,
   useApiCredentialsListQuery,
 } from "services/api/endpoints";
@@ -108,7 +108,7 @@ const BatchCreate = (): JSX.Element => {
     { skip: !Boolean(id) }
   );
 
-  const [apiBatchCreate] = useApiBatchesCreateMutation();
+  const [apiBatchCreate] = useRiverBatchesCreateMutation();
 
   const handleResourceSelectionChange = (
     event: React.ChangeEvent<{
