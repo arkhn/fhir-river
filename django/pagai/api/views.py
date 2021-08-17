@@ -6,6 +6,7 @@ from pagai.api import serializers
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
+from river.parsing import Source, as_old_mapping
 
 
 class OwnersListView(views.APIView):
@@ -52,7 +53,8 @@ class ExploreView(generics.GenericAPIView):
         limit = int(request.GET.get("first", 10))
 
         analyzer = Analyzer()
-        analysis = analyzer.analyze(data["mapping"])
+        mapping = as_old_mapping(Source(**data["mapping"]), data["resource_id"])
+        analysis = analyzer.analyze(mapping)
 
         credentials = analysis.source_credentials
 
