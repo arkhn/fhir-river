@@ -2583,8 +2583,6 @@ components:
     ExplorationRequestRequest:
       type: object
       properties:
-        resource_id:
-          type: string
         mapping:
           $ref: '#/components/schemas/MappingRequest'
         owner:
@@ -2594,7 +2592,6 @@ components:
       required:
       - mapping
       - owner
-      - resource_id
       - table
     ExplorationResponse:
       type: object

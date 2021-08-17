@@ -1476,7 +1476,6 @@ export type ExplorationResponse = {
   rows: string[][];
 };
 export type ExplorationRequestRequest = {
-  resource_id: string;
   mapping: MappingRequest;
   owner: string;
   table: string;
