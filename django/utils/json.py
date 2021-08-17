@@ -24,5 +24,8 @@ class CustomJSONEncoder(json.JSONEncoder):
             # val.encode("<detected-encoding>").decode("<your-encoding>")
             detected_encoding = chardet.detect(obj)["encoding"]
             logger.debug(f"Detected encoding {detected_encoding} for {obj}")
-            return obj.decode(detected_encoding)
+            try:
+                return obj.decode(detected_encoding)
+            except UnicodeDecodeError:
+                return obj.decode("latin-1")
         return super().default(obj)
