@@ -53,7 +53,7 @@ class ExploreView(generics.GenericAPIView):
         limit = int(request.GET.get("first", 10))
 
         analyzer = Analyzer()
-        mapping = as_old_mapping(Source(**data["mapping"]), data["resource_id"])
+        mapping = as_old_mapping(Source(**data["mapping"]), data["mapping"]["resources"][0]["id"])
         analysis = analyzer.analyze(mapping)
 
         credentials = analysis.source_credentials
