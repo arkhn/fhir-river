@@ -30,8 +30,7 @@ class BatchViewSet(viewsets.ModelViewSet):
 
         batch(batch_instance.id, resources, topics_manager, event_publisher)
 
-        headers = self.get_success_headers(serializer.data)
-        return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
         batch_instance = self.get_object()
@@ -51,16 +50,13 @@ class PreviewEndpoint(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = serializers.PreviewRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
         primary_key_values = data["primary_key_values"]
 
         documents, errors = preview(data["mapping"], primary_key_values)
 
-        return response.Response(
-            {"instances": documents, "errors": errors}, status=status.HTTP_200_OK, headers=headers
-        )
+        return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
 
 class ScriptsEndpoint(generics.ListAPIView):
