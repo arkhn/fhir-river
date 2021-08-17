@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Tuple
 from uuid import uuid4
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Field
 
 
 class BaseModel(PydanticBaseModel):
@@ -86,7 +85,7 @@ class Resource(BaseModel):
 class Owner(BaseModel):
     id: str
     name: str
-    schema_: str = Field(alias="schema")
+    schema: Optional[dict] = None
     columns: List[Column]
 
 
