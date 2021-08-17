@@ -63,74 +63,6 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiBatchesList: build.query<
-      ApiBatchesListApiResponse,
-      ApiBatchesListApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batches/`,
-        params: {
-          limit: queryArg.limit,
-          offset: queryArg.offset,
-          ordering: queryArg.ordering,
-        },
-      }),
-    }),
-    apiBatchesCreate: build.mutation<
-      ApiBatchesCreateApiResponse,
-      ApiBatchesCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batches/`,
-        method: "POST",
-        body: queryArg.batchRequest,
-      }),
-    }),
-    apiBatchesRetrieve: build.query<
-      ApiBatchesRetrieveApiResponse,
-      ApiBatchesRetrieveApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/batches/${queryArg.id}/` }),
-    }),
-    apiBatchesUpdate: build.mutation<
-      ApiBatchesUpdateApiResponse,
-      ApiBatchesUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batches/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.batchRequest,
-      }),
-    }),
-    apiBatchesPartialUpdate: build.mutation<
-      ApiBatchesPartialUpdateApiResponse,
-      ApiBatchesPartialUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batches/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.patchedBatchRequest,
-      }),
-    }),
-    apiBatchesDestroy: build.mutation<
-      ApiBatchesDestroyApiResponse,
-      ApiBatchesDestroyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batches/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    apiBatchesRetryCreate: build.mutation<
-      ApiBatchesRetryCreateApiResponse,
-      ApiBatchesRetryCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/batches/${queryArg.id}/retry/`,
-        method: "POST",
-        body: queryArg.batchRequest,
-      }),
-    }),
     apiColumnsList: build.query<
       ApiColumnsListApiResponse,
       ApiColumnsListApiArg
@@ -592,16 +524,6 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiPreviewCreate: build.mutation<
-      ApiPreviewCreateApiResponse,
-      ApiPreviewCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/preview/`,
-        method: "POST",
-        body: queryArg.previewRequestRequest,
-      }),
-    }),
     apiResourcesList: build.query<
       ApiResourcesListApiResponse,
       ApiResourcesListApiArg
@@ -655,12 +577,6 @@ export const api = createApi({
         url: `/api/resources/${queryArg.id}/`,
         method: "DELETE",
       }),
-    }),
-    apiScriptsList: build.query<
-      ApiScriptsListApiResponse,
-      ApiScriptsListApiArg
-    >({
-      query: () => ({ url: `/api/scripts/` }),
     }),
     apiSourcesList: build.query<
       ApiSourcesListApiResponse,
@@ -738,6 +654,90 @@ export const api = createApi({
     >({
       query: () => ({ url: `/api/user/` }),
     }),
+    riverBatchesList: build.query<
+      RiverBatchesListApiResponse,
+      RiverBatchesListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/batches/`,
+        params: {
+          limit: queryArg.limit,
+          offset: queryArg.offset,
+          ordering: queryArg.ordering,
+        },
+      }),
+    }),
+    riverBatchesCreate: build.mutation<
+      RiverBatchesCreateApiResponse,
+      RiverBatchesCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/batches/`,
+        method: "POST",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    riverBatchesRetrieve: build.query<
+      RiverBatchesRetrieveApiResponse,
+      RiverBatchesRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/river/batches/${queryArg.id}/` }),
+    }),
+    riverBatchesUpdate: build.mutation<
+      RiverBatchesUpdateApiResponse,
+      RiverBatchesUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/batches/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    riverBatchesPartialUpdate: build.mutation<
+      RiverBatchesPartialUpdateApiResponse,
+      RiverBatchesPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/batches/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedBatchRequest,
+      }),
+    }),
+    riverBatchesDestroy: build.mutation<
+      RiverBatchesDestroyApiResponse,
+      RiverBatchesDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/batches/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    riverBatchesRetryCreate: build.mutation<
+      RiverBatchesRetryCreateApiResponse,
+      RiverBatchesRetryCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/batches/${queryArg.id}/retry/`,
+        method: "POST",
+        body: queryArg.batchRequest,
+      }),
+    }),
+    riverPreviewCreate: build.mutation<
+      RiverPreviewCreateApiResponse,
+      RiverPreviewCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/river/preview/`,
+        method: "POST",
+        body: queryArg.previewRequestRequest,
+      }),
+    }),
+    riverScriptsList: build.query<
+      RiverScriptsListApiResponse,
+      RiverScriptsListApiArg
+    >({
+      query: () => ({ url: `/river/scripts/` }),
+    }),
   }),
 });
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
@@ -774,47 +774,6 @@ export type ApiAttributesDestroyApiResponse = unknown;
 export type ApiAttributesDestroyApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
-};
-export type ApiBatchesListApiResponse = /** status 200  */ PaginatedBatchList;
-export type ApiBatchesListApiArg = {
-  /** Number of results to return per page. */
-  limit?: number;
-  /** The initial index from which to return the results. */
-  offset?: number;
-  /** Which field to use when ordering the results. */
-  ordering?: string;
-};
-export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
-export type ApiBatchesCreateApiArg = {
-  batchRequest: BatchRequest;
-};
-export type ApiBatchesRetrieveApiResponse = /** status 200  */ Batch;
-export type ApiBatchesRetrieveApiArg = {
-  /** A unique value identifying this batch. */
-  id: string;
-};
-export type ApiBatchesUpdateApiResponse = /** status 200  */ Batch;
-export type ApiBatchesUpdateApiArg = {
-  /** A unique value identifying this batch. */
-  id: string;
-  batchRequest: BatchRequest;
-};
-export type ApiBatchesPartialUpdateApiResponse = /** status 200  */ Batch;
-export type ApiBatchesPartialUpdateApiArg = {
-  /** A unique value identifying this batch. */
-  id: string;
-  patchedBatchRequest: PatchedBatchRequest;
-};
-export type ApiBatchesDestroyApiResponse = unknown;
-export type ApiBatchesDestroyApiArg = {
-  /** A unique value identifying this batch. */
-  id: string;
-};
-export type ApiBatchesRetryCreateApiResponse = /** status 200  */ Batch;
-export type ApiBatchesRetryCreateApiArg = {
-  /** A unique value identifying this batch. */
-  id: string;
-  batchRequest: BatchRequest;
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
@@ -1083,10 +1042,6 @@ export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
-export type ApiPreviewCreateApiResponse = /** status 200  */ PreviewResponse;
-export type ApiPreviewCreateApiArg = {
-  previewRequestRequest: PreviewRequestRequest;
-};
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
   /** Which field to use when ordering the results. */
@@ -1119,8 +1074,6 @@ export type ApiResourcesDestroyApiArg = {
   /** A unique value identifying this resource. */
   id: string;
 };
-export type ApiScriptsListApiResponse = /** status 200  */ Scripts[];
-export type ApiScriptsListApiArg = {};
 export type ApiSourcesListApiResponse = /** status 200  */ Source[];
 export type ApiSourcesListApiArg = {
   /** Which field to use when ordering the results. */
@@ -1164,6 +1117,53 @@ export type ApiSourcesImportCreateApiArg = {
 };
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
+export type RiverBatchesListApiResponse = /** status 200  */ PaginatedBatchList;
+export type RiverBatchesListApiArg = {
+  /** Number of results to return per page. */
+  limit?: number;
+  /** The initial index from which to return the results. */
+  offset?: number;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type RiverBatchesCreateApiResponse = /** status 201  */ Batch;
+export type RiverBatchesCreateApiArg = {
+  batchRequest: BatchRequest;
+};
+export type RiverBatchesRetrieveApiResponse = /** status 200  */ Batch;
+export type RiverBatchesRetrieveApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+};
+export type RiverBatchesUpdateApiResponse = /** status 200  */ Batch;
+export type RiverBatchesUpdateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  batchRequest: BatchRequest;
+};
+export type RiverBatchesPartialUpdateApiResponse = /** status 200  */ Batch;
+export type RiverBatchesPartialUpdateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  patchedBatchRequest: PatchedBatchRequest;
+};
+export type RiverBatchesDestroyApiResponse = unknown;
+export type RiverBatchesDestroyApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+};
+export type RiverBatchesRetryCreateApiResponse = /** status 200  */ Batch;
+export type RiverBatchesRetryCreateApiArg = {
+  /** A unique value identifying this batch. */
+  id: string;
+  batchRequest: BatchRequest;
+};
+export type RiverPreviewCreateApiResponse = /** status 200  */ PreviewResponse;
+export type RiverPreviewCreateApiArg = {
+  previewRequestRequest: PreviewRequestRequest;
+};
+export type RiverScriptsListApiResponse = /** status 200  */ Scripts[];
+export type RiverScriptsListApiArg = {};
 export type Attribute = {
   id: string;
   path: string;
@@ -1185,24 +1185,29 @@ export type PatchedAttributeRequest = {
   definition_id?: string;
   resource?: string;
 };
-export type Error = {
+export type Column = {
   id: string;
-  event: string;
-  message: string;
-  exception?: string;
-  created_at: string;
+  table: string;
+  column: string;
   updated_at: string;
-  deleted_at: string;
-  batch: string;
+  created_at: string;
+  join?: string | null;
+  input?: string | null;
+  owner: string;
 };
-export type MappingInput = {
-  script?: string;
-  concept_map_id?: string;
-  concept_map?: {
-    [key: string]: any;
-  };
-  static_value?: string | null;
-  column: string | null;
+export type ColumnRequest = {
+  table: string;
+  column: string;
+  join?: string | null;
+  input?: string | null;
+  owner: string;
+};
+export type PatchedColumnRequest = {
+  table?: string;
+  column?: string;
+  join?: string | null;
+  input?: string | null;
+  owner?: string;
 };
 export type ActionEnum = "INCLUDE" | "EXCLUDE";
 export type ConditionRelationEnum =
@@ -1213,96 +1218,63 @@ export type ConditionRelationEnum =
   | "LE"
   | "NOTNULL"
   | "NULL";
-export type MappingCondition = {
+export type Condition = {
+  id: string;
   action: ActionEnum;
-  column: string;
   value?: string;
   relation?: ConditionRelationEnum;
+  column: string;
+  input_group: string;
 };
-export type MappingInputGroup = {
-  id: string;
-  merging_script?: string;
-  inputs?: MappingInput[];
-  conditions?: MappingCondition[];
-};
-export type MappingAttribute = {
-  path: string;
-  slice_name?: string;
-  definition_id: string;
-  input_groups?: MappingInputGroup[];
-};
-export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
-export type MappingFilter = {
-  relation: FilterRelationEnum;
+export type ConditionRequest = {
+  action: ActionEnum;
   value?: string;
-  sql_column: string;
+  relation?: ConditionRelationEnum;
+  column: string;
+  input_group: string;
 };
-export type MappingResource = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  primary_key_owner: string;
-  attributes?: MappingAttribute[];
-  filters?: MappingFilter[];
-  logical_reference: string;
+export type PatchedConditionRequest = {
+  action?: ActionEnum;
+  value?: string;
+  relation?: ConditionRelationEnum;
+  column?: string;
+  input_group?: string;
 };
 export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
-export type MappingJoin = {
-  columns: string[];
-};
-export type MappingColumn = {
+export type Credential = {
   id: string;
-  table: string;
-  column: string;
-  joins?: MappingJoin[];
-};
-export type MappingOwner = {
-  id: string;
-  name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
-  columns?: MappingColumn[];
-};
-export type MappingCredential = {
+  available_owners: string[];
   host: string;
   port: number;
   database: string;
-  model: ModelEnum;
-  owners?: MappingOwner[];
   login: string;
   password: string;
-};
-export type MappingUser = {
-  id: string;
-  email: string;
-  username: string;
-};
-export type Mapping = {
-  id: string;
-  name: string;
-  version?: string;
-  resources?: MappingResource[];
-  credential: MappingCredential;
-  users?: MappingUser[];
+  model: ModelEnum;
   updated_at: string;
   created_at: string;
+  source: string;
 };
-export type Batch = {
-  id: string;
-  errors: Error[];
-  mappings: Mapping;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string;
+export type CredentialRequest = {
+  host: string;
+  port: number;
+  database: string;
+  login: string;
+  password: string;
+  model: ModelEnum;
+  source: string;
 };
-export type PaginatedBatchList = {
-  count?: number;
-  next?: string | null;
-  previous?: string | null;
-  results?: Batch[];
+export type PatchedCredentialRequest = {
+  host?: string;
+  port?: number;
+  database?: string;
+  login?: string;
+  password?: string;
+  model?: ModelEnum;
+  source?: string;
+};
+export type ExplorationResponse = {
+  fields: string[];
+  rows: string[][];
 };
 export type MappingInputRequest = {
   script?: string;
@@ -1331,6 +1303,7 @@ export type MappingAttributeRequest = {
   definition_id: string;
   input_groups?: MappingInputGroupRequest[];
 };
+export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
 export type MappingFilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
@@ -1387,93 +1360,6 @@ export type MappingRequest = {
   users?: MappingUserRequest[];
   updated_at: string;
   created_at: string;
-};
-export type BatchRequest = {
-  mappings: MappingRequest;
-};
-export type PatchedBatchRequest = {
-  mappings?: MappingRequest;
-};
-export type Column = {
-  id: string;
-  table: string;
-  column: string;
-  updated_at: string;
-  created_at: string;
-  join?: string | null;
-  input?: string | null;
-  owner: string;
-};
-export type ColumnRequest = {
-  table: string;
-  column: string;
-  join?: string | null;
-  input?: string | null;
-  owner: string;
-};
-export type PatchedColumnRequest = {
-  table?: string;
-  column?: string;
-  join?: string | null;
-  input?: string | null;
-  owner?: string;
-};
-export type Condition = {
-  id: string;
-  action: ActionEnum;
-  value?: string;
-  relation?: ConditionRelationEnum;
-  column: string;
-  input_group: string;
-};
-export type ConditionRequest = {
-  action: ActionEnum;
-  value?: string;
-  relation?: ConditionRelationEnum;
-  column: string;
-  input_group: string;
-};
-export type PatchedConditionRequest = {
-  action?: ActionEnum;
-  value?: string;
-  relation?: ConditionRelationEnum;
-  column?: string;
-  input_group?: string;
-};
-export type Credential = {
-  id: string;
-  available_owners: string[];
-  host: string;
-  port: number;
-  database: string;
-  login: string;
-  password: string;
-  model: ModelEnum;
-  updated_at: string;
-  created_at: string;
-  source: string;
-};
-export type CredentialRequest = {
-  host: string;
-  port: number;
-  database: string;
-  login: string;
-  password: string;
-  model: ModelEnum;
-  source: string;
-};
-export type PatchedCredentialRequest = {
-  host?: string;
-  port?: number;
-  database?: string;
-  login?: string;
-  password?: string;
-  model?: ModelEnum;
-  source?: string;
-};
-export type ExplorationResponse = {
-  fields: string[];
-  rows: string[][];
 };
 export type ExplorationRequestRequest = {
   mapping: MappingRequest;
@@ -1563,16 +1449,6 @@ export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
 };
-export type PreviewResponse = {
-  instances: {
-    [key: string]: any;
-  }[];
-  errors: string[];
-};
-export type PreviewRequestRequest = {
-  mapping: MappingRequest;
-  primary_key_values: string[];
-};
 export type Resource = {
   id: string;
   label?: string;
@@ -1600,11 +1476,6 @@ export type PatchedResourceRequest = {
   definition_id?: string;
   source?: string;
   primary_key_owner?: string;
-};
-export type Scripts = {
-  name: string;
-  description: string;
-  category: string;
 };
 export type Source = {
   id: string;
@@ -1798,6 +1669,135 @@ export type MappingModelRequest = {
   name: string;
   version?: string;
 };
+export type Error = {
+  id: string;
+  event: string;
+  message: string;
+  exception?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+  batch: string;
+};
+export type MappingInput = {
+  script?: string;
+  concept_map_id?: string;
+  concept_map?: {
+    [key: string]: any;
+  };
+  static_value?: string | null;
+  column: string | null;
+};
+export type MappingCondition = {
+  action: ActionEnum;
+  column: string;
+  value?: string;
+  relation?: ConditionRelationEnum;
+};
+export type MappingInputGroup = {
+  id: string;
+  merging_script?: string;
+  inputs?: MappingInput[];
+  conditions?: MappingCondition[];
+};
+export type MappingAttribute = {
+  path: string;
+  slice_name?: string;
+  definition_id: string;
+  input_groups?: MappingInputGroup[];
+};
+export type MappingFilter = {
+  relation: FilterRelationEnum;
+  value?: string;
+  sql_column: string;
+};
+export type MappingResource = {
+  id: string;
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  primary_key_owner: string;
+  attributes?: MappingAttribute[];
+  filters?: MappingFilter[];
+  logical_reference: string;
+};
+export type MappingJoin = {
+  columns: string[];
+};
+export type MappingColumn = {
+  id: string;
+  table: string;
+  column: string;
+  joins?: MappingJoin[];
+};
+export type MappingOwner = {
+  id: string;
+  name: string;
+  schema?: {
+    [key: string]: any;
+  } | null;
+  columns?: MappingColumn[];
+};
+export type MappingCredential = {
+  host: string;
+  port: number;
+  database: string;
+  model: ModelEnum;
+  owners?: MappingOwner[];
+  login: string;
+  password: string;
+};
+export type MappingUser = {
+  id: string;
+  email: string;
+  username: string;
+};
+export type Mapping = {
+  id: string;
+  name: string;
+  version?: string;
+  resources?: MappingResource[];
+  credential: MappingCredential;
+  users?: MappingUser[];
+  updated_at: string;
+  created_at: string;
+};
+export type Batch = {
+  id: string;
+  errors: Error[];
+  mappings: Mapping;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string;
+};
+export type PaginatedBatchList = {
+  count?: number;
+  next?: string | null;
+  previous?: string | null;
+  results?: Batch[];
+};
+export type BatchRequest = {
+  mappings: MappingRequest;
+};
+export type PatchedBatchRequest = {
+  mappings?: MappingRequest;
+};
+export type PreviewResponse = {
+  instances: {
+    [key: string]: any;
+  }[];
+  errors: string[];
+};
+export type PreviewRequestRequest = {
+  mapping: MappingRequest;
+  primary_key_values: string[];
+};
+export type Scripts = {
+  name: string;
+  description: string;
+  category: string;
+};
 export const {
   useApiAttributesListQuery,
   useApiAttributesCreateMutation,
@@ -1805,13 +1805,6 @@ export const {
   useApiAttributesUpdateMutation,
   useApiAttributesPartialUpdateMutation,
   useApiAttributesDestroyMutation,
-  useApiBatchesListQuery,
-  useApiBatchesCreateMutation,
-  useApiBatchesRetrieveQuery,
-  useApiBatchesUpdateMutation,
-  useApiBatchesPartialUpdateMutation,
-  useApiBatchesDestroyMutation,
-  useApiBatchesRetryCreateMutation,
   useApiColumnsListQuery,
   useApiColumnsCreateMutation,
   useApiColumnsRetrieveQuery,
@@ -1864,14 +1857,12 @@ export const {
   useApiOwnersUpdateMutation,
   useApiOwnersPartialUpdateMutation,
   useApiOwnersDestroyMutation,
-  useApiPreviewCreateMutation,
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
   useApiResourcesRetrieveQuery,
   useApiResourcesUpdateMutation,
   useApiResourcesPartialUpdateMutation,
   useApiResourcesDestroyMutation,
-  useApiScriptsListQuery,
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
   useApiSourcesRetrieveQuery,
@@ -1881,4 +1872,13 @@ export const {
   useApiSourcesExportRetrieveQuery,
   useApiSourcesImportCreateMutation,
   useApiUserRetrieveQuery,
+  useRiverBatchesListQuery,
+  useRiverBatchesCreateMutation,
+  useRiverBatchesRetrieveQuery,
+  useRiverBatchesUpdateMutation,
+  useRiverBatchesPartialUpdateMutation,
+  useRiverBatchesDestroyMutation,
+  useRiverBatchesRetryCreateMutation,
+  useRiverPreviewCreateMutation,
+  useRiverScriptsListQuery,
 } = api;
