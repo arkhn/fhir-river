@@ -28,7 +28,7 @@ import {
   useApiResourcesRetrieveQuery,
   useApiExploreCreateMutation,
   useApiOwnersRetrieveQuery,
-  useApiPreviewCreateMutation,
+  useRiverPreviewCreateMutation,
   useApiCredentialsListQuery,
 } from "services/api/endpoints";
 import {
@@ -172,7 +172,7 @@ const Preview = (): JSX.Element => {
     { skip: !mapping }
   );
 
-  const [pagaiExploreCreate] = useApiExploreCreateMutation();
+  const [apiExploreCreate] = useApiExploreCreateMutation();
 
   useEffect(() => {
     if (
@@ -185,7 +185,7 @@ const Preview = (): JSX.Element => {
 
       const explore = async () => {
         try {
-          const exploration = await pagaiExploreCreate({
+          const exploration = await apiExploreCreate({
             explorationRequestRequest: {
               owner: owner?.name ?? "",
               table: mapping?.primary_key_table ?? "",
@@ -199,15 +199,9 @@ const Preview = (): JSX.Element => {
       };
       explore();
     }
-  }, [
-    exploration,
-    mapping,
-    mappingsWithConceptMaps,
-    owner,
-    pagaiExploreCreate,
-  ]);
+  }, [apiExploreCreate, exploration, mapping, mappingsWithConceptMaps, owner]);
 
-  const [apiPreviewCreate] = useApiPreviewCreateMutation();
+  const [apiPreviewCreate] = useRiverPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
     refetchMappings();

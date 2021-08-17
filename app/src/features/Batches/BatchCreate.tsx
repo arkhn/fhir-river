@@ -18,14 +18,10 @@ import PlayIcon from "@material-ui/icons/PlayCircleOutline";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
-<<<<<<< HEAD
 import Button from "common/components/Button";
-=======
-import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
->>>>>>> 77feb0ca (feat(app): merge concept maps to mappings)
 import {
   useApiResourcesListQuery,
-  useApiBatchesCreateMutation,
+  useRiverBatchesCreateMutation,
   useApiSourcesExportRetrieveQuery,
   useApiCredentialsListQuery,
 } from "services/api/endpoints";
@@ -126,7 +122,7 @@ const BatchCreate = (): JSX.Element => {
     { skip: !Boolean(id) }
   );
 
-  const [apiBatchCreate] = useApiBatchesCreateMutation();
+  const [apiBatchCreate] = useRiverBatchesCreateMutation();
 
   const handleResourceSelectionChange = (
     event: React.ChangeEvent<{
