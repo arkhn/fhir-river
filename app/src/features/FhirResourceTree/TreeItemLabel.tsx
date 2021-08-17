@@ -153,7 +153,7 @@ const TreeItemLabel = ({
         {elementNode.type}
       </Typography>
       {elementNode.kind === "complex" && !elementNode.isArray && (
-        <Tooltip title={t("addExtension").toString()} arrow>
+        <Tooltip title={t<string>("addExtension")} arrow>
           <div>
             <IconButton
               icon={IconNames.CODE_BLOCK}
@@ -165,9 +165,9 @@ const TreeItemLabel = ({
       {isArrayItem && (
         <>
           <Tooltip
-            title={t(
+            title={t<string>(
               elementNode.sliceName ? "deleteSlice" : "deleteItem"
-            ).toString()}
+            )}
             arrow
           >
             <div>
@@ -181,12 +181,12 @@ const TreeItemLabel = ({
       )}
       {elementNode.isArray && elementNode.type !== "Extension" && (
         <>
-          <Tooltip title={t("addItem").toString()} arrow>
+          <Tooltip title={t<string>("addItem")} arrow>
             <div>
               <IconButton icon={IconNames.ADD} onClick={handleAddItemClick} />
             </div>
           </Tooltip>
-          <Tooltip title={t("addSlice").toString()} arrow>
+          <Tooltip title={t<string>("addSlice")} arrow>
             <div>
               <IconButton
                 icon={IconNames.PIE_CHART}
