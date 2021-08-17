@@ -11,18 +11,12 @@ import {
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import {
-  Link as RouterLink,
-  useHistory,
-  useLocation,
-  useParams,
-} from "react-router-dom";
+import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
 
 import {
   useApiSourcesRetrieveQuery,
   useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
-import { Resource } from "services/api/generated/api.generated";
 
 import MappingSelectButton from "./MappingSelectButton";
 
@@ -76,7 +70,6 @@ const NavigationBreadcrumbs = ({
 }: NavigationBreadcrumbsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const history = useHistory();
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -96,9 +89,6 @@ const NavigationBreadcrumbs = ({
     { skip: !mappingId }
   );
 
-  const handleMappingChange = (newMapping: Resource) => {
-    history.push(`/sources/${sourceId}/mappings/${newMapping.id}`);
-  };
   const isEtl = location.pathname.endsWith("batches");
   const isSource = sourceId && location.pathname.endsWith(sourceId);
 
@@ -149,11 +139,7 @@ const NavigationBreadcrumbs = ({
         )}
         {source && mapping && (
           <div>
-            <MappingSelectButton
-              mapping={mapping}
-              source={source}
-              onChange={handleMappingChange}
-            />
+            <MappingSelectButton mapping={mapping} source={source} />
             {editMappingButton}
           </div>
         )}

@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import ArrowDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowUpIcon from "@material-ui/icons/ArrowDropUp";
+import { useHistory } from "react-router-dom";
 
 import MappingInfo from "features/Mappings/MappingInfo";
 import { useApiResourcesListQuery } from "services/api/endpoints";
@@ -23,22 +24,20 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
     boxShadow: `0 1px 5px ${theme.palette.divider}`,
     border: `1px solid ${theme.palette.divider}`,
-    marginRight: theme.spacing(1),
   },
 }));
 
 type MappingSelectButtonProps = {
   source: Source;
   mapping: Resource;
-  onChange?: (mapping: Resource) => void;
 };
 
 const MappingSelectButton = ({
   source,
   mapping,
-  onChange,
 }: MappingSelectButtonProps): JSX.Element => {
   const classes = useStyles();
+  const history = useHistory();
   const [isPopperOpen, setPopperOpen] = useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -63,7 +62,7 @@ const MappingSelectButton = ({
   };
   const handleMappingChange = (mapping: Resource) => () => {
     handlePopperClose();
-    onChange && onChange(mapping);
+    history.push(`/sources/${source.id}/mappings/${mapping.id}`);
   };
 
   return (
