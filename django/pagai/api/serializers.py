@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from river.api.serializers.mapping import MappingSerializer
-
 
 class CredentialsSerializer(serializers.Serializer):
     model = serializers.CharField()
@@ -13,7 +11,7 @@ class CredentialsSerializer(serializers.Serializer):
 
 
 class ExplorationRequestSerializer(serializers.Serializer):
-    mapping = MappingSerializer()
+    resource_id = serializers.CharField()
     owner = serializers.CharField()
     table = serializers.CharField()
 
