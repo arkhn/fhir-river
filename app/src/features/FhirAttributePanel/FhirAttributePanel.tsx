@@ -1,16 +1,11 @@
 import React from "react";
 
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { CircularProgress, Grid, makeStyles } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
+import Button from "common/components/Button";
 import AttributeInputGroup from "features/FhirAttributePanel/AttributeInputGroup";
 import {
   useApiAttributesRetrieveQuery,
@@ -86,7 +81,7 @@ const FhirAttributePanel = (): JSX.Element => {
               startIcon={<Add />}
               onClick={handleCreateInputGroup}
             >
-              <Typography>{t("addGroup")}</Typography>
+              {t("addGroup")}
             </Button>
           )}
         </div>

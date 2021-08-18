@@ -4,6 +4,7 @@ import {
   Button as MuiButton,
   ButtonProps as MuiButtonProps,
   withStyles,
+  Typography,
 } from "@material-ui/core";
 
 export const EditedButton = withStyles((theme) => ({
@@ -50,17 +51,26 @@ export const EditedButton = withStyles((theme) => ({
 type ButtonProps<C extends React.ElementType> = MuiButtonProps<
   C,
   { component?: C }
->;
+> & {
+  typographyColor?:
+    | "initial"
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "textPrimary"
+    | "textSecondary"
+    | "error";
+};
 
 const Button = React.forwardRef(
   <C extends React.ElementType>(
-    { children, ...buttonProps }: ButtonProps<C>,
+    { typographyColor, children, ...buttonProps }: ButtonProps<C>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: any
   ): JSX.Element => {
     return (
       <EditedButton disableElevation {...buttonProps} ref={ref}>
-        {children}
+        <Typography color={typographyColor}>{children}</Typography>
       </EditedButton>
     );
   }

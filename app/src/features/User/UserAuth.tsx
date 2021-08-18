@@ -48,8 +48,9 @@ const UserAuth = (): JSX.Element | null => {
           onClick={handleLogout}
           color="inherit"
           startIcon={<ExitToApp className={classes.icon} />}
+          typographyColor="textSecondary"
         >
-          <Typography color="textSecondary">{t("logout")}</Typography>
+          {t("logout")}
         </Button>
       </>
     );

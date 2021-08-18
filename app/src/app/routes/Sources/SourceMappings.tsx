@@ -2,7 +2,7 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Container, makeStyles, Typography } from "@material-ui/core";
+import { Container, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 
@@ -53,7 +53,7 @@ const SourceMappings = (): JSX.Element => {
           startIcon={<Icon icon={IconNames.FLAME} />}
           onClick={handleLaunchClick}
         >
-          <Typography>{t("ETLDashboard")}</Typography>
+          {t("ETLDashboard")}
         </Button>
       </Navbar>
       <Container maxWidth="xl" className={classes.container}>

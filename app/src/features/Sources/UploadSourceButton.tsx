@@ -3,7 +3,7 @@ import React, { ChangeEvent, useRef, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Typography, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { useTranslation } from "react-i18next";
 
@@ -100,7 +100,7 @@ const UploadSourceButton = (): JSX.Element => {
         fullWidth={false}
         startIcon={<Icon icon={IconNames.IMPORT} />}
       >
-        <Typography>{t("importSource")}</Typography>
+        {t("importSource")}
       </Button>
       <Alert
         severity="error"

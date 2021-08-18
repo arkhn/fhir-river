@@ -9,7 +9,6 @@ import {
   Menu,
   MenuItem,
   ListItemText,
-  Typography,
   Container,
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreHoriz";
@@ -103,7 +102,7 @@ const MappingHeader = (): JSX.Element => {
             onClick={handlePreviewClick}
             className={classes.previewButton}
           >
-            <Typography>{t("preview")}</Typography>
+            {t("preview")}
           </Button>
         </Navbar>
       </Container>

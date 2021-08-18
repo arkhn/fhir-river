@@ -220,9 +220,9 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : credential ? (
-              <Typography>{t("updateCredential")}</Typography>
+              t("updateCredential")
             ) : (
-              <Typography>{t("createCredential")}</Typography>
+              t("createCredential")
             )}
           </Button>
         }
