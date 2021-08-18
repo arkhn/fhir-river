@@ -9,14 +9,13 @@ import SourceGrid from "features/Sources/SourceGrid";
 const useStyles = makeStyles((theme) => ({
   button: {
     textTransform: "none",
-    marginTop: theme.spacing(3),
   },
   gridContainer: {
     flexGrow: 1,
     paddingTop: theme.spacing(5),
   },
   container: {
-    padding: theme.spacing(0, 5),
+    padding: theme.spacing(5, 8),
   },
 }));
 
