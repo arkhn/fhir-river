@@ -2,7 +2,7 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Container, makeStyles } from "@material-ui/core";
+import { Container, Grid, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 
@@ -22,9 +22,6 @@ const useStyles = makeStyles((theme) => ({
   breadcrumbsButtons: {
     marginLeft: "auto",
   },
-  button: {
-    marginRight: theme.spacing(1),
-  },
 }));
 
 const SourceMappings = (): JSX.Element => {
@@ -40,21 +37,28 @@ const SourceMappings = (): JSX.Element => {
   return (
     <Container maxWidth="xl">
       <Navbar>
-        <CredentialEditButton
-          variant="contained"
-          color="secondary"
-          startIcon={<Icon icon={IconNames.COG} />}
-          className={classes.button}
-        />
-        <SourceExportButton className={classes.button} />
-        <Button
-          variant="contained"
-          color="secondary"
-          startIcon={<Icon icon={IconNames.FLAME} />}
-          onClick={handleLaunchClick}
-        >
-          {t("ETLDashboard")}
-        </Button>
+        <Grid container spacing={1} justify="flex-end">
+          <Grid item>
+            <CredentialEditButton
+              variant="contained"
+              color="secondary"
+              startIcon={<Icon icon={IconNames.COG} />}
+            />
+          </Grid>
+          <Grid item>
+            <SourceExportButton />
+          </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<Icon icon={IconNames.FLAME} />}
+              onClick={handleLaunchClick}
+            >
+              {t("ETLDashboard")}
+            </Button>
+          </Grid>
+        </Grid>
       </Navbar>
       <Container maxWidth="xl" className={classes.container}>
         <MappingsToolbar />

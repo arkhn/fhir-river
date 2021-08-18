@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
   breadcrumbsContainer: {
     display: "flex",
-    padding: `0 ${theme.spacing(5)}px`,
+    padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
     minHeight: theme.mixins.breadcrumbBar.height,
     alignItems: "center",
   },
