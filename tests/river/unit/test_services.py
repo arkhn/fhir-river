@@ -14,13 +14,13 @@ def test_batch():
     topics = FakeTopicsManager()
     publisher = FakeEventPublisher()
     batch_id = str(uuid.uuid4())
-    resources = [{"id": str(uuid.uuid4())} for _ in range(5)]
+    resource_ids = [str(uuid.uuid4()) for _ in range(5)]
 
-    batch(batch_id, resources, topics, publisher)
+    batch(batch_id, resource_ids, topics, publisher)
 
     assert topics._topics == {f"{base_topic}.{batch_id}" for base_topic in ["batch", "extract", "transform", "load"]}
     assert publisher._events[f"batch.{batch_id}"] == [
-        BatchEvent(batch_id=batch_id, resource_id=resource["id"]) for resource in resources
+        BatchEvent(batch_id=batch_id, resource_id=resource_id) for resource_id in resource_ids
     ]
 
 
