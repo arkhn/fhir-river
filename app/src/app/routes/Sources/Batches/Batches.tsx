@@ -4,12 +4,12 @@ import { Container } from "@material-ui/core";
 
 import BatchCreate from "features/Batches/BatchCreate";
 import BatchList from "features/Batches/BatchList";
-import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import Navbar from "features/Navbar/Navbar";
 
 const Batches = (): JSX.Element => {
   return (
     <Container maxWidth="xl">
-      <NavigationBreadcrumbs />
+      <Navbar />
       <BatchCreate />
       <BatchList />
     </Container>

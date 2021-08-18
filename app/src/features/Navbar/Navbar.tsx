@@ -60,14 +60,11 @@ const useStyles = makeStyles((theme) => ({
   children: { marginLeft: "auto" },
 }));
 
-type NavigationBreadcrumbsProps = MuiBreadcrumbsProps & {
+type NavbarProps = MuiBreadcrumbsProps & {
   editMappingButton?: JSX.Element;
 };
 
-const NavigationBreadcrumbs = ({
-  editMappingButton,
-  ...props
-}: NavigationBreadcrumbsProps): JSX.Element => {
+const Navbar = ({ editMappingButton, ...props }: NavbarProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { sourceId, mappingId } = useParams<{
@@ -134,7 +131,7 @@ const NavigationBreadcrumbs = ({
             color={!isEtl ? "textSecondary" : "textPrimary"}
             to={location.pathname}
           >
-            ETL
+            {t("ETLDashboard")}
           </Link>
         )}
         {source && mapping && (
@@ -149,4 +146,4 @@ const NavigationBreadcrumbs = ({
   );
 };
 
-export default NavigationBreadcrumbs;
+export default Navbar;

@@ -19,7 +19,7 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 import Button from "common/components/Button";
 import MappingDeleteDialog from "features/Mappings/Delete/MappingDeleteDialog";
 import MappingNameDialog from "features/Mappings/Edit/MappingNameDialog";
-import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import Navbar from "features/Navbar/Navbar";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,7 +86,7 @@ const MappingHeader = (): JSX.Element => {
   return (
     <div className={classes.root}>
       <Container maxWidth="xl">
-        <NavigationBreadcrumbs
+        <Navbar
           editMappingButton={
             <IconButton
               onClick={handleMenuClick}
@@ -105,7 +105,7 @@ const MappingHeader = (): JSX.Element => {
           >
             <Typography>{t("preview")}</Typography>
           </Button>
-        </NavigationBreadcrumbs>
+        </Navbar>
       </Container>
       <Menu
         anchorEl={anchorEl}

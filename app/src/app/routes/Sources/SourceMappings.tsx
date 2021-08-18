@@ -9,7 +9,7 @@ import { useHistory, useParams } from "react-router";
 import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
-import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import Navbar from "features/Navbar/Navbar";
 import CredentialEditButton from "features/Sources/CredentialEditButton";
 import SourceDrawer from "features/Sources/SourceDrawer";
 
@@ -39,7 +39,7 @@ const SourceMappings = (): JSX.Element => {
 
   return (
     <Container maxWidth="xl">
-      <NavigationBreadcrumbs>
+      <Navbar>
         <CredentialEditButton
           variant="contained"
           color="secondary"
@@ -53,9 +53,9 @@ const SourceMappings = (): JSX.Element => {
           startIcon={<Icon icon={IconNames.FLAME} />}
           onClick={handleLaunchClick}
         >
-          <Typography>{t("launchETL")}</Typography>
+          <Typography>{t("ETLDashboard")}</Typography>
         </Button>
-      </NavigationBreadcrumbs>
+      </Navbar>
       <Container maxWidth="xl" className={classes.container}>
         <MappingsToolbar />
         <MappingsTable />
