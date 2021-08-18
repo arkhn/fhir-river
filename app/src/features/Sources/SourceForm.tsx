@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 150,
   },
   divider: {
-    marginBlock: theme.spacing(5),
+    margin: `${theme.spacing(4)}px ${theme.spacing(3)}px`,
   },
 }));
 
@@ -57,6 +57,9 @@ const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
     label: t("name"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
 ];
 
