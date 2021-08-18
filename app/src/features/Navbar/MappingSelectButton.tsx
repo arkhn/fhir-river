@@ -75,7 +75,6 @@ const MappingSelectButton = ({
         variant="outlined"
         size="small"
         endIcon={isPopperOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
-        mappingMenu
       >
         <MappingInfo mapping={mapping} />
       </Button>
