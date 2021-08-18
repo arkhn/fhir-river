@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     flexGrow: 1,
-    paddingTop: theme.spacing(5),
+    paddingTop: theme.spacing(2),
   },
   container: {
     padding: theme.spacing(5, 8),
