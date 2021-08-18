@@ -5,6 +5,7 @@ import { IconNames } from "@blueprintjs/icons";
 import {
   ButtonProps as MuiButtonProps,
   CircularProgress,
+  Typography,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
@@ -54,7 +55,7 @@ const SourceExportButton = ({ ...props }: MuiButtonProps): JSX.Element => {
       disableElevation
     >
       {isSerializedSourceLoading && <CircularProgress size="small" />}
-      {t("exportMapping")}
+      <Typography>{t("exportMapping")}</Typography>
     </Button>
   );
 };

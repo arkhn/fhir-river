@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ButtonProps, Typography } from "@material-ui/core";
+import { ButtonProps } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
@@ -26,7 +26,7 @@ const CredentialEditButton = ({
 
   return (
     <Button {...buttonProps} onClick={handleSourceEdit}>
-      <Typography>{t("databaseSettings")}</Typography>
+      {t("databaseSettings")}
     </Button>
   );
 };

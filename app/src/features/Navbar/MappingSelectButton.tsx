@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import {
-  Button,
   CircularProgress,
   Popper,
   Grow,
@@ -15,6 +14,7 @@ import ArrowDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowUpIcon from "@material-ui/icons/ArrowDropUp";
 import { useHistory } from "react-router-dom";
 
+import Button from "common/components/Button";
 import MappingInfo from "features/Mappings/MappingInfo";
 import { useApiResourcesListQuery } from "services/api/endpoints";
 import { Resource, Source } from "services/api/generated/api.generated";
@@ -75,6 +75,7 @@ const MappingSelectButton = ({
         variant="outlined"
         size="small"
         endIcon={isPopperOpen ? <ArrowUpIcon /> : <ArrowDownIcon />}
+        mappingMenu
       >
         <MappingInfo mapping={mapping} />
       </Button>

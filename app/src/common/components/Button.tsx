@@ -70,7 +70,11 @@ const Button = React.forwardRef(
   ): JSX.Element => {
     return (
       <EditedButton disableElevation {...buttonProps} ref={ref}>
-        <Typography color={typographyColor}>{children}</Typography>
+        {typeof children === "string" ? (
+          <Typography color={typographyColor}>{children}</Typography>
+        ) : (
+          children
+        )}
       </EditedButton>
     );
   }
