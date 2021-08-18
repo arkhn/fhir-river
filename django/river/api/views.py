@@ -3,15 +3,17 @@ from rest_framework.decorators import action
 
 from common.scripts import ScriptsRepository
 from drf_spectacular.utils import extend_schema
-from river import models
+from pyrog import models as pyrog_models
+from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
 from river.api.serializers import serializers
 from river.services import abort, batch, preview
+from pyrog.api.serializers.import_export import MappingModelSerializer
 
 
 class BatchViewSet(viewsets.ModelViewSet):
-    queryset = models.Batch.objects.all()
+    queryset = river_models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
     pagination_class = pagination.LimitOffsetPagination
     filter_backends = [filters.OrderingFilter]
@@ -20,15 +22,22 @@ class BatchViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+        resource_ids = data["resource_ids"]
+
+        # Store serialized mapping
+        # FIXME we consider that all the resources come from the same Source
+        resource = pyrog_models.Resource.objects.get(id=resource_ids[0])
+        source = pyrog_models.Source.objects.get(id=resource.source)
+        serializer.validated_data["mappings"] = MappingModelSerializer(instance=source)
+
         batch_instance = serializer.save()
 
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
 
-        data = serializer.validated_data
-        resources = data["mappings"]["resources"]
-
-        batch(batch_instance.id, resources, topics_manager, event_publisher)
+        batch(batch_instance.id, resource_ids, topics_manager, event_publisher)
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 

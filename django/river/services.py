@@ -20,17 +20,17 @@ from utils.json import CustomJSONEncoder
 
 def batch(
     batch_id: str,
-    resources: List[dict],
+    resource_ids: List[str],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_id}")
 
-    for resource in resources:
+    for resource_id in resource_ids:
         publisher.publish(
             topic=f"batch.{batch_id}",
-            event=BatchEvent(batch_id=batch_id, resource_id=resource["id"]),
+            event=BatchEvent(batch_id=batch_id, resource_id=resource_id),
         )
 
 
