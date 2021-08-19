@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useApiInputGroupsUpdateMutation } from "services/api/endpoints";
 import {
   InputGroup,
-  useRiverScriptsListQuery,
+  useApiScriptsListQuery,
 } from "services/api/generated/api.generated";
 
 import ScriptMenuItem from "./ScriptListItem";
@@ -48,7 +48,7 @@ const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [updateInputGroup] = useApiInputGroupsUpdateMutation();
-  const { data: scripts } = useRiverScriptsListQuery({});
+  const { data: scripts } = useApiScriptsListQuery({});
 
   const handleMergingScriptSelect = async (
     event: React.ChangeEvent<{

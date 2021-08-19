@@ -47,7 +47,7 @@ const UploadSourceButton = (): JSX.Element => {
           updated_at,
           users,
         } = await apiSourceImportCreate({
-          mappingModelRequest: parsedContent,
+          mappingRequest: parsedContent,
         }).unwrap();
         dispatch(
           sourceEdited({
