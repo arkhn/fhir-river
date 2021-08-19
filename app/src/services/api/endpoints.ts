@@ -298,13 +298,13 @@ export const api = generatedApi
       /**
        * Batches
        */
-      riverBatchesCreate: {
+      apiBatchesCreate: {
         invalidatesTags: invalidatesList("Batches"),
       },
-      riverBatchesList: {
+      apiBatchesList: {
         providesTags: providesPaginatedList("Batches"),
       },
-      riverBatchesDestroy: {
+      apiBatchesDestroy: {
         invalidatesTags: invalidatesOne("Batches"),
       },
     },
@@ -382,10 +382,10 @@ export const {
   useApiConditionsUpdateMutation,
   useApiConditionsDestroyMutation,
   // Batches
-  useRiverBatchesCreateMutation,
-  useRiverBatchesListQuery,
-  useRiverBatchesDestroyMutation,
+  useApiBatchesCreateMutation,
+  useApiBatchesListQuery,
+  useApiBatchesDestroyMutation,
   // Pagai
   useApiExploreCreateMutation,
-  useRiverPreviewCreateMutation,
+  useApiPreviewCreateMutation,
 } = api;

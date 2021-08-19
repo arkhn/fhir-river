@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 import {
   Scripts,
-  useRiverScriptsListQuery,
+  useApiScriptsListQuery,
 } from "services/api/generated/api.generated";
 
 import ScriptListItem from "./ScriptListItem";
@@ -64,10 +64,9 @@ const CleaningScriptButton = ({
   const isInputScriptSelected = scriptName !== undefined && scriptName !== "";
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const {
-    data: scripts,
-    isLoading: isScriptsLoading,
-  } = useRiverScriptsListQuery({});
+  const { data: scripts, isLoading: isScriptsLoading } = useApiScriptsListQuery(
+    {}
+  );
 
   const handleMenuToggle = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
