@@ -13,7 +13,7 @@ import { ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
-import { useRiverBatchesListQuery } from "services/api/endpoints";
+import { useApiBatchesListQuery } from "services/api/endpoints";
 
 import BatchCancel from "./BatchCancel";
 import BatchErrors from "./BatchErrors";
@@ -115,14 +115,13 @@ const BatchList = (): JSX.Element => {
 
   const offset = (page - 1) * PAGE_SIZE;
   const limit = offset + PAGE_SIZE;
-  const {
-    data: batches,
-    isLoading: isBatchesLoading,
-  } = useRiverBatchesListQuery({
-    limit,
-    offset,
-    ordering: "-created_at",
-  });
+  const { data: batches, isLoading: isBatchesLoading } = useApiBatchesListQuery(
+    {
+      limit,
+      offset,
+      ordering: "-created_at",
+    }
+  );
 
   const handleBatchRetry = (batchId: string) => (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>

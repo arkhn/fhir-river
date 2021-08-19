@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 
-import { ButtonProps, Typography } from "@material-ui/core";
+import { Button, ButtonProps, Typography } from "@material-ui/core";
 import { CancelOutlined } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 import Alert from "common/components/Alert";
-<<<<<<< HEAD
-import Button from "common/components/Button";
 import { useApiBatchesDestroyMutation } from "services/api/endpoints";
-=======
-import { useRiverBatchesDestroyMutation } from "services/api/endpoints";
->>>>>>> 9c386dcb (fix(app): river endpoints)
 import type { Batch } from "services/api/generated/api.generated";
 
 type BatchCancelProps = {
@@ -26,7 +21,7 @@ const BatchCancel = ({
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const handleAlertClose = () => setAlert(undefined);
 
-  const [apiBatchesDestroy] = useRiverBatchesDestroyMutation();
+  const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
   const handleBatchCancel = (batchId: string) => async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
