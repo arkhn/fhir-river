@@ -26,7 +26,6 @@ from pyrog.models import (
     Resource,
     Source,
 )
-from users.api.serializers import UserSerializer
 
 
 class _ColumnField(serializers.PrimaryKeyRelatedField):
@@ -178,7 +177,6 @@ class MappingSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
     resources = MappingResourceSerializer(many=True, required=False, default=[])
     credential = MappingCredentialSerializer()
-    users = UserSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = Source
