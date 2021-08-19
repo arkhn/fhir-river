@@ -180,7 +180,7 @@ class MappingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = "__all__"
+        exclude = ["users"]
 
     def create(self, validated_data):
         """Create Source and related models from the validated representation.
