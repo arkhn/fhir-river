@@ -4,12 +4,12 @@ from rest_framework.decorators import action
 from common.scripts import ScriptsRepository
 from drf_spectacular.utils import extend_schema
 from pyrog import models as pyrog_models
+from pyrog.api.serializers.import_export import MappingModelSerializer
 from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
 from river.api.serializers import serializers
 from river.services import abort, batch, preview
-from pyrog.api.serializers.import_export import MappingModelSerializer
 
 
 class BatchViewSet(viewsets.ModelViewSet):
@@ -30,7 +30,7 @@ class BatchViewSet(viewsets.ModelViewSet):
         # FIXME we consider that all the resources come from the same Source
         resource = pyrog_models.Resource.objects.get(id=resource_ids[0])
         source = pyrog_models.Source.objects.get(id=resource.source)
-        serializer.validated_data["mappings"] = MappingModelSerializer(instance=source)
+        serializer.validated_data["mappings"] = MappingModelSerializer(instance=source).data
 
         batch_instance = serializer.save()
 
@@ -61,9 +61,16 @@ class PreviewEndpoint(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
+        resource_id = data["resource_id"]
+
+        # FIXME we consider that all the resources come from the same Source
+        resource = pyrog_models.Resource.objects.get(id=resource_id)
+        source = pyrog_models.Source.objects.get(id=resource.source)
+        mappings = MappingModelSerializer(instance=source).data
+
         primary_key_values = data["primary_key_values"]
 
-        documents, errors = preview(data["mapping"], primary_key_values)
+        documents, errors = preview(mappings, primary_key_values)
 
         return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
