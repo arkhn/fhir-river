@@ -8,7 +8,7 @@ from django_filters import rest_framework as django_filters
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
-from pyrog.api.serializers.import_export import MappingModelSerializer, MappingWithPartialCredentialModelSerializer
+from pyrog.api.serializers.import_export import MappingSerializer, MappingWithPartialCredentialSerializer
 from revproxy.views import ProxyView
 
 
@@ -33,13 +33,11 @@ class SourceViewSet(viewsets.ModelViewSet):
     ordering_fields = ["created_at"]
     ordering = ["created_at"]
 
-    @action(detail=False, methods=["post"], serializer_class=MappingModelSerializer, url_path="import")
+    @action(detail=False, methods=["post"], serializer_class=MappingSerializer, url_path="import")
     def import_mapping(self, request):
         return self.create(request)
 
-    @action(
-        detail=True, methods=["get"], serializer_class=MappingWithPartialCredentialModelSerializer, url_path="export"
-    )
+    @action(detail=True, methods=["get"], serializer_class=MappingWithPartialCredentialSerializer, url_path="export")
     def export_mapping(self, request, pk=None):
         return self.retrieve(request)
 
