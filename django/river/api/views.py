@@ -9,6 +9,7 @@ from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
 from river.api.serializers import serializers
+from river.common.mapping.fetch_concept_maps import dereference_concept_map
 from river.services import abort, batch, preview
 
 
@@ -30,7 +31,13 @@ class BatchViewSet(viewsets.ModelViewSet):
         # FIXME we consider that all the resources come from the same Source
         resource = pyrog_models.Resource.objects.get(id=resource_ids[0])
         source = pyrog_models.Source.objects.get(id=resource.source)
-        serializer.validated_data["mappings"] = MappingSerializer(source).data
+        mappings = MappingSerializer(source).data
+
+        auth_token = self.request.session["oidc_access_token"]
+        for mapping in mappings["resources"]:
+            dereference_concept_map(mapping, auth_token)
+
+        serializer.validated_data["mappings"] = mappings
 
         batch_instance = serializer.save()
 
@@ -67,6 +74,10 @@ class PreviewEndpoint(generics.GenericAPIView):
         resource = pyrog_models.Resource.objects.get(id=resource_id)
         source = pyrog_models.Source.objects.get(id=resource.source)
         mappings = MappingSerializer(source).data
+
+        auth_token = self.request.session["oidc_access_token"]
+        for mapping in mappings["resources"]:
+            dereference_concept_map(mapping, auth_token)
 
         primary_key_values = data["primary_key_values"]
 
