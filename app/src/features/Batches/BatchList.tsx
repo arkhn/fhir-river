@@ -20,11 +20,12 @@ import BatchErrors from "./BatchErrors";
 
 const useStyles = makeStyles((theme) => ({
   accordionSummaryContent: {
-    width: "100%",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     padding: theme.spacing(1, 0),
+    flexGrow: 1,
+    flexWrap: "wrap",
   },
   accordionSummary: {
     margin: 0,
@@ -46,13 +47,16 @@ const useStyles = makeStyles((theme) => ({
   },
   accordionSummaryTitle: {
     display: "flex",
-    width: "100%",
     justifyContent: "space-between",
     alignItems: "center",
+    flexWrap: "wrap",
+    flexGrow: 1,
+    marginRight: theme.spacing(1),
   },
   button: {
     textTransform: "none",
-    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    margin: theme.spacing(0.5, 0),
   },
   accordionDetails: {
     display: "flex",

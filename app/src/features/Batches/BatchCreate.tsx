@@ -2,10 +2,10 @@ import React, { useState } from "react";
 
 import {
   Button,
-  Chip,
+  Checkbox,
   FormControl,
-  Input,
   InputLabel,
+  ListItemText,
   MenuItem,
   Select,
   Typography,
@@ -41,23 +41,20 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "auto",
     marginBottom: "auto",
   },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-  chip: {
-    margin: theme.spacing(0.25),
-  },
-  mediumBold: {
+  menuItem: {
     fontWeight: theme.typography.fontWeightMedium,
-  },
-  regularBold: {
-    fontWeight: theme.typography.fontWeightRegular,
   },
   menuPaper: {
     maxHeight: ITEM_HEIGHT * 4.5 + theme.spacing(1),
     width: 250,
   },
+  select: {
+    padding: theme.spacing(1.3),
+  },
+  label: {
+    transform: "translate(14px, 12px) scale(1)",
+  },
+  selectedValue: {},
 }));
 
 const BatchCreate = (): JSX.Element => {
@@ -104,39 +101,39 @@ const BatchCreate = (): JSX.Element => {
 
   return (
     <div className={classes.root}>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-mutiple-chip-label">{t("resources")}</InputLabel>
+      <FormControl variant="outlined" className={classes.formControl}>
+        <InputLabel
+          classes={{
+            root: classes.label,
+          }}
+          id="resources"
+        >
+          {t("resources")}
+        </InputLabel>
         <Select
-          variant="filled"
-          labelId="demo-mutiple-chip-label"
-          id="demo-mutiple-chip"
           multiple
+          labelId="resources"
+          id="resources"
+          label={t("resources")}
           value={selectedResourceIds}
           onChange={handleResourceSelectionChange}
-          input={<Input id="select-multiple-chip" />}
-          renderValue={(selected) => (
-            <div className={classes.chips}>
-              {(selected as string[]).map((resourceId) => {
-                const resource = resources?.find(({ id }) => resourceId === id);
-                return (
-                  resource && (
-                    <Chip
-                      size="small"
-                      key={`resource-selected-${resource.id}`}
-                      label={`${resource.definition_id} - ${resource.label}`}
-                      className={classes.chip}
-                    />
-                  )
-                );
-              })}
-            </div>
-          )}
+          renderValue={(selected) =>
+            (selected as string[]).map((resourceId) => {
+              const resource = resources?.find(({ id }) => resourceId === id);
+              return `${resource?.definition_id} - ${resource?.label}${
+                (selected as string[]).length > 1 ? "," : ""
+              } `;
+            })
+          }
+          classes={{
+            root: classes.select,
+          }}
           MenuProps={{
             PaperProps: {
               className: classes.menuPaper,
             },
             anchorOrigin: {
-              vertical: "top",
+              vertical: "bottom",
               horizontal: "left",
             },
             transformOrigin: {
@@ -152,11 +149,14 @@ const BatchCreate = (): JSX.Element => {
                 key={`resource-option-${id}`}
                 value={id}
                 classes={{
-                  root: classes.mediumBold,
-                  selected: classes.regularBold,
+                  root: classes.menuItem,
                 }}
               >
-                {definition_id} - {label}
+                <Checkbox
+                  color="primary"
+                  checked={selectedResourceIds.indexOf(id) > -1}
+                />
+                <ListItemText primary={`${definition_id} - ${label}`} />
               </MenuItem>
             ))}
         </Select>
@@ -164,6 +164,7 @@ const BatchCreate = (): JSX.Element => {
       <Button
         variant="contained"
         color="primary"
+        size="large"
         disabled={!selectedResourceIds.length}
         className={classes.button}
         startIcon={<PlayIcon />}
