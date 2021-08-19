@@ -42,7 +42,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
 
-        for owner in self.root.initial_data["mappings"]["credential"]["owners"]:
+        for owner in self.root.initial_data["credential"]["owners"]:
             for column in owner["columns"]:
                 if column["id"] == data:
                     return data
@@ -60,7 +60,7 @@ class _OwnerField(serializers.PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
 
-        for owner in self.root.initial_data["mappings"]["credential"]["owners"]:
+        for owner in self.root.initial_data["credential"]["owners"]:
             if owner["id"] == data:
                 return data
         raise serializers.ValidationError("No associated Owner.")
