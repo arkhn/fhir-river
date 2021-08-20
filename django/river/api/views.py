@@ -28,7 +28,7 @@ class BatchViewSet(viewsets.ModelViewSet):
 
         # Store serialized mapping
         # FIXME we consider that all the resources come from the same Source
-        resource = pyrog_models.Resource.objects.get(id=resource_ids[0])
+        resource = pyrog_models.Resource.objects.get(id=next(iter(resource_ids)))
         source = pyrog_models.Source.objects.get(id=resource.source.id)
         mappings = MappingSerializer(source).data
 
