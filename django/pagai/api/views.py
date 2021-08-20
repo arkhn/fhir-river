@@ -55,7 +55,7 @@ class ExploreView(generics.GenericAPIView):
 
         analyzer = Analyzer()
         resource = models.Resource.objects.get(id=data["resource_id"])
-        source = models.Source.objects.get(id=resource.source)
+        source = models.Source.objects.get(id=resource.source.id)
         mapping = as_old_mapping(source, resource.id)
         analysis = analyzer.analyze(mapping)
 
