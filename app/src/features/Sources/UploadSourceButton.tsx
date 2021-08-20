@@ -45,7 +45,6 @@ const UploadSourceButton = (): JSX.Element => {
           id,
           name,
           updated_at,
-          users,
         } = await apiSourceImportCreate({
           mappingRequest: parsedContent,
         }).unwrap();
@@ -55,7 +54,7 @@ const UploadSourceButton = (): JSX.Element => {
             id,
             name,
             updated_at,
-            users: users?.map(({ id }) => id) || [],
+            users: [],
           })
         );
       } catch (error) {
