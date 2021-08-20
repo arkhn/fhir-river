@@ -28,8 +28,8 @@ def test_fetch_concept_map_forbidden(mock_fhir_api_response):
 
 
 def test_dereference_concept_map(mock_fhir_api_response):
-    mapping = {"attributes": [{"inputGroups": [{"inputs": [{"conceptMapId": "cm_gender"}]}]}]}
+    mapping = {"attributes": [{"input_groups": [{"inputs": [{"concept_map_id": "cm_gender"}]}]}]}
 
     fetch_concept_maps.dereference_concept_map(mapping, "validToken")
 
-    assert mapping["attributes"][0]["inputGroups"][0]["inputs"][0]["conceptMap"] == {"F": "female", "M": "male"}
+    assert mapping["attributes"][0]["input_groups"][0]["inputs"][0]["concept_map"] == {"F": "female", "M": "male"}
