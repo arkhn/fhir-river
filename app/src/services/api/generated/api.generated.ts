@@ -1518,16 +1518,10 @@ export type MappingPartialCredential = {
   model: ModelEnum;
   owners?: MappingOwner[];
 };
-export type User = {
-  id: string;
-  email: string;
-  username: string;
-};
 export type MappingWithPartialCredential = {
   id: string;
   resources?: MappingResource[];
   credential: MappingPartialCredential;
-  users?: User[];
   name: string;
   version?: string;
   updated_at: string;
@@ -1546,7 +1540,6 @@ export type Mapping = {
   id: string;
   resources?: MappingResource[];
   credential: MappingCredential;
-  users?: User[];
   name: string;
   version?: string;
   updated_at: string;
@@ -1565,7 +1558,6 @@ export type MappingConditionRequest = {
   relation?: ConditionRelationEnum;
 };
 export type MappingInputGroupRequest = {
-  id: string;
   merging_script?: string;
   inputs?: MappingInputRequest[];
   conditions?: MappingConditionRequest[];
@@ -1582,7 +1574,6 @@ export type MappingFilterRequest = {
   sql_column: string;
 };
 export type MappingResourceRequest = {
-  id: string;
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
@@ -1618,17 +1609,16 @@ export type MappingCredentialRequest = {
   login: string;
   password: string;
 };
-export type UserRequest = {
-  email: string;
-  username: string;
-};
 export type MappingRequest = {
-  id: string;
   resources?: MappingResourceRequest[];
   credential: MappingCredentialRequest;
-  users?: UserRequest[];
   name: string;
   version?: string;
+};
+export type User = {
+  id: string;
+  email: string;
+  username: string;
 };
 export const {
   useApiAttributesListQuery,
