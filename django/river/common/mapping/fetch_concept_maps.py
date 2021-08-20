@@ -1,5 +1,6 @@
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from typing import Optional
+
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
 from django.conf import settings
 
@@ -15,7 +16,7 @@ def dereference_concept_map(mapping, auth_token: Optional[str]):
             for input_ in input_group["inputs"]:
                 if concept_map_id := input_.get("concept_map_id"):
                     concept_map = fetch_concept_map(concept_map_id, auth_token)
-                    input_["conceptMap"] = concept_map
+                    input_["concept_map"] = concept_map
 
 
 def fetch_concept_map(concept_map_id: str, auth_token: Optional[str]):
