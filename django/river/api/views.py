@@ -24,8 +24,7 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        data = serializer.validated_data
-        resource_ids = data.pop("resource_ids")
+        resource_ids = serializer.data.pop("resource_ids")
 
         # Store serialized mapping
         # FIXME we consider that all the resources come from the same Source
