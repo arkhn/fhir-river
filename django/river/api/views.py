@@ -25,15 +25,15 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
-        resource_ids = data["resource_ids"]
+        resource_ids = data.pop("resource_ids")
 
         # Store serialized mapping
         # FIXME we consider that all the resources come from the same Source
         resource = pyrog_models.Resource.objects.get(id=resource_ids[0])
-        source = pyrog_models.Source.objects.get(id=resource.source)
+        source = pyrog_models.Source.objects.get(id=resource.source.id)
         mappings = MappingSerializer(source).data
 
-        auth_token = self.request.session["oidc_access_token"]
+        auth_token = self.request.session.get("oidc_access_token")
         for mapping in mappings["resources"]:
             dereference_concept_map(mapping, auth_token)
 
@@ -72,10 +72,10 @@ class PreviewEndpoint(generics.GenericAPIView):
 
         # FIXME we consider that all the resources come from the same Source
         resource = pyrog_models.Resource.objects.get(id=resource_id)
-        source = pyrog_models.Source.objects.get(id=resource.source)
+        source = pyrog_models.Source.objects.get(id=resource.source.id)
         mappings = MappingSerializer(source).data
 
-        auth_token = self.request.session["oidc_access_token"]
+        auth_token = self.request.session.get("oidc_access_token")
         for mapping in mappings["resources"]:
             dereference_concept_map(mapping, auth_token)
 
