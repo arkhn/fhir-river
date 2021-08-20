@@ -2764,6 +2764,7 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         resources:
           type: array
           items:
@@ -2989,6 +2990,7 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         merging_script:
           type: string
         inputs:
@@ -3006,8 +3008,6 @@ components:
     MappingInputGroupRequest:
       type: object
       properties:
-        id:
-          type: string
         merging_script:
           type: string
         inputs:
@@ -3020,8 +3020,6 @@ components:
           items:
             $ref: '#/components/schemas/MappingConditionRequest'
           default: []
-      required:
-      - id
     MappingInputRequest:
       type: object
       properties:
@@ -3119,8 +3117,6 @@ components:
     MappingRequest:
       type: object
       properties:
-        id:
-          type: string
         resources:
           type: array
           items:
@@ -3134,7 +3130,6 @@ components:
           type: string
       required:
       - credential
-      - id
       - name
     MappingResource:
       type: object
@@ -3207,6 +3202,7 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         resources:
           type: array
           items:

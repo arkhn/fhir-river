@@ -126,7 +126,6 @@ class MappingConditionSerializer(serializers.ModelSerializer):
 
 
 class MappingInputGroupSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
     inputs = MappingInputSerializer(many=True, required=False, default=[])
     conditions = MappingConditionSerializer(many=True, required=False, default=[])
 
@@ -173,7 +172,6 @@ class MappingResourceSerializer(serializers.ModelSerializer):
 
 
 class MappingSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
     resources = MappingResourceSerializer(many=True, required=False, default=[])
     credential = MappingCredentialSerializer()
 
