@@ -10,10 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="batch",
-            name="resources",
-        ),
         migrations.AddField(
             model_name="batch",
             name="mappings",

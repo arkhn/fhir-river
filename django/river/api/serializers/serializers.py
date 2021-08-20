@@ -11,11 +11,11 @@ class ErrorSerializer(serializers.ModelSerializer):
 
 class BatchSerializer(serializers.ModelSerializer):
     errors = ErrorSerializer(many=True, read_only=True)
-    resource_ids = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = models.Batch
         exclude = ["mappings"]
+        extra_kwargs = {"resource_ids": {"required": True}}
 
 
 class PreviewRequestSerializer(serializers.Serializer):
