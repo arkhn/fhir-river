@@ -152,7 +152,6 @@ class MappingFilterSerializer(serializers.ModelSerializer):
 
 
 class MappingResourceSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
     primary_key_owner = _OwnerField()
     attributes = MappingAttributeSerializer(many=True, required=False, default=[])
     filters = MappingFilterSerializer(many=True, required=False, default=[])

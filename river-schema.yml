@@ -2771,11 +2771,6 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/MappingCredential'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-          default: []
         name:
           type: string
         version:
@@ -3133,11 +3128,6 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/MappingCredentialRequest'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRequest'
-          default: []
         name:
           type: string
         version:
@@ -3151,6 +3141,7 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         label:
           type: string
         primary_key_table:
@@ -3183,8 +3174,6 @@ components:
     MappingResourceRequest:
       type: object
       properties:
-        id:
-          type: string
         label:
           type: string
         primary_key_table:
@@ -3209,7 +3198,6 @@ components:
           default: []
       required:
       - definition_id
-      - id
       - logical_reference
       - primary_key_column
       - primary_key_owner
@@ -3226,11 +3214,6 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/MappingPartialCredential'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-          default: []
         name:
           type: string
         version:
@@ -3591,22 +3574,6 @@ components:
       required:
       - email
       - id
-      - username
-    UserRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          maxLength: 254
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-      required:
-      - email
       - username
   securitySchemes:
     basicAuth:
