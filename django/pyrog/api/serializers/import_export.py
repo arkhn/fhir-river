@@ -199,7 +199,7 @@ class MappingSerializer(serializers.ModelSerializer):
         credential_data = validated_data.pop("credential")
         owners_data = credential_data.pop("owners")
 
-        source = Source.objects.create(**validated_data)
+        source = Source.objects.create(**{**validated_data, "id": None})
         credential = Credential.objects.create(source=source, **credential_data)
 
         # Registries to track owner and column instances by their exported ids
