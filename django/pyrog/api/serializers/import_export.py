@@ -281,7 +281,7 @@ class MappingSerializer(serializers.ModelSerializer):
 
                         if column_data is not None:
                             column = column_by_id[column_data]
-                            column.input_ = input_
+                            column.input = input_
                             column.save(update_fields=["input"])
 
                     for condition_data in conditions_data:
