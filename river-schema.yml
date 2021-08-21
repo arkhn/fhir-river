@@ -2345,7 +2345,12 @@ components:
           type: string
           format: date-time
           readOnly: true
+        canceled_at:
+          type: string
+          format: date-time
+          readOnly: true
       required:
+      - canceled_at
       - created_at
       - deleted_at
       - errors

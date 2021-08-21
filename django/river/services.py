@@ -39,7 +39,8 @@ def abort(batch: models.Batch, topics_manager: TopicsManager) -> None:
         topics_manager.delete(f"{base_topic}.{batch.id}")
 
     batch.deleted_at = timezone.now()
-    batch.save(update_fields=["deleted_at"])
+    batch.canceled_at = batch.deleted_at
+    batch.save(update_fields=["deleted_at", "canceled_at"])
 
 
 def retry(batch: models.Batch) -> None:
