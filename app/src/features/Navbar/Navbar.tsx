@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
     padding: `${theme.spacing(4)}px ${theme.spacing(5)}px`,
     minHeight: theme.mixins.breadcrumbBar.height,
     alignItems: "center",
+    flexWrap: "wrap",
   },
   children: { marginLeft: "auto" },
 }));

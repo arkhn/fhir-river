@@ -80,7 +80,7 @@ const usePyrogTheme = (): Theme => {
             height: 64,
           },
           breadcrumbBar: {
-            height: 100,
+            height: 104,
           },
           icons: {
             size: 16,
