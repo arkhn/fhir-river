@@ -36,7 +36,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
     hierarchy (accessible from ``self.root.initial_data``).
     """
 
-    queryset = Column.objects.all().order_by("updated_at")
+    queryset = Column.objects.all()
 
     def to_internal_value(self, data):
         """Find the actual representation in the submitted data, or raise."""
