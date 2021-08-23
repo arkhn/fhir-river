@@ -39,10 +39,13 @@ const useStyles = makeStyles((theme) => ({
       },
     },
     "&.MuiAccordionSummary-root": {
-      borderBottom: `1px solid ${theme.palette.background.default}`,
+      borderBottom: "none",
       minHeight: 56,
       margin: 0,
       transition: "none",
+      "&.Mui-expanded": {
+        borderBottom: `1px solid ${theme.palette.background.default}`,
+      },
     },
   },
   accordionSummaryTitle: {
