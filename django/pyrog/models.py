@@ -118,6 +118,9 @@ class Column(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["updated_at"]
+
 
 class Join(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
