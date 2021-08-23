@@ -11,7 +11,6 @@ from river.common.errors import OperationOutcome
 # FIXME: use this function on a mapping before sending it to the analyzer
 def dereference_concept_map(mapping, auth_token: Optional[str]):
     for attribute in mapping["attributes"]:
-        print(attribute)
         for input_group in attribute["input_groups"]:
             for input_ in input_group["inputs"]:
                 if concept_map_id := input_.get("concept_map_id"):
