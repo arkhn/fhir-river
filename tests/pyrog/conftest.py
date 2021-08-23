@@ -1,10 +1,14 @@
 import inspect
+import json
+from pathlib import Path
 
 import pytest
 from factory import Factory
 from pytest_factoryboy import register
 
 from . import factories
+
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "river/fixtures"
 
 register(factories.SourceFactory)
 register(factories.SourceUserFactory)
@@ -35,3 +39,8 @@ def reset_factories_sequences():
     """Reset all sequences for predictable values."""
     for factory in get_factories():
         factory.reset_sequence()
+
+@pytest.fixture
+def mimic_mapping():
+    with (DATA_FIXTURES_DIR / "mimic_mapping.json").open() as f:
+        return json.load(f)
