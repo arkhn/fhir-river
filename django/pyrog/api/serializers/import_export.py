@@ -243,7 +243,7 @@ class MappingSerializer(serializers.ModelSerializer):
                     for column_data in join_data["columns"]:
                         column = column_by_id[column_data]
                         column.join = join
-                        column.save(update_fields=["join"])
+                        column.save(update_fields=["join", "updated_at"])
 
         # Main hierarchy
         for resource_data in resources_data:
