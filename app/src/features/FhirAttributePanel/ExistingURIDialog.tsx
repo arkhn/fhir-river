@@ -15,10 +15,7 @@ import { useTranslation } from "react-i18next";
 import Button from "common/components/Button";
 import Select from "common/components/Select";
 import { useApiSourcesListQuery } from "services/api/endpoints";
-import {
-  useApiSourcesExportRetrieveQuery,
-  _Resource,
-} from "services/api/generated/api.generated";
+import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,10 +69,10 @@ const ExistingURIDialog = ({
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     const selectedMapping = mappings?.resources?.find(
-      ({ id }: _Resource & { id?: string }) => id === mapping
+      ({ id }) => id === mapping
     );
     if (selectedMapping) {
-      onSubmit((selectedMapping as _Resource).logical_reference ?? "");
+      onSubmit(selectedMapping.logical_reference ?? "");
     }
     handleClose(e);
   };
@@ -104,16 +101,10 @@ const ExistingURIDialog = ({
             <Select
               value={mapping}
               options={
-                mappings?.resources?.map(
-                  ({
-                    label,
-                    id,
-                    definition_id,
-                  }: _Resource & { id?: string }) => ({
-                    id: id ?? "",
-                    label: label && label !== "" ? label : definition_id,
-                  })
-                ) ?? []
+                mappings?.resources?.map(({ label, id, definition_id }) => ({
+                  id: id ?? "",
+                  label: label && label !== "" ? label : definition_id,
+                })) ?? []
               }
               onChange={handleMappingChange}
               emptyOption={t("selectMapping")}
