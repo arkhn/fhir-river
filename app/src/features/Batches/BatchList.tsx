@@ -26,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     marginBottom: theme.spacing(0.5),
     "&.Mui-expanded": {
-      margin: 0,
-      marginBottom: theme.spacing(0.5),
+      margin: theme.spacing(0, 0, 0.5, 0),
     },
     "&:before": {
       display: "none",
@@ -79,14 +78,12 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     textTransform: "none",
-    marginRight: theme.spacing(1),
-    margin: theme.spacing(0.5, 0),
+    margin: theme.spacing(0.5, 1, 0.5, 0),
   },
   accordionDetails: {
     display: "flex",
     flexDirection: "column",
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(0.5, 0, 1, 0),
   },
   paginationContainer: {
     backgroundColor: theme.palette.background.default,
@@ -153,13 +150,15 @@ const BatchList = (): JSX.Element => {
                 <div className={classes.accordionSummaryTitle}>
                   <div>
                     <Typography variant="subtitle2">
-                      {!batch.deleted_at && `⏳ In Progress...`}
+                      {!batch.deleted_at && t("batchInProgress")}
                       {batch.deleted_at &&
                         batch.errors.length > 0 &&
-                        `⚠️ ${batch.errors.length} errors`}
+                        t("batchErrors", {
+                          errors: batch.errors.length.toString(),
+                        })}
                       {batch.deleted_at &&
                         batch.errors.length === 0 &&
-                        `✅ Success`}
+                        t("batchSuccess")}
                     </Typography>
                     <Typography className={classes.batchId}>
                       {batch.id}

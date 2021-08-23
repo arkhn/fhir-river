@@ -154,7 +154,7 @@ const BatchCreate = (): JSX.Element => {
               >
                 <Checkbox
                   color="primary"
-                  checked={selectedResourceIds.indexOf(id) > -1}
+                  checked={selectedResourceIds.includes(id)}
                 />
                 <ListItemText primary={`${definition_id} - ${label}`} />
               </MenuItem>

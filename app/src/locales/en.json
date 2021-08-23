@@ -113,5 +113,8 @@
   "resources": "Resources",
   "retry": "Retry",
   "mergingScript": "Merging script",
-  "selectScript": "Select script"
+  "selectScript": "Select script",
+  "batchInProgress": "⏳ In Progress...",
+  "batchErrors": "⚠️ {{errors}} errors",
+  "batchSuccess": "✅ Success"
 }
