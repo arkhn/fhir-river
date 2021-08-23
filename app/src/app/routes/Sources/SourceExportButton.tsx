@@ -13,7 +13,7 @@ import { useParams } from "react-router";
 import Button from "common/components/Button";
 import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
 
-const SourceExportButton = ({ ...props }: MuiButtonProps): JSX.Element => {
+const SourceExportButton = (props: MuiButtonProps): JSX.Element => {
   const { t } = useTranslation();
   const exportButtonRef = useRef<HTMLAnchorElement | null>(null);
   const { sourceId } = useParams<{ sourceId?: string }>();

@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 150,
   },
   divider: {
-    margin: `${theme.spacing(4)}px ${theme.spacing(3)}px`,
+    margin: theme.spacing(4, 3),
   },
 }));
 

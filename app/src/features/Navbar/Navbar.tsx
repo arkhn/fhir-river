@@ -18,6 +18,7 @@ import {
   useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 
+import EditMappingButton from "./EditMappingButton";
 import MappingSelectButton from "./MappingSelectButton";
 
 interface LinkRouterProps extends LinkProps {
@@ -59,13 +60,20 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
   },
   children: { marginLeft: "auto" },
+  delete: {
+    color: theme.palette.error.light,
+  },
+  actionButton: {
+    boxShadow: `0px 0px 10px ${theme.palette.divider}`,
+    marginRight: theme.spacing(1),
+    paddingInline: theme.spacing(1),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: 5,
+    height: 40,
+  },
 }));
 
-type NavbarProps = MuiBreadcrumbsProps & {
-  editMappingButton?: JSX.Element;
-};
-
-const Navbar = ({ editMappingButton, ...props }: NavbarProps): JSX.Element => {
+const Navbar = ({ ...props }: MuiBreadcrumbsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { sourceId, mappingId } = useParams<{
@@ -86,7 +94,6 @@ const Navbar = ({ editMappingButton, ...props }: NavbarProps): JSX.Element => {
     },
     { skip: !mappingId }
   );
-
   const isEtl = location.pathname.endsWith("batches");
   const isSource = sourceId && location.pathname.endsWith(sourceId);
 
@@ -138,7 +145,7 @@ const Navbar = ({ editMappingButton, ...props }: NavbarProps): JSX.Element => {
         {source && mapping && (
           <div>
             <MappingSelectButton mapping={mapping} source={source} />
-            {editMappingButton}
+            <EditMappingButton />
           </div>
         )}
       </Breadcrumbs>

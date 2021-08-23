@@ -19,9 +19,6 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(0, 5),
   },
-  breadcrumbsButtons: {
-    marginLeft: "auto",
-  },
 }));
 
 const SourceMappings = (): JSX.Element => {
