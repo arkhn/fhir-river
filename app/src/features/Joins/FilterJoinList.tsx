@@ -39,6 +39,7 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const mapping = useAppSelector((state) =>
     resourceSelectors.selectById(state, filter.resource ?? "")
   );
+
   const columns = useAppSelector(columnSelectors.selectAll);
   const filterJoins = useAppSelector((state) =>
     joinSelectors

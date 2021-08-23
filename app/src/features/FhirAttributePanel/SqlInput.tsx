@@ -2,7 +2,13 @@ import React, { useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Grid, IconButton, makeStyles } from "@material-ui/core";
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  CircularProgress,
+} from "@material-ui/core";
+import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -20,6 +26,7 @@ import {
   useApiColumnsUpdateMutation,
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
+  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 import {
   ColumnRequest,
@@ -71,24 +78,40 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const [createColumn] = useApiColumnsCreateMutation();
   const [updateColumn] = useApiColumnsUpdateMutation();
   const [updateInput] = useApiInputsUpdateMutation();
+  const { mappingId } = useParams<{ mappingId?: string }>();
   const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
     input: input.id,
   });
+  const {
+    data: mapping,
+    isLoading: mappingLoading,
+  } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !mappingId }
+  );
+
   const inputColumn = useAppSelector((state) =>
     columnSelectors
       .selectAll(state)
       .find((column) => column?.input === input.id)
   );
-
   useEffect(() => {
-    if (inputColumns && !inputColumn) {
+    if (inputColumns && !inputColumn && mapping) {
       if (inputColumns[0]) {
         dispatch(columnAdded({ ...inputColumns[0], pending: false }));
-      } else if (isSuccess && inputColumns.length === 0) {
-        dispatch(columnAdded({ id: uuid(), input: input.id, pending: true }));
+      } else if (isSuccess && inputColumns.length === 0 && mapping) {
+        dispatch(
+          columnAdded({
+            id: uuid(),
+            input: input.id,
+            pending: true,
+            table: mapping.primary_key_table,
+            owner: mapping.primary_key_owner,
+          })
+        );
       }
     }
-  }, [inputColumns, dispatch, inputColumn, input.id, isSuccess]);
+  }, [inputColumns, dispatch, inputColumn, input.id, isSuccess, mapping]);
 
   const handleDeleteInput = async () => {
     try {
@@ -137,6 +160,10 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
       console.error(error);
     }
   };
+
+  if (mappingLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Grid item container alignItems="center" direction="row" spacing={1}>
