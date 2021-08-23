@@ -91,28 +91,6 @@ def test_can_import_mapping_several_times(api_client, export_data):
 
 
 @pytest.mark.as_user
-def test_retrieve_full_source(
-    snapshot,
-    reset_factories_sequences,
-    api_client,
-    source,
-    credential,
-    resource,
-    attribute,
-    input_group,
-    input,
-    column,
-    condition,
-):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    response = api_client.get(url, {"full": True})
-
-    assert response.status_code == 200
-    assert response.json() == snapshot
-
-
-@pytest.mark.as_user
 def test_list_sources(api_client, user, other_user, source_factory):
     url = reverse("sources-list")
 

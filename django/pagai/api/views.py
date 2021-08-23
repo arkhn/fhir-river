@@ -1,16 +1,16 @@
-from rest_framework import status, views
+from rest_framework import generics, status, views
 from rest_framework.response import Response
 
-from pagai.api.serializers import CredentialsSerializer, ExplorationSerializer
+from drf_spectacular.utils import extend_schema
+from pagai.api import serializers
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
-from river.common.mapping.fetch_mapping import fetch_resource_with_filters
 
 
 class OwnersListView(views.APIView):
     def post(self, request):
-        serializer = CredentialsSerializer(data=request.data)
+        serializer = serializers.CredentialsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         credentials = serializer.validated_data
 
@@ -26,7 +26,7 @@ class OwnersListView(views.APIView):
 
 class OwnerSchemaView(views.APIView):
     def post(self, request, owner):
-        serializer = CredentialsSerializer(data=request.data)
+        serializer = serializers.CredentialsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         credentials = serializer.validated_data
 
@@ -40,28 +40,28 @@ class OwnerSchemaView(views.APIView):
         return Response(db_schema, status=status.HTTP_200_OK)
 
 
-class ExploreView(views.APIView):
-    def get_serializer_class(self):
-        return ExplorationSerializer
+@extend_schema(
+    request=serializers.ExplorationRequestSerializer, responses={"200": serializers.ExplorationResponseSerializer}
+)
+class ExploreView(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.ExplorationRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        headers = self.get_success_headers(serializer.data)
 
-    def get(self, request, resource_id, owner, table):
+        data = serializer.validated_data
         limit = int(request.GET.get("first", 10))
 
-        # Get authorization header
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
-
-        resource_mapping = fetch_resource_with_filters(resource_id, authorization_header)
-
         analyzer = Analyzer()
-        analysis = analyzer.analyze(resource_mapping)
+        analysis = analyzer.analyze(data["mapping"])
 
         credentials = analysis.source_credentials
 
         try:
             db_connection = DBConnection(credentials)
             explorer = DatabaseExplorer(db_connection)
-            exploration = explorer.explore(owner, table, limit=limit, filters=analysis.filters)
+            exploration = explorer.explore(data["owner"], data["table"], limit=limit, filters=analysis.filters)
         except Exception as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR, headers=headers)
 
-        return Response(exploration, status=status.HTTP_200_OK)
+        return Response(exploration, status=status.HTTP_200_OK, headers=headers)

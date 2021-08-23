@@ -21,12 +21,21 @@ const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(4),
   },
+  loader: {
+    display: "flex",
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 }));
 
 const FhirAttributePanel = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { attributeId } = useParams<{ attributeId?: string }>();
+  const { attributeId } = useParams<{
+    attributeId?: string;
+  }>();
   const {
     data: attribute,
     isError,
@@ -40,6 +49,7 @@ const FhirAttributePanel = (): JSX.Element => {
     { attribute: attribute?.id ?? "" },
     { skip: !attribute }
   );
+
   const [createInputGroup] = useApiInputGroupsCreateMutation();
 
   const handleCreateInputGroup = async () => {
@@ -57,7 +67,11 @@ const FhirAttributePanel = (): JSX.Element => {
   };
 
   if (isFetching) {
-    return <CircularProgress />;
+    return (
+      <div className={classes.loader}>
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (
@@ -66,10 +80,11 @@ const FhirAttributePanel = (): JSX.Element => {
         <div className={classes.container}>
           <Grid container spacing={4} direction="column">
             {attributeInputGroups &&
-              attributeInputGroups.map((inputGroup) => (
+              attributeInputGroups.map((inputGroup, index) => (
                 <AttributeInputGroup
                   key={inputGroup.id}
                   inputGroup={inputGroup}
+                  isConditionRequired={index > 0}
                 />
               ))}
           </Grid>

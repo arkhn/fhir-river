@@ -2,12 +2,11 @@ from rest_framework import filters, generics, pagination, response, status, view
 from rest_framework.decorators import action
 
 from common.scripts import ScriptsRepository
+from drf_spectacular.utils import extend_schema
 from river import models
 from river.adapters.event_publisher import KafkaEventPublisher
-from river.adapters.mappings import RedisMappingsRepository
-from river.adapters.pyrog_client import APIPyrogClient
 from river.adapters.topics import KafkaTopicsManager
-from river.api import serializers
+from river.api.serializers import serializers
 from river.services import abort, batch, preview
 
 
@@ -23,16 +22,13 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         batch_instance = serializer.save()
 
-        data = serializer.validated_data
-        resource_ids = data["resources"]
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
-
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
-        pyrog_client = APIPyrogClient(authorization_header)
-        mappings_repo = RedisMappingsRepository()
 
-        batch(batch_instance, resource_ids, topics_manager, event_publisher, pyrog_client, mappings_repo)
+        data = serializer.validated_data
+        resources = data["mappings"]["resources"]
+
+        batch(batch_instance.id, resources, topics_manager, event_publisher)
 
         headers = self.get_success_headers(serializer.data)
         return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -50,25 +46,20 @@ class BatchViewSet(viewsets.ModelViewSet):
         raise NotImplementedError
 
 
-class PreviewEndpoint(generics.CreateAPIView):
-    serializer_class = serializers.PreviewSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = serializers.PreviewSerializer(data=request.data)
+@extend_schema(request=serializers.PreviewRequestSerializer, responses={"200": serializers.PreviewResponseSerializer})
+class PreviewEndpoint(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.PreviewRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
-        resource_id = data["resource_id"]
         primary_key_values = data["primary_key_values"]
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        pyrog_client = APIPyrogClient(authorization_header)
-
-        documents, errors = preview(resource_id, primary_key_values, pyrog_client)
+        documents, errors = preview(data["mapping"], primary_key_values)
 
         return response.Response(
-            {"instances": documents, "errors": errors}, status=status.HTTP_201_CREATED, headers=headers
+            {"instances": documents, "errors": errors}, status=status.HTTP_200_OK, headers=headers
         )
 
 

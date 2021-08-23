@@ -8,8 +8,10 @@ import {
   IconButton,
   makeStyles,
   TextField,
+  CircularProgress,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
@@ -33,6 +35,7 @@ import {
   useApiConditionsCreateMutation,
   useApiConditionsDestroyMutation,
   useApiConditionsUpdateMutation,
+  useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 import {
   ColumnRequest,
@@ -94,11 +97,19 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
   const [deleteCondition] = useApiConditionsDestroyMutation();
   const [createColumn] = useApiColumnsCreateMutation();
   const [updateColumn] = useApiColumnsUpdateMutation();
+  const { mappingId } = useParams<{ mappingId?: string }>();
   const { data: apiConditionColumn } = useApiColumnsRetrieveQuery(
     {
       id: condition.column ?? "",
     },
     { skip: !condition.column }
+  );
+  const {
+    data: mapping,
+    isLoading: mappingLoading,
+  } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !mappingId }
   );
   const conditionColumn = useAppSelector((state) =>
     columnSelectors
@@ -112,9 +123,16 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
     if (!conditionColumn) {
       if (apiConditionColumn) {
         dispatch(columnAdded({ ...apiConditionColumn, pending: false }));
-      } else if (!condition.column) {
+      } else if (!condition.column && mapping) {
         const pendingColumnId = uuid();
-        dispatch(columnAdded({ id: pendingColumnId, pending: true }));
+        dispatch(
+          columnAdded({
+            id: pendingColumnId,
+            pending: true,
+            table: mapping.primary_key_table,
+            owner: mapping.primary_key_owner,
+          })
+        );
         condition.id &&
           dispatch(
             conditionUpdated({
@@ -124,7 +142,7 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
           );
       }
     }
-  }, [apiConditionColumn, conditionColumn, dispatch, condition]);
+  }, [apiConditionColumn, conditionColumn, dispatch, condition, mapping]);
 
   useEffect(() => {
     const createOrUpdateCondition = async () => {
@@ -233,6 +251,10 @@ const Condition = ({ condition }: ConditionProps): JSX.Element => {
         })
       );
   };
+
+  if (mappingLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <Grid

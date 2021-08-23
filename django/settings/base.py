@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd parties
+    "drf_spectacular",
     "rest_framework",
     "corsheaders",
     "django_filters",
@@ -249,8 +250,8 @@ KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_PO
 
 # API URLs
 
-PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
-FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
+PYROG_API_URL = os.environ.get("PYROG_API_URL", "http://pyrog-server:1000")
+FHIR_API_URL = os.environ.get("FHIR_API_URL", "http://fhir-api:2000")
 
 # Prometheus
 
@@ -301,9 +302,7 @@ if SENTRY_ENABLED:
 
 # DRF Spectacular settings
 
-if get_env_bool_value("DRF_SPECTACULAR_ENABLED", False):
-    INSTALLED_APPS += ["drf_spectacular"]
-    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
 SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [

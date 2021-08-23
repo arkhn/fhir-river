@@ -44,7 +44,7 @@ class CleaningScript(Script):
         try:
             return [self.func(val) for val in data_column]
         except Exception as e:
-            logger.exception(f"{self.script.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
+            logger.exception(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
             return data_column
 
 

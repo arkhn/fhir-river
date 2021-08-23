@@ -50,9 +50,17 @@ const UploadSourceButton = (): JSX.Element => {
           updated_at,
           users,
         } = await apiSourceImportCreate({
-          mappingRequest: parsedContent,
+          mappingModelRequest: parsedContent,
         }).unwrap();
-        dispatch(sourceEdited({ created_at, id, name, updated_at, users }));
+        dispatch(
+          sourceEdited({
+            created_at,
+            id,
+            name,
+            updated_at,
+            users: users?.map(({ id }) => id) || [],
+          })
+        );
       } catch (error) {
         // TODO: Handle errors nicely
         console.error(error);
