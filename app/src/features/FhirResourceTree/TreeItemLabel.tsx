@@ -163,21 +163,19 @@ const TreeItemLabel = ({
         </Tooltip>
       )}
       {isArrayItem && (
-        <>
-          <Tooltip
-            title={t<string>(
-              elementNode.sliceName ? "deleteSlice" : "deleteItem"
-            )}
-            arrow
-          >
-            <div>
-              <IconButton
-                icon={IconNames.TRASH}
-                onClick={handleDeleteItemClick}
-              />
-            </div>
-          </Tooltip>
-        </>
+        <Tooltip
+          title={t<string>(
+            elementNode.sliceName ? "deleteSlice" : "deleteItem"
+          )}
+          arrow
+        >
+          <div>
+            <IconButton
+              icon={IconNames.TRASH}
+              onClick={handleDeleteItemClick}
+            />
+          </div>
+        </Tooltip>
       )}
       {elementNode.isArray && elementNode.type !== "Extension" && (
         <>

@@ -12,8 +12,7 @@ const useStyles = makeStyles((theme) => ({
   badgeContainer: {
     display: "flex",
     alignItems: "center",
-    paddingInlineEnd: theme.spacing(1.2),
-    paddingInlineStart: theme.spacing(0.5),
+    paddingInline: theme.spacing(0.5, 1.2),
   },
   badge: {
     height: theme.spacing(1),
