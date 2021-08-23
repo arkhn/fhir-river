@@ -80,7 +80,7 @@ class PreviewEndpoint(generics.GenericAPIView):
 
         primary_key_values = data["primary_key_values"]
 
-        documents, errors = preview(mappings, primary_key_values)
+        documents, errors = preview(mappings, resource_id, primary_key_values)
 
         return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
