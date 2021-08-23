@@ -46,8 +46,8 @@ def retry(batch: models.Batch) -> None:
     pass
 
 
-def preview(mapping: dict, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = as_old_mapping(Source(**mapping), mapping["resources"][0]["id"])
+def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
+    resource_mapping = as_old_mapping(Source(**mapping), resource_id)
 
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_mapping)
