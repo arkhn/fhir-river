@@ -44,6 +44,7 @@ import StaticInput from "./StaticInput";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
+  isConditionRequired: boolean;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -80,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AttributeInputGroup = ({
   inputGroup,
+  isConditionRequired,
 }: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -113,6 +115,16 @@ const AttributeInputGroup = ({
         conditions,
         (condition) => condition.id
       );
+      if (conditions.length === 0 && isConditionRequired) {
+        dispatch(
+          conditionAdded({
+            id: uuid(),
+            action: "INCLUDE",
+            input_group: inputGroup.id,
+            pending: true,
+          })
+        );
+      }
       if (conditionDiff.length > 0) {
         dispatch(
           conditionsAdded(
@@ -121,7 +133,15 @@ const AttributeInputGroup = ({
         );
       }
     }
-  }, [apiConditions, conditions, dispatch, isError, isFetching]);
+  }, [
+    apiConditions,
+    conditions,
+    dispatch,
+    isError,
+    isFetching,
+    isConditionRequired,
+    inputGroup,
+  ]);
 
   useEffect(() => {
     if (inputs && inputs.length <= 1 && inputGroup.merging_script !== "") {

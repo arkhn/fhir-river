@@ -52,15 +52,15 @@ const source_resources = resourceFactory.buildList(
 const source_attributes = [
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0].id } }
+    { associations: { resource: source_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0].id } }
+    { associations: { resource: source_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[1].id } }
+    { associations: { resource: source_resources[1]?.id } }
   ),
 ];
 

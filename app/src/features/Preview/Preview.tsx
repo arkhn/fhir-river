@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -14,7 +14,6 @@ import {
   TableHead,
   TableBody,
   useMediaQuery,
-  CircularProgress,
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -24,12 +23,18 @@ import { useParams } from "react-router-dom";
 import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
 import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
+import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
 import {
   useApiResourcesRetrieveQuery,
-  usePagaiExploreRetrieveQuery,
+  usePagaiExploreCreateMutation,
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
+  useApiCredentialsListQuery,
 } from "services/api/endpoints";
+import {
+  useApiSourcesExportRetrieveQuery,
+  ExplorationResponse,
+} from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -101,9 +106,16 @@ const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const { mappingId } = useParams<{
+  const { sourceId, mappingId } = useParams<{
+    sourceId?: string;
     mappingId?: string;
   }>();
+
+  const [previewIndex, setPreviewIndex] = useState<number>(0);
+
+  const [exploration, setExploration] = useState<
+    ExplorationResponse | undefined
+  >(undefined);
 
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const handleAlertClose = () => setAlert(undefined);
@@ -111,6 +123,42 @@ const Preview = (): JSX.Element => {
   const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
     undefined
   );
+
+  const { data: credentials } = useApiCredentialsListQuery({
+    source: sourceId,
+  });
+  const credential = credentials?.[0];
+
+  const {
+    mappings,
+    refetch: refetchMappings,
+    isMappingsFetching,
+  } = useApiSourcesExportRetrieveQuery(
+    { id: sourceId ?? "" },
+    {
+      skip: !sourceId,
+      selectFromResult: ({ data: mappings, isFetching }) => {
+        const resource = mappings?.resources?.find(
+          ({ id }) => id === mappingId
+        );
+        return {
+          mappings: mappings &&
+            credential && {
+              ...mappings,
+              credential: {
+                ...mappings.credential,
+                login: credential.login,
+                password: credential.password,
+              },
+              resources: resource && [resource],
+            },
+          isMappingsFetching: isFetching,
+        };
+      },
+    }
+  );
+
+  const mappingsWithConceptMaps = useMergeConceptMapsToMappings({ mappings });
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
@@ -124,40 +172,75 @@ const Preview = (): JSX.Element => {
     { skip: !mapping }
   );
 
-  const {
-    data: exploration,
-    isLoading: isExplorationLoading,
-  } = usePagaiExploreRetrieveQuery(
-    {
-      resourceId: mapping?.id ?? "",
-      owner: owner?.name ?? "",
-      table: mapping?.primary_key_table ?? "",
-    },
-    { skip: !mapping || !owner }
-  );
+  const [pagaiExploreCreate] = usePagaiExploreCreateMutation();
+
+  useEffect(() => {
+    if (mappingsWithConceptMaps && mapping && owner) {
+      const explore = async () => {
+        try {
+          const exploration = await pagaiExploreCreate({
+            explorationRequestRequest: {
+              resource_id: mapping?.id ?? "",
+              owner: owner?.name ?? "",
+              table: mapping?.primary_key_table ?? "",
+              mapping: mappingsWithConceptMaps,
+            },
+          }).unwrap();
+          setExploration(exploration);
+        } catch (e) {
+          setAlert(e.message);
+        }
+      };
+      explore();
+    }
+  }, [mapping, mappingsWithConceptMaps, owner, pagaiExploreCreate]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
-    const primaryKey = mapping?.primary_key_table;
-    if (exploration && primaryKey && mapping) {
-      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
-      const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
-      try {
-        const previewResult = await apiPreviewCreate({
-          previewRequest: {
-            resource_id: mapping?.id,
-            primary_key_values: [primaryKeyValue ?? ""],
-          },
-        }).unwrap();
-        setPreview(previewResult);
-      } catch (e) {
-        setAlert(e.message);
-      }
-    }
+    refetchMappings();
+    setPreviewIndex(index);
   };
 
-  if (isExplorationLoading) return <CircularProgress />;
+  useEffect(() => {
+    if (
+      previewIndex > 0 &&
+      !isMappingsFetching &&
+      exploration &&
+      mapping?.primary_key_table
+    ) {
+      const primaryKey = mapping?.primary_key_table;
+      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
+      const primaryKeyValue = exploration.rows[previewIndex]?.[primaryKeyIndex];
+
+      if (mappingsWithConceptMaps) {
+        const previewCreate = async () => {
+          try {
+            const previewResult = await apiPreviewCreate({
+              previewRequestRequest: {
+                mapping: mappingsWithConceptMaps,
+                primary_key_values: [primaryKeyValue ?? ""],
+              },
+            }).unwrap();
+            setPreview(previewResult);
+            setPreviewIndex(0);
+          } catch (e) {
+            setAlert(e.message);
+          }
+        };
+        previewCreate();
+      }
+    }
+  }, [
+    apiPreviewCreate,
+    exploration,
+    isMappingsFetching,
+    mapping,
+    mappings,
+    mappingsWithConceptMaps,
+    previewIndex,
+  ]);
+
   return (
     <>
       <MappingHeader />

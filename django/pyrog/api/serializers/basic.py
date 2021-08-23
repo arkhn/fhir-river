@@ -3,6 +3,7 @@ from typing import List
 from rest_framework import serializers
 
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.errors import ExplorationError
 from pyrog import models
 from river.common.database_connection.db_connection import DBConnection
 
@@ -59,10 +60,10 @@ class OwnerSerializer(serializers.ModelSerializer):
             explorer = DatabaseExplorer(db_connection)
             name = data["name"] if "name" in data else self.instance.name
             data["schema"] = explorer.get_owner_schema(name)
+        except ExplorationError as e:
+            raise serializers.ValidationError({"name": str(e)})
         except Exception as e:
             raise serializers.ValidationError(e)
-        if not data["schema"]:
-            raise serializers.ValidationError({"name": [f"{name} schema is empty or does not exist"]})
         return data
 
 

@@ -1,0 +1,452 @@
+{
+    "source": {
+        "id": "ckjl9h9ha1725464ocjkqdff4c",
+        "name": "mimic-small-testMapping",
+        "credential": {
+            "owners": [
+                {
+                    "id": "f7c65226-84ce-4c03-b349-9b912aeb271c",
+                    "name": "public",
+                    "schema": "{\"admissions\":[\"subject_id\",\"hospital_expire_flag\",\"marital_status\",\"has_chartevents_data\",\"admittime\",\"edouttime\",\"ethnicity\",\"hadm_id\",\"insurance\",\"admission_location\",\"admission_type\",\"language\",\"religion\",\"dischtime\",\"row_id\",\"discharge_location\",\"diagnosis\",\"edregtime\",\"deathtime\"],\"callout\":[\"row_id\",\"outcometime\",\"callout_service\",\"submit_careunit\",\"updatetime\",\"request_resp\",\"request_cdiff\",\"curr_wardid\",\"callout_status\",\"acknowledgetime\",\"discharge_wardid\",\"callout_outcome\",\"submit_wardid\",\"hadm_id\",\"request_vre\",\"request_mrsa\",\"createtime\",\"acknowledge_status\",\"subject_id\",\"firstreservationtime\",\"curr_careunit\",\"callout_wardid\",\"currentreservationtime\",\"request_tele\"],\"caregivers\":[\"description\",\"label\",\"cgid\",\"row_id\"],\"chartevents\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_1\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_10\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\"],\"chartevents_100\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_101\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_102\":[\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_103\":[\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_104\":[\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_105\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_106\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_107\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_108\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_109\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_11\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\"],\"chartevents_110\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_111\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_112\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_113\":[\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_114\":[\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_115\":[\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_116\":[\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_117\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_118\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_119\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_12\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_120\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_121\":[\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_122\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_123\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_124\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_125\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_126\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_127\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_128\":[\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_129\":[\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_13\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_130\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_131\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_132\":[\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_133\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_134\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_135\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_136\":[\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_137\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_138\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_139\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_14\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_140\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_141\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\"],\"chartevents_142\":[\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_143\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_144\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_145\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_146\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\"],\"chartevents_147\":[\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_148\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_149\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_15\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_150\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_151\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\"],\"chartevents_152\":[\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_153\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_154\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_155\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_156\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_157\":[\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_158\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_159\":[\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_16\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_160\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_161\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_162\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_163\":[\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_164\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\"],\"chartevents_165\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_166\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_167\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_168\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_169\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_17\":[\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_170\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_171\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_172\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_173\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_174\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_175\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_176\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_177\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_178\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_179\":[\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_18\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_180\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_181\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_182\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_183\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_184\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_185\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\"],\"chartevents_186\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_187\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_188\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_189\":[\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_19\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_190\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_191\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\"],\"chartevents_192\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_193\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_194\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_195\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_196\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_197\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_198\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_199\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_2\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_20\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_200\":[\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_201\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\"],\"chartevents_202\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\"],\"chartevents_203\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_204\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_205\":[\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_206\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_207\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\"],\"chartevents_21\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_22\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_23\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_24\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_25\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\"],\"chartevents_26\":[\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_27\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_28\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_29\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_3\":[\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_30\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_31\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_32\":[\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_33\":[\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_34\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_35\":[\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_36\":[\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_37\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_38\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_39\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\"],\"chartevents_4\":[\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_40\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_41\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\"],\"chartevents_42\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_43\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_44\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_45\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_46\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_47\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_48\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_49\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_5\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\"],\"chartevents_50\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\",\"charttime\",\"stopped\"],\"chartevents_51\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_52\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_53\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\"],\"chartevents_54\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_55\":[\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_56\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_57\":[\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"stopped\",\"charttime\"],\"chartevents_58\":[\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_59\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_6\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_60\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_61\":[\"storetime\",\"cgid\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_62\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_63\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\"],\"chartevents_64\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\"],\"chartevents_65\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\"],\"chartevents_66\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_67\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_68\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_69\":[\"icustay_id\",\"hadm_id\",\"resultstatus\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_7\":[\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\"],\"chartevents_70\":[\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\",\"row_id\",\"value\",\"valueuom\",\"warning\",\"itemid\",\"charttime\",\"stopped\"],\"chartevents_71\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_72\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_73\":[\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\"],\"chartevents_74\":[\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"warning\",\"valueuom\"],\"chartevents_75\":[\"cgid\",\"storetime\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\"],\"chartevents_76\":[\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_77\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_78\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_79\":[\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_8\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"error\",\"subject_id\"],\"chartevents_80\":[\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_81\":[\"itemid\",\"warning\",\"valueuom\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_82\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"stopped\",\"charttime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\"],\"chartevents_83\":[\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_84\":[\"stopped\",\"charttime\",\"itemid\",\"valueuom\",\"warning\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_85\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\"],\"chartevents_86\":[\"stopped\",\"charttime\",\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"valuenum\",\"storetime\",\"cgid\",\"error\",\"subject_id\",\"resultstatus\",\"hadm_id\",\"icustay_id\"],\"chartevents_87\":[\"charttime\",\"stopped\",\"value\",\"row_id\",\"valueuom\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"error\"],\"chartevents_88\":[\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"cgid\",\"storetime\",\"valuenum\"],\"chartevents_89\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"resultstatus\",\"hadm_id\"],\"chartevents_9\":[\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\",\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_90\":[\"cgid\",\"storetime\",\"valuenum\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"subject_id\",\"error\",\"charttime\",\"stopped\",\"row_id\",\"value\",\"warning\",\"valueuom\",\"itemid\"],\"chartevents_91\":[\"warning\",\"valueuom\",\"itemid\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_92\":[\"itemid\",\"warning\",\"valueuom\",\"value\",\"row_id\",\"stopped\",\"charttime\",\"error\",\"subject_id\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"valuenum\",\"storetime\",\"cgid\"],\"chartevents_93\":[\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"charttime\",\"stopped\",\"icustay_id\",\"resultstatus\",\"hadm_id\",\"error\",\"subject_id\",\"storetime\",\"cgid\",\"valuenum\"],\"chartevents_94\":[\"warning\",\"valueuom\",\"itemid\",\"row_id\",\"value\",\"stopped\",\"charttime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"cgid\",\"storetime\"],\"chartevents_95\":[\"charttime\",\"stopped\",\"row_id\",\"value\",\"itemid\",\"valueuom\",\"warning\",\"storetime\",\"cgid\",\"valuenum\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"error\",\"subject_id\"],\"chartevents_96\":[\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"hadm_id\",\"resultstatus\",\"icustay_id\",\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"value\",\"row_id\"],\"chartevents_97\":[\"error\",\"subject_id\",\"icustay_id\",\"hadm_id\",\"resultstatus\",\"valuenum\",\"storetime\",\"cgid\",\"itemid\",\"valueuom\",\"warning\",\"row_id\",\"value\",\"stopped\",\"charttime\"],\"chartevents_98\":[\"stopped\",\"charttime\",\"valueuom\",\"warning\",\"itemid\",\"row_id\",\"value\",\"valuenum\",\"cgid\",\"storetime\",\"subject_id\",\"error\",\"icustay_id\",\"hadm_id\",\"resultstatus\"],\"chartevents_99\":[\"storetime\",\"cgid\",\"valuenum\",\"resultstatus\",\"hadm_id\",\"icustay_id\",\"error\",\"subject_id\",\"charttime\",\"stopped\",\"value\",\"row_id\",\"itemid\",\"valueuom\",\"warning\"],\"cptevents\":[\"cpt_cd\",\"subsectionheader\",\"description\",\"chartdate\",\"row_id\",\"ticket_id_seq\",\"sectionheader\",\"cpt_suffix\",\"cpt_number\",\"subject_id\",\"costcenter\",\"hadm_id\"],\"d_cpt\":[\"sectionheader\",\"sectionrange\",\"category\",\"mincodeinsubsection\",\"codesuffix\",\"row_id\",\"maxcodeinsubsection\",\"subsectionrange\",\"subsectionheader\"],\"d_icd_diagnoses\":[\"short_title\",\"long_title\",\"icd9_code\",\"row_id\"],\"d_icd_procedures\":[\"row_id\",\"icd9_code\",\"long_title\",\"short_title\"],\"d_items\":[\"dbsource\",\"row_id\",\"param_type\",\"linksto\",\"itemid\",\"abbreviation\",\"label\",\"conceptid\",\"unitname\",\"category\"],\"d_labitems\":[\"label\",\"fluid\",\"itemid\",\"loinc_code\",\"row_id\",\"category\"],\"datetimeevents\":[\"charttime\",\"row_id\",\"value\",\"error\",\"warning\",\"itemid\",\"cgid\",\"storetime\",\"valueuom\",\"icustay_id\",\"hadm_id\",\"stopped\",\"subject_id\",\"resultstatus\"],\"diagnoses_icd\":[\"icd9_code\",\"row_id\",\"subject_id\",\"hadm_id\",\"seq_num\"],\"drgcodes\":[\"hadm_id\",\"drg_type\",\"subject_id\",\"drg_mortality\",\"drg_severity\",\"row_id\",\"drg_code\",\"description\"],\"icustays\":[\"last_careunit\",\"first_wardid\",\"intime\",\"hadm_id\",\"icustay_id\",\"subject_id\",\"first_careunit\",\"last_wardid\",\"row_id\",\"dbsource\",\"los\",\"outtime\"],\"inputevents_cv\":[\"row_id\",\"originalsite\",\"rate\",\"charttime\",\"originalrate\",\"cgid\",\"storetime\",\"itemid\",\"originalrateuom\",\"stopped\",\"originalamount\",\"newbottle\",\"icustay_id\",\"hadm_id\",\"linkorderid\",\"orderid\",\"originalroute\",\"originalamountuom\",\"subject_id\",\"amount\",\"amountuom\",\"rateuom\"],\"inputevents_mv\":[\"endtime\",\"secondaryordercategoryname\",\"cancelreason\",\"statusdescription\",\"totalamount\",\"linkorderid\",\"amountuom\",\"row_id\",\"totalamountuom\",\"storetime\",\"rateuom\",\"originalrate\",\"comments_editedby\",\"patientweight\",\"starttime\",\"comments_date\",\"amount\",\"comments_canceledby\",\"originalamount\",\"itemid\",\"isopenbag\",\"rate\",\"continueinnextdept\",\"hadm_id\",\"orderid\",\"ordercategoryname\",\"icustay_id\",\"ordercomponenttypedescription\",\"subject_id\",\"ordercategorydescription\",\"cgid\"],\"labevents\":[\"subject_id\",\"itemid\",\"hadm_id\",\"valuenum\",\"valueuom\",\"charttime\",\"row_id\",\"flag\",\"value\"],\"microbiologyevents\":[\"subject_id\",\"dilution_text\",\"hadm_id\",\"dilution_comparison\",\"interpretation\",\"chartdate\",\"isolate_num\",\"org_itemid\",\"spec_type_desc\",\"ab_name\",\"ab_itemid\",\"charttime\",\"org_name\",\"row_id\",\"dilution_value\",\"spec_itemid\"],\"noteevents\":[\"chartdate\",\"hadm_id\",\"subject_id\",\"description\",\"category\",\"iserror\",\"row_id\",\"cgid\",\"text\",\"charttime\",\"storetime\"],\"outputevents\":[\"charttime\",\"stopped\",\"newbottle\",\"storetime\",\"row_id\",\"itemid\",\"iserror\",\"subject_id\",\"hadm_id\",\"icustay_id\",\"cgid\",\"value\",\"valueuom\"],\"patients\":[\"dod\",\"row_id\",\"dod_hosp\",\"subject_id\",\"gender\",\"dob\",\"expire_flag\",\"dod_ssn\"],\"prescriptions\":[\"enddate\",\"form_val_disp\",\"dose_val_rx\",\"row_id\",\"drug_name_poe\",\"gsn\",\"formulary_drug_cd\",\"startdate\",\"drug\",\"drug_type\",\"drug_name_generic\",\"icustay_id\",\"dose_unit_rx\",\"prod_strength\",\"hadm_id\",\"subject_id\",\"form_unit_disp\",\"ndc\",\"route\"],\"procedureevents_mv\":[\"endtime\",\"secondaryordercategoryname\",\"comments_date\",\"cancelreason\",\"linkorderid\",\"valueuom\",\"row_id\",\"statusdescription\",\"storetime\",\"locationcategory\",\"continueinnextdept\",\"starttime\",\"value\",\"itemid\",\"comments_editedby\",\"location\",\"comments_canceledby\",\"orderid\",\"hadm_id\",\"icustay_id\",\"ordercategoryname\",\"subject_id\",\"ordercategorydescription\",\"isopenbag\",\"cgid\"],\"procedures_icd\":[\"subject_id\",\"seq_num\",\"hadm_id\",\"icd9_code\",\"row_id\"],\"services\":[\"subject_id\",\"transfertime\",\"hadm_id\",\"curr_service\",\"prev_service\",\"row_id\"],\"transfers\":[\"eventtype\",\"row_id\",\"prev_wardid\",\"dbsource\",\"intime\",\"outtime\",\"prev_careunit\",\"curr_careunit\",\"curr_wardid\",\"icustay_id\",\"hadm_id\",\"los\",\"subject_id\"]}",
+                    "credentialId": "ckjsu1nxd749874pl6u8xa50x"
+                }
+            ],
+            "model": "POSTGRES"
+        }
+    },
+    "template": {
+        "name": "mimic-small-testMapping"
+    },
+    "resources": [
+        {
+            "id": "ckjl9h9mj1803264ocso7hdzk7",
+            "sourceId": "ckjl9h9ha1725464ocjkqdff4c",
+            "createdAt": "2021-01-06T10:10:58.171Z",
+            "label": "feat_1_extension+Observation(microbio)Ref",
+            "primaryKeyOwnerId": "cf31cb40-03a1-4806-85e8-62aa04c1632a",
+            "primaryKeyColumn": "subject_id",
+            "primaryKeyTable": "patients",
+            "updatedAt": "2021-01-07T14:53:57.315Z",
+            "definitionId": "Patient",
+            "logicalReference": "b8efd322-3e38-4072-9c68-e62e15d84d04",
+            "source": {
+                "id": "ckjl9h9ha1725464ocjkqdff4c",
+                "name": "mimic-small-testMapping",
+                "templateId": "ckjl9h9b31725064ocun5gduu1",
+                "createdAt": "2021-01-06T10:10:57.982Z",
+                "updatedAt": "2021-01-06T10:10:57.983Z",
+                "version": null
+            },
+            "primaryKeyOwner": {
+                "name": "public",
+                "id": "cf31cb40-03a1-4806-85e8-62aa04c1632a"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ckjlb77ot2780864ocbl0of9mp",
+                    "resourceId": "ckjl9h9mj1803264ocso7hdzk7",
+                    "createdAt": "2021-01-06T10:59:08.333Z",
+                    "updatedAt": "2021-01-06T10:59:08.333Z",
+                    "path": "name[0].given[0]",
+                    "definitionId": "string",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": [
+                        {
+                            "id": "ckjlb77qh2782064oc6tsumkca",
+                            "mergingScript": null,
+                            "attributeId": "ckjlb77ot2780864ocbl0of9mp",
+                            "updatedAt": "2021-01-06T10:59:08.393Z",
+                            "createdAt": "2021-01-06T10:59:08.393Z",
+                            "inputs": [
+                                {
+                                    "id": "ckjlb78h02787764oce9wekqmi",
+                                    "createdAt": "2021-01-06T10:59:09.348Z",
+                                    "script": null,
+                                    "staticValue": "Jean",
+                                    "updatedAt": "2021-01-06T10:59:15.655Z",
+                                    "conceptMapId": null,
+                                    "inputGroupId": "ckjlb77qh2782064oc6tsumkca",
+                                    "sqlValue": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "id": "ckjlb77s32784664ocdp0mu7wh",
+                    "resourceId": "ckjl9h9mj1803264ocso7hdzk7",
+                    "createdAt": "2021-01-06T10:59:08.451Z",
+                    "updatedAt": "2021-01-06T10:59:08.452Z",
+                    "path": "name[0]",
+                    "definitionId": "HumanName",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": []
+                },
+                {
+                    "id": "ckjlb7gtq2793964oc80r8qxaf",
+                    "resourceId": "ckjl9h9mj1803264ocso7hdzk7",
+                    "createdAt": "2021-01-06T10:59:20.174Z",
+                    "updatedAt": "2021-01-06T10:59:20.174Z",
+                    "path": "name[0].given[1]",
+                    "definitionId": "string",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": [
+                        {
+                            "id": "ckjlb7gvs2795164ocm7q8j5eu",
+                            "mergingScript": null,
+                            "attributeId": "ckjlb7gtq2793964oc80r8qxaf",
+                            "updatedAt": "2021-01-06T10:59:20.249Z",
+                            "createdAt": "2021-01-06T10:59:20.248Z",
+                            "inputs": [
+                                {
+                                    "id": "ckjlb7hze2798864octxht4xfo",
+                                    "createdAt": "2021-01-06T10:59:21.674Z",
+                                    "script": null,
+                                    "staticValue": "Georges",
+                                    "updatedAt": "2021-01-06T10:59:24.805Z",
+                                    "conceptMapId": null,
+                                    "inputGroupId": "ckjlb7gvs2795164ocm7q8j5eu",
+                                    "sqlValue": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "id": "ckjmz1g4j3629264oc15dzj1og",
+                    "resourceId": "ckjl9h9mj1803264ocso7hdzk7",
+                    "createdAt": "2021-01-07T14:54:16.291Z",
+                    "updatedAt": "2021-01-07T14:54:16.291Z",
+                    "path": "identifier[0].system",
+                    "definitionId": "uri",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": [
+                        {
+                            "id": "ckjmz1g773630464oc1ipvh9ql",
+                            "mergingScript": null,
+                            "attributeId": "ckjmz1g4j3629264oc15dzj1og",
+                            "updatedAt": "2021-01-07T14:54:16.388Z",
+                            "createdAt": "2021-01-07T14:54:16.387Z",
+                            "inputs": [
+                                {
+                                    "id": "ckjmz1haa3636164ockzoaqksb",
+                                    "createdAt": "2021-01-07T14:54:17.793Z",
+                                    "script": null,
+                                    "staticValue": "http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04",
+                                    "updatedAt": "2021-01-07T14:54:18.841Z",
+                                    "conceptMapId": null,
+                                    "inputGroupId": "ckjmz1g773630464oc1ipvh9ql",
+                                    "sqlValue": null
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "id": "ckjmz1g9i3633064oc7mtofhip",
+                    "resourceId": "ckjl9h9mj1803264ocso7hdzk7",
+                    "createdAt": "2021-01-07T14:54:16.470Z",
+                    "updatedAt": "2021-01-07T14:54:16.470Z",
+                    "path": "identifier[0]",
+                    "definitionId": "Identifier",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": []
+                },
+                {
+                    "id": "ckjmz1mom3642364ocbaqvb4hp",
+                    "resourceId": "ckjl9h9mj1803264ocso7hdzk7",
+                    "createdAt": "2021-01-07T14:54:24.790Z",
+                    "updatedAt": "2021-01-07T14:54:24.791Z",
+                    "path": "identifier[0].value",
+                    "definitionId": "string",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": [
+                        {
+                            "id": "ckjmz1mqv3643564ocfkg0pwgg",
+                            "mergingScript": null,
+                            "attributeId": "ckjmz1mom3642364ocbaqvb4hp",
+                            "updatedAt": "2021-01-07T14:54:24.872Z",
+                            "createdAt": "2021-01-07T14:54:24.871Z",
+                            "inputs": [
+                                {
+                                    "id": "ckjmz1nt33647264oc9fzva6ns",
+                                    "createdAt": "2021-01-07T14:54:26.247Z",
+                                    "script": null,
+                                    "staticValue": null,
+                                    "updatedAt": "2021-01-07T14:54:26.248Z",
+                                    "conceptMapId": null,
+                                    "inputGroupId": "ckjmz1mqv3643564ocfkg0pwgg",
+                                    "sqlValue": {
+                                        "id": "ckjmz1nt33647364ocscq54anv",
+                                        "column": "subject_id",
+                                        "table": "patients",
+                                        "inputId": "ckjmz1nt33647264oc9fzva6ns",
+                                        "ownerId": "cf31cb40-03a1-4806-85e8-62aa04c1632a",
+                                        "joinId": null,
+                                        "createdAt": "2021-01-07T14:54:26.247Z",
+                                        "updatedAt": "2021-01-07T14:54:46.192Z",
+                                        "joins": [],
+                                        "owner": {
+                                            "name": "public",
+                                            "id": "cf31cb40-03a1-4806-85e8-62aa04c1632a"
+                                        }
+                                    }
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                }
+            ],
+            "definition": {
+                "id": "Patient",
+                "url": "http://hl7.org/fhir/StructureDefinition/Patient",
+                "name": "Patient",
+                "type": "Patient",
+                "description": "Demographics and other administrative information about an individual or animal receiving care or other health-related services.",
+                "kind": "resource",
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "publisher": "Health Level Seven International (Patient Administration)",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "key": "dom-2",
+                        "severity": "error",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "expression": "contained.contained.empty()",
+                        "xpath": "not(parent::f:contained and f:contained)",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "key": "dom-3",
+                        "severity": "error",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "key": "dom-4",
+                        "severity": "error",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "key": "dom-5",
+                        "severity": "error",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "expression": "contained.meta.security.empty()",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "human": "A resource should have narrative for robust management",
+                        "expression": "text.`div`.exists()",
+                        "xpath": "exists(f:text/h:div)",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "ckjlaz5gc2731264oczma2ha5n",
+            "sourceId": "ckjl9h9ha1725464ocjkqdff4c",
+            "createdAt": "2021-01-06T10:52:52.188Z",
+            "label": "feat_10_merge_concat(photo.title)",
+            "primaryKeyOwnerId": "cf31cb40-03a1-4806-85e8-62aa04c1632a",
+            "primaryKeyColumn": "subject_id",
+            "primaryKeyTable": "patients",
+            "updatedAt": "2021-01-06T10:53:18.140Z",
+            "definitionId": "Patient",
+            "logicalReference": "7b421f8c-0b62-46f3-96fb-8f182119d8a3",
+            "source": {
+                "id": "ckjl9h9ha1725464ocjkqdff4c",
+                "name": "mimic-small-testMapping",
+                "templateId": "ckjl9h9b31725064ocun5gduu1",
+                "createdAt": "2021-01-06T10:10:57.982Z",
+                "updatedAt": "2021-01-06T10:10:57.983Z",
+                "version": null
+            },
+            "primaryKeyOwner": {
+                "name": "public",
+                "id": "cf31cb40-03a1-4806-85e8-62aa04c1632a"
+            },
+            "filters": [],
+            "attributes": [
+                {
+                    "id": "ckjlazu5e2739164oc6rz2bza7",
+                    "resourceId": "ckjlaz5gc2731264oczma2ha5n",
+                    "createdAt": "2021-01-06T10:53:24.194Z",
+                    "updatedAt": "2021-01-06T10:53:24.195Z",
+                    "path": "photo[0].title",
+                    "definitionId": "string",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": [
+                        {
+                            "id": "ckjlazu6z2740364ocep9pozvx",
+                            "mergingScript": "merge_concat",
+                            "attributeId": "ckjlazu5e2739164oc6rz2bza7",
+                            "updatedAt": "2021-01-06T10:53:54.149Z",
+                            "createdAt": "2021-01-06T10:53:24.251Z",
+                            "inputs": [
+                                {
+                                    "id": "ckjlazx7d2746064ocjdp9cm3o",
+                                    "createdAt": "2021-01-06T10:53:28.153Z",
+                                    "script": null,
+                                    "staticValue": null,
+                                    "updatedAt": "2021-01-06T10:53:28.154Z",
+                                    "conceptMapId": null,
+                                    "inputGroupId": "ckjlazu6z2740364ocep9pozvx",
+                                    "sqlValue": {
+                                        "id": "ckjlazx7d2746164ocelxx7j7p",
+                                        "column": "subject_id",
+                                        "table": "patients",
+                                        "inputId": "ckjlazx7d2746064ocjdp9cm3o",
+                                        "ownerId": "cf31cb40-03a1-4806-85e8-62aa04c1632a",
+                                        "joinId": null,
+                                        "createdAt": "2021-01-06T10:53:28.153Z",
+                                        "updatedAt": "2021-01-06T10:53:51.188Z",
+                                        "joins": [],
+                                        "owner": {
+                                            "name": "public",
+                                            "id": "cf31cb40-03a1-4806-85e8-62aa04c1632a"
+                                        }
+                                    }
+                                },
+                                {
+                                    "id": "ckjlb04612755064oc9ed981b4",
+                                    "createdAt": "2021-01-06T10:53:37.177Z",
+                                    "script": null,
+                                    "staticValue": null,
+                                    "updatedAt": "2021-01-06T10:53:37.177Z",
+                                    "conceptMapId": null,
+                                    "inputGroupId": "ckjlazu6z2740364ocep9pozvx",
+                                    "sqlValue": {
+                                        "id": "ckjlb04612755164ocnmsmxqyk",
+                                        "column": "row_id",
+                                        "table": "patients",
+                                        "inputId": "ckjlb04612755064oc9ed981b4",
+                                        "ownerId": "cf31cb40-03a1-4806-85e8-62aa04c1632a",
+                                        "joinId": null,
+                                        "createdAt": "2021-01-06T10:53:37.177Z",
+                                        "updatedAt": "2021-01-06T10:53:48.074Z",
+                                        "joins": [],
+                                        "owner": {
+                                            "name": "public",
+                                            "id": "cf31cb40-03a1-4806-85e8-62aa04c1632a"
+                                        }
+                                    }
+                                }
+                            ],
+                            "conditions": []
+                        }
+                    ]
+                },
+                {
+                    "id": "ckjlazu8z2742964oc7osjbt96",
+                    "resourceId": "ckjlaz5gc2731264oczma2ha5n",
+                    "createdAt": "2021-01-06T10:53:24.323Z",
+                    "updatedAt": "2021-01-06T10:53:24.324Z",
+                    "path": "photo[0]",
+                    "definitionId": "Attachment",
+                    "sliceName": null,
+                    "comments": [],
+                    "inputGroups": []
+                }
+            ],
+            "definition": {
+                "id": "Patient",
+                "url": "http://hl7.org/fhir/StructureDefinition/Patient",
+                "name": "Patient",
+                "type": "Patient",
+                "description": "Demographics and other administrative information about an individual or animal receiving care or other health-related services.",
+                "kind": "resource",
+                "baseDefinition": "http://hl7.org/fhir/StructureDefinition/DomainResource",
+                "derivation": "specialization",
+                "publisher": "Health Level Seven International (Patient Administration)",
+                "min": 0,
+                "max": "*",
+                "constraint": [
+                    {
+                        "key": "dom-2",
+                        "severity": "error",
+                        "human": "If the resource is contained in another resource, it SHALL NOT contain nested Resources",
+                        "expression": "contained.contained.empty()",
+                        "xpath": "not(parent::f:contained and f:contained)",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "key": "dom-3",
+                        "severity": "error",
+                        "human": "If the resource is contained in another resource, it SHALL be referred to from elsewhere in the resource or SHALL refer to the containing resource",
+                        "expression": "contained.where((('#'+id in (%resource.descendants().reference | %resource.descendants().as(canonical) | %resource.descendants().as(uri) | %resource.descendants().as(url))) or descendants().where(reference = '#').exists() or descendants().where(as(canonical) = '#').exists() or descendants().where(as(canonical) = '#').exists()).not()).trace('unmatched', id).empty()",
+                        "xpath": "not(exists(for $id in f:contained/*/f:id/@value return $contained[not(parent::*/descendant::f:reference/@value=concat('#', $contained/*/id/@value) or descendant::f:reference[@value='#'])]))",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "key": "dom-4",
+                        "severity": "error",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a meta.versionId or a meta.lastUpdated",
+                        "expression": "contained.meta.versionId.empty() and contained.meta.lastUpdated.empty()",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:versionId)) and not(exists(f:contained/*/f:meta/f:lastUpdated))",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "key": "dom-5",
+                        "severity": "error",
+                        "human": "If a resource is contained in another resource, it SHALL NOT have a security label",
+                        "expression": "contained.meta.security.empty()",
+                        "xpath": "not(exists(f:contained/*/f:meta/f:security))",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    },
+                    {
+                        "extension": [
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice",
+                                "valueBoolean": true
+                            },
+                            {
+                                "url": "http://hl7.org/fhir/StructureDefinition/elementdefinition-bestpractice-explanation",
+                                "valueMarkdown": "When a resource has no narrative, only systems that fully understand the data can display the resource to a human safely. Including a human readable representation in the resource makes for a much more robust eco-system and cheaper handling of resources by intermediary systems. Some ecosystems restrict distribution of resources to only those systems that do fully understand the resources, and as a consequence implementers may believe that the narrative is superfluous. However experience shows that such eco-systems often open up to new participants over time."
+                            }
+                        ],
+                        "key": "dom-6",
+                        "severity": "warning",
+                        "human": "A resource should have narrative for robust management",
+                        "expression": "text.`div`.exists()",
+                        "xpath": "exists(f:text/h:div)",
+                        "source": "http://hl7.org/fhir/StructureDefinition/DomainResource"
+                    }
+                ]
+            }
+        }
+    ],
+    "version": 10
+}

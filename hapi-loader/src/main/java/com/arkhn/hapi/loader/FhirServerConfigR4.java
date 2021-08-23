@@ -6,6 +6,8 @@ import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
+import redis.clients.jedis.Jedis;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -32,6 +34,9 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
    */
   @Autowired
   AppProperties appProperties;
+
+  @Autowired
+  RedisCounterProperties redisCounterProperties;
 
   @Override
   public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
@@ -88,6 +93,13 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     } else {
       return null;
     }
+  }
+
+  @Bean()
+  public Jedis redisCounter() {
+    Jedis redisCounter = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
+    redisCounter.select(redisCounterProperties.getDb_index());
+    return redisCounter;
   }
 
 }

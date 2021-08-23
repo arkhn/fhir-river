@@ -2,6 +2,7 @@ import {
   IBundle,
   IStructureDefinition,
   IValueSet,
+  IConceptMap,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Required } from "utility-types";
 
@@ -40,6 +41,13 @@ export const api = generatedApi
           url: `/oidc/logout/`,
           method: "POST",
         }),
+      }),
+      apiConceptMapsList: build.query<IConceptMap[], { ids?: string[] }>({
+        query: (queryArg) => ({
+          url: `/api/fhir/ConceptMap?_id=${queryArg.ids?.join(",") ?? ""}`,
+        }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(({ resource }) => resource as IConceptMap) || [],
       }),
       apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
         query: (queryArg) => ({
@@ -323,6 +331,7 @@ export const {
   useApiSourcesUpdateMutation,
   useApiSourcesDestroyMutation,
   useApiSourcesImportCreateMutation,
+  useApiSourcesExportRetrieveQuery,
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
@@ -355,6 +364,8 @@ export const {
   useApiJoinsDestroyMutation,
   // ValueSets
   useApiValueSetsRetrieveQuery,
+  // ConceptMaps
+  useApiConceptMapsListQuery,
   // InputGroups
   useApiInputGroupsListQuery,
   useApiInputGroupsCreateMutation,
@@ -375,6 +386,6 @@ export const {
   useApiBatchesListQuery,
   useApiBatchesDestroyMutation,
   // Pagai
-  usePagaiExploreRetrieveQuery,
+  usePagaiExploreCreateMutation,
   useApiPreviewCreateMutation,
 } = api;
