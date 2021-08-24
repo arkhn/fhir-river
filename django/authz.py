@@ -3,6 +3,8 @@ import logging
 import re
 
 from django import http
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 import requests
 
@@ -27,10 +29,12 @@ HTTP_METHOD_TO_OPERATION = {
 class AuthzMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        self._is_authz_enabled = True
-        self._authz_validation_endpoint = "http://127.0.0.1:8007/api/authz/validate/"
-        self._service_name = "pyrog"
-        self._authz_url_pattern = re.compile(r"/api/.*")
+        if settings.AUTHZ_MIDDLEWARE_ENABLED and settings.AUTHZ_MIDDLEWARE_SERVICE_NAME is None:
+            raise ImproperlyConfigured("AUTHZ_MIDDLEWARE_SERVICE_NAME is not set.")
+        if settings.AUTHZ_MIDDLEWARE_ENABLED and settings.AUTHZ_MIDDLEWARE_ENDPOINT is None:
+            raise ImproperlyConfigured("AUTHZ_MIDDLEWARE_ENDPOINT is not set.")
+
+        self._authz_url_pattern = re.compile(settings.AUTHZ_MIDDLEWARE_URL_PATTERN)
 
     def __call__(self, request: http.HttpRequest):
         if not self.is_exempt(request) and not self.validate_authz(
@@ -45,7 +49,7 @@ class AuthzMiddleware:
 
     def is_exempt(self, request) -> bool:
         return (
-            not self._is_authz_enabled
+            not settings.AUTHZ_MIDDLEWARE_ENABLED
             or not request.user.is_authenticated
             or self._authz_url_pattern.match(request.path) is None
         )
@@ -62,12 +66,12 @@ class AuthzMiddleware:
     def validate_authz(self, user_email: str, resource: str, operation: Operation) -> bool:
         data = {
             "user_email": user_email,
-            "service_name": self._service_name,
+            "service_name": settings.AUTHZ_MIDDLEWARE_SERVICE_NAME,
             "resource": resource,
             "requested_operation": operation.value,
         }
 
-        response = requests.post(self._authz_validation_endpoint, data=data)
+        response = requests.post(settings.AUTHZ_MIDDLEWARE_ENDPOINT, data=data)
         result = response.json()["authorized"]
 
         logger.info(f"{'Successful' if result else 'Failed'} authz request for {data}")
