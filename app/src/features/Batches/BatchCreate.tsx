@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 
 import {
-  Button,
   Checkbox,
-  FormControl,
-  InputLabel,
+  Dialog,
+  List,
+  ListItem,
   ListItemText,
-  MenuItem,
-  Select,
+  ListItemIcon,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlayIcon from "@material-ui/icons/PlayCircleOutline";
-import { useTranslation } from "react-i18next";
+//import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
+import Button from "common/components/Button";
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
@@ -57,17 +60,29 @@ const useStyles = makeStyles((theme) => ({
   label: {
     transform: "translate(14px, 12px) scale(1)",
   },
-  selectedValue: {},
+  dialog: {
+    padding: theme.spacing(3),
+    maxHeight: 515,
+  },
+  title: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  titleButton: {
+    marginTop: "auto",
+    marginBottom: "auto",
+  },
 }));
 
 const BatchCreate = (): JSX.Element => {
-  const { t } = useTranslation();
+  //const { t } = useTranslation();
 
   const classes = useStyles();
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
   const [alert, setAlert] = useState<string | undefined>(undefined);
+  const [open, setOpen] = useState<boolean>(false);
   const handleAlertClose = () => setAlert(undefined);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
@@ -78,24 +93,6 @@ const BatchCreate = (): JSX.Element => {
   );
 
   const [apiBatchCreate] = useApiBatchesCreateMutation();
-
-  const handleResourceSelectionChange = (
-    event: React.ChangeEvent<{
-      name?: string;
-      value: unknown;
-    }>
-  ) => {
-    const value = event.target.value as string[];
-    if (value[value.length - 1] === "selectAll" && resources) {
-      setSelectedResourceIds(
-        selectedResourceIds.length === resources.length
-          ? []
-          : resources?.map((resource) => resource.id)
-      );
-      return;
-    }
-    setSelectedResourceIds(value);
-  };
 
   const handleBatchRun = async () => {
     try {
@@ -113,102 +110,101 @@ const BatchCreate = (): JSX.Element => {
 
   return (
     <div className={classes.root}>
-      <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel
-          classes={{
-            root: classes.label,
-          }}
-          id="resources"
-        >
-          {t("resources")}
-        </InputLabel>
-        <Select
-          multiple
-          labelId="resources"
-          id="resources"
-          label={t("resources")}
-          value={selectedResourceIds}
-          onChange={handleResourceSelectionChange}
-          renderValue={(selected) =>
-            (selected as string[]).map((resourceId) => {
-              const resource = resources?.find(({ id }) => resourceId === id);
-              return `${resource?.definition_id} - ${resource?.label}${
-                (selected as string[]).length > 1 ? "," : ""
-              } `;
-            })
-          }
-          classes={{
-            root: classes.select,
-          }}
-          MenuProps={{
-            PaperProps: {
-              className: classes.menuPaper,
-            },
-            anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "left",
-            },
-            transformOrigin: {
-              vertical: "top",
-              horizontal: "left",
-            },
-            getContentAnchorEl: null,
-            variant: "menu",
-          }}
-        >
-          {resources && (
-            <MenuItem
-              classes={{
-                root: classes.menuItem,
-              }}
-              value="selectAll"
-            >
-              <Checkbox
-                color="primary"
-                checked={
-                  selectedResourceIds.length <= resources.length &&
-                  selectedResourceIds.length > 0
-                }
-                indeterminate={
-                  selectedResourceIds.length < resources.length &&
-                  selectedResourceIds.length > 0
-                }
-              />
-              <ListItemText
-                primary={t("selectAll")}
-                classes={{ primary: classes.selectAll }}
-              />
-            </MenuItem>
-          )}
-          {resources &&
-            resources.map(({ id, definition_id, label }) => (
-              <MenuItem
-                key={`resource-option-${id}`}
-                value={id}
-                classes={{
-                  root: classes.menuItem,
-                }}
-              >
-                <Checkbox
-                  color="primary"
-                  checked={selectedResourceIds.includes(id)}
-                />
-                <ListItemText primary={`${definition_id} - ${label}`} />
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
       <Button
         variant="contained"
         color="primary"
         size="large"
-        disabled={!selectedResourceIds.length}
+        onClick={() => setOpen(true)}
         className={classes.button}
         startIcon={<PlayIcon />}
-        onClick={handleBatchRun}
       >
-        <Typography>{t("run")}</Typography>
+        <Typography>Run new batch</Typography>
       </Button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        classes={{ paper: classes.dialog }}
+        fullWidth
+      >
+        <div className={classes.title}>
+          <DialogTitle>Choose a resource</DialogTitle>
+          <Button
+            size="large"
+            className={classes.titleButton}
+            variant="outlined"
+            onClick={() => {
+              if (resources)
+                setSelectedResourceIds(
+                  selectedResourceIds.length === resources.length
+                    ? []
+                    : resources?.map((resource) => resource.id)
+                );
+            }}
+          >
+            <Typography>
+              {resources && selectedResourceIds.length === resources.length
+                ? "unselect all"
+                : "select all"}
+            </Typography>
+          </Button>
+        </div>
+        <DialogContent dividers>
+          <List>
+            {resources &&
+              resources.map(({ id, definition_id, label }) => (
+                <ListItem
+                  role={undefined}
+                  key={`resource-option-${id}`}
+                  button
+                  onClick={() => {
+                    if (
+                      !selectedResourceIds.find(
+                        (resourceId) => resourceId === id
+                      )
+                    ) {
+                      setSelectedResourceIds([...selectedResourceIds, id]);
+                    } else {
+                      const index = selectedResourceIds.indexOf(id);
+                      const newSelectedResourceIds = [...selectedResourceIds];
+                      newSelectedResourceIds.splice(index, 1);
+                      setSelectedResourceIds(newSelectedResourceIds);
+                    }
+                  }}
+                >
+                  <ListItemIcon>
+                    <Checkbox
+                      color="primary"
+                      checked={selectedResourceIds.includes(id)}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary={`${definition_id} - ${label}`} />
+                </ListItem>
+              ))}
+            <ListItem role={undefined} button>
+              <ListItemIcon>
+                <Checkbox
+                  color="primary"
+                  checked={selectedResourceIds.includes(id)}
+                />
+              </ListItemIcon>
+              <ListItemText primary={"new"} />
+            </ListItem>
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            color="primary"
+            variant="contained"
+            size="large"
+            onClick={() => {
+              handleBatchRun();
+              setOpen(false);
+            }}
+          >
+            <Typography>Run</Typography>
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Alert
         severity="error"
         open={!!alert}
