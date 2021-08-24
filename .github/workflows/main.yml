@@ -151,11 +151,10 @@ jobs:
           dockerUsername: ${{ secrets.DOCKER_LOGIN }}
           dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: refactor/river/merge_services
-          debug: true
+          deploymentRef: v4
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",
               "hapi_loader": "${{ steps.docker-tag.outputs.docker-version }}",
-              "testy": "jason-merge-pyrog-river"
+              "testy": "v4"
             }
