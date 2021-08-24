@@ -142,7 +142,7 @@ jobs:
         run: echo "::set-output name=docker-version::sha-${GITHUB_SHA::7}"
 
       - name: Provision, deploy and test
-        uses: docker://arkhn/testy-action:0.5.9
+        uses: docker://arkhn/testy-action:0.5.10
         with:
           cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
           cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
