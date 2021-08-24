@@ -82,7 +82,16 @@ const BatchCreate = (): JSX.Element => {
       value: unknown;
     }>
   ) => {
-    setSelectedResourceIds(event.target.value as string[]);
+    const value = event.target.value as string[];
+    if (value[value.length - 1] === "selectAll" && resources) {
+      setSelectedResourceIds(
+        selectedResourceIds.length === resources.length
+          ? []
+          : resources?.map((resource) => resource.id)
+      );
+      return;
+    }
+    setSelectedResourceIds(value);
   };
 
   const handleBatchRun = async () => {
@@ -143,6 +152,27 @@ const BatchCreate = (): JSX.Element => {
             getContentAnchorEl: null,
           }}
         >
+          {resources && (
+            <MenuItem
+              classes={{
+                root: classes.menuItem,
+              }}
+              value="selectAll"
+            >
+              <Checkbox
+                color="primary"
+                checked={
+                  selectedResourceIds.length <= resources.length &&
+                  selectedResourceIds.length > 0
+                }
+                indeterminate={
+                  selectedResourceIds.length < resources.length &&
+                  selectedResourceIds.length > 0
+                }
+              />
+              <ListItemText primary="select all" />
+            </MenuItem>
+          )}
           {resources &&
             resources.map(({ id, definition_id, label }) => (
               <MenuItem
