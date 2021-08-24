@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
   select: {
     padding: theme.spacing(1.3),
   },
+  selectAll: {
+    fontWeight: theme.typography.fontWeightBold,
+  },
   label: {
     transform: "translate(14px, 12px) scale(1)",
   },
@@ -150,6 +153,7 @@ const BatchCreate = (): JSX.Element => {
               horizontal: "left",
             },
             getContentAnchorEl: null,
+            variant: "menu",
           }}
         >
           {resources && (
@@ -170,7 +174,10 @@ const BatchCreate = (): JSX.Element => {
                   selectedResourceIds.length > 0
                 }
               />
-              <ListItemText primary="select all" />
+              <ListItemText
+                primary={t("selectAll")}
+                classes={{ primary: classes.selectAll }}
+              />
             </MenuItem>
           )}
           {resources &&

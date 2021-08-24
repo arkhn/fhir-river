@@ -116,5 +116,6 @@
   "selectScript": "Select script",
   "batchInProgress": "⏳ In Progress...",
   "batchErrors": "⚠️ {{errors}} errors",
-  "batchSuccess": "✅ Success"
+  "batchSuccess": "✅ Success",
+  "selectAll": "Select all"
 }
