@@ -5,6 +5,7 @@ import re
 from django import http
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_string
 
 import requests
 
@@ -60,7 +61,7 @@ class RemoteAuthzBackend(AuthzBackend):
 class AuthzMiddleware:
     def __init__(self, get_response, backend: AuthzBackend = None, url_pattern: str = None):
         self.get_response = get_response
-        self._backend = backend or settings.AUTHZ_MIDDLEWARE_BACKEND()
+        self._backend = backend or import_string(settings.AUTHZ_MIDDLEWARE_BACKEND)()
         self._url_pattern = re.compile(url_pattern or settings.AUTHZ_MIDDLEWARE_URL_PATTERN)
 
     def __call__(self, request: http.HttpRequest):
