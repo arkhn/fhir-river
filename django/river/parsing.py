@@ -86,7 +86,7 @@ class Resource(BaseModel):
 class Owner(BaseModel):
     id: str
     name: str
-    schema_: Optional[str] = Field(alias="schema")
+    schema_: Optional[dict] = Field(alias="schema")
     columns: List[Column]
 
 
