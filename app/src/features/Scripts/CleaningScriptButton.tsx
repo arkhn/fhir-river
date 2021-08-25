@@ -3,9 +3,7 @@ import React, { useState } from "react";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
-  Button,
   makeStyles,
-  Typography,
   CircularProgress,
   Menu,
   MenuItem,
@@ -13,6 +11,7 @@ import {
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import {
   Scripts,
   useApiScriptsListQuery,
@@ -84,7 +83,6 @@ const CleaningScriptButton = ({
   return (
     <>
       <Button
-        size="small"
         className={classes.button}
         onClick={handleMenuToggle}
         color={isInputScriptSelected ? "primary" : "default"}
@@ -97,9 +95,7 @@ const CleaningScriptButton = ({
           />
         }
       >
-        <Typography>
-          {isInputScriptSelected ? scriptName : t("applyScript")}
-        </Typography>
+        {isInputScriptSelected ? scriptName : t("applyScript")}
       </Button>
       <Menu
         id="script-menu"

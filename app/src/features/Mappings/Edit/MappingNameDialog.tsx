@@ -9,7 +9,6 @@ import {
   TextField,
   DialogActions,
   makeStyles,
-  Typography,
 } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { head } from "lodash";
@@ -118,7 +117,7 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
               disableRipple
               onClick={handleClose}
             >
-              <Typography>{t("cancel")}</Typography>
+              {t("cancel")}
             </Button>
             <Button
               className={classes.button}
@@ -127,11 +126,7 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
               onClick={handleSubmit}
               disabled={isUpdateLoading}
             >
-              {isUpdateLoading ? (
-                <CircularProgress />
-              ) : (
-                <Typography>{t("confirm")}</Typography>
-              )}
+              {isUpdateLoading ? <CircularProgress /> : t("confirm")}
             </Button>
           </DialogActions>
           <Alert

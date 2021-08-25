@@ -52,6 +52,9 @@ const credentialInputs: (
     label: t("host"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "number",
@@ -63,6 +66,9 @@ const credentialInputs: (
       min: 0,
       max: 65535,
     },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -70,6 +76,9 @@ const credentialInputs: (
     label: t("database"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -77,6 +86,9 @@ const credentialInputs: (
     label: t("username"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -85,9 +97,15 @@ const credentialInputs: (
     label: t("password"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "select",
+    containerStyle: {
+      margin: "16px 10px",
+    },
     selectOptions: [
       {
         id: "MSSQL",
@@ -202,9 +220,9 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : credential ? (
-              <Typography>{t("updateCredential")}</Typography>
+              t("updateCredential")
             ) : (
-              <Typography>{t("createCredential")}</Typography>
+              t("createCredential")
             )}
           </Button>
         }

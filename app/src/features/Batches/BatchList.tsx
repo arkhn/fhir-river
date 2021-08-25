@@ -4,7 +4,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Button,
   CircularProgress,
   Typography,
 } from "@material-ui/core";
@@ -13,6 +12,7 @@ import { ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import { useApiBatchesListQuery } from "services/api/endpoints";
 
 import BatchCancel from "./BatchCancel";
@@ -173,7 +173,7 @@ const BatchList = (): JSX.Element => {
                       startIcon={<Replay />}
                       onClick={handleBatchRetry(batch.id)}
                     >
-                      <Typography>{t("retry")}</Typography>
+                      {t("retry")}
                     </Button>
                     {!batch.deleted_at && (
                       <BatchCancel batch={batch} className={classes.button} />

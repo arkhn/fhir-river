@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 
 import {
-  Button,
   Chip,
   FormControl,
   Input,
   InputLabel,
   MenuItem,
   Select,
-  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlayIcon from "@material-ui/icons/PlayCircleOutline";
@@ -16,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
+import Button from "common/components/Button";
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
@@ -174,7 +173,7 @@ const BatchCreate = (): JSX.Element => {
         startIcon={<PlayIcon />}
         onClick={handleBatchRun}
       >
-        <Typography>{t("run")}</Typography>
+        {t("run")}
       </Button>
       <Alert
         severity="error"

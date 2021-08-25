@@ -296,7 +296,7 @@ const EditMapping = (): JSX.Element => {
         onClick={handleCancelClick}
         disableRipple
       >
-        <Typography>{t("cancel")}</Typography>
+        {t("cancel")}
       </Button>
       <Container maxWidth="lg">
         {isLoading ? (
@@ -315,11 +315,7 @@ const EditMapping = (): JSX.Element => {
               color="primary"
               disabled={isEditLoading}
             >
-              {isEditLoading ? (
-                <CircularProgress />
-              ) : (
-                <Typography>{t("saveChanges")}</Typography>
-              )}
+              {isEditLoading ? <CircularProgress /> : t("saveChanges")}
             </Button>
           </>
         ) : (

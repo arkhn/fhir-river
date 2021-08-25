@@ -35,7 +35,6 @@ const Mapping = (): JSX.Element => {
   return (
     <>
       <MappingHeader />
-
       <div className={classes.body}>
         <div className={clsx(classes.leftContainer, classes.scrollContainer)}>
           <FhirResourceTree />
