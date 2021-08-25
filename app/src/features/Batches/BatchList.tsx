@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   CircularProgress,
   Typography,
 } from "@material-ui/core";
@@ -12,7 +13,6 @@ import { ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
 
-import Button from "common/components/Button";
 import { useApiBatchesListQuery } from "services/api/endpoints";
 
 import BatchCancel from "./BatchCancel";
@@ -164,19 +164,25 @@ const BatchList = (): JSX.Element => {
                       {batch.id}
                     </Typography>
                   </div>
-                  <div className={classes.endButtons}>
-                    <Button
-                      className={classes.button}
-                      variant="outlined"
-                      startIcon={<Replay />}
-                      onClick={handleBatchRetry(batch.id)}
-                    >
-                      {t("retry")}
-                    </Button>
-                    {!batch.deleted_at && (
-                      <BatchCancel batch={batch} className={classes.button} />
-                    )}
-                  </div>
+                  <Typography variant="subtitle2">
+                    {new Date(batch.created_at)
+                      .toLocaleString()
+                      .split(",")
+                      .join(" -")}
+                  </Typography>
+                </div>
+                <div className={classes.endButtons}>
+                  <Button
+                    className={classes.button}
+                    variant="outlined"
+                    startIcon={<Replay />}
+                    onClick={handleBatchRetry(batch.id)}
+                  >
+                    <Typography>{t("retry")}</Typography>
+                  </Button>
+                  {!batch.deleted_at && (
+                    <BatchCancel batch={batch} className={classes.button} />
+                  )}
                 </div>
               </AccordionSummary>
               <AccordionDetails className={classes.accordionDetails}>

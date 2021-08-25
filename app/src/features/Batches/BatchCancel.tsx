@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 
-import { ButtonProps } from "@material-ui/core";
+import { Button, ButtonProps, Typography } from "@material-ui/core";
 import { CancelOutlined } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
 import Alert from "common/components/Alert";
-import Button from "common/components/Button";
 import { useApiBatchesDestroyMutation } from "services/api/endpoints";
 import type { Batch } from "services/api/generated/api.generated";
 
@@ -43,7 +42,7 @@ const BatchCancel = ({
         startIcon={<CancelOutlined />}
         onClick={handleBatchCancel(batch.id)}
       >
-        {t("cancel")}
+        <Typography>{t("cancel")}</Typography>
       </Button>
       <Alert
         severity="error"

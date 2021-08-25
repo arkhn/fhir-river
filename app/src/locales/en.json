@@ -104,7 +104,7 @@
   "sliceName": "Slice name",
   "condition": "Condition",
   "exportMapping": "Export mapping",
-  "ETLDashboard": "ETL Dashboard",
+  "launchEtl": "Launch ETL",
   "newMapping": "New mapping",
   "clickOnAFireIcon": "Click on a",
   "inOrderToPreview": "icon in order to preview a line as a FHIR instance",
@@ -117,5 +117,9 @@
   "batchInProgress": "⏳ In Progress...",
   "batchErrors": "⚠️ {{errors}} errors",
   "batchSuccess": "✅ Success",
-  "selectAll": "Select all"
+  "selectAll": "Select all",
+  "runNewBatch": "Run a new batch",
+  "chooseSource": "Select a source",
+  "unselectAll": "Unselect all",
+  "search...": "Search..."
 }
