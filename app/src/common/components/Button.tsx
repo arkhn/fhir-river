@@ -5,6 +5,7 @@ import {
   ButtonProps as MuiButtonProps,
   withStyles,
   Typography,
+  TypographyProps,
 } from "@material-ui/core";
 
 export const EditedButton = withStyles((theme) => ({
@@ -52,14 +53,7 @@ type ButtonProps<C extends React.ElementType> = MuiButtonProps<
   C,
   { component?: C }
 > & {
-  typographyColor?:
-    | "initial"
-    | "inherit"
-    | "primary"
-    | "secondary"
-    | "textPrimary"
-    | "textSecondary"
-    | "error";
+  typographyColor?: TypographyProps["color"];
 };
 
 const Button = React.forwardRef(
