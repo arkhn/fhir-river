@@ -42,7 +42,9 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     textTransform: "none",
-    margin: theme.spacing(3, 1, 1, 1),
+    margin: theme.spacing(1),
+    marginTop: "auto",
+    marginBottom: "auto",
   },
   menuItem: {
     fontWeight: theme.typography.fontWeightMedium,
@@ -55,9 +57,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1.3),
   },
   selectAll: {
-    display: "flex",
-    alignItems: "center",
-    cursor: "pointer",
+    fontWeight: theme.typography.fontWeightBold,
   },
   label: {
     transform: "translate(14px, 12px) scale(1)",
@@ -152,22 +152,6 @@ const BatchCreate = (): JSX.Element => {
     }
   };
 
-  const searchResource = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    setResourceList(
-      resources?.filter(
-        (resource) =>
-          resource.label
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase()) ||
-          resource.definition_id
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())
-      )
-    );
-  };
-
   useEffect(() => {
     setResourceList(resources);
   }, [resources]);
@@ -177,7 +161,7 @@ const BatchCreate = (): JSX.Element => {
       <Button
         variant="contained"
         color="primary"
-        size="small"
+        size="large"
         onClick={() => setOpen(true)}
         className={classes.button}
         startIcon={<PlayCircleOutline />}
@@ -193,29 +177,26 @@ const BatchCreate = (): JSX.Element => {
         <div className={classes.header}>
           <div className={classes.titleContainer}>
             <DialogTitle className={classes.title}>
-              {t("chooseSource")}
+              {t("chooseResource")}
             </DialogTitle>
-            <div
+            <Button
+              size="large"
+              className={classes.titleButton}
+              variant="outlined"
               onClick={handleSelectAllResources}
-              className={classes.selectAll}
             >
               <Typography>
                 {resources && selectedResourceIds.length === resources.length
                   ? t("unselectAll")
                   : t("selectAll")}
               </Typography>
-              <Checkbox
-                color="primary"
-                checked={
-                  resources && selectedResourceIds.length === resources.length
-                }
-              />
-            </div>
+            </Button>
           </div>
           <TextField
             variant="outlined"
             size="small"
-            placeholder={t<string>("search...")}
+            placeholder="Search…"
+            inputProps={{ "aria-label": "search" }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -223,7 +204,19 @@ const BatchCreate = (): JSX.Element => {
                 </InputAdornment>
               ),
             }}
-            onChange={searchResource}
+            onChange={(e) => {
+              setResourceList(
+                resources?.filter(
+                  (resource) =>
+                    resource.label
+                      ?.toLowerCase()
+                      .includes(e.target.value.toLowerCase()) ||
+                    resource.definition_id
+                      .toLowerCase()
+                      .includes(e.target.value.toLowerCase())
+                )
+              );
+            }}
           />
         </div>
         <DialogContent dividers classes={{ root: classes.rootDialogContent }}>
@@ -244,9 +237,7 @@ const BatchCreate = (): JSX.Element => {
                       checked={selectedResourceIds.includes(id)}
                     />
                   </ListItemIcon>
-                  <ListItemText
-                    primary={`${definition_id} ${label ? `- ${label}` : ""}`}
-                  />
+                  <ListItemText primary={`${definition_id} - ${label}`} />
                 </ListItem>
               ))}
           </List>
