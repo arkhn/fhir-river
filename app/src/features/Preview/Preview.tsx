@@ -251,7 +251,6 @@ const Preview = (): JSX.Element => {
             <ReactJson
               src={preview}
               theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
-              collapsed={1}
               displayObjectSize={false}
               displayDataTypes={false}
             />
