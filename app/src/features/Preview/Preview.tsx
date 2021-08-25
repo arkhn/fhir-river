@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import { IResource } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
@@ -112,9 +113,7 @@ const Preview = (): JSX.Element => {
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const handleAlertClose = () => setAlert(undefined);
 
-  const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
-    undefined
-  );
+  const [preview, setPreview] = useState<IResource | undefined>(undefined);
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
@@ -175,7 +174,9 @@ const Preview = (): JSX.Element => {
                 primary_key_values: [primaryKeyValue],
               },
             }).unwrap();
-            setPreview(previewResult);
+            setPreview(previewResult.instances[0]);
+            if (previewResult.errors.length > 0)
+              setAlert(previewResult.errors[0]);
           } catch (e) {
             setAlert(e.message);
           }
