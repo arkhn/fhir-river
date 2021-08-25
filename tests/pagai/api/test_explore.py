@@ -15,7 +15,6 @@ def test_explore(
 
     data = {"resource_id": resource.id, "owner": "public", "table": "patients"}
     response = api_client.post(url, data)
-    print(response.data)
 
     assert response.status_code == 200, response.data
 
