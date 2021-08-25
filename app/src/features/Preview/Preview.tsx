@@ -161,8 +161,8 @@ const Preview = (): JSX.Element => {
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
-    if (exploration && mappingId && mapping?.primary_key_table) {
-      const primaryKey = mapping.primary_key_table;
+    if (exploration && mappingId && mapping?.primary_key_column) {
+      const primaryKey = mapping.primary_key_column;
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
       const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
 
