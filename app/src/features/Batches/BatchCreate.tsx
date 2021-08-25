@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Checkbox,
@@ -11,10 +11,12 @@ import {
   DialogContent,
   DialogActions,
   Typography,
+  TextField,
+  InputAdornment,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import PlayIcon from "@material-ui/icons/PlayCircleOutline";
-//import { useTranslation } from "react-i18next";
+import { PlayCircleOutline, Search } from "@material-ui/icons";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
@@ -62,27 +64,41 @@ const useStyles = makeStyles((theme) => ({
   },
   dialog: {
     padding: theme.spacing(3),
-    maxHeight: 515,
+    height: 500,
   },
-  title: {
+  header: {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: 10,
+  },
+  titleContainer: {
     display: "flex",
     justifyContent: "space-between",
+  },
+  title: {
+    paddingLeft: 0,
   },
   titleButton: {
     marginTop: "auto",
     marginBottom: "auto",
   },
+  rootDialogContent: {
+    padding: 0,
+  },
+  rootListItem: {
+    padding: 0,
+    borderRadius: theme.shape.borderRadius,
+  },
 }));
 
 const BatchCreate = (): JSX.Element => {
-  //const { t } = useTranslation();
-
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
-
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState<boolean>(false);
+
   const handleAlertClose = () => setAlert(undefined);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
@@ -92,9 +108,12 @@ const BatchCreate = (): JSX.Element => {
     { skip: !Boolean(id) }
   );
 
+  const [resourceList, setResourceList] = useState(resources);
+
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
   const handleBatchRun = () => {
+    setOpen(false);
     const batchCreate = async () => {
       try {
         await apiBatchCreate({
@@ -113,6 +132,30 @@ const BatchCreate = (): JSX.Element => {
     }
   };
 
+  const handleSelectAllResources = () => {
+    if (resources)
+      setSelectedResourceIds(
+        selectedResourceIds.length === resources.length
+          ? []
+          : resources?.map((resource) => resource.id)
+      );
+  };
+
+  const handleSelectResources = (id: string) => {
+    if (!selectedResourceIds.find((resourceId) => resourceId === id)) {
+      setSelectedResourceIds([...selectedResourceIds, id]);
+    } else {
+      const index = selectedResourceIds.indexOf(id);
+      const newSelectedResourceIds = [...selectedResourceIds];
+      newSelectedResourceIds.splice(index, 1);
+      setSelectedResourceIds(newSelectedResourceIds);
+    }
+  };
+
+  useEffect(() => {
+    setResourceList(resources);
+  }, [resources]);
+
   return (
     <div className={classes.root}>
       <Button
@@ -121,9 +164,9 @@ const BatchCreate = (): JSX.Element => {
         size="large"
         onClick={() => setOpen(true)}
         className={classes.button}
-        startIcon={<PlayIcon />}
+        startIcon={<PlayCircleOutline />}
       >
-        <Typography>Run new batch</Typography>
+        <Typography>{t("runNewBatch")}</Typography>
       </Button>
       <Dialog
         open={open}
@@ -131,50 +174,62 @@ const BatchCreate = (): JSX.Element => {
         classes={{ paper: classes.dialog }}
         fullWidth
       >
-        <div className={classes.title}>
-          <DialogTitle>Choose a resource</DialogTitle>
-          <Button
-            size="large"
-            className={classes.titleButton}
+        <div className={classes.header}>
+          <div className={classes.titleContainer}>
+            <DialogTitle className={classes.title}>
+              {t("chooseResource")}
+            </DialogTitle>
+            <Button
+              size="large"
+              className={classes.titleButton}
+              variant="outlined"
+              onClick={handleSelectAllResources}
+            >
+              <Typography>
+                {resources && selectedResourceIds.length === resources.length
+                  ? t("unselectAll")
+                  : t("selectAll")}
+              </Typography>
+            </Button>
+          </div>
+          <TextField
             variant="outlined"
-            onClick={() => {
-              if (resources)
-                setSelectedResourceIds(
-                  selectedResourceIds.length === resources.length
-                    ? []
-                    : resources?.map((resource) => resource.id)
-                );
+            size="small"
+            placeholder="Search…"
+            inputProps={{ "aria-label": "search" }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
-          >
-            <Typography>
-              {resources && selectedResourceIds.length === resources.length
-                ? "unselect all"
-                : "select all"}
-            </Typography>
-          </Button>
+            onChange={(e) => {
+              setResourceList(
+                resources?.filter(
+                  (resource) =>
+                    resource.label
+                      ?.toLowerCase()
+                      .includes(e.target.value.toLowerCase()) ||
+                    resource.definition_id
+                      .toLowerCase()
+                      .includes(e.target.value.toLowerCase())
+                )
+              );
+            }}
+          />
         </div>
-        <DialogContent dividers>
+        <DialogContent dividers classes={{ root: classes.rootDialogContent }}>
           <List>
-            {resources &&
-              resources.map(({ id, definition_id, label }) => (
+            {resourceList &&
+              resourceList.length > 0 &&
+              resourceList.map(({ id, definition_id, label }) => (
                 <ListItem
                   role={undefined}
                   key={`resource-option-${id}`}
                   button
-                  onClick={() => {
-                    if (
-                      !selectedResourceIds.find(
-                        (resourceId) => resourceId === id
-                      )
-                    ) {
-                      setSelectedResourceIds([...selectedResourceIds, id]);
-                    } else {
-                      const index = selectedResourceIds.indexOf(id);
-                      const newSelectedResourceIds = [...selectedResourceIds];
-                      newSelectedResourceIds.splice(index, 1);
-                      setSelectedResourceIds(newSelectedResourceIds);
-                    }
-                  }}
+                  onClick={() => handleSelectResources(id)}
+                  classes={{ root: classes.rootListItem }}
                 >
                   <ListItemIcon>
                     <Checkbox
@@ -185,15 +240,6 @@ const BatchCreate = (): JSX.Element => {
                   <ListItemText primary={`${definition_id} - ${label}`} />
                 </ListItem>
               ))}
-            <ListItem role={undefined} button>
-              <ListItemIcon>
-                <Checkbox
-                  color="primary"
-                  checked={selectedResourceIds.includes(id)}
-                />
-              </ListItemIcon>
-              <ListItemText primary={"new"} />
-            </ListItem>
           </List>
         </DialogContent>
         <DialogActions>
@@ -201,10 +247,7 @@ const BatchCreate = (): JSX.Element => {
             color="primary"
             variant="contained"
             size="large"
-            onClick={() => {
-              handleBatchRun();
-              setOpen(false);
-            }}
+            onClick={handleBatchRun}
           >
             <Typography>Run</Typography>
           </Button>
