@@ -53,7 +53,7 @@ class RemoteAuthzBackend(AuthzBackend):
         response = requests.post(settings.AUTHZ_MIDDLEWARE_ENDPOINT, data=data)
         result = response.json()["authorized"]
 
-        logger.info(f"{'Successful' if result else 'Failed'} authz request for {data}")
+        logger.debug(f"{'Successful' if result else 'Failed'} authz request for {data}")
 
         return result
 
