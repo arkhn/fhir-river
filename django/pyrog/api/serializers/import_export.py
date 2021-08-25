@@ -13,6 +13,7 @@ from typing import Mapping
 
 from rest_framework import serializers
 
+from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog.models import (
     Attribute,
     Column,
@@ -26,6 +27,7 @@ from pyrog.models import (
     Resource,
     Source,
 )
+from river.common.database_connection.db_connection import DBConnection
 
 
 class _ColumnField(serializers.PrimaryKeyRelatedField):
@@ -87,8 +89,20 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Owner
-        fields = ["id", "name", "schema", "columns"]
+        fields = ["id", "name", "columns"]
+        read_only_fields = ["schema"]
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
+
+    def to_internal_value(self, data):
+        credential = self.root.initial_data["credential"]
+        try:
+            db_connection = DBConnection(credential)
+            explorer = DatabaseExplorer(db_connection)
+            name = data["name"]
+            data["schema"] = explorer.get_owner_schema(name)
+        except Exception as e:
+            raise serializers.ValidationError(e)
+        return data
 
 
 class MappingPartialCredentialSerializer(serializers.ModelSerializer):
@@ -102,6 +116,14 @@ class MappingPartialCredentialSerializer(serializers.ModelSerializer):
 class MappingCredentialSerializer(MappingPartialCredentialSerializer):
     class Meta(MappingPartialCredentialSerializer.Meta):
         fields = MappingPartialCredentialSerializer.Meta.fields + ["login", "password"]
+
+    def validate(self, data):
+        try:
+            db_connection = DBConnection(data).engine.connect()
+            db_connection.close()
+        except Exception as e:
+            raise serializers.ValidationError(e)
+        return data
 
 
 class MappingInputSerializer(serializers.ModelSerializer):
