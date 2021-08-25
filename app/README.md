@@ -48,8 +48,8 @@ This React-Redux project follows the overall [Redux style guide](https://redux.j
 # App Dependencies
 
 
-## Redux ToolKit
-`Redux ToolKit` is a package used to handle the whole application state. Its module `RTK-Query` is also used to handle API calls.
+## [Redux ToolKit](https://redux-toolkit.js.org/)
+`Redux ToolKit` is a package used to handle the whole application state. Its module [RTK-Query](https://redux-toolkit.js.org/rtk-query/overview) is also used to handle API calls.
 We made the choice of handling the state in 2 different ways : 
 
 
@@ -66,21 +66,99 @@ In this project, when needed, a `slice` is created for each model class in need 
 The main reason that made us use those `slices` on top of `RTK-Query`'s API store is to handle back-end objects creations/updates locally before applying the changes in the back-end. The best example use would be the whole mapping editing process : Before applying the changes made, we need to edit locally a whole load of class instances locally (columns, joins, filters, ...). 
 
 
-## Material-UI
+## [Material-UI](https://material-ui.com/)
 
 `Material-UI` is a React UI components library that follows the `Material Design` pattern. We use this library for our whole application UI.
 
 
-## Blueprint
+## [Blueprint](https://blueprintjs.com/docs/)
 
 `Blueprint` is another React UI components library. In our case, we only use this library for its icons.
 
 
-## I18next
+## [I18next](https://www.i18next.com/)
 
 `I18next` is an internationalization-framework used to translate our application in several languages. For now, there is only an English translation available.
 
 
-## ahryman40k/ts-fhir-types
+## [ahryman40k/ts-fhir-types](https://www.npmjs.com/package/@ahryman40k/ts-fhir-types)
 
 This typescript package lets us manage and handle FHIR R4 object models in our application.
+
+
+# Codebase Logic
+
+## Routes
+
+Routes source code is located in folder `src/routes/`
+
+
+### Sources
+
+![Sources](public/screenshots/sources.png "Sources")
+- URL: `/` or `/sources`
+- Features:
+  - [Sources](#sources)
+
+
+### SourceMappings
+
+![SourceMappings](public/screenshots/sourceMappings.png "SourceMappings")
+- URL: `/sources/:sourceId`
+- Features: 
+  - [Sources](#sources)
+  - [Mappings](#mappings)
+  - [NavBar](#navBar)
+
+
+### Batches
+
+![Batches](public/screenshots/batches.png "Batches")
+- URL: `/sources/:sourceId/batches`
+- Features:
+  - [Batches](#batches)
+  - [NavBar](#navBar)
+
+
+### CreateMapping
+
+![CreateMapping](public/screenshots/createMapping.png "CreateMapping")
+- URL: `/sources/:sourceId/batches`
+- Features:
+  - [Columns](#columns)
+  - [Filters](#filters)
+  - [Joins](#joins)
+  - [Mappings](#mappings)
+
+
+### Mapping
+
+![Mapping](public/screenshots/mapping.png "Mapping")
+- URL: `/sources/:sourceId/mappings/:mappingId`
+- Features:
+  - [FhirAttributePanel](#fhirAttributePanel)
+  - [FhirResourceTree](#fhirResourceTree)
+  - [Conditions](#conditions)
+  - [Scripts](#scripts)
+  - [Columns](#columns)
+  - [Joins](#joins)
+
+
+### EditMapping
+
+![EditMapping](public/screenshots/editMapping.png "EditMapping")
+- URL: `/sources/:sourceId/mappings/:mappingId/edit`
+- Features: 
+  - [Columns](#columns)
+  - [Filters](#filters)
+  - [Joins](#joins)
+  - [Mappings](#mappings)
+
+
+### Preview
+
+![Preview](public/screenshots/preview.png "Preview")
+- URL: `/sources/:sourceId/mappings/:mappingId/preview` or `/sources/:sourceId/mappings/:mappingId/attributes/:attributeId/preview`
+- Features:
+  - [Mappings](#mappings)
+  - [NavBar](#navBar)
