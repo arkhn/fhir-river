@@ -2,7 +2,7 @@
   "name": "app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/new_pyrog",
+  "homepage": "/river",
   "dependencies": {
     "@arkhn/ui": "^1.11.2",
     "@blueprintjs/core": "^3.40.0",
