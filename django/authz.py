@@ -34,8 +34,6 @@ class AuthzBackend:
 
 class RemoteAuthzBackend(AuthzBackend):
     def __init__(self):
-        super().__init__()
-
         if settings.AUTHZ_MIDDLEWARE_ENABLED and settings.AUTHZ_MIDDLEWARE_ENDPOINT is None:
             raise ImproperlyConfigured("AUTHZ_MIDDLEWARE_ENDPOINT is not set.")
 
