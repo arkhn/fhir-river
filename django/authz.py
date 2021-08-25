@@ -26,44 +26,22 @@ HTTP_METHOD_TO_OPERATION = {
 }
 
 
-class AuthzMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-        if settings.AUTHZ_MIDDLEWARE_ENABLED and settings.AUTHZ_MIDDLEWARE_SERVICE_NAME is None:
-            raise ImproperlyConfigured("AUTHZ_MIDDLEWARE_SERVICE_NAME is not set.")
+class AuthzBackend:
+    def validate(self, user_email: str, resource: str, operation: Operation) -> bool:
+        raise NotImplementedError
+
+
+class RemoteAuthzBackend(AuthzBackend):
+    def __init__(self):
+        super().__init__()
+
         if settings.AUTHZ_MIDDLEWARE_ENABLED and settings.AUTHZ_MIDDLEWARE_ENDPOINT is None:
             raise ImproperlyConfigured("AUTHZ_MIDDLEWARE_ENDPOINT is not set.")
 
-        self._authz_url_pattern = re.compile(settings.AUTHZ_MIDDLEWARE_URL_PATTERN)
+        if settings.AUTHZ_MIDDLEWARE_ENABLED and settings.AUTHZ_MIDDLEWARE_SERVICE_NAME is None:
+            raise ImproperlyConfigured("AUTHZ_MIDDLEWARE_SERVICE_NAME is not set.")
 
-    def __call__(self, request: http.HttpRequest):
-        if not self.is_exempt(request) and not self.validate_authz(
-            self.get_user_email(request),
-            self.get_resource(request),
-            self.get_operation(request),
-        ):
-            logger.info(f"Authz failed for {request}")
-            return http.HttpResponse(status=403)
-
-        return self.get_response(request)
-
-    def is_exempt(self, request) -> bool:
-        return (
-            not settings.AUTHZ_MIDDLEWARE_ENABLED
-            or not request.user.is_authenticated
-            or self._authz_url_pattern.match(request.path) is None
-        )
-
-    def get_user_email(self, request: http.HttpRequest) -> str:
-        return request.user.email
-
-    def get_operation(self, request: http.HttpRequest) -> Operation:
-        return HTTP_METHOD_TO_OPERATION[request.method]
-
-    def get_resource(self, request: http.HttpRequest) -> str:
-        return request.get_full_path()
-
-    def validate_authz(self, user_email: str, resource: str, operation: Operation) -> bool:
+    def validate(self, user_email: str, resource: str, operation: Operation) -> bool:
         data = {
             "user_email": user_email,
             "service_name": settings.AUTHZ_MIDDLEWARE_SERVICE_NAME,
@@ -77,3 +55,37 @@ class AuthzMiddleware:
         logger.info(f"{'Successful' if result else 'Failed'} authz request for {data}")
 
         return result
+
+
+class AuthzMiddleware:
+    def __init__(self, get_response, backend: AuthzBackend = None, url_pattern: str = None):
+        self.get_response = get_response
+        self._backend = backend or settings.AUTHZ_MIDDLEWARE_BACKEND()
+        self._url_pattern = re.compile(url_pattern or settings.AUTHZ_MIDDLEWARE_URL_PATTERN)
+
+    def __call__(self, request: http.HttpRequest):
+        if not self.is_exempt(request) and not self._backend.validate(
+            self.get_user_email(request),
+            self.get_resource(request),
+            self.get_operation(request),
+        ):
+            logger.info(f"Authz failed for {request}")
+            return http.HttpResponse(status=403)
+
+        return self.get_response(request)
+
+    def get_user_email(self, request: http.HttpRequest) -> str:
+        return request.user.email
+
+    def get_operation(self, request: http.HttpRequest) -> Operation:
+        return HTTP_METHOD_TO_OPERATION[request.method]
+
+    def get_resource(self, request: http.HttpRequest) -> str:
+        return request.get_full_path()
+
+    def is_exempt(self, request) -> bool:
+        return (
+            not settings.AUTHZ_MIDDLEWARE_ENABLED
+            or not request.user.is_authenticated
+            or self._url_pattern.match(request.path) is None
+        )
