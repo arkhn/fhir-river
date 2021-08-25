@@ -15,7 +15,6 @@ import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
 import Button from "common/components/Button";
-
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
