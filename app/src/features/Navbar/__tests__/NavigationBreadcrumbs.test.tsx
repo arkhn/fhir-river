@@ -13,7 +13,7 @@ import {
   ApiSourcesRetrieveApiResponse,
 } from "services/api/generated/api.generated";
 
-import NavigationBreadcrumbs from "../NavigationBreadcrumbs";
+import Navbar from "../Navbar";
 
 const source = sourceFactory.build();
 const mapping = resourceFactory.build(
@@ -49,7 +49,7 @@ afterAll(() => server.close());
 
 describe("Navigation breadcrumbs", () => {
   it("should only display the source name", async () => {
-    render(<NavigationBreadcrumbs />, undefined, {
+    render(<Navbar />, undefined, {
       path: "/sources/:sourceId",
       route: `/sources/${source.id}`,
     });
@@ -58,7 +58,7 @@ describe("Navigation breadcrumbs", () => {
   });
 
   it("should display the source name and mapping name", async () => {
-    render(<NavigationBreadcrumbs />, undefined, {
+    render(<Navbar />, undefined, {
       path: "/sources/:sourceId/mappings/:mappingId",
       route: `/sources/${source.id}/mappings/${mapping.id}`,
     });

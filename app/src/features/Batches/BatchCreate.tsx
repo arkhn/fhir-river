@@ -166,7 +166,7 @@ const BatchCreate = (): JSX.Element => {
         className={classes.button}
         startIcon={<PlayCircleOutline />}
       >
-        <Typography>{t("runNewBatch")}</Typography>
+        {t("run")}
       </Button>
       <Dialog
         open={open}

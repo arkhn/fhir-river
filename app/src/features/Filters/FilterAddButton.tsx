@@ -1,10 +1,11 @@
 import React from "react";
 
-import { Button, ButtonProps, Typography } from "@material-ui/core";
+import { ButtonProps } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch } from "app/store";
+import Button from "common/components/Button";
 import { columnAdded } from "features/Columns/columnSlice";
 import { Resource } from "services/api/generated/api.generated";
 
@@ -33,7 +34,7 @@ const FilterAddButton = ({
 
   return (
     <Button {...props} onClick={handleFilterAdd}>
-      <Typography>{t("addFilter")}</Typography>
+      {t("addFilter")}
     </Button>
   );
 };

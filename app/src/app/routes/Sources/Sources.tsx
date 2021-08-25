@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Container, Grid, makeStyles } from "@material-ui/core";
+import { Container, makeStyles } from "@material-ui/core";
 
 import SourceCreate from "features/Sources/SourceCreate";
 import SourceDrawer from "features/Sources/SourceDrawer";
@@ -12,10 +12,10 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     flexGrow: 1,
-    paddingTop: theme.spacing(5),
+    paddingTop: theme.spacing(2),
   },
   container: {
-    padding: theme.spacing(0, 5),
+    padding: theme.spacing(5, 8),
   },
 }));
 
@@ -24,9 +24,7 @@ const Sources = (): JSX.Element => {
 
   return (
     <Container maxWidth="xl" className={classes.container}>
-      <Grid className={classes.gridContainer} spacing={3} container>
-        <SourceCreate className={classes.button} />
-      </Grid>
+      <SourceCreate className={classes.button} />
       <SourceGrid />
       <SourceDrawer />
     </Container>

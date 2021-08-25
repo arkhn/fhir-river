@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { ChangeEvent, useRef, useState } from "react";
 
-import { Button, Typography, makeStyles } from "@material-ui/core";
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+import { makeStyles } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
 import Alert from "common/components/Alert";
+import Button from "common/components/Button";
 import { useApiSourcesImportCreateMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 
@@ -100,11 +103,11 @@ const UploadSourceButton = (): JSX.Element => {
       <Button
         component="div"
         className={classes.button}
-        variant="contained"
-        color="primary"
+        variant="outlined"
         fullWidth={false}
+        startIcon={<Icon icon={IconNames.IMPORT} />}
       >
-        <Typography>{t("importSource")}</Typography>
+        {t("importSource")}
       </Button>
       <Alert
         severity="error"

@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 150,
   },
   divider: {
-    marginBlock: theme.spacing(5),
+    margin: theme.spacing(4, 3),
   },
 }));
 
@@ -57,6 +57,9 @@ const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
     label: t("name"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
 ];
 
@@ -126,9 +129,9 @@ const SourceForm = (): JSX.Element => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : source ? (
-              <Typography>{t("updateSource")}</Typography>
+              t("updateSource")
             ) : (
-              <Typography>{t("createSource")}</Typography>
+              t("createSource")
             )}
           </Button>
         }

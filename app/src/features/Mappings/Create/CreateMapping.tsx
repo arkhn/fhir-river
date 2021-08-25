@@ -8,12 +8,7 @@ import React, {
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  CircularProgress,
-  Container,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { CircularProgress, Container, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
@@ -243,7 +238,7 @@ const CreateMapping = (): JSX.Element => {
         disableRipple
         color="inherit"
       >
-        <Typography>{t("cancel")}</Typography>
+        {t("cancel")}
       </Button>
       <Container className={classes.rootContainer} maxWidth="lg">
         <MappingCreationStepper ref={stepperRef} activeStep={activeStep} />
@@ -276,7 +271,7 @@ const CreateMapping = (): JSX.Element => {
           disableRipple
           color="inherit"
         >
-          <Typography>{t("previousStep")}</Typography>
+          {t("previousStep")}
         </Button>
         <Button
           className={classes.button}
@@ -288,7 +283,7 @@ const CreateMapping = (): JSX.Element => {
           {isCreateMappingLoading ? (
             <CircularProgress color="inherit" size={23} />
           ) : (
-            <Typography>{t("next")}</Typography>
+            t("next")
           )}
         </Button>
       </div>
