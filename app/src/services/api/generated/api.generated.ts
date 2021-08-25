@@ -1506,9 +1506,6 @@ export type MappingColumn = {
 export type MappingOwner = {
   id: string;
   name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
   columns?: MappingColumn[];
 };
 export type MappingPartialCredential = {
@@ -1595,9 +1592,6 @@ export type MappingColumnRequest = {
 export type MappingOwnerRequest = {
   id: string;
   name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
   columns?: MappingColumnRequest[];
 };
 export type MappingCredentialRequest = {
