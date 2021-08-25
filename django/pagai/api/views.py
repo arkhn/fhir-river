@@ -4,8 +4,10 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from pagai.api import serializers
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pyrog import models
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
+from river.parsing import as_old_mapping
 
 
 class OwnersListView(views.APIView):
@@ -47,13 +49,15 @@ class ExploreView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = serializers.ExplorationRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
         limit = int(request.GET.get("first", 10))
 
         analyzer = Analyzer()
-        analysis = analyzer.analyze(data["mapping"])
+        resource = models.Resource.objects.get(id=data["resource_id"])
+        source = models.Source.objects.get(id=resource.source.id)
+        mapping = as_old_mapping(source, resource.id)
+        analysis = analyzer.analyze(mapping)
 
         credentials = analysis.source_credentials
 
@@ -62,6 +66,6 @@ class ExploreView(generics.GenericAPIView):
             explorer = DatabaseExplorer(db_connection)
             exploration = explorer.explore(data["owner"], data["table"], limit=limit, filters=analysis.filters)
         except Exception as e:
-            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR, headers=headers)
+            return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(exploration, status=status.HTTP_200_OK, headers=headers)
+        return Response(exploration, status=status.HTTP_200_OK)

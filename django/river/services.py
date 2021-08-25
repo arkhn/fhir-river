@@ -20,17 +20,17 @@ from utils.json import CustomJSONEncoder
 
 def batch(
     batch_id: str,
-    resources: List[dict],
+    resource_ids: List[str],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_id}")
 
-    for resource in resources:
+    for resource_id in resource_ids:
         publisher.publish(
             topic=f"batch.{batch_id}",
-            event=BatchEvent(batch_id=batch_id, resource_id=resource["id"]),
+            event=BatchEvent(batch_id=batch_id, resource_id=resource_id),
         )
 
 
@@ -46,8 +46,8 @@ def retry(batch: models.Batch) -> None:
     pass
 
 
-def preview(mapping: dict, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = as_old_mapping(Source(**mapping), mapping["resources"][0]["id"])
+def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
+    resource_mapping = as_old_mapping(Source(**mapping), resource_id)
 
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_mapping)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import {
   Chip,
@@ -15,14 +15,11 @@ import { useParams } from "react-router-dom";
 
 import Alert from "common/components/Alert";
 import Button from "common/components/Button";
-import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
+
 import {
   useApiResourcesListQuery,
   useApiBatchesCreateMutation,
-  useApiSourcesExportRetrieveQuery,
-  useApiCredentialsListQuery,
 } from "services/api/endpoints";
-import type { MappingRequest } from "services/api/generated/api.generated";
 
 const ITEM_HEIGHT = 48;
 
@@ -70,37 +67,10 @@ const BatchCreate = (): JSX.Element => {
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
-  const [isBatchStarting, setIsBatchStarting] = useState<boolean>(false);
-
   const [alert, setAlert] = useState<string | undefined>(undefined);
   const handleAlertClose = () => setAlert(undefined);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
-
-  const {
-    data: mappings,
-    refetch: refetchMappings,
-    isFetching: isMappingsFetching,
-  } = useApiSourcesExportRetrieveQuery({ id });
-
-  const { data: credentials } = useApiCredentialsListQuery(
-    { source: id },
-    { skip: !Boolean(id) }
-  );
-  const credential = credentials?.[0];
-  const mappingsWithCredentials = mappings &&
-    credential && {
-      ...mappings,
-      credential: {
-        ...mappings.credential,
-        login: credential.login,
-        password: credential.password,
-      },
-    };
-
-  const mappingsWithConceptMaps = useMergeConceptMapsToMappings({
-    mappings: mappingsWithCredentials,
-  });
 
   const { data: resources } = useApiResourcesListQuery(
     { source: id },
@@ -119,41 +89,23 @@ const BatchCreate = (): JSX.Element => {
   };
 
   const handleBatchRun = () => {
-    refetchMappings();
-    setIsBatchStarting(true);
-  };
+    const batchCreate = async () => {
+      try {
+        await apiBatchCreate({
+          batchRequest: {
+            resource_ids: selectedResourceIds,
+          },
+        }).unwrap();
+      } catch (e) {
+        setAlert(e.message as string);
+      }
+    };
 
-  useEffect(() => {
-    if (isBatchStarting && !isMappingsFetching && mappingsWithConceptMaps) {
-      const filteredMappings: MappingRequest = {
-        ...mappingsWithConceptMaps,
-        resources: mappingsWithConceptMaps.resources?.filter(({ id }) =>
-          selectedResourceIds.includes(id)
-        ),
-      };
-      const batchCreate = async () => {
-        try {
-          await apiBatchCreate({
-            batchRequest: {
-              mappings: filteredMappings,
-            },
-          }).unwrap();
-
-          setSelectedResourceIds([]);
-          setIsBatchStarting(false);
-        } catch (e) {
-          setAlert(e.message as string);
-        }
-      };
+    if (selectedResourceIds.length > 0) {
       batchCreate();
+      setSelectedResourceIds([]);
     }
-  }, [
-    apiBatchCreate,
-    isBatchStarting,
-    isMappingsFetching,
-    mappingsWithConceptMaps,
-    selectedResourceIds,
-  ]);
+  };
 
   return (
     <div className={classes.root}>

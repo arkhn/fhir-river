@@ -132,7 +132,7 @@ jobs:
   integration:
     runs-on: ubuntu-18.04
     if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
-    needs: [build-and-publish-hapi]
+    needs: [build-and-publish, build-and-publish-hapi]
     steps:
       # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
       # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}
@@ -142,7 +142,7 @@ jobs:
         run: echo "::set-output name=docker-version::sha-${GITHUB_SHA::7}"
 
       - name: Provision, deploy and test
-        uses: docker://arkhn/testy-action:0.5.8
+        uses: docker://arkhn/testy-action:0.5.10
         with:
           cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
           cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
@@ -151,7 +151,7 @@ jobs:
           dockerUsername: ${{ secrets.DOCKER_LOGIN }}
           dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: main
+          deploymentRef: v4
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",

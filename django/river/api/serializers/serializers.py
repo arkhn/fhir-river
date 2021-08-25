@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from river import models
-from river.api.serializers.mapping import MappingSerializer
 
 
 class ErrorSerializer(serializers.ModelSerializer):
@@ -12,15 +11,15 @@ class ErrorSerializer(serializers.ModelSerializer):
 
 class BatchSerializer(serializers.ModelSerializer):
     errors = ErrorSerializer(many=True, read_only=True)
-    mappings = MappingSerializer()
 
     class Meta:
         model = models.Batch
-        fields = "__all__"
+        exclude = ["mappings"]
+        extra_kwargs = {"resource_ids": {"required": True}}
 
 
 class PreviewRequestSerializer(serializers.Serializer):
-    mapping = MappingSerializer()
+    resource_id = serializers.CharField()
     primary_key_values = serializers.ListField(child=serializers.CharField())
 
 

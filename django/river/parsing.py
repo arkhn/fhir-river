@@ -86,7 +86,7 @@ class Resource(BaseModel):
 class Owner(BaseModel):
     id: str
     name: str
-    schema_: str = Field(alias="schema")
+    schema_: Optional[str] = Field(alias="schema")
     columns: List[Column]
 
 
@@ -108,7 +108,6 @@ class Source(BaseModel):
     credential: Credential
     created_at: Optional[str]
     updated_at: Optional[str]
-    users: Optional[List[str]]
 
 
 def as_old_mapping(source: Source, resource_id: str):

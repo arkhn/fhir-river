@@ -915,6 +915,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/explore/:
+    post:
+      operationId: api_explore_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorationResponse'
+          description: ''
   /api/filters/:
     get:
       operationId: api_filters_list
@@ -1589,6 +1618,38 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/list-owners/:
+    post:
+      operationId: api_list_owners_create
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/owner-schema/{owner}/:
+    post:
+      operationId: api_owner_schema_create
+      description: ''
+      parameters:
+      - in: path
+        name: owner
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/owners/:
     get:
       operationId: api_owners_list
@@ -2159,7 +2220,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MappingWithPartialCredentialModel'
+                $ref: '#/components/schemas/MappingWithPartialCredential'
           description: ''
   /api/sources/import/:
     post:
@@ -2171,13 +2232,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MappingModelRequest'
+              $ref: '#/components/schemas/MappingRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/MappingModelRequest'
+              $ref: '#/components/schemas/MappingRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MappingModelRequest'
+              $ref: '#/components/schemas/MappingRequest'
         required: true
       security:
       - cookieAuth: []
@@ -2188,7 +2249,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MappingModel'
+                $ref: '#/components/schemas/Mapping'
           description: ''
   /api/user/:
     get:
@@ -2206,67 +2267,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /pagai/explore/:
-    post:
-      operationId: pagai_explore_create
-      description: ''
-      tags:
-      - pagai
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExplorationRequestRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/ExplorationRequestRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ExplorationRequestRequest'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExplorationResponse'
-          description: ''
-  /pagai/list-owners/:
-    post:
-      operationId: pagai_list_owners_create
-      description: ''
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
-  /pagai/owner-schema/{owner}/:
-    post:
-      operationId: pagai_owner_schema_create
-      description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
 components:
   schemas:
     ActionEnum:
@@ -2329,8 +2329,10 @@ components:
           items:
             $ref: '#/components/schemas/Error'
           readOnly: true
-        mappings:
-          $ref: '#/components/schemas/Mapping'
+        resource_ids:
+          type: array
+          items:
+            type: string
         created_at:
           type: string
           format: date-time
@@ -2348,15 +2350,17 @@ components:
       - deleted_at
       - errors
       - id
-      - mappings
+      - resource_ids
       - updated_at
     BatchRequest:
       type: object
       properties:
-        mappings:
-          $ref: '#/components/schemas/MappingRequest'
+        resource_ids:
+          type: array
+          items:
+            type: string
       required:
-      - mappings
+      - resource_ids
     Column:
       type: object
       properties:
@@ -2585,14 +2589,11 @@ components:
       properties:
         resource_id:
           type: string
-        mapping:
-          $ref: '#/components/schemas/MappingRequest'
         owner:
           type: string
         table:
           type: string
       required:
-      - mapping
       - owner
       - resource_id
       - table
@@ -2763,10 +2764,7 @@ components:
       properties:
         id:
           type: string
-        name:
-          type: string
-        version:
-          type: string
+          readOnly: true
         resources:
           type: array
           items:
@@ -2774,15 +2772,18 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/MappingCredential'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingUser'
-          default: []
+        name:
+          type: string
+        version:
+          type: string
         updated_at:
           type: string
+          format: date-time
+          readOnly: true
         created_at:
           type: string
+          format: date-time
+          readOnly: true
       required:
       - created_at
       - credential
@@ -2802,40 +2803,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MappingInputGroup'
-          default: []
-      required:
-      - definition_id
-      - path
-    MappingAttributeModel:
-      type: object
-      properties:
-        path:
-          type: string
-        slice_name:
-          type: string
-        definition_id:
-          type: string
-        input_groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingInputGroupModel'
-          default: []
-      required:
-      - definition_id
-      - path
-    MappingAttributeModelRequest:
-      type: object
-      properties:
-        path:
-          type: string
-        slice_name:
-          type: string
-        definition_id:
-          type: string
-        input_groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingInputGroupModelRequest'
           default: []
       required:
       - definition_id
@@ -2875,42 +2842,6 @@ components:
       - column
       - id
       - table
-    MappingColumnModel:
-      type: object
-      properties:
-        id:
-          type: string
-        table:
-          type: string
-        column:
-          type: string
-        joins:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingJoinModel'
-          default: []
-      required:
-      - column
-      - id
-      - table
-    MappingColumnModelRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        table:
-          type: string
-        column:
-          type: string
-        joins:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingJoinModelRequest'
-          default: []
-      required:
-      - column
-      - id
-      - table
     MappingColumnRequest:
       type: object
       properties:
@@ -2930,34 +2861,6 @@ components:
       - id
       - table
     MappingCondition:
-      type: object
-      properties:
-        action:
-          $ref: '#/components/schemas/ActionEnum'
-        column:
-          type: string
-        value:
-          type: string
-        relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
-      required:
-      - action
-      - column
-    MappingConditionModel:
-      type: object
-      properties:
-        action:
-          $ref: '#/components/schemas/ActionEnum'
-        column:
-          type: string
-        value:
-          type: string
-        relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
-      required:
-      - action
-      - column
-    MappingConditionModelRequest:
       type: object
       properties:
         action:
@@ -2992,6 +2895,8 @@ components:
           type: string
         port:
           type: integer
+          maximum: 2147483647
+          minimum: -2147483648
         database:
           type: string
         model:
@@ -3012,64 +2917,6 @@ components:
       - model
       - password
       - port
-    MappingCredentialModel:
-      type: object
-      properties:
-        host:
-          type: string
-        port:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-        database:
-          type: string
-        model:
-          $ref: '#/components/schemas/ModelEnum'
-        owners:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingOwnerModel'
-          default: []
-        login:
-          type: string
-        password:
-          type: string
-      required:
-      - database
-      - host
-      - login
-      - model
-      - password
-      - port
-    MappingCredentialModelRequest:
-      type: object
-      properties:
-        host:
-          type: string
-        port:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-        database:
-          type: string
-        model:
-          $ref: '#/components/schemas/ModelEnum'
-        owners:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingOwnerModelRequest'
-          default: []
-        login:
-          type: string
-        password:
-          type: string
-      required:
-      - database
-      - host
-      - login
-      - model
-      - password
-      - port
     MappingCredentialRequest:
       type: object
       properties:
@@ -3077,6 +2924,8 @@ components:
           type: string
         port:
           type: integer
+          maximum: 2147483647
+          minimum: -2147483648
         database:
           type: string
         model:
@@ -3109,30 +2958,6 @@ components:
       required:
       - relation
       - sql_column
-    MappingFilterModel:
-      type: object
-      properties:
-        relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
-        value:
-          type: string
-        sql_column:
-          type: string
-      required:
-      - relation
-      - sql_column
-    MappingFilterModelRequest:
-      type: object
-      properties:
-        relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
-        value:
-          type: string
-        sql_column:
-          type: string
-      required:
-      - relation
-      - sql_column
     MappingFilterRequest:
       type: object
       properties:
@@ -3152,9 +2977,6 @@ components:
           type: string
         concept_map_id:
           type: string
-        concept_map:
-          type: object
-          additionalProperties: {}
         static_value:
           type: string
           nullable: true
@@ -3168,6 +2990,7 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         merging_script:
           type: string
         inputs:
@@ -3182,49 +3005,9 @@ components:
           default: []
       required:
       - id
-    MappingInputGroupModel:
-      type: object
-      properties:
-        id:
-          type: string
-        merging_script:
-          type: string
-        inputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingInputModel'
-          default: []
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingConditionModel'
-          default: []
-      required:
-      - id
-    MappingInputGroupModelRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        merging_script:
-          type: string
-        inputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingInputModelRequest'
-          default: []
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingConditionModelRequest'
-          default: []
-      required:
-      - id
     MappingInputGroupRequest:
       type: object
       properties:
-        id:
-          type: string
         merging_script:
           type: string
         inputs:
@@ -3237,38 +3020,6 @@ components:
           items:
             $ref: '#/components/schemas/MappingConditionRequest'
           default: []
-      required:
-      - id
-    MappingInputModel:
-      type: object
-      properties:
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        column:
-          type: string
-          nullable: true
-      required:
-      - column
-    MappingInputModelRequest:
-      type: object
-      properties:
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        column:
-          type: string
-          nullable: true
-      required:
-      - column
     MappingInputRequest:
       type: object
       properties:
@@ -3276,9 +3027,6 @@ components:
           type: string
         concept_map_id:
           type: string
-        concept_map:
-          type: object
-          additionalProperties: {}
         static_value:
           type: string
           nullable: true
@@ -3296,24 +3044,6 @@ components:
             type: string
       required:
       - columns
-    MappingJoinModel:
-      type: object
-      properties:
-        columns:
-          type: array
-          items:
-            type: string
-      required:
-      - columns
-    MappingJoinModelRequest:
-      type: object
-      properties:
-        columns:
-          type: array
-          items:
-            type: string
-      required:
-      - columns
     MappingJoinRequest:
       type: object
       properties:
@@ -3323,66 +3053,6 @@ components:
             type: string
       required:
       - columns
-    MappingModel:
-      type: object
-      properties:
-        id:
-          type: string
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingResourceModel'
-          default: []
-        credential:
-          $ref: '#/components/schemas/MappingCredentialModel'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-          default: []
-        name:
-          type: string
-        version:
-          type: string
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-      required:
-      - created_at
-      - credential
-      - id
-      - name
-      - updated_at
-    MappingModelRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingResourceModelRequest'
-          default: []
-        credential:
-          $ref: '#/components/schemas/MappingCredentialModelRequest'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRequest'
-          default: []
-        name:
-          type: string
-        version:
-          type: string
-      required:
-      - credential
-      - id
-      - name
     MappingOwner:
       type: object
       properties:
@@ -3398,44 +3068,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MappingColumn'
-          default: []
-      required:
-      - id
-      - name
-    MappingOwnerModel:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        schema:
-          type: object
-          additionalProperties: {}
-          nullable: true
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingColumnModel'
-          default: []
-      required:
-      - id
-      - name
-    MappingOwnerModelRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        schema:
-          type: object
-          additionalProperties: {}
-          nullable: true
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingColumnModelRequest'
           default: []
       required:
       - id
@@ -3459,7 +3091,7 @@ components:
       required:
       - id
       - name
-    MappingPartialCredentialModel:
+    MappingPartialCredential:
       type: object
       properties:
         host:
@@ -3475,7 +3107,7 @@ components:
         owners:
           type: array
           items:
-            $ref: '#/components/schemas/MappingOwnerModel'
+            $ref: '#/components/schemas/MappingOwner'
           default: []
       required:
       - database
@@ -3485,12 +3117,6 @@ components:
     MappingRequest:
       type: object
       properties:
-        id:
-          type: string
-        name:
-          type: string
-        version:
-          type: string
         resources:
           type: array
           items:
@@ -3498,26 +3124,19 @@ components:
           default: []
         credential:
           $ref: '#/components/schemas/MappingCredentialRequest'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingUserRequest'
-          default: []
-        updated_at:
+        name:
           type: string
-        created_at:
+        version:
           type: string
       required:
-      - created_at
       - credential
-      - id
       - name
-      - updated_at
     MappingResource:
       type: object
       properties:
         id:
           type: string
+          readOnly: true
         label:
           type: string
         primary_key_table:
@@ -3525,6 +3144,8 @@ components:
         primary_key_column:
           type: string
         definition_id:
+          type: string
+        logical_reference:
           type: string
         primary_key_owner:
           type: string
@@ -3538,76 +3159,6 @@ components:
           items:
             $ref: '#/components/schemas/MappingFilter'
           default: []
-        logical_reference:
-          type: string
-      required:
-      - definition_id
-      - id
-      - logical_reference
-      - primary_key_column
-      - primary_key_owner
-      - primary_key_table
-    MappingResourceModel:
-      type: object
-      properties:
-        id:
-          type: string
-        label:
-          type: string
-        primary_key_table:
-          type: string
-        primary_key_column:
-          type: string
-        definition_id:
-          type: string
-        logical_reference:
-          type: string
-        primary_key_owner:
-          type: string
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingAttributeModel'
-          default: []
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingFilterModel'
-          default: []
-      required:
-      - definition_id
-      - id
-      - logical_reference
-      - primary_key_column
-      - primary_key_owner
-      - primary_key_table
-    MappingResourceModelRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        label:
-          type: string
-        primary_key_table:
-          type: string
-        primary_key_column:
-          type: string
-        definition_id:
-          type: string
-        logical_reference:
-          type: string
-        primary_key_owner:
-          type: string
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingAttributeModelRequest'
-          default: []
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/MappingFilterModelRequest'
-          default: []
       required:
       - definition_id
       - id
@@ -3618,8 +3169,6 @@ components:
     MappingResourceRequest:
       type: object
       properties:
-        id:
-          type: string
         label:
           type: string
         primary_key_table:
@@ -3627,6 +3176,8 @@ components:
         primary_key_column:
           type: string
         definition_id:
+          type: string
+        logical_reference:
           type: string
         primary_key_owner:
           type: string
@@ -3640,60 +3191,25 @@ components:
           items:
             $ref: '#/components/schemas/MappingFilterRequest'
           default: []
-        logical_reference:
-          type: string
       required:
       - definition_id
-      - id
       - logical_reference
       - primary_key_column
       - primary_key_owner
       - primary_key_table
-    MappingUser:
+    MappingWithPartialCredential:
       type: object
       properties:
         id:
           type: string
-        email:
-          type: string
-          format: email
-        username:
-          type: string
-      required:
-      - email
-      - id
-      - username
-    MappingUserRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        email:
-          type: string
-          format: email
-        username:
-          type: string
-      required:
-      - email
-      - id
-      - username
-    MappingWithPartialCredentialModel:
-      type: object
-      properties:
-        id:
-          type: string
+          readOnly: true
         resources:
           type: array
           items:
-            $ref: '#/components/schemas/MappingResourceModel'
+            $ref: '#/components/schemas/MappingResource'
           default: []
         credential:
-          $ref: '#/components/schemas/MappingPartialCredentialModel'
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-          default: []
+          $ref: '#/components/schemas/MappingPartialCredential'
         name:
           type: string
         version:
@@ -3782,8 +3298,10 @@ components:
     PatchedBatchRequest:
       type: object
       properties:
-        mappings:
-          $ref: '#/components/schemas/MappingRequest'
+        resource_ids:
+          type: array
+          items:
+            type: string
     PatchedColumnRequest:
       type: object
       properties:
@@ -3898,15 +3416,15 @@ components:
     PreviewRequestRequest:
       type: object
       properties:
-        mapping:
-          $ref: '#/components/schemas/MappingRequest'
+        resource_id:
+          type: string
         primary_key_values:
           type: array
           items:
             type: string
       required:
-      - mapping
       - primary_key_values
+      - resource_id
     PreviewResponse:
       type: object
       properties:
@@ -4052,22 +3570,6 @@ components:
       required:
       - email
       - id
-      - username
-    UserRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          maxLength: 254
-        username:
-          type: string
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-      required:
-      - email
       - username
   securitySchemes:
     basicAuth:

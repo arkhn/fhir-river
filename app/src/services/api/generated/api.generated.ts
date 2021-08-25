@@ -303,6 +303,16 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiExploreCreate: build.mutation<
+      ApiExploreCreateApiResponse,
+      ApiExploreCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/explore/`,
+        method: "POST",
+        body: queryArg.explorationRequestRequest,
+      }),
+    }),
     apiFiltersList: build.query<
       ApiFiltersListApiResponse,
       ApiFiltersListApiArg
@@ -516,6 +526,21 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
+    apiListOwnersCreate: build.mutation<
+      ApiListOwnersCreateApiResponse,
+      ApiListOwnersCreateApiArg
+    >({
+      query: () => ({ url: `/api/list-owners/`, method: "POST" }),
+    }),
+    apiOwnerSchemaCreate: build.mutation<
+      ApiOwnerSchemaCreateApiResponse,
+      ApiOwnerSchemaCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/owner-schema/${queryArg.owner}/`,
+        method: "POST",
+      }),
+    }),
     apiOwnersList: build.query<ApiOwnersListApiResponse, ApiOwnersListApiArg>({
       query: (queryArg) => ({
         url: `/api/owners/`,
@@ -704,7 +729,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/sources/import/`,
         method: "POST",
-        body: queryArg.mappingModelRequest,
+        body: queryArg.mappingRequest,
       }),
     }),
     apiUserRetrieve: build.query<
@@ -712,31 +737,6 @@ export const api = createApi({
       ApiUserRetrieveApiArg
     >({
       query: () => ({ url: `/api/user/` }),
-    }),
-    pagaiExploreCreate: build.mutation<
-      PagaiExploreCreateApiResponse,
-      PagaiExploreCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/pagai/explore/`,
-        method: "POST",
-        body: queryArg.explorationRequestRequest,
-      }),
-    }),
-    pagaiListOwnersCreate: build.mutation<
-      PagaiListOwnersCreateApiResponse,
-      PagaiListOwnersCreateApiArg
-    >({
-      query: () => ({ url: `/pagai/list-owners/`, method: "POST" }),
-    }),
-    pagaiOwnerSchemaCreate: build.mutation<
-      PagaiOwnerSchemaCreateApiResponse,
-      PagaiOwnerSchemaCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/pagai/owner-schema/${queryArg.owner}/`,
-        method: "POST",
-      }),
     }),
   }),
 });
@@ -915,6 +915,11 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
+export type ApiExploreCreateApiResponse =
+  /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiArg = {
+  explorationRequestRequest: ExplorationRequestRequest;
+};
 export type ApiFiltersListApiResponse = /** status 200  */ Filter[];
 export type ApiFiltersListApiArg = {
   resource?: string;
@@ -1042,6 +1047,12 @@ export type ApiJoinsDestroyApiArg = {
   /** A unique value identifying this join. */
   id: string;
 };
+export type ApiListOwnersCreateApiResponse = unknown;
+export type ApiListOwnersCreateApiArg = {};
+export type ApiOwnerSchemaCreateApiResponse = unknown;
+export type ApiOwnerSchemaCreateApiArg = {
+  owner: string;
+};
 export type ApiOwnersListApiResponse = /** status 200  */ Owner[];
 export type ApiOwnersListApiArg = {
   credential?: string;
@@ -1142,28 +1153,17 @@ export type ApiSourcesDestroyApiArg = {
   id: string;
 };
 export type ApiSourcesExportRetrieveApiResponse =
-  /** status 200  */ MappingWithPartialCredentialModel;
+  /** status 200  */ MappingWithPartialCredential;
 export type ApiSourcesExportRetrieveApiArg = {
   /** A unique value identifying this source. */
   id: string;
 };
-export type ApiSourcesImportCreateApiResponse = /** status 200  */ MappingModel;
+export type ApiSourcesImportCreateApiResponse = /** status 200  */ Mapping;
 export type ApiSourcesImportCreateApiArg = {
-  mappingModelRequest: MappingModelRequest;
+  mappingRequest: MappingRequest;
 };
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
-export type PagaiExploreCreateApiResponse =
-  /** status 200  */ ExplorationResponse;
-export type PagaiExploreCreateApiArg = {
-  explorationRequestRequest: ExplorationRequestRequest;
-};
-export type PagaiListOwnersCreateApiResponse = unknown;
-export type PagaiListOwnersCreateApiArg = {};
-export type PagaiOwnerSchemaCreateApiResponse = unknown;
-export type PagaiOwnerSchemaCreateApiArg = {
-  owner: string;
-};
 export type Attribute = {
   id: string;
   path: string;
@@ -1195,105 +1195,10 @@ export type Error = {
   deleted_at: string;
   batch: string;
 };
-export type MappingInput = {
-  script?: string;
-  concept_map_id?: string;
-  concept_map?: {
-    [key: string]: any;
-  };
-  static_value?: string | null;
-  column: string | null;
-};
-export type ActionEnum = "INCLUDE" | "EXCLUDE";
-export type ConditionRelationEnum =
-  | "EQ"
-  | "GT"
-  | "GE"
-  | "LT"
-  | "LE"
-  | "NOTNULL"
-  | "NULL";
-export type MappingCondition = {
-  action: ActionEnum;
-  column: string;
-  value?: string;
-  relation?: ConditionRelationEnum;
-};
-export type MappingInputGroup = {
-  id: string;
-  merging_script?: string;
-  inputs?: MappingInput[];
-  conditions?: MappingCondition[];
-};
-export type MappingAttribute = {
-  path: string;
-  slice_name?: string;
-  definition_id: string;
-  input_groups?: MappingInputGroup[];
-};
-export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
-export type MappingFilter = {
-  relation: FilterRelationEnum;
-  value?: string;
-  sql_column: string;
-};
-export type MappingResource = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  primary_key_owner: string;
-  attributes?: MappingAttribute[];
-  filters?: MappingFilter[];
-  logical_reference: string;
-};
-export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
-export type MappingJoin = {
-  columns: string[];
-};
-export type MappingColumn = {
-  id: string;
-  table: string;
-  column: string;
-  joins?: MappingJoin[];
-};
-export type MappingOwner = {
-  id: string;
-  name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
-  columns?: MappingColumn[];
-};
-export type MappingCredential = {
-  host: string;
-  port: number;
-  database: string;
-  model: ModelEnum;
-  owners?: MappingOwner[];
-  login: string;
-  password: string;
-};
-export type MappingUser = {
-  id: string;
-  email: string;
-  username: string;
-};
-export type Mapping = {
-  id: string;
-  name: string;
-  version?: string;
-  resources?: MappingResource[];
-  credential: MappingCredential;
-  users?: MappingUser[];
-  updated_at: string;
-  created_at: string;
-};
 export type Batch = {
   id: string;
   errors: Error[];
-  mappings: Mapping;
+  resource_ids: string[];
   created_at: string;
   updated_at: string;
   deleted_at: string;
@@ -1304,95 +1209,11 @@ export type PaginatedBatchList = {
   previous?: string | null;
   results?: Batch[];
 };
-export type MappingInputRequest = {
-  script?: string;
-  concept_map_id?: string;
-  concept_map?: {
-    [key: string]: any;
-  };
-  static_value?: string | null;
-  column: string | null;
-};
-export type MappingConditionRequest = {
-  action: ActionEnum;
-  column: string;
-  value?: string;
-  relation?: ConditionRelationEnum;
-};
-export type MappingInputGroupRequest = {
-  id: string;
-  merging_script?: string;
-  inputs?: MappingInputRequest[];
-  conditions?: MappingConditionRequest[];
-};
-export type MappingAttributeRequest = {
-  path: string;
-  slice_name?: string;
-  definition_id: string;
-  input_groups?: MappingInputGroupRequest[];
-};
-export type MappingFilterRequest = {
-  relation: FilterRelationEnum;
-  value?: string;
-  sql_column: string;
-};
-export type MappingResourceRequest = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  primary_key_owner: string;
-  attributes?: MappingAttributeRequest[];
-  filters?: MappingFilterRequest[];
-  logical_reference: string;
-};
-export type MappingJoinRequest = {
-  columns: string[];
-};
-export type MappingColumnRequest = {
-  id: string;
-  table: string;
-  column: string;
-  joins?: MappingJoinRequest[];
-};
-export type MappingOwnerRequest = {
-  id: string;
-  name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
-  columns?: MappingColumnRequest[];
-};
-export type MappingCredentialRequest = {
-  host: string;
-  port: number;
-  database: string;
-  model: ModelEnum;
-  owners?: MappingOwnerRequest[];
-  login: string;
-  password: string;
-};
-export type MappingUserRequest = {
-  id: string;
-  email: string;
-  username: string;
-};
-export type MappingRequest = {
-  id: string;
-  name: string;
-  version?: string;
-  resources?: MappingResourceRequest[];
-  credential: MappingCredentialRequest;
-  users?: MappingUserRequest[];
-  updated_at: string;
-  created_at: string;
-};
 export type BatchRequest = {
-  mappings: MappingRequest;
+  resource_ids: string[];
 };
 export type PatchedBatchRequest = {
-  mappings?: MappingRequest;
+  resource_ids?: string[];
 };
 export type Column = {
   id: string;
@@ -1418,6 +1239,15 @@ export type PatchedColumnRequest = {
   input?: string | null;
   owner?: string;
 };
+export type ActionEnum = "INCLUDE" | "EXCLUDE";
+export type ConditionRelationEnum =
+  | "EQ"
+  | "GT"
+  | "GE"
+  | "LT"
+  | "LE"
+  | "NOTNULL"
+  | "NULL";
 export type Condition = {
   id: string;
   action: ActionEnum;
@@ -1440,6 +1270,7 @@ export type PatchedConditionRequest = {
   column?: string;
   input_group?: string;
 };
+export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
 export type Credential = {
   id: string;
   available_owners: string[];
@@ -1471,6 +1302,16 @@ export type PatchedCredentialRequest = {
   model?: ModelEnum;
   source?: string;
 };
+export type ExplorationResponse = {
+  fields: string[];
+  rows: string[][];
+};
+export type ExplorationRequestRequest = {
+  resource_id: string;
+  owner: string;
+  table: string;
+};
+export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
 export type Filter = {
   id: string;
   relation: FilterRelationEnum;
@@ -1561,7 +1402,7 @@ export type PreviewResponse = {
   errors: string[];
 };
 export type PreviewRequestRequest = {
-  mapping: MappingRequest;
+  resource_id: string;
   primary_key_values: string[];
 };
 export type Resource = {
@@ -1613,36 +1454,36 @@ export type PatchedSourceRequest = {
   name?: string;
   version?: string;
 };
-export type MappingInputModel = {
+export type MappingInput = {
   script?: string;
   concept_map_id?: string;
   static_value?: string | null;
   column: string | null;
 };
-export type MappingConditionModel = {
+export type MappingCondition = {
   action: ActionEnum;
   column: string;
   value?: string;
   relation?: ConditionRelationEnum;
 };
-export type MappingInputGroupModel = {
+export type MappingInputGroup = {
   id: string;
   merging_script?: string;
-  inputs?: MappingInputModel[];
-  conditions?: MappingConditionModel[];
+  inputs?: MappingInput[];
+  conditions?: MappingCondition[];
 };
-export type MappingAttributeModel = {
+export type MappingAttribute = {
   path: string;
   slice_name?: string;
   definition_id: string;
-  input_groups?: MappingInputGroupModel[];
+  input_groups?: MappingInputGroup[];
 };
-export type MappingFilterModel = {
+export type MappingFilter = {
   relation: FilterRelationEnum;
   value?: string;
   sql_column: string;
 };
-export type MappingResourceModel = {
+export type MappingResource = {
   id: string;
   label?: string;
   primary_key_table: string;
@@ -1650,154 +1491,134 @@ export type MappingResourceModel = {
   definition_id: string;
   logical_reference: string;
   primary_key_owner: string;
-  attributes?: MappingAttributeModel[];
-  filters?: MappingFilterModel[];
+  attributes?: MappingAttribute[];
+  filters?: MappingFilter[];
 };
-export type MappingJoinModel = {
+export type MappingJoin = {
   columns: string[];
 };
-export type MappingColumnModel = {
+export type MappingColumn = {
   id: string;
   table: string;
   column: string;
-  joins?: MappingJoinModel[];
+  joins?: MappingJoin[];
 };
-export type MappingOwnerModel = {
+export type MappingOwner = {
   id: string;
   name: string;
   schema?: {
     [key: string]: any;
   } | null;
-  columns?: MappingColumnModel[];
+  columns?: MappingColumn[];
 };
-export type MappingPartialCredentialModel = {
+export type MappingPartialCredential = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: MappingOwnerModel[];
+  owners?: MappingOwner[];
+};
+export type MappingWithPartialCredential = {
+  id: string;
+  resources?: MappingResource[];
+  credential: MappingPartialCredential;
+  name: string;
+  version?: string;
+  updated_at: string;
+  created_at: string;
+};
+export type MappingCredential = {
+  host: string;
+  port: number;
+  database: string;
+  model: ModelEnum;
+  owners?: MappingOwner[];
+  login: string;
+  password: string;
+};
+export type Mapping = {
+  id: string;
+  resources?: MappingResource[];
+  credential: MappingCredential;
+  name: string;
+  version?: string;
+  updated_at: string;
+  created_at: string;
+};
+export type MappingInputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  static_value?: string | null;
+  column: string | null;
+};
+export type MappingConditionRequest = {
+  action: ActionEnum;
+  column: string;
+  value?: string;
+  relation?: ConditionRelationEnum;
+};
+export type MappingInputGroupRequest = {
+  merging_script?: string;
+  inputs?: MappingInputRequest[];
+  conditions?: MappingConditionRequest[];
+};
+export type MappingAttributeRequest = {
+  path: string;
+  slice_name?: string;
+  definition_id: string;
+  input_groups?: MappingInputGroupRequest[];
+};
+export type MappingFilterRequest = {
+  relation: FilterRelationEnum;
+  value?: string;
+  sql_column: string;
+};
+export type MappingResourceRequest = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  logical_reference: string;
+  primary_key_owner: string;
+  attributes?: MappingAttributeRequest[];
+  filters?: MappingFilterRequest[];
+};
+export type MappingJoinRequest = {
+  columns: string[];
+};
+export type MappingColumnRequest = {
+  id: string;
+  table: string;
+  column: string;
+  joins?: MappingJoinRequest[];
+};
+export type MappingOwnerRequest = {
+  id: string;
+  name: string;
+  schema?: {
+    [key: string]: any;
+  } | null;
+  columns?: MappingColumnRequest[];
+};
+export type MappingCredentialRequest = {
+  host: string;
+  port: number;
+  database: string;
+  model: ModelEnum;
+  owners?: MappingOwnerRequest[];
+  login: string;
+  password: string;
+};
+export type MappingRequest = {
+  resources?: MappingResourceRequest[];
+  credential: MappingCredentialRequest;
+  name: string;
+  version?: string;
 };
 export type User = {
   id: string;
   email: string;
   username: string;
-};
-export type MappingWithPartialCredentialModel = {
-  id: string;
-  resources?: MappingResourceModel[];
-  credential: MappingPartialCredentialModel;
-  users?: User[];
-  name: string;
-  version?: string;
-  updated_at: string;
-  created_at: string;
-};
-export type MappingCredentialModel = {
-  host: string;
-  port: number;
-  database: string;
-  model: ModelEnum;
-  owners?: MappingOwnerModel[];
-  login: string;
-  password: string;
-};
-export type MappingModel = {
-  id: string;
-  resources?: MappingResourceModel[];
-  credential: MappingCredentialModel;
-  users?: User[];
-  name: string;
-  version?: string;
-  updated_at: string;
-  created_at: string;
-};
-export type MappingInputModelRequest = {
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  column: string | null;
-};
-export type MappingConditionModelRequest = {
-  action: ActionEnum;
-  column: string;
-  value?: string;
-  relation?: ConditionRelationEnum;
-};
-export type MappingInputGroupModelRequest = {
-  id: string;
-  merging_script?: string;
-  inputs?: MappingInputModelRequest[];
-  conditions?: MappingConditionModelRequest[];
-};
-export type MappingAttributeModelRequest = {
-  path: string;
-  slice_name?: string;
-  definition_id: string;
-  input_groups?: MappingInputGroupModelRequest[];
-};
-export type MappingFilterModelRequest = {
-  relation: FilterRelationEnum;
-  value?: string;
-  sql_column: string;
-};
-export type MappingResourceModelRequest = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  logical_reference: string;
-  primary_key_owner: string;
-  attributes?: MappingAttributeModelRequest[];
-  filters?: MappingFilterModelRequest[];
-};
-export type MappingJoinModelRequest = {
-  columns: string[];
-};
-export type MappingColumnModelRequest = {
-  id: string;
-  table: string;
-  column: string;
-  joins?: MappingJoinModelRequest[];
-};
-export type MappingOwnerModelRequest = {
-  id: string;
-  name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
-  columns?: MappingColumnModelRequest[];
-};
-export type MappingCredentialModelRequest = {
-  host: string;
-  port: number;
-  database: string;
-  model: ModelEnum;
-  owners?: MappingOwnerModelRequest[];
-  login: string;
-  password: string;
-};
-export type UserRequest = {
-  email: string;
-  username: string;
-};
-export type MappingModelRequest = {
-  id: string;
-  resources?: MappingResourceModelRequest[];
-  credential: MappingCredentialModelRequest;
-  users?: UserRequest[];
-  name: string;
-  version?: string;
-};
-export type ExplorationResponse = {
-  fields: string[];
-  rows: string[][];
-};
-export type ExplorationRequestRequest = {
-  resource_id: string;
-  mapping: MappingRequest;
-  owner: string;
-  table: string;
 };
 export const {
   useApiAttributesListQuery,
@@ -1832,6 +1653,7 @@ export const {
   useApiCredentialsUpdateMutation,
   useApiCredentialsPartialUpdateMutation,
   useApiCredentialsDestroyMutation,
+  useApiExploreCreateMutation,
   useApiFiltersListQuery,
   useApiFiltersCreateMutation,
   useApiFiltersRetrieveQuery,
@@ -1856,6 +1678,8 @@ export const {
   useApiJoinsUpdateMutation,
   useApiJoinsPartialUpdateMutation,
   useApiJoinsDestroyMutation,
+  useApiListOwnersCreateMutation,
+  useApiOwnerSchemaCreateMutation,
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersRetrieveQuery,
@@ -1879,7 +1703,4 @@ export const {
   useApiSourcesExportRetrieveQuery,
   useApiSourcesImportCreateMutation,
   useApiUserRetrieveQuery,
-  usePagaiExploreCreateMutation,
-  usePagaiListOwnersCreateMutation,
-  usePagaiOwnerSchemaCreateMutation,
 } = api;

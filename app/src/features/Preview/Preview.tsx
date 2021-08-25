@@ -23,18 +23,13 @@ import { useParams } from "react-router-dom";
 import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
 import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
-import useMergeConceptMapsToMappings from "common/hooks/useMergeConceptMapsToMappings";
 import {
   useApiResourcesRetrieveQuery,
-  usePagaiExploreCreateMutation,
+  useApiExploreCreateMutation,
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
-  useApiCredentialsListQuery,
 } from "services/api/endpoints";
-import {
-  useApiSourcesExportRetrieveQuery,
-  ExplorationResponse,
-} from "services/api/generated/api.generated";
+import { ExplorationResponse } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -106,15 +101,12 @@ const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
+  const { mappingId } = useParams<{
     mappingId?: string;
   }>();
 
-  const [previewIndex, setPreviewIndex] = useState<number>(0);
-
   const [exploration, setExploration] = useState<
-    ExplorationResponse | undefined
+    ExplorationResponse | null | undefined
   >(undefined);
 
   const [alert, setAlert] = useState<string | undefined>(undefined);
@@ -123,42 +115,6 @@ const Preview = (): JSX.Element => {
   const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
     undefined
   );
-
-  const { data: credentials } = useApiCredentialsListQuery({
-    source: sourceId,
-  });
-  const credential = credentials?.[0];
-
-  const {
-    mappings,
-    refetch: refetchMappings,
-    isMappingsFetching,
-  } = useApiSourcesExportRetrieveQuery(
-    { id: sourceId ?? "" },
-    {
-      skip: !sourceId,
-      selectFromResult: ({ data: mappings, isFetching }) => {
-        const resource = mappings?.resources?.find(
-          ({ id }) => id === mappingId
-        );
-        return {
-          mappings: mappings &&
-            credential && {
-              ...mappings,
-              credential: {
-                ...mappings.credential,
-                login: credential.login,
-                password: credential.password,
-              },
-              resources: resource && [resource],
-            },
-          isMappingsFetching: isFetching,
-        };
-      },
-    }
-  );
-
-  const mappingsWithConceptMaps = useMergeConceptMapsToMappings({ mappings });
 
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
@@ -172,18 +128,19 @@ const Preview = (): JSX.Element => {
     { skip: !mapping }
   );
 
-  const [pagaiExploreCreate] = usePagaiExploreCreateMutation();
+  const [apiExploreCreate] = useApiExploreCreateMutation();
 
   useEffect(() => {
-    if (mappingsWithConceptMaps && mapping && owner) {
+    if (mappingId && owner && exploration === undefined) {
+      setExploration(null);
+
       const explore = async () => {
         try {
-          const exploration = await pagaiExploreCreate({
+          const exploration = await apiExploreCreate({
             explorationRequestRequest: {
-              resource_id: mapping?.id ?? "",
               owner: owner?.name ?? "",
               table: mapping?.primary_key_table ?? "",
-              mapping: mappingsWithConceptMaps,
+              resource_id: mappingId,
             },
           }).unwrap();
           setExploration(exploration);
@@ -193,37 +150,32 @@ const Preview = (): JSX.Element => {
       };
       explore();
     }
-  }, [mapping, mappingsWithConceptMaps, owner, pagaiExploreCreate]);
+  }, [
+    apiExploreCreate,
+    exploration,
+    mapping?.primary_key_table,
+    mappingId,
+    owner,
+  ]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
-    refetchMappings();
-    setPreviewIndex(index);
-  };
-
-  useEffect(() => {
-    if (
-      previewIndex > 0 &&
-      !isMappingsFetching &&
-      exploration &&
-      mapping?.primary_key_table
-    ) {
-      const primaryKey = mapping?.primary_key_table;
+    if (exploration && mappingId && mapping?.primary_key_table) {
+      const primaryKey = mapping.primary_key_table;
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
-      const primaryKeyValue = exploration.rows[previewIndex]?.[primaryKeyIndex];
+      const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
 
-      if (mappingsWithConceptMaps) {
+      if (primaryKeyValue) {
         const previewCreate = async () => {
           try {
             const previewResult = await apiPreviewCreate({
               previewRequestRequest: {
-                mapping: mappingsWithConceptMaps,
-                primary_key_values: [primaryKeyValue ?? ""],
+                resource_id: mappingId,
+                primary_key_values: [primaryKeyValue],
               },
             }).unwrap();
             setPreview(previewResult);
-            setPreviewIndex(0);
           } catch (e) {
             setAlert(e.message);
           }
@@ -231,15 +183,7 @@ const Preview = (): JSX.Element => {
         previewCreate();
       }
     }
-  }, [
-    apiPreviewCreate,
-    exploration,
-    isMappingsFetching,
-    mapping,
-    mappings,
-    mappingsWithConceptMaps,
-    previewIndex,
-  ]);
+  };
 
   return (
     <>
