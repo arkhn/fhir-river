@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Navbar = ({ ...props }: MuiBreadcrumbsProps): JSX.Element => {
+const Navbar = (props: MuiBreadcrumbsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const { sourceId, mappingId } = useParams<{

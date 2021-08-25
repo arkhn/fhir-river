@@ -76,7 +76,6 @@ const DeleteDialog = ({
           className={clsx(classes.button, classes.error)}
           variant="contained"
           onClick={onDelete}
-          typography
         >
           {isLoading ? <CircularProgress /> : t("confirmDelete")}
         </Button>
