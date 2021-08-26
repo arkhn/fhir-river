@@ -1,16 +1,17 @@
 import logging
 from time import sleep
+from typing import List
 
 from django.utils import timezone
 
-from river import models
 from river.adapters.progression_counter import ProgressionCounter
 from river.adapters.topics import TopicsManager
+from river.models import Batch
 
 logger = logging.getLogger(__name__)
 
 
-def teardown_after_batch(batch: models.Batch, topics: TopicsManager):
+def teardown_after_batch(batch: Batch, topics: TopicsManager):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics.delete(f"{base_topic}.{batch.id}")
 
@@ -18,8 +19,8 @@ def teardown_after_batch(batch: models.Batch, topics: TopicsManager):
 
 
 def clean(counter: ProgressionCounter, topics: TopicsManager):
-    current_batches = models.Batch.objects.filter(deleted_at__isnull=True)
-    batches_to_delete = []
+    current_batches = Batch.objects.filter(completed_at__isnull=True, canceled_at__isnull=True)
+    batches_to_delete: List[Batch] = []
 
     for batch in current_batches:
         resources_progressions = [counter.get(f"{batch.id}:{resource_id}") for resource_id in batch.resource_ids]
@@ -39,7 +40,7 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
 
     for batch in batches_to_delete:
         teardown_after_batch(batch, topics)
-        batch.deleted_at = timezone.now()
+        batch.completed_at = timezone.now()
         batch.save()
         logger.info(f"Batch {batch} deleted.")
 

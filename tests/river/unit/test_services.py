@@ -31,7 +31,7 @@ def test_abort(batch):
 
     abort(batch, topics)
 
-    assert batch.deleted_at is not None
+    assert batch.canceled_at is not None
     assert topics._topics == set()
 
 
@@ -42,6 +42,6 @@ def test_retry(batch):
 
 # TODO improve test to verify what's in documents
 def test_preview(mimic_mapping):
-    documents, errors = preview(mimic_mapping, None)
+    documents, errors = preview(mimic_mapping, mimic_mapping["resources"][0]["id"], None)
 
     assert len(errors) == 0

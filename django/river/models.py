@@ -10,7 +10,8 @@ class Batch(models.Model):
     resource_ids = fields.ArrayField(models.TextField(), size=None, default=list)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, editable=False)
+    canceled_at = models.DateTimeField(null=True, editable=False)
+    completed_at = models.DateTimeField(null=True, editable=False)
 
 
 class Error(models.Model):
@@ -21,4 +22,3 @@ class Error(models.Model):
     exception = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, editable=False)

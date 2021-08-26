@@ -2341,13 +2341,18 @@ components:
           type: string
           format: date-time
           readOnly: true
-        deleted_at:
+        canceled_at:
+          type: string
+          format: date-time
+          readOnly: true
+        completed_at:
           type: string
           format: date-time
           readOnly: true
       required:
+      - canceled_at
+      - completed_at
       - created_at
-      - deleted_at
       - errors
       - id
       - resource_ids
@@ -2555,16 +2560,11 @@ components:
           type: string
           format: date-time
           readOnly: true
-        deleted_at:
-          type: string
-          format: date-time
-          readOnly: true
         batch:
           type: string
       required:
       - batch
       - created_at
-      - deleted_at
       - event
       - id
       - message
@@ -3448,6 +3448,7 @@ components:
           type: string
         logical_reference:
           type: string
+          format: uuid
           readOnly: true
         updated_at:
           type: string

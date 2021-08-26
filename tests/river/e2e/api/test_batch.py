@@ -67,7 +67,7 @@ def test_retrieve_batch(api_client, create_batch):
 
     assert response.status_code == 200
     assert response.json()["resources"] == ["foo", "bar"]
-    assert response.json()["deleted_at"] is None
+    assert response.json()["completed_at"] is None
 
 
 def test_delete_batch(api_client, create_batch, kafka_admin):
@@ -79,7 +79,7 @@ def test_delete_batch(api_client, create_batch, kafka_admin):
 
     batches = models.Batch.objects.all()
     assert len(batches) == 1
-    assert batches[0].deleted_at is not None
+    assert batches[0].completed_at is not None
 
     # Check that topics are deleted
     topics = kafka_admin.list_topics().topics
