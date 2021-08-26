@@ -15,7 +15,11 @@ class BatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Batch
         exclude = ["mappings"]
-        extra_kwargs = {"resource_ids": {"required": True}}
+        extra_kwargs = {
+            "resource_ids": {"required": True},
+            "canceled_at": {"allow_null": True},
+            "completed_at": {"allow_null": True},
+        }
 
 
 class PreviewRequestSerializer(serializers.Serializer):
