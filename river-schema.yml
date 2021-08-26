@@ -3060,10 +3060,6 @@ components:
           type: string
         name:
           type: string
-        schema:
-          type: object
-          additionalProperties: {}
-          nullable: true
         columns:
           type: array
           items:
@@ -3079,10 +3075,6 @@ components:
           type: string
         name:
           type: string
-        schema:
-          type: object
-          additionalProperties: {}
-          nullable: true
         columns:
           type: array
           items:

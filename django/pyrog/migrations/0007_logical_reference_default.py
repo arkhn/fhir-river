@@ -1,6 +1,6 @@
-from django.db import migrations, models
+import uuid
 
-import cuid
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="resource",
             name="logical_reference",
-            field=models.TextField(default=cuid.cuid, editable=False),
+            field=models.UUIDField(default=uuid.uuid4, editable=False),
         ),
     ]
