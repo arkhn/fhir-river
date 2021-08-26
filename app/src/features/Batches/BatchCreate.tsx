@@ -12,42 +12,19 @@ import {
   useApiBatchesCreateMutation,
 } from "services/api/endpoints";
 
-const ITEM_HEIGHT = 48;
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
     margin: theme.spacing(0, 4, 1, 4),
-    marginTop: `-${theme.spacing(3)}px`,
   },
   button: {
-    textTransform: "none",
-    margin: theme.spacing(1),
-    marginTop: "auto",
-    marginBottom: "auto",
-  },
-  chips: {
-    display: "flex",
-    flexWrap: "wrap",
+    margin: theme.spacing(0, 1, 1, 1),
   },
   selectAll: {
     display: "flex",
     alignItems: "center",
     cursor: "pointer",
-  },
-  chip: {
-    margin: theme.spacing(0.25),
-  },
-  mediumBold: {
-    fontWeight: theme.typography.fontWeightMedium,
-  },
-  regularBold: {
-    fontWeight: theme.typography.fontWeightRegular,
-  },
-  menuPaper: {
-    maxHeight: ITEM_HEIGHT * 4.5 + theme.spacing(1),
-    width: 250,
   },
   dialog: {
     padding: theme.spacing(3),
