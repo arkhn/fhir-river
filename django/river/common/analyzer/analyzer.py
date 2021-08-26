@@ -83,7 +83,16 @@ class Analyzer:
                 "resource_id": self._cur_analysis.resource_id,
             },
         )
-        attribute = Attribute(path=attribute_mapping["path"], definition_id=attribute_mapping["definitionId"])
+        # we need to remove the resource_type from the
+        # beginning of the path in order to build the fhir object
+        # eg: ("Patient.birthDate" --> "birthDate")
+        path = re.sub(
+            r"^{resource_type}\.".format(resource_type=self._cur_analysis.definition["type"]),
+            "",
+            attribute_mapping["path"],
+        )
+        attribute = Attribute(path=path, definition_id=attribute_mapping["definitionId"])
+
         if not attribute_mapping["inputGroups"]:
             # If there are no input groups for this attribute, it means that it is an
             # intermediary attribute (ie not a leaf). It is here to give us some context
