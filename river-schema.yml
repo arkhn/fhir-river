@@ -2345,10 +2345,12 @@ components:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
         completed_at:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
       required:
       - canceled_at
       - completed_at
