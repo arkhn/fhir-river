@@ -1,4 +1,3 @@
-from unittest import mock
 from uuid import uuid4
 
 from river.common.analyzer import Analyzer
@@ -124,6 +123,7 @@ def test_analyze_mapping(patient_mapping):
 def test_analyze_attribute(dict_map_gender):
     analyzer = Analyzer()
     analyzer._cur_analysis.primary_key_column = SqlColumn("mimiciii", "patients", "subject_id")
+    analyzer._cur_analysis.definition = {"type": "Patient"}
 
     attribute_mapping = {
         "id": "ck8ooenpu26984kp4wyiz4yc2",
