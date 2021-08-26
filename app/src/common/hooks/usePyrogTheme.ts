@@ -94,8 +94,8 @@ const usePyrogTheme = (): Theme => {
             main: prefersDarkMode ? "#424242" : "#383838",
           },
           badges: {
-            required: { main: "red" },
-            pending: { main: "orange" },
+            required: { main: "#A43C3C" },
+            pending: { main: "#FFC56F" },
           },
           text: {
             primary: prefersDarkMode ? "#FFFFFF" : "#464646",

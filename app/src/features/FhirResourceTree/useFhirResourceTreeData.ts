@@ -92,6 +92,7 @@ const useFhirResourceTreeData = (
         ));
     }
   }, [attributes, nodePath, deleteAttribute]);
+
   const createItem = useCallback(
     async (sliceName?: string) => {
       if (nodeId && root) {
@@ -113,6 +114,7 @@ const useFhirResourceTreeData = (
     },
     [createAttribute, mappingId, nodeId, root]
   );
+
   const addExtension = useCallback(async () => {
     const parentNode = node ?? root;
     const extensionArrayNode = parentNode?.children.find(
