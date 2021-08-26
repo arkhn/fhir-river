@@ -32,6 +32,7 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
       rows={batch.errors}
       columns={columns}
       pageSize={5}
+      rowHeight={38}
     />
   );
 };
