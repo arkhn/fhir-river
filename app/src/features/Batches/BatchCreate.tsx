@@ -125,13 +125,41 @@ const BatchCreate = (): JSX.Element => {
     );
   };
 
+  const getAllSelectedStatus = () => {
+    const resourceListIds = resourceList?.map((resource) => resource.id);
+    if (
+      selectedResourceIds.filter(
+        (id) => id === resourceListIds?.find((idList) => id === idList)
+      ).length === resourceListIds?.length
+    ) {
+      return true;
+    } else return false;
+  };
+
   const handleSelectAllResources = () => {
-    if (resources)
+    if (resources && resources.length === resourceList?.length) {
       setSelectedResourceIds(
         selectedResourceIds.length === resources.length
           ? []
           : resources?.map((resource) => resource.id)
       );
+    } else {
+      const newItems = resourceList?.filter(
+        (resource) =>
+          resource.id !==
+          selectedResourceIds.find((sele) => sele === resource.id)
+      );
+      const newItemsId = newItems?.map((newItem) => newItem.id);
+      if (newItemsId && newItemsId.length > 0)
+        setSelectedResourceIds(selectedResourceIds.concat(newItemsId));
+      else {
+        const resourceListIds = resourceList?.map((resource) => resource.id);
+        console.log(resourceListIds, selectedResourceIds);
+        const indexToDelete: number[] = [];
+        console.log(resourceListIds);
+        console.log(indexToDelete);
+      }
+    }
   };
 
   const handleSelectResources = (id: string) => {
@@ -177,12 +205,7 @@ const BatchCreate = (): JSX.Element => {
               onClick={handleSelectAllResources}
             >
               <Typography>{t("selectAll")}</Typography>
-              <Checkbox
-                color="primary"
-                checked={
-                  resources && selectedResourceIds.length === resources.length
-                }
-              />
+              <Checkbox color="primary" checked={getAllSelectedStatus()} />
             </div>
           </div>
           <TextField
