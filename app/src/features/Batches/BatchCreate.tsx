@@ -130,7 +130,8 @@ const BatchCreate = (): JSX.Element => {
     if (
       selectedResourceIds.filter(
         (id) => id === resourceListIds?.find((idList) => id === idList)
-      ).length === resourceListIds?.length
+      ).length === resourceListIds?.length &&
+      resourceListIds?.length > 0
     ) {
       return true;
     } else return false;
@@ -154,10 +155,16 @@ const BatchCreate = (): JSX.Element => {
         setSelectedResourceIds(selectedResourceIds.concat(newItemsId));
       else {
         const resourceListIds = resourceList?.map((resource) => resource.id);
-        console.log(resourceListIds, selectedResourceIds);
         const indexToDelete: number[] = [];
-        console.log(resourceListIds);
-        console.log(indexToDelete);
+        resourceListIds?.forEach((id) => {
+          indexToDelete.push(selectedResourceIds.indexOf(id));
+        });
+        indexToDelete.sort((a, b) => b - a);
+        const newSelectedResourceIds = [...selectedResourceIds];
+        indexToDelete.forEach((index) => {
+          newSelectedResourceIds.splice(index, 1);
+        });
+        setSelectedResourceIds(newSelectedResourceIds);
       }
     }
   };
@@ -191,7 +198,10 @@ const BatchCreate = (): JSX.Element => {
       </Button>
       <Dialog
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          setSelectedResourceIds([]);
+          setOpen(false);
+        }}
         classes={{ paper: classes.dialog }}
         fullWidth
       >
@@ -254,7 +264,11 @@ const BatchCreate = (): JSX.Element => {
             size="large"
             onClick={handleBatchRun}
           >
-            <Typography>Run</Typography>
+            <Typography>
+              {`${t("runOn")} ${selectedResourceIds.length.toString()} ${t(
+                "resources"
+              ).toLowerCase()}`}
+            </Typography>
           </Button>
         </DialogActions>
       </Dialog>

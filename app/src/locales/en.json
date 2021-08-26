@@ -120,5 +120,6 @@
   "selectScript": "Select script",
   "selectAll": "Select all",
   "runNewBatch": "Run a new batch",
-  "selectResources": "Select resources"
+  "selectResources": "Select resources",
+  "runOn": "Run on"
 }

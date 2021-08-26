@@ -763,8 +763,7 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse =
-  /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -868,8 +867,7 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse =
-  /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -903,8 +901,7 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse =
-  /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -915,8 +912,7 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
-export type ApiExploreCreateApiResponse =
-  /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiResponse = /** status 200  */ ExplorationResponse;
 export type ApiExploreCreateApiArg = {
   explorationRequestRequest: ExplorationRequestRequest;
 };
@@ -971,8 +967,7 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse =
-  /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -1152,8 +1147,7 @@ export type ApiSourcesDestroyApiArg = {
   /** A unique value identifying this source. */
   id: string;
 };
-export type ApiSourcesExportRetrieveApiResponse =
-  /** status 200  */ MappingWithPartialCredential;
+export type ApiSourcesExportRetrieveApiResponse = /** status 200  */ MappingWithPartialCredential;
 export type ApiSourcesExportRetrieveApiArg = {
   /** A unique value identifying this source. */
   id: string;
@@ -1192,7 +1186,6 @@ export type Error = {
   exception?: string;
   created_at: string;
   updated_at: string;
-  deleted_at: string;
   batch: string;
 };
 export type Batch = {
@@ -1201,7 +1194,8 @@ export type Batch = {
   resource_ids: string[];
   created_at: string;
   updated_at: string;
-  deleted_at: string;
+  canceled_at: string;
+  completed_at: string;
 };
 export type PaginatedBatchList = {
   count?: number;

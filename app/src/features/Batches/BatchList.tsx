@@ -147,11 +147,13 @@ const BatchList = (): JSX.Element => {
                   <div className={classes.accordionSummaryTitle}>
                     <div>
                       <Typography variant="subtitle2">
-                        {!batch.deleted_at && `⏳ In Progress...`}
-                        {batch.deleted_at &&
+                        {!batch.completed_at &&
+                          !batch.canceled_at &&
+                          `⏳ In Progress...`}
+                        {batch.completed_at &&
                           batch.errors.length > 0 &&
                           `⚠️ ${batch.errors.length} errors`}
-                        {batch.deleted_at &&
+                        {batch.completed_at &&
                           batch.errors.length === 0 &&
                           `✅ Success`}
                       </Typography>
@@ -175,7 +177,7 @@ const BatchList = (): JSX.Element => {
                     >
                       {t("retry")}
                     </Button>
-                    {!batch.deleted_at && (
+                    {!batch.canceled_at && !batch.completed_at && (
                       <BatchCancel batch={batch} className={classes.button} />
                     )}
                   </div>
