@@ -176,11 +176,7 @@ const BatchCreate = (): JSX.Element => {
               className={classes.selectAll}
               onClick={handleSelectAllResources}
             >
-              <Typography>
-                {resources && selectedResourceIds.length === resources.length
-                  ? t("unselectAll")
-                  : t("selectAll")}
-              </Typography>
+              <Typography>{t("selectAll")}</Typography>
               <Checkbox
                 color="primary"
                 checked={
