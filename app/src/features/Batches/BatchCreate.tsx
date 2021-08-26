@@ -57,10 +57,8 @@ const useStyles = makeStyles((theme) => ({
 
 const BatchCreate = (): JSX.Element => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
 
-  const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
@@ -70,62 +68,6 @@ const BatchCreate = (): JSX.Element => {
     { skip: !Boolean(id) }
   );
   const [resourceList, setResourceList] = useState(resources);
-  const [apiBatchCreate] = useApiBatchesCreateMutation();
-
-  const handleBatchRun = () => {
-    const batchCreate = async () => {
-      try {
-        await apiBatchCreate({
-          batchRequest: {
-            resources: selectedResourceIds,
-          },
-        }).unwrap();
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
-    };
-
-    if (selectedResourceIds.length > 0) {
-      batchCreate();
-      setSelectedResourceIds([]);
-    }
-  };
-
-  const searchResource = (
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    setResourceList(
-      resources?.filter(
-        (resource) =>
-          resource.label
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase()) ||
-          resource.definition_id
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())
-      )
-    );
-  };
-
-  const handleSelectAllResources = () => {
-    if (resources)
-      setSelectedResourceIds(
-        selectedResourceIds.length === resources.length
-          ? []
-          : resources?.map((resource) => resource.id)
-      );
-  };
-
-  const handleSelectResources = (id: string) => {
-    if (!selectedResourceIds.find((resourceId) => resourceId === id)) {
-      setSelectedResourceIds([...selectedResourceIds, id]);
-    } else {
-      const index = selectedResourceIds.indexOf(id);
-      const newSelectedResourceIds = [...selectedResourceIds];
-      newSelectedResourceIds.splice(index, 1);
-      setSelectedResourceIds(newSelectedResourceIds);
-    }
-  };
 
   useEffect(() => {
     setResourceList(resources);
