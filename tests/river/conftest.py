@@ -82,6 +82,13 @@ def clear_redis(request):
 
 
 @pytest.fixture
+def export_data(request):
+    marker = request.node.get_closest_marker("export_data")
+    with open(DATA_FIXTURES_DIR / marker.args[0]) as f:
+        return json.load(f)
+
+
+@pytest.fixture
 def patient_mapping():
     with (DATA_FIXTURES_DIR / "patient_mapping.json").open() as f:
         return json.load(f)
