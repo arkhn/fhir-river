@@ -124,5 +124,6 @@
   "selectMapping": "Select a mapping",
   "selectAll": "Select all",
   "runNewBatch": "Run a new batch",
-  "selectResources": "Select resources"
+  "selectResources": "Select resources",
+  "runOn": "Run on"
 }
