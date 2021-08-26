@@ -121,5 +121,9 @@
   "generateURI": "Generate URI",
   "chooseExistingURI": "Choose existing URI",
   "selectSource": "Select a source",
-  "selectMapping": "Select a mapping"
+  "selectMapping": "Select a mapping",
+  "selectAll": "Select all",
+  "unselectAll": "Unselect all",
+  "runNewBatch": "Run a new batch",
+  "selectResources": "Select resources"
 }

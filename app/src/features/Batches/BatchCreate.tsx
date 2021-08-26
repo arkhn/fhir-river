@@ -1,15 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  Chip,
-  FormControl,
-  Input,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import PlayIcon from "@material-ui/icons/PlayCircleOutline";
+import { PlayCircleOutline } from "@material-ui/icons";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -29,11 +21,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(0, 4, 1, 4),
     marginTop: `-${theme.spacing(3)}px`,
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-    width: "50%",
-  },
   button: {
     textTransform: "none",
     margin: theme.spacing(1),
@@ -43,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
   chips: {
     display: "flex",
     flexWrap: "wrap",
+  },
+  selectAll: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
   },
   chip: {
     margin: theme.spacing(0.25),
@@ -57,6 +49,33 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: ITEM_HEIGHT * 4.5 + theme.spacing(1),
     width: 250,
   },
+  dialog: {
+    padding: theme.spacing(3),
+    height: 500,
+  },
+  header: {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: 10,
+  },
+  titleContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  title: {
+    paddingLeft: 0,
+  },
+  titleButton: {
+    marginTop: "auto",
+    marginBottom: "auto",
+  },
+  rootDialogContent: {
+    padding: 0,
+  },
+  rootListItem: {
+    padding: 0,
+    borderRadius: theme.shape.borderRadius,
+  },
 }));
 
 const BatchCreate = (): JSX.Element => {
@@ -65,6 +84,7 @@ const BatchCreate = (): JSX.Element => {
   const classes = useStyles();
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
 
@@ -72,17 +92,8 @@ const BatchCreate = (): JSX.Element => {
     { source: id },
     { skip: !Boolean(id) }
   );
-
+  const [resourceList, setResourceList] = useState(resources);
   const [apiBatchCreate] = useApiBatchesCreateMutation();
-
-  const handleResourceSelectionChange = (
-    event: React.ChangeEvent<{
-      name?: string;
-      value: unknown;
-    }>
-  ) => {
-    setSelectedResourceIds(event.target.value as string[]);
-  };
 
   const handleBatchRun = () => {
     const batchCreate = async () => {
@@ -103,74 +114,57 @@ const BatchCreate = (): JSX.Element => {
     }
   };
 
+  const searchResource = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setResourceList(
+      resources?.filter(
+        (resource) =>
+          resource.label
+            ?.toLowerCase()
+            .includes(e.target.value.toLowerCase()) ||
+          resource.definition_id
+            .toLowerCase()
+            .includes(e.target.value.toLowerCase())
+      )
+    );
+  };
+
+  const handleSelectAllResources = () => {
+    if (resources)
+      setSelectedResourceIds(
+        selectedResourceIds.length === resources.length
+          ? []
+          : resources?.map((resource) => resource.id)
+      );
+  };
+
+  const handleSelectResources = (id: string) => {
+    if (!selectedResourceIds.find((resourceId) => resourceId === id)) {
+      setSelectedResourceIds([...selectedResourceIds, id]);
+    } else {
+      const index = selectedResourceIds.indexOf(id);
+      const newSelectedResourceIds = [...selectedResourceIds];
+      newSelectedResourceIds.splice(index, 1);
+      setSelectedResourceIds(newSelectedResourceIds);
+    }
+  };
+
+  useEffect(() => {
+    setResourceList(resources);
+  }, [resources]);
+
   return (
     <div className={classes.root}>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-mutiple-chip-label">{t("resources")}</InputLabel>
-        <Select
-          variant="filled"
-          labelId="demo-mutiple-chip-label"
-          id="demo-mutiple-chip"
-          multiple
-          value={selectedResourceIds}
-          onChange={handleResourceSelectionChange}
-          input={<Input id="select-multiple-chip" />}
-          renderValue={(selected) => (
-            <div className={classes.chips}>
-              {(selected as string[]).map((resourceId) => {
-                const resource = resources?.find(({ id }) => resourceId === id);
-                return (
-                  resource && (
-                    <Chip
-                      size="small"
-                      key={`resource-selected-${resource.id}`}
-                      label={`${resource.definition_id} - ${resource.label}`}
-                      className={classes.chip}
-                    />
-                  )
-                );
-              })}
-            </div>
-          )}
-          MenuProps={{
-            PaperProps: {
-              className: classes.menuPaper,
-            },
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "left",
-            },
-            transformOrigin: {
-              vertical: "top",
-              horizontal: "left",
-            },
-            getContentAnchorEl: null,
-          }}
-        >
-          {resources &&
-            resources.map(({ id, definition_id, label }) => (
-              <MenuItem
-                key={`resource-option-${id}`}
-                value={id}
-                classes={{
-                  root: classes.mediumBold,
-                  selected: classes.regularBold,
-                }}
-              >
-                {definition_id} - {label}
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
       <Button
         variant="contained"
         color="primary"
-        disabled={!selectedResourceIds.length}
+        size="small"
+        onClick={() => setOpen(true)}
         className={classes.button}
-        startIcon={<PlayIcon />}
-        onClick={handleBatchRun}
+        startIcon={<PlayCircleOutline />}
       >
-        {t("run")}
+        {t("runNewBatch")}
       </Button>
     </div>
   );
