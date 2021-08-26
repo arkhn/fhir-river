@@ -119,7 +119,6 @@
   "mergingScript": "Merging script",
   "selectScript": "Select script",
   "selectAll": "Select all",
-  "unselectAll": "Unselect all",
   "runNewBatch": "Run a new batch",
   "selectResources": "Select resources"
 }
