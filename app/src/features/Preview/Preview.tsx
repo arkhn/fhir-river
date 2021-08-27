@@ -16,12 +16,12 @@ import {
   TableBody,
   useMediaQuery,
 } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useParams } from "react-router-dom";
 
-import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
 import {
   useApiResourcesRetrieveQuery,
@@ -94,6 +94,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "inherit",
       color: theme.palette.text.primary,
     },
+  },
+  alert: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -188,7 +192,6 @@ const Preview = (): JSX.Element => {
   return (
     <Container className={classes.container} maxWidth="xl">
       <BackButton className={classes.button} />
-
       <TableContainer className={classes.table}>
         <Table size="small">
           <TableHead>
@@ -236,12 +239,15 @@ const Preview = (): JSX.Element => {
           )}
         </Table>
       </TableContainer>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
-      />
+      {alert && (
+        <Alert
+          className={classes.alert}
+          severity="error"
+          onClose={handleAlertClose}
+        >
+          {alert}
+        </Alert>
+      )}
       {preview ? (
         <div className={classes.preview}>
           <ReactJson
