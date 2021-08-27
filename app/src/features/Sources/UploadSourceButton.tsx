@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
     width: "auto",
     minWidth: 150,
+    "& svg": {
+      fill: theme.palette.text.primary,
+    },
   },
 }));
 
