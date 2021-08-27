@@ -2,13 +2,7 @@ import React, { useMemo, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Grid,
-  IconButton,
-  makeStyles,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -206,7 +200,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
               onClick={handleGenerateURIClick}
               disabled={!currentMapping}
             >
-              <Typography>{t("generateURI")}</Typography>
+              {t("generateURI")}
             </Button>
           </Grid>
         )}
@@ -214,7 +208,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           <>
             <Grid item>
               <Button variant="outlined" onClick={handleExistingURIDialogOpen}>
-                <Typography>{t("chooseExistingURI")}</Typography>
+                {t("chooseExistingURI")}
               </Button>
             </Grid>
             <ExistingURIDialog
