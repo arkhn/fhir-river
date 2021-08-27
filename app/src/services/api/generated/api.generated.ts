@@ -1188,11 +1188,8 @@ export type PatchedAttributeRequest = {
 export type Error = {
   id: string;
   event: string;
-  message: string;
-  exception?: string;
   created_at: string;
   updated_at: string;
-  deleted_at: string;
   batch: string;
 };
 export type Batch = {
@@ -1201,7 +1198,8 @@ export type Batch = {
   resource_ids: string[];
   created_at: string;
   updated_at: string;
-  deleted_at: string;
+  canceled_at: string | null;
+  completed_at: string | null;
 };
 export type PaginatedBatchList = {
   count?: number;
