@@ -14,8 +14,6 @@ const BatchErrors = ({ batch }: BatchErrorsProps): JSX.Element => {
 
   const columns = [
     { field: "event", flex: 1, headerName: t("event") },
-    { field: "message", flex: 1, headerName: t("message") },
-    { field: "exception", flex: 1, headerName: t("exception") },
     {
       field: "created_at",
       flex: 1,

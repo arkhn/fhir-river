@@ -2550,10 +2550,6 @@ components:
           readOnly: true
         event:
           type: string
-        message:
-          type: string
-        exception:
-          type: string
         created_at:
           type: string
           format: date-time
@@ -2569,23 +2565,17 @@ components:
       - created_at
       - event
       - id
-      - message
       - updated_at
     ErrorRequest:
       type: object
       properties:
         event:
           type: string
-        message:
-          type: string
-        exception:
-          type: string
         batch:
           type: string
       required:
       - batch
       - event
-      - message
     ExplorationRequestRequest:
       type: object
       properties:
