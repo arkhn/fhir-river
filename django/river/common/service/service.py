@@ -1,6 +1,5 @@
 import logging
 import re
-import traceback
 from typing import Callable, Dict, Type
 
 from confluent_kafka.error import ConsumeError
@@ -43,12 +42,7 @@ class Service:
 
                 try:
                     self.handlers[matching_topic](raw)
-                except Exception as exc:
+                except Exception:
                     event_logger.exception(f"Failed to process event: {raw} from {polled_topic}")
-                    Error.objects.create(
-                        batch_id=raw["batch_id"],
-                        event=raw,
-                        message=str(exc),
-                        exception=traceback.format_exc(),
-                    )
+                    Error.objects.create(batch_id=raw["batch_id"], event=raw)
                     continue
