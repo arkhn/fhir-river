@@ -1201,7 +1201,7 @@ export type Batch = {
   updated_at: string;
   canceled_at: string | null;
   completed_at: string | null;
-  resource_ids: string[];
+  resources: string[];
 };
 export type PaginatedBatchList = {
   count?: number;
@@ -1210,10 +1210,10 @@ export type PaginatedBatchList = {
   results?: Batch[];
 };
 export type BatchRequest = {
-  resource_ids: string[];
+  resources: string[];
 };
 export type PatchedBatchRequest = {
-  resource_ids?: string[];
+  resources?: string[];
 };
 export type Column = {
   id: string;
