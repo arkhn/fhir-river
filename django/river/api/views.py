@@ -1,13 +1,16 @@
-from rest_framework import filters, generics, pagination, response, status, viewsets
+from rest_framework import filters as drf_filters
+from rest_framework import generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
 from common.scripts import ScriptsRepository
+from django_filters import rest_framework as django_filters
 from drf_spectacular.utils import extend_schema
 from pyrog import models as pyrog_models
 from pyrog.api.serializers.import_export import MappingSerializer
 from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
+from river.api import filters
 from river.api.serializers import serializers
 from river.common.mapping.fetch_concept_maps import dereference_concept_map
 from river.services import abort, batch, preview
@@ -17,7 +20,8 @@ class BatchViewSet(viewsets.ModelViewSet):
     queryset = river_models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
     pagination_class = pagination.LimitOffsetPagination
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [drf_filters.OrderingFilter, django_filters.DjangoFilterBackend]
+    filterset_class = filters.BatchFilterSet
     ordering_fields = ["created_at"]
 
     def create(self, request, *args, **kwargs):

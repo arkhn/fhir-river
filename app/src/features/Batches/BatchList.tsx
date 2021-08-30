@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { ExpandMore, Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 
 import Button from "common/components/Button";
 import { useApiBatchesListQuery } from "services/api/endpoints";
@@ -103,6 +104,7 @@ const PAGE_SIZE = 10;
 const BatchList = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { sourceId } = useParams<{ sourceId: string }>();
 
   const [page, setPage] = useState(1);
   const handlePageChange = (
@@ -118,6 +120,7 @@ const BatchList = (): JSX.Element => {
     {
       limit,
       offset,
+      source: [sourceId],
       ordering: "-created_at",
     }
   );
