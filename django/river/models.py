@@ -7,7 +7,7 @@ from pyrog import models as pyrog_models
 class Batch(models.Model):
     id = models.TextField(primary_key=True, default=cuid, editable=False)
     mappings = models.JSONField(default=None, null=True)
-    resource_ids = models.ManyToManyField(pyrog_models.Resource)
+    resources = models.ManyToManyField(pyrog_models.Resource)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     canceled_at = models.DateTimeField(null=True, editable=False)

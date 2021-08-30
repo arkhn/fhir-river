@@ -2355,7 +2355,7 @@ components:
           format: date-time
           readOnly: true
           nullable: true
-        resource_ids:
+        resources:
           type: array
           items:
             type: string
@@ -2365,17 +2365,17 @@ components:
       - created_at
       - errors
       - id
-      - resource_ids
+      - resources
       - updated_at
     BatchRequest:
       type: object
       properties:
-        resource_ids:
+        resources:
           type: array
           items:
             type: string
       required:
-      - resource_ids
+      - resources
     Column:
       type: object
       properties:
@@ -3290,7 +3290,7 @@ components:
     PatchedBatchRequest:
       type: object
       properties:
-        resource_ids:
+        resources:
           type: array
           items:
             type: string
