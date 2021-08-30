@@ -10,7 +10,7 @@ def test_list_scripts(api_client):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert response.data == [
         {"category": "cleaning", "description": "Map (0,1) to (False, True)", "name": "binary_to_bool_1"},
         {"category": "cleaning", "description": "Map (0,1) to (True, False)", "name": "binary_to_bool_2"},

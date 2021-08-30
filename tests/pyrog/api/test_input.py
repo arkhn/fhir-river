@@ -31,7 +31,7 @@ def test_create_input(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_input(api_client, input):
@@ -39,7 +39,7 @@ def test_retrieve_input(api_client, input):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_inputs(api_client, input_factory):
@@ -48,7 +48,7 @@ def test_list_inputs(api_client, input_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
     assert all(
         parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
@@ -68,7 +68,7 @@ def test_update_input(api_client, input, script, concept_map_id, static_value, s
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_input(api_client, input):
@@ -76,7 +76,7 @@ def test_delete_input(api_client, input):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data
 
 
 def test_filter_inputs_by_input_group(api_client, input_group_factory, input_factory):
@@ -88,5 +88,5 @@ def test_filter_inputs_by_input_group(api_client, input_group_factory, input_fac
 
     response = api_client.get(url, {"input_group": first_input_group.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {input_data["id"] for input_data in response.json()} == {input.id for input in first_input_group_inputs}
