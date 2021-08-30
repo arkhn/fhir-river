@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { makeStyles } from "@material-ui/core";
 import clsx from "clsx";
@@ -6,7 +6,6 @@ import clsx from "clsx";
 import useIsNodePending from "common/hooks/useIsNodePending";
 
 import { ElementNode } from "./resourceTreeSlice";
-import { isTreeElementNodeRequired } from "./resourceTreeUtils";
 
 const useStyles = makeStyles((theme) => ({
   badgeContainer: {
@@ -34,9 +33,7 @@ type TreeNodeBadgeProps = {
 const TreeNodeBadge = ({ elementNode }: TreeNodeBadgeProps): JSX.Element => {
   const classes = useStyles();
   const isPending = useIsNodePending(elementNode);
-  const isRequired = useMemo(() => isTreeElementNodeRequired(elementNode), [
-    elementNode,
-  ]);
+  const isRequired = elementNode.isRequired;
   return (
     <>
       {(isRequired || isPending) && (
