@@ -16,7 +16,7 @@ class BatchSerializer(serializers.ModelSerializer):
         model = models.Batch
         exclude = ["mappings"]
         extra_kwargs = {
-            "resource_ids": {"required": True},
+            "resources": {"required": True},
             "canceled_at": {"allow_null": True},
             "completed_at": {"allow_null": True},
         }
