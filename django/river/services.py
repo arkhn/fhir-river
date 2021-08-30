@@ -6,6 +6,7 @@ from django.utils import timezone
 from fhir.resources import construct_fhir_element
 
 from pydantic import ValidationError
+from pyrog.models import Resource
 from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.topics import TopicsManager
@@ -20,17 +21,17 @@ from utils.json import CustomJSONEncoder
 
 def batch(
     batch_id: str,
-    resource_ids: List[str],
+    resources: List[Resource],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_id}")
 
-    for resource_id in resource_ids:
+    for resource in resources:
         publisher.publish(
             topic=f"batch.{batch_id}",
-            event=BatchEvent(batch_id=batch_id, resource_id=resource_id),
+            event=BatchEvent(batch_id=batch_id, resource_id=resource.id),
         )
 
 

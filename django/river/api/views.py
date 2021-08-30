@@ -28,11 +28,11 @@ class BatchViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        resource_ids = serializer.validated_data["resources"]
+        resources = serializer.validated_data["resources"]
 
         # Store serialized mapping
         # FIXME we consider that all the resources come from the same Source
-        resource = pyrog_models.Resource.objects.get(id=next(iter(resource_ids)))
+        resource = next(iter(resources))
         source = pyrog_models.Source.objects.get(id=resource.source.id)
         mappings = MappingSerializer(source).data
 
@@ -47,7 +47,7 @@ class BatchViewSet(viewsets.ModelViewSet):
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
 
-        batch(batch_instance.id, resource_ids, topics_manager, event_publisher)
+        batch(batch_instance.id, resources, topics_manager, event_publisher)
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
