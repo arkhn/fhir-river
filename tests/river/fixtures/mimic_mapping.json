@@ -1830,6 +1830,18 @@
           "input_groups": []
         },
         {
+          "path": "generalPractitioner",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "link[0].other",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
           "path": "identifier[0].value",
           "slice_name": "",
           "definition_id": "string",

@@ -13,7 +13,6 @@ from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchEvent
 from river.extractor.extractor import Extractor
-from river.parsing import Source, as_old_mapping
 from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
@@ -47,10 +46,8 @@ def retry(batch: models.Batch) -> None:
 
 
 def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = as_old_mapping(Source(**mapping), resource_id)
-
     analyzer = Analyzer()
-    analysis = analyzer.analyze(resource_mapping)
+    analysis = analyzer.analyze(mapping, resource_id)
 
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:
