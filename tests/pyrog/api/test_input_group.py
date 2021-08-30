@@ -26,7 +26,7 @@ def test_create_input_group(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_input_group(api_client, input_group):
@@ -34,7 +34,7 @@ def test_retrieve_input_group(api_client, input_group):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_input_groups(api_client, input_group_factory):
@@ -43,7 +43,7 @@ def test_list_input_groups(api_client, input_group_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
     assert all(
         parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
@@ -61,7 +61,7 @@ def test_update_input_group(api_client, input_group, merging_script, status_code
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_input_group(api_client, input_group):
@@ -69,7 +69,7 @@ def test_delete_input_group(api_client, input_group):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data
 
 
 def test_filter_input_groups_by_attribute(api_client, attribute_factory, input_group_factory):
@@ -81,7 +81,7 @@ def test_filter_input_groups_by_attribute(api_client, attribute_factory, input_g
 
     response = api_client.get(url, {"attribute": first_attribute.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {input_group_data["id"] for input_group_data in response.json()} == {
         input_group.id for input_group in first_attribute_input_groups
     }

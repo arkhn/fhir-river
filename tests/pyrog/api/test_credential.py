@@ -58,7 +58,7 @@ def test_create_credential(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_credential(api_client, credential):
@@ -66,7 +66,7 @@ def test_retrieve_credential(api_client, credential):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_retrieve_credential_without_password(api_client, credential_factory):
@@ -76,7 +76,7 @@ def test_retrieve_credential_without_password(api_client, credential_factory):
     response = api_client.get(url)
 
     assert response.data["available_owners"] == []
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_credentials(api_client, credential_factory):
@@ -85,7 +85,7 @@ def test_list_credentials(api_client, credential_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
     assert all(
         parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
@@ -106,7 +106,7 @@ def test_filter_credentials_by_source(
 
     response = api_client.get(url, {"source": first_source.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {credential_data["id"] for credential_data in response.json()} == {first_source_credentials.id}
 
 
@@ -152,7 +152,7 @@ def test_update_credential(
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_credential(api_client, credential):
@@ -160,4 +160,4 @@ def test_delete_credential(api_client, credential):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data

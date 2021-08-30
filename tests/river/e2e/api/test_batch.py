@@ -14,7 +14,7 @@ def test_create_batch(api_client, resource_factory, kafka_admin):
     url = reverse("batches-list")
     response = api_client.post(url, data, format="json")
 
-    assert response.status_code == 201
+    assert response.status_code == 201, response.data
 
     batch_id = response.json()["id"]
 
@@ -51,7 +51,7 @@ def test_filter_batches_by_sources(api_client, batch_factory, source_factory, re
     url = reverse("batches-list")
     response = api_client.get(url, {"source": [first_source.id]})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {batch_data["id"] for batch_data in response.json()} == {
         batch.id for batch in first_source_resources_batches
     }
@@ -63,7 +63,8 @@ def test_retrieve_batch(api_client, batch_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
+    assert response.json()["resources"] == ["foo", "bar"]
     assert response.json()["completed_at"] is None
 
 
@@ -73,7 +74,7 @@ def test_delete_batch(api_client, batch_factory, kafka_admin):
     url = reverse("batches-detail", kwargs={"pk": batch_id})
 
     response = api_client.delete(url)
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data
 
     batches = models.Batch.objects.all()
     assert len(batches) == 1

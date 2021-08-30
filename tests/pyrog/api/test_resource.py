@@ -41,7 +41,7 @@ def test_create_resource(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
     # Check that logical_reference has been generated
     assert response.data["logical_reference"] != logical_reference
@@ -52,7 +52,7 @@ def test_retrieve_resource(api_client, resource):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_resources(api_client, resource_factory):
@@ -61,7 +61,7 @@ def test_list_resources(api_client, resource_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
     assert all(
         parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
@@ -77,7 +77,7 @@ def test_filter_resources_by_source(api_client, source_factory, resource_factory
 
     response = api_client.get(url, {"source": first_source.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {resource_data["id"] for resource_data in response.json()} == {
         resource.id for resource in first_source_resources
     }
@@ -92,7 +92,7 @@ def test_update_resource(api_client, resource, label, status_code):
         data["label"] = label
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_resource(api_client, resource):
@@ -100,4 +100,4 @@ def test_delete_resource(api_client, resource):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data
