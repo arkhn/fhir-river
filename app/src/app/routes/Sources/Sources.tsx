@@ -5,6 +5,7 @@ import { Container, makeStyles } from "@material-ui/core";
 import SourceCreate from "features/Sources/SourceCreate";
 import SourceDrawer from "features/Sources/SourceDrawer";
 import SourceGrid from "features/Sources/SourceGrid";
+import UploadSourceButton from "features/Sources/UploadSourceButton";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,6 +26,7 @@ const Sources = (): JSX.Element => {
   return (
     <Container maxWidth="xl" className={classes.container}>
       <SourceCreate className={classes.button} />
+      <UploadSourceButton />
       <SourceGrid />
       <SourceDrawer />
     </Container>

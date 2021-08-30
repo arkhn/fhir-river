@@ -2,12 +2,7 @@ import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
-import {
-  CircularProgress,
-  makeStyles,
-  Typography,
-  Divider,
-} from "@material-ui/core";
+import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import { isEqual } from "lodash";
@@ -26,7 +21,6 @@ import {
 import type { SourceRequest } from "services/api/generated/api.generated";
 
 import { sourceEdited, selectSourceCurrent } from "./sourceSlice";
-import UploadSourceButton from "./UploadSourceButton";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -42,9 +36,6 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
     width: "auto",
     minWidth: 150,
-  },
-  divider: {
-    margin: theme.spacing(4, 3),
   },
 }));
 
@@ -136,8 +127,6 @@ const SourceForm = (): JSX.Element => {
           </Button>
         }
       />
-      <Divider className={classes.divider} variant="middle" />
-      <UploadSourceButton />
     </div>
   );
 };
