@@ -57,14 +57,13 @@ def test_filter_batches_by_sources(api_client, batch_factory, source_factory, re
     }
 
 
-def test_retrieve_batch(api_client, create_batch):
-    batch_id = create_batch(resources=["foo", "bar"])
-    url = reverse("batches-detail", kwargs={"pk": batch_id})
+def test_retrieve_batch(api_client, batch_factory):
+    [batch] = batch_factory.create_batch(1)
+    url = reverse("batches-detail", kwargs={"pk": batch.id})
 
     response = api_client.get(url)
 
     assert response.status_code == 200
-    assert response.json()["resources"] == ["foo", "bar"]
     assert response.json()["completed_at"] is None
 
 
