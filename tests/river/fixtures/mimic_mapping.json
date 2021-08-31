@@ -3330,7 +3330,7 @@
     }
   ],
   "credential": {
-    "host": "localhost",
+    "host": "mimic",
     "port": 15432,
     "database": "test",
     "model": "POSTGRES",
