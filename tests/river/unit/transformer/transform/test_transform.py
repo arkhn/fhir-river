@@ -67,7 +67,8 @@ def test_transform(dict_map_code):
     analysis = Analysis()
     analysis.attributes = [attr_name, attr_language, attr_static, attr_static_list]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
-    analysis.definition = {"type": "Patient"}
+    # FIXME defintion is absent from analysis
+    analysis.definition_id = "Patient"
     analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
 
     primary_key_value = data[analysis.primary_key_column.dataframe_column_name()][0]
@@ -161,7 +162,8 @@ def test_transform_with_condition_arrays(dict_map_code):
     analysis = Analysis()
     analysis.attributes = [attr_name, attr_language, attr_language_sys, attr_status]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
-    analysis.definition = {"type": "Patient"}
+    # FIXME defintion is absent from analysis
+    analysis.definition_id = "Patient"
     analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
 
     primary_key_value = data[analysis.primary_key_column.dataframe_column_name()][0]
