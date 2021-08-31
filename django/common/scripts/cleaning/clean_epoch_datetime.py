@@ -7,9 +7,9 @@ from common.scripts import utils
 def clean_epoch_dateTime(raw_input):
     # Handle epoch
     try:
-        if len(raw_input) == 8:
+        if len(raw_input) < 12:
             date = datetime.datetime.fromtimestamp(float(raw_input))
-        elif len(raw_input) == 13:
+        else:
             date = datetime.datetime.fromtimestamp(float(raw_input) / 1000)
         date_with_tz = date.replace(tzinfo=datetime.timezone(datetime.timedelta(hours=2)))
         result = date_with_tz.isoformat()
@@ -17,6 +17,9 @@ def clean_epoch_dateTime(raw_input):
         pass
 
     if date is None:
+        return raw_input
+
+    if result is None:
         return raw_input
 
     return result
