@@ -1,58 +1,57 @@
 version: "3.7"
 
 services:
+  old-pyrog:
+    image: arkhn/pyrog-server:3.0.3
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - POSTGRES_URL=postgresql://migrate:migrate@postgres:5432/migrate?schema=pyrog
+      - APP_SECRET=deadbeefdeadbeefdeadbeefdeadbeef
+      - REDIS_URL=redis://redis:6379
+      - OAUTH2_CLIENT_ID=pyrog
+      - OAUTH2_TOKEN_URL=bla
+      - DEFINITIONS_DIR=/var/fhir/definitions
+      - ENV=test
+    volumes:
+      - ./definitions:/var/fhir/definitions
+      - ./mappings:/srv/mappings
 
-    old-pyrog:
-        image: arkhn/pyrog-server:3.0.3
-        depends_on:
-            - postgres
-            - redis
-        environment:
-            - POSTGRES_URL=postgresql://migrate:migrate@postgres:5432/migrate?schema=pyrog
-            - APP_SECRET=deadbeefdeadbeefdeadbeefdeadbeef
-            - REDIS_URL=redis://redis:6379
-            - OAUTH2_CLIENT_ID=pyrog
-            - OAUTH2_TOKEN_URL=bla
-            - DEFINITIONS_DIR=/var/fhir/definitions
-            - ENV=test
-        volumes:
-            - ./definitions:/var/fhir/definitions 
-            - ./mappings:/srv/mappings
+  new-pyrog:
+    image: arkhn/river:latest
+    build:
+      context: ../..
+    restart: on-failure
+    ports:
+      - "8000:8000"
+    environment:
+      - ALLOWED_HOSTS=localhost
+      - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
+      - SECRET_KEY=any
+      - POSTGRES_DB=migrate
+      - POSTGRES_USER=migrate
+      - POSTGRES_PASSWORD=migrate
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - OIDC_RP_SIGN_ALGO=HS256
 
-    new-pyrog:
-        image: arkhn/river:migrate
-        build:
-            context: ../..
-        restart: on-failure
-        ports:
-            - "8000:8000"
-        environment:
-            - ALLOWED_HOSTS=localhost
-            - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
-            - SECRET_KEY=any
-            - POSTGRES_DB=migrate
-            - POSTGRES_USER=migrate
-            - POSTGRES_PASSWORD=migrate
-            - POSTGRES_HOST=postgres
-            - POSTGRES_PORT=5432
-            - OIDC_RP_SIGN_ALGO=HS256
+  postgres:
+    image: postgres:12
+    restart: on-failure
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=migrate
+      - POSTGRES_USER=migrate
+      - POSTGRES_PASSWORD=migrate
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
-    postgres:
-        image: postgres:12
-        restart: on-failure
-        ports:
-            - 5432:5432
-        environment:
-            - POSTGRES_DB=migrate
-            - POSTGRES_USER=migrate
-            - POSTGRES_PASSWORD=migrate
-        volumes:
-            - db-data:/var/lib/postgresql/data
-
-    redis:
-        image: redis:5.0.7-alpine
-        ports:
-            - 6379:6379
+  redis:
+    image: redis:5.0.7-alpine
+    ports:
+      - 6379:6379
 
 volumes:
   db-data:
