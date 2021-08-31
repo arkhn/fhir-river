@@ -41,7 +41,7 @@ def test_list_batch(api_client, batch_factory):
     assert len(response.data) == 3
 
 
-def test_filter_batches_by_source(api_client, batch_factory, source_factory, resource_factory):
+def test_filter_batches_by_sources(api_client, batch_factory, source_factory, resource_factory):
     first_source, second_source = source_factory.create_batch(2)
     first_source_resources = resource_factory.create_batch(2, source=first_source)
     second_source_resources = resource_factory.create_batch(2, source=second_source)
@@ -49,7 +49,7 @@ def test_filter_batches_by_source(api_client, batch_factory, source_factory, res
     batch_factory.create_batch(3, resources=second_source_resources)
 
     url = reverse("batches-list")
-    response = api_client.get(url, {"source": first_source.id})
+    response = api_client.get(url, {"source": [first_source.id]})
 
     assert response.status_code == 200
     assert {batch_data["id"] for batch_data in response.json()} == {
