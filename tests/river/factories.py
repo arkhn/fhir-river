@@ -19,6 +19,13 @@ class BatchFactory(factory.django.DjangoModelFactory):
     id = factory.Sequence(lambda n: f"batch_id_{n:04d}")
     mappings = factory.LazyAttribute(lambda x: mimic_mapping())
 
+    @factory.post_generation
+    def resources(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+
+        self.resources.add(*extracted)
+
 
 class ErrorFactory(factory.django.DjangoModelFactory):
     class Meta:
