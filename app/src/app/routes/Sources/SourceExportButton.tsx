@@ -23,7 +23,7 @@ const SourceExportButton = (props: MuiButtonProps): JSX.Element => {
     isLoading: isSerializedSourceLoading,
   } = useApiSourcesExportRetrieveQuery(
     { id: sourceId ?? "" },
-    { skip: !sourceId }
+    { skip: !sourceId, refetchOnMountOrArgChange: true }
   );
 
   const handleExportMappingClick = () => {
