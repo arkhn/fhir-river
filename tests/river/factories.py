@@ -21,6 +21,11 @@ class BatchFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def resources(self, create, extracted, **kwargs):
+        """resources is a callable that links the Batch and Resource models.
+
+        https://factoryboy.readthedocs.io/en/stable/recipes.html#simple-many-to-many-relationship
+        """
+
         if not create or not extracted:
             return
 
