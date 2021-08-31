@@ -11,7 +11,7 @@ from pytest_factoryboy import register
 
 from django.conf import settings
 
-from tests.pyrog.factories import ResourceFactory
+from tests.pyrog.factories import ResourceFactory, SourceFactory
 
 from . import factories
 
@@ -20,6 +20,7 @@ DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 register(factories.BatchFactory)
 register(factories.ErrorFactory)
 register(ResourceFactory)
+register(SourceFactory)
 
 
 def get_factories():
