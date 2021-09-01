@@ -73,9 +73,6 @@ class ColumnFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Column"
 
-    class Params:
-        with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
-
     id = factory.Sequence(lambda n: f"column_id_{n:04d}")
     owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
 
