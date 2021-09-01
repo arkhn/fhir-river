@@ -20,7 +20,7 @@ def test_create_batch(api_client, resource_factory, kafka_admin):
 
     batches = models.Batch.objects.all()
     assert len(batches) == 1
-    assert [r.id for r in batches[0].resources.all()] == [resource.id for resource in resources]
+    assert [resource.id for resource in batches[0].resources.all()] == [resource.id for resource in resources]
 
     # Check that topics are created
     topics = kafka_admin.list_topics().topics
@@ -58,14 +58,14 @@ def test_filter_batches_by_sources(api_client, batch_factory, source_factory, re
 
 
 def test_retrieve_batch(api_client, batch_factory, resource_factory):
-    r1, r2 = resource_factory.create_batch(2)
-    batch = batch_factory.create(resources=(r1, r2))
+    first_resource, second_resource = resource_factory.create_batch(2)
+    batch = batch_factory.create(resources=[first_resource, second_resource])
     url = reverse("batches-detail", kwargs={"pk": batch.id})
 
     response = api_client.get(url)
 
     assert response.status_code == 200, response.data
-    assert response.json()["resources"] == [r1.id, r2.id]
+    assert response.json()["resources"] == [first_resource.id, second_resource.id]
     assert response.json()["completed_at"] is None
 
 

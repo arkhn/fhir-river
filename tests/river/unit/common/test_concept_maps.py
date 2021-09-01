@@ -1,8 +1,5 @@
 from pathlib import Path
 
-from pytest import raises
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied
-
 from river.common.mapping import concept_maps
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
@@ -15,16 +12,6 @@ def test_fetch_concept_map(mock_fhir_api_response):
         "M": "male",
     }
     assert actual == expected
-
-
-def test_fetch_concept_map_invalid(mock_fhir_api_response):
-    with raises(NotAuthenticated):
-        concept_maps.fetch_concept_map("id", "invalidToken")
-
-
-def test_fetch_concept_map_forbidden(mock_fhir_api_response):
-    with raises(PermissionDenied):
-        concept_maps.fetch_concept_map("id", "forbiddenToken")
 
 
 def test_dereference_concept_map(mock_fhir_api_response):

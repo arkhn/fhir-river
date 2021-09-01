@@ -4,6 +4,7 @@ from pathlib import Path
 from pytest import fixture
 
 import requests
+from common.adapters.fhir_api import HapiFhirAPI
 
 
 class MockResponse:
@@ -30,12 +31,7 @@ fhirConceptMap = {
 
 @fixture
 def mock_fhir_api_response(monkeypatch):
-    def mock_get(*args, headers):
-        if headers["Authorization"] == "Bearer validToken":
-            return MockResponse(fhirConceptMap, 200)
-        elif headers["Authorization"] == "Bearer forbiddenToken":
-            return MockResponse("invalid token", 403)
-        else:
-            return MockResponse("invalid token", 401)
+    def mock_get(*arg):
+        return MockResponse(fhirConceptMap, 200).json_data
 
-    monkeypatch.setattr(requests, "get", mock_get)
+    monkeypatch.setattr(HapiFhirAPI, "get", mock_get)
