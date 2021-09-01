@@ -30,6 +30,7 @@ class ResourceFactory(factory.django.DjangoModelFactory):
     id = factory.Sequence(lambda n: f"resource_id_{n:04d}")
     source = factory.SubFactory(SourceFactory)
     primary_key_owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
+    definition = factory.Faker("json")
 
 
 class CredentialFactory(factory.django.DjangoModelFactory):
