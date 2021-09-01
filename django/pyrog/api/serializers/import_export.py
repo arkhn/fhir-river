@@ -95,7 +95,6 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
         fields = ["id", "name", "columns"]
-        read_only_fields = ["schema"]
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
     def to_internal_value(self, data):

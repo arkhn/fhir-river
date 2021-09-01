@@ -3394,9 +3394,6 @@ components:
           type: string
         definition_id:
           type: string
-        definition:
-          type: object
-          additionalProperties: {}
         source:
           type: string
         primary_key_owner:
@@ -3452,6 +3449,7 @@ components:
         definition:
           type: object
           additionalProperties: {}
+          readOnly: true
         logical_reference:
           type: string
           format: uuid
@@ -3490,15 +3488,11 @@ components:
           type: string
         definition_id:
           type: string
-        definition:
-          type: object
-          additionalProperties: {}
         source:
           type: string
         primary_key_owner:
           type: string
       required:
-      - definition
       - definition_id
       - primary_key_column
       - primary_key_owner

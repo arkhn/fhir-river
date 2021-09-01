@@ -72,6 +72,7 @@ class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Resource
         fields = "__all__"
+        read_only_fields = ["definition"]
 
     def validate(self, data):
         request = self.context["request"]
