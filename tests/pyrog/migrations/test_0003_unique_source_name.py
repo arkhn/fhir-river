@@ -3,7 +3,7 @@ import pytest
 
 @pytest.mark.django_db
 @pytest.mark.migration_test
-@pytest.mark.migration(app_label="pyrog", migration_name="0001_initial")
+@pytest.mark.migration(app_label="pyrog", migration_name="0002_integrate_users")
 def test_migrate(migrator, state):
     Template = state.apps.get_model("pyrog", "Template")
     Source = state.apps.get_model("pyrog", "Source")
