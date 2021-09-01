@@ -52,6 +52,11 @@ export const resourceFactory = Factory.define<Resource>(
     primary_key_column: faker.lorem.word(),
     primary_key_owner: faker.datatype.uuid(),
     definition_id: faker.lorem.word(),
+    definition: {
+      title: faker.lorem.word(),
+      name: faker.lorem.word(),
+      type: faker.lorem.word(),
+    },
     logical_reference: faker.datatype.uuid(),
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
