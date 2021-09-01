@@ -5,8 +5,8 @@ from river.common.mapping import concept_maps
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
-def test_fetch_concept_map(mock_fhir_api_response):
-    actual = concept_maps.fetch_concept_map("id", "validToken")
+def test_format_concept_map(mock_fhir_api_response):
+    actual = concept_maps.format_concept_map("id", "validToken")
     expected = {
         "F": "female",
         "M": "male",
