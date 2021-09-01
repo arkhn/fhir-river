@@ -2,6 +2,7 @@ from typing import List
 
 from rest_framework import serializers
 
+from common.adapters.fhir_api import HapiFhirAPI
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pagai.errors import ExplorationError
 from pyrog import models
@@ -71,6 +72,16 @@ class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Resource
         fields = "__all__"
+
+    def validate(self, data):
+        request = self.context["request"]
+        auth_token = request.session.get("oidc_access_token")
+        fhir_api = HapiFhirAPI(auth_token)
+        try:
+            data["definition"] = fhir_api.get(f"/StructureDefinition/{data['definition_id']}")
+        except Exception as e:
+            raise serializers.ValidationError({"definition": str(e)})
+        return data
 
 
 class AttributeSerializer(serializers.ModelSerializer):

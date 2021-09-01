@@ -12,7 +12,7 @@ from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
 from river.api import filters
 from river.api.serializers import serializers
-from river.common.mapping.fetch_concept_maps import dereference_concept_map
+from river.common.mapping.concept_maps import dereference_concept_map
 from river.services import abort, batch, preview
 
 
