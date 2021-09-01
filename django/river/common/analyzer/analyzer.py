@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 from pydantic.typing import AnyCallable
 
 from common.scripts import ScriptsRepository
+from river.common.errors import OperationOutcome
 
 from .analysis import Analysis
 from .attribute import Attribute
@@ -14,7 +15,6 @@ from .input_group import InputGroup
 from .sql_column import SqlColumn
 from .sql_filter import SqlFilter
 from .sql_join import SqlJoin
-from river.common.analyzer import sql_column
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +55,6 @@ class Analyzer:
         return self._cur_analysis
 
     def retrieve_col_data(self, mappings):
-        # Flatten owners->columns to search through all columns
         columns_by_id: Dict[str, Dict[str, Any]] = {}
         owner_names_by_id: Dict[str, str] = {}
         for owner in mappings["credential"]["owners"]:
@@ -66,7 +65,10 @@ class Analyzer:
         return owner_names_by_id, columns_by_id
 
     def analyze_mapping(self, resource_id, mappings):
-        resource_mapping = next(mapping for mapping in mappings["resources"] if mapping["id"] == resource_id)
+        try:
+            resource_mapping = next(mapping for mapping in mappings["resources"] if mapping["id"] == resource_id)
+        except StopIteration:
+            raise OperationOutcome(f"resource with id {resource_id} was not found in the provided mapping")
 
         self._cur_analysis.primary_key_column = self.get_primary_key(resource_mapping)
         self._cur_analysis.source_id = mappings["id"]
