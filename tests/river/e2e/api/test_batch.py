@@ -20,7 +20,7 @@ def test_create_batch(api_client, resource_factory, kafka_admin):
 
     batches = models.Batch.objects.all()
     assert len(batches) == 1
-    assert batches[0].resources == [resource.id for resource in resources]
+    assert [r.id for r in batches[0].resources.all()] == [resource.id for resource in resources]
 
     # Check that topics are created
     topics = kafka_admin.list_topics().topics
@@ -57,19 +57,20 @@ def test_filter_batches_by_sources(api_client, batch_factory, source_factory, re
     }
 
 
-def test_retrieve_batch(api_client, batch_factory):
-    [batch] = batch_factory.create_batch(1)
+def test_retrieve_batch(api_client, batch_factory, resource_factory):
+    r1, r2 = resource_factory.create_batch(2)
+    batch = batch_factory.create(resources=(r1, r2))
     url = reverse("batches-detail", kwargs={"pk": batch.id})
 
     response = api_client.get(url)
 
     assert response.status_code == 200, response.data
-    assert response.json()["resources"] == ["foo", "bar"]
+    assert response.json()["resources"] == [r1.id, r2.id]
     assert response.json()["completed_at"] is None
 
 
 def test_delete_batch(api_client, batch_factory, kafka_admin):
-    batch = batch_factory.create_batch(1)
+    batch = batch_factory.create()
     batch_id = batch.id
     url = reverse("batches-detail", kwargs={"pk": batch_id})
 
@@ -78,7 +79,7 @@ def test_delete_batch(api_client, batch_factory, kafka_admin):
 
     batches = models.Batch.objects.all()
     assert len(batches) == 1
-    assert batches[0].completed_at is not None
+    assert batches[0].canceled_at is not None
 
     # Check that topics are deleted
     topics = kafka_admin.list_topics().topics
