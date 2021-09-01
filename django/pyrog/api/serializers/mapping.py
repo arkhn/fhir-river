@@ -25,12 +25,13 @@ from pyrog.models import (
     Condition,
     Credential,
     Filter,
-    Input,
     InputGroup,
     Join,
     Owner,
     Resource,
     Source,
+    SQLInput,
+    StaticInput,
 )
 from river.common.database_connection.db_connection import DBConnection
 
@@ -130,12 +131,18 @@ class MappingCredentialSerializer(MappingPartialCredentialSerializer):
         return super().validate(data)
 
 
-class MappingInputSerializer(serializers.ModelSerializer):
+class MappingStaticInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaticInput
+        fields = ["value"]
+
+
+class MappingSQLInputSerializer(serializers.ModelSerializer):
     column = _ColumnField(allow_null=True)
 
     class Meta:
-        model = Input
-        fields = ["script", "concept_map_id", "static_value", "column"]
+        model = SQLInput
+        fields = ["script", "concept_map_id", "column"]
 
 
 class MappingConditionSerializer(serializers.ModelSerializer):
@@ -152,12 +159,13 @@ class MappingConditionSerializer(serializers.ModelSerializer):
 
 
 class MappingInputGroupSerializer(serializers.ModelSerializer):
-    inputs = MappingInputSerializer(many=True, required=False, default=[])
+    static_inputs = MappingStaticInputSerializer(many=True, required=False, default=[])
+    sql_inputs = MappingSQLInputSerializer(many=True, required=False, default=[])
     conditions = MappingConditionSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = InputGroup
-        fields = ["id", "merging_script", "inputs", "conditions"]
+        fields = ["id", "merging_script", "static_inputs", "sql_inputs", "conditions"]
 
 
 class MappingAttributeSerializer(serializers.ModelSerializer):

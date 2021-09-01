@@ -95,11 +95,20 @@ class InputGroupViewSet(viewsets.ModelViewSet):
     ordering = ["created_at"]
 
 
-class InputViewSet(viewsets.ModelViewSet):
-    queryset = models.Input.objects.all()
-    serializer_class = basic_serializers.InputSerializer
+class StaticInputViewSet(viewsets.ModelViewSet):
+    queryset = models.StaticInput.objects.all()
+    serializer_class = basic_serializers.StaticInputSerializer
     filter_backends = [django_filters.DjangoFilterBackend, drf_filters.OrderingFilter]
-    filterset_class = filters.InputFilterSet
+    filterset_class = filters.StaticInputFilterSet
+    ordering_fields = ["created_at"]
+    ordering = ["created_at"]
+
+
+class SQLInputViewSet(viewsets.ModelViewSet):
+    queryset = models.SQLInput.objects.all()
+    serializer_class = basic_serializers.SQLInputSerializer
+    filter_backends = [django_filters.DjangoFilterBackend, drf_filters.OrderingFilter]
+    filterset_class = filters.SQLInputFilterSet
     ordering_fields = ["created_at"]
     ordering = ["created_at"]
 
