@@ -68,6 +68,17 @@ class InputGroupFactory(factory.django.DjangoModelFactory):
     attribute = factory.SubFactory(AttributeFactory)
 
 
+class ColumnFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.Column"
+
+    class Params:
+        with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
+
+    id = factory.Sequence(lambda n: f"column_id_{n:04d}")
+    owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
+
+
 class InputFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Input
@@ -76,15 +87,21 @@ class InputFactory(factory.django.DjangoModelFactory):
     input_group = factory.SubFactory(InputGroupFactory)
 
 
-class ColumnFactory(factory.django.DjangoModelFactory):
+class StaticInputFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.Column
+        model = "pyrog.StaticInput"
 
-    class Params:
-        with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
+    id = factory.Sequence(lambda n: f"static_input_id_{n:04d}")
+    input_group = factory.SubFactory(InputGroupFactory)
 
-    id = factory.Sequence(lambda n: f"column_id_{n:04d}")
-    owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
+
+class SQLInputFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.SQLInput"
+
+    id = factory.Sequence(lambda n: f"sql_input_id_{n:04d}")
+    input_group = factory.SubFactory(InputGroupFactory)
+    column = factory.SubFactory(ColumnFactory)
 
 
 class JoinFactory(factory.django.DjangoModelFactory):
