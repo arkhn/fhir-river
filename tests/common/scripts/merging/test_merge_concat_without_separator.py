@@ -24,7 +24,7 @@ def test_merge_concat_without_separator():
     # Tests datetime
 
     dateNow = datetime.datetime.now()
-    assert merge_concat_without_separator("a", dateNow) == "a" + str(dateNow)
+    assert merge_concat_without_separator("a", dateNow) == f"a{dateNow}"
 
     assert (
         merge_concat_without_separator("testing", datetime.datetime(2020, 5, 17))
@@ -46,5 +46,5 @@ def test_merge_concat_without_separator():
     dateNow = datetime.datetime.now()
     assert (
         merge_concat_without_separator("a", dateNow, datetime.date(2020, 5, 17), True)
-        == "a" + str(dateNow) + "2020-05-17True"
+        == f"a{dateNow}2020-05-17True"
     )

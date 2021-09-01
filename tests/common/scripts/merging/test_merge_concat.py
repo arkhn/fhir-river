@@ -24,7 +24,7 @@ def test_merge_concat():
     # Tests datetime
 
     dateNow = datetime.datetime.now()
-    assert merge_concat("a", dateNow) == "a " + str(dateNow)
+    assert merge_concat("a", dateNow) == f"a {dateNow}"
 
     assert merge_concat("testing", datetime.datetime(2020, 5, 17)) == "testing 2020-05-17 00:00:00"
     # Test date
@@ -39,4 +39,7 @@ def test_merge_concat():
 
     # Test mixed
     dateNow = datetime.datetime.now()
-    assert merge_concat("a", dateNow, datetime.date(2020, 5, 17), True) == "a " + str(dateNow) + " 2020-05-17 True"
+    assert (
+        merge_concat("a", dateNow, datetime.date(2020, 5, 17), True)
+        == f"a {dateNow} 2020-05-17 True"
+    )
