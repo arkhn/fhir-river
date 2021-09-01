@@ -51,7 +51,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
         for owner in self.root.initial_data["credential"]["owners"]:
             for column in owner["columns"]:
                 if column["id"] == data:
-                    return super().to_internal_value(data)
+                    return data
         raise serializers.ValidationError("No associated Column.")
 
 
@@ -68,7 +68,7 @@ class _OwnerField(serializers.PrimaryKeyRelatedField):
 
         for owner in self.root.initial_data["credential"]["owners"]:
             if owner["id"] == data:
-                return super().to_internal_value(data)
+                return data
         raise serializers.ValidationError("No associated Owner.")
 
 
