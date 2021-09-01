@@ -20,6 +20,7 @@ import {
   useApiResourcesRetrieveQuery,
   useApiAttributesListQuery,
   useApiInputGroupsCreateMutation,
+  useApiInputsCreateMutation,
 } from "services/api/endpoints";
 
 import { getNode } from "./resourceTreeUtils";
@@ -73,6 +74,7 @@ const FhirResourceTree = (): JSX.Element => {
   );
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
+  const [createInput] = useApiInputsCreateMutation();
   const selectedNode = useGetSelectedNode();
 
   const handleSelectNode = async (
@@ -100,7 +102,21 @@ const FhirResourceTree = (): JSX.Element => {
               resource: mapping.id,
             },
           }).unwrap();
-          createInputGroup({ inputGroupRequest: { attribute: attribute.id } });
+          const inputGroup = await createInputGroup({
+            inputGroupRequest: { attribute: attribute.id },
+          }).unwrap();
+          const isNodeTypeURI = node?.type === "uri";
+          const isNodeNameType = node?.name === "type";
+          // Create a static input for node of type "URI" & name "type"
+          if (isNodeTypeURI && isNodeNameType) {
+            createInput({
+              inputRequest: {
+                input_group: inputGroup.id,
+                static_value: "",
+              },
+            });
+          }
+
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );
