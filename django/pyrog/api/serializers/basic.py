@@ -44,7 +44,7 @@ class CredentialSerializer(serializers.ModelSerializer):
             db_connection.close()
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().validate(data)
 
 
 class OwnerSerializer(serializers.ModelSerializer):
@@ -65,7 +65,7 @@ class OwnerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"name": str(e)})
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().validate(data)
 
 
 class ResourceSerializer(serializers.ModelSerializer):
@@ -81,7 +81,7 @@ class ResourceSerializer(serializers.ModelSerializer):
             data["definition"] = fhir_api.get(f"/StructureDefinition/{data['definition_id']}")
         except Exception as e:
             raise serializers.ValidationError({"definition": str(e)})
-        return data
+        return super().validate(data)
 
 
 class AttributeSerializer(serializers.ModelSerializer):

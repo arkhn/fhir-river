@@ -17,6 +17,7 @@ from typing import Mapping
 
 from rest_framework import serializers
 
+from common.adapters.fhir_api import HapiFhirAPI
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog.models import (
     Attribute,
@@ -50,7 +51,7 @@ class _ColumnField(serializers.PrimaryKeyRelatedField):
         for owner in self.root.initial_data["credential"]["owners"]:
             for column in owner["columns"]:
                 if column["id"] == data:
-                    return data
+                    return super().to_internal_value(data)
         raise serializers.ValidationError("No associated Column.")
 
 
@@ -67,7 +68,7 @@ class _OwnerField(serializers.PrimaryKeyRelatedField):
 
         for owner in self.root.initial_data["credential"]["owners"]:
             if owner["id"] == data:
-                return data
+                return super().to_internal_value(data)
         raise serializers.ValidationError("No associated Owner.")
 
 
@@ -106,7 +107,7 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
             data["schema"] = explorer.get_owner_schema(name)
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().to_internal_value(data)
 
 
 class MappingPartialCredentialSerializer(serializers.ModelSerializer):
@@ -127,7 +128,7 @@ class MappingCredentialSerializer(MappingPartialCredentialSerializer):
             db_connection.close()
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().validate(data)
 
 
 class MappingInputSerializer(serializers.ModelSerializer):
@@ -195,6 +196,16 @@ class MappingResourceSerializer(serializers.ModelSerializer):
             "attributes",
             "filters",
         ]
+
+    def validate(self, data):
+        request = self.context["request"]
+        auth_token = request.session.get("oidc_access_token")
+        fhir_api = HapiFhirAPI(auth_token)
+        try:
+            data["definition"] = fhir_api.get(f"/StructureDefinition/{data['definition_id']}")
+        except Exception as e:
+            raise serializers.ValidationError({"definition": str(e)})
+        return super().validate(data)
 
 
 class MappingSerializer(serializers.ModelSerializer):
