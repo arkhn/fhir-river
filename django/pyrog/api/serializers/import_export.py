@@ -203,7 +203,7 @@ class MappingResourceSerializer(serializers.ModelSerializer):
         try:
             data["definition"] = fhir_api.get(f"/StructureDefinition/{data['definition_id']}")
         except Exception as e:
-            raise serializers.ValidationError({"definition": str(e)})
+            raise serializers.ValidationError({"definition": [str(e)]})
         return super().validate(data)
 
 

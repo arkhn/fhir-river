@@ -62,7 +62,7 @@ class OwnerSerializer(serializers.ModelSerializer):
             name = data["name"] if "name" in data else self.instance.name
             data["schema"] = explorer.get_owner_schema(name)
         except ExplorationError as e:
-            raise serializers.ValidationError({"name": str(e)})
+            raise serializers.ValidationError({"name": [str(e)]})
         except Exception as e:
             raise serializers.ValidationError(e)
         return super().validate(data)
@@ -81,7 +81,7 @@ class ResourceSerializer(serializers.ModelSerializer):
         try:
             data["definition"] = fhir_api.get(f"/StructureDefinition/{data['definition_id']}")
         except Exception as e:
-            raise serializers.ValidationError({"definition": str(e)})
+            raise serializers.ValidationError({"definition": [str(e)]})
         return super().validate(data)
 
 
