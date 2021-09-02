@@ -1,12 +1,16 @@
 #!/bin/sh
-# wait-for-postgres.sh
+# POSTGRES_USER=toto POSTGRES_PASSWORD=tata wait-for-postgres.sh <host> <port> <database>
 
 set -e
   
 host="$1"
+port="$2"
+database="$3"
+shift
+shift
 shift
   
-until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$host" -U "test" -c '\q'; do
+until psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$host:$port/$database" -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
   sleep 1
 done
