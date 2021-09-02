@@ -11,6 +11,7 @@ import Button from "common/components/Button";
 import FhirResourceAutocomplete from "common/components/FhirResourceAutocomplete";
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
+import ExistingURIDialog from "features/Inputs/ExistingURIDialog";
 import {
   useApiInputsDestroyMutation,
   useApiInputsUpdateMutation,
@@ -21,7 +22,6 @@ import {
 } from "services/api/generated/api.generated";
 
 import { URI_STATIC_VALUE_PREFIX } from "../../constants";
-import ExistingURIDialog from "./ExistingURIDialog";
 
 type StaticInputProps = {
   input: Input;
