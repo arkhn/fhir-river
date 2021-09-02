@@ -125,7 +125,6 @@ class Column(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     table = models.TextField()
     column = models.TextField()
-    join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
     owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
@@ -137,7 +136,9 @@ class Column(models.Model):
 
 class Join(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    column = models.ForeignKey(Column, related_name="joins", on_delete=models.CASCADE)
+    sql_input = models.ForeignKey(SQLInput, related_name="joins", on_delete=models.CASCADE)
+    left = models.ForeignKey(Column, related_name="join_lhs", on_delete=models.CASCADE)
+    right = models.ForeignKey(Column, related_name="join_rhs", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
