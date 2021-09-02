@@ -1,5 +1,3 @@
-from urllib.parse import urljoin
-
 from django.conf import settings
 
 import requests
@@ -25,7 +23,7 @@ class HapiFhirAPI(FhirAPI):
 
     def get(self, path):
         response = requests.get(
-            urljoin(self._url, path),
+            f"{self._url}{path}",
             headers=self._headers,
         )
         response.raise_for_status()
