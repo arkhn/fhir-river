@@ -34,13 +34,8 @@ def test_create_column(
     assert response.status_code == status_code, response.data
 
 
-@pytest.fixture(params=[True, False], ids=["With join", "Without join"])
-def x_column(request, column_factory):
-    return column_factory(with_join=request.param)
-
-
-def test_retrieve_column(api_client, x_column):
-    url = reverse("columns-detail", kwargs={"pk": x_column.id})
+def test_retrieve_column(api_client, column):
+    url = reverse("columns-detail", kwargs={"pk": column.id})
 
     response = api_client.get(url)
 

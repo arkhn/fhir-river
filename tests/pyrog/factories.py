@@ -100,7 +100,9 @@ class JoinFactory(factory.django.DjangoModelFactory):
         model = models.Join
 
     id = factory.Sequence(lambda n: f"join_id_{n:04d}")
-    column = factory.SubFactory(ColumnFactory)
+    sql_input = factory.SubFactory(SQLInputFactory)
+    left = factory.SubFactory(ColumnFactory)
+    right = factory.SubFactory(ColumnFactory)
 
 
 class ConditionFactory(factory.django.DjangoModelFactory):
