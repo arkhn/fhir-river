@@ -47,7 +47,7 @@ def table_exists(sql_engine, table_name):
 @pytest.fixture(params=list(DATABASES.keys()))
 def db_config(request):
     db_driver = request.param
-    return {**DATABASES[db_driver], "model": db_driver}
+    return DATABASES[db_driver]
 
 
 def load_table(sql_engine, table_name, data_file):
