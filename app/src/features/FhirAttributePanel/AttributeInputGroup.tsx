@@ -27,6 +27,8 @@ import {
   conditionsAdded,
   conditionSelectors,
 } from "features/Conditions/conditionSlice";
+import SqlInput from "features/Inputs/SqlInput";
+import StaticInput from "features/Inputs/StaticInput";
 import MergingScript from "features/Scripts/MergingScript";
 import {
   useApiInputGroupsDestroyMutation,
@@ -38,8 +40,6 @@ import {
 import { InputGroup } from "services/api/generated/api.generated";
 
 import Condition from "./Condition";
-import SqlInput from "./SqlInput";
-import StaticInput from "./StaticInput";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
