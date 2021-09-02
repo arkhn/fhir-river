@@ -439,8 +439,8 @@ export const buildTreeDefinition = (
  * `Identifier[0].type.coding[3]` -> `Identifier[0].type.coding`
  * @param node
  */
-export const computePathWithoutIndexes = (node: { path: string }): string =>
-  node.path.replace(/[[]\d+]$/, "");
+export const computePathWithoutIndexes = (path: string): string =>
+  path.replace(/[[]\d+]$/, "");
 
 /**
  * Computes path's index :
@@ -500,7 +500,7 @@ export const getDefinitionNodeFromItemAttribute = (
   attribute: Attribute,
   rootElementNode: ElementNode
 ): DefinitionNode | undefined => {
-  const attributePathWithoutIndex = computePathWithoutIndexes(attribute);
+  const attributePathWithoutIndex = computePathWithoutIndexes(attribute.path);
   const attributeParentElementNode = getElementNodeByPath(
     attributePathWithoutIndex,
     rootElementNode

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -13,6 +13,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useSnackbar } from "notistack";
+import { difference } from "lodash";
 import { useHistory, useParams } from "react-router-dom";
 
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
@@ -27,6 +28,7 @@ import {
 import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 import useFhirResourceTreeData from "./useFhirResourceTreeData";
+import useGetSelectedAttributeAncestors from "./useGetSelectedAttributeAncestors";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -54,6 +56,9 @@ const FhirResourceTree = (): JSX.Element => {
   const history = useHistory();
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
   const { enqueueSnackbar } = useSnackbar();
+  const [hasAlreadyExpandedToTarget, setHasAlreadyExpandedToTarget] = useState(
+    false
+  );
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -74,10 +79,28 @@ const FhirResourceTree = (): JSX.Element => {
     { resource: mapping?.id ?? "" },
     { skip: !mapping }
   );
+  const {
+    ids: nodeAncestorsIds,
+    hasReachedTarget,
+  } = useGetSelectedAttributeAncestors(rootElementNode);
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
   const [createStaticInput] = useApiStaticInputsCreateMutation();
   const selectedNode = useGetSelectedNode();
+
+  useEffect(() => {
+    const nodesToExpand = difference(nodeAncestorsIds, expandedNodes);
+
+    if (nodesToExpand.length > 0 && !hasAlreadyExpandedToTarget) {
+      setExpandedNodes([...expandedNodes, ...nodesToExpand]);
+      hasReachedTarget && setHasAlreadyExpandedToTarget(hasReachedTarget);
+    }
+  }, [
+    expandedNodes,
+    hasAlreadyExpandedToTarget,
+    hasReachedTarget,
+    nodeAncestorsIds,
+  ]);
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
