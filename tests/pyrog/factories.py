@@ -79,14 +79,6 @@ class ColumnFactory(factory.django.DjangoModelFactory):
     owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
 
 
-class InputFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.Input
-
-    id = factory.Sequence(lambda n: f"input_id_{n:04d}")
-    input_group = factory.SubFactory(InputGroupFactory)
-
-
 class StaticInputFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.StaticInput"

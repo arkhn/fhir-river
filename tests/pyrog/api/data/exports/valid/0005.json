@@ -4158,11 +4158,11 @@
                     "input_groups": [
                         {
                             "merging_script": "",
-                            "inputs": [
+                            "static_inputs": [],
+                            "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "static_value": "",
                                     "column": "reference-to-column-a"
                                 }
                             ],
@@ -8333,7 +8333,31 @@
             },
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
             "primary_key_owner": "reference-to-owner-b",
-            "attributes": [
+            "attributes": [               
+                {
+                    "path": "static",
+                    "slice_name": "",
+                    "definition_id": "code",
+                    "input_groups": [
+                        {
+                            "merging_script": "",
+                            "static_inputs": [
+                                {
+                                    "value": "static value"
+                                }
+                            ],
+                            "sql_inputs": [],
+                            "conditions": [
+                                {
+                                    "action": "EXCLUDE",
+                                    "column": "reference-to-column-c",
+                                    "value": "something",
+                                    "relation": "EQ"
+                                }
+                            ]
+                        }
+                    ]
+                },
                 {
                     "path": "something",
                     "slice_name": "",
@@ -8341,11 +8365,11 @@
                     "input_groups": [
                         {
                             "merging_script": "",
-                            "inputs": [
+                            "static_inputs": [],
+                            "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "static_value": "",
                                     "column": "reference-to-column-b"
                                 }
                             ],
@@ -8366,6 +8390,11 @@
                     "relation": "=",
                     "value": "whatever",
                     "sql_column": "reference-to-column-b"
+                },
+                {
+                    "relation": "=",
+                    "value": "whatever",
+                    "sql_column": "reference-to-column-c"
                 }
             ]
         }
@@ -8387,6 +8416,12 @@
                         "id": "reference-to-column-a",
                         "table": "patient",
                         "column": "a",
+                        "joins": []
+                    },
+                    {
+                        "id": "reference-to-column-c",
+                        "table": "patient",
+                        "column": "c",
                         "joins": []
                     }
                 ]
