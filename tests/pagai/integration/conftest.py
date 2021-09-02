@@ -8,8 +8,7 @@ from ..settings import DATABASES
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_databases():
-    for db_driver in DATABASES:
-        db_config = {**DATABASES[db_driver], "model": db_driver}
+    for db_driver, db_config in DATABASES.items():
         sql_engine = create_engine(get_sql_url(db_driver, db_config))
 
         # Load (or reload) test data into db.
