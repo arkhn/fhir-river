@@ -1,0 +1,85 @@
+<mxfile host="65bd71144e">
+    <diagram id="CfOmq31BsmOXV1zDY3m9" name="Page-1">
+        <mxGraphModel dx="913" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="8" value="1. POST /api/sources/" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="4" target="10">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="195" y="370" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="4" value="Logged user&lt;br&gt;bob@arkhn.com" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+                    <mxGeometry x="130" y="340" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="2. AuthzMiddleware:&lt;br&gt;is request exempt ?&lt;br&gt;no" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=0;entryDx=0;entryDy=0;exitX=0.25;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="10" target="10">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="460" y="250" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="400" y="270"/>
+                            <mxPoint x="460" y="270"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="13" value="3.AuthzMiddleware:&amp;nbsp;&lt;br&gt;GET /api/authz/validate/&lt;br&gt;{&quot;user_email&quot;: &quot;bob@arkhn.com&quot;,&lt;br&gt;&quot;service&quot;: &quot;pyrog&quot;,&lt;br&gt;&quot;resource&quot;: &quot;/api/sources/&quot;,&lt;br&gt;&quot;operation&quot;: &quot;CREATE&quot;}" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="10" target="12">
+                    <mxGeometry x="-0.0526" y="-40" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="10" target="10">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="560" y="400" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="550" y="360"/>
+                            <mxPoint x="550" y="385"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="26" value="5. AuthzMiddleware:&amp;nbsp;&lt;br&gt;If OK pass request to view,&lt;br&gt;else 403&lt;br&gt;&amp;nbsp;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="25">
+                    <mxGeometry x="0.1264" y="-3" relative="1" as="geometry">
+                        <mxPoint x="83" y="-12" as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="10" value="pyrog" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="340" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="4. OK or KO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="12" target="10">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="430" y="510" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="12" target="17">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="oprovider" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="590" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="Permissions,&lt;br&gt;Roles,&lt;br&gt;Users" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="580" width="60" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="0. Edits permissions, assigns roles" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="20" target="12">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="195" y="620" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="20" value="Arkhn admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+                    <mxGeometry x="130" y="590" width="30" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="6. Response" style="endArrow=classic;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" edge="1" parent="1" source="10">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="430" y="500" as="sourcePoint"/>
+                        <mxPoint x="170" y="385" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="28" value="A request from authz validation is exempt if:&lt;br&gt;* AUTHZ_MIDDLEWARE_ENABLED=True&lt;br&gt;* user is unauthenticated&lt;br&gt;* request url does not match AUTHZ_MIDDLEWARE_URL_PATTERN" style="shape=note;size=15;align=left;spacingLeft=10;html=1;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="560" y="150" width="250" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="" style="edgeStyle=none;endArrow=none;exitX=0;exitY=0.5;dashed=1;html=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" source="28" parent="1">
+                    <mxGeometry x="1" relative="1" as="geometry">
+                        <mxPoint x="490" y="260" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
