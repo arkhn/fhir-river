@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { makeStyles } from "@material-ui/core";
 import { TreeItem as MuiTreeItem } from "@material-ui/lab";
@@ -12,6 +12,7 @@ type TreeItemProps = {
   elementNode: ElementNode;
   isArrayItem?: boolean;
   hasParentExpanded?: boolean;
+  expandedNodes: string[];
 };
 
 const useStyle = makeStyles((theme) => ({
@@ -39,13 +40,16 @@ const TreeItem = ({
   elementNode,
   isArrayItem,
   hasParentExpanded,
+  expandedNodes,
 }: TreeItemProps): JSX.Element => {
   const classes = useStyle();
   const isNodeHidden =
     elementNode.type === "Extension" &&
     elementNode.isArray &&
     elementNode.children.length === 0;
-  const [hasExpanded, setHasExpanded] = useState(false);
+  const [hasExpanded, setHasExpanded] = useState(
+    expandedNodes.includes(elementNode.id)
+  );
   const isComplex = elementNode.kind === "complex";
   const hasToFetchNodeDefinition =
     isComplex &&
@@ -61,6 +65,12 @@ const TreeItem = ({
       skip: !hasToFetchNodeDefinition,
     }
   );
+
+  useEffect(() => {
+    if (expandedNodes.includes(elementNode.id) && !hasExpanded) {
+      setHasExpanded(true);
+    }
+  }, [elementNode.id, expandedNodes, hasExpanded]);
 
   const handleIconClick = () => {
     setHasExpanded(true);
@@ -92,6 +102,7 @@ const TreeItem = ({
             elementNode={childElementNode}
             isArrayItem={elementNode.isArray}
             hasParentExpanded={hasExpanded}
+            expandedNodes={expandedNodes}
           />
         ))}
     </MuiTreeItem>

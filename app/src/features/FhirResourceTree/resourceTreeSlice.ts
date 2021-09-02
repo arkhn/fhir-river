@@ -97,7 +97,7 @@ const resourceTreeSlice = createSlice({
             rootElementNode
           );
           if (attributeElementDefinition) {
-            const parentPath = computePathWithoutIndexes(attribute);
+            const parentPath = computePathWithoutIndexes(attribute.path);
             const itemIndex = getPathItemIndex(attribute) ?? 0;
             const attributeElementNode = createElementNode(
               attributeElementDefinition,
@@ -126,7 +126,7 @@ const resourceTreeSlice = createSlice({
         const { attributes } = payload;
         attributes.forEach((attribute) => {
           const parent = getElementNodeByPath(
-            computePathWithoutIndexes(attribute),
+            computePathWithoutIndexes(attribute.path),
             rootElementNode
           );
           if (parent) {

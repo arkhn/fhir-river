@@ -178,13 +178,13 @@ describe("computePathWithoutIndexes", () => {
     const path = "Observation.code.coding[0]";
     const pathWithoutIndex = "Observation.code.coding";
 
-    expect(computePathWithoutIndexes({ path })).toBe(pathWithoutIndex);
+    expect(computePathWithoutIndexes(path)).toBe(pathWithoutIndex);
   });
   it("nested item path", () => {
     const path = "Observation.code.coding[0].type.coding[3]";
     const pathWithoutIndex = "Observation.code.coding[0].type.coding";
 
-    expect(computePathWithoutIndexes({ path })).toBe(pathWithoutIndex);
+    expect(computePathWithoutIndexes(path)).toBe(pathWithoutIndex);
   });
 });
 
