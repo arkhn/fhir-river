@@ -47,7 +47,7 @@ def retry(batch: models.Batch) -> None:
 
 def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
     analyzer = Analyzer()
-    analysis = analyzer.analyze(mapping, resource_id)
+    analysis = analyzer.analyze(resource_id, mapping)
 
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:
