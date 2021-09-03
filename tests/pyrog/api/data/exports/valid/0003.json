@@ -143,12 +143,6 @@
                 "merging_script": "",
                 "inputs": [
                   {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
-                  {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
                     "static_value": null,
@@ -224,12 +218,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fyj00581jpjnqdt1wav"
                   }
                 ],
@@ -246,12 +234,6 @@
                 "id": "ckszt4fyj00601jpjzcabr025",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -444,12 +426,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fyp00961jpjlduqbvsf"
                   }
                 ],
@@ -485,12 +461,6 @@
                 "id": "ckszt4fyp01021jpjhf6dty2d",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -574,12 +544,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fyr01201jpjfcqa6p2f"
                   }
                 ],
@@ -641,12 +605,6 @@
                 "id": "ckszt4fys01301jpjuc0r5nds",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -723,12 +681,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fyt01461jpjhsii7qvl"
                   }
                 ],
@@ -788,12 +740,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fyu01581jpju57maxwv"
                   }
                 ],
@@ -817,12 +763,6 @@
                 "id": "ckszt4fyv01621jpj7i1p6t9p",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -1040,12 +980,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fz002021jpjnnv7i9ur"
                   }
                 ],
@@ -1118,12 +1052,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fz102151jpj5lbq4njh"
                   }
                 ],
@@ -1140,12 +1068,6 @@
                 "id": "ckszt4fz102171jpj9uzev345",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -1226,12 +1148,6 @@
                 "id": "ckszt4fz302331jpj2ys7vbws",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -1528,12 +1444,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4fz802831jpjfy3yuf6k"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -1605,12 +1515,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fz902971jpjzf05ka2s"
                   }
                 ],
@@ -1632,12 +1536,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4fza03011jpj6rclyett"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -1653,12 +1551,6 @@
                 "id": "ckszt4fza03041jpj6u7bekpr",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -2013,12 +1905,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fzg03641jpj4eq8yrv0"
                   }
                 ],
@@ -2035,12 +1921,6 @@
                 "id": "ckszt4fzh03661jpjo276m4rl",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -2114,12 +1994,6 @@
                 "merging_script": "",
                 "inputs": [
                   {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
-                  {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
                     "static_value": null,
@@ -2144,12 +2018,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4fzi03861jpjry57vztu"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -2171,12 +2039,6 @@
                 "id": "ckszt4fzj03901jpjvujfbthv",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -2351,12 +2213,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fzn04211jpj22njq7j7"
                   }
                 ],
@@ -2405,12 +2261,6 @@
                 "id": "ckszt4fzp04311jpjfl97en6e",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -2488,12 +2338,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4fzr04491jpjv1wyyli8"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -2586,12 +2430,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4fzs04661jpjxluov18x"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -2607,12 +2445,6 @@
                 "id": "ckszt4fzt04691jpj7290yi01",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -2643,12 +2475,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fzu04781jpji8v9pbme"
                   }
                 ],
@@ -2665,12 +2491,6 @@
                 "id": "ckszt4fzu04801jpjnxi7k31b",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -2715,12 +2535,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4fzw04941jpj8gua8xci"
                   }
                 ],
@@ -2754,14 +2568,7 @@
               {
                 "id": "ckszt4fzx05021jpju6kqe65c",
                 "merging_script": "",
-                "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  }
-                ],
+                "inputs": [],
                 "conditions": []
               }
             ]
@@ -2816,12 +2623,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0005111jpj7xu25ats"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -2887,12 +2688,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0105241jpj5w8z8oea"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -3155,12 +2950,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g0505731jpjf1ohnfa9"
                   }
                 ],
@@ -3355,12 +3144,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g0906041jpjptmvkg5f"
                   }
                 ],
@@ -3468,12 +3251,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0b06241jpjw8zsgqxk"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -3489,12 +3266,6 @@
                 "id": "ckszt4g0b06271jpj7vk2qmeb",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -3540,12 +3311,6 @@
                 "merging_script": "",
                 "inputs": [
                   {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
-                  {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
                     "static_value": null,
@@ -3571,12 +3336,6 @@
                 "id": "ckszt4g0d06451jpjsda0q25p",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -3609,12 +3368,6 @@
                 "id": "ckszt4g0f06551jpjuf4b0t0f",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -3666,12 +3419,6 @@
                 "id": "ckszt4g0f06651jpj92ooul6q",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "333dd312-17f6-4911-9d88-f34b46bbe454",
@@ -3813,12 +3560,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0k06901jpja6hcmx3o"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -3966,12 +3707,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g0m07161jpj1s8hogcj"
                   }
                 ],
@@ -4075,12 +3810,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0n07331jpjgyhgtr9k"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -4140,12 +3869,6 @@
                 "id": "ckszt4g0o07431jpjsoz6jguq",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -4234,12 +3957,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g0p07611jpjrw4ugwpq"
                   }
                 ],
@@ -4274,12 +3991,6 @@
                 "id": "ckszt4g0q07661jpj9b77whn5",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -4331,12 +4042,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0r07771jpjuf54s1s5"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -4553,12 +4258,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g0v08131jpjgwhsfkc8"
                   }
                 ],
@@ -4580,12 +4279,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g0w08171jpjjyeu2lde"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -4744,12 +4437,6 @@
                 "id": "ckszt4g0y08421jpj850be25o",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -4983,12 +4670,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1308841jpje0wfl9ml"
                   }
                 ],
@@ -5035,14 +4716,7 @@
               {
                 "id": "ckszt4g1308911jpjf3s7lf4l",
                 "merging_script": "",
-                "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  }
-                ],
+                "inputs": [],
                 "conditions": []
               }
             ]
@@ -5120,12 +4794,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g1609061jpjc0d1200o"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -5159,12 +4827,6 @@
                 "id": "ckszt4g1609121jpjszttzc4r",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -5384,12 +5046,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g1909501jpj1wsq6mf9"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -5613,12 +5269,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1d09901jpjgcci7b9t"
                   }
                 ],
@@ -5679,12 +5329,6 @@
                 "id": "ckszt4g1f09991jpjriz09e8q",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_date",
                     "concept_map_id": "",
@@ -5841,12 +5485,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1j10281jpjp40kqzu7"
                   }
                 ],
@@ -5863,12 +5501,6 @@
                 "id": "ckszt4g1j10301jpjvow2n6yw",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -6020,12 +5652,6 @@
                 "merging_script": "",
                 "inputs": [
                   {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
-                  {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
                     "static_value": null,
@@ -6045,12 +5671,6 @@
                 "id": "ckszt4g1l10601jpjyzdgvckf",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -6091,12 +5711,6 @@
                 "id": "ckszt4g1m10681jpjeu3bwmfw",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -6157,12 +5771,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1p10841jpjbrxqdqn4"
                   }
                 ],
@@ -6203,12 +5811,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1r10951jpjmmv1it23"
                   }
                 ],
@@ -6235,12 +5837,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1s11041jpj34626csl"
                   }
                 ],
@@ -6262,12 +5858,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g1t11111jpjfwbm26ba"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -6593,12 +6183,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g1z11651jpj9s7jb5q7"
                   }
                 ],
@@ -6620,12 +6204,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2011721jpj44fd6mhe"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -6691,12 +6269,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g2311921jpj3prgf7zm"
                   }
                 ],
@@ -6739,12 +6311,6 @@
                 "id": "ckszt4g2411981jpjdbd55nmh",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -6789,12 +6355,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g2512091jpjoyvhveqf"
                   }
                 ],
@@ -6817,12 +6377,6 @@
                 "id": "ckszt4g2512121jpjag0andse",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -6899,12 +6453,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g2712311jpjfm3y4pyw"
                   }
                 ],
@@ -6959,12 +6507,6 @@
                 "id": "ckszt4g2812391jpjontyupib",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -7182,12 +6724,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2d12761jpj8g7o8ro3"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -7203,12 +6739,6 @@
                 "id": "ckszt4g2d12791jpjda3lzt4g",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -7306,12 +6836,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2e12971jpjwlvju3jp"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -7550,12 +7074,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g2m13471jpjtiidpmbx"
                   }
                 ],
@@ -7655,12 +7173,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2n13641jpj2devm4n1"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -7874,12 +7386,6 @@
                 "id": "ckszt4g2p13981jpjl7wu94ai",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -8155,12 +7661,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2v14441jpjg16l8thk"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -8232,12 +7732,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g2w14581jpjpful14wc"
                   }
                 ],
@@ -8259,12 +7753,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2w14621jpj2wltjpun"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -8286,12 +7774,6 @@
                 "id": "ckszt4g2x14661jpjv4gpxidz",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -8343,12 +7825,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g2y14771jpj8isaaz1d"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -8530,12 +8006,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3215081jpj48nrrxfs"
                   }
                 ],
@@ -8608,12 +8078,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3315211jpjzz2hcl0p"
                   }
                 ],
@@ -8630,12 +8094,6 @@
                 "id": "ckszt4g3315231jpj91mvld6l",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -8680,12 +8138,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3415341jpjvtvlhiud"
                   }
                 ],
@@ -8715,12 +8167,6 @@
                 "id": "ckszt4g3515391jpj3532eazf",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -8926,12 +8372,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3a15781jpj3z3yvvlb"
                   }
                 ],
@@ -8948,12 +8388,6 @@
                 "id": "ckszt4g3b15801jpjnlyysvda",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -9102,12 +8536,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3d16101jpjy1f23lff"
                   }
                 ],
@@ -9124,12 +8552,6 @@
                 "id": "ckszt4g3e16121jpjywwtw46t",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -9156,12 +8578,6 @@
                 "id": "ckszt4g3e16181jpjlmob2ru1",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -9238,12 +8654,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3f16341jpjo3gitjn8"
                   }
                 ],
@@ -9265,12 +8675,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g3g16381jpjgta3vwhr"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -9298,12 +8702,6 @@
                 "id": "ckszt4g3g16431jpjdt0i3tf6",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -9390,12 +8788,6 @@
                 "id": "ckszt4g3i16591jpj4lzivcmq",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -9652,12 +9044,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3n17031jpj68j8km5j"
                   }
                 ],
@@ -9730,12 +9116,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3o17161jpjfl7uyrm6"
                   }
                 ],
@@ -9757,12 +9137,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g3p17201jpjvdonwt6a"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -9879,12 +9253,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3s17421jpj2hs9kzxz"
                   }
                 ],
@@ -9997,12 +9365,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3u17611jpjh4pje38n"
                   }
                 ],
@@ -10071,12 +9433,6 @@
                 "id": "ckszt4g3v17741jpjdr6imzcv",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -10153,12 +9509,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g3x17901jpjxxbcoa26"
                   }
                 ],
@@ -10175,12 +9525,6 @@
                 "id": "ckszt4g3x17921jpjmm8dyoku",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -10458,12 +9802,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4318421jpj8eltmtf9"
                   }
                 ],
@@ -10536,12 +9874,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4418551jpjy5tvbvh5"
                   }
                 ],
@@ -10592,12 +9924,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4518651jpja387q17b"
                   }
                 ],
@@ -10630,12 +9956,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4518721jpjj141b7fc"
                   }
                 ],
@@ -10652,12 +9972,6 @@
                 "id": "ckszt4g4618741jpjbkbiaxb1",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -10688,12 +10002,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4718831jpjaom9t1nl"
                   }
                 ],
@@ -10716,12 +10024,6 @@
                 "id": "ckszt4g4718861jpj4n8pqtop",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -10787,12 +10089,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g4818991jpjqbnoml4q"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -10849,12 +10145,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g4c19131jpjj20jrfu8"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -10882,12 +10172,6 @@
                 "id": "ckszt4g4d19181jpj9ndln5w9",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -10946,12 +10230,6 @@
                 "id": "ckszt4g4e19291jpjbove9v6x",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -11037,12 +10315,6 @@
                     "concept_map_id": "",
                     "static_value": null,
                     "column": "ckszt4g4g19481jpjfl6zgi9t"
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
                   }
                 ],
                 "conditions": []
@@ -11058,12 +10330,6 @@
                 "id": "ckszt4g4g19511jpjtqfqj668",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "clean_dateTime",
                     "concept_map_id": "",
@@ -11144,12 +10410,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4h19681jpj9fcektib"
                   }
                 ],
@@ -11166,12 +10426,6 @@
                 "id": "ckszt4g4i19701jpjlq8sfdfm",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",
@@ -11196,12 +10450,6 @@
                     "script": "",
                     "concept_map_id": "",
                     "static_value": null,
-                    "column": null
-                  },
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
                     "column": "ckszt4g4i19781jpjcsntlq8m"
                   }
                 ],
@@ -11218,12 +10466,6 @@
                 "id": "ckszt4g4j19801jpj0rp8xkp0",
                 "merging_script": "",
                 "inputs": [
-                  {
-                    "script": "",
-                    "concept_map_id": "",
-                    "static_value": null,
-                    "column": null
-                  },
                   {
                     "script": "",
                     "concept_map_id": "",

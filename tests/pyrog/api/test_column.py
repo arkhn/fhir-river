@@ -101,8 +101,12 @@ def test_filter_columns_by_input(api_client, input_factory, column_factory):
     url = reverse("columns-list")
 
     first_input, second_input = input_factory.create_batch(2)
-    first_input_column = column_factory.create(input=first_input)
-    column_factory.create(input=second_input)
+    first_input_column, second_input_column = column_factory.create_batch(2)
+
+    first_input.column = first_input_column
+    second_input.column = second_input_column
+    first_input.save()
+    second_input.save()
 
     response = api_client.get(url, {"input": first_input.id})
 

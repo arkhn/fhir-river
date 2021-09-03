@@ -2,8 +2,7 @@ import pytest
 
 
 @pytest.mark.django_db
-@pytest.mark.migration_test
-@pytest.mark.migration(app_label="pyrog", migration_name="0001_initial")
+@pytest.mark.migration(app_label="pyrog", migration_name="0002_integrate_users")
 def test_migrate(migrator, state):
     Template = state.apps.get_model("pyrog", "Template")
     Source = state.apps.get_model("pyrog", "Source")
@@ -14,10 +13,7 @@ def test_migrate(migrator, state):
     s1 = Source.objects.create(template=t1, name="my_source")
     s2 = Source.objects.create(template=t2, name="my_source")
 
-    try:
-        migrator.apply_tested_migration(("pyrog", "0003_unique_source_name"))
-    except Exception:
-        pytest.fail()
+    migrator.apply_tested_migration(("pyrog", "0003_unique_source_name"))
 
     s1.refresh_from_db()
     s2.refresh_from_db()
