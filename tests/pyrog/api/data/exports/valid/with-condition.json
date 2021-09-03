@@ -4,6 +4,7 @@
     "version": "",
     "resources": [
         {
+            "id": "ckt4kpyht000o3hvzm3hb2fhx",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
@@ -4149,7 +4150,7 @@
                 }
             },
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "reference-to-owner",
+            "primary_key_owner": "ckt4kpyhs000m3hvz7u06m457",
             "attributes": [
                 {
                     "path": "something",
@@ -4157,19 +4158,20 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
+                            "id": "ckt4kpyhu000q3hvz6jhcqvw6",
                             "merging_script": "",
-                            "inputs": [
+                            "static_inputs": [],
+                            "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "static_value": "",
-                                    "column": "reference-to-column"
+                                    "column": "ckt4kpyhs000n3hvz9yfrxxct"
                                 }
                             ],
                             "conditions": [
                                 {
                                     "action": "EXCLUDE",
-                                    "column": "reference-to-column",
+                                    "column": "ckt4kpyhs000n3hvz9yfrxxct",
                                     "value": "something",
                                     "relation": "EQ"
                                 }
@@ -4182,20 +4184,17 @@
         }
     ],
     "credential": {
-        "host": "mimic",
+        "host": "localhost",
         "port": 5432,
-        "login": "test",
-        "password": "test",
-        "database": "test",
+        "database": "river",
         "model": "POSTGRES",
         "owners": [
             {
-                "id": "reference-to-owner",
+                "id": "ckt4kpyhs000m3hvz7u06m457",
                 "name": "public",
-                "schema": "something",
                 "columns": [
                     {
-                        "id": "reference-to-column",
+                        "id": "ckt4kpyhs000n3hvz9yfrxxct",
                         "table": "patient",
                         "column": "id",
                         "joins": []

@@ -4,6 +4,7 @@
     "version": "",
     "resources": [
         {
+            "id": "ckt4kpzcs01ge3hvz796uye03",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
@@ -4149,7 +4150,7 @@
                 }
             },
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "reference-to-owner",
+            "primary_key_owner": "ckt4kpzcr01gc3hvzl13ya6si",
             "attributes": [
                 {
                     "path": "something",
@@ -4157,13 +4158,14 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
+                            "id": "ckt4kpzct01gg3hvzy1h732sm",
                             "merging_script": "",
-                            "inputs": [
+                            "static_inputs": [],
+                            "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "static_value": "",
-                                    "column": "reference-to-column"
+                                    "column": "ckt4kpzcr01gd3hvz9ij494y7"
                                 }
                             ],
                             "conditions": []
@@ -4175,20 +4177,17 @@
         }
     ],
     "credential": {
-        "host": "mimic",
+        "host": "localhost",
         "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
+        "database": "river",
         "model": "POSTGRES",
         "owners": [
             {
-                "id": "reference-to-owner",
+                "id": "ckt4kpzcr01gc3hvzl13ya6si",
                 "name": "public",
-                "schema": "something",
                 "columns": [
                     {
-                        "id": "reference-to-column",
+                        "id": "ckt4kpzcr01gd3hvz9ij494y7",
                         "table": "patient",
                         "column": "id",
                         "joins": []

@@ -4,6 +4,7 @@
     "version": "",
     "resources": [
         {
+            "id": "ckt4kpyfy00083hvzw0kbm2m4",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
@@ -4149,7 +4150,7 @@
                 }
             },
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "reference-to-owner-a",
+            "primary_key_owner": "ckt4kpyfu00043hvzhw0qwoag",
             "attributes": [
                 {
                     "path": "something",
@@ -4163,13 +4164,13 @@
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "column": "reference-to-column-a"
+                                    "column": "ckt4kpyfv00053hvz9qyrkqke"
                                 }
                             ],
                             "conditions": [
                                 {
                                     "action": "EXCLUDE",
-                                    "column": "reference-to-column-a",
+                                    "column": "ckt4kpyfv00053hvz9qyrkqke",
                                     "value": "something",
                                     "relation": "EQ"
                                 }
@@ -4182,7 +4183,7 @@
                 {
                     "relation": "=",
                     "value": "whatever",
-                    "sql_column": "reference-to-column-a"
+                    "sql_column": "ckt4kpyfv00053hvz9qyrkqke"
                 }
             ]
         },
@@ -8332,7 +8333,7 @@
                 }
             },
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "reference-to-owner-b",
+            "primary_key_owner": "ckt4kpyfv00063hvzribmov9h",
             "attributes": [               
                 {
                     "path": "static",
@@ -8345,15 +8346,6 @@
                                 {
                                     "value": "static value"
                                 }
-                            ],
-                            "sql_inputs": [],
-                            "conditions": [
-                                {
-                                    "action": "EXCLUDE",
-                                    "column": "reference-to-column-c",
-                                    "value": "something",
-                                    "relation": "EQ"
-                                }
                             ]
                         }
                     ]
@@ -8364,19 +8356,20 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
+                            "id": "ckt4kpyg5000h3hvzwho9qmvz",
                             "merging_script": "",
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "column": "reference-to-column-b"
+                                    "column": "ckt4kpyfx00073hvzl7l6t0si"
                                 }
                             ],
                             "conditions": [
                                 {
                                     "action": "EXCLUDE",
-                                    "column": "reference-to-column-b",
+                                    "column": "ckt4kpyfx00073hvzl7l6t0si",
                                     "value": "something",
                                     "relation": "EQ"
                                 }
@@ -8389,50 +8382,35 @@
                 {
                     "relation": "=",
                     "value": "whatever",
-                    "sql_column": "reference-to-column-b"
-                },
-                {
-                    "relation": "=",
-                    "value": "whatever",
-                    "sql_column": "reference-to-column-c"
+                    "sql_column": "ckt4kpyfx00073hvzl7l6t0si"
                 }
             ]
         }
     ],
     "credential": {
-        "host": "mimic",
+        "host": "localhost",
         "port": 5432,
-        "login": "test",
-        "password": "test",
-        "database": "test",
+        "database": "river",
         "model": "POSTGRES",
         "owners": [
             {
-                "id": "reference-to-owner-a",
+                "id": "ckt4kpyfu00043hvzhw0qwoag",
                 "name": "public",
-                "schema": "something",
                 "columns": [
                     {
-                        "id": "reference-to-column-a",
+                        "id": "ckt4kpyfv00053hvz9qyrkqke",
                         "table": "patient",
                         "column": "a",
-                        "joins": []
-                    },
-                    {
-                        "id": "reference-to-column-c",
-                        "table": "patient",
-                        "column": "c",
                         "joins": []
                     }
                 ]
             },
             {
-                "id": "reference-to-owner-b",
+                "id": "ckt4kpyfv00063hvzribmov9h",
                 "name": "pg_catalog",
-                "schema": "something",
                 "columns": [
                     {
-                        "id": "reference-to-column-b",
+                        "id": "ckt4kpyfx00073hvzl7l6t0si",
                         "table": "observation",
                         "column": "b",
                         "joins": []
