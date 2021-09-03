@@ -12,7 +12,6 @@ from river.common.service.errors import BatchCancelled
 from river.common.service.service import Service
 from river.domain import events
 from river.extractor.extractor import Extractor
-from river.parsing import Source, as_old_mapping
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +70,7 @@ def batch_resource_handler(
     analyzer: Analyzer,
 ):
     batch = models.Batch.objects.get(id=event.batch_id)
-    mapping = as_old_mapping(Source(**batch.mappings), event.resource_id)
-    analysis = analyzer.analyze(mapping)
+    analysis = analyzer.analyze(event.resource_id, batch.mappings)
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:
         extractor = Extractor(session, db_connection.metadata)

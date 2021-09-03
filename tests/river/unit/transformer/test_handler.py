@@ -55,7 +55,7 @@ def test_extracted_resource_handler(batch, mimic_mapping):
                         },
                         {
                             "system": "http://terminology.arkhn.org/CodeSystem/resource",
-                            "code": "ckrowsivi00181lpdfod4jpz8",
+                            "code": "patient-resource-id",
                         },
                     ],
                 },

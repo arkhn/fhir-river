@@ -229,6 +229,15 @@ def test_build_metadata(mock_datetime):
         ],
     }
 
+@mark.skip(reason="Definition is absent from analysis")
+@mock.patch("river.transformer.fhir.datetime", autospec=True)
+def test_build_metadata_for_profiles(mock_datetime):
+    mock_datetime.now.return_value = mockdatetime()
+
+    analysis = mock.MagicMock()
+    analysis.source_id = "sourceId"
+    analysis.resource_id = "resourceId"
+
     analysis.definition = {
         "kind": "resource",
         "derivation": "constraint",

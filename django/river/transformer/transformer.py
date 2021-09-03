@@ -67,7 +67,7 @@ class Transformer:
 
         # Identify the fhir object
         fhir_object["id"] = compute_fhir_object_id(analysis.logical_reference, primary_key_value)
-        fhir_object["resourceType"] = analysis.definition["type"]
+        fhir_object["resourceType"] = analysis.definition_id
         fhir_object["meta"] = build_metadata(analysis)
 
         return fhir_object

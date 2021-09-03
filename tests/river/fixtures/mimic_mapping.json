@@ -2,7 +2,7 @@
   "id": "ckrowsirw00091lpd4jph0861",
   "resources": [
     {
-      "id": "ckrowsivi00181lpdfod4jpz8",
+      "id": "patient-resource-id",
       "label": "feat_1_extension+Observation(microbio)Ref",
       "primary_key_table": "patients",
       "primary_key_column": "subject_id",
@@ -1795,7 +1795,7 @@
       ]
     },
     {
-      "id": "ckrowsiwn03451lpdlofp2gsn",
+      "id": "join-resource-id",
       "label": "feat_11_joinOnFilter",
       "primary_key_table": "patients",
       "primary_key_column": "subject_id",
@@ -1827,6 +1827,18 @@
           "path": "identifier[0]",
           "slice_name": "",
           "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "generalPractitioner",
+          "slice_name": "",
+          "definition_id": "Reference",
+          "input_groups": []
+        },
+        {
+          "path": "link[0].other",
+          "slice_name": "",
+          "definition_id": "Reference",
           "input_groups": []
         },
         {

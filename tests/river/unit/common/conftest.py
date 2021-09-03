@@ -5,9 +5,6 @@ from pytest import fixture
 
 import requests
 
-FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
-PATIENT_MAPPING_FILE = Path(__file__).resolve().parent.parent / "fixtures/patient_mapping.json"
-
 
 class MockResponse:
     def __init__(self, json_data, status_code):
@@ -16,22 +13,6 @@ class MockResponse:
 
     def json(self):
         return self.json_data
-
-
-@fixture
-def mock_pyrog_response(monkeypatch):
-    def mock_post(*args, headers, **kwargs):
-        if headers["Authorization"] == "Bearer validToken":
-            with open(PATIENT_MAPPING_FILE, "r") as fp:
-                return MockResponse({"data": {"resource": json.load(fp)}}, 200)
-        elif headers["Authorization"] == "Bearer forbiddenToken":
-            return MockResponse({"errors": [{"statusCode": 403, "message": "forbidden"}]}, 200)
-        elif headers["Authorization"] == "Bearer unauthorizedToken":
-            return MockResponse({"errors": [{"statusCode": 401, "message": "unauthorized"}]}, 200)
-        else:
-            return MockResponse("invalid token", 400)
-
-    monkeypatch.setattr(requests, "post", mock_post)
 
 
 fhirConceptMap = {
