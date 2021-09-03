@@ -18,10 +18,7 @@ def test_migrate(migrator, state, owner_factory, input_group_factory):
     input = Input.objects.create(input_group=group)
     _ = Column.objects.create(owner=owner, table="table", column="column", input=input)
 
-    try:
-        new_state = migrator.apply_tested_migration(("pyrog", "0009_move_column_fk_on_input"))
-    except Exception:
-        pytest.fail()
+    new_state = migrator.apply_tested_migration(("pyrog", "0009_move_column_fk_on_input"))
 
     Input = new_state.apps.get_model("pyrog", "Input")
     inputs = Input.objects.all()
@@ -39,10 +36,7 @@ def test_migrate_reverse(migrator, state, input_factory, column_factory):
     input.column = column
     input.save()
 
-    try:
-        new_state = migrator.apply_tested_migration(("pyrog", "0008_column_ordering"))
-    except Exception:
-        pytest.fail()
+    new_state = migrator.apply_tested_migration(("pyrog", "0008_column_ordering"))
 
     Column = new_state.apps.get_model("pyrog", "Column")
     columns = Column.objects.all()
