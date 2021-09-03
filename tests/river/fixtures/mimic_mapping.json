@@ -2,7 +2,7 @@
   "id": "ckrowsirw00091lpd4jph0861",
   "resources": [
     {
-      "id": "ckrowsivi00181lpdfod4jpz8",
+      "id": "patient-resource-id",
       "label": "feat_1_extension+Observation(microbio)Ref",
       "primary_key_table": "patients",
       "primary_key_column": "subject_id",
@@ -1795,7 +1795,7 @@
       ]
     },
     {
-      "id": "ckrowsiwn03451lpdlofp2gsn",
+      "id": "join-resource-id",
       "label": "feat_11_joinOnFilter",
       "primary_key_table": "patients",
       "primary_key_column": "subject_id",

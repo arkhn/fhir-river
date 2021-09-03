@@ -11,7 +11,7 @@ from river.common.analyzer.sql_join import SqlJoin
 
 def test_cache_analysis_redis(mimic_mapping):
     batch_id = uuid4()
-    resource_id = "ckrowsivi00181lpdfod4jpz8"
+    resource_id = "patient-resource-id"
     analyzer = Analyzer()
 
     res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
@@ -57,7 +57,7 @@ def test_get_primary_key_missing_field():
 
 def test_analyze_mapping(mimic_mapping):
     analyzer = Analyzer()
-    resource_id = "ckrowsiwn03451lpdlofp2gsn"
+    resource_id = "join-resource-id"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
