@@ -1,4 +1,5 @@
 import factory
+from factory import fuzzy
 
 from django.conf import settings
 
@@ -85,6 +86,7 @@ class StaticInputFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"static_input_id_{n:04d}")
     input_group = factory.SubFactory(InputGroupFactory)
+    value = fuzzy.FuzzyText(length=8)
 
 
 class SQLInputFactory(factory.django.DjangoModelFactory):
