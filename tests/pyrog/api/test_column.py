@@ -14,7 +14,7 @@ pytestmark = pytest.mark.django_db
 def test_create_column(
     api_client,
     join,
-    input_factory,
+    sql_input_factory,
     owner,
     table,
     column_field,
@@ -24,7 +24,7 @@ def test_create_column(
 
     data = {
         "join": join.id,
-        "input": input_factory().id,
+        "input": sql_input_factory().id,
         "owner": owner.id,
         "table": table,
         "column": column_field,
@@ -97,10 +97,10 @@ def test_filter_columns_by_join(api_client, join_factory, column_factory):
     assert {column_data["id"] for column_data in response.json()} == {column.id for column in first_join_columns}
 
 
-def test_filter_columns_by_input(api_client, input_factory, column_factory):
+def test_filter_columns_by_input(api_client, sql_input_factory, column_factory):
     url = reverse("columns-list")
 
-    first_input, second_input = input_factory.create_batch(2)
+    first_input, second_input = sql_input_factory.create_batch(2)
     first_input_column, second_input_column = column_factory.create_batch(2)
 
     first_input.column = first_input_column
@@ -108,7 +108,7 @@ def test_filter_columns_by_input(api_client, input_factory, column_factory):
     first_input.save()
     second_input.save()
 
-    response = api_client.get(url, {"input": first_input.id})
+    response = api_client.get(url, {"sql_input": first_input.id})
 
     assert response.status_code == 200, response.data
     assert {column_data["id"] for column_data in response.json()} == {first_input_column.id}
