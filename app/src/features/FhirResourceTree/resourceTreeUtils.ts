@@ -89,9 +89,7 @@ export const createElementNode = (
   const elementPath = `${prefixPath}${
     prefixPath && suffixPath && "."
   }${suffixPath}${index !== undefined ? `[${index}]` : ""}`;
-  const elementName = `${elementDefinition.id?.split(".").pop() ?? ""}${
-    elementDefinition.sliceName ? `:${elementDefinition.sliceName}` : ""
-  }`;
+  const elementName = `${elementDefinition.id?.split(".").pop() ?? ""}`;
   return {
     id: uuid(),
     name: elementName,
@@ -231,13 +229,24 @@ export const buildTree = (
   if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
     if (
       previousElementNode.isArray &&
-      previousElementNode.type === "BackboneElement"
+      previousElementNode.type === "BackboneElement" &&
+      !currentElementNode.sliceName
     ) {
       previousElementNode.backboneElementDefinitions.push(
         currentElementDefinition
       );
       buildTree(rest, rootNode, previousElementNode);
     } else {
+      if (currentElementNode.sliceName) {
+        currentElementNode.path = `${currentElementNode.path}[${previousElementNode.children.length}]`;
+      } else if (
+        previousElementNode.sliceName &&
+        previousElementNode.type === "BackboneElement"
+      ) {
+        currentElementNode.path = `${
+          previousElementNode.path
+        }.${currentElementNode.path.split(".").pop()}`;
+      }
       previousElementNode.children.push(currentElementNode);
       buildTree(rest, rootNode, currentElementNode);
     }
