@@ -17,4 +17,4 @@ def clean_epoch_dateTime(raw_input):
         date_with_tz = date.replace(tzinfo=datetime.timezone(datetime.timedelta(hours=2)))
         return date_with_tz.isoformat()
     except ValueError:
-        return raw_input
+        return ""
