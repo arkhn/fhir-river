@@ -35,9 +35,11 @@
         }
     ],
     "credential": {
-        "host": "localhost",
+        "host": "mimic",
         "port": 5432,
-        "database": "river",
+        "database": "test",
+        "login": "test",
+        "password": "test",
         "model": "POSTGRES",
         "owners": [
             {
