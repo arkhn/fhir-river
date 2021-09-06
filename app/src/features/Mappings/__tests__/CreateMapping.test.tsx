@@ -1,5 +1,10 @@
 import React from "react";
 
+import {
+  IStructureDefinition,
+  IValueSet,
+  StructureDefinitionDerivationKind,
+} from "@ahryman40k/ts-fhir-types/lib/R4";
 import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest, RestRequest } from "msw";
 import { setupServer } from "msw/node";
@@ -27,6 +32,14 @@ const owner = ownerFactory.build(
   {},
   { associations: { credential: credential.id } }
 );
+const accountStructureDef: IStructureDefinition = {
+  resourceType: "StructureDefinition",
+  title: "Account",
+  name: "Account",
+  type: "Account",
+  id: "Account",
+  derivation: StructureDefinitionDerivationKind._specialization,
+};
 
 const handlers = [
   rest.get("http://example.com/api/credentials/", (_, res, ctx) =>
@@ -40,6 +53,28 @@ const handlers = [
       res(
         ctx.json<ApiOwnersListApiResponse>([owner])
       )
+  ),
+  rest.get(
+    new RegExp("http://example.com/api/fhir/ValueSet/resource-types/\\$expand"),
+    (_, res: ResponseComposition<IValueSet>, ctx) =>
+      res(
+        ctx.json<IValueSet>({
+          resourceType: "ValueSet",
+          expansion: { contains: [{ code: "Account" }] },
+        })
+      )
+  ),
+  rest.get(
+    "http://example.com/api/fhir/StructureDefinition",
+    (_, res: ResponseComposition<IStructureDefinition[]>, ctx) =>
+      res(
+        ctx.json<IStructureDefinition[]>([accountStructureDef])
+      )
+  ),
+  rest.get(
+    "http://example.com/api/fhir/StructureDefinition/Account",
+    (_, res: ResponseComposition<IStructureDefinition>, ctx) =>
+      res(ctx.json<IStructureDefinition>(accountStructureDef))
   ),
 ];
 
@@ -68,13 +103,11 @@ describe("Mapping creation page", () => {
     await screen.findByText(/name mapping/i);
 
     // primary_key_table selection
-    userEvent.click(await screen.findByRole("textbox"));
+    userEvent.click(await screen.findByPlaceholderText(/select table/i));
     userEvent.click(await screen.findByRole("option", { name: /^table$/i }));
 
     // primary_key_column selection
-    userEvent.click(
-      await screen.findByRole("button", { name: /select column/i })
-    );
+    userEvent.click(await screen.findByPlaceholderText(/select column/i));
     userEvent.click(await screen.findByRole("option", { name: /^column$/i }));
 
     userEvent.click(await screen.findByRole("button", { name: /next/i }));

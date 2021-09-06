@@ -29,7 +29,7 @@ def test_create_condition(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_condition(api_client, condition):
@@ -37,7 +37,7 @@ def test_retrieve_condition(api_client, condition):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_conditions(api_client, condition_factory):
@@ -46,7 +46,7 @@ def test_list_conditions(api_client, condition_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
 
 
@@ -67,7 +67,7 @@ def test_update_condition(
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_condition(api_client, condition):
@@ -75,4 +75,19 @@ def test_delete_condition(api_client, condition):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data
+
+
+def test_filter_conditions_by_input_group(api_client, input_group_factory, condition_factory):
+    url = reverse("conditions-list")
+    first_input_group = input_group_factory()
+    second_input_group = input_group_factory()
+    first_input_group_conditions = condition_factory.create_batch(2, input_group=first_input_group)
+    condition_factory.create_batch(3, input_group=second_input_group)
+
+    response = api_client.get(url, {"input_group": first_input_group.id})
+
+    assert response.status_code == 200, response.data
+    assert {condition_data["id"] for condition_data in response.json()} == {
+        condition.id for condition in first_input_group_conditions
+    }

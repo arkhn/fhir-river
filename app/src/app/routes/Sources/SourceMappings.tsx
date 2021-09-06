@@ -2,81 +2,67 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Button,
-  Container,
-  Grid,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { Container, Grid, makeStyles } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
+import { useHistory, useParams } from "react-router";
 
+import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
-import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import Navbar from "features/Navbar/Navbar";
 import CredentialEditButton from "features/Sources/CredentialEditButton";
 import SourceDrawer from "features/Sources/SourceDrawer";
 
+import SourceExportButton from "./SourceExportButton";
+
 const useStyles = makeStyles((theme) => ({
-  header: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  button: {
-    margin: theme.spacing(0.5),
-    backgroundColor: theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    textTransform: "none",
-  },
-  icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
+  container: {
+    padding: theme.spacing(0, 5),
   },
 }));
 
 const SourceMappings = (): JSX.Element => {
+  const { t } = useTranslation();
   const classes = useStyles();
+  const history = useHistory();
+  const { sourceId } = useParams<{ sourceId?: string }>();
+
+  const handleLaunchClick = () => {
+    history.push(`/sources/${sourceId}/batches`);
+  };
 
   return (
-    <>
-      <Container maxWidth="xl">
-        <div className={classes.header}>
-          <NavigationBreadcrumbs />
-          <Grid>
+    <Container maxWidth="xl">
+      <Navbar>
+        <Grid container spacing={1} justify="flex-end">
+          <Grid item>
             <CredentialEditButton
-              size="small"
               variant="contained"
-              className={classes.button}
-              startIcon={<Icon icon={IconNames.COG} className={classes.icon} />}
+              color="secondary"
+              startIcon={<Icon icon={IconNames.COG} />}
             />
+          </Grid>
+          <Grid item>
+            <SourceExportButton />
+          </Grid>
+          <Grid item>
             <Button
-              size="small"
               variant="contained"
-              className={classes.button}
-              startIcon={
-                <Icon icon={IconNames.EXPORT} className={classes.icon} />
-              }
+              color="secondary"
+              startIcon={<Icon icon={IconNames.FLAME} />}
+              onClick={handleLaunchClick}
             >
-              <Typography>Export mapping</Typography>
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              className={classes.button}
-              startIcon={
-                <Icon icon={IconNames.FLAME} className={classes.icon} />
-              }
-            >
-              <Typography>Launch ETL</Typography>
+              {t("ETLDashboard")}
             </Button>
           </Grid>
-        </div>
-        <Container maxWidth="xl">
-          <MappingsToolbar />
-          <MappingsTable />
-        </Container>
+        </Grid>
+      </Navbar>
+      <Container maxWidth="xl" className={classes.container}>
+        <MappingsToolbar />
+        <MappingsTable />
       </Container>
       <SourceDrawer />
-    </>
+    </Container>
   );
 };
 

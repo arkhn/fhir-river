@@ -11,16 +11,13 @@ services:
     environment:
       - ENV=dev
       - LOG_LEVEL=DEBUG
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-      - REDIS_COUNTER_HOST=river-redis
-      - REDIS_COUNTER_PORT=6379
-      - REDIS_COUNTER_DB=2
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river
-      - POSTGRES_PASSWORD=USE_IN_DEVELOPMENT_ONLY
+      - POSTGRES_PASSWORD=river
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
 
@@ -34,13 +31,13 @@ services:
     environment:
       - ENV=dev
       - LOG_LEVEL=DEBUG
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river
-      - POSTGRES_PASSWORD=USE_IN_DEVELOPMENT_ONLY
+      - POSTGRES_PASSWORD=river
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
 
@@ -56,12 +53,9 @@ services:
       - ENV=prod
       - LOG_LEVEL=INFO
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-      - REDIS_COUNTER_HOST=river-redis
-      - REDIS_COUNTER_PORT=6379
-      - REDIS_COUNTER_DB=2
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
 
   db:
     image: postgres:12
@@ -83,17 +77,20 @@ services:
       - "8000:8000"
     environment:
       - ENV=dev
+      - ADMIN_ENABLED=True
+      - ALLOWED_HOSTS=*
+      - CORS_ALLOW_ALL_ORIGINS=True
+      - CORS_ALLOW_CREDENTIALS=True
+      - RF_DEFAULT_RENDERER_CLASSES=rest_framework.renderers.JSONRenderer,rest_framework.renderers.BrowsableAPIRenderer
+      - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
       - LOG_LEVEL=DEBUG
       - DEBUG=True
       - SECRET_KEY=whatever
-      - PYROG_API_URL=http://pyrog-server:1000
+      - PYROG_API_URL=${PYROG_API_URL}
       - FHIR_API_URL=${FHIR_API_URL}
-      - REDIS_MAPPINGS_HOST=river-redis
-      - REDIS_MAPPINGS_PORT=6379
-      - REDIS_MAPPINGS_DB=1
-      - REDIS_COUNTER_HOST=river-redis
-      - REDIS_COUNTER_PORT=6379
-      - REDIS_COUNTER_DB=2
+      - REDIS_HOST=river-redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       - SECRET_KEY=USE_IN_DEVELOPMENT_ONLY
       - POSTGRES_DB=river
       - POSTGRES_USER=river
@@ -128,12 +125,13 @@ services:
     restart: on-failure
     # This port mapping is required by the containerized kafka
     ports:
-      - "9092:9092"
+      - "19092:19092"
     depends_on:
       - zookeeper
     environment:
-      - KAFKA_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONNECTIONS_FROM_HOST://:19092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
       - KAFKA_DELETE_TOPIC_ENABLE=true
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       # The following option can be used in local, but should not be used in production.

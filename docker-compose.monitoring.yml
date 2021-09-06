@@ -42,11 +42,6 @@ services:
       - discovery.type=single-node
       - network.host=0.0.0.0
 
-  fluentd:
-    image: arkhn/fluentd:latest
-    volumes:
-      - ./monitoring/fluentd:/fluentd/etc
-
   kibana:
     image: kibana:7.7.1
     depends_on:

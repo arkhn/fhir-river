@@ -4,6 +4,8 @@ from faker import Faker
 from django.conf import settings
 from django.urls import reverse
 
+from dateutil.parser import parse
+
 faker = Faker()
 
 pytestmark = pytest.mark.django_db
@@ -56,7 +58,7 @@ def test_create_credential(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_credential(api_client, credential):
@@ -64,7 +66,17 @@ def test_retrieve_credential(api_client, credential):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
+
+
+def test_retrieve_credential_without_password(api_client, credential_factory):
+    credential = credential_factory.create(password="")
+    url = reverse("credentials-detail", kwargs={"pk": credential.id})
+
+    response = api_client.get(url)
+
+    assert response.data["available_owners"] == []
+    assert response.status_code == 200, response.data
 
 
 def test_list_credentials(api_client, credential_factory):
@@ -73,8 +85,12 @@ def test_list_credentials(api_client, credential_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
+    assert all(
+        parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
+        for i in range(len(response.data) - 1)
+    )
 
 
 def test_filter_credentials_by_source(
@@ -85,15 +101,13 @@ def test_filter_credentials_by_source(
     url = reverse("credentials-list")
 
     first_source, second_source = source_factory.create_batch(2)
-    first_source_credentials = credential_factory.create_batch(1, source=first_source)
-    credential_factory.create_batch(1, source=second_source)
+    first_source_credentials = credential_factory.create(source=first_source)
+    credential_factory.create(source=second_source)
 
     response = api_client.get(url, {"source": first_source.id})
 
-    assert response.status_code == 200
-    assert {credential_data["id"] for credential_data in response.json()} == {
-        credential.id for credential in first_source_credentials
-    }
+    assert response.status_code == 200, response.data
+    assert {credential_data["id"] for credential_data in response.json()} == {first_source_credentials.id}
 
 
 @pytest.mark.parametrize(
@@ -138,7 +152,7 @@ def test_update_credential(
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_credential(api_client, credential):
@@ -146,4 +160,4 @@ def test_delete_credential(api_client, credential):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data

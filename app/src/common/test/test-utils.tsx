@@ -1,5 +1,6 @@
 import React, { FC, ReactElement } from "react";
 
+import { MuiThemeProvider } from "@material-ui/core";
 import { render, RenderOptions, RenderResult } from "@testing-library/react";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { Provider } from "react-redux";
@@ -7,15 +8,21 @@ import { useLocation } from "react-router-dom";
 import { Router, Route, Switch } from "react-router-dom";
 
 import { store } from "app/store";
+import usePyrogTheme from "common/hooks/usePyrogTheme";
 
 import "locales/i18n";
 
-const wrapper: FC = ({ children }) => {
+const Wrapper: FC = ({ children }) => {
   // JSDom does not implement .getComputedStyle and an error was being
   // thrown from jest.
   const { getComputedStyle } = window;
+  const theme = usePyrogTheme();
   window.getComputedStyle = (elt) => getComputedStyle(elt);
-  return <Provider store={store}>{children}</Provider>;
+  return (
+    <MuiThemeProvider theme={theme}>
+      <Provider store={store}>{children}</Provider>;
+    </MuiThemeProvider>
+  );
 };
 
 const LocationDisplay = () => {
@@ -41,7 +48,7 @@ const renderWithRouter = (
         </Route>
       </Switch>
     </Router>,
-    { wrapper, ...options }
+    { wrapper: Wrapper, ...options }
   );
 };
 

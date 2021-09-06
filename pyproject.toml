@@ -8,8 +8,8 @@ include_trailing_comma = true
 indent = 4
 known_django = "django"
 known_arkhn = "fhir.resources"
-known_first_party = "common,control,core,extractor,pagai,pyrog,river,transformer,utils"
-known_third_party = "dotenv,rest_framework,factory,pytest,faker,pytest_factoryboy"
+known_first_party = "common,core,extractor,pagai,pyrog,river,transformer,utils"
+known_third_party = "confluent_kafka,dotenv,rest_framework,factory,pytest,faker,pytest_factoryboy,redis"
 line_length = 119
 multi_line_output = 3
 sections = "FUTURE,STDLIB,THIRDPARTY,DJANGO,ARKHN,FIRSTPARTY,LOCALFOLDER"
@@ -32,12 +32,15 @@ line-length = 119
 target-version = ["py38"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "river.settings.test"
+DJANGO_SETTINGS_MODULE = "settings.base"
 testpaths = "tests"
 python_paths = "django"
 markers = '''
     migration(app_label=..., migration_name=...): mark a test as requiring the given migration state
     export_data(path): mark a test as requiring the given export data
+    kafka: mark a test as requiring kafka
+    redis: mark a test as requiring redis
+    pyrog: mark a test as requiring pyrog api
     pagai: mark test that requires access to tests databases
     as_user: force authenticate the api_client fixture to the user fixure
     as_other_user: force authenticate the api_client fixture to the other_user fixture

@@ -30,7 +30,6 @@ class ResourceFactory(factory.django.DjangoModelFactory):
     id = factory.Sequence(lambda n: f"resource_id_{n:04d}")
     source = factory.SubFactory(SourceFactory)
     primary_key_owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
-    logical_reference = factory.Sequence(lambda n: f"logical_reference_{n:04d}")
 
 
 class CredentialFactory(factory.django.DjangoModelFactory):
@@ -84,7 +83,6 @@ class ColumnFactory(factory.django.DjangoModelFactory):
         with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
 
     id = factory.Sequence(lambda n: f"column_id_{n:04d}")
-    input = factory.SubFactory(InputFactory)
     owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
 
 

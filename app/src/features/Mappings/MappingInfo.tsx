@@ -7,7 +7,10 @@ import { ArrowForward } from "@material-ui/icons";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { useApiFiltersListQuery } from "services/api/endpoints";
+import {
+  useApiFiltersListQuery,
+  useApiStructureDefinitionRetrieveQuery,
+} from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
@@ -16,16 +19,16 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   icon: {
-    width: 16,
-    height: 16,
+    width: theme.mixins.icons.size,
+    height: theme.mixins.icons.size,
   },
   flameIcon: {
-    fill: "#CC7831",
-    marginRight: theme.spacing(0.5),
+    fill: theme.palette.orange.main,
+    marginRight: theme.spacing(0),
   },
   tableIcon: {
-    fill: theme.palette.secondary.main,
-    marginRight: theme.spacing(1),
+    fill: theme.palette.icons.table.main,
+    marginRight: theme.spacing(0.5),
   },
   text: {
     margin: theme.spacing(0.5),
@@ -45,7 +48,20 @@ type MappingInfosProps = {
 const MappingInfos = ({ mapping }: MappingInfosProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+
   const { data: filters } = useApiFiltersListQuery({ resource: mapping.id });
+
+  const { title } = useApiStructureDefinitionRetrieveQuery(
+    {
+      id: mapping.definition_id,
+    },
+    {
+      selectFromResult: ({ data }) => ({
+        title: data?.title || data?.name || mapping.definition_id,
+      }),
+    }
+  );
+
   const filtersCount = filters?.length ?? 0;
 
   return (
@@ -68,7 +84,7 @@ const MappingInfos = ({ mapping }: MappingInfosProps): JSX.Element => {
         className={clsx(classes.text, classes.definitionId)}
         color="textPrimary"
       >
-        {mapping.definition_id}
+        {title}
       </Typography>
       <Typography
         className={classes.text}

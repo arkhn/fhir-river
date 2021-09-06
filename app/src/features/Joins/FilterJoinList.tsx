@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect } from "react";
 
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 import {
   columnAdded,
   columnSelectors,
@@ -39,6 +40,7 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const mapping = useAppSelector((state) =>
     resourceSelectors.selectById(state, filter.resource ?? "")
   );
+
   const columns = useAppSelector(columnSelectors.selectAll);
   const filterJoins = useAppSelector((state) =>
     joinSelectors
@@ -141,7 +143,7 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
           onClick={handleJoinAdd}
           variant="outlined"
         >
-          <Typography>{t("addJoin")}</Typography>
+          {t("addJoin")}
         </Button>
       </Grid>
     </Grid>

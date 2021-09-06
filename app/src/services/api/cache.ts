@@ -2,7 +2,7 @@ import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 type CacheItem<T, ID> = { type: T; id: ID };
 
-type CacheList<T, ID> = (CacheItem<T, "LIST"> | CacheItem<T, ID>)[];
+type CacheList<T, ID> = [CacheItem<T, "LIST">, ...CacheItem<T, ID>[]];
 
 type Item = { id: unknown };
 
@@ -19,32 +19,27 @@ export const providesList = <T extends string>(type: T): ProvidesListFn<T> => (
   _error
 ) =>
   results
-    ? [...results.map(({ id }) => ({ type, id })), { type, id: "LIST" }]
+    ? [{ type, id: "LIST" }, ...results.map(({ id }) => ({ type, id }))]
     : [{ type, id: "LIST" }];
 
-type ProvidesFhirBundleFn<T> = <
-  Results extends { entry?: { resource?: { id?: string } }[] },
+type ProvidesPaginatedListFn<T> = <
+  Results extends Item[],
   Error extends FetchBaseQueryError
 >(
-  results?: Results,
+  data?: { results?: Results },
   error?: Error
-) => CacheList<T, string>;
+) => CacheList<T, Results[number]["id"]>;
 
-export const providesFhirBundle = <T extends string>(
+export const providesPaginatedList = <T extends string>(
   type: T
-): ProvidesFhirBundleFn<T> => (results, _error) =>
-  results?.entry
+): ProvidesPaginatedListFn<T> => (data, _error) =>
+  data?.results
     ? [
-        ...results.entry
-          .map(
-            (entry) =>
-              !!entry.resource?.id && {
-                type,
-                id: entry.resource.id,
-              }
-          )
-          .filter((item): item is { id: string; type: T } => Boolean(item)),
         { type, id: "LIST" },
+        ...data.results.map(({ id }) => ({
+          type,
+          id,
+        })),
       ]
     : [{ type, id: "LIST" }];
 

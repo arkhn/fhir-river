@@ -1,9 +1,9 @@
 from collections import defaultdict
 from typing import Callable, Dict, List
 
-from common.analyzer.sql_filter import SqlFilter
-from common.database_connection.db_connection import ORACLE, ORACLE11, DBConnection
 from pagai.errors import ExplorationError
+from river.common.analyzer.sql_filter import SqlFilter
+from river.common.database_connection.db_connection import ORACLE, ORACLE11, DBConnection
 from sqlalchemy import Column, Table, and_, text
 from sqlalchemy.exc import InvalidRequestError
 
@@ -114,6 +114,10 @@ class DatabaseExplorer:
         """
         if self.db_schema.get(owner):
             return self.db_schema[owner]
+
+        # make sure owner exists
+        if owner not in self.get_owners():
+            raise ExplorationError(f"Owner {owner} does not exist in database")
 
         schema = defaultdict(list)
 

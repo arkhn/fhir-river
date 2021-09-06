@@ -67,6 +67,7 @@ const CredentialOwnersSelect = ({
           value,
           owners.map((owner) => owner.name)
         );
+        if (!selectedOwnerName) return;
         try {
           await apiOwnersCreate({
             ownerRequest: {

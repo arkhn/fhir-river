@@ -2,12 +2,7 @@ import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
-import {
-  Button,
-  CircularProgress,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import { head, isEqual } from "lodash";
@@ -15,6 +10,7 @@ import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
 import Alert from "common/components/Alert";
+import Button from "common/components/Button";
 import {
   useApiCredentialsCreateMutation,
   useApiCredentialsListQuery,
@@ -56,6 +52,9 @@ const credentialInputs: (
     label: t("host"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "number",
@@ -67,6 +66,9 @@ const credentialInputs: (
       min: 0,
       max: 65535,
     },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -74,6 +76,9 @@ const credentialInputs: (
     label: t("database"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -81,6 +86,9 @@ const credentialInputs: (
     label: t("username"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -89,9 +97,15 @@ const credentialInputs: (
     label: t("password"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "select",
+    containerStyle: {
+      margin: "16px 10px",
+    },
     selectOptions: [
       {
         id: "MSSQL",
@@ -205,10 +219,10 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
           >
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
+            ) : credential ? (
+              t("updateCredential")
             ) : (
-              <Typography>
-                {credential ? t("updateCredential") : t("createCredential")}
-              </Typography>
+              t("createCredential")
             )}
           </Button>
         }

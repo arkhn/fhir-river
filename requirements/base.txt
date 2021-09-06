@@ -1,17 +1,17 @@
 arkhn-monitoring==0.0.4
 asgiref==3.2.10
-cleaning-scripts==0.2.29
+chardet==3.0.4
 confluent-kafka==1.5.0
 cuid==0.3
 cx-Oracle==7.1.2
-Django==3.1.8
+Django==3.1.12
 django-cors-headers==3.7.0
 django-filter==2.4.0
 django-revproxy==0.10.0
 djangorestframework==3.12.4
 dotty-dict==1.2.1
+drf-spectacular==0.14.0
 fhir.resources @ git+https://github.com/arkhn/fhir.resources@6.0.1#egg=fhir.resources
-fluent-logger==0.9.6
 hiredis==1.1.0
 jsonschema==3.0.2
 mozilla-django-oidc==1.2.4

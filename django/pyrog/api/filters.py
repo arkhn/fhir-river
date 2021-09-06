@@ -11,7 +11,7 @@ class CredentialFilterSet(filters.FilterSet):
 class ColumnFilterSet(filters.FilterSet):
     class Meta:
         model = models.Column
-        fields = ["join"]
+        fields = ["join", "input"]
 
 
 class JoinFilterSet(filters.FilterSet):
@@ -43,4 +43,22 @@ class AttributeFilterSet(filters.FilterSet):
 
     class Meta:
         model = models.Attribute
-        fields = ["source"]
+        fields = ["resource", "source", "path"]
+
+
+class InputGroupFilterSet(filters.FilterSet):
+    class Meta:
+        model = models.InputGroup
+        fields = ["attribute"]
+
+
+class InputFilterSet(filters.FilterSet):
+    class Meta:
+        model = models.Input
+        fields = ["input_group"]
+
+
+class ConditionFilterSet(filters.FilterSet):
+    class Meta:
+        model = models.Condition
+        fields = ["input_group"]

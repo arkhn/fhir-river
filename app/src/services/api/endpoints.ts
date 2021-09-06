@@ -1,14 +1,17 @@
 import {
   IBundle,
   IStructureDefinition,
+  IValueSet,
+  IConceptMap,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
+import { Required } from "utility-types";
 
 import {
   providesList,
+  providesPaginatedList,
   providesOne,
   invalidatesList,
   invalidatesOne,
-  providesFhirBundle,
 } from "./cache";
 import { api as generatedApi } from "./generated/api.generated";
 
@@ -23,6 +26,11 @@ const tagTypes = [
   "Filters",
   "Joins",
   "StructureDefinition",
+  "ValueSets",
+  "InputGroups",
+  "Inputs",
+  "Conditions",
+  "Batches",
 ];
 
 export const api = generatedApi
@@ -34,25 +42,46 @@ export const api = generatedApi
           method: "POST",
         }),
       }),
-      apiStructureDefinitionList: build.query<IBundle, { params: string }>({
+      apiConceptMapsList: build.query<IConceptMap[], { ids?: string[] }>({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition?${queryArg.params}`,
+          url: `/api/fhir/ConceptMap?_id=${queryArg.ids?.join(",") ?? ""}`,
+        }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(({ resource }) => resource as IConceptMap) || [],
+      }),
+      apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
+        query: (queryArg) => ({
+          url: `/api/fhir/ValueSet/${queryArg.id}/$expand?`,
         }),
       }),
+      apiStructureDefinitionList: build.query<
+        Required<IStructureDefinition, "id">[],
+        { params?: string }
+      >({
+        query: (queryArg) => ({
+          url: `/api/fhir/StructureDefinition?${queryArg.params || ""}`,
+        }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(
+            ({ resource }) => resource as Required<IStructureDefinition, "id">
+          ) || [],
+      }),
       apiStructureDefinitionRetrieve: build.query<
-        IStructureDefinition,
+        Required<IStructureDefinition, "id">,
         {
           id: string;
-          params: string;
+          params?: string;
         }
       >({
         query: (queryArg) => ({
-          url: `/api/fhir/StructureDefinition/${queryArg.id}?${queryArg.params}`,
+          url: `/api/fhir/StructureDefinition/${queryArg.id}?${
+            queryArg.params || ""
+          }`,
         }),
       }),
       apiStructureDefinitionCreate: build.mutation<
-        IStructureDefinition,
-        IStructureDefinition
+        Required<IStructureDefinition, "id">,
+        Required<IStructureDefinition, "id">
       >({
         query: (queryArg) => ({
           url: `/api/fhir/StructureDefinition`,
@@ -78,7 +107,7 @@ export const api = generatedApi
        * StructureDefinition
        */
       apiStructureDefinitionList: {
-        providesTags: providesFhirBundle("StructureDefinition"),
+        providesTags: providesList("StructureDefinition"),
       },
       apiStructureDefinitionRetrieve: {
         providesTags: providesOne("StructureDefinition"),
@@ -91,6 +120,18 @@ export const api = generatedApi
        */
       apiColumnsCreate: {
         invalidatesTags: invalidatesList("Columns"),
+      },
+      apiColumnsList: {
+        providesTags: providesList("Columns"),
+      },
+      apiColumnsRetrieve: {
+        providesTags: providesOne("Columns"),
+      },
+      apiColumnsUpdate: {
+        invalidatesTags: invalidatesOne("Columns"),
+      },
+      apiColumnsDestroy: {
+        invalidatesTags: invalidatesOne("Columns"),
       },
       /**
        *  Sources
@@ -109,6 +150,9 @@ export const api = generatedApi
       },
       apiSourcesDestroy: {
         invalidatesTags: invalidatesOne("Sources"),
+      },
+      apiSourcesImportCreate: {
+        invalidatesTags: invalidatesList("Sources"),
       },
       /**
        * Resources
@@ -134,6 +178,15 @@ export const api = generatedApi
       apiAttributesList: {
         providesTags: providesList("Attributes"),
       },
+      apiAttributesRetrieve: {
+        providesTags: providesOne("Attributes"),
+      },
+      apiAttributesDestroy: {
+        invalidatesTags: invalidatesOne("Attributes"),
+      },
+      apiAttributesCreate: {
+        invalidatesTags: invalidatesList("Attributes"),
+      },
       /**
        * Owners
        */
@@ -142,6 +195,9 @@ export const api = generatedApi
       },
       apiOwnersCreate: {
         invalidatesTags: invalidatesList("Owners"),
+      },
+      apiOwnersRetrieve: {
+        providesTags: providesOne("Owners"),
       },
       apiOwnersDestroy: {
         invalidatesTags: invalidatesOne("Owners"),
@@ -167,11 +223,89 @@ export const api = generatedApi
       apiFiltersCreate: {
         invalidatesTags: invalidatesList("Filters"),
       },
+      apiFiltersUpdate: {
+        invalidatesTags: invalidatesOne("Filters"),
+      },
+      apiFiltersDestroy: {
+        invalidatesTags: invalidatesOne("Filters"),
+      },
       /**
        * Joins
        */
       apiJoinsCreate: {
         invalidatesTags: invalidatesList("Joins"),
+      },
+      apiJoinsList: {
+        providesTags: providesList("Joins"),
+      },
+      apiJoinsUpdate: {
+        invalidatesTags: invalidatesOne("Joins"),
+      },
+      apiJoinsDestroy: {
+        invalidatesTags: invalidatesOne("Joins"),
+      },
+      /**
+       * ValueSets
+       */
+      apiValueSetsRetrieve: {
+        providesTags: providesOne("ValueSets"),
+      },
+      /**
+       * InputGroups
+       */
+      apiInputGroupsList: {
+        providesTags: providesList("InputGroups"),
+      },
+      apiInputGroupsCreate: {
+        invalidatesTags: invalidatesList("InputGroups"),
+      },
+      apiInputGroupsDestroy: {
+        invalidatesTags: invalidatesOne("InputGroups"),
+      },
+      apiInputGroupsUpdate: {
+        invalidatesTags: invalidatesOne("InputGroups"),
+      },
+      /**
+       * Inputs
+       */
+      apiInputsList: {
+        providesTags: providesList("Inputs"),
+      },
+      apiInputsCreate: {
+        invalidatesTags: invalidatesList("Inputs"),
+      },
+      apiInputsDestroy: {
+        invalidatesTags: invalidatesOne("Inputs"),
+      },
+      apiInputsUpdate: {
+        invalidatesTags: invalidatesOne("Inputs"),
+      },
+      /**
+       * Conditions
+       */
+      apiConditionsList: {
+        providesTags: providesList("Conditions"),
+      },
+      apiConditionsCreate: {
+        invalidatesTags: invalidatesList("Conditions"),
+      },
+      apiConditionsUpdate: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
+      apiConditionsDestroy: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
+      /**
+       * Batches
+       */
+      apiBatchesCreate: {
+        invalidatesTags: invalidatesList("Batches"),
+      },
+      apiBatchesList: {
+        providesTags: providesPaginatedList("Batches"),
+      },
+      apiBatchesDestroy: {
+        invalidatesTags: invalidatesOne("Batches"),
       },
     },
   });
@@ -186,12 +320,18 @@ export const {
   useApiStructureDefinitionRetrieveQuery,
   //Columns
   useApiColumnsCreateMutation,
+  useApiColumnsListQuery,
+  useApiColumnsRetrieveQuery,
+  useApiColumnsUpdateMutation,
+  useApiColumnsDestroyMutation,
   // Sources
   useApiSourcesListQuery,
   useApiSourcesCreateMutation,
   useApiSourcesRetrieveQuery,
   useApiSourcesUpdateMutation,
   useApiSourcesDestroyMutation,
+  useApiSourcesImportCreateMutation,
+  useApiSourcesExportRetrieveQuery,
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
@@ -200,9 +340,13 @@ export const {
   useApiResourcesDestroyMutation,
   // Attributes
   useApiAttributesListQuery,
+  useApiAttributesRetrieveQuery,
+  useApiAttributesDestroyMutation,
+  useApiAttributesCreateMutation,
   // Owners
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
+  useApiOwnersRetrieveQuery,
   useApiOwnersDestroyMutation,
   // Credentials
   useApiCredentialsListQuery,
@@ -211,6 +355,37 @@ export const {
   // Filters
   useApiFiltersListQuery,
   useApiFiltersCreateMutation,
+  useApiFiltersUpdateMutation,
+  useApiFiltersDestroyMutation,
   // Joins
   useApiJoinsCreateMutation,
+  useApiJoinsListQuery,
+  useApiJoinsUpdateMutation,
+  useApiJoinsDestroyMutation,
+  // ValueSets
+  useApiValueSetsRetrieveQuery,
+  // ConceptMaps
+  useApiConceptMapsListQuery,
+  // InputGroups
+  useApiInputGroupsListQuery,
+  useApiInputGroupsCreateMutation,
+  useApiInputGroupsDestroyMutation,
+  useApiInputGroupsUpdateMutation,
+  // Inputs
+  useApiInputsListQuery,
+  useApiInputsCreateMutation,
+  useApiInputsDestroyMutation,
+  useApiInputsUpdateMutation,
+  // Conditions
+  useApiConditionsListQuery,
+  useApiConditionsCreateMutation,
+  useApiConditionsUpdateMutation,
+  useApiConditionsDestroyMutation,
+  // Batches
+  useApiBatchesCreateMutation,
+  useApiBatchesListQuery,
+  useApiBatchesDestroyMutation,
+  // Pagai
+  useApiExploreCreateMutation,
+  useApiPreviewCreateMutation,
 } = api;

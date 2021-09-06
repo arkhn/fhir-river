@@ -4,7 +4,7 @@ max-doc-length = 88
 extend-exclude = .venv/ .github/ .vscode/ migrations
 extend-ignore = E203, W503
 per-file-ignores =
-    django/**/settings/*:F401 F403 F405
+    django/settings/*:F401 F403 F405
     django/manage.py:F401
     django/**/apps.py:F401
     django/**/migrations/*:E501

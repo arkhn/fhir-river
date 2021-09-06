@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 
@@ -38,7 +40,7 @@ class Resource(models.Model):
     primary_key_table = models.TextField()
     primary_key_column = models.TextField()
     definition_id = models.TextField()
-    logical_reference = models.TextField(default=cuid, editable=False)
+    logical_reference = models.UUIDField(default=uuid.uuid4, editable=False)
     primary_key_owner = models.ForeignKey("Owner", related_name="resources", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
@@ -101,7 +103,8 @@ class Input(models.Model):
     input_group = models.ForeignKey(InputGroup, related_name="inputs", on_delete=models.CASCADE)
     script = models.TextField(blank=True, default="")
     concept_map_id = models.TextField(blank=True, default="")
-    static_value = models.TextField(blank=True, default="")
+    column = models.OneToOneField("Column", blank=True, null=True, on_delete=models.CASCADE)
+    static_value = models.TextField(blank=True, null=True, default=None)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -112,11 +115,13 @@ class Column(models.Model):
     table = models.TextField()
     column = models.TextField()
     join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
-    input_ = models.OneToOneField(Input, name="input", blank=True, null=True, on_delete=models.CASCADE)
     owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["updated_at"]
 
 
 class Join(models.Model):

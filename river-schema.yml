@@ -9,6 +9,20 @@ paths:
       operationId: api_attributes_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: path
+        schema:
+          type: string
+      - in: query
+        name: resource
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -168,10 +182,37 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/batch/:
+  /api/batches/:
     get:
-      operationId: api_batch_retrieve
+      operationId: api_batches_list
       description: ''
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: source
+        schema:
+          type: array
+          items:
+            type: string
+        explode: true
+        style: form
       tags:
       - api
       security:
@@ -180,10 +221,50 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBatchList'
+          description: ''
     post:
-      operationId: api_batch_create
+      operationId: api_batches_create
       description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+  /api/batches/{id}/:
+    get:
+      operationId: api_batches_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
       tags:
       - api
       security:
@@ -191,17 +272,90 @@ paths:
       - basicAuth: []
       - {}
       responses:
-        '201':
-          description: No response body
-  /api/batch/{id}/:
-    delete:
-      operationId: api_batch_destroy
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    put:
+      operationId: api_batches_update
       description: ''
       parameters:
       - in: path
         name: id
         schema:
           type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    patch:
+      operationId: api_batches_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBatchRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
+    delete:
+      operationId: api_batches_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
         required: true
       tags:
       - api
@@ -212,13 +366,59 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/batches/{id}/retry/:
+    post:
+      operationId: api_batches_retry_create
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this batch.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Batch'
+          description: ''
   /api/columns/:
     get:
       operationId: api_columns_list
       description: ''
       parameters:
       - in: query
+        name: input
+        schema:
+          type: string
+      - in: query
         name: join
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
         schema:
           type: string
       tags:
@@ -380,6 +580,11 @@ paths:
     get:
       operationId: api_conditions_list
       description: ''
+      parameters:
+      - in: query
+        name: input_group
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -553,6 +758,12 @@ paths:
       operationId: api_credentials_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -712,6 +923,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/explore/:
+    post:
+      operationId: api_explore_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorationResponse'
+          description: ''
   /api/filters/:
     get:
       operationId: api_filters_list
@@ -880,6 +1120,17 @@ paths:
     get:
       operationId: api_input_groups_list
       description: ''
+      parameters:
+      - in: query
+        name: attribute
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1039,6 +1290,17 @@ paths:
     get:
       operationId: api_inputs_list
       description: ''
+      parameters:
+      - in: query
+        name: input_group
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1203,6 +1465,12 @@ paths:
         name: column
         schema:
           type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1357,6 +1625,38 @@ paths:
       - {}
       responses:
         '204':
+          description: No response body
+  /api/list-owners/:
+    post:
+      operationId: api_list_owners_create
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/owner-schema/{owner}/:
+    post:
+      operationId: api_owner_schema_create
+      description: ''
+      parameters:
+      - in: path
+        name: owner
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
           description: No response body
   /api/owners/:
     get:
@@ -1528,18 +1828,40 @@ paths:
       description: ''
       tags:
       - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PreviewRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PreviewRequestRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
       - {}
       responses:
-        '201':
-          description: No response body
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreviewResponse'
+          description: ''
   /api/resources/:
     get:
       operationId: api_resources_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -1701,7 +2023,7 @@ paths:
           description: No response body
   /api/scripts/:
     get:
-      operationId: api_scripts_retrieve
+      operationId: api_scripts_list
       description: ''
       tags:
       - api
@@ -1711,11 +2033,24 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scripts'
+          description: ''
   /api/sources/:
     get:
       operationId: api_sources_list
       description: ''
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1871,6 +2206,59 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/sources/{id}/export/:
+    get:
+      operationId: api_sources_export_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this source.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MappingWithPartialCredential'
+          description: ''
+  /api/sources/import/:
+    post:
+      operationId: api_sources_import_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MappingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MappingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MappingRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mapping'
+          description: ''
   /api/user/:
     get:
       operationId: api_user_retrieve
@@ -1887,67 +2275,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /pagai/explore/{resource_id}/{owner}/{table}/:
-    get:
-      operationId: pagai_explore_retrieve
-      description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: resource_id
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: table
-        schema:
-          type: string
-        required: true
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
-  /pagai/list-owners/:
-    post:
-      operationId: pagai_list_owners_create
-      description: ''
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
-  /pagai/owner-schema/{owner}/:
-    post:
-      operationId: pagai_owner_schema_create
-      description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
 components:
   schemas:
     ActionEnum:
@@ -1999,6 +2326,56 @@ components:
       - definition_id
       - path
       - resource
+    Batch:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        canceled_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        resources:
+          type: array
+          items:
+            type: string
+      required:
+      - canceled_at
+      - completed_at
+      - created_at
+      - errors
+      - id
+      - resources
+      - updated_at
+    BatchRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            type: string
+      required:
+      - resources
     Column:
       type: object
       properties:
@@ -2173,6 +2550,69 @@ components:
       - password
       - port
       - source
+    Error:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        event:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        batch:
+          type: string
+      required:
+      - batch
+      - created_at
+      - event
+      - id
+      - updated_at
+    ErrorRequest:
+      type: object
+      properties:
+        event:
+          type: string
+        batch:
+          type: string
+      required:
+      - batch
+      - event
+    ExplorationRequestRequest:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        owner:
+          type: string
+        table:
+          type: string
+      required:
+      - owner
+      - resource_id
+      - table
+    ExplorationResponse:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+        rows:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+      required:
+      - fields
+      - rows
     Filter:
       type: object
       properties:
@@ -2229,6 +2669,7 @@ components:
           type: string
         static_value:
           type: string
+          nullable: true
         updated_at:
           type: string
           format: date-time
@@ -2285,6 +2726,7 @@ components:
           type: string
         static_value:
           type: string
+          nullable: true
         input_group:
           type: string
       required:
@@ -2317,6 +2759,467 @@ components:
           type: string
       required:
       - column
+    Mapping:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingResource'
+          default: []
+        credential:
+          $ref: '#/components/schemas/MappingCredential'
+        name:
+          type: string
+        version:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - credential
+      - id
+      - name
+      - updated_at
+    MappingAttribute:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingInputGroup'
+          default: []
+      required:
+      - definition_id
+      - path
+    MappingAttributeRequest:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingInputGroupRequest'
+          default: []
+      required:
+      - definition_id
+      - path
+    MappingColumn:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingJoin'
+          default: []
+      required:
+      - column
+      - id
+      - table
+    MappingColumnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingJoinRequest'
+          default: []
+      required:
+      - column
+      - id
+      - table
+    MappingCondition:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        column:
+          type: string
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/ConditionRelationEnum'
+      required:
+      - action
+      - column
+    MappingConditionRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        column:
+          type: string
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/ConditionRelationEnum'
+      required:
+      - action
+      - column
+    MappingCredential:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOwner'
+          default: []
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - database
+      - host
+      - login
+      - model
+      - password
+      - port
+    MappingCredentialRequest:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOwnerRequest'
+          default: []
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - database
+      - host
+      - login
+      - model
+      - password
+      - port
+    MappingFilter:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/FilterRelationEnum'
+        value:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - sql_column
+    MappingFilterRequest:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/FilterRelationEnum'
+        value:
+          type: string
+        sql_column:
+          type: string
+      required:
+      - relation
+      - sql_column
+    MappingInput:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        static_value:
+          type: string
+          nullable: true
+        column:
+          type: string
+          nullable: true
+      required:
+      - column
+    MappingInputGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        merging_script:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingInput'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingCondition'
+          default: []
+      required:
+      - id
+    MappingInputGroupRequest:
+      type: object
+      properties:
+        merging_script:
+          type: string
+        inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingInputRequest'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingConditionRequest'
+          default: []
+    MappingInputRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        static_value:
+          type: string
+          nullable: true
+        column:
+          type: string
+          nullable: true
+      required:
+      - column
+    MappingJoin:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+      required:
+      - columns
+    MappingJoinRequest:
+      type: object
+      properties:
+        columns:
+          type: array
+          items:
+            type: string
+      required:
+      - columns
+    MappingOwner:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingColumn'
+          default: []
+      required:
+      - id
+      - name
+    MappingOwnerRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingColumnRequest'
+          default: []
+      required:
+      - id
+      - name
+    MappingPartialCredential:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOwner'
+          default: []
+      required:
+      - database
+      - host
+      - model
+      - port
+    MappingRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingResourceRequest'
+          default: []
+        credential:
+          $ref: '#/components/schemas/MappingCredentialRequest'
+        name:
+          type: string
+        version:
+          type: string
+      required:
+      - credential
+      - name
+    MappingResource:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingAttribute'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingFilter'
+          default: []
+      required:
+      - definition_id
+      - id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    MappingResourceRequest:
+      type: object
+      properties:
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        logical_reference:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingAttributeRequest'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingFilterRequest'
+          default: []
+      required:
+      - definition_id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    MappingWithPartialCredential:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingResource'
+          default: []
+        credential:
+          $ref: '#/components/schemas/MappingPartialCredential'
+        name:
+          type: string
+        version:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - credential
+      - id
+      - name
+      - updated_at
     ModelEnum:
       enum:
       - MSSQL
@@ -2353,6 +3256,26 @@ components:
       required:
       - credential
       - name
+    PaginatedBatchList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Batch'
     PatchedAttributeRequest:
       type: object
       properties:
@@ -2364,6 +3287,13 @@ components:
           type: string
         resource:
           type: string
+    PatchedBatchRequest:
+      type: object
+      properties:
+        resources:
+          type: array
+          items:
+            type: string
     PatchedColumnRequest:
       type: object
       properties:
@@ -2438,6 +3368,7 @@ components:
           type: string
         static_value:
           type: string
+          nullable: true
         input_group:
           type: string
     PatchedJoinRequest:
@@ -2474,6 +3405,33 @@ components:
           type: string
         version:
           type: string
+    PreviewRequestRequest:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        primary_key_values:
+          type: array
+          items:
+            type: string
+      required:
+      - primary_key_values
+      - resource_id
+    PreviewResponse:
+      type: object
+      properties:
+        instances:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        errors:
+          type: array
+          items:
+            type: string
+      required:
+      - errors
+      - instances
     Resource:
       type: object
       properties:
@@ -2490,6 +3448,7 @@ components:
           type: string
         logical_reference:
           type: string
+          format: uuid
           readOnly: true
         updated_at:
           type: string
@@ -2534,6 +3493,19 @@ components:
       - primary_key_owner
       - primary_key_table
       - source
+    Scripts:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+      required:
+      - category
+      - description
+      - name
     Source:
       type: object
       properties:

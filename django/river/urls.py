@@ -1,16 +1,10 @@
-from django.conf import settings
 from django.urls import include, path
 
+from river.api import views
+from river.api.router import router
+
 urlpatterns = [
-    path("", include("core.urls")),
-    path("", include("control.urls")),
-    path("", include("pagai.urls")),
-    path("", include("pyrog.urls")),
-    path("", include("users.urls")),
-    path("oidc/", include("mozilla_django_oidc.urls")),
+    path("api/", include(router.urls)),
+    path("api/preview/", views.PreviewEndpoint.as_view(), name="preview"),
+    path("api/scripts/", views.ScriptsEndpoint.as_view(), name="scripts"),
 ]
-
-if settings.ADMIN_ENABLED:
-    from django.contrib import admin
-
-    urlpatterns += [path("admin/", admin.site.urls)]

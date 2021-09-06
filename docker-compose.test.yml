@@ -4,13 +4,24 @@ services:
   postgres:
     image: postgres:12.6
     ports:
-      - 5432
+      - 5432:5432
     environment:
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
       POSTGRES_DB: test
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  mimic:
+    image: arkhn/mimic:latest
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - mimic-data:/var/lib/postgresql/data
 
   ora11:
     image: wnameless/oracle-xe-11g-r2
@@ -49,5 +60,45 @@ services:
       - TEST_MSSQL_LOGIN
       - TEST_MSSQL_PASSWORD
 
+      - DEBUG=True
+      - SECRET_KEY=USE_IN_TESTS_ONLY
+      - ALLOWED_HOSTS=*
+      - CORS_ALLOW_ALL_ORIGINS=True
+      - CORS_ALLOW_CREDENTIALS=True
+      - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
+
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+  redis:
+    image: redis:6.0.7
+    ports:
+      - "6379:6379"
+    restart: on-failure
+
+  zookeeper:
+    image: zookeeper:3.4.10
+    restart: on-failure
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.6.0
+    restart: on-failure
+    # This port mapping is required by the containerized kafka
+    ports:
+      - "19092:19092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONNECTIONS_FROM_HOST://:19092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
+      - KAFKA_DELETE_TOPIC_ENABLE=true
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
 volumes:
   postgres-data:
+  mimic-data:

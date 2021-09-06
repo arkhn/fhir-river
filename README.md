@@ -13,6 +13,8 @@ Using **River** and your Pyrog mappings, you can ETL your data, from a data sour
 
 ![source_view](./static/source_view.png)
 
+![ETL flow](./diagrams/batch_process.png)
+
 ## [Changelog](./CHANGELOG.md)
 
 ## [Usage](./USAGE.md)

@@ -1,5 +1,15 @@
 # Contributing
 
+## Docs
+
+Documentation is auto-generated from the code using [pdocs](https://pdoc3.github.io/pdoc/)
+To start a local webserver and access the docs, run:
+
+```bash
+# the following command will spin up a web server on 0.0.0.0:8080
+python django/manage.py docs [--http HOST:PORT]
+```
+
 ## Project structure
 
     .
@@ -25,7 +35,7 @@ The services are deployed as the same docker `arkhn/river` image, but are run wi
 This repository contains 3 compose files that can be used for development.
 
 |                                 |                                                                                         |
-|---------------------------------|-----------------------------------------------------------------------------------------|
+| ------------------------------- | --------------------------------------------------------------------------------------- |
 | `docker-compose.yml`            | The minimal functional configuration. `fhir-api` and `pyrog-api` URLs must be provided. |
 | `docker-compose.monitoring.yml` | Optional monitoring services. Configuration is store in the root `monitoring` directory |
 | `docker-compose.test.yml`       | Optional services for testing (e.g. `mimic`)                                            |
@@ -49,7 +59,10 @@ python3.8 -m venv --prompt "river" .venv
 # 2. Activate the virtual env
 source .venv/bin/activate
 
-# 3. Install dev requirements
+# 3. Install unixodbc-dev package
+sudo apt install unixodbc-dev
+
+# 4. Install dev requirements
 pip install -r requirements/dev.txt
 ```
 
@@ -81,6 +94,7 @@ Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
 # Install the hooks
 pre-commit install
 ```
+
 ### Tests
 
 ```bash

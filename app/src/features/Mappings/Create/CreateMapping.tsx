@@ -6,19 +6,16 @@ import React, {
   useState,
 } from "react";
 
-import {
-  CircularProgress,
-  Container,
-  Button,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
-import BackIcon from "@material-ui/icons/ArrowBackIos";
+import { Icon } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+import { CircularProgress, Container, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
+import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 import StepPanel from "common/components/Stepper/StepPanel";
 import { columnSelectors, columnsRemoved } from "features/Columns/columnSlice";
 import { filterSelectors, filtersRemoved } from "features/Filters/filterSlice";
@@ -34,20 +31,22 @@ import {
   useApiColumnsCreateMutation,
   useApiJoinsCreateMutation,
 } from "services/api/endpoints";
-import {
+import type {
   ResourceRequest,
   ColumnRequest,
   FilterRequest,
   JoinRequest,
 } from "services/api/generated/api.generated";
 
-import { resourcesRemoved, resourceSelectors } from "../resourceSlice";
-
-const FOOTER_HEIGHT = 150;
+import {
+  resourcesRemoved,
+  resourceSelectors,
+  resourceAdded,
+} from "../resourceSlice";
 
 const useStyles = makeStyles((theme) => ({
   footerContainer: {
-    height: FOOTER_HEIGHT,
+    height: theme.mixins.footer.height,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -55,7 +54,9 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   rootContainer: {
-    height: `calc(100vh - ${FOOTER_HEIGHT + theme.spacing(10)}px)`,
+    height: `calc(100vh - ${
+      Number(theme.mixins.footer.height) + Number(theme.mixins.appbar.height)
+    }px)`,
   },
   scrollContainer: {
     paddingTop: theme.spacing(8),
@@ -63,14 +64,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(2),
-    textTransform: "none",
-  },
-  previousButton: {
-    color: theme.palette.text.secondary,
-    "&:hover": {
-      backgroundColor: "inherit",
-      color: theme.palette.text.primary,
-    },
   },
   absolute: {
     position: "absolute",
@@ -87,7 +80,6 @@ const CreateMapping = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
   const [activeStep, setActiveStep] = useState(0);
-  const [isProfileSelected, setIsProfileSelected] = useState(false);
 
   const [mapping] = useAppSelector(resourceSelectors.selectAll);
   const columns = useAppSelector(columnSelectors.selectAll);
@@ -118,8 +110,7 @@ const CreateMapping = (): JSX.Element => {
           isDisabled = mapping.definition_id === undefined;
           break;
         case 2:
-          isDisabled =
-            mapping.definition_id === undefined || !isProfileSelected;
+          isDisabled = mapping.definition_id === undefined;
           break;
         case 3:
           isDisabled =
@@ -134,7 +125,7 @@ const CreateMapping = (): JSX.Element => {
     }
 
     return isDisabled;
-  }, [activeStep, mapping, isProfileSelected]);
+  }, [activeStep, mapping]);
 
   const resetCreateMapping = useCallback(() => {
     dispatch(resourcesRemoved());
@@ -172,7 +163,7 @@ const CreateMapping = (): JSX.Element => {
                 filterRequest: {
                   ...filter,
                   resource: createdMapping.id,
-                  sql_column: createdColumns[index].id,
+                  sql_column: createdColumns[index]?.id ?? "",
                 } as FilterRequest,
               }).unwrap();
             })
@@ -186,7 +177,7 @@ const CreateMapping = (): JSX.Element => {
               );
               return createJoin({
                 joinRequest: {
-                  column: createdColumns[index].id,
+                  column: createdColumns[index]?.id ?? "",
                 } as JoinRequest,
               }).unwrap();
             })
@@ -199,7 +190,7 @@ const CreateMapping = (): JSX.Element => {
               return createColumn({
                 columnRequest: {
                   ...column,
-                  join: createdJoins[index].id,
+                  join: createdJoins[index]?.id ?? "",
                 } as ColumnRequest,
               }).unwrap();
             })
@@ -220,9 +211,16 @@ const CreateMapping = (): JSX.Element => {
     history.goBack();
   };
 
+  useEffect(() => {
+    dispatch(
+      resourceAdded({
+        id: uuid(),
+        source: sourceId,
+      })
+    );
+  }, [dispatch, sourceId]);
   useEffect(() => resetCreateMapping, [resetCreateMapping]);
 
-  const handleProfileSelected = () => setIsProfileSelected(true);
   const handlePrevStep = () => {
     activeStep > 0 && setActiveStep(activeStep - 1);
   };
@@ -234,16 +232,13 @@ const CreateMapping = (): JSX.Element => {
   return (
     <>
       <Button
-        className={clsx(
-          classes.button,
-          classes.previousButton,
-          classes.absolute
-        )}
-        startIcon={<BackIcon />}
+        className={clsx(classes.button, classes.absolute)}
+        startIcon={<Icon icon={IconNames.CHEVRON_LEFT} />}
         onClick={handleCancelClick}
         disableRipple
+        color="inherit"
       >
-        <Typography>{t("cancel")}</Typography>
+        {t("cancel")}
       </Button>
       <Container className={classes.rootContainer} maxWidth="lg">
         <MappingCreationStepper ref={stepperRef} activeStep={activeStep} />
@@ -261,10 +256,7 @@ const CreateMapping = (): JSX.Element => {
               <FhirResourceStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={2} value={activeStep}>
-              <FhirProfileStep
-                mapping={mapping}
-                onChange={handleProfileSelected}
-              />
+              <FhirProfileStep mapping={mapping} />
             </StepPanel>
             <StepPanel index={3} value={activeStep}>
               <MappingNameStep mapping={mapping} />
@@ -274,11 +266,12 @@ const CreateMapping = (): JSX.Element => {
       </Container>
       <div className={classes.footerContainer}>
         <Button
-          className={clsx(classes.button, classes.previousButton)}
+          className={classes.button}
           onClick={handlePrevStep}
           disableRipple
+          color="inherit"
         >
-          <Typography>{t("previousStep")}</Typography>
+          {t("previousStep")}
         </Button>
         <Button
           className={classes.button}
@@ -290,7 +283,7 @@ const CreateMapping = (): JSX.Element => {
           {isCreateMappingLoading ? (
             <CircularProgress color="inherit" size={23} />
           ) : (
-            <Typography>{t("next")}</Typography>
+            t("next")
           )}
         </Button>
       </div>

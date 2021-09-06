@@ -52,15 +52,15 @@ const source_resources = resourceFactory.buildList(
 const source_attributes = [
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0].id } }
+    { associations: { resource: source_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0].id } }
+    { associations: { resource: source_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[1].id } }
+    { associations: { resource: source_resources[1]?.id } }
   ),
 ];
 
@@ -263,7 +263,6 @@ describe("Sources page", () => {
 
   test("the source mappings and attributes count", async () => {
     screen.getByText("2 mappings");
-    screen.getByText("3 attributes");
   });
 
   test("updating a source", async () => {
@@ -349,6 +348,7 @@ describe("Sources page", () => {
       screen.getByRole("button", { name: /source_1_edited menu/i })
     );
     userEvent.click(screen.getByRole("menuitem", { name: /delete/i }));
+    userEvent.click(screen.getByRole("button", { name: /yes, delete/i }));
 
     await waitForElementToBeRemoved(() => screen.getByText("source_1_edited"));
   });

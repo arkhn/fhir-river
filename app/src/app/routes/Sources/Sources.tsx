@@ -1,15 +1,22 @@
 import React from "react";
 
-import { Container, Grid, makeStyles } from "@material-ui/core";
+import { Container, makeStyles } from "@material-ui/core";
 
 import SourceCreate from "features/Sources/SourceCreate";
 import SourceDrawer from "features/Sources/SourceDrawer";
 import SourceGrid from "features/Sources/SourceGrid";
+import UploadSourceButton from "features/Sources/UploadSourceButton";
 
 const useStyles = makeStyles((theme) => ({
+  button: {
+    textTransform: "none",
+  },
   gridContainer: {
     flexGrow: 1,
-    paddingTop: theme.spacing(5),
+    paddingTop: theme.spacing(2),
+  },
+  container: {
+    padding: theme.spacing(5, 8),
   },
 }));
 
@@ -17,10 +24,9 @@ const Sources = (): JSX.Element => {
   const classes = useStyles();
 
   return (
-    <Container maxWidth="xl">
-      <Grid className={classes.gridContainer} spacing={3} container>
-        <SourceCreate />
-      </Grid>
+    <Container maxWidth="xl" className={classes.container}>
+      <SourceCreate className={classes.button} />
+      <UploadSourceButton />
       <SourceGrid />
       <SourceDrawer />
     </Container>

@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 
 import { useAppDispatch } from "app/store";
+import DeleteDialog from "common/components/DeleteDialog";
 import { useApiSourcesDestroyMutation } from "services/api/endpoints";
 import { Source } from "services/api/generated/api.generated";
 
@@ -59,9 +60,13 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const [deleteSource] = useApiSourcesDestroyMutation();
+  const [
+    deleteSource,
+    { isLoading: isDeleteLoading },
+  ] = useApiSourcesDestroyMutation({});
 
   const handleCardClick = () => {
     history.push(`/sources/${source.id}`);
@@ -77,6 +82,15 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
     handleMenuClose();
   };
   const handleDeleteSource = () => deleteSource({ id: source.id });
+
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteDialogOpen = () => {
+    handleMenuClose();
+    setDeleteDialogOpen(true);
+  };
 
   return (
     <>
@@ -131,13 +145,20 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
           <ListItemText primary={t("edit")} />
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleDeleteSource}>
+        <MenuItem onClick={handleDeleteDialogOpen}>
           <ListItemIcon className={clsx(classes.listItemIcon, classes.delete)}>
             <DeleteIcon />
           </ListItemIcon>
           <ListItemText primary={t("delete")} className={classes.delete} />
         </MenuItem>
       </Menu>
+      <DeleteDialog
+        title={t("deleteSourcePrompt", { sourceName: source.name })}
+        open={isDeleteDialogOpen}
+        onClose={handleDeleteDialogClose}
+        onDelete={handleDeleteSource}
+        isLoading={isDeleteLoading}
+      />
     </>
   );
 };

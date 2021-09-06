@@ -1,6 +1,6 @@
 from os import getenv
 
-from common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES
+from river.common.database_connection.db_connection import MSSQL, ORACLE, ORACLE11, POSTGRES
 
 DATABASES = {
     MSSQL: {
@@ -10,6 +10,7 @@ DATABASES = {
         "login": getenv("TEST_MSSQL_LOGIN"),
         "password": getenv("TEST_MSSQL_PASSWORD"),
         "owner": "dbo",
+        "model": "MSSQL",
     },
     ORACLE11: {
         "host": getenv("TEST_ORACLE_11_HOST"),
@@ -18,6 +19,7 @@ DATABASES = {
         "login": getenv("TEST_ORACLE_11_LOGIN"),
         "password": getenv("TEST_ORACLE_11_PASSWORD"),
         "owner": "SYSTEM",
+        "model": "ORACLE11",
     },
     ORACLE: {
         "host": getenv("TEST_ORACLE_HOST"),
@@ -26,6 +28,7 @@ DATABASES = {
         "login": getenv("TEST_ORACLE_LOGIN"),
         "password": getenv("TEST_ORACLE_PASSWORD"),
         "owner": "SYSTEM",
+        "model": "ORACLE",
     },
     POSTGRES: {
         "host": getenv("TEST_POSTGRES_HOST"),
@@ -34,5 +37,6 @@ DATABASES = {
         "login": getenv("TEST_POSTGRES_LOGIN", "test"),
         "password": getenv("TEST_POSTGRES_PASSWORD", "test"),
         "owner": "public",
+        "model": "POSTGRES",
     },
 }

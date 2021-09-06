@@ -2,9 +2,10 @@ from typing import List
 
 from rest_framework import serializers
 
-from common.database_connection.db_connection import DBConnection
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.errors import ExplorationError
 from pyrog import models
+from river.common.database_connection.db_connection import DBConnection
 
 
 class SourceSerializer(serializers.ModelSerializer):
@@ -21,6 +22,12 @@ class CredentialSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_available_owners(self, obj) -> List[str]:
+        """
+        Introspects the database schema and returns the list of available owners
+        Returns an empty list if a connection parameter is empty.
+        """
+        if "" in [obj.login, obj.password, obj.host, obj.port, obj.database]:
+            return []
         try:
             db_connection = DBConnection(obj.__dict__)
             explorer = DatabaseExplorer(db_connection)
@@ -53,10 +60,10 @@ class OwnerSerializer(serializers.ModelSerializer):
             explorer = DatabaseExplorer(db_connection)
             name = data["name"] if "name" in data else self.instance.name
             data["schema"] = explorer.get_owner_schema(name)
+        except ExplorationError as e:
+            raise serializers.ValidationError({"name": str(e)})
         except Exception as e:
             raise serializers.ValidationError(e)
-        if not data["schema"]:
-            raise serializers.ValidationError({"name": [f"{name} schema is empty or does not exist"]})
         return data
 
 
