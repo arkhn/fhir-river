@@ -64,7 +64,7 @@ def test_retrieve_source_forbidden(api_client, source):
 
 
 @pytest.mark.as_user
-@pytest.mark.export_data("valid/0003.json")
+@pytest.mark.export_data("valid/mimic.json")
 def test_can_import_mapping(api_client, export_data):
     url = reverse("sources-list")
 
@@ -74,7 +74,7 @@ def test_can_import_mapping(api_client, export_data):
 
 
 @pytest.mark.as_user
-@pytest.mark.export_data("valid/0003.json")
+@pytest.mark.export_data("valid/mimic.json")
 def test_can_import_mapping_several_times(api_client, export_data):
     url = reverse("sources-list")
 

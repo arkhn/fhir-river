@@ -2,9 +2,11 @@
     "id": "ckt4kpzdj01gi3hvzl5j6j310",
     "resources": [],
     "credential": {
-        "host": "localhost",
+        "host": "mimic",
         "port": 5432,
-        "database": "river",
+        "database": "test",
+        "login": "test",
+        "password": "test",
         "model": "POSTGRES",
         "owners": []
     },

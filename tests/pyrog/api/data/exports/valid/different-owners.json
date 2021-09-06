@@ -8328,6 +8328,15 @@
                                     "map": "outboundRelationship[typeCode=REFV]/target[classCode=OBS, moodCode=EVN]"
                                 }
                             ]
+                        }, {
+                            "id": "ckt4kpyg0000b3hvzf0ziirqd",
+                            "merging_script": "",
+                            "static_inputs": [
+                                {
+                                    "value": "static"
+                                }
+                            ],
+                            "sql_inputs": []
                         }
                     ]
                 }
@@ -8388,9 +8397,11 @@
         }
     ],
     "credential": {
-        "host": "localhost",
+        "host": "mimic",
         "port": 5432,
-        "database": "river",
+        "database": "test",
+        "login": "test",
+        "password": "test",
         "model": "POSTGRES",
         "owners": [
             {

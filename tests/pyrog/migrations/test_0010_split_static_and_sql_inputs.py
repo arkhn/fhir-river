@@ -4,14 +4,19 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.migration(app_label="pyrog", migration_name="0009_move_column_fk_on_input")
-def test_migrate(migrator, state, input_factory, column_factory):
-    input_1 = input_factory()
+def test_migrate(migrator, state, input_group_factory, column_factory):
+    InputGroup = state.apps.get_model("pyrog", "InputGroup")
+    input_group_factory()
+    group = InputGroup.objects.first()
+
+    Input = state.apps.get_model("pyrog", "Input")
+    input_1 = Input.objects.create(input_group=group)
     input_1.static_value = "val"
     input_1.save()
 
-    input_2 = input_factory()
+    input_2 = Input.objects.create(input_group=group)
     col = column_factory()
-    input_2.column = col
+    input_2.column = state.apps.get_model("pyrog", "Column").objects.first()
     input_2.save()
 
     try:

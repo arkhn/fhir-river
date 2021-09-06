@@ -44,11 +44,17 @@ def test_migrate(migrator, old_state):
 
 
 @pytest.mark.migration(app_label="pyrog", migration_name="0009_move_column_fk_on_input")
-def test_migrate_reverse(migrator, input_factory, column_factory):
-    input = input_factory()
-    column = column_factory()
+def test_migrate_reverse(migrator, state, input_group_factory, column_factory):
+    InputGroup = state.apps.get_model("pyrog", "InputGroup")
+    input_group_factory()
+    group = InputGroup.objects.first()
 
-    input.column = column
+    Input = state.apps.get_model("pyrog", "Input")
+    input = Input.objects.create(input_group=group)
+
+    Column = state.apps.get_model("pyrog", "Column")
+    column_factory()
+    input.column = Column.objects.first()
     input.save()
 
     new_state = migrator.apply_tested_migration(("pyrog", "0008_column_ordering"))
