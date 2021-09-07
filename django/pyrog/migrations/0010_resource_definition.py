@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0008_column_ordering"),
+        ("pyrog", "0009_move_column_fk_on_input"),
     ]
 
     operations = [
