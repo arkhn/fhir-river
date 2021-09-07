@@ -45,7 +45,7 @@ const resourceTreeSlice = createSlice({
         state.root = data;
       } else if (state.root) {
         const node = getNode("id", nodeId, state.root);
-        if (node) node.children = data.children;
+        if (node && node.children.length === 0) node.children = data.children;
       }
     },
     attibuteNodesAdded: (
