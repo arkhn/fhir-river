@@ -1,0 +1,184 @@
+{
+  "id": "ckt8rw3l300091jmhf7omwgpz",
+  "resources": [
+    {
+      "id": "patient-resource-id",
+      "label": "feat_1_extension+Observation(microbio)Ref",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "b8efd322-3e38-4072-9c68-e62e15d84d04",
+      "primary_key_owner": "2d3b7ac8-0743-4d90-ae98-d681660bb25f",
+      "attributes": [
+        {
+          "path": "name[0].given[0]",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckt8rw3n700201jmh4jx3c7zh",
+              "merging_script": "",
+              "static_inputs": [
+                {
+                  "value": "Jean"
+                }
+              ],
+              "sql_inputs": [],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "name[0]",
+          "slice_name": "",
+          "definition_id": "HumanName",
+          "input_groups": []
+        },
+        {
+          "path": "name[0].given[1]",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckt8rw3n700241jmhqwloejit",
+              "merging_script": "",
+              "static_inputs": [
+                {
+                  "value": "Georges"
+                }
+              ],
+              "sql_inputs": [],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0].system",
+          "slice_name": "",
+          "definition_id": "uri",
+          "input_groups": [
+            {
+              "id": "ckt8rw3n700271jmhlx2aanez",
+              "merging_script": "",
+              "static_inputs": [
+                {
+                  "value": "http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04"
+                }
+              ],
+              "sql_inputs": [],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "identifier[0]",
+          "slice_name": "",
+          "definition_id": "Identifier",
+          "input_groups": []
+        },
+        {
+          "path": "identifier[0].value",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckt8rw3n800311jmh2d7y6swp",
+              "merging_script": "",
+              "static_inputs": [],
+              "sql_inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "column": "ckt8rw3n800331jmh7a8lw4r9"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        }
+      ],
+      "filters": []
+    },
+    {
+      "id": "ckt8rw3n900341jmhsxad724h",
+      "label": "feat_10_merge_concat(photo.title)",
+      "primary_key_table": "patients",
+      "primary_key_column": "subject_id",
+      "definition_id": "Patient",
+      "logical_reference": "7b421f8c-0b62-46f3-96fb-8f182119d8a3",
+      "primary_key_owner": "2d3b7ac8-0743-4d90-ae98-d681660bb25f",
+      "attributes": [
+        {
+          "path": "photo[0].title",
+          "slice_name": "",
+          "definition_id": "string",
+          "input_groups": [
+            {
+              "id": "ckt8rw3n900361jmhre93u22p",
+              "merging_script": "merge_concat",
+              "static_inputs": [],
+              "sql_inputs": [
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "column": "ckt8rw3na00381jmh5ndb0d41"
+                },
+                {
+                  "script": "",
+                  "concept_map_id": "",
+                  "column": "ckt8rw3na00401jmh2ugxe2zo"
+                }
+              ],
+              "conditions": []
+            }
+          ]
+        },
+        {
+          "path": "photo[0]",
+          "slice_name": "",
+          "definition_id": "Attachment",
+          "input_groups": []
+        }
+      ],
+      "filters": []
+    }
+  ],
+  "credential": {
+    "host": "mimic",
+    "port": 5432,
+    "database": "test",
+    "login": "test",
+    "password": "test",
+    "model": "POSTGRES",
+    "owners": [
+      {
+        "id": "2d3b7ac8-0743-4d90-ae98-d681660bb25f",
+        "name": "public",
+        "columns": [
+          {
+            "id": "ckt8rw3n800331jmh7a8lw4r9",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckt8rw3na00381jmh5ndb0d41",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckt8rw3na00401jmh2ugxe2zo",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          }
+        ]
+      }
+    ]
+  },
+  "name": "mimic-small-testMapping - mimic-small-testMapping",
+  "version": "",
+  "updated_at": "2021-09-06T17:02:26.345000+02:00",
+  "created_at": "2021-09-06T17:02:26.343000+02:00"
+}

@@ -1,0 +1,19 @@
+# name: test_preview
+  <class 'dict'> {
+    'birthDate': '2094-03-05',
+    'deceasedDateTime': '2165-08-12T00:00:00',
+    'gender': 'female',
+    'id': '6229783e-7c04-5b58-a6ef-3c67632c217b',
+    'meta': <class 'dict'> {
+      'tag': <class 'list'> [
+        <class 'dict'> {
+          'system': 'http://terminology.arkhn.org/CodeSystem/source',
+        },
+        <class 'dict'> {
+          'system': 'http://terminology.arkhn.org/CodeSystem/resource',
+        },
+      ],
+    },
+    'resourceType': 'Patient',
+  }
+---

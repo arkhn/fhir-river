@@ -5,13 +5,12 @@ from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.condition import Condition
 from river.common.analyzer.input_group import InputGroup
 from river.common.analyzer.sql_column import SqlColumn
-from river.common.analyzer.sql_filter import SqlFilter
 from river.common.analyzer.sql_join import SqlJoin
 
 
 def test_cache_analysis_redis(mimic_mapping):
     batch_id = uuid4()
-    resource_id = "patient-resource-id"
+    resource_id = "ckt4kpz1800u63hvz7p1wf9xi"
     analyzer = Analyzer()
 
     res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
@@ -55,45 +54,16 @@ def test_get_primary_key_missing_field():
     assert analyzer.get_primary_key(resource_mapping) is None
 
 
-def test_analyze_mapping(mimic_mapping):
+def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "join-resource-id"
+    resource_id = "ckt4kpyo4007v3hvz2ukm1yjx"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    assert len(analysis.attributes) == 2
-    assert analyzer.get_analysis_columns(analysis) == {
-        SqlColumn("public", "patients", "row_id"),
-        SqlColumn(
-            "public",
-            "admissions",
-            "admission_type",
-            joins=[
-                SqlJoin(
-                    SqlColumn("public", "patients", "subject_id"),
-                    SqlColumn("public", "admissions", "subject_id"),
-                )
-            ],
-        ),
-    }
-    assert analysis.filters == [
-        SqlFilter(
-            SqlColumn(
-                "public",
-                "admissions",
-                "admission_type",
-                joins=[
-                    SqlJoin(
-                        SqlColumn("public", "patients", "subject_id"),
-                        SqlColumn("public", "admissions", "subject_id"),
-                    )
-                ],
-            ),
-            "=",
-            "EMERGENCY",
-        ),
-    ]
-    assert analysis.reference_paths == [["generalPractitioner"], ["link", "other"]]
+    assert len(analysis.attributes) == 13
+    assert analyzer.get_analysis_columns(analysis) == snapshot
+    assert analysis.filters == snapshot
+    assert analysis.reference_paths == [["partOf"], ["subject"], ["encounter"], ["report"]]
 
 
 def test_analyze_attribute(dict_map_gender, structure_definitions):
@@ -172,12 +142,12 @@ def test_analyze_attribute(dict_map_gender, structure_definitions):
             {
                 "id": "ckdom8lgq0045m29ksz6vudvc",
                 "merging_script": None,
-                "inputs": [
+                "static_inputs": [],
+                "sql_inputs": [
                     {
-                        "script": None,
+                        "script": "",
                         "concept_map_id": "id_cm_gender",
                         "concept_map": dict_map_gender,
-                        "static_value": None,
                         "column": "ck8ooenw827004kp41nv3kcmq",
                     }
                 ],

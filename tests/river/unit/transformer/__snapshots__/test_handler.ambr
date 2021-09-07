@@ -1,0 +1,21 @@
+# name: test_extracted_resource_handler
+  <class 'dict'> {
+    'birthDate': '2057-11-15',
+    'deceasedDateTime': '2114-02-20 00:00:00',
+    'gender': 'female',
+    'id': '589300ec-dfde-53e8-87ff-2dc6abfcb852',
+    'meta': <class 'dict'> {
+      'tag': <class 'list'> [
+        <class 'dict'> {
+          'code': 'ckt4kpyju000t3hvzcax0o7pl',
+          'system': 'http://terminology.arkhn.org/CodeSystem/source',
+        },
+        <class 'dict'> {
+          'code': 'ckt4kpz1800u63hvz7p1wf9xi',
+          'system': 'http://terminology.arkhn.org/CodeSystem/resource',
+        },
+      ],
+    },
+    'resourceType': 'Patient',
+  }
+---

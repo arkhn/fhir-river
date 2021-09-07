@@ -5090,7 +5090,7 @@
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
-                                    "script": "",
+                                    "script": "map_gender",
                                     "concept_map_id": "",
                                     "column": "ckt4kpyla00423hvzg4jw2h7l"
                                 }
@@ -5110,7 +5110,7 @@
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
-                                    "script": "",
+                                    "script": "clean_date",
                                     "concept_map_id": "",
                                     "column": "ckt4kpyla00433hvzjpyz8xg9"
                                 }
