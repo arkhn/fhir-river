@@ -1,7 +1,6 @@
 import json
 import logging
 
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from pyrog.api.serializers.import_export import MappingWithPartialCredentialSerializer
@@ -15,7 +14,6 @@ class Command(BaseCommand):
         parser.add_argument("--dest", required=True)
 
     def handle(self, *args, **options):
-        call_command("migrate", "pyrog")
         dest_folder = options.get("dest")
 
         sources = Source.objects.all()
