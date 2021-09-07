@@ -1,9 +1,7 @@
-import json
 from pathlib import Path
 
 from pytest import fixture
 
-import requests
 from common.adapters.fhir_api import HapiFhirAPI
 
 
