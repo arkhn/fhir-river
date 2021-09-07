@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from pytest import fixture
 
 from common.adapters.fhir_api import HapiFhirAPI
