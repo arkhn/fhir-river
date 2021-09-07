@@ -7,10 +7,10 @@ from common.adapters.fhir_api import fhir_api
 def dereference_concept_map(mapping, auth_token: Optional[str]):
     for attribute in mapping["attributes"]:
         for input_group in attribute["input_groups"]:
-            for input_ in input_group["inputs"]:
-                if concept_map_id := input_.get("concept_map_id"):
+            for sql_input in input_group["sql_inputs"]:
+                if concept_map_id := sql_input.get("concept_map_id"):
                     concept_map = format_concept_map(concept_map_id, auth_token)
-                    input_["concept_map"] = concept_map
+                    sql_input["concept_map"] = concept_map
 
 
 def format_concept_map(concept_map_id: str, auth_token: Optional[str]):
