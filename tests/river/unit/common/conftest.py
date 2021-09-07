@@ -1,7 +1,7 @@
-from pytest import fixture
+import pytest
 
 
-@fixture
+@pytest.fixture
 def concept_map():
     return {
         "id": "cm_gender",
@@ -14,3 +14,8 @@ def concept_map():
             }
         ],
     }
+
+
+@pytest.fixture(autouse=True)
+def use_inmemory_fhir_api(settings):
+    settings.DEFAULT_FHIR_API_CLASS = "common.adapters.fhir_api.InMemoryFhirAPI"
