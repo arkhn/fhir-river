@@ -78,7 +78,7 @@ class ResourceSerializer(serializers.ModelSerializer):
         request = self.context["request"]
         auth_token = request.session.get("oidc_access_token")
         try:
-            data["definition"] = fhir_api.get(f"/StructureDefinition/{data['definition_id']}", auth_token)
+            data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
         except Exception as e:
             raise serializers.ValidationError({"definition": [str(e)]})
         return super().validate(data)

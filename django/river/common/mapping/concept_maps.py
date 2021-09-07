@@ -14,7 +14,7 @@ def dereference_concept_map(mapping, auth_token: Optional[str]):
 
 
 def format_concept_map(concept_map_id: str, auth_token: Optional[str]):
-    concept_map_resource = fhir_api.get(f"/ConceptMap/{concept_map_id}", auth_token)
+    concept_map_resource = fhir_api.retrieve("ConceptMap", concept_map_id, auth_token)
     concept_map = {}
     for group in concept_map_resource["group"]:
         for element in group["element"]:
