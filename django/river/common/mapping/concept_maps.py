@@ -1,6 +1,6 @@
 from typing import Optional
 
-from common.adapters.fhir_api import HapiFhirAPI
+from common.adapters.fhir_api import fhir_api
 
 
 # FIXME: use this function on a mapping before sending it to the analyzer
@@ -14,8 +14,7 @@ def dereference_concept_map(mapping, auth_token: Optional[str]):
 
 
 def format_concept_map(concept_map_id: str, auth_token: Optional[str]):
-    fhir_api = HapiFhirAPI(auth_token)
-    concept_map_resource = fhir_api.get(f"/ConceptMap/{concept_map_id}")
+    concept_map_resource = fhir_api.get(f"/ConceptMap/{concept_map_id}", auth_token)
     concept_map = {}
     for group in concept_map_resource["group"]:
         for element in group["element"]:
