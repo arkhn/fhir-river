@@ -29,7 +29,7 @@ class EventSubscriber:
         raise NotImplementedError
 
 
-class FakeEventSubscriber(EventSubscriber):
+class InMemoryEventSubscriber(EventSubscriber):
     """EventSubscriber using an in-memory dict of lists as a data structure.
 
     Instead of relying on a complex message broker in basic tests, we mock such a system

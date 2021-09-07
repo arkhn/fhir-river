@@ -1,7 +1,7 @@
 import pytest
 
-from river.adapters.event_publisher import FakeEventPublisher
-from river.adapters.topics import FakeTopicsManager
+from river.adapters.event_publisher import InMemoryEventPublisher
+from river.adapters.topics import InMemoryTopicsManager
 from river.domain.events import BatchEvent
 from river.services import abort, batch, preview
 
@@ -11,8 +11,8 @@ pytestmark = pytest.mark.django_db
 def test_batch(batch_factory, resource_factory):
     resources = resource_factory.create_batch(2)
     batch_ = batch_factory.create(resources=resources)
-    topics = FakeTopicsManager()
-    publisher = FakeEventPublisher()
+    topics = InMemoryTopicsManager()
+    publisher = InMemoryEventPublisher()
 
     batch(batch_.id, resources, topics, publisher)
 
@@ -23,7 +23,7 @@ def test_batch(batch_factory, resource_factory):
 
 
 def test_abort(batch):
-    topics = FakeTopicsManager(
+    topics = InMemoryTopicsManager(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 

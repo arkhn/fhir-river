@@ -15,7 +15,7 @@ class TopicsManager:
         raise NotImplementedError
 
 
-class FakeTopicsManager(TopicsManager):
+class InMemoryTopicsManager(TopicsManager):
     def __init__(self, topics=list()):
         self._topics = set(topics)
 
