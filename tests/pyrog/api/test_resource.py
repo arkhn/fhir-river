@@ -86,7 +86,6 @@ def test_filter_resources_by_source(api_client, source_factory, resource_factory
 @pytest.mark.parametrize("label, status_code", [(faker.word(), 200)])
 def test_update_resource(api_client, resource, label, status_code):
     url = reverse("resources-detail", kwargs={"pk": resource.id})
-
     data = {}
     if label:
         data["label"] = label

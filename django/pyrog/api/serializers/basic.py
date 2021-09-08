@@ -77,8 +77,9 @@ class ResourceSerializer(serializers.ModelSerializer):
     def validate(self, data):
         request = self.context["request"]
         auth_token = request.session.get("oidc_access_token")
+        definition_id = data["definition_id"] if "definition_id" in data else self.instance.definition_id
         try:
-            data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
+            data["definition"] = fhir_api.retrieve("StructureDefinition", definition_id, auth_token)
         except Exception as e:
             raise serializers.ValidationError({"definition": [str(e)]})
         return super().validate(data)
