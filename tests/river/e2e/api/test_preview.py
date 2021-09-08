@@ -1,5 +1,3 @@
-from unittest import mock
-
 import pytest
 
 from django.urls import reverse
@@ -7,12 +5,7 @@ from django.urls import reverse
 pytestmark = pytest.mark.django_db
 
 
-def mock_fetch_concept_map(concept_map_id, auth_token):
-    return {}
-
-
 @pytest.mark.export_data("mimic_mapping.json")
-@mock.patch("river.common.mapping.fetch_concept_maps.fetch_concept_map", mock_fetch_concept_map)
 def test_preview(api_client, export_data):
     url = reverse("sources-list")
 
