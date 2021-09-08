@@ -82,7 +82,7 @@ jobs:
         run: |
           docker-compose -f ./docker-compose.test.yml up -d
           ./scripts/wait-for-postgres.sh localhost 15432 test
-          docker-compose -f ./docker-compose.test.yml exec -T river pytest -vv
+          docker-compose -f ./docker-compose.test.yml exec -T river pytest -vv --ds=settings.test
 
   test-hapi:
     runs-on: ubuntu-18.04

@@ -9,7 +9,7 @@ FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 def test_format_concept_map(concept_map):
     fhir_api.create("ConceptMap", concept_map)
 
-    actual = concept_maps.format_concept_map("id", "validToken")
+    actual = concept_maps.format_concept_map("cm_gender", "validToken")
     expected = {
         "F": "female",
         "M": "male",
