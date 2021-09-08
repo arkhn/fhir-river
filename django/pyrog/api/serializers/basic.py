@@ -54,9 +54,8 @@ class OwnerSerializer(serializers.ModelSerializer):
         read_only_fields = ["schema"]
 
     def validate(self, data):
-        if "credential" not in data:
-            return super().validate(data)
-        credential = CredentialSerializer(data["credential"]).data
+        credential_instance = data["credential"] if "credential" in data else self.instance.credential
+        credential = CredentialSerializer(credential_instance).data
         try:
             db_connection = DBConnection(credential)
             explorer = DatabaseExplorer(db_connection)
