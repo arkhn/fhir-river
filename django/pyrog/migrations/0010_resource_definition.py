@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="resource",
             name="definition",
-            field=models.JSONField(default=None),
+            field=models.JSONField(null=True, blank=True, default=None),
             preserve_default=False,
         ),
     ]

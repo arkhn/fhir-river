@@ -7,7 +7,7 @@ from pyrog import models
 
 class SourceFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Source"
+        model = models.Source
 
     id = factory.Sequence(lambda n: f"source_id_{n:04d}")
     name = factory.Sequence(lambda n: f"source_{n}")
@@ -16,7 +16,7 @@ class SourceFactory(factory.django.DjangoModelFactory):
 
 class SourceUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.SourceUser"
+        model = models.SourceUser
 
     id = factory.Sequence(lambda n: f"source_user_id_{n:04d}")
     user = factory.SubFactory("tests.pyrog.factories.UserFactory")
@@ -25,7 +25,7 @@ class SourceUserFactory(factory.django.DjangoModelFactory):
 
 class ResourceFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Resource"
+        model = models.Resource
 
     id = factory.Sequence(lambda n: f"resource_id_{n:04d}")
     source = factory.SubFactory(SourceFactory)
@@ -40,7 +40,7 @@ class CredentialFactory(factory.django.DjangoModelFactory):
     which is a valid and available database."""
 
     class Meta:
-        model = "pyrog.Credential"
+        model = models.Credential
 
     id = factory.Sequence(lambda n: f"credential_id_{n:04d}")
     source = factory.SubFactory(SourceFactory)
@@ -54,7 +54,7 @@ class CredentialFactory(factory.django.DjangoModelFactory):
 
 class AttributeFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Attribute"
+        model = models.Attribute
 
     id = factory.Sequence(lambda n: f"attribute_id_{n:04d}")
     resource = factory.SubFactory(ResourceFactory)
@@ -62,7 +62,7 @@ class AttributeFactory(factory.django.DjangoModelFactory):
 
 class InputGroupFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.InputGroup"
+        model = models.InputGroup
 
     id = factory.Sequence(lambda n: f"input_group_id_{n:04d}")
     attribute = factory.SubFactory(AttributeFactory)
@@ -70,7 +70,7 @@ class InputGroupFactory(factory.django.DjangoModelFactory):
 
 class InputFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Input"
+        model = models.Input
 
     id = factory.Sequence(lambda n: f"input_id_{n:04d}")
     input_group = factory.SubFactory(InputGroupFactory)
@@ -78,7 +78,7 @@ class InputFactory(factory.django.DjangoModelFactory):
 
 class ColumnFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Column"
+        model = models.Column
 
     class Params:
         with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
@@ -89,7 +89,7 @@ class ColumnFactory(factory.django.DjangoModelFactory):
 
 class JoinFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Join"
+        model = models.Join
 
     id = factory.Sequence(lambda n: f"join_id_{n:04d}")
     column = factory.SubFactory(ColumnFactory)
@@ -97,7 +97,7 @@ class JoinFactory(factory.django.DjangoModelFactory):
 
 class ConditionFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Condition"
+        model = models.Condition
 
     id = factory.Sequence(lambda n: f"condition_id_{n:04d}")
     column = factory.SubFactory(ColumnFactory)
@@ -106,7 +106,7 @@ class ConditionFactory(factory.django.DjangoModelFactory):
 
 class FilterFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Filter"
+        model = models.Filter
 
     id = factory.Sequence(lambda n: f"filter_id_{n:04d}")
     resource = factory.SubFactory(ResourceFactory)
@@ -115,7 +115,7 @@ class FilterFactory(factory.django.DjangoModelFactory):
 
 class OwnerFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Owner"
+        model = models.Owner
 
     id = factory.Sequence(lambda n: f"owner_id_{n:04d}")
     name = factory.Sequence(lambda n: f"owner_{n}")
