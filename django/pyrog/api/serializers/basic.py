@@ -22,6 +22,7 @@ class CredentialSerializer(serializers.ModelSerializer):
         model = models.Credential
         fields = "__all__"
 
+    @staticmethod
     def get_available_owners(self, obj) -> List[str]:
         """
         Introspects the database schema and returns the list of available owners
@@ -54,8 +55,9 @@ class OwnerSerializer(serializers.ModelSerializer):
         read_only_fields = ["schema"]
 
     def validate(self, data):
-        credential_instance = data["credential"] if "credential" in data else self.instance.credential
-        credential = CredentialSerializer(credential_instance).data
+        if "credential" not in data:
+            return super().validate(data)
+        credential = CredentialSerializer(data["credential"]).data
         try:
             db_connection = DBConnection(credential)
             explorer = DatabaseExplorer(db_connection)
@@ -75,11 +77,12 @@ class ResourceSerializer(serializers.ModelSerializer):
         read_only_fields = ["definition"]
 
     def validate(self, data):
+        if "definition_id" not in data:
+            return super().validate(data)
         request = self.context["request"]
         auth_token = request.session.get("oidc_access_token")
-        definition_id = data["definition_id"] if "definition_id" in data else self.instance.definition_id
         try:
-            data["definition"] = fhir_api.retrieve("StructureDefinition", definition_id, auth_token)
+            data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
         except Exception as e:
             raise serializers.ValidationError({"definition": [str(e)]})
         return super().validate(data)
