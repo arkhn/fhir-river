@@ -6,6 +6,7 @@ from django.utils import timezone
 from fhir.resources import construct_fhir_element
 
 from pydantic import ValidationError
+from pyrog.models import Resource
 from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.topics import TopicsManager
@@ -13,24 +14,23 @@ from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 from river.domain.events import BatchEvent
 from river.extractor.extractor import Extractor
-from river.parsing import Source, as_old_mapping
 from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
 
 
 def batch(
     batch_id: str,
-    resource_ids: List[str],
+    resources: List[Resource],
     topics_manager: TopicsManager,
     publisher: EventPublisher,
 ):
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.create(f"{base_topic}.{batch_id}")
 
-    for resource_id in resource_ids:
+    for resource in resources:
         publisher.publish(
             topic=f"batch.{batch_id}",
-            event=BatchEvent(batch_id=batch_id, resource_id=resource_id),
+            event=BatchEvent(batch_id=batch_id, resource_id=resource.id),
         )
 
 
@@ -47,10 +47,8 @@ def retry(batch: models.Batch) -> None:
 
 
 def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
-    resource_mapping = as_old_mapping(Source(**mapping), resource_id)
-
     analyzer = Analyzer()
-    analysis = analyzer.analyze(resource_mapping)
+    analysis = analyzer.analyze(resource_id, mapping)
 
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:

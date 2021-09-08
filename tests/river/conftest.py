@@ -11,18 +11,21 @@ from pytest_factoryboy import register
 
 from django.conf import settings
 
+from tests.pyrog.factories import ResourceFactory, SourceFactory
+
 from . import factories
 
 DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
 register(factories.BatchFactory)
 register(factories.ErrorFactory)
+register(ResourceFactory)
+register(SourceFactory)
 
 
 def get_factories():
     return [
-        factory
-        for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
+        factory for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
     ]
 
 
@@ -82,17 +85,12 @@ def clear_redis(request):
 
 
 @pytest.fixture
-def patient_mapping():
-    with (DATA_FIXTURES_DIR / "patient_mapping.json").open() as f:
+def export_data(request):
+    marker = request.node.get_closest_marker("export_data")
+    with open(DATA_FIXTURES_DIR / marker.args[0]) as f:
         return json.load(f)
 
 
 @pytest.fixture
 def mimic_mapping():
     return factories.mimic_mapping()
-
-
-@pytest.fixture
-def users_to_patients_mapping():
-    with (DATA_FIXTURES_DIR / "users_to_patients_mapping.json").open() as f:
-        return json.load(f)

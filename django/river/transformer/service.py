@@ -9,7 +9,6 @@ from river.common.analyzer import Analyzer
 from river.common.errors import OperationOutcome
 from river.common.service.service import Service
 from river.domain import events
-from river.parsing import Source, as_old_mapping
 from river.transformer.reference_binder import ReferenceBinder
 from river.transformer.transformer import Transformer
 
@@ -49,8 +48,7 @@ def extracted_record_handler(
     analysis = analyzer.load_analysis(event.batch_id, event.resource_id)
     if analysis is None:
         batch = models.Batch.objects.get(id=event.batch_id)
-        mapping = as_old_mapping(Source(**batch.mappings), event.resource_id)
-        analysis = analyzer.cache_analysis(event.batch_id, event.resource_id, mapping)
+        analysis = analyzer.cache_analysis(event.batch_id, event.resource_id, batch.mappings)
     fhir_object = transform_row(analysis, event.record, transformer=transformer)
 
     # Resolve references

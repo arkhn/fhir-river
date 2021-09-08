@@ -298,17 +298,22 @@ class MappingSerializer(serializers.ModelSerializer):
                     input_group = InputGroup.objects.create(attribute=attribute, **{**input_group_data, "id": None})
 
                     for input_data in inputs_data:
-                        column_data = input_data.pop("column")
+                        static_value = input_data.pop("static_value")
+                        column_id = input_data.pop("column")
 
-                        input_ = Input.objects.create(
-                            input_group=input_group,
-                            **input_data,
-                        )
-
-                        if column_data is not None:
-                            column = column_by_id[column_data]
-                            column.input = input_
-                            column.save(update_fields=["input"])
+                        if static_value:
+                            Input.objects.create(
+                                input_group=input_group,
+                                static_value=static_value,
+                                **input_data,
+                            )
+                        else:
+                            column = column_by_id[column_id]
+                            Input.objects.create(
+                                input_group=input_group,
+                                column=column,
+                                **input_data,
+                            )
 
                     for condition_data in conditions_data:
                         column_data = condition_data.pop("column")

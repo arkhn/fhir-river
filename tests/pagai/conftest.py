@@ -7,7 +7,7 @@ from pytest_factoryboy import register
 
 import pandas as pd
 from river.common.database_connection.db_connection import DB_DRIVERS, URL_SUFFIXES
-from sqlalchemy import MetaData, Table, create_engine
+from sqlalchemy import MetaData, Table
 from sqlalchemy.exc import NoSuchTableError
 
 from . import factories
@@ -44,20 +44,10 @@ def table_exists(sql_engine, table_name):
         return False, None
 
 
-@pytest.fixture(scope="session", params=list(DATABASES.keys()))
+@pytest.fixture(params=list(DATABASES.keys()))
 def db_config(request):
     db_driver = request.param
-    db_config = DATABASES[db_driver]
-
-    sql_engine = create_engine(get_sql_url(db_driver, db_config))
-
-    # Load (or reload) test data into db.
-    load_table(sql_engine, "patients", "patients.csv")
-    load_table(sql_engine, "UPPERCASE", "patients-uppercase.csv")
-    load_table(sql_engine, "CaseSensitive", "patients-case-sensitive.csv")
-
-    db_config["model"] = db_driver
-    return db_config
+    return DATABASES[db_driver]
 
 
 def load_table(sql_engine, table_name, data_file):

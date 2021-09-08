@@ -125,5 +125,9 @@
   "batchInProgress": "⏳ In progress...",
   "batchErrors": "⚠️ {{errors}} errors",
   "batchSuccess": "✅ Success",
-  "batchCanceled": "🚫 Canceled"
+  "batchCanceled": "🚫 Canceled",
+  "generateURI": "Generate URI",
+  "chooseExistingURI": "Choose existing URI",
+  "selectSource": "Select a source",
+  "selectMapping": "Select a mapping"
 }

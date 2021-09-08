@@ -8,7 +8,6 @@ from pyrog import models
 from pyrog.api.serializers.import_export import MappingSerializer
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
-from river.parsing import Source, as_old_mapping
 
 
 class OwnersListView(views.APIView):
@@ -58,8 +57,7 @@ class ExploreView(generics.GenericAPIView):
         resource = models.Resource.objects.get(id=data["resource_id"])
         source = models.Source.objects.get(id=resource.source.id)
         mappings = MappingSerializer(source).data
-        mapping = as_old_mapping(Source(**mappings), resource.id)
-        analysis = analyzer.analyze(mapping)
+        analysis = analyzer.analyze(resource.id, mappings)
 
         credentials = analysis.source_credentials
 

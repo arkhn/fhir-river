@@ -10,7 +10,7 @@ def test_list_scripts(api_client):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert response.data == [
         {"category": "cleaning", "description": "Map (0,1) to (False, True)", "name": "binary_to_bool_1"},
         {"category": "cleaning", "description": "Map (0,1) to (True, False)", "name": "binary_to_bool_2"},
@@ -23,6 +23,11 @@ def test_list_scripts(api_client):
         {"category": "cleaning", "description": None, "name": "clean_date"},
         {"category": "cleaning", "description": None, "name": "clean_dateTime"},
         {"category": "cleaning", "description": None, "name": "clean_instant"},
+        {
+            "category": "cleaning",
+            "description": "Remove special character from long BLOB / CLOB text in ORBIS",
+            "name": "clean_long_text_ORBIS",
+        },
         {"category": "cleaning", "description": None, "name": "clean_phone"},
         {
             "category": "cleaning",
@@ -64,7 +69,7 @@ def test_list_scripts(api_client):
         },
         {
             "category": "cleaning",
-            "description": "Map int to ServiceRequest.priority (0: stat, 1: asap, 2: " "urgent, 3+ routine)",
+            "description": "Map int to ServiceRequest.priority (1: stat, 2: asap, 3: " "urgent, else: routine)",
             "name": "map_priority",
         },
         {"category": "cleaning", "description": "Map code (0,1) to (active,inactive)", "name": "map_status"},
@@ -90,6 +95,11 @@ def test_list_scripts(api_client):
             "name": "merge_datetime",
         },
         {"category": "merging", "description": None, "name": "merge_insee"},
+        {
+            "category": "merging",
+            "description": "Merging script with a instant concatenation",
+            "name": "merge_instant",
+        },
         {
             "category": "merging",
             "description": "Merge two binary entries and return a FHIR CarePlan.status",

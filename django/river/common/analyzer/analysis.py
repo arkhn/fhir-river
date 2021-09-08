@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.sql_column import SqlColumn
@@ -15,7 +15,7 @@ class Analysis:
         self.definition: Dict = None
         self.attributes: List[Attribute] = []
         self.filters: List[SqlFilter] = []
-        self.primary_key_column: SqlColumn = None
+        self.primary_key_column: Optional[SqlColumn] = None
         self.logical_reference: str = None
         self.reference_paths: List[List[str]] = []
         self.is_static = False

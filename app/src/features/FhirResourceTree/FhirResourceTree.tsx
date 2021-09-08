@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -14,12 +14,13 @@ import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { useHistory, useParams } from "react-router-dom";
 
+import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import {
   useApiAttributesCreateMutation,
   useApiResourcesRetrieveQuery,
   useApiAttributesListQuery,
-  useApiAttributesRetrieveQuery,
   useApiInputGroupsCreateMutation,
+  useApiInputsCreateMutation,
 } from "services/api/endpoints";
 
 import { getNode } from "./resourceTreeUtils";
@@ -51,18 +52,10 @@ const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
-  const { sourceId, mappingId, attributeId } = useParams<{
+  const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
-    attributeId?: string;
   }>();
-  const {
-    data: selectedAttribute,
-    isUninitialized: isSelectedAttributeUninitialized,
-  } = useApiAttributesRetrieveQuery(
-    { id: attributeId ?? "" },
-    { skip: !attributeId }
-  );
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
       id: mappingId ?? "",
@@ -81,12 +74,8 @@ const FhirResourceTree = (): JSX.Element => {
   );
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
-
-  const selectedNode = useMemo(() => {
-    if (!isSelectedAttributeUninitialized && selectedAttribute && root) {
-      return getNode("path", selectedAttribute.path, root);
-    }
-  }, [selectedAttribute, root, isSelectedAttributeUninitialized]);
+  const [createInput] = useApiInputsCreateMutation();
+  const selectedNode = useGetSelectedNode();
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
@@ -113,7 +102,21 @@ const FhirResourceTree = (): JSX.Element => {
               resource: mapping.id,
             },
           }).unwrap();
-          createInputGroup({ inputGroupRequest: { attribute: attribute.id } });
+          const inputGroup = await createInputGroup({
+            inputGroupRequest: { attribute: attribute.id },
+          }).unwrap();
+          const isNodeTypeURI = node?.type === "uri";
+          const isNodeNameType = node?.name === "type";
+          // Create a static input for node of type "URI" & name "type"
+          if (isNodeTypeURI && isNodeNameType) {
+            createInput({
+              inputRequest: {
+                input_group: inputGroup.id,
+                static_value: "",
+              },
+            });
+          }
+
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );

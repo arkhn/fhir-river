@@ -103,6 +103,7 @@ class Input(models.Model):
     input_group = models.ForeignKey(InputGroup, related_name="inputs", on_delete=models.CASCADE)
     script = models.TextField(blank=True, default="")
     concept_map_id = models.TextField(blank=True, default="")
+    column = models.OneToOneField("Column", blank=True, null=True, on_delete=models.CASCADE)
     static_value = models.TextField(blank=True, null=True, default=None)
 
     updated_at = models.DateTimeField(auto_now=True)
@@ -114,7 +115,6 @@ class Column(models.Model):
     table = models.TextField()
     column = models.TextField()
     join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
-    input_ = models.OneToOneField(Input, name="input", blank=True, null=True, on_delete=models.CASCADE)
     owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)

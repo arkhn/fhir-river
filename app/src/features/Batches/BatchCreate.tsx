@@ -95,7 +95,7 @@ const BatchCreate = (): JSX.Element => {
       try {
         await apiBatchCreate({
           batchRequest: {
-            resource_ids: selectedResourceIds,
+            resources: selectedResourceIds,
           },
         }).unwrap();
       } catch (e) {

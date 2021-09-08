@@ -1,13 +1,16 @@
-from rest_framework import filters, generics, pagination, response, status, viewsets
+from rest_framework import filters as drf_filters
+from rest_framework import generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
 from common.scripts import ScriptsRepository
+from django_filters import rest_framework as django_filters
 from drf_spectacular.utils import extend_schema
 from pyrog import models as pyrog_models
 from pyrog.api.serializers.import_export import MappingSerializer
 from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
+from river.api import filters
 from river.api.serializers import serializers
 from river.common.mapping.fetch_concept_maps import dereference_concept_map
 from river.services import abort, batch, preview
@@ -17,18 +20,19 @@ class BatchViewSet(viewsets.ModelViewSet):
     queryset = river_models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
     pagination_class = pagination.LimitOffsetPagination
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [drf_filters.OrderingFilter, django_filters.DjangoFilterBackend]
+    filterset_class = filters.BatchFilterSet
     ordering_fields = ["created_at"]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        resource_ids = serializer.validated_data["resource_ids"]
+        resources = serializer.validated_data["resources"]
 
         # Store serialized mapping
         # FIXME we consider that all the resources come from the same Source
-        resource = pyrog_models.Resource.objects.get(id=next(iter(resource_ids)))
+        resource = next(iter(resources))
         source = pyrog_models.Source.objects.get(id=resource.source.id)
         mappings = MappingSerializer(source).data
 
@@ -43,7 +47,7 @@ class BatchViewSet(viewsets.ModelViewSet):
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
 
-        batch(batch_instance.id, resource_ids, topics_manager, event_publisher)
+        batch(batch_instance.id, resources, topics_manager, event_publisher)
 
         return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 

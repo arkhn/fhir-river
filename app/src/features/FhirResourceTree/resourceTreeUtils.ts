@@ -186,7 +186,7 @@ const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
   );
 };
 
-const getParent = (
+export const getParent = (
   child: ElementNode,
   root: ElementNode
 ): ElementNode | undefined => {
@@ -293,14 +293,4 @@ export const computeChildPathIndex = (parent: ElementNode): number => {
     if (!childIndexes.includes(i)) return i;
   }
   return parent.children.length;
-};
-
-export const isTreeElementNodeRequired = (node: ElementNode): boolean => {
-  if (node.isRequired) return true;
-
-  for (const next of node.children) {
-    const result = isTreeElementNodeRequired(next);
-    if (result) return result;
-  }
-  return false;
 };

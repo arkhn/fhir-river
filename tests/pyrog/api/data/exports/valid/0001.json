@@ -4,9 +4,11 @@
     "version": "",
     "resources": [],
     "credential": {
-        "host": "localhost",
+        "host": "mimic",
         "port": 5432,
-        "database": "default",
+        "database": "test",
+        "login": "test",
+        "password": "test",
         "model": "POSTGRES",
         "owners": []
     }

@@ -8,7 +8,7 @@
             "primary_key_table": "something",
             "primary_key_column": "something",
             "definition_id": "Observation",
-            "logical_reference": "something",
+            "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
             "primary_key_owner": "reference-to-owner",
             "attributes": [
                 {
@@ -42,14 +42,16 @@
         }
     ],
     "credential": {
-        "host": "localhost",
+        "host": "mimic",
         "port": 5432,
-        "database": "default",
+        "login": "test",
+        "password": "test",
+        "database": "test",
         "model": "POSTGRES",
         "owners": [
             {
                 "id": "reference-to-owner",
-                "name": "something",
+                "name": "public",
                 "schema": "something",
                 "columns": [
                     {

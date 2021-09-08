@@ -67,6 +67,11 @@ services:
       - CORS_ALLOW_CREDENTIALS=True
       - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
 
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
   redis:
     image: redis:6.0.7
     ports:

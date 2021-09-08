@@ -205,6 +205,14 @@ paths:
         description: Which field to use when ordering the results.
         schema:
           type: string
+      - in: query
+        name: source
+        schema:
+          type: array
+          items:
+            type: string
+        explode: true
+        style: form
       tags:
       - api
       security:
@@ -2329,10 +2337,6 @@ components:
           items:
             $ref: '#/components/schemas/Error'
           readOnly: true
-        resource_ids:
-          type: array
-          items:
-            type: string
         created_at:
           type: string
           format: date-time
@@ -2345,27 +2349,33 @@ components:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
         completed_at:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
+        resources:
+          type: array
+          items:
+            type: string
       required:
       - canceled_at
       - completed_at
       - created_at
       - errors
       - id
-      - resource_ids
+      - resources
       - updated_at
     BatchRequest:
       type: object
       properties:
-        resource_ids:
+        resources:
           type: array
           items:
             type: string
       required:
-      - resource_ids
+      - resources
     Column:
       type: object
       properties:
@@ -2548,10 +2558,6 @@ components:
           readOnly: true
         event:
           type: string
-        message:
-          type: string
-        exception:
-          type: string
         created_at:
           type: string
           format: date-time
@@ -2567,23 +2573,17 @@ components:
       - created_at
       - event
       - id
-      - message
       - updated_at
     ErrorRequest:
       type: object
       properties:
         event:
           type: string
-        message:
-          type: string
-        exception:
-          type: string
         batch:
           type: string
       required:
       - batch
       - event
-      - message
     ExplorationRequestRequest:
       type: object
       properties:
@@ -3290,7 +3290,7 @@ components:
     PatchedBatchRequest:
       type: object
       properties:
-        resource_ids:
+        resources:
           type: array
           items:
             type: string

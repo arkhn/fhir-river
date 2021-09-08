@@ -73,6 +73,7 @@ export const api = createApi({
           limit: queryArg.limit,
           offset: queryArg.offset,
           ordering: queryArg.ordering,
+          source: queryArg.source,
         },
       }),
     }),
@@ -782,6 +783,7 @@ export type ApiBatchesListApiArg = {
   offset?: number;
   /** Which field to use when ordering the results. */
   ordering?: string;
+  source?: string[];
 };
 export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
 export type ApiBatchesCreateApiArg = {
@@ -1182,8 +1184,6 @@ export type PatchedAttributeRequest = {
 export type Error = {
   id: string;
   event: string;
-  message: string;
-  exception?: string;
   created_at: string;
   updated_at: string;
   batch: string;
@@ -1191,11 +1191,11 @@ export type Error = {
 export type Batch = {
   id: string;
   errors: Error[];
-  resource_ids: string[];
   created_at: string;
   updated_at: string;
-  canceled_at: string;
-  completed_at: string;
+  canceled_at: string | null;
+  completed_at: string | null;
+  resources: string[];
 };
 export type PaginatedBatchList = {
   count?: number;
@@ -1204,10 +1204,10 @@ export type PaginatedBatchList = {
   results?: Batch[];
 };
 export type BatchRequest = {
-  resource_ids: string[];
+  resources: string[];
 };
 export type PatchedBatchRequest = {
-  resource_ids?: string[];
+  resources?: string[];
 };
 export type Column = {
   id: string;

@@ -34,7 +34,7 @@ def test_create_attribute(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_attribute(api_client, attribute):
@@ -42,7 +42,7 @@ def test_retrieve_attribute(api_client, attribute):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_attributes(api_client, attribute_factory):
@@ -51,7 +51,7 @@ def test_list_attributes(api_client, attribute_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
     assert all(
         parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
@@ -68,7 +68,7 @@ def test_filter_attributes_by_resource(api_client, resource_factory, attribute_f
 
     response = api_client.get(url, {"resource": first_resource.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {attribute_data["id"] for attribute_data in response.json()} == {
         attribute.id for attribute in first_resource_attributes
     }
@@ -84,7 +84,7 @@ def test_filter_attributes_by_source(api_client, source_factory, resource_factor
 
     response = api_client.get(url, {"source": first_source.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {attribute_data["id"] for attribute_data in response.json()} == {
         attribute.id for attribute in first_source_attributes
     }
@@ -102,7 +102,7 @@ def test_update_attribute(api_client, attribute, path, slice_name, definition_id
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_attribute(api_client, attribute):
@@ -110,4 +110,4 @@ def test_delete_attribute(api_client, attribute):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data

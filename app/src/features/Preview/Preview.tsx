@@ -16,13 +16,12 @@ import {
   TableBody,
   useMediaQuery,
 } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useParams } from "react-router-dom";
 
-import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
-import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
 import {
   useApiResourcesRetrieveQuery,
@@ -95,6 +94,10 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "inherit",
       color: theme.palette.text.primary,
     },
+  },
+  alert: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -187,85 +190,83 @@ const Preview = (): JSX.Element => {
   };
 
   return (
-    <>
-      <MappingHeader />
-
-      <Container className={classes.container} maxWidth="xl">
-        <BackButton className={classes.button} />
-
-        <TableContainer className={classes.table}>
-          <Table size="small">
-            <TableHead>
-              <TableRow className={classes.cellsTitle}>
-                <TableCell className={classes.cells} />
-                {exploration &&
-                  exploration.fields.map((field, index) => (
-                    <TableCell
-                      className={classes.cells}
-                      key={`exploration-field-${index}`}
-                    >
-                      {field}
+    <Container className={classes.container} maxWidth="xl">
+      <BackButton className={classes.button} />
+      <TableContainer className={classes.table}>
+        <Table size="small">
+          <TableHead>
+            <TableRow className={classes.cellsTitle}>
+              <TableCell className={classes.cells} />
+              {exploration &&
+                exploration.fields.map((field, index) => (
+                  <TableCell
+                    className={classes.cells}
+                    key={`exploration-field-${index}`}
+                  >
+                    {field}
+                  </TableCell>
+                ))}
+            </TableRow>
+          </TableHead>
+          {exploration && (
+            <TableBody>
+              {exploration.rows.map((columnData, index) => (
+                <TableRow
+                  hover
+                  key={`exploration-row-${index}`}
+                  className={classes.rowBorder}
+                >
+                  <TableCell
+                    className={clsx(classes.fhirIconCell, classes.cellsTitle)}
+                    onClick={handleFhirIconClick(index)}
+                  >
+                    <IconButton size="small" className={classes.icon}>
+                      <Icon
+                        icon={IconNames.FLAME}
+                        iconSize={15}
+                        className={classes.iconFlame}
+                      />
+                    </IconButton>
+                  </TableCell>
+                  {columnData.map((cell, i) => (
+                    <TableCell className={classes.cells} key={i}>
+                      {cell}
                     </TableCell>
                   ))}
-              </TableRow>
-            </TableHead>
-            {exploration && (
-              <TableBody>
-                {exploration.rows.map((columnData, index) => (
-                  <TableRow
-                    hover
-                    key={`exploration-row-${index}`}
-                    className={classes.rowBorder}
-                  >
-                    <TableCell
-                      className={clsx(classes.fhirIconCell, classes.cellsTitle)}
-                      onClick={handleFhirIconClick(index)}
-                    >
-                      <IconButton size="small" className={classes.icon}>
-                        <Icon
-                          icon={IconNames.FLAME}
-                          iconSize={15}
-                          className={classes.iconFlame}
-                        />
-                      </IconButton>
-                    </TableCell>
-                    {columnData.map((cell, i) => (
-                      <TableCell className={classes.cells} key={i}>
-                        {cell}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
-          </Table>
-        </TableContainer>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
+        </Table>
+      </TableContainer>
+      {alert && (
         <Alert
+          className={classes.alert}
           severity="error"
-          open={!!alert}
           onClose={handleAlertClose}
-          message={alert}
-        />
-        {preview ? (
-          <div className={classes.preview}>
-            <ReactJson
-              src={preview}
-              theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
-              displayObjectSize={false}
-              displayDataTypes={false}
-            />
-          </div>
-        ) : (
-          <div className={classes.texts}>
-            <Typography>
-              {t("clickOnAFireIcon")}{" "}
-              <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
-              {t("inOrderToPreview")}
-            </Typography>
-          </div>
-        )}
-      </Container>
-    </>
+        >
+          {alert}
+        </Alert>
+      )}
+      {preview ? (
+        <div className={classes.preview}>
+          <ReactJson
+            src={preview}
+            theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />
+        </div>
+      ) : (
+        <div className={classes.texts}>
+          <Typography>
+            {t("clickOnAFireIcon")}{" "}
+            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
+            {t("inOrderToPreview")}
+          </Typography>
+        </div>
+      )}
+    </Container>
   );
 };
 

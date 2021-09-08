@@ -23,7 +23,7 @@ def test_create_owner(
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_owner(api_client, owner):
@@ -31,7 +31,7 @@ def test_retrieve_owner(api_client, owner):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_owners(api_client, owner_factory):
@@ -40,7 +40,7 @@ def test_list_owners(api_client, owner_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
 
 
@@ -57,7 +57,7 @@ def test_filter_owners_by_credential(
 
     response = api_client.get(url, {"credential": first_credential.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {owner_data["id"] for owner_data in response.json()} == {owner.id for owner in first_credential_owners}
 
 
@@ -73,7 +73,7 @@ def test_update_owner(
     data = {"name": name}
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_owner(api_client, owner):
@@ -81,4 +81,4 @@ def test_delete_owner(api_client, owner):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data
