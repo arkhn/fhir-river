@@ -22,7 +22,6 @@ class CredentialSerializer(serializers.ModelSerializer):
         model = models.Credential
         fields = "__all__"
 
-    @staticmethod
     def get_available_owners(self, obj) -> List[str]:
         """
         Introspects the database schema and returns the list of available owners
