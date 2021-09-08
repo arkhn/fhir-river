@@ -1,4 +1,386 @@
 # name: test_analyze_mapping
+  <class 'Analysis'> {
+    attributes=<class 'list'> [
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqc00b83hvzbtkf5hw8',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'unknown',
+            ],
+          },
+        ],
+        path='status',
+        type='code',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqf00bg3hvzb7lnn0lf',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'http ://loinc.org',
+            ],
+          },
+        ],
+        path='code.coding[0].system',
+        type='uri',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqi00bl3hvzifefku7f',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              '29463-7',
+            ],
+          },
+        ],
+        path='code.coding[0].code',
+        type='code',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqj00bo3hvzm92m946h',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'Body weight',
+            ],
+          },
+        ],
+        path='code.coding[0].display',
+        type='string',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyql00br3hvzg0wxtkty',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'Patient',
+            ],
+          },
+        ],
+        path='subject.type',
+        type='uri',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqn00bv3hvziqwmflyb',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'http://terminology.arkhn.org/038b7a11-2195-4b6d-b5d3-40e5422d7446',
+            ],
+          },
+        ],
+        path='subject.identifier.system',
+        type='uri',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+              <class 'SqlColumn'> {
+                cleaning_script=None,
+                column='subject_id',
+                concept_map=None,
+                joins=<class 'list'> [
+                ],
+                owner='public',
+                table='chartevents',
+              },
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqp00bz3hvzf59q84xp',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+            ],
+          },
+        ],
+        path='subject.identifier.value',
+        type='string',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqr00c23hvzd5ic63fr',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'Encounter',
+            ],
+          },
+        ],
+        path='encounter.type',
+        type='uri',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqx00c63hvzftg8o1z1',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'http://terminology.arkhn.org/a31b9d5c-6635-4861-8162-577bd26eb010',
+            ],
+          },
+        ],
+        path='encounter.identifier.system',
+        type='uri',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+              <class 'SqlColumn'> {
+                cleaning_script=None,
+                column='icustay_id',
+                concept_map=None,
+                joins=<class 'list'> [
+                ],
+                owner='public',
+                table='chartevents',
+              },
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyqz00ca3hvz750yx2wn',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+            ],
+          },
+        ],
+        path='encounter.identifier.value',
+        type='string',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+              <class 'SqlColumn'> {
+                cleaning_script=None,
+                column='charttime',
+                concept_map=None,
+                joins=<class 'list'> [
+                ],
+                owner='public',
+                table='chartevents',
+              },
+            ],
+            conditions=<class 'list'> [
+            ],
+            id='ckt4kpyr000cd3hvz878igsdx',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+            ],
+          },
+        ],
+        path='effectiveDateTime',
+        type='dateTime',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+              <class 'Condition'> {
+                action='EXCLUDE',
+                relation='NULL',
+                sql_column=<class 'SqlColumn'> {
+                  cleaning_script=None,
+                  column='valuenum',
+                  concept_map=None,
+                  joins=<class 'list'> [
+                  ],
+                  owner='public',
+                  table='chartevents',
+                },
+                value='',
+              },
+            ],
+            id='ckt4kpyr200cg3hvzccpz5wsr',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'http://unitsofmeasure.org',
+            ],
+          },
+        ],
+        path='valueQuantity.system',
+        type='uri',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+            ],
+            conditions=<class 'list'> [
+              <class 'Condition'> {
+                action='EXCLUDE',
+                relation='NULL',
+                sql_column=<class 'SqlColumn'> {
+                  cleaning_script=None,
+                  column='valuenum',
+                  concept_map=None,
+                  joins=<class 'list'> [
+                  ],
+                  owner='public',
+                  table='chartevents',
+                },
+                value='',
+              },
+            ],
+            id='ckt4kpyr400cl3hvzp67gxulx',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+              'kg',
+            ],
+          },
+        ],
+        path='valueQuantity.unit',
+        type='string',
+      },
+      <class 'Attribute'> {
+        input_groups=<class 'list'> [
+          <class 'InputGroup'> {
+            attribute=...,
+            columns=<class 'list'> [
+              <class 'SqlColumn'> {
+                cleaning_script=None,
+                column='valuenum',
+                concept_map=None,
+                joins=<class 'list'> [
+                ],
+                owner='public',
+                table='chartevents',
+              },
+            ],
+            conditions=<class 'list'> [
+              <class 'Condition'> {
+                action='EXCLUDE',
+                relation='NULL',
+                sql_column=<class 'SqlColumn'> {
+                  cleaning_script=None,
+                  column='valuenum',
+                  concept_map=None,
+                  joins=<class 'list'> [
+                  ],
+                  owner='public',
+                  table='chartevents',
+                },
+                value='',
+              },
+            ],
+            id='ckt4kpyr600cp3hvzt4vy6s8o',
+            merging_script=None,
+            static_inputs=<class 'list'> [
+            ],
+          },
+        ],
+        path='valueQuantity.value',
+        type='decimal',
+      },
+    ],
+    definition=None,
+    definition_id='Observation',
+    filters=<class 'list'> [
+      <class 'SqlFilter'> {
+        relation='IN',
+        sql_column=<class 'SqlColumn'> {
+          cleaning_script=None,
+          column='itemid',
+          concept_map=None,
+          joins=<class 'list'> [
+          ],
+          owner='public',
+          table='chartevents',
+        },
+        value='762,3580,3696,226512',
+      },
+    ],
+    is_static=False,
+    label='Body_Weight',
+    logical_reference='6f691f4c-920b-4cc0-b241-67f77f43850e',
+    primary_key_column=<class 'SqlColumn'> {
+      cleaning_script=None,
+      column='row_id',
+      concept_map=None,
+      joins=<class 'list'> [
+      ],
+      owner='public',
+      table='chartevents',
+    },
+    reference_paths=<class 'list'> [
+      <class 'list'> [
+        'partOf',
+      ],
+      <class 'list'> [
+        'subject',
+      ],
+      <class 'list'> [
+        'encounter',
+      ],
+    ],
+    resource_id='ckt4kpyqa00b53hvzwewu3jc6',
+    source_credentials=<class 'dict'> {
+      'database': 'test',
+      'host': 'mimic',
+      'login': 'test',
+      'model': 'POSTGRES',
+      'password': 'test',
+      'port': 5432,
+    },
+    source_id='ckt4kpyju000t3hvzcax0o7pl',
+  }
+---
+# name: test_analyze_mapping.1
   <class 'set'> {
     <class 'SqlColumn'> {
       cleaning_script=None,
@@ -29,36 +411,16 @@
     },
     <class 'SqlColumn'> {
       cleaning_script=None,
-      column='label',
+      column='subject_id',
       concept_map=None,
       joins=<class 'list'> [
-        <class 'SqlJoin'> {
-          left=<class 'SqlColumn'> {
-            cleaning_script=None,
-            column='itemid',
-            concept_map=None,
-            joins=<class 'list'> [
-            ],
-            owner='public',
-            table='chartevents',
-          },
-          right=<class 'SqlColumn'> {
-            cleaning_script=None,
-            column='itemid',
-            concept_map=None,
-            joins=<class 'list'> [
-            ],
-            owner='public',
-            table='d_items',
-          },
-        },
       ],
       owner='public',
-      table='d_items',
+      table='chartevents',
     },
     <class 'SqlColumn'> {
       cleaning_script=None,
-      column='subject_id',
+      column='valuenum',
       concept_map=None,
       joins=<class 'list'> [
       ],
@@ -67,7 +429,7 @@
     },
   }
 ---
-# name: test_analyze_mapping.1
+# name: test_analyze_mapping.2
   <class 'list'> [
     <class 'SqlFilter'> {
       relation='IN',
@@ -80,7 +442,7 @@
         owner='public',
         table='chartevents',
       },
-      value='224,225,2515,2865,2957,3265,5798,5931,5937,6424,6758,6931,7015,7018,7449,43928,224272,224322,224660,225335,225336,225337,225338,225339,225340,225341,225342,225727,225742,225778,225979,225980,225981,225982,225984,225985,225986,225987,225988,226110,227355,227754',
+      value='762,3580,3696,226512',
     },
   ]
 ---

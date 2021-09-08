@@ -56,14 +56,15 @@ def test_get_primary_key_missing_field():
 
 def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "ckt4kpyo4007v3hvz2ukm1yjx"
+    resource_id = "ckt4kpyqa00b53hvzwewu3jc6"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    assert len(analysis.attributes) == 13
+    assert len(analysis.attributes) == 14
+    assert analysis == snapshot
     assert analyzer.get_analysis_columns(analysis) == snapshot
     assert analysis.filters == snapshot
-    assert analysis.reference_paths == [["partOf"], ["subject"], ["encounter"], ["report"]]
+    assert analysis.reference_paths == [["partOf"], ["subject"], ["encounter"]]
 
 
 def test_analyze_attribute(dict_map_gender, structure_definitions):

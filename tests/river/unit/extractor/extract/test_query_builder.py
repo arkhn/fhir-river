@@ -1,5 +1,6 @@
 from unittest import mock
 
+from river.common.analyzer import Analyzer
 from river.common.analyzer.analysis import Analysis
 from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.condition import Condition
@@ -25,6 +26,18 @@ tables = {
     ),
     "prescriptions": Table("prescriptions", meta, Column("row_id"), schema="public"),
     "join_table": Table("join_table", meta, Column("pat_id"), Column("adm_id"), schema="public"),
+    "d_items": Table("d_items", meta, Column("itemid"), Column("label"), schema="public"),
+    "chartevents": Table(
+        "chartevents",
+        meta,
+        Column("row_id"),
+        Column("subject_id"),
+        Column("charttime"),
+        Column("icustay_id"),
+        Column("itemid"),
+        Column("valuenum"),
+        schema="public",
+    ),
 }
 
 
@@ -40,6 +53,19 @@ def make_query_builder(analysis, pk_values=None):
     session = mock.MagicMock()
     session.query = mock_alchemy_query
     return QueryBuilder(session, None, analysis, pk_values)
+
+
+@mock.patch("river.extractor.query_builder.Table", mock_table)
+def test_with_real_analysis(mimic_mapping, snapshot):
+    analyzer = Analyzer()
+    resource_id = "ckt4kpyqa00b53hvzwewu3jc6"
+
+    analysis = analyzer.analyze(resource_id, mimic_mapping)
+    query_builder = make_query_builder(analysis)
+    query = query_builder.build_query()
+
+    assert str(query) == snapshot
+    assert query.statement.compile().params == snapshot
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
