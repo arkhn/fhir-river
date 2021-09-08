@@ -87,7 +87,7 @@ const BatchCreate = (): JSX.Element => {
     { source: id },
     { skip: !Boolean(id) }
   );
-  const [resourceList, setResourceList] = useState(resources);
+  const [displayedResources, setDisplayedResources] = useState(resources);
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
   const handleBatchRun = () => {
@@ -112,7 +112,7 @@ const BatchCreate = (): JSX.Element => {
   const searchResource = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
-    setResourceList(
+    setDisplayedResources(
       resources?.filter(
         (resource) =>
           resource.label
@@ -125,47 +125,61 @@ const BatchCreate = (): JSX.Element => {
     );
   };
 
-  const getAllSelectedStatus = () => {
-    const resourceListIds = resourceList?.map((resource) => resource.id);
+  const isSelected = () => {
+    const displayedResourcesIds = displayedResources?.map(
+      (resource) => resource.id
+    );
     if (
       selectedResourceIds.filter(
-        (id) => id === resourceListIds?.find((idList) => id === idList)
-      ).length === resourceListIds?.length &&
-      resourceListIds?.length > 0
+        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
+      ).length === displayedResourcesIds?.length &&
+      displayedResourcesIds?.length > 0
     ) {
       return true;
     } else return false;
   };
 
+  const getIndeterminateStatus = () => {
+    const displayedResourcesIds = displayedResources?.map(
+      (resource) => resource.id
+    );
+    if (
+      displayedResourcesIds &&
+      selectedResourceIds.filter(
+        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
+      ).length < displayedResourcesIds?.length &&
+      selectedResourceIds.filter(
+        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
+      ).length > 0 &&
+      selectedResourceIds.length > 0
+    )
+      return true;
+    else return false;
+  };
+
   const handleSelectAllResources = () => {
-    if (resources && resources.length === resourceList?.length) {
-      setSelectedResourceIds(
-        selectedResourceIds.length === resources.length
-          ? []
-          : resources?.map((resource) => resource.id)
-      );
+    if (selectedResourceIds.length === 0 && displayedResources) {
+      setSelectedResourceIds(displayedResources.map((resource) => resource.id));
     } else {
-      const newItems = resourceList?.filter(
-        (resource) =>
-          resource.id !==
-          selectedResourceIds.find((sele) => sele === resource.id)
+      const resourcesToDelete = displayedResources
+        ?.map((resource) => resource.id)
+        ?.filter(
+          (resource) =>
+            resource ===
+            selectedResourceIds.find(
+              (selectedResourceId) => selectedResourceId === resource
+            )
+        );
+      const indexToDelete: number[] = [];
+      resourcesToDelete?.forEach((id) =>
+        indexToDelete.push(selectedResourceIds.indexOf(id))
       );
-      const newItemsId = newItems?.map((newItem) => newItem.id);
-      if (newItemsId && newItemsId.length > 0)
-        setSelectedResourceIds(selectedResourceIds.concat(newItemsId));
-      else {
-        const resourceListIds = resourceList?.map((resource) => resource.id);
-        const indexToDelete: number[] = [];
-        resourceListIds?.forEach((id) => {
-          indexToDelete.push(selectedResourceIds.indexOf(id));
-        });
-        indexToDelete.sort((a, b) => b - a);
-        const newSelectedResourceIds = [...selectedResourceIds];
-        indexToDelete.forEach((index) => {
-          newSelectedResourceIds.splice(index, 1);
-        });
-        setSelectedResourceIds(newSelectedResourceIds);
-      }
+      indexToDelete.sort((a, b) => b - a);
+      const newSelectedResourceIds = [...selectedResourceIds];
+      indexToDelete.forEach((index) => {
+        newSelectedResourceIds.splice(index, 1);
+      });
+      setSelectedResourceIds(newSelectedResourceIds);
     }
   };
 
@@ -181,7 +195,7 @@ const BatchCreate = (): JSX.Element => {
   };
 
   useEffect(() => {
-    setResourceList(resources);
+    setDisplayedResources(resources);
   }, [resources]);
 
   return (
@@ -214,8 +228,16 @@ const BatchCreate = (): JSX.Element => {
               className={classes.selectAll}
               onClick={handleSelectAllResources}
             >
-              <Typography>{t("selectAll")}</Typography>
-              <Checkbox color="primary" checked={getAllSelectedStatus()} />
+              <Typography>
+                {isSelected() || getIndeterminateStatus()
+                  ? t("unselectResources")
+                  : t("selectResources")}
+              </Typography>
+              <Checkbox
+                color="primary"
+                checked={isSelected()}
+                indeterminate={getIndeterminateStatus()}
+              />
             </div>
           </div>
           <TextField
@@ -234,9 +256,9 @@ const BatchCreate = (): JSX.Element => {
         </div>
         <DialogContent dividers classes={{ root: classes.rootDialogContent }}>
           <List>
-            {resourceList &&
-              resourceList.length > 0 &&
-              resourceList.map(({ id, definition_id, label }) => (
+            {displayedResources &&
+              displayedResources.length > 0 &&
+              displayedResources.map(({ id, definition_id, label }) => (
                 <ListItem
                   role={undefined}
                   key={`resource-option-${id}`}
