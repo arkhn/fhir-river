@@ -125,5 +125,9 @@
   "selectAll": "Select all",
   "runNewBatch": "Run a new batch",
   "selectResources": "Select resources",
-  "runOn": "Run on"
+  "unselectResources": "Unselect resources",
+  "runOn": "Run on",
+  "batchInProgress": "⏳ In progress...",
+  "batchErrors": "⚠️ {{errors}} errors",
+  "batchSuccess": "✅ Success"
 }

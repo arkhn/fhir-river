@@ -20,60 +20,49 @@ import BatchCancel from "./BatchCancel";
 import BatchErrors from "./BatchErrors";
 
 const useStyles = makeStyles((theme) => ({
-  accordionSummaryContent: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: theme.spacing(1, 0),
-  },
-  accordionSummary: {
-    margin: 0,
-    minHeight: 56,
-    "& > .MuiAccordionSummary-content": {
-      minHeight: 56,
-      margin: 0,
-      transition: "none",
-      "&.Mui-expanded": {
-        minHeight: 56,
-      },
-    },
-    "&.MuiAccordionSummary-root": {
-      borderBottom: `1px solid ${theme.palette.background.default}`,
-      minHeight: 56,
-      margin: 0,
-      transition: "none",
-    },
-  },
-  accordionSummaryTitle: {
-    display: "flex",
-    width: "100%",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  button: {
-    textTransform: "none",
-    marginLeft: theme.spacing(1),
-  },
-  accordionDetails: {
-    display: "flex",
-    flexDirection: "column",
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(1),
-  },
   accordions: {
+    overflowY: "scroll",
     margin: theme.spacing(0, 5, 8, 5),
   },
   accordion: {
+    borderRadius: theme.shape.borderRadius,
+    marginBottom: theme.spacing(0.5),
     "&.Mui-expanded": {
-      margin: 0,
-      marginBottom: theme.spacing(0.5),
+      margin: theme.spacing(0, 0, 0.5, 0),
     },
     "&:before": {
       display: "none",
     },
-    borderRadius: theme.shape.borderRadius,
-    marginBottom: theme.spacing(0.5),
+  },
+  accordionSummary: {
+    borderBottom: "none",
+    transition: "none",
+    "&.Mui-expanded": {
+      minHeight: 56,
+      borderBottom: `1px solid ${theme.palette.background.default}`,
+    },
+  },
+  accordionSummaryContent: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: theme.spacing(1, 0),
+    flexWrap: "wrap",
+    minHeight: 56,
+    margin: 0,
+    transition: "none",
+    "&.Mui-expanded": {
+      minHeight: 56,
+      margin: 0,
+    },
+  },
+  accordionSummaryTitle: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    flexGrow: 1,
+    marginRight: theme.spacing(1),
   },
   batchId: {
     fontSize: theme.typography.subtitle2.fontSize,
@@ -81,6 +70,21 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0, 0.5),
     borderRadius: 3,
     marginTop: theme.spacing(0.5),
+  },
+  endButtons: {
+    display: "flex",
+    marginTop: "auto",
+    marginBottom: "auto",
+    justifyContent: "start",
+    flexWrap: "wrap",
+  },
+  button: {
+    margin: theme.spacing(0.5, 1, 0.5, 0),
+  },
+  accordionDetails: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: theme.spacing(0.5, 0, 1, 0),
   },
   paginationContainer: {
     backgroundColor: theme.palette.background.default,
@@ -94,8 +98,9 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(5),
     borderTop: `1px solid ${theme.palette.divider}`,
   },
-  endButtons: {
+  loader: {
     display: "flex",
+    justifyContent: "center",
   },
 }));
 
@@ -133,58 +138,67 @@ const BatchList = (): JSX.Element => {
     console.log(batchId);
   };
 
-  if (isBatchesLoading) return <CircularProgress />;
+  if (isBatchesLoading)
+    return (
+      <div className={classes.loader}>
+        <CircularProgress />
+      </div>
+    );
   return (
     <>
       <div className={classes.accordions}>
         {batches?.results &&
           batches.results.map((batch) => (
-            <Accordion key={`batch-${batch.id}`} className={classes.accordion}>
+            <Accordion className={classes.accordion} key={`batch-${batch.id}`}>
               <AccordionSummary
-                className={classes.accordionSummary}
+                classes={{
+                  root: classes.accordionSummary,
+                  content: classes.accordionSummaryContent,
+                }}
                 expandIcon={<ExpandMore />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <div className={classes.accordionSummaryContent}>
-                  <div className={classes.accordionSummaryTitle}>
-                    <div>
-                      <Typography variant="subtitle2">
-                        {!batch.completed_at &&
-                          !batch.canceled_at &&
-                          `⏳ In Progress...`}
-                        {batch.completed_at &&
-                          batch.errors.length > 0 &&
-                          `⚠️ ${batch.errors.length} errors`}
-                        {batch.completed_at &&
-                          batch.errors.length === 0 &&
-                          `✅ Success`}
-                        {batch.canceled_at && `🚫 Canceled`}
-                      </Typography>
-                      <Typography className={classes.batchId}>
-                        {batch.id}
-                      </Typography>
-                    </div>
+                <div className={classes.accordionSummaryTitle}>
+                  <div>
                     <Typography variant="subtitle2">
-                      {new Date(batch.created_at)
-                        .toLocaleString()
-                        .split(",")
-                        .join(" -")}
+                      {!batch.completed_at &&
+                        !batch.canceled_at &&
+                        t("batchInProgress")}
+                      {batch.completed_at &&
+                        batch.errors.length > 0 &&
+                        t("batchErrors", {
+                          errors: batch.errors.length.toString(),
+                        })}
+
+                      {batch.completed_at &&
+                        batch.errors.length === 0 &&
+                        t("batchSuccess")}
+                      {batch.canceled_at && t("batchCanceled")}
+                    </Typography>
+                    <Typography className={classes.batchId}>
+                      {batch.id}
                     </Typography>
                   </div>
-                  <div className={classes.endButtons}>
-                    <Button
-                      className={classes.button}
-                      variant="outlined"
-                      startIcon={<Replay />}
-                      onClick={handleBatchRetry(batch.id)}
-                    >
-                      {t("retry")}
-                    </Button>
-                    {!batch.canceled_at && !batch.completed_at && (
-                      <BatchCancel batch={batch} className={classes.button} />
-                    )}
-                  </div>
+                  <Typography variant="subtitle2">
+                    {new Date(batch.created_at)
+                      .toLocaleString()
+                      .split(",")
+                      .join(" -")}
+                  </Typography>
+                </div>
+                <div className={classes.endButtons}>
+                  <Button
+                    className={classes.button}
+                    variant="outlined"
+                    startIcon={<Replay />}
+                    onClick={handleBatchRetry(batch.id)}
+                  >
+                    {t("retry")}
+                  </Button>
+                  {!batch.canceled_at && !batch.completed_at && (
+                    <BatchCancel batch={batch} className={classes.button} />
+                  )}
                 </div>
               </AccordionSummary>
               <AccordionDetails className={classes.accordionDetails}>
@@ -195,7 +209,7 @@ const BatchList = (): JSX.Element => {
       </div>
       <div className={classes.paginationContainer}>
         <Pagination
-          count={Math.ceil((batches?.results?.length ?? 1) / PAGE_SIZE)}
+          count={Math.ceil((batches?.count ?? 1) / PAGE_SIZE)}
           page={page}
           onChange={handlePageChange}
         />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { PlayCircleOutline } from "@material-ui/icons";
@@ -68,10 +68,6 @@ const BatchCreate = (): JSX.Element => {
     { skip: !Boolean(id) }
   );
   const [resourceList, setResourceList] = useState(resources);
-
-  useEffect(() => {
-    setResourceList(resources);
-  }, [resources]);
 
   return (
     <div className={classes.root}>
