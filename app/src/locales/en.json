@@ -124,5 +124,6 @@
   "runOn": "Run on",
   "batchInProgress": "⏳ In progress...",
   "batchErrors": "⚠️ {{errors}} errors",
-  "batchSuccess": "✅ Success"
+  "batchSuccess": "✅ Success",
+  "batchCanceled": "🚫 Canceled"
 }

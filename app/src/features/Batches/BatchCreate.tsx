@@ -105,6 +105,7 @@ const BatchCreate = (): JSX.Element => {
 
     if (selectedResourceIds.length > 0) {
       batchCreate();
+      setOpen(false);
       setSelectedResourceIds([]);
     }
   };
@@ -285,12 +286,11 @@ const BatchCreate = (): JSX.Element => {
             variant="contained"
             size="large"
             onClick={handleBatchRun}
+            disabled={selectedResourceIds.length === 0}
           >
-            <Typography>
-              {`${t("runOn")} ${selectedResourceIds.length.toString()} ${t(
-                "resources"
-              ).toLowerCase()}`}
-            </Typography>
+            {`${t("runOn")} ${selectedResourceIds.length.toString()} ${t(
+              "resources"
+            ).toLowerCase()}`}
           </Button>
         </DialogActions>
       </Dialog>

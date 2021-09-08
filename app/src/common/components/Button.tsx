@@ -32,7 +32,7 @@ export const EditedButton = withStyles((theme) => ({
     },
   },
   disabled: {
-    border: "none",
+    border: "1px solid transparent",
   },
   colorInherit: {
     "& .MuiButton-startIcon": {

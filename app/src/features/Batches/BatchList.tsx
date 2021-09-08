@@ -171,6 +171,7 @@ const BatchList = (): JSX.Element => {
                       {batch.completed_at &&
                         batch.errors.length === 0 &&
                         t("batchSuccess")}
+                      {batch.canceled_at && t("batchCanceled")}
                     </Typography>
                     <Typography className={classes.batchId}>
                       {batch.id}
