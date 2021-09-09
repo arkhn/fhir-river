@@ -77,8 +77,8 @@ class ResourceSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if "definition_id" not in data:
             return super().validate(data)
-        request = self.context["request"]
-        auth_token = request.session.get("oidc_access_token")
+        request = self.context.get["request"]
+        auth_token = request.session.get("oidc_access_token") if request else None
         try:
             data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
         except Exception as e:
