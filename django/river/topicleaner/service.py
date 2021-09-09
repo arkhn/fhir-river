@@ -19,7 +19,9 @@ def teardown_after_batch(batch: Batch, topics: TopicsManager):
 
 
 def clean(counter: ProgressionCounter, topics: TopicsManager):
-    current_batches = Batch.objects.filter(completed_at__isnull=True, canceled_at__isnull=True)
+    current_batches = Batch.objects.filter(completed_at__isnull=True, canceled_at__isnull=True).prefetch_related(
+        "resources"
+    )
     batches_to_delete: List[Batch] = []
 
     for batch in current_batches:
