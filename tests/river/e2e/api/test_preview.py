@@ -2,16 +2,12 @@ import pytest
 
 from django.urls import reverse
 
-from common.adapters.fhir_api import fhir_api
-
 pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.export_data("mimic_mapping.json")
-def test_preview(api_client, export_data, concept_map):
+def test_preview(api_client, export_data):
     url = reverse("sources-list")
-
-    fhir_api.create("ConceptMap", concept_map)
 
     response = api_client.post(url + "import/", export_data, format="json")
 

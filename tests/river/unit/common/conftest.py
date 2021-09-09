@@ -1,5 +1,7 @@
 import pytest
 
+from common.adapters.fhir_api import fhir_api
+
 
 @pytest.fixture
 def concept_map():
@@ -14,3 +16,8 @@ def concept_map():
             }
         ],
     }
+
+
+@pytest.fixture(autouse=True)
+def load_concept_map(concept_map):
+    fhir_api.create("ConceptMap", concept_map)

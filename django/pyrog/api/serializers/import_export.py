@@ -197,7 +197,7 @@ class MappingResourceSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        request = self.context.get["request"]
+        request = self.context.get("request")
         auth_token = request.session.get("oidc_access_token") if request else None
         try:
             data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
