@@ -88,7 +88,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     alignSelf: "flex-start",
     marginBottom: theme.spacing(2),
-    textTransform: "none",
     color: theme.palette.text.secondary,
     "&:hover": {
       backgroundColor: "inherit",

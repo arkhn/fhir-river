@@ -8,9 +8,6 @@ import SourceGrid from "features/Sources/SourceGrid";
 import UploadSourceButton from "features/Sources/UploadSourceButton";
 
 const useStyles = makeStyles((theme) => ({
-  button: {
-    textTransform: "none",
-  },
   gridContainer: {
     flexGrow: 1,
     paddingTop: theme.spacing(2),
@@ -25,7 +22,7 @@ const Sources = (): JSX.Element => {
 
   return (
     <Container maxWidth="xl" className={classes.container}>
-      <SourceCreate className={classes.button} />
+      <SourceCreate />
       <UploadSourceButton />
       <SourceGrid />
       <SourceDrawer />

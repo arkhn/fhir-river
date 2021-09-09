@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch, useAppSelector } from "app/store";
+import Button from "common/components/Button";
 import {
   columnAdded,
   columnSelectors,
@@ -23,12 +24,6 @@ import {
 } from "services/api/endpoints";
 import { ColumnRequest, Resource } from "services/api/generated/api.generated";
 
-const useStyles = makeStyles(() => ({
-  button: {
-    textTransform: "none",
-  },
-}));
-
 type ColumnJoinListProps = {
   column?: PendingColumn;
   mapping?: Resource;
@@ -39,7 +34,6 @@ const ColumnJoinList = ({
   mapping,
 }: ColumnJoinListProps): JSX.Element => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const dispatch = useAppDispatch();
   const [createJoin] = useApiJoinsCreateMutation();
   const [deleteJoin] = useApiJoinsDestroyMutation();
@@ -221,7 +215,6 @@ const ColumnJoinList = ({
         )}
       <Grid item>
         <Button
-          className={classes.button}
           startIcon={<AddIcon />}
           onClick={handleJoinAdd}
           variant="outlined"
