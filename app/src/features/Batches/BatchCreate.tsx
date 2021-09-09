@@ -29,13 +29,21 @@ const BatchCreate = (): JSX.Element => {
 
   const handleAlertClose = () => setAlert(undefined);
 
+  const handleOpenModal = () => {
+    setOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpen(false);
+  };
+
   return (
     <div className={classes.root}>
       <Button
         variant="contained"
         color="primary"
         size="small"
-        onClick={() => setOpen(true)}
+        onClick={handleOpenModal}
         className={classes.button}
         startIcon={<PlayCircleOutline />}
       >
@@ -43,7 +51,7 @@ const BatchCreate = (): JSX.Element => {
       </Button>
       <BatchResourceDialog
         open={open}
-        setOpen={() => setOpen(false)}
+        handleClose={handleCloseModal}
         setAlert={setAlert}
       />
       <Alert

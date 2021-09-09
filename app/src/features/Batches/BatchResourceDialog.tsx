@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import {
   Checkbox,
@@ -6,6 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   InputAdornment,
   List,
   ListItem,
@@ -16,6 +17,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
+import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -26,49 +28,38 @@ import {
 } from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
-  selectAll: {
-    display: "flex",
-    alignItems: "center",
-    cursor: "pointer",
-  },
   dialog: {
     padding: theme.spacing(3),
-    height: 500,
-  },
-  header: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: 10,
-  },
-  titleContainer: {
-    display: "flex",
-    justifyContent: "space-between",
+    height: 470,
   },
   title: {
-    paddingLeft: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
-  titleButton: {
-    marginTop: "auto",
-    marginBottom: "auto",
-  },
-  rootDialogContent: {
-    padding: 0,
+  checkboxForm: {
+    cursor: "pointer",
+    paddingTop: theme.spacing(0.5),
   },
   rootListItem: {
     padding: 0,
     borderRadius: theme.shape.borderRadius,
   },
+  textField: {
+    padding: theme.spacing(0, 3),
+  },
 }));
 
 type BatchResourceDialogType = {
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleClose: React.Dispatch<React.SetStateAction<boolean>>;
   setAlert: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 const BatchResourceDialog = ({
   open,
-  setOpen,
+  handleClose,
   setAlert,
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
@@ -85,40 +76,37 @@ const BatchResourceDialog = ({
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
 
   const [displayedResources, setDisplayedResources] = useState(resources);
+  const displayedResourcesIds = useMemo(
+    () => displayedResources?.map(({ id }) => id),
+    [displayedResources]
+  );
 
-  const isSelected = () => {
-    const displayedResourcesIds = displayedResources?.map(
-      (resource) => resource.id
-    );
-    if (
-      selectedResourceIds.filter(
-        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
-      ).length === displayedResourcesIds?.length &&
-      displayedResourcesIds?.length > 0
-    ) {
-      return true;
-    } else return false;
-  };
-
-  const getIndeterminateStatus = () => {
-    const displayedResourcesIds = displayedResources?.map(
-      (resource) => resource.id
-    );
-    if (
+  const areAllDisplayedResourcesSelected = useMemo(() => {
+    return (
       displayedResourcesIds &&
-      selectedResourceIds.filter(
-        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
-      ).length < displayedResourcesIds?.length &&
-      selectedResourceIds.filter(
-        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
-      ).length > 0 &&
+      displayedResourcesIds.length > 0 &&
+      selectedResourceIds.filter((id) => displayedResourcesIds.includes(id))
+        .length === displayedResourcesIds.length
+    );
+  }, [selectedResourceIds, displayedResourcesIds]);
+
+  const isCheckboxIndeterminate = useMemo(() => {
+    return (
+      displayedResourcesIds &&
+      selectedResourceIds.filter((id) => displayedResourcesIds.includes(id))
+        .length < displayedResourcesIds?.length &&
+      selectedResourceIds.filter((id) => displayedResourcesIds.includes(id))
+        .length > 0 &&
       selectedResourceIds.length > 0
-    )
-      return true;
-    else return false;
+    );
+  }, [selectedResourceIds, displayedResourcesIds]);
+
+  const handleCloseModal = () => {
+    setSelectedResourceIds([]);
+    handleClose(false);
   };
 
-  const searchResource = (
+  const handleSearchResource = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
     setDisplayedResources(
@@ -135,39 +123,25 @@ const BatchResourceDialog = ({
   };
 
   const handleSelectResources = (id: string) => {
-    if (!selectedResourceIds.find((resourceId) => resourceId === id)) {
-      setSelectedResourceIds([...selectedResourceIds, id]);
+    if (selectedResourceIds.includes(id)) {
+      setSelectedResourceIds(
+        selectedResourceIds.filter((selectedId) => selectedId !== id)
+      );
     } else {
-      const index = selectedResourceIds.indexOf(id);
-      const newSelectedResourceIds = [...selectedResourceIds];
-      newSelectedResourceIds.splice(index, 1);
-      setSelectedResourceIds(newSelectedResourceIds);
+      setSelectedResourceIds([...selectedResourceIds, id]);
     }
   };
 
-  const handleSelectAllResources = () => {
+  const handleSelectAllClick = () => {
     if (selectedResourceIds.length === 0 && displayedResources) {
       setSelectedResourceIds(displayedResources.map((resource) => resource.id));
-    } else {
-      const resourcesToDelete = displayedResources
-        ?.map((resource) => resource.id)
-        ?.filter(
-          (resource) =>
-            resource ===
-            selectedResourceIds.find(
-              (selectedResourceId) => selectedResourceId === resource
-            )
-        );
-      const indexToDelete: number[] = [];
-      resourcesToDelete?.forEach((id) =>
-        indexToDelete.push(selectedResourceIds.indexOf(id))
+    } else if (areAllDisplayedResourcesSelected || isCheckboxIndeterminate) {
+      const resourcesToKeep = selectedResourceIds.filter(
+        (id) => !displayedResourcesIds?.includes(id)
       );
-      indexToDelete.sort((a, b) => b - a);
-      const newSelectedResourceIds = [...selectedResourceIds];
-      indexToDelete.forEach((index) => {
-        newSelectedResourceIds.splice(index, 1);
-      });
-      setSelectedResourceIds(newSelectedResourceIds);
+      setSelectedResourceIds(resourcesToKeep);
+    } else if (displayedResourcesIds) {
+      setSelectedResourceIds(selectedResourceIds.concat(displayedResourcesIds));
     }
   };
 
@@ -186,7 +160,7 @@ const BatchResourceDialog = ({
 
     if (selectedResourceIds.length > 0) {
       batchCreate();
-      setOpen(false);
+      handleClose(false);
       setSelectedResourceIds([]);
     }
   };
@@ -194,49 +168,53 @@ const BatchResourceDialog = ({
     setDisplayedResources(resources);
   }, [resources]);
 
+  useEffect(() => {
+    console.log(selectedResourceIds);
+  }, [selectedResourceIds]);
+
   return (
     <Dialog
       open={open}
-      onClose={() => {
-        setSelectedResourceIds([]);
-        setOpen(false);
-      }}
+      onClose={handleCloseModal}
       classes={{ paper: classes.dialog }}
       fullWidth
     >
-      <div className={classes.header}>
-        <div className={classes.titleContainer}>
-          <DialogTitle className={classes.title}>
-            {t("selectResources")}
-          </DialogTitle>
-          <div className={classes.selectAll} onClick={handleSelectAllResources}>
-            <Typography>
-              {isSelected() || getIndeterminateStatus()
-                ? t("unselectResources")
-                : t("selectResources")}
-            </Typography>
-            <Checkbox
-              color="primary"
-              checked={isSelected()}
-              indeterminate={getIndeterminateStatus()}
-            />
-          </div>
+      <DialogTitle className={classes.title} disableTypography>
+        <Typography variant="h6">{t("selectResources")}</Typography>
+        <div
+          onClick={handleSelectAllClick}
+          className={clsx(classes.title, classes.checkboxForm)}
+        >
+          <Typography>
+            {areAllDisplayedResourcesSelected || isCheckboxIndeterminate
+              ? t("unselectResources")
+              : t("selectAllResources")}
+          </Typography>
+          <Checkbox
+            disableFocusRipple
+            edge="end"
+            color="primary"
+            checked={areAllDisplayedResourcesSelected}
+            indeterminate={isCheckboxIndeterminate}
+          />
         </div>
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder={t<string>("search")}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          onChange={searchResource}
-        />
-      </div>
-      <DialogContent dividers classes={{ root: classes.rootDialogContent }}>
+      </DialogTitle>
+      <TextField
+        variant="outlined"
+        size="small"
+        classes={{ root: classes.textField }}
+        fullWidth
+        placeholder={t<string>("search")}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search />
+            </InputAdornment>
+          ),
+        }}
+        onChange={handleSearchResource}
+      />
+      <DialogContent>
         <List>
           {displayedResources &&
             displayedResources.length > 0 &&
@@ -261,6 +239,7 @@ const BatchResourceDialog = ({
             ))}
         </List>
       </DialogContent>
+      <Divider />
       <DialogActions>
         <Button
           color="primary"
