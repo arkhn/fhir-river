@@ -10,4 +10,5 @@ def old_state(request, migrator):
     target = (marker.kwargs["app_label"], marker.kwargs["migration_name"])
     migrator.apply_initial_migration(target)
     loader = MigrationLoader(connection)
-    return loader.project_state(target)
+    yield loader.project_state(target)
+    migrator.reset()
