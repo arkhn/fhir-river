@@ -9,9 +9,6 @@ import {
   Divider,
   InputAdornment,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   makeStyles,
   TextField,
   Typography,
@@ -27,6 +24,8 @@ import {
   useApiResourcesListQuery,
 } from "services/api/endpoints";
 
+import BatchResourceListItem from "./BatchResourceListItem";
+
 const useStyles = makeStyles((theme) => ({
   dialog: {
     padding: theme.spacing(3),
@@ -40,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
   checkboxForm: {
     cursor: "pointer",
-    paddingTop: theme.spacing(0.5),
   },
   rootListItem: {
     padding: 0,
@@ -217,25 +215,13 @@ const BatchResourceDialog = ({
       <DialogContent>
         <List>
           {displayedResources &&
-            displayedResources.length > 0 &&
-            displayedResources.map(({ id, definition_id, label }) => (
-              <ListItem
-                role={undefined}
-                key={`resource-option-${id}`}
-                button
-                onClick={() => handleSelectResources(id)}
-                classes={{ root: classes.rootListItem }}
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    color="primary"
-                    checked={selectedResourceIds.includes(id)}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${definition_id} ${label ? `- ${label}` : ""}`}
-                />
-              </ListItem>
+            displayedResources.map((resource) => (
+              <BatchResourceListItem
+                resource={resource}
+                handleClick={handleSelectResources}
+                key={resource.id}
+                checked={selectedResourceIds.includes(resource.id)}
+              />
             ))}
         </List>
       </DialogContent>
