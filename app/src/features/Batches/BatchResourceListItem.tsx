@@ -11,26 +11,9 @@ import {
 import { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
-  dialog: {
-    padding: theme.spacing(3),
-    height: 470,
-  },
-  title: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
-  checkboxForm: {
-    cursor: "pointer",
-    paddingTop: theme.spacing(0.5),
-  },
   rootListItem: {
     padding: 0,
     borderRadius: theme.shape.borderRadius,
-  },
-  textField: {
-    padding: theme.spacing(0, 3),
   },
 }));
 

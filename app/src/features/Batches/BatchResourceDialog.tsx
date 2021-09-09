@@ -40,10 +40,6 @@ const useStyles = makeStyles((theme) => ({
   checkboxForm: {
     cursor: "pointer",
   },
-  rootListItem: {
-    padding: 0,
-    borderRadius: theme.shape.borderRadius,
-  },
   textField: {
     padding: theme.spacing(0, 3),
   },
