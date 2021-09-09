@@ -3,7 +3,7 @@
   "resources": [
     {
       "id": "patient-resource-id",
-      "label": "feat_1_extension+Observation(microbio)Ref",
+      "label": "patient-resource-id",
       "primary_key_table": "patients",
       "primary_key_column": "subject_id",
       "definition_id": "Patient",

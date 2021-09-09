@@ -14,7 +14,7 @@ def test_preview(api_client, export_data):
     assert response.status_code == 201, response.data
 
     url = reverse("preview")
-    patient_mapping_id = next(r["id"] for r in response.json()["resources"] if r["primary_key_table"] == "patients")
+    patient_mapping_id = next(r["id"] for r in response.json()["resources"] if r["label"] == "patient-resource-id")
 
     data = {
         "resource_id": patient_mapping_id,
