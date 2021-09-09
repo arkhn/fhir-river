@@ -11,6 +11,13 @@ import {
 export const EditedButton = withStyles((theme) => ({
   root: {
     textTransform: "none",
+    minHeight: 38,
+  },
+  sizeSmall: {
+    minHeight: 34,
+  },
+  sizeLarge: {
+    minHeight: 42,
   },
   startIcon: {
     height: 12,
@@ -18,6 +25,11 @@ export const EditedButton = withStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     fill: theme.palette.common.white,
+  },
+  contained: {
+    "&.Mui-disabled": {
+      border: "1px solid transparent",
+    },
   },
   containedPrimary: {
     border: `1px solid ${theme.palette.primary.dark}`,
@@ -30,9 +42,6 @@ export const EditedButton = withStyles((theme) => ({
     "& .MuiButton-startIcon": {
       fill: theme.palette.secondary.contrastText,
     },
-  },
-  disabled: {
-    border: "1px solid transparent",
   },
   colorInherit: {
     "& .MuiButton-startIcon": {

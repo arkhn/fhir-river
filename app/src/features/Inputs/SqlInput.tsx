@@ -46,9 +46,6 @@ const useStyles = makeStyles((theme) => ({
   iconSelected: {
     fill: theme.palette.primary.main,
   },
-  button: {
-    textTransform: "none",
-  },
   columnSelect: { width: "fit-content" },
   iconButtonContainer: {
     flex: 1,

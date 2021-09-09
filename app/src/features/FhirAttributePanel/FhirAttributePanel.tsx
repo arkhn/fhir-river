@@ -15,7 +15,6 @@ import {
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    textTransform: "none",
     marginTop: theme.spacing(2),
   },
   container: {
