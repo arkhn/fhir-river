@@ -46,4 +46,4 @@ def test_preview(api_client, export_data):
         "identifier": [
             {"system": "http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04", "value": "10006"}
         ],
-    }
+    }, f"invalid fhir instance:\n {fhir_instance}"
