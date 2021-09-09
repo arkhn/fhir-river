@@ -66,7 +66,7 @@ COPY --chown=uwsgi:uwsgi ["pyproject.toml", "docker-entrypoint.sh", "uwsgi.ini",
 COPY --chown=uwsgi:uwsgi django /srv/django
 COPY --chown=uwsgi:uwsgi tests /srv/tests
 COPY --chown=uwsgi:uwsgi tox.ini /srv/tox.ini
-COPY --chown=uwsgi:uwsgi tox.ini /srv/pytest.ini
+COPY --chown=uwsgi:uwsgi pytest.ini /srv/pytest.ini
 RUN chmod +x docker-entrypoint.sh
 
 RUN mkdir -p /var/www/static
