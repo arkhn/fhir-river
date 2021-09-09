@@ -1193,14 +1193,9 @@ export type Batch = {
   errors: Error[];
   created_at: string;
   updated_at: string;
-<<<<<<< HEAD
   canceled_at: string | null;
   completed_at: string | null;
   resources: string[];
-=======
-  canceled_at: string;
-  completed_at: string;
->>>>>>> e8f4185d (add button with count resources and finish the select all function)
 };
 export type PaginatedBatchList = {
   count?: number;

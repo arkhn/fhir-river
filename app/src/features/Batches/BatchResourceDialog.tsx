@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import {
   Checkbox,
@@ -6,16 +6,16 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   InputAdornment,
   List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   makeStyles,
   TextField,
   Typography,
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
+import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -25,56 +25,40 @@ import {
   useApiResourcesListQuery,
 } from "services/api/endpoints";
 
+import BatchResourceListItem from "./BatchResourceListItem";
+
 const useStyles = makeStyles((theme) => ({
-  selectAll: {
-    display: "flex",
-    alignItems: "center",
-    cursor: "pointer",
-  },
   dialog: {
     padding: theme.spacing(3),
-    height: 500,
-  },
-  header: {
-    display: "flex",
-    flexDirection: "column",
-    marginBottom: 10,
-  },
-  titleContainer: {
-    display: "flex",
-    justifyContent: "space-between",
+    height: 470,
   },
   title: {
-    paddingLeft: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
-  titleButton: {
-    marginTop: "auto",
-    marginBottom: "auto",
+  checkboxForm: {
+    cursor: "pointer",
   },
-  rootDialogContent: {
-    padding: 0,
-  },
-  rootListItem: {
-    padding: 0,
-    borderRadius: theme.shape.borderRadius,
+  textField: {
+    padding: theme.spacing(0, 3),
   },
 }));
 
 type BatchResourceDialogType = {
   open: boolean;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setAlert: React.Dispatch<React.SetStateAction<string | undefined>>;
+  onClose: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const BatchResourceDialog = ({
   open,
-  setOpen,
-  setAlert,
+  onClose,
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-
   const { sourceId: id } = useParams<{ sourceId: string }>();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data: resources } = useApiResourcesListQuery(
     { source: id },
@@ -83,91 +67,78 @@ const BatchResourceDialog = ({
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
-
   const [displayedResources, setDisplayedResources] = useState(resources);
 
-  const isSelected = () => {
-    const displayedResourcesIds = displayedResources?.map(
-      (resource) => resource.id
-    );
-    if (
-      selectedResourceIds.filter(
-        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
-      ).length === displayedResourcesIds?.length &&
-      displayedResourcesIds?.length > 0
-    ) {
-      return true;
-    } else return false;
+  const displayedResourcesIds = useMemo(
+    () => displayedResources?.map(({ id }) => id),
+    [displayedResources]
+  );
+
+  const areAllDisplayedResourcesSelected = useMemo(() => {
+    if (displayedResourcesIds) {
+      const selectedAndDisplayedResourcesId = selectedResourceIds.filter((id) =>
+        displayedResourcesIds.includes(id)
+      );
+      return (
+        displayedResourcesIds.length > 0 &&
+        selectedAndDisplayedResourcesId.length === displayedResourcesIds.length
+      );
+    }
+  }, [selectedResourceIds, displayedResourcesIds]);
+
+  const isCheckboxIndeterminate = useMemo(() => {
+    if (displayedResourcesIds) {
+      const selectedAndDisplayedResourcesId = selectedResourceIds.filter((id) =>
+        displayedResourcesIds.includes(id)
+      );
+      return (
+        selectedAndDisplayedResourcesId.length > 0 &&
+        selectedAndDisplayedResourcesId.length < displayedResourcesIds.length
+      );
+    }
+  }, [selectedResourceIds, displayedResourcesIds]);
+
+  const onCloseModal = () => {
+    setSelectedResourceIds([]);
+    onClose(false);
   };
 
-  const getIndeterminateStatus = () => {
-    const displayedResourcesIds = displayedResources?.map(
-      (resource) => resource.id
-    );
-    if (
-      displayedResourcesIds &&
-      selectedResourceIds.filter(
-        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
-      ).length < displayedResourcesIds?.length &&
-      selectedResourceIds.filter(
-        (id) => id === displayedResourcesIds?.find((idList) => id === idList)
-      ).length > 0 &&
-      selectedResourceIds.length > 0
-    )
-      return true;
-    else return false;
-  };
-
-  const searchResource = (
+  const handleSearchResource = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
+    const searchValue = e.target.value.toLowerCase();
     setDisplayedResources(
       resources?.filter(
-        (resource) =>
-          resource.label
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase()) ||
-          resource.definition_id
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())
+        ({ label, definition_id }) =>
+          label?.toLowerCase().includes(searchValue) ||
+          definition_id.toLowerCase().includes(searchValue)
       )
     );
   };
 
   const handleSelectResources = (id: string) => {
-    if (!selectedResourceIds.find((resourceId) => resourceId === id)) {
-      setSelectedResourceIds([...selectedResourceIds, id]);
+    if (selectedResourceIds.includes(id)) {
+      setSelectedResourceIds(
+        selectedResourceIds.filter((selectedId) => selectedId !== id)
+      );
     } else {
-      const index = selectedResourceIds.indexOf(id);
-      const newSelectedResourceIds = [...selectedResourceIds];
-      newSelectedResourceIds.splice(index, 1);
-      setSelectedResourceIds(newSelectedResourceIds);
+      setSelectedResourceIds([...selectedResourceIds, id]);
     }
   };
 
-  const handleSelectAllResources = () => {
-    if (selectedResourceIds.length === 0 && displayedResources) {
-      setSelectedResourceIds(displayedResources.map((resource) => resource.id));
-    } else {
-      const resourcesToDelete = displayedResources
-        ?.map((resource) => resource.id)
-        ?.filter(
-          (resource) =>
-            resource ===
-            selectedResourceIds.find(
-              (selectedResourceId) => selectedResourceId === resource
-            )
-        );
-      const indexToDelete: number[] = [];
-      resourcesToDelete?.forEach((id) =>
-        indexToDelete.push(selectedResourceIds.indexOf(id))
+  const handleSelectAllClick = () => {
+    if (displayedResourcesIds && selectedResourceIds.length === 0) {
+      setSelectedResourceIds(displayedResourcesIds);
+    } else if (areAllDisplayedResourcesSelected || isCheckboxIndeterminate) {
+      const resourcesIdsToKeep = selectedResourceIds.filter(
+        (id) => !displayedResourcesIds?.includes(id)
       );
-      indexToDelete.sort((a, b) => b - a);
-      const newSelectedResourceIds = [...selectedResourceIds];
-      indexToDelete.forEach((index) => {
-        newSelectedResourceIds.splice(index, 1);
-      });
-      setSelectedResourceIds(newSelectedResourceIds);
+      setSelectedResourceIds(resourcesIdsToKeep);
+    } else if (displayedResourcesIds) {
+      const newSelectedResourcesIds = selectedResourceIds.concat(
+        displayedResourcesIds
+      );
+      setSelectedResourceIds(newSelectedResourcesIds);
     }
   };
 
@@ -180,87 +151,85 @@ const BatchResourceDialog = ({
           },
         }).unwrap();
       } catch (e) {
-        setAlert(e.message as string);
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     };
 
     if (selectedResourceIds.length > 0) {
       batchCreate();
-      setOpen(false);
+      onClose(false);
       setSelectedResourceIds([]);
     }
   };
+
+  /**
+   * If the dialog opening state or if the resources changes,
+   * set displayed resources with all the resources of the source.
+   */
   useEffect(() => {
     setDisplayedResources(resources);
-  }, [resources]);
+  }, [resources, open]);
 
   return (
     <Dialog
       open={open}
-      onClose={() => {
-        setSelectedResourceIds([]);
-        setOpen(false);
-      }}
+      onClose={onCloseModal}
       classes={{ paper: classes.dialog }}
       fullWidth
     >
-      <div className={classes.header}>
-        <div className={classes.titleContainer}>
-          <DialogTitle className={classes.title}>
-            {t("selectResources")}
-          </DialogTitle>
-          <div className={classes.selectAll} onClick={handleSelectAllResources}>
-            <Typography>
-              {isSelected() || getIndeterminateStatus()
-                ? t("unselectResources")
-                : t("selectResources")}
-            </Typography>
-            <Checkbox
-              color="primary"
-              checked={isSelected()}
-              indeterminate={getIndeterminateStatus()}
-            />
-          </div>
+      <DialogTitle className={classes.title} disableTypography>
+        <Typography variant="h6">{t("selectResources")}</Typography>
+        <div
+          onClick={handleSelectAllClick}
+          className={clsx(classes.title, classes.checkboxForm)}
+        >
+          <Typography>
+            {areAllDisplayedResourcesSelected || isCheckboxIndeterminate
+              ? t("unselectResources")
+              : t("selectAllResources")}
+          </Typography>
+          <Checkbox
+            disabled={!displayedResourcesIds?.length}
+            disableFocusRipple
+            edge="end"
+            color="primary"
+            checked={areAllDisplayedResourcesSelected}
+            indeterminate={isCheckboxIndeterminate}
+          />
         </div>
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder={t<string>("search")}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          onChange={searchResource}
-        />
-      </div>
-      <DialogContent dividers classes={{ root: classes.rootDialogContent }}>
+      </DialogTitle>
+      <TextField
+        variant="outlined"
+        size="small"
+        classes={{ root: classes.textField }}
+        fullWidth
+        placeholder={t<string>("search")}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search />
+            </InputAdornment>
+          ),
+        }}
+        onChange={handleSearchResource}
+      />
+      <DialogContent>
         <List>
+          {displayedResources?.length === 0 && (
+            <Typography>{t("noAvailableResource")}</Typography>
+          )}
           {displayedResources &&
-            displayedResources.length > 0 &&
-            displayedResources.map(({ id, definition_id, label }) => (
-              <ListItem
-                role={undefined}
-                key={`resource-option-${id}`}
-                button
-                onClick={() => handleSelectResources(id)}
-                classes={{ root: classes.rootListItem }}
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    color="primary"
-                    checked={selectedResourceIds.includes(id)}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`${definition_id} ${label ? `- ${label}` : ""}`}
-                />
-              </ListItem>
+            displayedResources.map((resource) => (
+              <BatchResourceListItem
+                resource={resource}
+                onClick={handleSelectResources}
+                key={resource.id}
+                checked={selectedResourceIds.includes(resource.id)}
+              />
             ))}
         </List>
       </DialogContent>
+      <Divider />
       <DialogActions>
         <Button
           color="primary"
@@ -269,9 +238,7 @@ const BatchResourceDialog = ({
           onClick={handleBatchRun}
           disabled={selectedResourceIds.length === 0}
         >
-          {`${t("runOn")} ${selectedResourceIds.length.toString()} ${t(
-            "resources"
-          ).toLowerCase()}`}
+          {t("runOnResources", { count: selectedResourceIds.length })}
         </Button>
       </DialogActions>
     </Dialog>

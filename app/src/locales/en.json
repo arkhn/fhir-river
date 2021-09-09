@@ -125,6 +125,7 @@
   "selectAll": "Select all",
   "runNewBatch": "Run a new batch",
   "selectResources": "Select resources",
+  "selectAllResources": "Select all resources",
   "unselectResources": "Unselect resources",
   "runOn": "Run on",
   "batchInProgress": "⏳ In progress...",
