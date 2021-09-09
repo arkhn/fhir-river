@@ -1,3 +1,7 @@
+import json
+import os
+from pathlib import Path
+
 import pytest
 
 
@@ -21,3 +25,11 @@ def force_authenticate(request, api_client):
     elif request.node.get_closest_marker("as_other_user"):
         other_user = request.getfixturevalue("other_user")
         api_client.force_authenticate(other_user)
+
+
+def load_export_data(path: Path) -> dict:
+    with open(path) as f:
+        data = json.loads(f.read())
+        if os.environ.get("ENV") == "dev":
+            data["credential"] = {**data["credential"], "host": "localhost", "port": 15432}
+        return data

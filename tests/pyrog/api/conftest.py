@@ -1,16 +1,10 @@
-import json
 from pathlib import Path
 
 import pytest
 
+from tests.conftest import load_export_data
+
 DATA_DIR = Path(__file__).resolve().parent / "data"
-
-
-def load_export_data(path: Path) -> dict:
-    with open(path) as f:
-        raw_data = f.read()
-        filtered_raw_data = "\n".join(filter(lambda l: l[0] != "#", raw_data.split("\n")))
-        return json.loads(filtered_raw_data)
 
 
 @pytest.fixture

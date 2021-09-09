@@ -1,5 +1,5 @@
-# Missing reference to column
 {
+    "@context": "Missing reference to column",
     "name": "test",
     "version": "",
     "resources": [

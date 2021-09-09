@@ -1,5 +1,5 @@
-# With condition
 {
+    "@context": "with condition",
     "name": "test",
     "version": "",
     "resources": [

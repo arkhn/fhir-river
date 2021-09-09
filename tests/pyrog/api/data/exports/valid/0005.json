@@ -1,5 +1,5 @@
-# 2 resources with a single sql input each from different owners
 {
+    "@context": "2 resources with a single sql input each from different owners",
     "name": "test",
     "version": "",
     "resources": [

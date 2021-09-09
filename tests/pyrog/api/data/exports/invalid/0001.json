@@ -1,5 +1,5 @@
-# Missing reference to owner
 {
+    "@context": "Missing reference to owner",
     "name": "test",
     "version": "",
     "resources": [

@@ -1,5 +1,5 @@
-# Single SQL input
 {
+    "@context": "Single SQL input",
     "name": "test",
     "version": "",
     "resources": [

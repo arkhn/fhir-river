@@ -1,5 +1,4 @@
 import inspect
-import json
 import time
 from pathlib import Path
 
@@ -11,6 +10,7 @@ from pytest_factoryboy import register
 
 from django.conf import settings
 
+from tests.conftest import load_export_data
 from tests.pyrog.factories import ResourceFactory, SourceFactory
 
 from . import factories
@@ -25,7 +25,8 @@ register(SourceFactory)
 
 def get_factories():
     return [
-        factory for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
+        factory
+        for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
     ]
 
 
@@ -87,8 +88,7 @@ def clear_redis(request):
 @pytest.fixture
 def export_data(request):
     marker = request.node.get_closest_marker("export_data")
-    with open(DATA_FIXTURES_DIR / marker.args[0]) as f:
-        return json.load(f)
+    return load_export_data(DATA_FIXTURES_DIR / marker.args[0])
 
 
 @pytest.fixture

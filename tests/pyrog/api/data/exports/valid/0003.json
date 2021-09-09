@@ -1,5 +1,5 @@
-# Test - mimic source
 {
+    "@context": "Test - mimic source",
     "id": "ckszt4fri00091jpjhcyzya2k",
     "resources": [
       {
@@ -12101,4 +12101,3 @@
     "updated_at": "2021-08-31T10:26:59.408000+02:00",
     "created_at": "2021-08-31T10:26:59.407000+02:00"
   }
-  
