@@ -2,7 +2,7 @@ import React from "react";
 
 import { Container } from "@material-ui/core";
 
-import BatchCreate from "features/Batches/BatchCreate";
+import BatchCreate from "app/routes/Sources/Batches/BatchCreate";
 import BatchList from "features/Batches/BatchList";
 import Navbar from "features/Navbar/Navbar";
 

@@ -162,10 +162,6 @@ const BatchResourceDialog = ({
     setDisplayedResources(resources);
   }, [resources]);
 
-  useEffect(() => {
-    console.log(selectedResourceIds);
-  }, [selectedResourceIds]);
-
   return (
     <Dialog
       open={open}

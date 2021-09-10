@@ -208,7 +208,7 @@ const BatchList = (): JSX.Element => {
       </div>
       <div className={classes.paginationContainer}>
         <Pagination
-          count={Math.ceil((batches?.results?.length ?? 1) / PAGE_SIZE)}
+          count={Math.ceil((batches?.count ?? 1) / PAGE_SIZE)}
           page={page}
           onChange={handlePageChange}
         />
