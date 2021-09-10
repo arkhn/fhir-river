@@ -14,7 +14,7 @@ def test_create_filter(
     relation,
     value,
     resource,
-    column,
+    sql_input,
     status_code,
 ):
     url = reverse("filters-list")
@@ -23,7 +23,7 @@ def test_create_filter(
         "relation": relation,
         "value": value,
         "resource": resource.id,
-        "sql_column": column.id,
+        "sql_input": sql_input.id,
     }
     response = api_client.post(url, data)
 

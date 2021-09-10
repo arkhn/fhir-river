@@ -10,14 +10,15 @@ faker = Faker()
 pytestmark = pytest.mark.django_db
 
 
-def test_create_join(
-    api_client,
-    column,
-):
+def test_create_join(api_client, sql_input, column_factory):
     url = reverse("joins-list")
 
+    column_1 = column_factory()
+    column_2 = column_factory()
     data = {
-        "column": column.id,
+        "sql_input": sql_input.id,
+        "left": column_1.id,
+        "right": column_2.id,
     }
     response = api_client.post(url, data)
 
@@ -54,14 +55,14 @@ def test_delete_join(api_client, join):
     assert response.status_code == 204, response.data
 
 
-def test_filter_joins_by_column(api_client, join_factory, column_factory):
+def test_filter_joins_by_sql_input(api_client, join_factory, sql_input_factory):
     url = reverse("joins-list")
 
-    first_column, second_column = column_factory.create_batch(2)
-    first_column_joins = join_factory.create_batch(3, column=first_column)
-    join_factory.create_batch(2, column=second_column)
+    first_sql_input, second_sql_input = sql_input_factory.create_batch(2)
+    first_sql_input_joins = join_factory.create_batch(3, sql_input=first_sql_input)
+    join_factory.create_batch(2, sql_input=second_sql_input)
 
-    response = api_client.get(url, {"column": first_column.id})
+    response = api_client.get(url, {"sql_input": first_sql_input.id})
 
     assert response.status_code == 200, response.data
-    assert {join_data["id"] for join_data in response.json()} == {join.id for join in first_column_joins}
+    assert {join_data["id"] for join_data in response.json()} == {join.id for join in first_sql_input_joins}

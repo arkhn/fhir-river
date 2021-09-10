@@ -44,7 +44,7 @@ def test_retrieve_column(api_client, column):
 
 def test_list_columns(api_client, column_factory):
     url = reverse("columns-list")
-    column_factory.create_batch(3, with_join=False)
+    column_factory.create_batch(3)
 
     response = api_client.get(url)
 
@@ -79,17 +79,16 @@ def test_delete_column(api_client, column):
     assert response.status_code == 204, response.data
 
 
-def test_filter_columns_by_join(api_client, join_factory, column_factory):
+def test_filter_columns_by_join(api_client, join_factory, column_factory, sql_input):
     url = reverse("columns-list")
 
-    first_join, second_join = join_factory.create_batch(2)
-    first_join_columns = column_factory.create_batch(2, join=first_join)
-    column_factory.create_batch(2, join=second_join)
+    join_1 = join_factory()
+    join_factory()
 
-    response = api_client.get(url, {"join": first_join.id})
+    response = api_client.get(url, {"join_lhs": join_1.id})
 
     assert response.status_code == 200, response.data
-    assert {column_data["id"] for column_data in response.json()} == {column.id for column in first_join_columns}
+    assert {column_data["id"] for column_data in response.json()} == {join_1.left.id}
 
 
 def test_filter_columns_by_input(api_client, sql_input_factory, column_factory):
