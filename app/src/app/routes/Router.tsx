@@ -17,7 +17,8 @@ import Sources from "./Sources/Sources";
 
 const useStyles = makeStyles((theme) => ({
   body: {
-    marginTop: theme.mixins.appbar.height,
+    paddingTop: theme.mixins.appbar.height,
+    height: "100vh",
   },
 }));
 
