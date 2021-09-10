@@ -3,7 +3,7 @@ import pytest
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.migration(app_label="pyrog", migration_name="0011_drop_input")
+@pytest.mark.migration(app_label="pyrog", migration_name="0013_sql_inputs_non_nullable")
 def test_migrate(migrator, state, owner_factory, sql_input_factory):
     Owner = state.apps.get_model("pyrog", "Owner")
     Join = state.apps.get_model("pyrog", "Join")
@@ -24,7 +24,7 @@ def test_migrate(migrator, state, owner_factory, sql_input_factory):
     right_col = Column.objects.create(owner=owner, table="table", column="col_right", join=join)
 
     try:
-        new_state = migrator.apply_tested_migration(("pyrog", "0012_split_join_left_right"))
+        new_state = migrator.apply_tested_migration(("pyrog", "0014_split_join_left_right"))
     except Exception:
         pytest.fail()
 
@@ -36,12 +36,12 @@ def test_migrate(migrator, state, owner_factory, sql_input_factory):
     assert new_joins[0].sql_input.id == sql_input.id
 
 
-@pytest.mark.migration(app_label="pyrog", migration_name="0012_split_join_left_right")
+@pytest.mark.migration(app_label="pyrog", migration_name="0014_split_join_left_right")
 def test_migrate_reverse(migrator, state, join_factory):
     join = join_factory()
 
     try:
-        new_state = migrator.apply_tested_migration(("pyrog", "0011_drop_input"))
+        new_state = migrator.apply_tested_migration(("pyrog", "0013_sql_inputs_non_nullable"))
     except Exception:
         pytest.fail()
 

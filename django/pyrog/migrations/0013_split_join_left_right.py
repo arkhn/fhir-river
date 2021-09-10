@@ -31,14 +31,13 @@ def reverse_func(apps, schema_editor):
 
         column = Column.objects.get(sql_input=join.sql_input)
         join.column = column
-        print(join.column)
         join.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0011_drop_input"),
+        ("pyrog", "0012_conditions_and_filters_sqlinput"),
     ]
 
     operations = [

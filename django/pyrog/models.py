@@ -115,7 +115,9 @@ class StaticInput(Input):
 
 
 class SQLInput(Input):
-    input_group = models.ForeignKey(InputGroup, related_name="sql_inputs", on_delete=models.CASCADE)
+    input_group = models.ForeignKey(
+        InputGroup, blank=True, null=True, related_name="sql_inputs", on_delete=models.CASCADE
+    )
     column = models.OneToOneField("Column", related_name="sql_input", on_delete=models.CASCADE)
     script = models.TextField(blank=True, default="")
     concept_map_id = models.TextField(blank=True, default="")
@@ -160,7 +162,7 @@ class Condition(models.Model):
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     action = models.TextField(choices=Action.choices)
-    column = models.OneToOneField(Column, on_delete=models.CASCADE)
+    sql_input = models.OneToOneField(SQLInput, on_delete=models.CASCADE)
     value = models.TextField(blank=True, default="")
     input_group = models.ForeignKey(InputGroup, related_name="conditions", on_delete=models.CASCADE)
     relation = models.TextField(choices=Relation.choices, default=Relation.EQUAL)
@@ -180,7 +182,7 @@ class Filter(models.Model):
     relation = models.TextField(choices=Relation.choices)
     value = models.TextField(blank=True, default="")
     resource = models.ForeignKey(Resource, related_name="filters", on_delete=models.CASCADE)
-    sql_column = models.OneToOneField(Column, on_delete=models.CASCADE)
+    sql_input = models.OneToOneField(SQLInput, on_delete=models.CASCADE)
 
 
 class Owner(models.Model):

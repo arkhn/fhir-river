@@ -110,7 +110,7 @@ class ConditionFactory(factory.django.DjangoModelFactory):
         model = models.Condition
 
     id = factory.Sequence(lambda n: f"condition_id_{n:04d}")
-    column = factory.SubFactory(ColumnFactory)
+    sql_input = factory.SubFactory(SQLInputFactory)
     input_group = factory.SubFactory(InputGroupFactory)
 
 
@@ -120,7 +120,7 @@ class FilterFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"filter_id_{n:04d}")
     resource = factory.SubFactory(ResourceFactory)
-    sql_column = factory.SubFactory(ColumnFactory)
+    sql_input = factory.SubFactory(SQLInputFactory)
 
 
 class OwnerFactory(factory.django.DjangoModelFactory):
