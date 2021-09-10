@@ -14,7 +14,12 @@ def forwards_func(apps, schema_editor):
         if input.static_value:
             StaticInput.objects.create(input_group=input.input_group, value=input.static_value)
         elif input.column:
-            SQLInput.objects.create(input_group=input.input_group, column=input.column)
+            SQLInput.objects.create(
+                input_group=input.input_group,
+                column=input.column,
+                script=input.script,
+                concept_map_id=input.concept_map_id,
+            )
 
 
 def reverse_func(apps, schema_editor):
@@ -24,7 +29,12 @@ def reverse_func(apps, schema_editor):
     for static_input in StaticInput.objects.all():
         Input.objects.create(input_group=static_input.input_group, static_value=static_input.value)
     for sql_input in SQLInput.objects.all():
-        Input.objects.create(input_group=sql_input.input_group, column=sql_input.column)
+        Input.objects.create(
+            input_group=sql_input.input_group,
+            column=sql_input.column,
+            script=sql_input.script,
+            concept_map_id=sql_input.concept_map_id,
+        )
 
 
 class Migration(migrations.Migration):

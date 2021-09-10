@@ -11,12 +11,14 @@ def test_migrate(migrator, state, input_group_factory, column_factory):
 
     Input = state.apps.get_model("pyrog", "Input")
     input_1 = Input.objects.create(input_group=group)
-    input_1.static_value = "val"
+    input_1.static_value = "value"
     input_1.save()
 
     input_2 = Input.objects.create(input_group=group)
-    col = column_factory()
+    column = column_factory()
     input_2.column = state.apps.get_model("pyrog", "Column").objects.first()
+    input_2.script = "script"
+    input_2.concept_map_id = "concept_map_id"
     input_2.save()
 
     try:
@@ -27,12 +29,14 @@ def test_migrate(migrator, state, input_group_factory, column_factory):
     StaticInput = new_state.apps.get_model("pyrog", "StaticInput")
     static_inputs = StaticInput.objects.all()
     assert len(static_inputs) == 1
-    assert static_inputs[0].value == "val"
+    assert static_inputs[0].value == "value"
 
     SQLInput = new_state.apps.get_model("pyrog", "SQLInput")
     sql_inputs = SQLInput.objects.all()
     assert len(sql_inputs) == 1
-    assert sql_inputs[0].column.id == col.id
+    assert sql_inputs[0].column.id == column.id
+    assert sql_inputs[0].script == "script"
+    assert sql_inputs[0].concept_map_id == "concept_map_id"
 
 
 @pytest.mark.migration(app_label="pyrog", migration_name="0010_split_static_and_sql_inputs")
