@@ -1,14 +1,14 @@
 {
-    "id": "ckt4kpyhq000k3hvzhlbo30js",
+    "id": "cktiliatt0002hzutnnnios0o",
     "resources": [
         {
-            "id": "ckt4kpyht000o3hvzm3hb2fhx",
+            "id": "cktiliau40007hzutelxcjfd7",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
             "definition_id": "Observation",
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "ckt4kpyhs000m3hvz7u06m457",
+            "primary_key_owner": "cktiliatx0004hzutxlsvp8ll",
             "attributes": [
                 {
                     "path": "something",
@@ -16,20 +16,26 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
-                            "id": "ckt4kpyhu000q3hvz6jhcqvw6",
+                            "id": "cktiliau80009hzutdqvu1b51",
                             "merging_script": "",
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "column": "ckt4kpyhs000n3hvz9yfrxxct"
+                                    "column": "cktiliau00005hzutsqhl55a5",
+                                    "joins": []
                                 }
                             ],
                             "conditions": [
                                 {
                                     "action": "EXCLUDE",
-                                    "column": "ckt4kpyhs000n3hvz9yfrxxct",
+                                    "sql_input": {
+                                        "script": "",
+                                        "concept_map_id": "",
+                                        "column": "cktiliau20006hzut0mei6vck",
+                                        "joins": []
+                                    },
                                     "value": "something",
                                     "relation": "EQ"
                                 }
@@ -42,22 +48,26 @@
         }
     ],
     "credential": {
-        "host": "mimic",
-        "port": 5432,
+        "host": "localhost",
+        "port": 15432,
         "database": "test",
         "login": "test",
         "password": "test",
         "model": "POSTGRES",
         "owners": [
             {
-                "id": "ckt4kpyhs000m3hvz7u06m457",
+                "id": "cktiliatx0004hzutxlsvp8ll",
                 "name": "public",
                 "columns": [
                     {
-                        "id": "ckt4kpyhs000n3hvz9yfrxxct",
+                        "id": "cktiliau00005hzutsqhl55a5",
                         "table": "patient",
-                        "column": "id",
-                        "joins": []
+                        "column": "id"
+                    },
+                    {
+                        "id": "cktiliau20006hzut0mei6vck",
+                        "table": "patient",
+                        "column": "name"
                     }
                 ]
             }
@@ -65,6 +75,6 @@
     },
     "name": "with-condition",
     "version": "",
-    "updated_at": "2021-09-03T18:30:37.790578+02:00",
-    "created_at": "2021-09-03T18:30:37.790601+02:00"
+    "updated_at": "2021-09-13T14:01:26.609429+02:00",
+    "created_at": "2021-09-13T14:01:26.609457+02:00"
 }

@@ -42,11 +42,11 @@ def test_create(export_data):
     assert Resource.objects.count() == 2
     assert Attribute.objects.count() == 2
     assert InputGroup.objects.count() == 3
-    assert SQLInput.objects.count() == 2
+    assert SQLInput.objects.count() == 6
     assert StaticInput.objects.count() == 1
-    assert Column.objects.count() == 5
-    assert Condition.objects.count() == 3
-    assert Filter.objects.count() == 3
+    assert Column.objects.count() == 6
+    assert Condition.objects.count() == 2
+    assert Filter.objects.count() == 2
     assert Join.objects.count() == 1
 
     # Assert that objects are truly referenced
@@ -54,14 +54,19 @@ def test_create(export_data):
     assert set(Resource.objects.all()) == set([a.resource for a in Attribute.objects.all()])
     assert set(Attribute.objects.all()) == set([ig.attribute for ig in InputGroup.objects.all()])
     assert set(InputGroup.objects.all()) == set(
-        [*(i.input_group for i in SQLInput.objects.all()), *(i.input_group for i in StaticInput.objects.all())]
+        [
+            *(i.input_group for i in SQLInput.objects.all() if i.input_group is not None),
+            *(i.input_group for i in StaticInput.objects.all() if i.input_group is not None),
+        ]
     )
     assert set(Column.objects.all()) == set(
         [
-            *(c.column for c in Condition.objects.all()),
+            *(i.column for i in SQLInput.objects.all()),
             *(j.left for j in Join.objects.all()),
             *(j.right for j in Join.objects.all()),
         ]
     )
-    assert set(InputGroup.objects.all()) == set([c.input_group for c in Condition.objects.all()])
+    input_groups = InputGroup.objects.all()
+    for c in Condition.objects.all():
+        assert c.input_group in input_groups
     assert set(Resource.objects.all()) == set([f.resource for f in Filter.objects.all()])

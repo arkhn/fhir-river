@@ -2,8 +2,8 @@
     "id": "ckt4kpzdj01gi3hvzl5j6j310",
     "resources": [],
     "credential": {
-        "host": "mimic",
-        "port": 5432,
+        "host": "localhost",
+        "port": 15432,
         "database": "test",
         "login": "test",
         "password": "test",

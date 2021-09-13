@@ -1,14 +1,14 @@
 {
-    "id": "ckt4kpzcp01ga3hvz3scplzuo",
+    "id": "cktiljfok0002jsut5gv033hb",
     "resources": [
         {
-            "id": "ckt4kpzcs01ge3hvz796uye03",
+            "id": "cktiljfot0006jsuthm69yt7x",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
             "definition_id": "Observation",
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "ckt4kpzcr01gc3hvzl13ya6si",
+            "primary_key_owner": "cktiljfoo0004jsutdop3tz88",
             "attributes": [
                 {
                     "path": "something",
@@ -16,14 +16,15 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
-                            "id": "ckt4kpzct01gg3hvzy1h732sm",
+                            "id": "cktiljfox0008jsutfyynmv97",
                             "merging_script": "",
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "column": "ckt4kpzcr01gd3hvz9ij494y7"
+                                    "column": "cktiljfor0005jsut1zl4qis7",
+                                    "joins": []
                                 }
                             ],
                             "conditions": []
@@ -35,22 +36,21 @@
         }
     ],
     "credential": {
-        "host": "mimic",
-        "port": 5432,
+        "host": "localhost",
+        "port": 15432,
         "database": "test",
         "login": "test",
         "password": "test",
         "model": "POSTGRES",
         "owners": [
             {
-                "id": "ckt4kpzcr01gc3hvzl13ya6si",
+                "id": "cktiljfoo0004jsutdop3tz88",
                 "name": "public",
                 "columns": [
                     {
-                        "id": "ckt4kpzcr01gd3hvz9ij494y7",
+                        "id": "cktiljfor0005jsut1zl4qis7",
                         "table": "patient",
-                        "column": "id",
-                        "joins": []
+                        "column": "id"
                     }
                 ]
             }
@@ -58,6 +58,6 @@
     },
     "name": "single-sql-input",
     "version": "",
-    "updated_at": "2021-09-03T18:30:38.905621+02:00",
-    "created_at": "2021-09-03T18:30:38.905650+02:00"
+    "updated_at": "2021-09-13T14:02:19.556951+02:00",
+    "created_at": "2021-09-13T14:02:19.556971+02:00"
 }

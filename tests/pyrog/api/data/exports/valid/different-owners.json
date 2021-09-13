@@ -1,14 +1,14 @@
 {
-    "id": "ckt4kpyfr00023hvzlfk6m6xm",
+    "id": "cktilifuz0002ieuts4uumvpw",
     "resources": [
         {
-            "id": "ckt4kpyfy00083hvzw0kbm2m4",
+            "id": "cktilifvk000cieut6am47j8n",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
             "definition_id": "something",
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "ckt4kpyfu00043hvzhw0qwoag",
+            "primary_key_owner": "cktilifv30004ieuta81boc93",
             "attributes": [
                 {
                     "path": "something",
@@ -16,33 +16,46 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
-                            "id": "ckt4kpyg0000b3hvzf0ziirqo",
+                            "id": "cktilifvq000fieutxaichnm9",
                             "merging_script": "",
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "column": "ckt4kpyfv00053hvz9qyrkqke"
+                                    "column": "cktilifv60005ieut1qrg934d",
+                                    "joins": [
+                                        {
+                                            "left": "cktilifv60005ieut1qrg934d",
+                                            "right": "cktilifv80006ieutqjyzhifz"
+                                        }
+                                    ]
                                 }
                             ],
                             "conditions": [
                                 {
                                     "action": "EXCLUDE",
-                                    "column": "ckt4kpyfv00053hvz9qyrkqke",
+                                    "sql_input": {
+                                        "script": "",
+                                        "concept_map_id": "",
+                                        "column": "cktilifv80006ieutqjyzhifz",
+                                        "joins": []
+                                    },
                                     "value": "something",
                                     "relation": "EQ"
                                 }
                             ]
-                        }, {
-                            "id": "ckt4kpyg0000b3hvzf0ziirqd",
+                        },
+                        {
+                            "id": "cktilifvw000iieutnp716zhi",
                             "merging_script": "",
                             "static_inputs": [
                                 {
                                     "value": "static"
                                 }
                             ],
-                            "sql_inputs": []
+                            "sql_inputs": [],
+                            "conditions": []
                         }
                     ]
                 }
@@ -51,18 +64,23 @@
                 {
                     "relation": "=",
                     "value": "whatever",
-                    "sql_column": "ckt4kpyfv00053hvz9qyrkqke"
+                    "sql_input": {
+                        "script": "",
+                        "concept_map_id": "",
+                        "column": "cktilifva0007ieuteisu4xh6",
+                        "joins": []
+                    }
                 }
             ]
         },
         {
-            "id": "ckt4kpyg3000e3hvz2qqc8gwg",
+            "id": "cktilifw0000kieut31xkd56g",
             "label": "simple-resource",
             "primary_key_table": "something",
             "primary_key_column": "something",
             "definition_id": "something",
             "logical_reference": "c5f26e8e-7e78-4c41-aa3c-4444454cc43b",
-            "primary_key_owner": "ckt4kpyfv00063hvzribmov9h",
+            "primary_key_owner": "cktilifvc0008ieut494thia5",
             "attributes": [
                 {
                     "path": "something",
@@ -70,20 +88,26 @@
                     "definition_id": "code",
                     "input_groups": [
                         {
-                            "id": "ckt4kpyg5000h3hvzwho9qmvz",
+                            "id": "cktilifw5000nieutiyqnydym",
                             "merging_script": "",
                             "static_inputs": [],
                             "sql_inputs": [
                                 {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "column": "ckt4kpyfx00073hvzl7l6t0si"
+                                    "column": "cktilifvf0009ieut1kvdrbum",
+                                    "joins": []
                                 }
                             ],
                             "conditions": [
                                 {
                                     "action": "EXCLUDE",
-                                    "column": "ckt4kpyfx00073hvzl7l6t0si",
+                                    "sql_input": {
+                                        "script": "",
+                                        "concept_map_id": "",
+                                        "column": "cktilifvh000aieutg9olng0z",
+                                        "joins": []
+                                    },
                                     "value": "something",
                                     "relation": "EQ"
                                 }
@@ -96,40 +120,63 @@
                 {
                     "relation": "=",
                     "value": "whatever",
-                    "sql_column": "ckt4kpyfx00073hvzl7l6t0si"
+                    "sql_input": {
+                        "script": "",
+                        "concept_map_id": "",
+                        "column": "cktilifvi000bieut74s2pf54",
+                        "joins": []
+                    }
                 }
             ]
         }
     ],
     "credential": {
-        "host": "mimic",
-        "port": 5432,
+        "host": "localhost",
+        "port": 15432,
         "database": "test",
         "login": "test",
         "password": "test",
         "model": "POSTGRES",
         "owners": [
             {
-                "id": "ckt4kpyfu00043hvzhw0qwoag",
+                "id": "cktilifv30004ieuta81boc93",
                 "name": "public",
                 "columns": [
                     {
-                        "id": "ckt4kpyfv00053hvz9qyrkqke",
+                        "id": "cktilifv60005ieut1qrg934d",
                         "table": "patient",
-                        "column": "a",
-                        "joins": []
+                        "column": "a"
+                    },
+                    {
+                        "id": "cktilifv80006ieutqjyzhifz",
+                        "table": "patient",
+                        "column": "b"
+                    },
+                    {
+                        "id": "cktilifva0007ieuteisu4xh6",
+                        "table": "patient",
+                        "column": "c"
                     }
                 ]
             },
             {
-                "id": "ckt4kpyfv00063hvzribmov9h",
+                "id": "cktilifvc0008ieut494thia5",
                 "name": "pg_catalog",
                 "columns": [
                     {
-                        "id": "ckt4kpyfx00073hvzl7l6t0si",
+                        "id": "cktilifvf0009ieut1kvdrbum",
                         "table": "observation",
-                        "column": "b",
-                        "joins": []
+                        "column": "b"
+                    },
+                    {
+                        "id": "cktilifvh000aieutg9olng0z",
+                        "table": "observation",
+                        "column": "b"
+                    },
+                    {
+                        "id": "cktilifvi000bieut74s2pf54",
+                        "table": "observation",
+                        "column": "c"
                     }
                 ]
             }
@@ -137,6 +184,6 @@
     },
     "name": "different-owners",
     "version": "",
-    "updated_at": "2021-09-03T18:30:37.719857+02:00",
-    "created_at": "2021-09-03T18:30:37.719878+02:00"
+    "updated_at": "2021-09-13T14:01:33.131677+02:00",
+    "created_at": "2021-09-13T14:01:33.131695+02:00"
 }
