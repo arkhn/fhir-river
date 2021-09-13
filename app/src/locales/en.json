@@ -127,7 +127,7 @@
   "selectResources": "Select resources",
   "selectAllResources": "Select all resources",
   "unselectResources": "Unselect resources",
-  "runOn": "Run on",
+  "runOnResources": "Run on {{ resourceCount }} resources",
   "batchInProgress": "⏳ In progress...",
   "batchErrors": "⚠️ {{errors}} errors",
   "batchSuccess": "✅ Success",
