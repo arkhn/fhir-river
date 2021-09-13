@@ -3,6 +3,7 @@ import React, { FC, ReactElement } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { render, RenderOptions, RenderResult } from "@testing-library/react";
 import { createMemoryHistory, MemoryHistory } from "history";
+import { SnackbarProvider } from "notistack";
 import { Provider } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { Router, Route, Switch } from "react-router-dom";
@@ -20,7 +21,9 @@ const Wrapper: FC = ({ children }) => {
   window.getComputedStyle = (elt) => getComputedStyle(elt);
   return (
     <MuiThemeProvider theme={theme}>
-      <Provider store={store}>{children}</Provider>;
+      <SnackbarProvider>
+        <Provider store={store}>{children}</Provider>;
+      </SnackbarProvider>
     </MuiThemeProvider>
   );
 };

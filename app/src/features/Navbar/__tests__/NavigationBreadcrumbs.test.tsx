@@ -2,7 +2,6 @@ import React from "react";
 
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { SnackbarProvider } from "notistack";
 
 import { resetState, store } from "app/store";
 import { render, screen, waitFor } from "common/test/test-utils";
@@ -59,16 +58,10 @@ describe("Navigation breadcrumbs", () => {
   });
 
   it("should display the source name and mapping name", async () => {
-    render(
-      <SnackbarProvider>
-        <Navbar />
-      </SnackbarProvider>,
-      undefined,
-      {
-        path: "/sources/:sourceId/mappings/:mappingId",
-        route: `/sources/${source.id}/mappings/${mapping.id}`,
-      }
-    );
+    render(<Navbar />, undefined, {
+      path: "/sources/:sourceId/mappings/:mappingId",
+      route: `/sources/${source.id}/mappings/${mapping.id}`,
+    });
 
     await waitFor(() => screen.getByText("source_1"));
     await waitFor(() => screen.getByText("resource_1"));

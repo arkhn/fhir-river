@@ -3,7 +3,6 @@ import React from "react";
 import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest } from "msw";
 import { setupServer } from "msw/node";
-import { SnackbarProvider } from "notistack";
 
 import { resetState, store } from "app/store";
 import { render, screen, waitFor } from "common/test/test-utils";
@@ -84,16 +83,10 @@ beforeAll(() => {
   store.dispatch(resetState());
 });
 beforeEach(() =>
-  render(
-    <SnackbarProvider>
-      <SourceMappings />
-    </SnackbarProvider>,
-    undefined,
-    {
-      path: "/sources/:sourceId",
-      route: `/sources/${source.id}`,
-    }
-  )
+  render(<SourceMappings />, undefined, {
+    path: "/sources/:sourceId",
+    route: `/sources/${source.id}`,
+  })
 );
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());

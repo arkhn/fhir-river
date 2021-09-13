@@ -8,7 +8,6 @@ import {
 import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest, RestRequest } from "msw";
 import { setupServer } from "msw/node";
-import { SnackbarProvider } from "notistack";
 
 import { resetState, store } from "app/store";
 import { render, screen, waitFor } from "common/test/test-utils";
@@ -94,16 +93,10 @@ describe("Mapping creation page", () => {
         source: "sourceId",
       })
     );
-    render(
-      <SnackbarProvider>
-        <CreateMapping />
-      </SnackbarProvider>,
-      undefined,
-      {
-        path: "/sources/:sourceId/mappings",
-        route: `/sources/sourceId/mappings`,
-      }
-    );
+    render(<CreateMapping />, undefined, {
+      path: "/sources/:sourceId/mappings",
+      route: `/sources/sourceId/mappings`,
+    });
     await screen.findByText(/define a source table/i);
     await screen.findByText(/select a fhir resource/i);
     await screen.findByText(/choose a fhir profile/i);

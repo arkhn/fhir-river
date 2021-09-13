@@ -3,7 +3,6 @@ import React from "react";
 import userEvent from "@testing-library/user-event";
 import { ResponseComposition, rest, RestRequest } from "msw";
 import { setupServer } from "msw/node";
-import { SnackbarProvider } from "notistack";
 
 import { resetState, store } from "app/store";
 import {
@@ -101,13 +100,7 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
   store.dispatch(resetState());
 });
-beforeEach(() =>
-  render(
-    <SnackbarProvider>
-      <Sources />
-    </SnackbarProvider>
-  )
-);
+beforeEach(() => render(<Sources />));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
