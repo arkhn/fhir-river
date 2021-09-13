@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { DialogProps } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { head } from "lodash";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
-import Alert from "common/components/Alert";
 import DeleteDialog from "common/components/DeleteDialog";
 import { useApiResourcesDestroyMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
@@ -15,7 +15,7 @@ import { ResourceRequest } from "services/api/generated/api.generated";
 const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
   const { t } = useTranslation();
   const history = useHistory();
-  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const { enqueueSnackbar } = useSnackbar();
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -24,8 +24,6 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
     deleteMapping,
     { isLoading: isDeleteLoading },
   ] = useApiResourcesDestroyMutation({});
-
-  const handleAlertClose = () => setAlert(undefined);
 
   const handleDelete = async () => {
     if (mappingId) {
@@ -37,7 +35,7 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
         const data = apiValidationErrorFromResponse<Partial<ResourceRequest>>(
           e as FetchBaseQueryError
         );
-        setAlert(head(data?.non_field_errors));
+        enqueueSnackbar(head(data?.non_field_errors));
       }
     }
   };
@@ -53,12 +51,6 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
         onClose={handleClose}
         onDelete={handleDelete}
         isLoading={isDeleteLoading}
-      />
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
       />
     </>
   );

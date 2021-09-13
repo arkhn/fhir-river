@@ -10,10 +10,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import PlayIcon from "@material-ui/icons/PlayCircleOutline";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import {
   useApiResourcesListQuery,
@@ -61,13 +61,10 @@ const useStyles = makeStyles((theme) => ({
 
 const BatchCreate = (): JSX.Element => {
   const { t } = useTranslation();
-
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
-
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
 
   const { sourceId: id } = useParams<{ sourceId: string }>();
 
@@ -96,7 +93,7 @@ const BatchCreate = (): JSX.Element => {
           },
         }).unwrap();
       } catch (e) {
-        setAlert(e.message as string);
+        enqueueSnackbar(e.message as string, { variant: "error" });
       }
     };
 
@@ -175,12 +172,6 @@ const BatchCreate = (): JSX.Element => {
       >
         {t("run")}
       </Button>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
-      />
     </div>
   );
 };

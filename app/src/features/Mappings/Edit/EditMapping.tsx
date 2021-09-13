@@ -12,11 +12,11 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import differenceBy from "lodash/differenceBy";
 import head from "lodash/head";
 import isEqual from "lodash/isEqual";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 
 import { useAppSelector } from "app/store";
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import { columnSelectors } from "features/Columns/columnSlice";
 import { filterSelectors } from "features/Filters/filterSlice";
@@ -55,8 +55,8 @@ const EditMapping = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
+  const { enqueueSnackbar } = useSnackbar();
   const [isEditLoading, setEditLoading] = useState(false);
-  const [alert, setAlert] = useState<string | undefined>(undefined);
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -86,7 +86,6 @@ const EditMapping = (): JSX.Element => {
   const [createJoin] = useApiJoinsCreateMutation();
   const [updateJoin] = useApiJoinsUpdateMutation();
 
-  const handleAlertClose = () => setAlert(undefined);
   const handleCancelClick = () => {
     history.goBack();
   };
@@ -279,7 +278,7 @@ const EditMapping = (): JSX.Element => {
         const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
           error as FetchBaseQueryError
         );
-        setAlert(head(data?.non_field_errors));
+        enqueueSnackbar(head(data?.non_field_errors), { variant: "error" });
       } finally {
         setEditLoading(false);
       }
@@ -322,12 +321,6 @@ const EditMapping = (): JSX.Element => {
           <></>
         )}
       </Container>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
-      />
     </>
   );
 };
