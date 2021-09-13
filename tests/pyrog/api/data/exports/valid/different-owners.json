@@ -131,8 +131,8 @@
         }
     ],
     "credential": {
-        "host": "localhost",
-        "port": 15432,
+        "host": "mimic",
+        "port": 5432,
         "database": "test",
         "login": "test",
         "password": "test",

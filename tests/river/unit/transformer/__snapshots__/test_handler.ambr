@@ -1,17 +1,17 @@
 # name: test_extracted_resource_handler
   <class 'dict'> {
     'birthDate': '2057-11-15',
-    'deceasedDateTime': '2114-02-20',
+    'deceasedDateTime': '2114-02-20 00:00:00',
     'gender': 'female',
-    'id': '50fe8f2e-bd34-561c-91b3-055813fba3b8',
+    'id': '589300ec-dfde-53e8-87ff-2dc6abfcb852',
     'meta': <class 'dict'> {
       'tag': <class 'list'> [
         <class 'dict'> {
-          'code': 'cktjv96c80002q7vzaq12cp3n',
+          'code': 'cktiqsyuj0002xgutzhqbn1ut',
           'system': 'http://terminology.arkhn.org/CodeSystem/source',
         },
         <class 'dict'> {
-          'code': 'cktjv96fh006eq7vzmvidju9g',
+          'code': 'cktiqt0c800tfxgutkq5b6gct',
           'system': 'http://terminology.arkhn.org/CodeSystem/resource',
         },
       ],

@@ -10,7 +10,7 @@ from river.common.analyzer.sql_join import SqlJoin
 
 def test_cache_analysis_redis(mimic_mapping):
     batch_id = uuid4()
-    resource_id = "cktjv96dy0030q7vz9gtmyd0z"
+    resource_id = "cktiqt0c800tfxgutkq5b6gct"
     analyzer = Analyzer()
 
     res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
@@ -56,10 +56,15 @@ def test_get_primary_key_missing_field():
 
 def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "cktjv96ex0050q7vzrea47mnt"
+    resource_id = "cktiqszf200aexgutj9ttg8l1"
+
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
+    assert len(analysis.attributes) == 14
     assert analysis == snapshot
+    assert analyzer.get_analysis_columns(analysis) == snapshot
+    assert analysis.filters == snapshot
+    assert analysis.reference_paths == [["partOf"], ["subject"], ["encounter"]]
 
 
 def test_analyze_attribute(dict_map_gender, structure_definitions):
@@ -80,52 +85,41 @@ def test_analyze_attribute(dict_map_gender, structure_definitions):
             "owner": "mimiciii",
             "table": "patients",
             "column": "gender",
-            "joins": [{"columns": ["ckdyl65kj0196gu9ku2dy0ygg", "ckdyl65kj0197gu9k1lrvx3bl"]}],
         },
         "ckdyl65kj0196gu9ku2dy0ygg": {
             "owner": "mimiciii",
             "table": "patients",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kj0197gu9k1lrvx3bl": {
             "owner": "mimiciii",
             "table": "admissions",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kl0335gu9kup0hwhe0": {
             "owner": "mimiciii",
             "table": "admissions",
             "column": "expire_flag",
-            "joins": [
-                {"columns": ["ckdyl65kj0196gu9ku2dy0ygb", "ckdyl65kj0197gu9k1lrvx3bb"]},
-                {"columns": ["ckdyl65kj0196gu9ku2dy0yga", "ckdyl65kj0197gu9k1lrvx3ba"]},
-            ],
         },
         "ckdyl65kj0196gu9ku2dy0ygb": {
             "owner": "mimiciii",
             "table": "patients",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kj0197gu9k1lrvx3bb": {
             "owner": "mimiciii",
             "table": "join_table",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kj0196gu9ku2dy0yga": {
             "owner": "mimiciii",
             "table": "join_table",
             "column": "adm_id",
-            "joins": [],
         },
         "ckdyl65kj0197gu9k1lrvx3ba": {
             "owner": "mimiciii",
             "table": "admissions",
             "column": "adm_id",
-            "joins": [],
         },
     }
     attribute_mapping = {
@@ -145,6 +139,7 @@ def test_analyze_attribute(dict_map_gender, structure_definitions):
                         "concept_map_id": "id_cm_gender",
                         "concept_map": dict_map_gender,
                         "column": "ck8ooenw827004kp41nv3kcmq",
+                        "joins": [{"left": "ckdyl65kj0196gu9ku2dy0ygg", "right": "ckdyl65kj0197gu9k1lrvx3bl"}],
                     }
                 ],
                 "conditions": [
@@ -152,7 +147,15 @@ def test_analyze_attribute(dict_map_gender, structure_definitions):
                         "action": "EXCLUDE",
                         "relation": "EQ",
                         "value": "1",
-                        "column": "ckdyl65kl0335gu9kup0hwhe0",
+                        "sql_input": {
+                            "script": "",
+                            "concept_map_id": "",
+                            "column": "ckdyl65kl0335gu9kup0hwhe0",
+                            "joins": [
+                                {"left": "ckdyl65kj0196gu9ku2dy0ygb", "right": "ckdyl65kj0197gu9k1lrvx3bb"},
+                                {"left": "ckdyl65kj0196gu9ku2dy0yga", "right": "ckdyl65kj0197gu9k1lrvx3ba"},
+                            ],
+                        },
                     }
                 ],
             }
