@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0010_split_static_and_sql_inputs"),
+        ("pyrog", "0011_split_static_and_sql_inputs"),
     ]
 
     operations = [

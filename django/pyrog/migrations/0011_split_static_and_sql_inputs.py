@@ -40,7 +40,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0009_move_column_fk_on_input"),
+        ("pyrog", "0010_resource_definition"),
     ]
 
     operations = [
