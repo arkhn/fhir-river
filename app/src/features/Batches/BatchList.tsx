@@ -21,7 +21,7 @@ import BatchErrors from "./BatchErrors";
 
 const useStyles = makeStyles((theme) => ({
   accordions: {
-    overflow: "scroll",
+    overflowY: "scroll",
     margin: theme.spacing(0, 5, 8, 5),
   },
   accordion: {
