@@ -190,20 +190,20 @@ class MappingResourceSerializer(serializers.ModelSerializer):
             "primary_key_table",
             "primary_key_column",
             "definition_id",
+            "definition",
             "logical_reference",
             "primary_key_owner",
             "attributes",
             "filters",
         ]
 
-    def validate(self, data):
-        request = self.context.get("request")
-        auth_token = request.session.get("oidc_access_token") if request else None
-        try:
-            data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
-        except Exception as e:
-            raise serializers.ValidationError({"definition": [str(e)]})
-        return super().validate(data)
+    def to_representation(self, instance):
+        if not instance.definition:
+            request = self.context.get("request")
+            auth_token = request.session.get("oidc_access_token") if request else None
+            instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
+            instance.save()
+        return super().to_representation(instance)
 
 
 class MappingSerializer(serializers.ModelSerializer):

@@ -8,7 +8,7 @@ from django_filters import rest_framework as django_filters
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
-from pyrog.api.serializers.import_export import MappingSerializer, MappingWithPartialCredentialSerializer
+from pyrog.api.serializers.mapping import MappingSerializer, MappingWithPartialCredentialSerializer
 from revproxy.views import ProxyView
 
 

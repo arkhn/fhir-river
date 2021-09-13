@@ -6,7 +6,7 @@ from common.scripts import ScriptsRepository
 from django_filters import rest_framework as django_filters
 from drf_spectacular.utils import extend_schema
 from pyrog import models as pyrog_models
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.mapping import MappingSerializer
 from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
 from river.adapters.topics import KafkaTopicsManager
