@@ -6,15 +6,15 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.migration(app_label="pyrog", migration_name="0008_column_ordering")
-def test_migrate(migrator, old_state):
-    Owner = old_state.apps.get_model("pyrog.Owner")
-    InputGroup = old_state.apps.get_model("pyrog.InputGroup")
-    Column = old_state.apps.get_model("pyrog.Column")
-    Input = old_state.apps.get_model("pyrog.Input")
-    Resource = old_state.apps.get_model("pyrog.Resource")
-    Attribute = old_state.apps.get_model("pyrog.Attribute")
-    Source = old_state.apps.get_model("pyrog.Source")
-    Credential = old_state.apps.get_model("pyrog.Credential")
+def test_migrate(migrator, state):
+    Owner = state.apps.get_model("pyrog.Owner")
+    InputGroup = state.apps.get_model("pyrog.InputGroup")
+    Column = state.apps.get_model("pyrog.Column")
+    Input = state.apps.get_model("pyrog.Input")
+    Resource = state.apps.get_model("pyrog.Resource")
+    Attribute = state.apps.get_model("pyrog.Attribute")
+    Source = state.apps.get_model("pyrog.Source")
+    Credential = state.apps.get_model("pyrog.Credential")
 
     source = Source.objects.create(name="source")
     credential = Credential.objects.create(
@@ -44,18 +44,32 @@ def test_migrate(migrator, old_state):
 
 
 @pytest.mark.migration(app_label="pyrog", migration_name="0009_move_column_fk_on_input")
-def test_migrate_reverse(migrator, state, input_group_factory, column_factory):
-    InputGroup = state.apps.get_model("pyrog", "InputGroup")
-    input_group_factory()
-    group = InputGroup.objects.first()
+def test_migrate_reverse(migrator, state):
+    Owner = state.apps.get_model("pyrog.Owner")
+    InputGroup = state.apps.get_model("pyrog.InputGroup")
+    Column = state.apps.get_model("pyrog.Column")
+    Input = state.apps.get_model("pyrog.Input")
+    Resource = state.apps.get_model("pyrog.Resource")
+    Attribute = state.apps.get_model("pyrog.Attribute")
+    Source = state.apps.get_model("pyrog.Source")
+    Credential = state.apps.get_model("pyrog.Credential")
 
-    Input = state.apps.get_model("pyrog", "Input")
-    input = Input.objects.create(input_group=group)
-
-    Column = state.apps.get_model("pyrog", "Column")
-    column_factory()
-    input.column = Column.objects.first()
-    input.save()
+    source = Source.objects.create(name="source")
+    credential = Credential.objects.create(
+        source=source,
+        host=settings.DATABASES["default"]["HOST"],
+        port=settings.DATABASES["default"]["PORT"],
+        database=settings.DATABASES["default"]["NAME"],
+        login=settings.DATABASES["default"]["USER"],
+        password=settings.DATABASES["default"]["PASSWORD"],
+        model="POSTGRES",
+    )
+    owner = Owner.objects.create(name="owner", credential=credential)
+    resource = Resource.objects.create(primary_key_owner=owner, source=source)
+    attribute = Attribute.objects.create(resource=resource)
+    input_group = InputGroup.objects.create(attribute=attribute)
+    column = Column.objects.create(owner=owner, table="table", column="column")
+    input_ = Input.objects.create(input_group=input_group, column=column)
 
     new_state = migrator.apply_tested_migration(("pyrog", "0008_column_ordering"))
 
@@ -63,4 +77,4 @@ def test_migrate_reverse(migrator, state, input_group_factory, column_factory):
     columns = Column.objects.all()
 
     assert len(columns) == 1
-    assert columns[0].input.id == input.id
+    assert columns[0].input.id == input_.id
