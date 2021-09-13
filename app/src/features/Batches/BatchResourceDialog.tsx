@@ -47,13 +47,13 @@ const useStyles = makeStyles((theme) => ({
 
 type BatchResourceDialogType = {
   open: boolean;
-  handleClose: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose: React.Dispatch<React.SetStateAction<boolean>>;
   setAlert: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 const BatchResourceDialog = ({
   open,
-  handleClose,
+  onClose,
   setAlert,
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
@@ -95,9 +95,9 @@ const BatchResourceDialog = ({
     );
   }, [selectedResourceIds, displayedResourcesIds]);
 
-  const handleCloseModal = () => {
+  const onCloseModal = () => {
     setSelectedResourceIds([]);
-    handleClose(false);
+    onClose(false);
   };
 
   const handleSearchResource = (
@@ -154,7 +154,7 @@ const BatchResourceDialog = ({
 
     if (selectedResourceIds.length > 0) {
       batchCreate();
-      handleClose(false);
+      onClose(false);
       setSelectedResourceIds([]);
     }
   };
@@ -165,7 +165,7 @@ const BatchResourceDialog = ({
   return (
     <Dialog
       open={open}
-      onClose={handleCloseModal}
+      onClose={onCloseModal}
       classes={{ paper: classes.dialog }}
       fullWidth
     >
@@ -226,9 +226,7 @@ const BatchResourceDialog = ({
           onClick={handleBatchRun}
           disabled={selectedResourceIds.length === 0}
         >
-          {`${t("runOn")} ${selectedResourceIds.length.toString()} ${t(
-            "resources"
-          ).toLowerCase()}`}
+          {t("runOnResources", { resourceCount: selectedResourceIds.length })}
         </Button>
       </DialogActions>
     </Dialog>

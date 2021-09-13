@@ -51,7 +51,7 @@ const BatchCreate = (): JSX.Element => {
       </Button>
       <BatchResourceDialog
         open={open}
-        handleClose={handleCloseModal}
+        onClose={handleCloseModal}
         setAlert={setAlert}
       />
       <Alert
