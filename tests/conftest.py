@@ -29,7 +29,11 @@ def force_authenticate(request, api_client):
 
 def load_export_data(path: Path) -> dict:
     with open(path) as f:
-        data = json.loads(f.read())
-        if os.environ.get("ENV") == "dev":
-            data["credential"] = {**data["credential"], "host": "localhost", "port": 15432}
-        return data
+        return json.loads(f.read())
+
+
+def load_mapping(path: Path) -> dict:
+    data = load_export_data(path)
+    if os.environ.get("ENV") == "dev":
+        data["credential"] = {**data["credential"], "host": "localhost", "port": 15432}
+    return data

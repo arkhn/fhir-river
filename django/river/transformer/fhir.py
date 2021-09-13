@@ -39,11 +39,10 @@ def build_metadata(analysis):
         {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": analysis.resource_id},
     ]
 
-    # FIXME definition is absent from analysis
     # in case the definition is a profile, add the profile to the resource metadata
-    # definition = analysis.definition
-    # if definition.get("kind") == "resource" and definition.get("derivation") == "constraint":
-    #     metadata["profile"] = [definition["url"]]
+    definition = analysis.definition
+    if definition.get("kind") == "resource" and definition.get("derivation") == "constraint":
+        metadata["profile"] = [definition["url"]]
 
     return metadata
 

@@ -2,8 +2,6 @@ import logging
 import re
 from typing import Any, Dict, Optional
 
-from pydantic.typing import AnyCallable
-
 from common.scripts import ScriptsRepository
 from river.common.errors import OperationOutcome
 
@@ -75,8 +73,7 @@ class Analyzer:
         self._cur_analysis.source_credentials = {k: v for k, v in mappings["credential"].items() if k != "owners"}
         self._cur_analysis.resource_id = resource_id
         self._cur_analysis.definition_id = resource_mapping.get("definition_id")
-        # FIXME: definition field is absent from mapping
-        # self._cur_analysis.definition = resource_mapping.get("definition")
+        self._cur_analysis.definition = resource_mapping.get("definition")
         self._cur_analysis.label = resource_mapping.get("label")
         self._cur_analysis.logical_reference = resource_mapping.get("logical_reference")
 
@@ -109,7 +106,7 @@ class Analyzer:
         # beginning of the path in order to build the fhir object
         # eg: ("Patient.birthDate" --> "birthDate")
         path = re.sub(
-            r"^{resource_type}\.".format(resource_type=self._cur_analysis.definition_id),
+            r"^{resource_type}\.".format(resource_type=self._cur_analysis.definition["type"]),
             "",
             attribute_mapping["path"],
         )
