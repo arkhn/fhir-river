@@ -1,3 +1,5 @@
+/* eslint-disable import/order */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   IElementDefinition,
   IElementDefinition_Type,
@@ -14,6 +16,7 @@ import {
 import {
   ElementNode,
   ElementKind,
+  DefinitionNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import { Attribute } from "services/api/generated/api.generated";
 
@@ -46,6 +49,7 @@ const getKind = (elementDefinition: IElementDefinition): ElementKind => {
   if (type && complexTypes.includes(type)) {
     return "complex";
   }
+
   if (types && types.length > 1 && elementDefinition.path?.endsWith("[x]")) {
     return "choice";
   }
@@ -80,31 +84,42 @@ const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
  * @param params Set of index and parentPath used to generate the ElementNode path attribute
  */
 export const createElementNode = (
-  elementDefinition: IElementDefinition,
+  nodeDefinition: DefinitionNode,
   params: { index?: number; parentPath?: string }
 ): ElementNode => {
   const { index, parentPath } = params;
-  const prefixPath = parentPath || elementDefinition.path?.split(".").shift();
-  const suffixPath = elementDefinition.path?.split(".").slice(1).join(".");
-  const elementPath = `${prefixPath}${
-    prefixPath && suffixPath && "."
-  }${suffixPath}${index !== undefined ? `[${index}]` : ""}`;
-  const elementName = `${elementDefinition.id?.split(".").pop() ?? ""}`;
+  const { definition } = nodeDefinition;
+  const elementPath =
+    parentPath && index !== undefined
+      ? `${parentPath}[${index}]`
+      : parentPath
+      ? `${parentPath}.${definition.path?.split(".").pop()}`
+      : `${definition.path}${index !== undefined ? `[${index}]` : ""}`;
+  const elementName = `${definition.id?.split(".").pop()}`;
   return {
-    id: uuid(),
+    id:
+      `${nodeDefinition.definition.id}${
+        index !== undefined ? `[${index}]` : ""
+      }` ?? uuid(),
     name: elementName,
     children: [],
     path: elementPath,
-    definition: elementDefinition,
-    isArray: index !== undefined ? false : isElementArray(elementDefinition),
-    sliceName: elementDefinition.sliceName,
-    kind: getKind(elementDefinition),
-    type: elementDefinition.type?.map((t) => computeType(t)).join(" | "),
-    backboneElementDefinitions: [],
-    isRequired:
-      elementDefinition.min !== undefined && elementDefinition.min > 0,
+    definitionNode: nodeDefinition,
+    isArray: index !== undefined ? false : isElementArray(definition),
+    sliceName: definition.sliceName,
+    kind: getKind(definition),
+    type: definition.type?.map((t) => computeType(t)).join(" | "),
+    isRequired: definition.min !== undefined && definition.min > 0,
   };
 };
+
+export const createDefinitionNode = (
+  definition: IElementDefinition
+): DefinitionNode => ({
+  definition,
+  childrenDefinitions: [],
+  sliceDefinitions: [],
+});
 
 export const createElementDefinition = (
   attribute: Attribute
@@ -119,23 +134,17 @@ export const createElementDefinition = (
   return elementDefinition;
 };
 
-const getChildrenChoices = (
+const getChildrenChoicesDefinition = (
   elementDefinition: IElementDefinition,
   parentPath?: string
-): ElementNode[] =>
+): DefinitionNode[] =>
   elementDefinition.type?.map((type) =>
-    createElementNode(
-      {
-        ...elementDefinition,
-        type: [{ code: computeType(type) }],
-        id: elementDefinition.id?.replace("[x]", upperFirst(type.code) ?? ""),
-        path: elementDefinition.path?.replace(
-          "[x]",
-          upperFirst(type.code) ?? ""
-        ),
-      },
-      { parentPath }
-    )
+    createDefinitionNode({
+      ...elementDefinition,
+      type: [{ code: computeType(type) }],
+      id: elementDefinition.id?.replace("[x]", upperFirst(type.code) ?? ""),
+      path: elementDefinition.path?.replace("[x]", upperFirst(type.code) ?? ""),
+    })
   ) ?? [];
 
 const isSliceOf = (
@@ -174,14 +183,11 @@ const isChildOf = (
  * @param child
  * @param parent
  */
-const isElementNodeChildOf = (child: ElementNode, parent: ElementNode) => {
-  const { definition: childDefinition } = child;
-  const { definition: parentDefinition } = parent;
-  return (
-    isMultipleChoiceOf(childDefinition, parentDefinition) ||
-    isChildOf(childDefinition, parentDefinition) ||
-    isSliceOf(childDefinition, parentDefinition)
-  );
+const isElementDefinitionChildOf = (
+  child: IElementDefinition,
+  parent: IElementDefinition
+) => {
+  return isMultipleChoiceOf(child, parent) || isChildOf(child, parent);
 };
 
 export const getParent = (
@@ -196,63 +202,147 @@ export const getParent = (
   return undefined;
 };
 
-/**
- * Mutates the `rootNode` argument to build the whole ElementNode tree
- * @param elementDefinitions Array of ElementDefinition form which the ElementNode tree is built
- * @param rootNode Root of the ElementNode tree
- * @param previousElementNode Previous generated ElementNode which has been set in the tree
- */
+export const getDefinitionNodeParent = (
+  child: DefinitionNode,
+  root: DefinitionNode
+): DefinitionNode | undefined => {
+  const childrenAndSlices = [
+    ...root.childrenDefinitions,
+    ...root.sliceDefinitions,
+  ];
+  const rootChildrenAndSlicesDefinitionIds = childrenAndSlices.map(
+    ({ definition }) => definition.id
+  );
+  if (rootChildrenAndSlicesDefinitionIds.includes(child.definition.id))
+    return root;
+  for (const next of childrenAndSlices) {
+    const result = getDefinitionNodeParent(child, next);
+    if (result) return result;
+  }
+  return undefined;
+};
+
 export const buildTree = (
+  nodeDefinition: DefinitionNode,
+  parentElementNode?: ElementNode
+): ElementNode => {
+  const currentNode = createElementNode(nodeDefinition, {
+    parentPath:
+      parentElementNode?.kind !== "choice"
+        ? parentElementNode?.path
+        : parentElementNode?.path.split(".").slice(0, -1).join("."),
+  });
+
+  nodeDefinition.sliceDefinitions.forEach((sliceNodeDefinition) => {
+    // TODO: Slice cardinality conditions
+    currentNode.children.push(buildTree(sliceNodeDefinition, currentNode));
+  });
+
+  if (nodeDefinition.sliceDefinitions.length === 0) {
+    nodeDefinition.childrenDefinitions.forEach((childNodeDefinition) => {
+      currentNode.children.push(buildTree(childNodeDefinition, currentNode));
+    });
+  }
+
+  if (parentElementNode) {
+    // const isParentRoot = !parentElementNode.path.includes(".");
+    // const isParentArray = parentElementNode.isArray;
+    // const isDefPathEqualToParentDefPath =
+    //   nodeDefinition.definition.path ===
+    //   parentElementNode.definitionNode.definition.path;
+    // const hasOrWillParentNodeHaveItem =
+    //   parentElementNode.children.length > 0 ||
+    //   parentElementNode.definitionNode.childrenDefinitions.some(
+    //     ({ definition }) =>
+    //       definition.path === parentElementNode.definitionNode.definition.path
+    //   );
+    // if (!isParentRoot && isParentArray) {
+    //   if (isDefPathEqualToParentDefPath) {
+    //     currentNode.path = `${parentElementNode.path}[${parentElementNode.children.length}]`;
+    //     parentElementNode.children.push(currentNode);
+    //   } else {
+    //     if (!hasOrWillParentNodeHaveItem) {
+    //       const arrayItem = createElementNode(
+    //         parentElementNode.definitionNode,
+    //         {
+    //           parentPath: parentElementNode.path,
+    //           index: 0,
+    //         }
+    //       );
+    //       parentElementNode.children.push(arrayItem);
+    //       parentElementNode.definitionNode.childrenDefinitions.forEach(
+    //         (childNodeDef) => {
+    //           buildTree(childNodeDef, arrayItem);
+    //         }
+    //       );
+    //       return arrayItem;
+    //     }
+    //   }
+    // } else {
+    //   parentElementNode.children.push(currentNode);
+    // }
+  }
+
+  // nodeDefinition.childrenDefinitions.forEach((childNodeDef) => {
+  //   buildTree(childNodeDef, currentNode);
+  // });
+
+  return currentNode;
+};
+
+export const buildTreeDefinition = (
   elementDefinitions: IElementDefinition[],
-  rootNode: ElementNode,
-  previousElementNode: ElementNode
+  rootNodeDefinition: DefinitionNode,
+  previousElementNodeDefinition: DefinitionNode
 ): void => {
   const [currentElementDefinition, ...rest] = elementDefinitions;
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
-    buildTree(rest, rootNode, previousElementNode);
+    buildTreeDefinition(
+      rest,
+      rootNodeDefinition,
+      previousElementNodeDefinition
+    );
     return;
   }
 
-  const currentElementNode = createElementNode(currentElementDefinition, {
-    parentPath: rootNode.path,
-  });
+  const currentDefinitionNode: DefinitionNode = createDefinitionNode(
+    currentElementDefinition
+  );
 
-  if (currentElementNode.kind === "choice") {
-    currentElementNode.children = getChildrenChoices(
-      currentElementNode.definition,
-      rootNode.path
-    );
-  }
-
-  if (isElementNodeChildOf(currentElementNode, previousElementNode)) {
-    if (
-      previousElementNode.isArray &&
-      previousElementNode.type === "BackboneElement" &&
-      !currentElementNode.sliceName
-    ) {
-      previousElementNode.backboneElementDefinitions.push(
-        currentElementDefinition
+  if (
+    isSliceOf(
+      currentElementDefinition,
+      previousElementNodeDefinition.definition
+    )
+  ) {
+    previousElementNodeDefinition.sliceDefinitions.push(currentDefinitionNode);
+    buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+  } else if (
+    isElementDefinitionChildOf(
+      currentElementDefinition,
+      previousElementNodeDefinition.definition
+    )
+  ) {
+    if (getKind(currentElementDefinition) === "choice") {
+      currentDefinitionNode.childrenDefinitions = getChildrenChoicesDefinition(
+        currentElementDefinition,
+        previousElementNodeDefinition.definition.path
       );
-      buildTree(rest, rootNode, previousElementNode);
-    } else {
-      if (currentElementNode.sliceName) {
-        currentElementNode.path = `${currentElementNode.path}[${previousElementNode.children.length}]`;
-      } else if (
-        previousElementNode.sliceName &&
-        previousElementNode.type === "BackboneElement"
-      ) {
-        currentElementNode.path = `${
-          previousElementNode.path
-        }.${currentElementNode.path.split(".").pop()}`;
-      }
-      previousElementNode.children.push(currentElementNode);
-      buildTree(rest, rootNode, currentElementNode);
     }
+
+    previousElementNodeDefinition.childrenDefinitions.push(
+      currentDefinitionNode
+    );
+    buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
   } else {
-    const parent = getParent(previousElementNode, rootNode);
-    if (parent) buildTree(elementDefinitions, rootNode, parent);
+    const parent = getDefinitionNodeParent(
+      previousElementNodeDefinition,
+      rootNodeDefinition
+    );
+    if (parent)
+      buildTreeDefinition(elementDefinitions, rootNodeDefinition, parent);
   }
 };
 
@@ -272,6 +362,37 @@ export const getNode = (
   if (root[get] === path) return root;
   for (const next of root.children) {
     const result = getNode(get, path, next);
+    if (result) return result;
+  }
+  return undefined;
+};
+
+export const getNodeDefinition = (
+  id: string,
+  root: DefinitionNode
+): DefinitionNode | undefined => {
+  if (root.definition.id === id) return root;
+  for (const next of root.childrenDefinitions) {
+    const result = getNodeDefinition(id, next);
+    if (result) return result;
+  }
+  return undefined;
+};
+
+/**
+ * Return the last nodeDefinition child having the given path in its definition
+ */
+export const getNodeDefinitionFromAttribute = (
+  attribute: Attribute,
+  root: DefinitionNode
+): DefinitionNode | undefined => {
+  const { path, slice_name } = attribute;
+  const elementDefinitionId = `${path.split(/[[]\d+]/).join("")}${
+    slice_name ? `:${slice_name}` : ""
+  }`;
+  if (root.definition.id === elementDefinitionId) return root;
+  for (const next of root.childrenDefinitions) {
+    const result = getNodeDefinitionFromAttribute(attribute, next);
     if (result) return result;
   }
   return undefined;
@@ -302,4 +423,18 @@ export const computeChildPathIndex = (parent: ElementNode): number => {
     if (!childIndexes.includes(i)) return i;
   }
   return parent.children.length;
+};
+
+/**
+ * Concat parent path/id with child last suffix path/id
+ * @param parentPathOrId `Observation.partOf` (of type Reference)
+ * @param childPathOrId `Reference.type`
+ * @returns `Observation.partOf.type`
+ */
+export const createElementDefinitionPathOrId = (
+  parentPathOrId: string,
+  childPathOrId: string
+): string => {
+  const suffix = childPathOrId.split(".").slice(1).join(".");
+  return `${parentPathOrId}${suffix ? `.${suffix}` : ""}`;
 };

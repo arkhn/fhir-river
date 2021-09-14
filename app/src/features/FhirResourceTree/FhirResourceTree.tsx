@@ -64,7 +64,7 @@ const FhirResourceTree = (): JSX.Element => {
     },
     { skip: !mappingId }
   );
-  const { root, addExtension } = useFhirResourceTreeData(
+  const { rootElementNode, addExtension } = useFhirResourceTreeData(
     {
       definitionId: mapping?.definition_id ?? "",
     },
@@ -81,9 +81,9 @@ const FhirResourceTree = (): JSX.Element => {
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
-    id: string
+    path: string
   ) => {
-    const node = root && getNode("id", id, root);
+    const node = rootElementNode && getNode("path", path, rootElementNode);
     if (
       node &&
       node.kind === "primitive" &&
@@ -118,7 +118,6 @@ const FhirResourceTree = (): JSX.Element => {
               },
             });
           }
-
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );
@@ -151,7 +150,7 @@ const FhirResourceTree = (): JSX.Element => {
           iconSize={15}
         />
         <Typography className={classes.headerTitle} color="textPrimary">
-          {root?.name}
+          {rootElementNode?.definitionNode.definition.id}
         </Typography>
         <IconButton onClick={handleAddExtensionClick} size="small">
           <Icon
@@ -162,15 +161,15 @@ const FhirResourceTree = (): JSX.Element => {
         </IconButton>
       </div>
       <TreeView
-        selected={selectedNode?.id ?? ""}
+        selected={selectedNode?.path ?? ""}
         expanded={expandedNodes}
         onNodeToggle={handleExpandNode}
         onNodeSelect={handleSelectNode}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {root?.children.map((node) => (
-          <TreeItem key={node.id} elementNode={node} hasParentExpanded />
+        {rootElementNode?.children.map((node) => (
+          <TreeItem key={node.path} elementNode={node} hasParentExpanded />
         ))}
       </TreeView>
     </Container>

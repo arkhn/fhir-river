@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable import/order */
 import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core";
@@ -41,7 +43,6 @@ const TreeItem = ({
   hasParentExpanded,
 }: TreeItemProps): JSX.Element => {
   const classes = useStyle();
-
   const isNodeHidden =
     elementNode.type === "Extension" &&
     elementNode.isArray &&
@@ -49,19 +50,22 @@ const TreeItem = ({
   const [hasExpanded, setHasExpanded] = useState(false);
   const isPrimitive = elementNode.kind === "primitive";
   const isComplex = elementNode.kind === "complex";
-  const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
-    {
-      definitionId: elementNode.type ?? "",
-      node: elementNode,
-    },
-    {
-      skip:
-        !isComplex ||
-        !hasParentExpanded ||
-        elementNode.isArray ||
-        elementNode.type === "BackboneElement",
-    }
-  );
+  const hasToFetchNodeDefinition =
+    isComplex &&
+    hasParentExpanded &&
+    !elementNode.isArray &&
+    elementNode.definitionNode.childrenDefinitions.filter(
+      ({ definition }) => !definition.sliceName
+    ).length === 0;
+  // const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
+  //   {
+  //     definitionId: elementNode.type ?? "",
+  //     node: elementNode,
+  //   },
+  //   {
+  //     skip: !hasToFetchNodeDefinition,
+  //   }
+  // );
 
   const handleIconClick = () => {
     setHasExpanded(true);
@@ -72,30 +76,29 @@ const TreeItem = ({
 
   return (
     <MuiTreeItem
-      nodeId={elementNode.id}
+      nodeId={elementNode.path}
       className={clsx(classes.root, { [classes.hidden]: isNodeHidden })}
       label={
         <TreeItemLabel
           isArrayItem={isArrayItem}
           elementNode={elementNode}
-          onDeleteItem={deleteItem}
-          onCreateItem={createItem}
-          onAddExtension={addExtension}
+          // onDeleteItem={deleteItem}
+          // onCreateItem={createItem}
+          // onAddExtension={addExtension}
         />
       }
       onIconClick={handleIconClick}
       onLabelClick={handleLabelClick}
     >
-      {elementNode.children.length > 0
-        ? elementNode.children.map((node) => (
-            <TreeItem
-              key={node.id}
-              elementNode={node}
-              isArrayItem={elementNode.isArray}
-              hasParentExpanded={hasExpanded}
-            />
-          ))
-        : !isPrimitive && !elementNode.isArray && <></>}
+      {elementNode.children.length > 0 &&
+        elementNode.children.map((childElementNode) => (
+          <TreeItem
+            key={childElementNode.path}
+            elementNode={childElementNode}
+            isArrayItem={elementNode.isArray}
+            hasParentExpanded={hasExpanded}
+          />
+        ))}
     </MuiTreeItem>
   );
 };

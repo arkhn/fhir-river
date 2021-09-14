@@ -15,9 +15,9 @@ import TreeNodeBadge from "./TreeNodeBadge";
 type TreeItemLabelProps = {
   elementNode: ElementNode;
   isArrayItem?: boolean;
-  onCreateItem: (sliceName?: string) => Promise<void>;
-  onDeleteItem: () => Promise<void>;
-  onAddExtension: () => Promise<void>;
+  onCreateItem?: (sliceName?: string) => Promise<void>;
+  onDeleteItem?: () => Promise<void>;
+  onAddExtension?: () => Promise<void>;
 };
 
 const useStyle = makeStyles((theme) => ({
@@ -97,14 +97,14 @@ const TreeItemLabel = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    onDeleteItem();
+    onDeleteItem && onDeleteItem();
   };
 
   const handleAddExtensionClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    onAddExtension();
+    onAddExtension && onAddExtension();
   };
 
   const handleSliceDialogOpen = (
@@ -121,7 +121,7 @@ const TreeItemLabel = ({
   };
 
   const handleAddSlice = (name: string) => {
-    onCreateItem(name);
+    onCreateItem && onCreateItem(name);
   };
 
   const handleAddItemClick = (
@@ -129,7 +129,7 @@ const TreeItemLabel = ({
   ) => {
     e.stopPropagation();
     popupState.close();
-    onCreateItem();
+    onCreateItem && onCreateItem();
   };
 
   return (
