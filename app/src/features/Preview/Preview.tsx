@@ -153,7 +153,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          setAlert(e.error);
+          setAlert([e.message]);
         }
       };
       explore();
@@ -187,7 +187,7 @@ const Preview = (): JSX.Element => {
             setPreview(previewResult.instances[0]);
             if (previewResult.errors.length > 0) setAlert(previewResult.errors);
           } catch (e) {
-            setAlert(e.error);
+            setAlert([e.message]);
           }
         };
         previewCreate();
@@ -236,7 +236,7 @@ const Preview = (): JSX.Element => {
                   </TableCell>
                   {columnData.map((cell, i) => (
                     <TableCell className={classes.cells} key={i}>
-                      {cell.toString()}
+                      {cell ? cell.toString() : ""}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -246,14 +246,14 @@ const Preview = (): JSX.Element => {
         </Table>
       </TableContainer>
       {alert &&
-        alert.map((a, index) => (
+        alert.map((message, index) => (
           <Alert
             key={index}
             className={classes.alert}
             severity="error"
             onClose={() => handleAlertClose(index)}
           >
-            {a}
+            {message}
           </Alert>
         ))}
       {preview ? (
