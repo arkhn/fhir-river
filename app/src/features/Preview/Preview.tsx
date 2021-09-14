@@ -16,8 +16,8 @@ import {
   TableBody,
   useMediaQuery,
 } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import clsx from "clsx";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useParams } from "react-router-dom";
@@ -95,12 +95,15 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.text.primary,
     },
   },
+  alert: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { mappingId } = useParams<{
     mappingId?: string;
@@ -109,6 +112,9 @@ const Preview = (): JSX.Element => {
   const [exploration, setExploration] = useState<
     ExplorationResponse | null | undefined
   >(undefined);
+
+  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const handleAlertClose = () => setAlert(undefined);
 
   const [preview, setPreview] = useState<IResource | undefined>(undefined);
 
@@ -141,7 +147,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          enqueueSnackbar(e.message, { variant: "error" });
+          setAlert(e.message);
         }
       };
       explore();
@@ -152,7 +158,6 @@ const Preview = (): JSX.Element => {
     mapping?.primary_key_table,
     mappingId,
     owner,
-    enqueueSnackbar,
   ]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
@@ -174,9 +179,9 @@ const Preview = (): JSX.Element => {
             }).unwrap();
             setPreview(previewResult.instances[0]);
             if (previewResult.errors.length > 0)
-              enqueueSnackbar(previewResult.errors[0], { variant: "error" });
+              setAlert(previewResult.errors[0]);
           } catch (e) {
-            enqueueSnackbar(e.message, { variant: "error" });
+            setAlert(e.message);
           }
         };
         previewCreate();
@@ -234,6 +239,15 @@ const Preview = (): JSX.Element => {
           )}
         </Table>
       </TableContainer>
+      {alert && (
+        <Alert
+          className={classes.alert}
+          severity="error"
+          onClose={handleAlertClose}
+        >
+          {alert}
+        </Alert>
+      )}
       {preview ? (
         <div className={classes.preview}>
           <ReactJson
