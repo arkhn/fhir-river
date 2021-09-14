@@ -113,8 +113,14 @@ const Preview = (): JSX.Element => {
     ExplorationResponse | null | undefined
   >(undefined);
 
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
+  const [alert, setAlert] = useState<string[] | undefined>(undefined);
+  const handleAlertClose = (index: number) => {
+    if (alert) {
+      const newAlert = [...alert];
+      newAlert.splice(index, 1);
+      setAlert(newAlert);
+    }
+  };
 
   const [preview, setPreview] = useState<IResource | undefined>(undefined);
 
@@ -166,8 +172,9 @@ const Preview = (): JSX.Element => {
     if (exploration && mappingId && mapping?.primary_key_column) {
       const primaryKey = mapping.primary_key_column;
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
-      const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
-
+      const primaryKeyValue = exploration.rows[index]?.[
+        primaryKeyIndex
+      ]?.toString();
       if (primaryKeyValue) {
         const previewCreate = async () => {
           try {
@@ -178,8 +185,7 @@ const Preview = (): JSX.Element => {
               },
             }).unwrap();
             setPreview(previewResult.instances[0]);
-            if (previewResult.errors.length > 0)
-              setAlert(previewResult.errors[0]);
+            if (previewResult.errors.length > 0) setAlert(previewResult.errors);
           } catch (e) {
             setAlert(e.error);
           }
@@ -230,7 +236,7 @@ const Preview = (): JSX.Element => {
                   </TableCell>
                   {columnData.map((cell, i) => (
                     <TableCell className={classes.cells} key={i}>
-                      {cell}
+                      {cell.toString()}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -239,15 +245,17 @@ const Preview = (): JSX.Element => {
           )}
         </Table>
       </TableContainer>
-      {alert && (
-        <Alert
-          className={classes.alert}
-          severity="error"
-          onClose={handleAlertClose}
-        >
-          {alert}
-        </Alert>
-      )}
+      {alert &&
+        alert.map((a, index) => (
+          <Alert
+            key={index}
+            className={classes.alert}
+            severity="error"
+            onClose={() => handleAlertClose(index)}
+          >
+            {a}
+          </Alert>
+        ))}
       {preview ? (
         <div className={classes.preview}>
           <ReactJson
