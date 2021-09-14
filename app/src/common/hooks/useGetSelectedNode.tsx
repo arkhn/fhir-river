@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useAppSelector } from "app/store";
 import {
   ElementNode,
-  selectRoot,
+  selectRootElementNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import { getNode } from "features/FhirResourceTree/resourceTreeUtils";
 import { useApiAttributesRetrieveQuery } from "services/api/endpoints";
@@ -21,15 +21,18 @@ const useGetSelectedNode = (): ElementNode | undefined => {
     { id: attributeId ?? "" },
     { skip: !attributeId }
   );
-  const root = useAppSelector(selectRoot);
-
+  const rootElementNode = useAppSelector(selectRootElementNode);
   const selectedNode = useMemo(() => {
-    if (!isSelectedAttributeUninitialized && selectedAttribute && root) {
-      return getNode("path", selectedAttribute.path, root);
+    if (
+      !isSelectedAttributeUninitialized &&
+      selectedAttribute &&
+      rootElementNode
+    ) {
+      return getNode("path", selectedAttribute.path, rootElementNode);
     }
-  }, [selectedAttribute, root, isSelectedAttributeUninitialized]);
-
+  }, [selectedAttribute, rootElementNode, isSelectedAttributeUninitialized]);
   return selectedNode;
+  return;
 };
 
 export default useGetSelectedNode;

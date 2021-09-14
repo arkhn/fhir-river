@@ -1,16 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo } from "react";
 
-import { difference } from "lodash";
+import { cloneDeep, difference } from "lodash";
 import { useParams } from "react-router";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import usePrevious from "common/hooks/usePrevious";
 import {
   ElementNode,
-  selectRoot,
-  treeNodeUpdate,
-  attibuteNodesAdded,
+  selectRootNodeDefinition,
+  selectRootElementNode,
   attributeNodesDeleted,
+  DefinitionNode,
+  rootNodeDefinitionUpdate,
+  rootElementNodeUpdate,
+  attibuteItemsAdded,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   getNode,
@@ -19,6 +23,11 @@ import {
   createElementNode,
   findChildAttributes,
   computeChildPathIndex,
+  buildTreeDefinition,
+  createDefinitionNode,
+  getNodeDefinitionFromAttribute,
+  computePathWithoutIndexes,
+  createElementDefinitionPathOrId,
 } from "features/FhirResourceTree/resourceTreeUtils";
 import {
   useApiStructureDefinitionRetrieveQuery,
@@ -34,7 +43,7 @@ const useFhirResourceTreeData = (
   },
   options?: { skip?: boolean }
 ): {
-  root?: ElementNode;
+  rootElementNode?: ElementNode;
   isLoading: boolean;
   deleteItem: () => Promise<void>;
   addExtension: () => Promise<void>;
@@ -53,7 +62,8 @@ const useFhirResourceTreeData = (
   const [deleteAttribute] = useApiAttributesDestroyMutation();
   const { mappingId } = useParams<{ mappingId?: string }>();
   const dispatch = useAppDispatch();
-  const root = useAppSelector(selectRoot);
+  const rootNodeDefinition = useAppSelector(selectRootNodeDefinition);
+  const rootElementNode = useAppSelector(selectRootElementNode);
   const {
     data: attributes,
     isLoading: isAttributesLoading,
@@ -63,22 +73,57 @@ const useFhirResourceTreeData = (
   const [createAttribute] = useApiAttributesCreateMutation();
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
-  const nodeId = node?.id;
+  const nodeDefinition = node?.definitionNode.definition;
   const nodePath = node?.path;
+  const nodeId = node?.id;
 
+  // DefinitionNode tree building
   const data = useMemo(() => {
-    if (structureDefinition?.snapshot) {
-      const elementDefinitions = structureDefinition.snapshot.element;
+    // If we already have all the definition needed to populate the node children
+    if (node && node.children.length === 0 && options?.skip) {
+      return node.definitionNode;
+    }
+    // Else, we need to populate children DefinitionNode
+    else if (structureDefinition?.snapshot) {
+      let elementDefinitions = structureDefinition.snapshot.element;
+      // Prefix paths with node definition's path
+      if (nodeDefinition) {
+        elementDefinitions = elementDefinitions.map((elementDefinition) => ({
+          ...elementDefinition,
+          id: createElementDefinitionPathOrId(
+            nodeDefinition.id ?? "",
+            elementDefinition.id ?? ""
+          ),
+          path: createElementDefinitionPathOrId(
+            nodeDefinition.path ?? "",
+            elementDefinition.path ?? ""
+          ),
+        }));
+      }
       const elementDefinition = elementDefinitions[0];
       if (!elementDefinition) return undefined;
 
-      const rootNode = createElementNode(elementDefinition, {
-        parentPath: nodePath,
-      });
-      buildTree(elementDefinitions.slice(1), rootNode, rootNode);
-      return rootNode;
+      const currentRootDefinitionNode: DefinitionNode = createDefinitionNode(
+        elementDefinition
+      );
+      buildTreeDefinition(
+        elementDefinitions.slice(1),
+        currentRootDefinitionNode,
+        currentRootDefinitionNode
+      );
+      dispatch(
+        rootNodeDefinitionUpdate({
+          data: currentRootDefinitionNode,
+          id: node?.definitionNode.definition.id,
+        })
+      );
+      return currentRootDefinitionNode;
     }
-  }, [structureDefinition, nodePath]);
+  }, [structureDefinition, nodeDefinition]);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const deleteItem = useCallback(async () => {
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
@@ -95,9 +140,8 @@ const useFhirResourceTreeData = (
 
   const createItem = useCallback(
     async (sliceName?: string) => {
-      if (nodeId && root) {
-        const parentNode = getNode("id", nodeId, root);
-
+      if (nodePath && rootElementNode) {
+        const parentNode = getNode("path", nodePath, rootElementNode);
         if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
           const pathIndex = computeChildPathIndex(parentNode);
           const attributePath = `${parentNode.path}[${pathIndex}]`;
@@ -112,45 +156,54 @@ const useFhirResourceTreeData = (
         }
       }
     },
-    [createAttribute, mappingId, nodeId, root]
+    [createAttribute, mappingId, nodePath, rootElementNode]
   );
 
   const addExtension = useCallback(async () => {
-    const parentNode = node ?? root;
-    const extensionArrayNode = parentNode?.children.find(
-      ({ type }) => type === "Extension"
-    );
-
-    if (extensionArrayNode && extensionArrayNode.type && mappingId) {
-      const pathIndex = computeChildPathIndex(extensionArrayNode);
-      const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
-      await createAttribute({
-        attributeRequest: {
-          definition_id: extensionArrayNode.type,
-          path: attributePath,
-          resource: mappingId,
-        },
-      }).unwrap();
+    // const parentNode = node ?? rootNodeDefinition;
+    // const extensionArrayNode = parentNode?.children.find(
+    //   ({ type }) => type === "Extension"
+    // );
+    // if (extensionArrayNode && extensionArrayNode.type && mappingId) {
+    //   const pathIndex = computeChildPathIndex(extensionArrayNode);
+    //   const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
+    //   await createAttribute({
+    //     attributeRequest: {
+    //       definition_id: extensionArrayNode.type,
+    //       path: attributePath,
+    //       resource: mappingId,
+    //     },
+    //   }).unwrap();
+    // }
+  }, [createAttribute, mappingId, node, rootNodeDefinition]);
+  useEffect(() => {
+    if (data && (!node || node.children.length === 0)) {
+      dispatch(
+        rootElementNodeUpdate({
+          rootNodeDefinition: data,
+          nodePath: node?.path,
+        })
+      );
     }
-  }, [createAttribute, mappingId, node, root]);
+  }, [data, dispatch, node?.path, node?.definitionNode.definition.id]);
+
+  // We build the tree only for the root node (ie !node)
+  // useEffect(() => {
+  //   if (rootNodeDefinition && !node) {
+  //     const root = buildTree(rootNodeDefinition, rootNodeDefinition);
+  //     dispatch(rootElementNodeUpdate({ root }));
+  //   }
+  // }, [dispatch, rootNodeDefinition, node]);
 
   useEffect(() => {
-    if (data) dispatch(treeNodeUpdate({ data, nodeId }));
-  }, [nodeId, data, dispatch]);
-
-  useEffect(() => {
-    // The attribute injections only need to happen from the tree root scope (ie if !node)
-    if (root && attributes && !node) {
+    // The attribute injections only need to happen from the tree rootNodeDefinition scope (ie if !node)
+    if (rootElementNode && attributes && !node) {
       const attributesToAdd = attributes.filter(
-        ({ path }) => !getNode("path", path, root)
+        ({ path }) => !getNode("path", path, rootElementNode)
       );
 
       if (attributesToAdd.length > 0) {
-        const attributeNodes = attributesToAdd.map((attribute) => {
-          const elementDefinition = createElementDefinition(attribute);
-          return createElementNode(elementDefinition, {});
-        });
-        dispatch(attibuteNodesAdded({ nodes: attributeNodes }));
+        dispatch(attibuteItemsAdded({ attributes: attributesToAdd }));
       }
 
       if (prevAttributes) {
@@ -160,33 +213,39 @@ const useFhirResourceTreeData = (
         }
       }
     }
-  }, [dispatch, attributes, prevAttributes, root, node]);
+  }, [dispatch, attributes, prevAttributes, rootElementNode, node]);
 
   // Add attribute items to array nodes
-  useEffect(() => {
-    const addItemToEmptyArray = async () => {
-      if (
-        node &&
-        node.isArray &&
-        attributes &&
-        node.type !== "Extension" &&
-        node.children.length === 0 &&
-        !isAttributesFetching
-      ) {
-        const hasNodeChildren = attributes.some(({ path }) =>
-          path.startsWith(node.path)
-        );
+  // useEffect(() => {
+  //   const addItemToEmptyArray = async () => {
+  //     if (
+  //       node &&
+  //       node.isArray &&
+  //       attributes &&
+  //       node.type !== "Extension" &&
+  //       node.children.length === 0 &&
+  //       !isAttributesFetching
+  //     ) {
+  //       const hasNodeChildren = attributes.some(({ path }) =>
+  //         path.startsWith(node.path)
+  //       );
 
-        if (!hasNodeChildren) {
-          await createItem();
-        }
-      }
-    };
-    addItemToEmptyArray();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [node, attributes, isAttributesFetching]);
+  //       if (!hasNodeChildren) {
+  //         await createItem();
+  //       }
+  //     }
+  //   };
+  //   addItemToEmptyArray();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [node, attributes, isAttributesFetching]);
 
-  return { root, isLoading, createItem, deleteItem, addExtension };
+  return {
+    rootElementNode,
+    isLoading,
+    createItem,
+    deleteItem,
+    addExtension,
+  };
 };
 
 export default useFhirResourceTreeData;

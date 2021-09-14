@@ -1,24 +1,30 @@
 import { useAppSelector } from "app/store";
 import {
   ElementNode,
-  selectRoot,
+  selectRootElementNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import { getParent } from "features/FhirResourceTree/resourceTreeUtils";
 
 const useIsNodeReferenceSystemURI = (node?: ElementNode): boolean => {
-  const root = useAppSelector(selectRoot);
+  const rootElementNode = useAppSelector(selectRootElementNode);
 
-  if (!root || !node || node.type !== "uri" || node.name !== "system") {
+  if (
+    !rootElementNode ||
+    !node ||
+    node.type !== "uri" ||
+    node.name !== "system"
+  ) {
     return false;
   }
 
-  const parentNode = getParent(node, root);
+  const parentNode = getParent(node, rootElementNode);
   if (!parentNode || parentNode.type !== "Identifier") {
     return false;
   }
 
-  const greatParentNode = getParent(parentNode, root);
+  const greatParentNode = getParent(parentNode, rootElementNode);
   return greatParentNode?.type === "Reference";
+  return false;
 };
 
 export default useIsNodeReferenceSystemURI;
