@@ -42,7 +42,7 @@ def test_retry(batch):
 def test_preview(mimic_mapping, snapshot):
     # label: patient-resource-id
     resource_id = "cktlnp0f300300mmznmyqln70"
-    documents, errors = preview(mimic_mapping, resource_id, [10006])
+    documents, errors = preview(mimic_mapping, resource_id, [10006], "authtokenxxx")
 
     assert len(errors) == 0
     assert len(documents) == 1

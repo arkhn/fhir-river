@@ -3,9 +3,7 @@ from typing import Any, List, Optional, Tuple
 
 from django.utils import timezone
 
-from fhir.resources import construct_fhir_element
-
-from pydantic import ValidationError
+from common.adapters.fhir_api import fhir_api
 from pyrog.models import Resource
 from river import models
 from river.adapters.event_publisher import EventPublisher
@@ -46,7 +44,9 @@ def retry(batch: models.Batch) -> None:
     pass
 
 
-def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list]) -> Tuple[List[Any], List[Any]]:
+def preview(
+    mapping: dict, resource_id: str, primary_key_values: Optional[list], fhir_api_auth_token: str
+) -> Tuple[List[Any], List[Any]]:
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_id, mapping)
 
@@ -70,14 +70,9 @@ def preview(mapping: dict, resource_id: str, primary_key_values: Optional[list])
             documents.append(document)
             resource_type = document.get("resourceType")
             try:
-                construct_fhir_element(resource_type, document)
-            except ValidationError as e:
-                errors.extend(
-                    [
-                        f"{err['msg'] or 'Validation error'}: "
-                        f"{e.model.get_resource_type()}.{'.'.join([str(l) for l in err['loc']])}"
-                        for err in e.errors()
-                    ]
-                )
+                validation_response = fhir_api.validate(resource_type, document, fhir_api_auth_token)
+                errors.extend(validation_response.get("issue"))
+            except Exception as e:
+                errors.append(str(e))
 
     return documents, errors
