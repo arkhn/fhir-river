@@ -18,20 +18,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type BatchResourceListItemType = {
-  handleClick: (id: string) => void;
+  onClick: (id: string) => void;
   checked: boolean;
   resource: Resource;
 };
 
 const BatchResourceListItem = ({
-  handleClick,
+  onClick,
   checked,
   resource,
 }: BatchResourceListItemType): JSX.Element => {
   const classes = useStyles();
 
   const handleSelectItem = () => {
-    handleClick(resource.id);
+    onClick(resource.id);
   };
 
   return (

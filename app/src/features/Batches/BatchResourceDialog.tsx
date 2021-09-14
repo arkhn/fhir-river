@@ -210,7 +210,7 @@ const BatchResourceDialog = ({
             displayedResources.map((resource) => (
               <BatchResourceListItem
                 resource={resource}
-                handleClick={handleSelectResources}
+                onClick={handleSelectResources}
                 key={resource.id}
                 checked={selectedResourceIds.includes(resource.id)}
               />
@@ -226,7 +226,7 @@ const BatchResourceDialog = ({
           onClick={handleBatchRun}
           disabled={selectedResourceIds.length === 0}
         >
-          {t("runOnResources", { resourceCount: selectedResourceIds.length })}
+          {t("runOnResources", { count: selectedResourceIds.length })}
         </Button>
       </DialogActions>
     </Dialog>
