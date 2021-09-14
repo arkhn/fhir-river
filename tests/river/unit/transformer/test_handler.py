@@ -13,10 +13,10 @@ from syrupy.filters import paths
 pytestmark = pytest.mark.django_db
 
 
-def test_extracted_resource_handler(batch_factory, mimic_mapping, snapshot):
+def test_extracted_resource_handler(batch_factory, snapshot):
     # FIXME: use a dedicated fixture for the patient mapping
     # instead of the first resource of mimic mappings.
-    resource_id = "ckt4kpz1800u63hvz7p1wf9xi"
+    resource_id = "cktjv96fh006eq7vzmvidju9g"
 
     batch = batch_factory.create(id="test-batch-id")
     event = ExtractedRecord(

@@ -14,7 +14,9 @@ from sqlalchemy.orm.query import Query
 
 meta = MetaData()
 tables = {
-    "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id"), schema="public"),
+    "patients": Table(
+        "patients", meta, Column("subject_id"), Column("dob"), Column("row_id"), Column("patient_id"), schema="public"
+    ),
     "admissions": Table(
         "admissions",
         meta,
@@ -58,7 +60,7 @@ def make_query_builder(analysis, pk_values=None):
 @mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_with_real_analysis(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "ckt4kpyqa00b53hvzwewu3jc6"
+    resource_id = "cktjv96ef003zq7vzorkm4ht3"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
     query_builder = make_query_builder(analysis)

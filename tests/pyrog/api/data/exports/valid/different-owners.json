@@ -8345,21 +8345,6 @@
             "primary_key_owner": "ckt4kpyfv00063hvzribmov9h",
             "attributes": [               
                 {
-                    "path": "static",
-                    "slice_name": "",
-                    "definition_id": "code",
-                    "input_groups": [
-                        {
-                            "merging_script": "",
-                            "static_inputs": [
-                                {
-                                    "value": "static value"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
                     "path": "something",
                     "slice_name": "",
                     "definition_id": "code",
@@ -8381,6 +8366,14 @@
                                     "column": "ckt4kpyfx00073hvzl7l6t0si",
                                     "value": "something",
                                     "relation": "EQ"
+                                }
+                            ]
+                        },
+                        {
+                            "merging_script": "",
+                            "static_inputs": [
+                                {
+                                    "value": "static value"
                                 }
                             ]
                         }

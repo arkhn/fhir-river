@@ -10,7 +10,7 @@ from river.common.analyzer.sql_join import SqlJoin
 
 def test_cache_analysis_redis(mimic_mapping):
     batch_id = uuid4()
-    resource_id = "ckt4kpz1800u63hvz7p1wf9xi"
+    resource_id = "cktjv96dy0030q7vz9gtmyd0z"
     analyzer = Analyzer()
 
     res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
@@ -56,15 +56,16 @@ def test_get_primary_key_missing_field():
 
 def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "ckt4kpyqa00b53hvzwewu3jc6"
-
+    resource_id = "cktjv96ex0050q7vzrea47mnt"
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    assert len(analysis.attributes) == 14
+    # FIXME syrupy compares function addresses in snapshot
+    for a in analysis.attributes:
+        for g in a.input_groups:
+            for c in g.columns:
+                c.cleaning_script = None
+
     assert analysis == snapshot
-    assert analyzer.get_analysis_columns(analysis) == snapshot
-    assert analysis.filters == snapshot
-    assert analysis.reference_paths == [["partOf"], ["subject"], ["encounter"]]
 
 
 def test_analyze_attribute(dict_map_gender, structure_definitions):

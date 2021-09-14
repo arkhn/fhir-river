@@ -1,15 +1,12 @@
 # name: test_with_real_analysis
   '
-  SELECT public.chartevents.row_id AS chartevents_row_id_5020f3aa, public.chartevents.subject_id AS chartevent_subject_id_b52c60c1, public.chartevents.icustay_id AS chartevent_icustay_id_22f44b72, public.chartevents.charttime AS chartevents_charttime_2fdedd2f, public.chartevents.valuenum AS chartevents_valuenum_5eca07f0 
-  FROM public.chartevents 
-  WHERE public.chartevents.itemid IN (:param_1, :param_2, :param_3, :param_4)
+  SELECT public.patients.subject_id AS patients_subject_id_a9fb9667, public.patients.dob AS patients_dob_f873eb32, public.patients.row_id AS patients_row_id_ba3a4e99 
+  FROM public.patients 
+  WHERE public.patients.row_id = :param_1
   '
 ---
 # name: test_with_real_analysis.1
   <class 'dict'> {
-    'param_1': '762',
-    'param_2': '3580',
-    'param_3': '3696',
-    'param_4': '226512',
+    'param_1': '9467',
   }
 ---
