@@ -40,6 +40,6 @@ def test_retry(batch):
 
 # TODO improve test to verify what's in documents
 def test_preview(mimic_mapping):
-    documents, errors = preview(mimic_mapping, mimic_mapping["resources"][0]["id"], None)
+    documents, errors = preview(mimic_mapping, mimic_mapping["resources"][0]["id"], None, "authtokenxxx")
 
     assert len(errors) == 0
