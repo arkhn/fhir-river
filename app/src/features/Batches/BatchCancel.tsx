@@ -29,7 +29,7 @@ const BatchCancel = ({
     try {
       await apiBatchesDestroy({ id: batchId }).unwrap();
     } catch (e) {
-      enqueueSnackbar(e.message as string, { variant: "error" });
+      enqueueSnackbar(e.error as string, { variant: "error" });
     }
   };
 

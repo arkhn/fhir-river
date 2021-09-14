@@ -78,8 +78,7 @@ const UploadSourceButton = (): JSX.Element => {
         }).unwrap();
         setMappingRequest(undefined);
       } catch (error) {
-        // TODO: Handle errors nicely
-        console.error(error);
+        enqueueSnackbar(error.error, { variant: "error" });
         const errorData = apiValidationErrorFromResponse(
           error as FetchBaseQueryError
         );
@@ -88,7 +87,7 @@ const UploadSourceButton = (): JSX.Element => {
             (acc, [key, value]) => `${acc} ${key}: ${value}`,
             ""
           );
-          enqueueSnackbar(errorMessage);
+          enqueueSnackbar(errorMessage, { variant: "error" });
         }
       }
     }

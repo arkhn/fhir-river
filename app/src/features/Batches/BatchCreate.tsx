@@ -93,7 +93,7 @@ const BatchCreate = (): JSX.Element => {
           },
         }).unwrap();
       } catch (e) {
-        enqueueSnackbar(e.message as string, { variant: "error" });
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     };
 

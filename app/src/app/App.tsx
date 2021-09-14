@@ -18,7 +18,7 @@ import { CloseReason, SnackbarKey, SnackbarProvider } from "notistack";
 import Router from "app/routes/Router";
 import usePyrogTheme from "common/hooks/usePyrogTheme";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
     marginRight: 8,
   },
   snackbarError: {
-    backgroundColor: "##f44336",
+    backgroundColor: theme.palette.error.main,
   },
 }));
 
@@ -50,7 +50,7 @@ const App = (): JSX.Element => {
         }}
         ref={notistackRef}
         autoHideDuration={null}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
         onClose={(event, reason, key) => key && dismissSnackbar(reason, key)}
         iconVariant={{
           error: (

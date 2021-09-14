@@ -35,7 +35,7 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
         const data = apiValidationErrorFromResponse<Partial<ResourceRequest>>(
           e as FetchBaseQueryError
         );
-        enqueueSnackbar(head(data?.non_field_errors));
+        enqueueSnackbar(head(data?.non_field_errors), { variant: "error" });
       }
     }
   };

@@ -10,6 +10,7 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { CircularProgress, Container, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
@@ -78,6 +79,7 @@ const CreateMapping = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -196,13 +198,13 @@ const CreateMapping = (): JSX.Element => {
             })
           );
         } catch (error) {
-          // Fix: Handle Column & Filter creation errors
+          enqueueSnackbar(error.error, { variant: "error" });
         }
 
         resetCreateMapping();
         history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
       } catch (error) {
-        // Fix: Handle Resource creation errors
+        enqueueSnackbar(error.error, { variant: "error" });
       }
     }
   };

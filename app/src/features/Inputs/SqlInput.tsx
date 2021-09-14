@@ -8,6 +8,7 @@ import {
   makeStyles,
   CircularProgress,
 } from "@material-ui/core";
+import { useSnackbar } from "notistack";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
@@ -79,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
 const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const classes = useStyles();
   const dispatch = useAppDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const [deleteInput] = useApiInputsDestroyMutation();
   const [createColumn] = useApiColumnsCreateMutation();
   const [updateColumn] = useApiColumnsUpdateMutation();
@@ -167,8 +169,7 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
         inputRequest: { ...input, script: script ? script.name : "" },
       });
     } catch (error) {
-      // TODO: Handle errors nicely
-      console.error(error);
+      enqueueSnackbar(error.error, { variant: "error" });
     }
   };
 
