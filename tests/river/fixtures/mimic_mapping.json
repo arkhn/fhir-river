@@ -1,5 +1,5 @@
 {
-  "id": "ckt8rw3l300091jmhf7omwgpz",
+  "id": "ckrowsirw00091lpd4jph0861",
   "resources": [
     {
       "id": "patient-resource-id",
@@ -61066,29 +61066,396 @@
             ]
           },
           {
-            "id": "ckt8rw3n800331jmh7a8lw4r9",
+            "id": "ckrowsiw702081lpdsd5pw0dy",
             "table": "patients",
             "column": "subject_id",
             "joins": []
           },
           {
-            "id": "ckt8rw3na00381jmh5ndb0d41",
-            "table": "patients",
+            "id": "ckrowsiw702071lpdqcilexzt",
+            "table": "admissions",
             "column": "subject_id",
             "joins": []
           },
           {
-            "id": "ckt8rw3na00401jmh2ugxe2zo",
+            "id": "ckrowsiw802131lpdu2uhfwb1",
+            "table": "patients",
+            "column": "dod",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiw802181lpduu1q1c1c",
             "table": "patients",
             "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwb02371lpdxrs5hlfb",
+            "table": "patients",
+            "column": "gender",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwc02411lpdkd0x5tul",
+            "table": "patients",
+            "column": "dob",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwc02441lpdd5hnwarv",
+            "table": "patients",
+            "column": "dod",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwd02531lpd4emekkgt",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwd02551lpdt84hd46j",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwa02251lpdidz68q3x",
+            "table": "patients",
+            "column": "gender",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwa02231lpd10wa0ay9",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwg02821lpdkunedzt0",
+            "table": "labevents",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwi03051lpdiznntz3f",
+            "table": "labevents",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwi03091lpdpn86x4gl",
+            "table": "labevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwl03321lpdp4mtq2ei",
+            "table": "labevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwl03441lpddejyou24",
+            "table": "labevents",
+            "column": "charttime",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwf02591lpd2isl25y5",
+            "table": "labevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwp03581lpdr90ofip6",
+            "table": "patients",
+            "column": "row_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwo03471lpdwz4h8qeg",
+            "table": "admissions",
+            "column": "admission_type",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiwo03501lpdua4oxmco",
+                  "ckrowsiwo03491lpdwicstq8s"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiwo03501lpdua4oxmco",
+            "table": "patients",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwo03491lpdwicstq8s",
+            "table": "admissions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwr03721lpda9nuovt1",
+            "table": "diagnoses_icd",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwr03811lpdc2fy51nf",
+            "table": "diagnoses_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiws03851lpdmyiw96wu",
+            "table": "d_icd_diagnoses",
+            "column": "short_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiws03881lpde5nohoo5",
+                  "ckrowsiws03871lpdihmyatsi"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiws03881lpde5nohoo5",
+            "table": "diagnoses_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiws03871lpdihmyatsi",
+            "table": "d_icd_diagnoses",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwu03981lpdpayrzyxt",
+            "table": "diagnoses_icd",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwu04021lpdqyi9af0k",
+            "table": "d_icd_diagnoses",
+            "column": "long_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsiwv04051lpd6t63oasj",
+                  "ckrowsiwu04041lpdjgs2z855"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsiwv04051lpd6t63oasj",
+            "table": "diagnoses_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwu04041lpdjgs2z855",
+            "table": "d_icd_diagnoses",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwv04101lpd76t0kupj",
+            "table": "diagnoses_icd",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwy04181lpdv0rm5v6t",
+            "table": "procedures_icd",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwy04261lpdgex6jzs5",
+            "table": "procedures_icd",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsiwz04311lpdtr1yx7jr",
+            "table": "procedures_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix004421lpdwk99uu9v",
+            "table": "d_icd_procedures",
+            "column": "long_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsix004451lpdsw9rxwa4",
+                  "ckrowsix004441lpdkajjhe1r"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsix004451lpdsw9rxwa4",
+            "table": "procedures_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix004441lpdkajjhe1r",
+            "table": "d_icd_procedures",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix104491lpd6548ob7e",
+            "table": "d_icd_procedures",
+            "column": "short_title",
+            "joins": [
+              {
+                "columns": [
+                  "ckrowsix204521lpdjj7vodir",
+                  "ckrowsix204511lpdaegnzswy"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "ckrowsix204521lpdjj7vodir",
+            "table": "procedures_icd",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix204511lpdaegnzswy",
+            "table": "d_icd_procedures",
+            "column": "icd9_code",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix604761lpdnai5zz8u",
+            "table": "microbiologyevents",
+            "column": "org_name",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix604831lpdxuvage1i",
+            "table": "microbiologyevents",
+            "column": "interpretation",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix704891lpdwb3uw35t",
+            "table": "microbiologyevents",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix804931lpdtnbz0rtq",
+            "table": "microbiologyevents",
+            "column": "org_itemid",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix804981lpdw0kl021r",
+            "table": "microbiologyevents",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsix805031lpd7yoo5qej",
+            "table": "microbiologyevents",
+            "column": "chartdate",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixc05341lpdmlcxv7k7",
+            "table": "caregivers",
+            "column": "label",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixd05411lpd8jl5jbvj",
+            "table": "caregivers",
+            "column": "description",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixe05511lpdyz4s30b3",
+            "table": "prescriptions",
+            "column": "startdate",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixf05601lpddu5t221p",
+            "table": "prescriptions",
+            "column": "subject_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixf05661lpdwnp4wfgr",
+            "table": "prescriptions",
+            "column": "enddate",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixg05741lpd4cs0u9q8",
+            "table": "prescriptions",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixh05891lpdrw7qdoge",
+            "table": "prescriptions",
+            "column": "ndc",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixi05931lpdemme1a9c",
+            "table": "prescriptions",
+            "column": "drug_name_generic",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixi05971lpdm1qrydob",
+            "table": "prescriptions",
+            "column": "route",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixj06061lpdaqb461zg",
+            "table": "prescriptions",
+            "column": "drug",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixj06101lpd1eqtiuip",
+            "table": "prescriptions",
+            "column": "hadm_id",
+            "joins": []
+          },
+          {
+            "id": "ckrowsixk06141lpdxh97ifxa",
+            "table": "prescriptions",
+            "column": "subject_id",
             "joins": []
           }
         ]
       }
-    ]
+    ],
+    "login": "test",
+    "password": "test"
   },
   "name": "mimic-small-testMapping - mimic-small-testMapping",
   "version": "",
-  "updated_at": "2021-09-06T17:02:26.345000+02:00",
-  "created_at": "2021-09-06T17:02:26.343000+02:00"
+  "updated_at": "2021-07-29T14:44:31.629000+02:00",
+  "created_at": "2021-07-29T14:44:31.628000+02:00"
 }
