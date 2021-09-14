@@ -3,7 +3,7 @@ import pytest
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.migration(app_label="pyrog", migration_name="0011_drop_input")
+@pytest.mark.migration(app_label="pyrog", migration_name="0012_drop_input")
 def test_migrate(migrator, state, input_group_factory, column_factory, owner_factory):
     # instantiate all objects required for Condition and Filter
     Owner = state.apps.get_model("pyrog", "Owner")
@@ -29,7 +29,7 @@ def test_migrate(migrator, state, input_group_factory, column_factory, owner_fac
     Filter = state.apps.get_model("pyrog", "Filter")
     filter = Filter.objects.create(sql_column=column_2, resource=resource)
 
-    new_state = migrator.apply_tested_migration(("pyrog", "0012_conditions_and_filters_sqlinput"))
+    new_state = migrator.apply_tested_migration(("pyrog", "0013_conditions_and_filters_sqlinput"))
 
     # assert that conditions and filters have references to sql_input
     SQLInput = new_state.apps.get_model("pyrog", "SQLInput")
@@ -39,7 +39,7 @@ def test_migrate(migrator, state, input_group_factory, column_factory, owner_fac
     assert filter_sql_input.column.id == column_2.id
 
 
-@pytest.mark.migration(app_label="pyrog", migration_name="0012_conditions_and_filters_sqlinput")
+@pytest.mark.migration(app_label="pyrog", migration_name="0013_conditions_and_filters_sqlinput")
 def test_migrate_reverse(migrator, state, condition_factory, filter_factory):
     condition = condition_factory()
     filter = filter_factory()
@@ -48,7 +48,7 @@ def test_migrate_reverse(migrator, state, condition_factory, filter_factory):
     condition_input = SQLInput.objects.get(condition=condition.id)
     filter_input = SQLInput.objects.get(filter=filter.id)
 
-    new_state = migrator.apply_tested_migration(("pyrog", "0011_drop_input"))
+    new_state = migrator.apply_tested_migration(("pyrog", "0012_drop_input"))
 
     SQLInput = new_state.apps.get_model("pyrog", "SQLInput")
     assert len(SQLInput.objects.all()) == 0

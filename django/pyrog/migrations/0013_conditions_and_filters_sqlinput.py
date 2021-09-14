@@ -37,7 +37,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0011_drop_input"),
+        ("pyrog", "0012_drop_input"),
     ]
 
     # In this migration, we add a non-nullable field.

@@ -37,7 +37,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pyrog", "0012_conditions_and_filters_sqlinput"),
+        ("pyrog", "0013_conditions_and_filters_sqlinput"),
     ]
 
     operations = [
