@@ -2,9 +2,10 @@ import json
 import logging
 from glob import glob
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.mapping import MappingSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,8 @@ class Command(BaseCommand):
         parser.add_argument("--mappings", required=True)
 
     def handle(self, *args, **options):
+        call_command("migrate", "pyrog")
+
         for mapping in glob(options.get("mappings")):
             print(f"Importing {mapping}...")
             with open(mapping, "r") as f:
