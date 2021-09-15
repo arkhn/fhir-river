@@ -35,12 +35,5 @@ def load_export_data(path: Path) -> dict:
 def load_mapping(path: Path) -> dict:
     data = load_export_data(path)
     if os.environ.get("ENV") == "dev":
-        data["credential"] = {
-            **data["credential"],
-            "host": "localhost",
-            "port": 5432,
-            "login": "river",
-            "password": "river",
-            "database": "river",
-        }
+        data["credential"] = {**data["credential"], "host": "localhost", "port": 15432}
     return data

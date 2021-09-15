@@ -26,6 +26,9 @@ class Script:
     def apply(self, data_columns, static_inputs: List[str], attr_path, primary_key):
         raise NotImplementedError
 
+    def __repr__(self):
+        return f"<Script: {self.name}>"
+
 
 class MergingScript(Script):
     def apply(self, data_columns, static_inputs: List[str], attr_path, primary_key):

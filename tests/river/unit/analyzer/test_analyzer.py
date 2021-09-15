@@ -59,12 +59,6 @@ def test_analyze_mapping(mimic_mapping, snapshot):
     resource_id = "cktjv96ex0050q7vzrea47mnt"
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    # FIXME syrupy compares function addresses in snapshot
-    for a in analysis.attributes:
-        for g in a.input_groups:
-            for c in g.columns:
-                c.cleaning_script = None
-
     assert analysis == snapshot
 
 

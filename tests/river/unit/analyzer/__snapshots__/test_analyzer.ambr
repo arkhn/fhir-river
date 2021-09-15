@@ -51,7 +51,7 @@
             attribute=...,
             columns=<class 'list'> [
               <class 'SqlColumn'> {
-                cleaning_script=None,
+                cleaning_script=<Script: clean_dateTime>,
                 column='dischtime',
                 concept_map=None,
                 joins=<class 'list'> [
@@ -103,7 +103,7 @@
             attribute=...,
             columns=<class 'list'> [
               <class 'SqlColumn'> {
-                cleaning_script=None,
+                cleaning_script=<Script: clean_dateTime>,
                 column='admittime',
                 concept_map=None,
                 joins=<class 'list'> [
