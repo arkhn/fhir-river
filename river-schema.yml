@@ -3412,6 +3412,27 @@ components:
         - id
         - name
         - schema
+    OperationOutcomeIssue:
+      type: object
+      properties:
+        severity:
+          type: string
+        code:
+          type: string
+        diagnostics:
+          type: string
+        location:
+          type: array
+          items:
+            type: string
+        expression:
+          type: string
+      required:
+      - code
+      - diagnostics
+      - expression
+      - location
+      - severity
     OwnerRequest:
       type: object
       properties:
@@ -3600,7 +3621,7 @@ components:
         errors:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/OperationOutcomeIssue'
       required:
         - errors
         - instances
