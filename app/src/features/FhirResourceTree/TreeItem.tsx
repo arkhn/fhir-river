@@ -57,15 +57,15 @@ const TreeItem = ({
     elementNode.definitionNode.childrenDefinitions.filter(
       ({ definition }) => !definition.sliceName
     ).length === 0;
-  // const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
-  //   {
-  //     definitionId: elementNode.type ?? "",
-  //     node: elementNode,
-  //   },
-  //   {
-  //     skip: !hasToFetchNodeDefinition,
-  //   }
-  // );
+  const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
+    {
+      definitionId: elementNode.type ?? "",
+      node: elementNode,
+    },
+    {
+      skip: !hasToFetchNodeDefinition,
+    }
+  );
 
   const handleIconClick = () => {
     setHasExpanded(true);
@@ -82,8 +82,8 @@ const TreeItem = ({
         <TreeItemLabel
           isArrayItem={isArrayItem}
           elementNode={elementNode}
-          // onDeleteItem={deleteItem}
-          // onCreateItem={createItem}
+          onDeleteItem={deleteItem}
+          onCreateItem={createItem}
           // onAddExtension={addExtension}
         />
       }

@@ -121,10 +121,6 @@ const useFhirResourceTreeData = (
     }
   }, [structureDefinition, nodeDefinition]);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   const deleteItem = useCallback(async () => {
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
 
@@ -176,6 +172,7 @@ const useFhirResourceTreeData = (
     //   }).unwrap();
     // }
   }, [createAttribute, mappingId, node, rootNodeDefinition]);
+
   useEffect(() => {
     if (data && (!node || node.children.length === 0)) {
       dispatch(
@@ -186,14 +183,6 @@ const useFhirResourceTreeData = (
       );
     }
   }, [data, dispatch, node?.path, node?.definitionNode.definition.id]);
-
-  // We build the tree only for the root node (ie !node)
-  // useEffect(() => {
-  //   if (rootNodeDefinition && !node) {
-  //     const root = buildTree(rootNodeDefinition, rootNodeDefinition);
-  //     dispatch(rootElementNodeUpdate({ root }));
-  //   }
-  // }, [dispatch, rootNodeDefinition, node]);
 
   useEffect(() => {
     // The attribute injections only need to happen from the tree rootNodeDefinition scope (ie if !node)

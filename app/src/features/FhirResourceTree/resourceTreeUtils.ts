@@ -46,12 +46,12 @@ const getKind = (elementDefinition: IElementDefinition): ElementKind => {
     return "primitive";
   }
 
-  if (type && complexTypes.includes(type)) {
-    return "complex";
+  if (types && elementDefinition.path?.endsWith("[x]")) {
+    return "choice";
   }
 
-  if (types && types.length > 1 && elementDefinition.path?.endsWith("[x]")) {
-    return "choice";
+  if (type && complexTypes.includes(type)) {
+    return "complex";
   }
 };
 
@@ -232,56 +232,112 @@ export const buildTree = (
         ? parentElementNode?.path
         : parentElementNode?.path.split(".").slice(0, -1).join("."),
   });
+  const isCurrentNodeRoot = !currentNode.path.includes(".");
 
-  nodeDefinition.sliceDefinitions.forEach((sliceNodeDefinition) => {
-    // TODO: Slice cardinality conditions
-    currentNode.children.push(buildTree(sliceNodeDefinition, currentNode));
+  // If current nodeDefinition has slices, we add them to its children
+  nodeDefinition.sliceDefinitions.forEach((sliceDefinition, index) => {
+    if (
+      sliceDefinition.definition.max &&
+      (sliceDefinition.definition.max === "*" ||
+        +sliceDefinition.definition.max > 0)
+    ) {
+      const sliceElementNode = createElementNode(sliceDefinition, {
+        index: currentNode.isArray ? index : undefined,
+        parentPath: currentNode.path,
+      });
+      currentNode.children.push(sliceElementNode);
+      sliceDefinition.childrenDefinitions.forEach((sliceChildDefinition) => {
+        buildTree(sliceChildDefinition, sliceElementNode);
+      });
+    }
   });
 
-  if (nodeDefinition.sliceDefinitions.length === 0) {
+  // If current node is array, has no children and has definitions, we add an item
+  if (
+    !isCurrentNodeRoot &&
+    currentNode.isArray &&
+    currentNode.children.length === 0 &&
+    nodeDefinition.childrenDefinitions.length > 0
+  ) {
+    const itemNode = createElementNode(nodeDefinition, {
+      index: currentNode.children.length,
+      parentPath: currentNode.path,
+    });
+    currentNode.children.push(itemNode);
     nodeDefinition.childrenDefinitions.forEach((childNodeDefinition) => {
-      currentNode.children.push(buildTree(childNodeDefinition, currentNode));
+      buildTree(childNodeDefinition, itemNode);
     });
   }
 
   if (parentElementNode) {
-    // const isParentRoot = !parentElementNode.path.includes(".");
-    // const isParentArray = parentElementNode.isArray;
-    // const isDefPathEqualToParentDefPath =
-    //   nodeDefinition.definition.path ===
-    //   parentElementNode.definitionNode.definition.path;
-    // const hasOrWillParentNodeHaveItem =
-    //   parentElementNode.children.length > 0 ||
-    //   parentElementNode.definitionNode.childrenDefinitions.some(
-    //     ({ definition }) =>
-    //       definition.path === parentElementNode.definitionNode.definition.path
-    //   );
-    // if (!isParentRoot && isParentArray) {
-    //   if (isDefPathEqualToParentDefPath) {
-    //     currentNode.path = `${parentElementNode.path}[${parentElementNode.children.length}]`;
-    //     parentElementNode.children.push(currentNode);
-    //   } else {
-    //     if (!hasOrWillParentNodeHaveItem) {
-    //       const arrayItem = createElementNode(
-    //         parentElementNode.definitionNode,
-    //         {
-    //           parentPath: parentElementNode.path,
-    //           index: 0,
-    //         }
-    //       );
-    //       parentElementNode.children.push(arrayItem);
-    //       parentElementNode.definitionNode.childrenDefinitions.forEach(
-    //         (childNodeDef) => {
-    //           buildTree(childNodeDef, arrayItem);
-    //         }
-    //       );
-    //       return arrayItem;
-    //     }
-    //   }
-    // } else {
-    //   parentElementNode.children.push(currentNode);
-    // }
+    const isParentRoot = !parentElementNode.path.includes(".");
+
+    // If parent is not of type array, we add its childrenDefinitions as children
+    if (!parentElementNode.isArray || isParentRoot) {
+      parentElementNode.children.push(currentNode);
+      nodeDefinition.childrenDefinitions.forEach((childDefinition) => {
+        buildTree(childDefinition, currentNode);
+      });
+    } else {
+      // if (parentElementNode.children.length === 0) {
+      //   debugger;
+      // }
+    }
+  } else {
+    nodeDefinition.childrenDefinitions.forEach((childDefinition) =>
+      buildTree(childDefinition, currentNode)
+    );
   }
+
+  // nodeDefinition.sliceDefinitions.forEach((sliceNodeDefinition) => {
+  //   // TODO: Slice cardinality conditions
+  //   currentNode.children.push(buildTree(sliceNodeDefinition, currentNode));
+  // });
+
+  // if (nodeDefinition.sliceDefinitions.length === 0) {
+  //   nodeDefinition.childrenDefinitions.forEach((childNodeDefinition) => {
+  //     currentNode.children.push(buildTree(childNodeDefinition, currentNode));
+  //   });
+  // }
+
+  // if (parentElementNode) {
+  //   const isParentRoot = !parentElementNode.path.includes(".");
+  //   const isParentArray = parentElementNode.isArray;
+  //   const isDefPathEqualToParentDefPath =
+  //     nodeDefinition.definition.path ===
+  //     parentElementNode.definitionNode.definition.path;
+  //   const hasOrWillParentNodeHaveItem =
+  //     parentElementNode.children.length > 0 ||
+  //     parentElementNode.definitionNode.childrenDefinitions.some(
+  //       ({ definition }) =>
+  //         definition.path === parentElementNode.definitionNode.definition.path
+  //     );
+  //   if (!isParentRoot && isParentArray) {
+  //     if (isDefPathEqualToParentDefPath) {
+  //       currentNode.path = `${parentElementNode.path}[${parentElementNode.children.length}]`;
+  //       parentElementNode.children.push(currentNode);
+  //     } else {
+  //       if (!hasOrWillParentNodeHaveItem) {
+  //         const arrayItem = createElementNode(
+  //           parentElementNode.definitionNode,
+  //           {
+  //             parentPath: parentElementNode.path,
+  //             index: 0,
+  //           }
+  //         );
+  //         parentElementNode.children.push(arrayItem);
+  //         parentElementNode.definitionNode.childrenDefinitions.forEach(
+  //           (childNodeDef) => {
+  //             buildTree(childNodeDef, arrayItem);
+  //           }
+  //         );
+  //         return arrayItem;
+  //       }
+  //     }
+  //   } else {
+  //     parentElementNode.children.push(currentNode);
+  //   }
+  // }
 
   // nodeDefinition.childrenDefinitions.forEach((childNodeDef) => {
   //   buildTree(childNodeDef, currentNode);
@@ -332,10 +388,22 @@ export const buildTreeDefinition = (
       );
     }
 
-    previousElementNodeDefinition.childrenDefinitions.push(
-      currentDefinitionNode
-    );
-    buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+    if (
+      getKind(previousElementNodeDefinition.definition) === "choice" &&
+      previousElementNodeDefinition.childrenDefinitions.length > 0
+    ) {
+      previousElementNodeDefinition.childrenDefinitions.forEach(
+        (prevChildDefinition) => {
+          prevChildDefinition.childrenDefinitions.push(currentDefinitionNode);
+          buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+        }
+      );
+    } else {
+      previousElementNodeDefinition.childrenDefinitions.push(
+        currentDefinitionNode
+      );
+      buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+    }
   } else {
     const parent = getDefinitionNodeParent(
       previousElementNodeDefinition,
