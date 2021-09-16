@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable import/order */
 import React, { useState } from "react";
 
 import { makeStyles } from "@material-ui/core";
@@ -48,7 +46,6 @@ const TreeItem = ({
     elementNode.isArray &&
     elementNode.children.length === 0;
   const [hasExpanded, setHasExpanded] = useState(false);
-  const isPrimitive = elementNode.kind === "primitive";
   const isComplex = elementNode.kind === "complex";
   const hasToFetchNodeDefinition =
     isComplex &&
@@ -84,7 +81,7 @@ const TreeItem = ({
           elementNode={elementNode}
           onDeleteItem={deleteItem}
           onCreateItem={createItem}
-          // onAddExtension={addExtension}
+          onAddExtension={addExtension}
         />
       }
       onIconClick={handleIconClick}
