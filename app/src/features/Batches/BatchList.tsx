@@ -1,19 +1,13 @@
 import React, { useState } from "react";
 
-import { CircularProgress, Link, Paper, Typography } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Replay } from "@material-ui/icons";
 import Pagination from "@material-ui/lab/Pagination";
-import moment, { Duration } from "moment";
-import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-import Button from "common/components/Button";
 import { useApiBatchesListQuery } from "services/api/endpoints";
-import { Batch } from "services/api/generated/api.generated";
 
-import { KIBANA_URL } from "../../constants";
-import BatchCancel from "./BatchCancel";
+import BatchListItem from "./BatchListItem";
 
 const useStyles = makeStyles((theme) => ({
   batchList: {
@@ -59,13 +53,8 @@ const useStyles = makeStyles((theme) => ({
 
 const PAGE_SIZE = 10;
 
-const createKibanaLink = (batchCreation: string) => {
-  return `${KIBANA_URL}app/kibana#/discover?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1y,to:now))&_a=(columns:!(_source),filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:ffb9f770-148b-11ec-afc5-23ae59245f97,key:'@timestamp',negate:!f,params:(query:'${batchCreation}'),type:phrase),query:(match_phrase:('@timestamp':'${batchCreation}')))),index:ffb9f770-148b-11ec-afc5-23ae59245f97,interval:auto,query:(language:kuery,query:''),sort:!())`;
-};
-
 const BatchList = (): JSX.Element => {
   const classes = useStyles();
-  const { t } = useTranslation();
   const { sourceId } = useParams<{ sourceId: string }>();
 
   const [page, setPage] = useState(1);
@@ -87,38 +76,6 @@ const BatchList = (): JSX.Element => {
     }
   );
 
-  const getDurationString = (duration: number, unit: string) => {
-    if (duration) return `${t(`${unit}`, { count: duration })} `;
-    else return "";
-  };
-
-  const getBatchDuration = (batch: Batch) => {
-    const batchEnd = batch.completed_at ?? batch.canceled_at;
-    if (batchEnd) {
-      const endTime = moment.utc(new Date(batchEnd));
-      const duration: Duration = moment.duration(
-        endTime.diff(new Date(batch.created_at))
-      );
-      return `${getDurationString(duration.years(), "year")}
-      ${getDurationString(duration.months(), "month")}
-      ${getDurationString(duration.days(), "day")}
-      ${getDurationString(duration.hours(), "hour")}
-      ${getDurationString(duration.minutes(), "minute")}
-      `;
-    }
-  };
-
-  const getCreatedAtDate = (date: string) =>
-    new Date(date).toLocaleString().split(",").join(" -");
-
-  const handleBatchRetry = (batchId: string) => (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
-    // TODO: batch retry is not implemented yet
-    console.log(batchId);
-  };
-
   if (isBatchesLoading)
     return (
       <div className={classes.loader}>
@@ -130,66 +87,7 @@ const BatchList = (): JSX.Element => {
       <div className={classes.batchList}>
         {batches?.results &&
           batches.results.map((batch) => (
-            <Paper
-              key={batch.id}
-              className={classes.listItem}
-              variant="outlined"
-              elevation={2}
-            >
-              <div>
-                <div className={classes.title}>
-                  <Typography variant="subtitle2">
-                    {!batch.completed_at &&
-                      !batch.canceled_at &&
-                      t("batchInProgress")}
-                    {batch.completed_at && batch.errors.length > 0 && (
-                      <>
-                        {t("batchErrors", {
-                          count: batch.errors.length,
-                        })}{" "}
-                        <Link
-                          target="_blank"
-                          rel="noopener"
-                          href={createKibanaLink(
-                            new Date(batch.created_at).toISOString()
-                          )}
-                        >
-                          ({t("seeOnKibana")})
-                        </Link>
-                      </>
-                    )}
-
-                    {batch.completed_at &&
-                      batch.errors.length === 0 &&
-                      t("batchSuccess")}
-                    {batch.canceled_at && t("batchCanceled")}
-                  </Typography>
-                </div>
-                {(batch.completed_at || batch.canceled_at) && (
-                  <Typography variant="body2" color="textSecondary">
-                    {`${getBatchDuration(batch)} | ${t("resource", {
-                      count: batch.resources.length,
-                    })}`}
-                  </Typography>
-                )}
-              </div>
-              <div className={classes.listItemActions}>
-                <Typography variant="subtitle2" className={classes.margin}>
-                  {getCreatedAtDate(batch.created_at)}
-                </Typography>
-                <Button
-                  variant="outlined"
-                  startIcon={<Replay />}
-                  onClick={handleBatchRetry(batch.id)}
-                  className={classes.margin}
-                >
-                  {t("retry")}
-                </Button>
-                {!batch.canceled_at && !batch.completed_at && (
-                  <BatchCancel batch={batch} />
-                )}
-              </div>
-            </Paper>
+            <BatchListItem key={batch.id} batch={batch} />
           ))}
       </div>
       <div className={classes.paginationContainer}>
