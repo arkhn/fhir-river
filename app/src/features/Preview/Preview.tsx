@@ -113,12 +113,12 @@ const Preview = (): JSX.Element => {
     ExplorationResponse | null | undefined
   >(undefined);
 
-  const [alert, setAlert] = useState<string[] | undefined>(undefined);
+  const [alerts, setAlerts] = useState<string[] | undefined>(undefined);
   const handleAlertClose = (index: number) => {
-    if (alert) {
-      const newAlert = [...alert];
-      newAlert.splice(index, 1);
-      setAlert(newAlert);
+    if (alerts) {
+      const newAlerts = [...alerts];
+      newAlerts.splice(index, 1);
+      setAlerts(newAlerts);
     }
   };
 
@@ -153,7 +153,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          setAlert([e.error]);
+          setAlerts([e.error]);
         }
       };
       explore();
@@ -183,9 +183,10 @@ const Preview = (): JSX.Element => {
               },
             }).unwrap();
             setPreview(previewResult.instances[0]);
-            if (previewResult.errors.length > 0) setAlert(previewResult.errors);
+            if (previewResult.errors.length > 0)
+              setAlerts(previewResult.errors);
           } catch (e) {
-            setAlert([e.error]);
+            setAlerts([e.error]);
           }
         };
         previewCreate();
@@ -243,8 +244,8 @@ const Preview = (): JSX.Element => {
           )}
         </Table>
       </TableContainer>
-      {alert &&
-        alert.map((message, index) => (
+      {alerts &&
+        alerts.map((message, index) => (
           <Alert
             key={index}
             className={classes.alert}
