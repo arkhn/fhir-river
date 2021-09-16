@@ -97,7 +97,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
               <>
                 {t("batchErrors", {
                   count: batch.errors.length,
-                })}
+                })}{" "}
                 {batchEnd && (
                   <Link
                     target="_blank"
