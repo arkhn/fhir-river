@@ -145,28 +145,27 @@ class Analyzer:
     def analyze_input_group(self, mapping_group, parent_attribute):
         input_group = InputGroup(id_=mapping_group["id"], attribute=parent_attribute)
         parent_attribute.add_input_group(input_group)
-        for input_ in mapping_group["inputs"]:
-            if input_["static_value"]:
-                input_group.add_static_input(input_["static_value"])
+        for static_input in mapping_group["static_inputs"]:
+            input_group.add_static_input(static_input["value"])
 
-            elif input_["column"]:
-                col_data = self._columns_data[input_["column"]]
-                cur_col = SqlColumn(col_data["owner"], col_data["table"], col_data["column"])
+        for sql_input in mapping_group["sql_inputs"]:
+            col_data = self._columns_data[sql_input["column"]]
+            cur_col = SqlColumn(col_data["owner"], col_data["table"], col_data["column"])
 
-                if input_["script"]:
-                    try:
-                        cur_col.cleaning_script = self.scripts_repo.get(input_["script"])
-                    except NameError as err:
-                        logger.exception(f"Error while fetching script {err}.")
+            if sql_input["script"]:
+                try:
+                    cur_col.cleaning_script = self.scripts_repo.get(sql_input["script"])
+                except NameError as err:
+                    logger.exception(f"Error while fetching script {err}.")
 
-                if input_["concept_map_id"] and input_["concept_map"]:
-                    cur_col.concept_map = ConceptMap(input_["concept_map"], input_["concept_map_id"])
+            if sql_input["concept_map_id"] and sql_input["concept_map"]:
+                cur_col.concept_map = ConceptMap(sql_input["concept_map"], sql_input["concept_map_id"])
 
-                input_joins = self.parse_joins_mapping(col_data["joins"])
-                for join in input_joins:
-                    cur_col.add_join(join)
+            input_joins = self.parse_joins_mapping(col_data["joins"])
+            for join in input_joins:
+                cur_col.add_join(join)
 
-                input_group.add_column(cur_col)
+            input_group.add_column(cur_col)
 
         for mapping_condition in mapping_group["conditions"]:
             cond_col_data = self._columns_data[mapping_condition["column"]]

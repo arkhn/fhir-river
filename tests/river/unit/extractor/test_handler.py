@@ -9,10 +9,12 @@ from river.extractor.service import batch_resource_handler
 pytestmark = pytest.mark.django_db
 
 
-def test_batch_resource_handler(batch, mimic_mapping):
+def test_batch_resource_handler(batch_factory, snapshot):
     # FIXME: use a dedicated fixture for the patient mapping
     # instead of the first resource of mimic mappings.
-    resource_id = mimic_mapping["resources"][0]["id"]
+    resource_id = "cktjv96fh006eq7vzmvidju9g"
+
+    batch = batch_factory.create(id="test-batch_id")
     event = BatchEvent(batch_id=batch.id, resource_id=resource_id)
     publisher = InMemoryEventPublisher()
     counter = InMemoryProgressionCounter()
@@ -26,3 +28,4 @@ def test_batch_resource_handler(batch, mimic_mapping):
     assert counter.get(f"{batch.id}:{resource_id}") == Progression(
         extracted=len(publisher._events[f"extract.{batch.id}"]), loaded=None, failed=None
     )
+    assert publisher._events[f"extract.{batch.id}"] == snapshot

@@ -101,14 +101,24 @@ class InputGroup(models.Model):
 
 class Input(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    input_group = models.ForeignKey(InputGroup, related_name="inputs", on_delete=models.CASCADE)
-    script = models.TextField(blank=True, default="")
-    concept_map_id = models.TextField(blank=True, default="")
-    column = models.OneToOneField("Column", blank=True, null=True, on_delete=models.CASCADE)
-    static_value = models.TextField(blank=True, null=True, default=None)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
+class StaticInput(Input):
+    input_group = models.ForeignKey(InputGroup, related_name="static_inputs", on_delete=models.CASCADE)
+    value = models.TextField(blank=True, null=True, default=None)
+
+
+class SQLInput(Input):
+    input_group = models.ForeignKey(InputGroup, related_name="sql_inputs", on_delete=models.CASCADE)
+    column = models.OneToOneField("Column", related_name="sql_input", on_delete=models.CASCADE)
+    script = models.TextField(blank=True, default="")
+    concept_map_id = models.TextField(blank=True, default="")
 
 
 class Column(models.Model):

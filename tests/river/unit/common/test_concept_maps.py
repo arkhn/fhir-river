@@ -15,8 +15,8 @@ def test_format_concept_map():
 
 
 def test_dereference_concept_map():
-    mapping = {"attributes": [{"input_groups": [{"inputs": [{"concept_map_id": "cm_gender"}]}]}]}
+    mapping = {"attributes": [{"input_groups": [{"sql_inputs": [{"concept_map_id": "cm_gender"}]}]}]}
 
     concept_maps.dereference_concept_map(mapping, "validToken")
 
-    assert mapping["attributes"][0]["input_groups"][0]["inputs"][0]["concept_map"] == {"F": "female", "M": "male"}
+    assert mapping["attributes"][0]["input_groups"][0]["sql_inputs"][0]["concept_map"] == {"F": "female", "M": "male"}

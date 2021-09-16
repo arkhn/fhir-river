@@ -1,7 +1,5 @@
 {
-    "@context": "No resources, no owners",
-    "name": "test",
-    "version": "",
+    "id": "ckt4kpzdj01gi3hvzl5j6j310",
     "resources": [],
     "credential": {
         "host": "mimic",
@@ -11,5 +9,9 @@
         "password": "test",
         "model": "POSTGRES",
         "owners": []
-    }
+    },
+    "name": "no-resource-no-owner",
+    "version": "",
+    "updated_at": "2021-09-03T18:30:38.935977+02:00",
+    "created_at": "2021-09-03T18:30:38.935998+02:00"
 }

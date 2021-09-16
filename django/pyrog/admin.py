@@ -38,8 +38,13 @@ class InputGroup(admin.ModelAdmin):
     pass
 
 
-@admin.register(models.Input)
-class Input(admin.ModelAdmin):
+@admin.register(models.StaticInput)
+class StaticInput(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.SQLInput)
+class SQLInput(admin.ModelAdmin):
     pass
 
 

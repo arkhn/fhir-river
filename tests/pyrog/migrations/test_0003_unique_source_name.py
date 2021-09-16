@@ -3,9 +3,9 @@ import pytest
 
 @pytest.mark.django_db
 @pytest.mark.migration(app_label="pyrog", migration_name="0002_integrate_users")
-def test_migrate(migrator, old_state):
-    Template = old_state.apps.get_model("pyrog", "Template")
-    Source = old_state.apps.get_model("pyrog", "Source")
+def test_migrate(migrator, state):
+    Template = state.apps.get_model("pyrog", "Template")
+    Source = state.apps.get_model("pyrog", "Source")
 
     t1 = Template.objects.create(name="template_1")
     t2 = Template.objects.create(name="template_2")

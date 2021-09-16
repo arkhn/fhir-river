@@ -1,4 +1,5 @@
 import factory
+from factory import fuzzy
 
 from django.conf import settings
 
@@ -68,23 +69,33 @@ class InputGroupFactory(factory.django.DjangoModelFactory):
     attribute = factory.SubFactory(AttributeFactory)
 
 
-class InputFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.Input
-
-    id = factory.Sequence(lambda n: f"input_id_{n:04d}")
-    input_group = factory.SubFactory(InputGroupFactory)
-
-
 class ColumnFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.Column
+        model = "pyrog.Column"
 
     class Params:
         with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
 
     id = factory.Sequence(lambda n: f"column_id_{n:04d}")
     owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
+
+
+class StaticInputFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.StaticInput"
+
+    id = factory.Sequence(lambda n: f"static_input_id_{n:04d}")
+    input_group = factory.SubFactory(InputGroupFactory)
+    value = fuzzy.FuzzyText(length=8)
+
+
+class SQLInputFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "pyrog.SQLInput"
+
+    id = factory.Sequence(lambda n: f"sql_input_id_{n:04d}")
+    input_group = factory.SubFactory(InputGroupFactory)
+    column = factory.SubFactory(ColumnFactory)
 
 
 class JoinFactory(factory.django.DjangoModelFactory):

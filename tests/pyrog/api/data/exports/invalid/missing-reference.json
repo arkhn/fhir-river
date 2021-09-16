@@ -1,5 +1,5 @@
 {
-    "@context": "with condition",
+    "@context": "Missing reference to column",
     "name": "test",
     "version": "",
     "resources": [
@@ -4158,22 +4158,15 @@
                     "input_groups": [
                         {
                             "merging_script": "",
-                            "inputs": [
-                                {
+                            "sql_inputs": [
+                            {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "static_value": "",
                                     "column": "reference-to-column"
                                 }
                             ],
-                            "conditions": [
-                                {
-                                    "action": "EXCLUDE",
-                                    "column": "reference-to-column",
-                                    "value": "something",
-                                    "relation": "EQ"
-                                }
-                            ]
+                            "static_inputs": [],
+                            "conditions": []
                         }
                     ]
                 }
@@ -4184,23 +4177,14 @@
     "credential": {
         "host": "mimic",
         "port": 5432,
-        "login": "test",
-        "password": "test",
-        "database": "test",
+        "database": "default",
         "model": "POSTGRES",
         "owners": [
             {
                 "id": "reference-to-owner",
-                "name": "public",
+                "name": "something",
                 "schema": "something",
-                "columns": [
-                    {
-                        "id": "reference-to-column",
-                        "table": "patient",
-                        "column": "id",
-                        "joins": []
-                    }
-                ]
+                "columns": []
             }
         ]
     }

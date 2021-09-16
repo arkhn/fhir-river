@@ -98,9 +98,15 @@ class InputGroupSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class InputSerializer(serializers.ModelSerializer):
+class StaticInputSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Input
+        model = models.StaticInput
+        fields = "__all__"
+
+
+class SQLInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SQLInput
         fields = "__all__"
 
 

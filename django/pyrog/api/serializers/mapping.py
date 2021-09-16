@@ -25,12 +25,13 @@ from pyrog.models import (
     Condition,
     Credential,
     Filter,
-    Input,
     InputGroup,
     Join,
     Owner,
     Resource,
     Source,
+    SQLInput,
+    StaticInput,
 )
 from river.common.database_connection.db_connection import DBConnection
 
@@ -130,12 +131,18 @@ class MappingCredentialSerializer(MappingPartialCredentialSerializer):
         return super().validate(data)
 
 
-class MappingInputSerializer(serializers.ModelSerializer):
+class MappingStaticInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaticInput
+        fields = ["value"]
+
+
+class MappingSQLInputSerializer(serializers.ModelSerializer):
     column = _ColumnField(allow_null=True)
 
     class Meta:
-        model = Input
-        fields = ["script", "concept_map_id", "static_value", "column"]
+        model = SQLInput
+        fields = ["script", "concept_map_id", "column"]
 
 
 class MappingConditionSerializer(serializers.ModelSerializer):
@@ -152,12 +159,13 @@ class MappingConditionSerializer(serializers.ModelSerializer):
 
 
 class MappingInputGroupSerializer(serializers.ModelSerializer):
-    inputs = MappingInputSerializer(many=True, required=False, default=[])
+    static_inputs = MappingStaticInputSerializer(many=True, required=False, default=[])
+    sql_inputs = MappingSQLInputSerializer(many=True, required=False, default=[])
     conditions = MappingConditionSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = InputGroup
-        fields = ["id", "merging_script", "inputs", "conditions"]
+        fields = ["id", "merging_script", "static_inputs", "sql_inputs", "conditions"]
 
 
 class MappingAttributeSerializer(serializers.ModelSerializer):
@@ -284,15 +292,15 @@ class MappingSerializer(serializers.ModelSerializer):
         for resource_data in resources_data:
             filters_data = resource_data.pop("filters")
             attributes_data = resource_data.pop("attributes")
-            owner_data = resource_data.pop("primary_key_owner")
+            owner_id = resource_data.pop("primary_key_owner")
 
-            owner = owner_by_id[owner_data]
+            owner = owner_by_id[owner_id]
             resource = Resource.objects.create(primary_key_owner=owner, source=source, **{**resource_data, "id": None})
 
             for filter_data in filters_data:
-                column_data = filter_data.pop("sql_column")
+                column_id = filter_data.pop("sql_column")
+                column = column_by_id[column_id]
 
-                column = column_by_id[column_data]
                 Filter.objects.create(resource=resource, sql_column=column, **filter_data)
 
             for attribute_data in attributes_data:
@@ -301,33 +309,24 @@ class MappingSerializer(serializers.ModelSerializer):
                 attribute = Attribute.objects.create(resource=resource, **attribute_data)
 
                 for input_group_data in input_groups_data:
-                    inputs_data = input_group_data.pop("inputs")
+                    static_inputs_data = input_group_data.pop("static_inputs")
+                    sql_inputs_data = input_group_data.pop("sql_inputs")
                     conditions_data = input_group_data.pop("conditions")
-
                     input_group = InputGroup.objects.create(attribute=attribute, **{**input_group_data, "id": None})
 
-                    for input_data in inputs_data:
-                        static_value = input_data.pop("static_value")
-                        column_id = input_data.pop("column")
+                    for static_input_data in static_inputs_data:
+                        StaticInput.objects.create(input_group=input_group, **static_input_data)
 
-                        if static_value:
-                            Input.objects.create(
-                                input_group=input_group,
-                                static_value=static_value,
-                                **input_data,
-                            )
-                        else:
-                            column = column_by_id[column_id]
-                            Input.objects.create(
-                                input_group=input_group,
-                                column=column,
-                                **input_data,
-                            )
+                    for sql_input_data in sql_inputs_data:
+                        column_id = sql_input_data.pop("column")
+                        column = column_by_id[column_id]
+
+                        SQLInput.objects.create(input_group=input_group, column=column, **sql_input_data)
 
                     for condition_data in conditions_data:
-                        column_data = condition_data.pop("column")
+                        column_id = condition_data.pop("column")
+                        column = column_by_id[column_id]
 
-                        column = column_by_id[column_data]
                         Condition.objects.create(input_group=input_group, column=column, **condition_data)
 
         return source

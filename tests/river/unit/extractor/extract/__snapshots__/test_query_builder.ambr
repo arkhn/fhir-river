@@ -1,0 +1,12 @@
+# name: test_with_real_analysis
+  '
+  SELECT public.patients.subject_id AS patients_subject_id_a9fb9667, public.patients.dob AS patients_dob_f873eb32, public.patients.row_id AS patients_row_id_ba3a4e99 
+  FROM public.patients 
+  WHERE public.patients.row_id = :param_1
+  '
+---
+# name: test_with_real_analysis.1
+  <class 'dict'> {
+    'param_1': '9467',
+  }
+---
