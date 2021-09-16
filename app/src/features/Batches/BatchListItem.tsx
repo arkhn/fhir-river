@@ -3,7 +3,7 @@ import React from "react";
 import { Link, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Replay } from "@material-ui/icons";
-import moment, { Duration } from "moment";
+import moment from "moment";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
@@ -47,27 +47,18 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const { t } = useTranslation();
   const batchEnd = batch.completed_at ?? batch.canceled_at;
 
-  const getDurationString = (duration: number, unit: string) => {
-    if (duration) return `${t(`${unit}`, { count: duration })} `;
-    else return "";
-  };
-
   const getBatchDuration = (batch: Batch) => {
     if (batchEnd) {
-      const endTime = moment.utc(new Date(batchEnd));
-      const duration: Duration = moment.duration(
-        endTime.diff(new Date(batch.created_at))
-      );
-      return `${getDurationString(duration.years(), "year")}${getDurationString(
-        duration.months(),
-        "month"
-      )}${getDurationString(duration.days(), "day")}${getDurationString(
-        duration.hours(),
-        "hour"
-      )}${getDurationString(duration.minutes(), "minute")}${getDurationString(
-        duration.seconds(),
-        "second"
-      )}`;
+      const start = moment(batch.created_at);
+      const end = moment(batchEnd);
+      const diff = moment.duration(end.diff(start));
+      return `${diff.years() ? `${t("year", { count: diff.years() })} ` : ""}${
+        diff.months() ? `${t("month", { count: diff.months() })} ` : ""
+      }${diff.days() ? `${t("day", { count: diff.days() })}` : ""}${
+        diff.hours() ? `${t("hour", { count: diff.hours() })} ` : ""
+      }${diff.minutes() ? `${t("minute", { count: diff.minutes() })} ` : ""}${
+        diff.seconds() ? `${t("second", { count: diff.seconds() })} ` : ""
+      }`;
     }
   };
 
