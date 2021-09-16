@@ -205,28 +205,28 @@ const useFhirResourceTreeData = (
   }, [dispatch, attributes, prevAttributes, rootElementNode, node]);
 
   // Add attribute items to array nodes
-  // useEffect(() => {
-  //   const addItemToEmptyArray = async () => {
-  //     if (
-  //       node &&
-  //       node.isArray &&
-  //       attributes &&
-  //       node.type !== "Extension" &&
-  //       node.children.length === 0 &&
-  //       !isAttributesFetching
-  //     ) {
-  //       const hasNodeChildren = attributes.some(({ path }) =>
-  //         path.startsWith(node.path)
-  //       );
+  useEffect(() => {
+    const addItemToEmptyArray = async () => {
+      if (
+        node &&
+        node.isArray &&
+        attributes &&
+        node.type !== "Extension" &&
+        node.children.length === 0 &&
+        !isAttributesFetching
+      ) {
+        const hasNodeChildren = attributes.some(({ path }) =>
+          path.startsWith(node.path)
+        );
 
-  //       if (!hasNodeChildren) {
-  //         await createItem();
-  //       }
-  //     }
-  //   };
-  //   addItemToEmptyArray();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [node, attributes, isAttributesFetching]);
+        if (!hasNodeChildren) {
+          await createItem();
+        }
+      }
+    };
+    addItemToEmptyArray();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attributes, isAttributesFetching]);
 
   return {
     rootElementNode,
