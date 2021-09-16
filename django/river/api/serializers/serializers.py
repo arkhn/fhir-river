@@ -27,9 +27,17 @@ class PreviewRequestSerializer(serializers.Serializer):
     primary_key_values = serializers.ListField(child=serializers.CharField())
 
 
+class OperationOutcomeIssueSerializer(serializers.Serializer):
+    severity = serializers.CharField()
+    code = serializers.CharField()
+    diagnostics = serializers.CharField(allow_blank=True)
+    location = serializers.ListField(child=serializers.CharField())
+    expression = serializers.CharField(allow_blank=True)
+
+
 class PreviewResponseSerializer(serializers.Serializer):
     instances = serializers.ListField(child=serializers.JSONField())
-    errors = serializers.ListField(child=serializers.CharField())
+    errors = serializers.ListField(child=OperationOutcomeIssueSerializer())
 
 
 class ScriptsSerializer(serializers.Serializer):
