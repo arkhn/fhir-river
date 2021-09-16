@@ -156,22 +156,22 @@ const useFhirResourceTreeData = (
   );
 
   const addExtension = useCallback(async () => {
-    // const parentNode = node ?? rootNodeDefinition;
-    // const extensionArrayNode = parentNode?.children.find(
-    //   ({ type }) => type === "Extension"
-    // );
-    // if (extensionArrayNode && extensionArrayNode.type && mappingId) {
-    //   const pathIndex = computeChildPathIndex(extensionArrayNode);
-    //   const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
-    //   await createAttribute({
-    //     attributeRequest: {
-    //       definition_id: extensionArrayNode.type,
-    //       path: attributePath,
-    //       resource: mappingId,
-    //     },
-    //   }).unwrap();
-    // }
-  }, [createAttribute, mappingId, node, rootNodeDefinition]);
+    const parentNode = node ?? rootElementNode;
+    const extensionArrayNode = parentNode?.children.find(
+      ({ type }) => type === "Extension"
+    );
+    if (extensionArrayNode && extensionArrayNode.type && mappingId) {
+      const pathIndex = computeChildPathIndex(extensionArrayNode);
+      const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
+      await createAttribute({
+        attributeRequest: {
+          definition_id: extensionArrayNode.type,
+          path: attributePath,
+          resource: mappingId,
+        },
+      }).unwrap();
+    }
+  }, [createAttribute, mappingId, node, rootElementNode]);
 
   useEffect(() => {
     if (data && (!node || node.children.length === 0)) {
