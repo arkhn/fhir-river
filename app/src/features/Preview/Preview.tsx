@@ -16,7 +16,7 @@ import {
   TableBody,
   useMediaQuery,
 } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
+import Alert, { Color } from "@material-ui/lab/Alert";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
@@ -29,7 +29,11 @@ import {
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
-import { ExplorationResponse } from "services/api/generated/api.generated";
+import {
+  ExplorationResponse,
+  OperationOutcomeIssue,
+  PreviewResponse,
+} from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -112,7 +116,9 @@ const Preview = (): JSX.Element => {
     ExplorationResponse | null | undefined
   >(undefined);
 
-  const [alerts, setAlerts] = useState<string[] | undefined>(undefined);
+  const [alerts, setAlerts] = useState<OperationOutcomeIssue[] | undefined>(
+    undefined
+  );
   const handleAlertClose = (index: number) => {
     if (alerts) {
       const newAlerts = [...alerts];
@@ -152,7 +158,13 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          setAlerts([e.error]);
+          setAlerts([
+            {
+              severity: "error",
+              diagnostics: e.error,
+              code: "internal",
+            },
+          ]);
         }
       };
       explore();
@@ -175,7 +187,7 @@ const Preview = (): JSX.Element => {
       if (primaryKeyValue) {
         const previewCreate = async () => {
           try {
-            const previewResult = await apiPreviewCreate({
+            const previewResult: PreviewResponse = await apiPreviewCreate({
               previewRequestRequest: {
                 resource_id: mappingId,
                 primary_key_values: [primaryKeyValue],
@@ -185,7 +197,13 @@ const Preview = (): JSX.Element => {
             if (previewResult.errors.length > 0)
               setAlerts(previewResult.errors);
           } catch (e) {
-            setAlerts([e.error]);
+            setAlerts([
+              {
+                severity: "error",
+                diagnostics: e.error,
+                code: "internal",
+              },
+            ]);
           }
         };
         previewCreate();
@@ -244,14 +262,14 @@ const Preview = (): JSX.Element => {
         </Table>
       </TableContainer>
       {alerts &&
-        alerts.map((message, index) => (
+        alerts.map((issue, index) => (
           <Alert
             key={index}
             className={classes.alert}
-            severity="error"
+            severity={issue.severity as Color}
             onClose={() => handleAlertClose(index)}
           >
-            {message}
+            {issue.diagnostics}
           </Alert>
         ))}
       {preview ? (

@@ -943,7 +943,7 @@ export type ApiConditionsDestroyApiArg = {
   id: string;
 };
 export type ApiCoreVersionRetrieveApiResponse = unknown;
-export type ApiCoreVersionRetrieveApiArg = {};
+export type ApiCoreVersionRetrieveApiArg = void;
 export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
   /** Which field to use when ordering the results. */
@@ -1462,11 +1462,18 @@ export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
 };
+export type OperationOutcomeIssue = {
+  severity: string;
+  code: string;
+  diagnostics: string;
+  location?: string[];
+  expression?: string;
+};
 export type PreviewResponse = {
   instances: {
     [key: string]: any;
   }[];
-  errors: string[];
+  errors: OperationOutcomeIssue[];
 };
 export type PreviewRequestRequest = {
   resource_id: string;
