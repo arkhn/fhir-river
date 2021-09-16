@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.mapping import MappingSerializer
 from pyrog.models import Attribute, Column, Condition, Filter, Input, InputGroup, Join, Resource, Source
 
 pytestmark = pytest.mark.django_db

@@ -1,5 +1,5 @@
-# No resources, no owners
 {
+    "@context": "No resources, no owners",
     "name": "test",
     "version": "",
     "resources": [],

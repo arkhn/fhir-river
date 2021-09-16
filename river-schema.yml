@@ -2397,9 +2397,6 @@ components:
         join:
           type: string
           nullable: true
-        input:
-          type: string
-          nullable: true
         owner:
           type: string
       required:
@@ -2417,9 +2414,6 @@ components:
         column:
           type: string
         join:
-          type: string
-          nullable: true
-        input:
           type: string
           nullable: true
         owner:
@@ -2680,6 +2674,9 @@ components:
           readOnly: true
         input_group:
           type: string
+        column:
+          type: string
+          nullable: true
       required:
       - created_at
       - id
@@ -2729,6 +2726,9 @@ components:
           nullable: true
         input_group:
           type: string
+        column:
+          type: string
+          nullable: true
       required:
       - input_group
     Join:
@@ -3304,9 +3304,6 @@ components:
         join:
           type: string
           nullable: true
-        input:
-          type: string
-          nullable: true
         owner:
           type: string
     PatchedConditionRequest:
@@ -3371,6 +3368,9 @@ components:
           nullable: true
         input_group:
           type: string
+        column:
+          type: string
+          nullable: true
     PatchedJoinRequest:
       type: object
       properties:
@@ -3446,6 +3446,10 @@ components:
           type: string
         definition_id:
           type: string
+        definition:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         logical_reference:
           type: string
           format: uuid
@@ -3464,6 +3468,7 @@ components:
           type: string
       required:
       - created_at
+      - definition
       - definition_id
       - id
       - logical_reference

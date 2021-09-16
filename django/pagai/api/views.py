@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema
 from pagai.api import serializers
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog import models
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.mapping import MappingSerializer
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
 

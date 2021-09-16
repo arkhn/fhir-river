@@ -1,6 +1,6 @@
 import pytest
 
-from river.adapters.event_publisher import FakeEventPublisher
+from river.adapters.event_publisher import InMemoryEventPublisher
 from river.common.analyzer import Analyzer
 from river.domain.events import ExtractedRecord, TransformedRecord
 from river.transformer.reference_binder import ReferenceBinder
@@ -20,7 +20,7 @@ def test_extracted_resource_handler(batch, mimic_mapping):
         resource_id=resource_id,
         record={"patients_subject_id_a9fb9667": "didier@chloroquine.org"},
     )
-    publisher = FakeEventPublisher()
+    publisher = InMemoryEventPublisher()
     analyzer = Analyzer()
     transformer = Transformer()
     binder = ReferenceBinder()

@@ -1,7 +1,7 @@
 import pytest
 
-from river.adapters.event_publisher import FakeEventPublisher
-from river.adapters.progression_counter import FakeProgressionCounter, Progression
+from river.adapters.event_publisher import InMemoryEventPublisher
+from river.adapters.progression_counter import InMemoryProgressionCounter, Progression
 from river.common.analyzer import Analyzer
 from river.domain.events import BatchEvent, ExtractedRecord
 from river.extractor.service import batch_resource_handler
@@ -14,8 +14,8 @@ def test_batch_resource_handler(batch, mimic_mapping):
     # instead of the first resource of mimic mappings.
     resource_id = mimic_mapping["resources"][0]["id"]
     event = BatchEvent(batch_id=batch.id, resource_id=resource_id)
-    publisher = FakeEventPublisher()
-    counter = FakeProgressionCounter()
+    publisher = InMemoryEventPublisher()
+    counter = InMemoryProgressionCounter()
     analyzer = Analyzer()
 
     batch_resource_handler(event, publisher, counter, analyzer)

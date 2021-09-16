@@ -1,5 +1,6 @@
 import React from "react";
 
+import type { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { makeStyles, Typography } from "@material-ui/core";
@@ -7,11 +8,8 @@ import { ArrowForward } from "@material-ui/icons";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import {
-  useApiFiltersListQuery,
-  useApiStructureDefinitionRetrieveQuery,
-} from "services/api/endpoints";
-import { Resource } from "services/api/generated/api.generated";
+import { useApiFiltersListQuery } from "services/api/endpoints";
+import type { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,16 +49,8 @@ const MappingInfos = ({ mapping }: MappingInfosProps): JSX.Element => {
 
   const { data: filters } = useApiFiltersListQuery({ resource: mapping.id });
 
-  const { title } = useApiStructureDefinitionRetrieveQuery(
-    {
-      id: mapping.definition_id,
-    },
-    {
-      selectFromResult: ({ data }) => ({
-        title: data?.title || data?.name || mapping.definition_id,
-      }),
-    }
-  );
+  const definition = mapping.definition as IStructureDefinition;
+  const title = definition.title || definition.name;
 
   const filtersCount = filters?.length ?? 0;
 

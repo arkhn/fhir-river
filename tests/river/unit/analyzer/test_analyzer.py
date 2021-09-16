@@ -96,10 +96,19 @@ def test_analyze_mapping(mimic_mapping):
     assert analysis.reference_paths == [["generalPractitioner"], ["link", "other"]]
 
 
-def test_analyze_attribute(dict_map_gender):
+def test_analyze_attribute(dict_map_gender, structure_definitions):
     analyzer = Analyzer()
     analyzer._cur_analysis.primary_key_column = SqlColumn("mimiciii", "patients", "subject_id")
     analyzer._cur_analysis.definition_id = "Patient"
+    analyzer._cur_analysis.definition = next(
+        iter(
+            [
+                structure_definition
+                for structure_definition in structure_definitions
+                if structure_definition["id"] == analyzer._cur_analysis.definition_id
+            ]
+        )
+    )
     analyzer._columns_data = {
         "ck8ooenw827004kp41nv3kcmq": {
             "owner": "mimiciii",

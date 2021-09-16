@@ -17,6 +17,7 @@ from typing import Mapping
 
 from rest_framework import serializers
 
+from common.adapters.fhir_api import fhir_api
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog.models import (
     Attribute,
@@ -94,7 +95,6 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
         fields = ["id", "name", "columns"]
-        read_only_fields = ["schema"]
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
     def to_internal_value(self, data):
@@ -106,7 +106,7 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
             data["schema"] = explorer.get_owner_schema(name)
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().to_internal_value(data)
 
 
 class MappingPartialCredentialSerializer(serializers.ModelSerializer):
@@ -127,7 +127,7 @@ class MappingCredentialSerializer(MappingPartialCredentialSerializer):
             db_connection.close()
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().validate(data)
 
 
 class MappingInputSerializer(serializers.ModelSerializer):
@@ -190,11 +190,20 @@ class MappingResourceSerializer(serializers.ModelSerializer):
             "primary_key_table",
             "primary_key_column",
             "definition_id",
+            "definition",
             "logical_reference",
             "primary_key_owner",
             "attributes",
             "filters",
         ]
+
+    def to_representation(self, instance):
+        if not instance.definition:
+            request = self.context.get("request")
+            auth_token = request.session.get("oidc_access_token") if request else None
+            instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
+            instance.save()
+        return super().to_representation(instance)
 
 
 class MappingSerializer(serializers.ModelSerializer):

@@ -46,7 +46,7 @@ class ProgressionCounter:
         raise NotImplementedError
 
 
-class FakeProgressionCounter(ProgressionCounter):
+class InMemoryProgressionCounter(ProgressionCounter):
     """ProgressionCounter using an in-memory dict as a data structure.
 
     Attributes:

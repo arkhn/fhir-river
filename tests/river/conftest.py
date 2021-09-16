@@ -1,5 +1,4 @@
 import inspect
-import json
 import time
 from pathlib import Path
 
@@ -11,6 +10,8 @@ from pytest_factoryboy import register
 
 from django.conf import settings
 
+from common.adapters.fhir_api import fhir_api
+from tests.conftest import load_export_data, load_mapping
 from tests.pyrog.factories import ResourceFactory, SourceFactory
 
 from . import factories
@@ -25,7 +26,8 @@ register(SourceFactory)
 
 def get_factories():
     return [
-        factory for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
+        factory
+        for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
     ]
 
 
@@ -87,10 +89,41 @@ def clear_redis(request):
 @pytest.fixture
 def export_data(request):
     marker = request.node.get_closest_marker("export_data")
-    with open(DATA_FIXTURES_DIR / marker.args[0]) as f:
-        return json.load(f)
+    return load_mapping(DATA_FIXTURES_DIR / marker.args[0])
 
 
 @pytest.fixture
 def mimic_mapping():
-    return factories.mimic_mapping()
+    return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
+
+
+@pytest.fixture
+def structure_definitions() -> list:
+    data = load_export_data(DATA_FIXTURES_DIR / "structure_definitions_bundle.json")
+    return [item["resource"] for item in data["entry"]]
+
+
+@pytest.fixture
+def concept_map():
+    return {
+        "id": "8d45157a-12c5-4da2-8b80-0c5607fa37d7",
+        "group": [
+            {
+                "element": [
+                    {"code": "F", "target": [{"code": "female", "equivalence": "equal"}]},
+                    {"code": "M", "target": [{"code": "male", "equivalence": "equal"}]},
+                ]
+            }
+        ],
+    }
+
+
+@pytest.fixture(autouse=True)
+def load_concept_map(concept_map):
+    fhir_api.create("ConceptMap", concept_map)
+
+
+@pytest.fixture(autouse=True)
+def load_structure_definitions(structure_definitions):
+    for structure_definition in structure_definitions:
+        fhir_api.create("StructureDefinition", structure_definition)

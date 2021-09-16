@@ -40,6 +40,7 @@ class Resource(models.Model):
     primary_key_table = models.TextField()
     primary_key_column = models.TextField()
     definition_id = models.TextField()
+    definition = models.JSONField()
     logical_reference = models.UUIDField(default=uuid.uuid4, editable=False)
     primary_key_owner = models.ForeignKey("Owner", related_name="resources", on_delete=models.CASCADE)
 
