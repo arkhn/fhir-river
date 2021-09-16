@@ -37,6 +37,8 @@
         "host": "mimic",
         "port": 5432,
         "database": "default",
+        "login": "test",
+        "password": "test",
         "model": "POSTGRES",
         "owners": [
             {

@@ -58,7 +58,8 @@ def make_query_builder(analysis, pk_values=None):
 @mock.patch("river.extractor.query_builder.Table", mock_table)
 def test_with_real_analysis(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "cktiqszf200aexgutj9ttg8l1"
+    # Patient - patient-resource-id
+    resource_id = "cktlnp0f300300mmznmyqln70"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
     query_builder = make_query_builder(analysis)

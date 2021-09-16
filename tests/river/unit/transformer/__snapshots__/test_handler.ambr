@@ -1,17 +1,43 @@
 # name: test_extracted_resource_handler
   <class 'dict'> {
     'birthDate': '2057-11-15',
-    'deceasedDateTime': '2114-02-20 00:00:00',
+    'communication': <class 'list'> [
+      <class 'dict'> {
+        'language': <class 'dict'> {
+          'coding': <class 'list'> [
+            <class 'dict'> {
+              'code': 'RUSS',
+            },
+            <class 'dict'> {
+              'code': 'ENGL',
+            },
+          ],
+        },
+      },
+    ],
+    'deceasedDateTime': '2114-02-20',
     'gender': 'female',
-    'id': '589300ec-dfde-53e8-87ff-2dc6abfcb852',
+    'id': '50fe8f2e-bd34-561c-91b3-055813fba3b8',
+    'identifier': <class 'list'> [
+      <class 'dict'> {
+        'value': '31789 (1)',
+      },
+    ],
+    'maritalStatus': <class 'dict'> {
+      'coding': <class 'list'> [
+        <class 'dict'> {
+          'code': 'SINGLE',
+        },
+      ],
+    },
     'meta': <class 'dict'> {
       'tag': <class 'list'> [
         <class 'dict'> {
-          'code': 'cktiqsyuj0002xgutzhqbn1ut',
+          'code': 'cktlnp0bb00020mmz5fks20ij',
           'system': 'http://terminology.arkhn.org/CodeSystem/source',
         },
         <class 'dict'> {
-          'code': 'cktiqt0c800tfxgutkq5b6gct',
+          'code': 'cktlnp0ji006e0mmzat7dwb98',
           'system': 'http://terminology.arkhn.org/CodeSystem/resource',
         },
       ],

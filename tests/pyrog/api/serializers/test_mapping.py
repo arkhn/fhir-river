@@ -44,7 +44,7 @@ def test_create(export_data):
     assert InputGroup.objects.count() == 3
     assert SQLInput.objects.count() == 6
     assert StaticInput.objects.count() == 1
-    assert Column.objects.count() == 6
+    assert Column.objects.count() == 8
     assert Condition.objects.count() == 2
     assert Filter.objects.count() == 2
     assert Join.objects.count() == 1

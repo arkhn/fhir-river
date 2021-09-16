@@ -4,6 +4,18 @@
     'deceasedDateTime': '2165-08-12',
     'gender': 'female',
     'id': '6140cc54-cd63-5ad9-b3f9-000649e5368f',
+    'identifier': <class 'list'> [
+      <class 'dict'> {
+        'value': '9467 (1)',
+      },
+    ],
+    'maritalStatus': <class 'dict'> {
+      'coding': <class 'list'> [
+        <class 'dict'> {
+          'code': 'SEPARATED',
+        },
+      ],
+    },
     'meta': <class 'dict'> {
       'tag': <class 'list'> [
         <class 'dict'> {

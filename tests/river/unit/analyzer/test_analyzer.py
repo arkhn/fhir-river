@@ -10,7 +10,8 @@ from river.common.analyzer.sql_join import SqlJoin
 
 def test_cache_analysis_redis(mimic_mapping):
     batch_id = uuid4()
-    resource_id = "cktiqt0c800tfxgutkq5b6gct"
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
     analyzer = Analyzer()
 
     res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
@@ -56,15 +57,21 @@ def test_get_primary_key_missing_field():
 
 def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "cktiqszf200aexgutj9ttg8l1"
+    # Encounter
+    resource_id = "cktlnp0hz00500mmzpor3i6hn"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    assert len(analysis.attributes) == 14
+    assert len(analysis.attributes) == 9
     assert analysis == snapshot
     assert analyzer.get_analysis_columns(analysis) == snapshot
     assert analysis.filters == snapshot
-    assert analysis.reference_paths == [["partOf"], ["subject"], ["encounter"]]
+    assert analysis.reference_paths == [
+        ["subject"],
+        ["location", "location"],
+        ["diagnosis", "condition"],
+        ["serviceProvider"],
+    ]
 
 
 def test_analyze_attribute(dict_map_gender, structure_definitions):
