@@ -85,7 +85,6 @@ const resourceTreeSlice = createSlice({
             .filter(({ definition }) => !definition.sliceName)
             .forEach((nodeDefinition) => buildTree(nodeDefinition, node));
         }
-        // if (node) node.children = root.children;
       }
     },
     attibuteItemsAdded: (
@@ -107,7 +106,6 @@ const resourceTreeSlice = createSlice({
               attributeElementDefinition,
               { parentPath, index: +itemIndex }
             );
-
             const parent = getNode("path", parentPath, rootElementNode);
             if (
               parent &&
