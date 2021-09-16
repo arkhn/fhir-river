@@ -7,7 +7,7 @@ import {
   ElementNode,
   selectRootElementNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
-import { getNode } from "features/FhirResourceTree/resourceTreeUtils";
+import { getElementNodeByPath } from "features/FhirResourceTree/resourceTreeUtils";
 import { useApiAttributesRetrieveQuery } from "services/api/endpoints";
 
 const useGetSelectedNode = (): ElementNode | undefined => {
@@ -28,7 +28,7 @@ const useGetSelectedNode = (): ElementNode | undefined => {
       selectedAttribute &&
       rootElementNode
     ) {
-      return getNode("path", selectedAttribute.path, rootElementNode);
+      return getElementNodeByPath(selectedAttribute.path, rootElementNode);
     }
   }, [selectedAttribute, rootElementNode, isSelectedAttributeUninitialized]);
   return selectedNode;

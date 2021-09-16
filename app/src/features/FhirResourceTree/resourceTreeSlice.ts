@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -9,9 +8,9 @@ import {
   buildTree,
   computePathWithoutIndexes,
   createElementNode,
-  getNode,
-  getNodeDefinition,
-  getNodeDefinitionFromAttribute,
+  getElementNodeByPath,
+  getDefinitionNodeById,
+  getDefinitionNodeFromAttribute,
 } from "./resourceTreeUtils";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
@@ -46,12 +45,6 @@ const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
-    rootNodeDefinitionCreated: (
-      state,
-      { payload }: PayloadAction<{ root: DefinitionNode }>
-    ) => {
-      state.rootNodeDefinition = payload.root;
-    },
     rootNodeDefinitionUpdate: (
       state,
       { payload }: PayloadAction<{ id?: string; data: DefinitionNode }>
@@ -60,7 +53,10 @@ const resourceTreeSlice = createSlice({
       if (!id) {
         state.rootNodeDefinition = data;
       } else if (state.rootNodeDefinition) {
-        const nodeDefinition = getNodeDefinition(id, state.rootNodeDefinition);
+        const nodeDefinition = getDefinitionNodeById(
+          id,
+          state.rootNodeDefinition
+        );
         if (nodeDefinition)
           nodeDefinition.childrenDefinitions = data.childrenDefinitions;
       }
@@ -79,7 +75,7 @@ const resourceTreeSlice = createSlice({
         const rootElementNode = buildTree(rootNodeDefinition);
         state.rootElementNode = rootElementNode;
       } else if (state.rootElementNode) {
-        const node = getNode("path", nodePath, state.rootElementNode);
+        const node = getElementNodeByPath(nodePath, state.rootElementNode);
         if (node) {
           rootNodeDefinition.childrenDefinitions
             .filter(({ definition }) => !definition.sliceName)
@@ -95,7 +91,7 @@ const resourceTreeSlice = createSlice({
       if (rootNodeDefinition && rootElementNode) {
         const { attributes } = payload;
         attributes.forEach((attribute) => {
-          const attributeElementDefinition = getNodeDefinitionFromAttribute(
+          const attributeElementDefinition = getDefinitionNodeFromAttribute(
             attribute,
             rootNodeDefinition
           );
@@ -106,7 +102,7 @@ const resourceTreeSlice = createSlice({
               attributeElementDefinition,
               { parentPath, index: +itemIndex }
             );
-            const parent = getNode("path", parentPath, rootElementNode);
+            const parent = getElementNodeByPath(parentPath, rootElementNode);
             if (
               parent &&
               parent.isArray &&
@@ -128,8 +124,7 @@ const resourceTreeSlice = createSlice({
       if (rootElementNode) {
         const { attributes } = payload;
         attributes.forEach((attribute) => {
-          const parent = getNode(
-            "path",
+          const parent = getElementNodeByPath(
             computePathWithoutIndexes(attribute),
             rootElementNode
           );
@@ -144,15 +139,11 @@ const resourceTreeSlice = createSlice({
   },
 });
 
-export const selectRootNodeDefinition = (
-  state: RootState
-): DefinitionNode | undefined => state.resourceTree.rootNodeDefinition;
 export const selectRootElementNode = (
   state: RootState
 ): ElementNode | undefined => state.resourceTree.rootElementNode;
 
 export const {
-  rootNodeDefinitionCreated,
   rootNodeDefinitionUpdate,
   rootElementNodeUpdate,
   attibuteItemsAdded,

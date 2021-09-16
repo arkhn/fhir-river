@@ -1,5 +1,3 @@
-/* eslint-disable import/order */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   IElementDefinition,
   IElementDefinition_Type,
@@ -20,6 +18,11 @@ import {
 } from "features/FhirResourceTree/resourceTreeSlice";
 import { Attribute } from "services/api/generated/api.generated";
 
+/**
+ * Checks if `elementDefinition` has to be ignored from tree building algorithm
+ * @param elementDefinition ElementDefinition to inspect
+ * @returns True if element is omitted, else false
+ */
 const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
   if (elementDefinition.base && elementDefinition.base.path) {
     const parsedPath: string[] = elementDefinition.base.path.split(".");
@@ -35,6 +38,11 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
   return false;
 };
 
+/**
+ * Returns the ElementKind matching the elementDefinition
+ * @param elementDefinition ElementDefinition to inspect
+ * @returns The kind of element the ElementDefinition is (primitive, complex of choice)
+ */
 const getKind = (elementDefinition: IElementDefinition): ElementKind => {
   const { type: types } = elementDefinition;
   const type = types?.length === 1 && types?.[0]?.code;
@@ -55,6 +63,10 @@ const getKind = (elementDefinition: IElementDefinition): ElementKind => {
   }
 };
 
+/**
+ * @param elementType ElementDefinition type attribute item
+ * @returns Type associated to the elementType attribute
+ */
 const computeType = (
   elementType?: IElementDefinition_Type
 ): string | undefined => {
@@ -75,12 +87,17 @@ const computeType = (
   return elementType.code;
 };
 
+/**
+ * Checks if elementDefinition is of array type by checking its `max` value and whether it is a slice
+ * @param elementDefinition ElementDefinition to inspect
+ * @returns True if `elementDefinition.max` is either > 0 or `*` AND elementDefinition is not a slice, else false
+ */
 const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
   (max && (max === "*" || +max > 1) && !sliceName) || false;
 
 /**
- * Creates an ElementNode from the corresponding ElementDefinition item
- * @param elementDefinition Element of StructureDef's snapshot used to create an ElementNode
+ * Creates an ElementNode from the corresponding DefinitionNode item
+ * @param nodeDefinition NodeDefinition created from ElementDefinition snapshot's item
  * @param params Set of index and parentPath used to generate the ElementNode path attribute
  */
 export const createElementNode = (
@@ -113,6 +130,11 @@ export const createElementNode = (
   };
 };
 
+/**
+ * Creates a DefinitionNode from an ElementDefinition with its children & slices set to empty arrays
+ * @param definition elementDefinition from which the DefinitionNode is created
+ * @returns An instance of DefinitionNode
+ */
 export const createDefinitionNode = (
   definition: IElementDefinition
 ): DefinitionNode => ({
@@ -121,22 +143,14 @@ export const createDefinitionNode = (
   sliceDefinitions: [],
 });
 
-export const createElementDefinition = (
-  attribute: Attribute
-): IElementDefinition => {
-  const elementDefinition: IElementDefinition = {
-    path: attribute.path,
-    sliceName: attribute.slice_name,
-    id: attribute.path.split(/[[]\d+]/).join(""),
-    type: [{ code: attribute.definition_id }],
-  };
-  if (attribute.slice_name) elementDefinition.sliceName = attribute.slice_name;
-  return elementDefinition;
-};
-
+/**
+ * Computes elementDefinition choice children from its type items
+ * @param elementDefinition ElementDefinition of Kind `choice`
+ * @returns DefinitionNode[] corresponding to elementDefinition children.
+ * Each item is a DefinitionNode corresponding to an elementDefinition type.
+ */
 const getChildrenChoicesDefinition = (
-  elementDefinition: IElementDefinition,
-  parentPath?: string
+  elementDefinition: IElementDefinition
 ): DefinitionNode[] =>
   elementDefinition.type?.map((type) =>
     createDefinitionNode({
@@ -147,6 +161,11 @@ const getChildrenChoicesDefinition = (
     })
   ) ?? [];
 
+/**
+ * @param slice Slice elementDefinition
+ * @param element elementDefinition to check if is `slice` parent
+ * @returns Returns true if `slice` is a slice of `elementDefinition`, else returns false
+ */
 const isSliceOf = (
   slice: IElementDefinition,
   element: IElementDefinition
@@ -160,15 +179,25 @@ const isSliceOf = (
   }
 };
 
+/**
+ * @param elementDefinition child elementDefinition
+ * @param parentElementDefinition Parent element definition
+ * @returns True if `elementDefinition` is child choice of `parentElementDefinition`
+ */
 const isMultipleChoiceOf = (
   elementDefinition: IElementDefinition,
-  previousElementDefinition: IElementDefinition
+  parentElementDefinition: IElementDefinition
 ): boolean =>
   !!elementDefinition.path &&
-  elementDefinition.path === previousElementDefinition.path &&
+  elementDefinition.path === parentElementDefinition.path &&
   !!elementDefinition.sliceName &&
   elementDefinition.path.endsWith("[x]");
 
+/**
+ * @param child Child elementDefinition
+ * @param parent Parent elementDefinition
+ * @returns True if `child` is a child of `parent` by checking paths, else return false
+ */
 const isChildOf = (
   child: IElementDefinition,
   parent: IElementDefinition
@@ -179,7 +208,7 @@ const isChildOf = (
 
 /**
  * Child of in ElementNode terms
- * ie if child is either child, slice or choice of parent
+ * ie if child is either child, choice of parent
  * @param child
  * @param parent
  */
@@ -190,6 +219,11 @@ const isElementDefinitionChildOf = (
   return isMultipleChoiceOf(child, parent) || isChildOf(child, parent);
 };
 
+/**
+ * @param child Node to get parent from
+ * @param root Tree root in which the search is started
+ * @returns The ElementNode parent of `child`, else return undefined
+ */
 export const getParent = (
   child: ElementNode,
   root: ElementNode
@@ -202,6 +236,12 @@ export const getParent = (
   return undefined;
 };
 
+/**
+ * Search in DefinitionNode children & slices to find the `child` parent
+ * @param child DefinitionNode to get parent from
+ * @param root Tree root DefinitionNode in which the search is started
+ * @returns The DefinitionNode parent of `child`, else return undefined
+ */
 export const getDefinitionNodeParent = (
   child: DefinitionNode,
   root: DefinitionNode
@@ -222,6 +262,12 @@ export const getDefinitionNodeParent = (
   return undefined;
 };
 
+/**
+ * Builds a ElementNode tree from the tree structure given by the `nodeDefinition` parameter
+ * @param nodeDefinition Current nodeDefinition
+ * @param parentElementNode Parent of the current nodeDefinition
+ * @returns The ElementNode instanciated from the `nodeDefinition` parameter
+ */
 export const buildTree = (
   nodeDefinition: DefinitionNode,
   parentElementNode?: ElementNode
@@ -278,10 +324,6 @@ export const buildTree = (
       nodeDefinition.childrenDefinitions.forEach((childDefinition) => {
         buildTree(childDefinition, currentNode);
       });
-    } else {
-      // if (parentElementNode.children.length === 0) {
-      //   debugger;
-      // }
     }
   } else {
     nodeDefinition.childrenDefinitions.forEach((childDefinition) =>
@@ -289,63 +331,15 @@ export const buildTree = (
     );
   }
 
-  // nodeDefinition.sliceDefinitions.forEach((sliceNodeDefinition) => {
-  //   // TODO: Slice cardinality conditions
-  //   currentNode.children.push(buildTree(sliceNodeDefinition, currentNode));
-  // });
-
-  // if (nodeDefinition.sliceDefinitions.length === 0) {
-  //   nodeDefinition.childrenDefinitions.forEach((childNodeDefinition) => {
-  //     currentNode.children.push(buildTree(childNodeDefinition, currentNode));
-  //   });
-  // }
-
-  // if (parentElementNode) {
-  //   const isParentRoot = !parentElementNode.path.includes(".");
-  //   const isParentArray = parentElementNode.isArray;
-  //   const isDefPathEqualToParentDefPath =
-  //     nodeDefinition.definition.path ===
-  //     parentElementNode.definitionNode.definition.path;
-  //   const hasOrWillParentNodeHaveItem =
-  //     parentElementNode.children.length > 0 ||
-  //     parentElementNode.definitionNode.childrenDefinitions.some(
-  //       ({ definition }) =>
-  //         definition.path === parentElementNode.definitionNode.definition.path
-  //     );
-  //   if (!isParentRoot && isParentArray) {
-  //     if (isDefPathEqualToParentDefPath) {
-  //       currentNode.path = `${parentElementNode.path}[${parentElementNode.children.length}]`;
-  //       parentElementNode.children.push(currentNode);
-  //     } else {
-  //       if (!hasOrWillParentNodeHaveItem) {
-  //         const arrayItem = createElementNode(
-  //           parentElementNode.definitionNode,
-  //           {
-  //             parentPath: parentElementNode.path,
-  //             index: 0,
-  //           }
-  //         );
-  //         parentElementNode.children.push(arrayItem);
-  //         parentElementNode.definitionNode.childrenDefinitions.forEach(
-  //           (childNodeDef) => {
-  //             buildTree(childNodeDef, arrayItem);
-  //           }
-  //         );
-  //         return arrayItem;
-  //       }
-  //     }
-  //   } else {
-  //     parentElementNode.children.push(currentNode);
-  //   }
-  // }
-
-  // nodeDefinition.childrenDefinitions.forEach((childNodeDef) => {
-  //   buildTree(childNodeDef, currentNode);
-  // });
-
   return currentNode;
 };
 
+/**
+ * Mutates the `rootNodeDefinition` parameter to set the whole DefinitionNode tree
+ * @param elementDefinitions Snapshot's elementDefinition array
+ * @param rootNodeDefinition The DefinitionNode root of the tree
+ * @param previousElementNodeDefinition
+ */
 export const buildTreeDefinition = (
   elementDefinitions: IElementDefinition[],
   rootNodeDefinition: DefinitionNode,
@@ -383,8 +377,7 @@ export const buildTreeDefinition = (
   ) {
     if (getKind(currentElementDefinition) === "choice") {
       currentDefinitionNode.childrenDefinitions = getChildrenChoicesDefinition(
-        currentElementDefinition,
-        previousElementNodeDefinition.definition.path
+        currentElementDefinition
       );
     }
 
@@ -422,35 +415,48 @@ export const buildTreeDefinition = (
 export const computePathWithoutIndexes = (node: { path: string }): string =>
   node.path.replace(/[[]\d+]$/, "");
 
-export const getNode = (
-  get: "path" | "id",
+/**
+ *
+ * @param path Path used to look for the elementNode
+ * @param root ElementNode root of the tree
+ * @returns The elementNode found or undefined if not found
+ */
+export const getElementNodeByPath = (
   path: string,
   root: ElementNode
 ): ElementNode | undefined => {
-  if (root[get] === path) return root;
+  if (root.path === path) return root;
   for (const next of root.children) {
-    const result = getNode(get, path, next);
-    if (result) return result;
-  }
-  return undefined;
-};
-
-export const getNodeDefinition = (
-  id: string,
-  root: DefinitionNode
-): DefinitionNode | undefined => {
-  if (root.definition.id === id) return root;
-  for (const next of root.childrenDefinitions) {
-    const result = getNodeDefinition(id, next);
+    const result = getElementNodeByPath(path, next);
     if (result) return result;
   }
   return undefined;
 };
 
 /**
- * Return the last nodeDefinition child having the given path in its definition
+ * @param id Id used to look for the DefinitionNode
+ * @param root DefinitionNode root of the tree
+ * @returns The definitionNode found or undefiend if not found
  */
-export const getNodeDefinitionFromAttribute = (
+export const getDefinitionNodeById = (
+  id: string,
+  root: DefinitionNode
+): DefinitionNode | undefined => {
+  if (root.definition.id === id) return root;
+  for (const next of root.childrenDefinitions) {
+    const result = getDefinitionNodeById(id, next);
+    if (result) return result;
+  }
+  return undefined;
+};
+
+/**
+ * Gets the DefinitionNode matching the given attribute
+ * @param attribute
+ * @param root DefinitionNode root of the tree
+ * @returns The definitionNode matching the attribute path (without index) with the slice name if defined
+ */
+export const getDefinitionNodeFromAttribute = (
   attribute: Attribute,
   root: DefinitionNode
 ): DefinitionNode | undefined => {
@@ -460,17 +466,22 @@ export const getNodeDefinitionFromAttribute = (
   }`;
   if (root.definition.id === elementDefinitionId) return root;
   for (const next of root.childrenDefinitions) {
-    const result = getNodeDefinitionFromAttribute(attribute, next);
+    const result = getDefinitionNodeFromAttribute(attribute, next);
     if (result) return result;
   }
   return undefined;
 };
 
+/**
+ * @param attributeSource Attribute source from which to find children
+ * @param attributes Attribute array
+ * @returns Attributes which are children of `attributeSource` regarding its path
+ */
 export const findChildAttributes = (
-  attributeToDelete: Attribute,
+  attributeSource: Attribute,
   attributes: Attribute[]
 ): Attribute[] => {
-  const path = attributeToDelete.path;
+  const path = attributeSource.path;
   return attributes.filter((attribute) => attribute.path.startsWith(path));
 };
 

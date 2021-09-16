@@ -24,7 +24,7 @@ import {
   useApiStaticInputsCreateMutation,
 } from "services/api/endpoints";
 
-import { getNode } from "./resourceTreeUtils";
+import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 import useFhirResourceTreeData from "./useFhirResourceTreeData";
 
@@ -83,7 +83,7 @@ const FhirResourceTree = (): JSX.Element => {
     _: React.ChangeEvent<unknown>,
     path: string
   ) => {
-    const node = rootElementNode && getNode("path", path, rootElementNode);
+    const node = rootElementNode && getElementNodeByPath(path, rootElementNode);
     if (
       node &&
       node.kind === "primitive" &&

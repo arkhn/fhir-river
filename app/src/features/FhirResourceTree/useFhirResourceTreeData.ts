@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo } from "react";
 
-import { cloneDeep, difference } from "lodash";
+import { difference } from "lodash";
 import { useParams } from "react-router";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import usePrevious from "common/hooks/usePrevious";
 import {
   ElementNode,
-  selectRootNodeDefinition,
   selectRootElementNode,
   attributeNodesDeleted,
   DefinitionNode,
@@ -17,16 +15,11 @@ import {
   attibuteItemsAdded,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
-  getNode,
-  buildTree,
-  createElementDefinition,
-  createElementNode,
+  getElementNodeByPath,
   findChildAttributes,
   computeChildPathIndex,
   buildTreeDefinition,
   createDefinitionNode,
-  getNodeDefinitionFromAttribute,
-  computePathWithoutIndexes,
   createElementDefinitionPathOrId,
 } from "features/FhirResourceTree/resourceTreeUtils";
 import {
@@ -62,7 +55,7 @@ const useFhirResourceTreeData = (
   const [deleteAttribute] = useApiAttributesDestroyMutation();
   const { mappingId } = useParams<{ mappingId?: string }>();
   const dispatch = useAppDispatch();
-  const rootNodeDefinition = useAppSelector(selectRootNodeDefinition);
+
   const rootElementNode = useAppSelector(selectRootElementNode);
   const {
     data: attributes,
@@ -75,7 +68,6 @@ const useFhirResourceTreeData = (
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
   const nodeDefinition = node?.definitionNode.definition;
   const nodePath = node?.path;
-  const nodeId = node?.id;
 
   // DefinitionNode tree building
   const data = useMemo(() => {
@@ -119,6 +111,7 @@ const useFhirResourceTreeData = (
       );
       return currentRootDefinitionNode;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [structureDefinition, nodeDefinition]);
 
   const deleteItem = useCallback(async () => {
@@ -137,7 +130,7 @@ const useFhirResourceTreeData = (
   const createItem = useCallback(
     async (sliceName?: string) => {
       if (nodePath && rootElementNode) {
-        const parentNode = getNode("path", nodePath, rootElementNode);
+        const parentNode = getElementNodeByPath(nodePath, rootElementNode);
         if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
           const pathIndex = computeChildPathIndex(parentNode);
           const attributePath = `${parentNode.path}[${pathIndex}]`;
@@ -173,6 +166,7 @@ const useFhirResourceTreeData = (
     }
   }, [createAttribute, mappingId, node, rootElementNode]);
 
+  // Trigger NodeElement tree building when DefinitionNode tree changes
   useEffect(() => {
     if (data && (!node || node.children.length === 0)) {
       dispatch(
@@ -182,13 +176,15 @@ const useFhirResourceTreeData = (
         })
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, dispatch, node?.path, node?.definitionNode.definition.id]);
 
+  // Add/Remove attribute nodes from ElementNode tree
   useEffect(() => {
     // The attribute injections only need to happen from the tree rootNodeDefinition scope (ie if !node)
     if (rootElementNode && attributes && !node) {
       const attributesToAdd = attributes.filter(
-        ({ path }) => !getNode("path", path, rootElementNode)
+        ({ path }) => !getElementNodeByPath(path, rootElementNode)
       );
 
       if (attributesToAdd.length > 0) {
