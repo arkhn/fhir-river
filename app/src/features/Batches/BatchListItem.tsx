@@ -54,7 +54,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
       const diff = moment.duration(end.diff(start));
       return `${diff.years() ? `${t("year", { count: diff.years() })} ` : ""}${
         diff.months() ? `${t("month", { count: diff.months() })} ` : ""
-      }${diff.days() ? `${t("day", { count: diff.days() })}` : ""}${
+      }${diff.days() ? `${t("day", { count: diff.days() })} ` : ""}${
         diff.hours() ? `${t("hour", { count: diff.hours() })} ` : ""
       }${diff.minutes() ? `${t("minute", { count: diff.minutes() })} ` : ""}${
         diff.seconds() ? `${t("second", { count: diff.seconds() })} ` : ""
