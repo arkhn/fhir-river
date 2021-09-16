@@ -17,10 +17,6 @@ type BatchListItemType = {
 };
 
 const useStyles = makeStyles((theme) => ({
-  batchList: {
-    overflowY: "scroll",
-    margin: theme.spacing(0, 5, 8, 5),
-  },
   listItem: {
     marginBottom: theme.spacing(0.5),
     display: "flex",
@@ -33,22 +29,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     flexWrap: "wrap",
-  },
-  paginationContainer: {
-    backgroundColor: theme.palette.background.default,
-    position: "fixed",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    height: theme.spacing(7),
-    display: "flex",
-    alignItems: "center",
-    paddingLeft: theme.spacing(5),
-    borderTop: `1px solid ${theme.palette.divider}`,
-  },
-  loader: {
-    display: "flex",
-    justifyContent: "center",
   },
   margin: {
     marginRight: theme.spacing(1),

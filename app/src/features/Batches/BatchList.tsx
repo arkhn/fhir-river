@@ -14,19 +14,6 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "scroll",
     margin: theme.spacing(0, 5, 8, 5),
   },
-  listItem: {
-    marginBottom: theme.spacing(0.5),
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: theme.spacing(1.3, 2, 1, 2),
-    flexWrap: "wrap",
-  },
-  listItemActions: {
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
   paginationContainer: {
     backgroundColor: theme.palette.background.default,
     position: "fixed",
@@ -42,12 +29,6 @@ const useStyles = makeStyles((theme) => ({
   loader: {
     display: "flex",
     justifyContent: "center",
-  },
-  margin: {
-    marginRight: theme.spacing(1),
-  },
-  title: {
-    display: "flex",
   },
 }));
 
