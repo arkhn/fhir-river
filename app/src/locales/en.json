@@ -136,6 +136,8 @@
   "chooseExistingURI": "Choose existing URI",
   "selectSource": "Select a source",
   "selectMapping": "Select a mapping",
+  "second": "{{ count }} second",
+  "second_plural": "{{ count }} seconds",
   "minute": "{{ count }} minute",
   "minute_plural": "{{ count }} minutes",
   "hour": "{{ count }} hour",
