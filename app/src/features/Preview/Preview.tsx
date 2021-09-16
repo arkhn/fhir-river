@@ -147,7 +147,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          setAlert(e.message);
+          setAlert(e.error);
         }
       };
       explore();
@@ -181,7 +181,7 @@ const Preview = (): JSX.Element => {
             if (previewResult.errors.length > 0)
               setAlert(previewResult.errors[0]);
           } catch (e) {
-            setAlert(e.message);
+            setAlert(e.error);
           }
         };
         previewCreate();

@@ -12,6 +12,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useHistory, useParams } from "react-router-dom";
 
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
@@ -52,6 +53,7 @@ const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -121,8 +123,7 @@ const FhirResourceTree = (): JSX.Element => {
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );
         } catch (error) {
-          // TODO: Handle errors nicely
-          console.error(error);
+          enqueueSnackbar(error.error, { variant: "error" });
         }
       } else {
         history.push(

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { ButtonProps } from "@material-ui/core";
 import { CancelOutlined } from "@material-ui/icons";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import { useApiBatchesDestroyMutation } from "services/api/endpoints";
 import type { Batch } from "services/api/generated/api.generated";
@@ -18,9 +18,7 @@ const BatchCancel = ({
   ...buttonProps
 }: BatchCancelProps): JSX.Element => {
   const { t } = useTranslation();
-
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
@@ -31,7 +29,7 @@ const BatchCancel = ({
     try {
       await apiBatchesDestroy({ id: batchId }).unwrap();
     } catch (e) {
-      setAlert(e.message as string);
+      enqueueSnackbar(e.error as string, { variant: "error" });
     }
   };
 
@@ -45,12 +43,6 @@ const BatchCancel = ({
       >
         {t("cancel")}
       </Button>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
-      />
     </>
   );
 };

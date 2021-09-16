@@ -4,9 +4,9 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { makeStyles } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import { useApiSourcesImportCreateMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
@@ -32,9 +32,9 @@ type CredentialFormInputs = Omit<MappingRequest["credential"], "owners">;
 
 const UploadSourceButton = (): JSX.Element => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [alert, setAlert] = useState<string | undefined>();
   const [mappingRequest, setMappingRequest] = useState<
     MappingRequest | undefined
   >();
@@ -42,7 +42,6 @@ const UploadSourceButton = (): JSX.Element => {
 
   let fileReader: FileReader | null = null;
 
-  const handleAlertClose = () => setAlert(undefined);
   const handleFileRead = () => {
     const content = fileReader?.result;
     if (content) {
@@ -79,8 +78,7 @@ const UploadSourceButton = (): JSX.Element => {
         }).unwrap();
         setMappingRequest(undefined);
       } catch (error) {
-        // TODO: Handle errors nicely
-        console.error(error);
+        enqueueSnackbar(error.error, { variant: "error" });
         const errorData = apiValidationErrorFromResponse(
           error as FetchBaseQueryError
         );
@@ -89,7 +87,7 @@ const UploadSourceButton = (): JSX.Element => {
             (acc, [key, value]) => `${acc} ${key}: ${value}`,
             ""
           );
-          setAlert(errorMessage);
+          enqueueSnackbar(errorMessage, { variant: "error" });
         }
       }
     }
@@ -120,12 +118,6 @@ const UploadSourceButton = (): JSX.Element => {
         onSubmit={handleCredentialSubmit}
         onClose={handleDialogClose}
         credential={mappingRequest?.credential}
-      />
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
       />
     </>
   );
