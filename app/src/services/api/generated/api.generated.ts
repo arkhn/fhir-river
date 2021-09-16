@@ -825,8 +825,7 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse =
-  /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -932,8 +931,7 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse =
-  /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -945,7 +943,7 @@ export type ApiConditionsDestroyApiArg = {
   id: string;
 };
 export type ApiCoreVersionRetrieveApiResponse = unknown;
-export type ApiCoreVersionRetrieveApiArg = {};
+export type ApiCoreVersionRetrieveApiArg = void;
 export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
   /** Which field to use when ordering the results. */
@@ -967,8 +965,7 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse =
-  /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -979,8 +976,7 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
-export type ApiExploreCreateApiResponse =
-  /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiResponse = /** status 200  */ ExplorationResponse;
 export type ApiExploreCreateApiArg = {
   explorationRequestRequest: ExplorationRequestRequest;
 };
@@ -1035,8 +1031,7 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse =
-  /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -1184,8 +1179,7 @@ export type ApiSourcesDestroyApiArg = {
   /** A unique value identifying this source. */
   id: string;
 };
-export type ApiSourcesExportRetrieveApiResponse =
-  /** status 200  */ MappingWithPartialCredential;
+export type ApiSourcesExportRetrieveApiResponse = /** status 200  */ MappingWithPartialCredential;
 export type ApiSourcesExportRetrieveApiArg = {
   /** A unique value identifying this source. */
   id: string;
@@ -1469,11 +1463,18 @@ export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
 };
+export type OperationOutcomeIssue = {
+  severity: string;
+  code: string;
+  diagnostics: string;
+  location?: string[];
+  expression?: string;
+};
 export type PreviewResponse = {
   instances: {
     [key: string]: any;
   }[];
-  errors: string[];
+  errors: OperationOutcomeIssue[];
 };
 export type PreviewRequestRequest = {
   resource_id: string;
