@@ -85,7 +85,7 @@ def test_filter_columns_by_join(api_client, join_factory, column_factory, sql_in
     join_1 = join_factory()
     join_factory()
 
-    response = api_client.get(url, {"join_lhs": join_1.id})
+    response = api_client.get(url, {"joined_left": join_1.id})
 
     assert response.status_code == 200, response.data
     assert {column_data["id"] for column_data in response.json()} == {join_1.left.id}

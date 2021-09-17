@@ -408,7 +408,7 @@ paths:
       description: ''
       parameters:
       - in: query
-        name: join_lhs
+        name: joined_left
         schema:
           type: array
           items:
@@ -416,7 +416,7 @@ paths:
         explode: true
         style: form
       - in: query
-        name: join_rhs
+        name: joined_right
         schema:
           type: array
           items:

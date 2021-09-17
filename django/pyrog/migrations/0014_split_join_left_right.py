@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 default=None,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="join_lhs",
+                related_name="joined_left",
                 to="pyrog.column",
             ),
             preserve_default=False,
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 default=None,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name="join_rhs",
+                related_name="joined_right",
                 to="pyrog.column",
             ),
             preserve_default=False,
@@ -87,14 +87,14 @@ class Migration(migrations.Migration):
             model_name="join",
             name="left",
             field=models.ForeignKey(
-                null=False, on_delete=django.db.models.deletion.CASCADE, related_name="join_lhs", to="pyrog.column"
+                null=False, on_delete=django.db.models.deletion.CASCADE, related_name="joined_left", to="pyrog.column"
             ),
         ),
         migrations.AlterField(
             model_name="join",
             name="right",
             field=models.ForeignKey(
-                null=False, on_delete=django.db.models.deletion.CASCADE, related_name="join_rhs", to="pyrog.column"
+                null=False, on_delete=django.db.models.deletion.CASCADE, related_name="joined_right", to="pyrog.column"
             ),
         ),
         migrations.AlterField(

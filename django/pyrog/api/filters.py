@@ -11,7 +11,7 @@ class CredentialFilterSet(filters.FilterSet):
 class ColumnFilterSet(filters.FilterSet):
     class Meta:
         model = models.Column
-        fields = ["join_lhs", "join_rhs", "sql_input"]
+        fields = ["joined_left", "joined_right", "sql_input"]
 
 
 class JoinFilterSet(filters.FilterSet):
