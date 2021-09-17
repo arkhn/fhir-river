@@ -85,10 +85,11 @@ class Analyzer:
         return self._cur_analysis
 
     def analyze_filter(self, filter_):
-        col_data = self._columns_data[filter_["sql_column"]]
+        sql_input_data = filter_["sql_input"]
+        col_data = self._columns_data[sql_input_data["column"]]
         sql_col = SqlColumn(col_data["owner"], col_data["table"], col_data["column"])
 
-        filter_joins = self.parse_joins_mapping(col_data["joins"])
+        filter_joins = self.parse_joins_mapping(sql_input_data["joins"])
         for join in filter_joins:
             sql_col.add_join(join)
 
@@ -161,17 +162,18 @@ class Analyzer:
             if sql_input["concept_map_id"] and sql_input["concept_map"]:
                 cur_col.concept_map = ConceptMap(sql_input["concept_map"], sql_input["concept_map_id"])
 
-            input_joins = self.parse_joins_mapping(col_data["joins"])
+            input_joins = self.parse_joins_mapping(sql_input["joins"])
             for join in input_joins:
                 cur_col.add_join(join)
 
             input_group.add_column(cur_col)
 
         for mapping_condition in mapping_group["conditions"]:
-            cond_col_data = self._columns_data[mapping_condition["column"]]
+            cond_sql_input_data = mapping_condition["sql_input"]
+            cond_col_data = self._columns_data[cond_sql_input_data["column"]]
             condition_column = SqlColumn(cond_col_data["owner"], cond_col_data["table"], cond_col_data["column"])
 
-            condition_joins = self.parse_joins_mapping(cond_col_data["joins"])
+            condition_joins = self.parse_joins_mapping(cond_sql_input_data["joins"])
             for join in condition_joins:
                 condition_column.add_join(join)
 
@@ -209,9 +211,8 @@ class Analyzer:
     def parse_joins_mapping(self, joins_mapping: dict):
         joins = []
         for join in joins_mapping:
-            columns = join["columns"]
-            left_col_data = self._columns_data[columns[0]]
-            right_col_data = self._columns_data[columns[1]]
+            left_col_data = self._columns_data[join["left"]]
+            right_col_data = self._columns_data[join["right"]]
 
             left = SqlColumn(left_col_data["owner"], left_col_data["table"], left_col_data["column"])
             right = SqlColumn(right_col_data["owner"], right_col_data["table"], right_col_data["column"])

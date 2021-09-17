@@ -18,7 +18,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96f00054q7vz3mmm5sa5',
+            id='cktlnp0ia00540mmzg29std4q',
             merging_script=None,
             static_inputs=<class 'list'> [
             ],
@@ -35,7 +35,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96f10058q7vzumyrzygk',
+            id='cktlnp0id00580mmz976cfvac',
             merging_script=None,
             static_inputs=<class 'list'> [
               'in-progress',
@@ -62,7 +62,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96f4005eq7vzmc6wl0lw',
+            id='cktlnp0ij005e0mmzujaruv3k',
             merging_script=None,
             static_inputs=<class 'list'> [
             ],
@@ -88,7 +88,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96f5005hq7vzymbp5el5',
+            id='cktlnp0in005h0mmzboxyq0rt',
             merging_script=None,
             static_inputs=<class 'list'> [
             ],
@@ -114,7 +114,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96f6005kq7vzes3iiipw',
+            id='cktlnp0iq005k0mmznop3pnje',
             merging_script=None,
             static_inputs=<class 'list'> [
             ],
@@ -131,7 +131,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96f7005nq7vzvisvdgiv',
+            id='cktlnp0is005n0mmz1lshg10q',
             merging_script=None,
             static_inputs=<class 'list'> [
               'Patient',
@@ -149,7 +149,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96fb005xq7vzmyiy3993',
+            id='cktlnp0j2005x0mmz89lhovqn',
             merging_script=None,
             static_inputs=<class 'list'> [
               'http://terminology.arkhn.org/62248c11-1d3f-4071-bfa8-f640764a9f63',
@@ -176,7 +176,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96fd0063q7vzj4e6z8cs',
+            id='cktlnp0j800630mmznso4iouv',
             merging_script=None,
             static_inputs=<class 'list'> [
             ],
@@ -222,7 +222,7 @@
             ],
             conditions=<class 'list'> [
             ],
-            id='cktjv96fh006cq7vzo391wz07',
+            id='cktlnp0jg006c0mmzam3w0hw7',
             merging_script=None,
             static_inputs=<class 'list'> [
             ],
@@ -5270,7 +5270,7 @@
         'serviceProvider',
       ],
     ],
-    resource_id='cktjv96ex0050q7vzrea47mnt',
+    resource_id='cktlnp0hz00500mmzpor3i6hn',
     source_credentials=<class 'dict'> {
       'database': 'test',
       'host': 'mimic',
@@ -5279,6 +5279,101 @@
       'password': 'test',
       'port': 5432,
     },
-    source_id='cktjv96c80002q7vzaq12cp3n',
+    source_id='cktlnp0bb00020mmz5fks20ij',
   }
+---
+# name: test_analyze_mapping.1
+  <class 'set'> {
+    <class 'SqlColumn'> {
+      cleaning_script=<Script: clean_dateTime>,
+      column='admittime',
+      concept_map=None,
+      joins=<class 'list'> [
+      ],
+      owner='public',
+      table='admissions',
+    },
+    <class 'SqlColumn'> {
+      cleaning_script=<Script: clean_dateTime>,
+      column='dischtime',
+      concept_map=None,
+      joins=<class 'list'> [
+      ],
+      owner='public',
+      table='admissions',
+    },
+    <class 'SqlColumn'> {
+      cleaning_script=None,
+      column='admission_type',
+      concept_map=None,
+      joins=<class 'list'> [
+      ],
+      owner='public',
+      table='admissions',
+    },
+    <class 'SqlColumn'> {
+      cleaning_script=None,
+      column='curr_service',
+      concept_map=None,
+      joins=<class 'list'> [
+        <class 'SqlJoin'> {
+          left=<class 'SqlColumn'> {
+            cleaning_script=None,
+            column='hadm_id',
+            concept_map=None,
+            joins=<class 'list'> [
+            ],
+            owner='public',
+            table='admissions',
+          },
+          right=<class 'SqlColumn'> {
+            cleaning_script=None,
+            column='hadm_id',
+            concept_map=None,
+            joins=<class 'list'> [
+            ],
+            owner='public',
+            table='services',
+          },
+        },
+      ],
+      owner='public',
+      table='services',
+    },
+    <class 'SqlColumn'> {
+      cleaning_script=None,
+      column='diagnosis',
+      concept_map=None,
+      joins=<class 'list'> [
+      ],
+      owner='public',
+      table='admissions',
+    },
+    <class 'SqlColumn'> {
+      cleaning_script=None,
+      column='subject_id',
+      concept_map=None,
+      joins=<class 'list'> [
+      ],
+      owner='public',
+      table='admissions',
+    },
+  }
+---
+# name: test_analyze_mapping.2
+  <class 'list'> [
+    <class 'SqlFilter'> {
+      relation='=',
+      sql_column=<class 'SqlColumn'> {
+        cleaning_script=None,
+        column='subject_id',
+        concept_map=None,
+        joins=<class 'list'> [
+        ],
+        owner='public',
+        table='admissions',
+      },
+      value='10011',
+    },
+  ]
 ---

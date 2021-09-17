@@ -154,7 +154,8 @@ jobs:
           dockerUsername: ${{ secrets.DOCKER_LOGIN }}
           dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
           deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: fix/testy/upload_definitions
+          deploymentRef: v4
+          debug: true
           versions: |
             {
               "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",

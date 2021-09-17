@@ -42,30 +42,31 @@ def test_create(export_data):
     assert Resource.objects.count() == 2
     assert Attribute.objects.count() == 2
     assert InputGroup.objects.count() == 3
-    assert SQLInput.objects.count() == 2
+    assert SQLInput.objects.count() == 6
     assert StaticInput.objects.count() == 1
-    assert Column.objects.count() == 2
+    assert Column.objects.count() == 8
     assert Condition.objects.count() == 2
     assert Filter.objects.count() == 2
-    assert Join.objects.count() == 0
+    assert Join.objects.count() == 1
 
     # Assert that objects are truly referenced
+    # FIXME can we improve that?
+    assert set(Resource.objects.all()) == set([a.resource for a in Attribute.objects.all()])
+    assert set(Attribute.objects.all()) == set([ig.attribute for ig in InputGroup.objects.all()])
+    assert set(InputGroup.objects.all()) == set(
+        [
+            *(i.input_group for i in SQLInput.objects.all() if i.input_group is not None),
+            *(i.input_group for i in StaticInput.objects.all() if i.input_group is not None),
+        ]
+    )
+    assert set(Column.objects.all()) == set(
+        [
+            *(i.column for i in SQLInput.objects.all()),
+            *(j.left for j in Join.objects.all()),
+            *(j.right for j in Join.objects.all()),
+        ]
+    )
     input_groups = InputGroup.objects.all()
-    conditions = Condition.objects.all()
-    resources = Resource.objects.all()
-    attributes = Attribute.objects.all()
-    columns = Column.objects.all()
-    filters = Filter.objects.all()
-    sql_inputs = SQLInput.objects.all()
-    static_inputs = StaticInput.objects.all()
-    assert set(resources) == set([a.resource for a in attributes])
-    assert set(attributes) == set([ig.attribute for ig in input_groups])
-    assert set(input_groups) == set([*(i.input_group for i in sql_inputs), *(i.input_group for i in static_inputs)])
-
-    for f in filters:
-        assert f.sql_column in columns
-    for c in conditions:
+    for c in Condition.objects.all():
         assert c.input_group in input_groups
-    for f in filters:
-        assert f.resource in resources
-        assert f.sql_column in columns
+    assert set(Resource.objects.all()) == set([f.resource for f in Filter.objects.all()])

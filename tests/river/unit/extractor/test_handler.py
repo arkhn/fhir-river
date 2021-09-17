@@ -12,7 +12,8 @@ pytestmark = pytest.mark.django_db
 def test_batch_resource_handler(batch_factory, snapshot):
     # FIXME: use a dedicated fixture for the patient mapping
     # instead of the first resource of mimic mappings.
-    resource_id = "cktjv96fh006eq7vzmvidju9g"
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
 
     batch = batch_factory.create(id="test-batch_id")
     event = BatchEvent(batch_id=batch.id, resource_id=resource_id)

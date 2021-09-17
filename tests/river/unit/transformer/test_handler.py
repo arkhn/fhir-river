@@ -16,7 +16,8 @@ pytestmark = pytest.mark.django_db
 def test_extracted_resource_handler(batch_factory, snapshot):
     # FIXME: use a dedicated fixture for the patient mapping
     # instead of the first resource of mimic mappings.
-    resource_id = "cktjv96fh006eq7vzmvidju9g"
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
 
     batch = batch_factory.create(id="test-batch-id")
     event = ExtractedRecord(
@@ -24,10 +25,13 @@ def test_extracted_resource_handler(batch_factory, snapshot):
         resource_type="",
         resource_id=resource_id,
         record={
+            "patients_row_id_ba3a4e99": [31789],
             "patients_subject_id_a9fb9667": ["didier@chloroquine.org"],
             "patients_gender_8035bbd1": ["F"],
             "patients_dob_f873eb32": [datetime.datetime(2057, 11, 15, 0, 0)],
             "patients_dod_9fd82e01": [datetime.datetime(2114, 2, 20, 0, 0)],
+            "admissions_tal_status_63a5ec83": ["SINGLE", None],
+            "admissions_language_d00ed22f": ["RUSS", "ENGL"],
         },
     )
     publisher = InMemoryEventPublisher()

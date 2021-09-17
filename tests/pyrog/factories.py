@@ -73,9 +73,6 @@ class ColumnFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "pyrog.Column"
 
-    class Params:
-        with_join = factory.Trait(join=factory.SubFactory("tests.pyrog.factories.JoinFactory"))
-
     id = factory.Sequence(lambda n: f"column_id_{n:04d}")
     owner = factory.SubFactory("tests.pyrog.factories.OwnerFactory")
 
@@ -103,7 +100,9 @@ class JoinFactory(factory.django.DjangoModelFactory):
         model = models.Join
 
     id = factory.Sequence(lambda n: f"join_id_{n:04d}")
-    column = factory.SubFactory(ColumnFactory)
+    sql_input = factory.SubFactory(SQLInputFactory)
+    left = factory.SubFactory(ColumnFactory)
+    right = factory.SubFactory(ColumnFactory)
 
 
 class ConditionFactory(factory.django.DjangoModelFactory):
@@ -111,7 +110,7 @@ class ConditionFactory(factory.django.DjangoModelFactory):
         model = models.Condition
 
     id = factory.Sequence(lambda n: f"condition_id_{n:04d}")
-    column = factory.SubFactory(ColumnFactory)
+    sql_input = factory.SubFactory(SQLInputFactory)
     input_group = factory.SubFactory(InputGroupFactory)
 
 
@@ -121,7 +120,7 @@ class FilterFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"filter_id_{n:04d}")
     resource = factory.SubFactory(ResourceFactory)
-    sql_column = factory.SubFactory(ColumnFactory)
+    sql_input = factory.SubFactory(SQLInputFactory)
 
 
 class OwnerFactory(factory.django.DjangoModelFactory):
