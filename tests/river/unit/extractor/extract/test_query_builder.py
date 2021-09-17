@@ -14,7 +14,17 @@ from sqlalchemy.orm.query import Query
 
 meta = MetaData()
 tables = {
-    "patients": Table("patients", meta, Column("subject_id"), Column("row_id"), Column("patient_id"), schema="public"),
+    "patients": Table(
+        "patients",
+        meta,
+        Column("subject_id"),
+        Column("row_id"),
+        Column("patient_id"),
+        Column("gender"),
+        Column("dob"),
+        Column("dod"),
+        schema="public",
+    ),
     "admissions": Table(
         "admissions",
         meta,
@@ -22,6 +32,8 @@ tables = {
         Column("row_id"),
         Column("patient_id"),
         Column("admittime"),
+        Column("marital_status"),
+        Column("language"),
         schema="public",
     ),
     "prescriptions": Table("prescriptions", meta, Column("row_id"), schema="public"),
