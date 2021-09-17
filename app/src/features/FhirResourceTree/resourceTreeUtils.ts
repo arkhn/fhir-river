@@ -453,23 +453,20 @@ export const getDefinitionNodeById = (
 /**
  * Gets the DefinitionNode matching the given attribute
  * @param attribute
- * @param root DefinitionNode root of the tree
+ * @param rootElementNode ElementNode root of the tree
  * @returns The definitionNode matching the attribute path (without index) with the slice name if defined
  */
-export const getDefinitionNodeFromAttribute = (
+export const getDefinitionNodeFromItemAttribute = (
   attribute: Attribute,
-  root: DefinitionNode
+  rootElementNode: ElementNode
 ): DefinitionNode | undefined => {
-  const { path, slice_name } = attribute;
-  const elementDefinitionId = `${path.split(/[[]\d+]/).join("")}${
-    slice_name ? `:${slice_name}` : ""
-  }`;
-  if (root.definition.id === elementDefinitionId) return root;
-  for (const next of root.childrenDefinitions) {
-    const result = getDefinitionNodeFromAttribute(attribute, next);
-    if (result) return result;
-  }
-  return undefined;
+  const attributePathWithoutIndex = computePathWithoutIndexes(attribute);
+  const attributeParentElementNode = getElementNodeByPath(
+    attributePathWithoutIndex,
+    rootElementNode
+  );
+
+  return attributeParentElementNode?.definitionNode;
 };
 
 /**

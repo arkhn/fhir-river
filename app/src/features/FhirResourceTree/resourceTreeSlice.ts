@@ -10,7 +10,7 @@ import {
   createElementNode,
   getElementNodeByPath,
   getDefinitionNodeById,
-  getDefinitionNodeFromAttribute,
+  getDefinitionNodeFromItemAttribute,
 } from "./resourceTreeUtils";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
@@ -91,9 +91,9 @@ const resourceTreeSlice = createSlice({
       if (rootNodeDefinition && rootElementNode) {
         const { attributes } = payload;
         attributes.forEach((attribute) => {
-          const attributeElementDefinition = getDefinitionNodeFromAttribute(
+          const attributeElementDefinition = getDefinitionNodeFromItemAttribute(
             attribute,
-            rootNodeDefinition
+            rootElementNode
           );
           if (attributeElementDefinition) {
             const parentPath = computePathWithoutIndexes(attribute);
