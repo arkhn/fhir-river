@@ -9,7 +9,7 @@ def forwards_func(apps, schema_editor):
     SQLInput = apps.get_model("pyrog", "SQLInput")
 
     for join in Join.objects.all():
-        columns = join.columns.all()
+        columns = join.columns.all().order_by("created_at")
         join.left = columns[0]
         join.right = columns[1]
         sql_input = SQLInput.objects.get(column=join.column)
