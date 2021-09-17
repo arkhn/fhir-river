@@ -13,8 +13,7 @@ pytestmark = pytest.mark.django_db
 def test_create_join(api_client, sql_input, column_factory):
     url = reverse("joins-list")
 
-    column_1 = column_factory()
-    column_2 = column_factory()
+    column_1, column_2 = column_factory.create_batch(2)
     data = {
         "sql_input": sql_input.id,
         "left": column_1.id,
