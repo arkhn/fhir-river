@@ -148,5 +148,6 @@
   "month_plural": "{{ count }} months",
   "year": "{{ count }} year",
   "year_plural": "{{ count }} years",
-  "seeOnKibana": "see on Kibana"
+  "seeOnKibana": "see on Kibana",
+  "noAvailableResource": "No available resource"
 }
