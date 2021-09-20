@@ -58,7 +58,6 @@ const BatchResourceDialog = ({
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-
   const { sourceId: id } = useParams<{ sourceId: string }>();
 
   const { data: resources } = useApiResourcesListQuery(
@@ -68,31 +67,35 @@ const BatchResourceDialog = ({
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
   const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
-
   const [displayedResources, setDisplayedResources] = useState(resources);
+
   const displayedResourcesIds = useMemo(
     () => displayedResources?.map(({ id }) => id),
     [displayedResources]
   );
 
   const areAllDisplayedResourcesSelected = useMemo(() => {
-    return (
-      displayedResourcesIds &&
-      displayedResourcesIds.length > 0 &&
-      selectedResourceIds.filter((id) => displayedResourcesIds.includes(id))
-        .length === displayedResourcesIds.length
-    );
+    if (displayedResourcesIds) {
+      const selectedAndDisplayedResourcesId = selectedResourceIds.filter((id) =>
+        displayedResourcesIds.includes(id)
+      );
+      return (
+        displayedResourcesIds.length > 0 &&
+        selectedAndDisplayedResourcesId.length === displayedResourcesIds.length
+      );
+    }
   }, [selectedResourceIds, displayedResourcesIds]);
 
   const isCheckboxIndeterminate = useMemo(() => {
-    return (
-      displayedResourcesIds &&
-      selectedResourceIds.filter((id) => displayedResourcesIds.includes(id))
-        .length < displayedResourcesIds?.length &&
-      selectedResourceIds.filter((id) => displayedResourcesIds.includes(id))
-        .length > 0 &&
-      selectedResourceIds.length > 0
-    );
+    if (displayedResourcesIds) {
+      const selectedAndDisplayedResourcesId = selectedResourceIds.filter((id) =>
+        displayedResourcesIds.includes(id)
+      );
+      return (
+        selectedAndDisplayedResourcesId.length > 0 &&
+        selectedAndDisplayedResourcesId.length < displayedResourcesIds.length
+      );
+    }
   }, [selectedResourceIds, displayedResourcesIds]);
 
   const onCloseModal = () => {
@@ -103,15 +106,12 @@ const BatchResourceDialog = ({
   const handleSearchResource = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
+    const searchValue = e.target.value.toLowerCase();
     setDisplayedResources(
       resources?.filter(
-        (resource) =>
-          resource.label
-            ?.toLowerCase()
-            .includes(e.target.value.toLowerCase()) ||
-          resource.definition_id
-            .toLowerCase()
-            .includes(e.target.value.toLowerCase())
+        ({ label, definition_id }) =>
+          label?.toLowerCase().includes(searchValue) ||
+          definition_id.toLowerCase().includes(searchValue)
       )
     );
   };
@@ -127,15 +127,18 @@ const BatchResourceDialog = ({
   };
 
   const handleSelectAllClick = () => {
-    if (selectedResourceIds.length === 0 && displayedResources) {
-      setSelectedResourceIds(displayedResources.map((resource) => resource.id));
+    if (displayedResourcesIds && selectedResourceIds.length === 0) {
+      setSelectedResourceIds(displayedResourcesIds);
     } else if (areAllDisplayedResourcesSelected || isCheckboxIndeterminate) {
-      const resourcesToKeep = selectedResourceIds.filter(
+      const resourcesIdsToKeep = selectedResourceIds.filter(
         (id) => !displayedResourcesIds?.includes(id)
       );
-      setSelectedResourceIds(resourcesToKeep);
+      setSelectedResourceIds(resourcesIdsToKeep);
     } else if (displayedResourcesIds) {
-      setSelectedResourceIds(selectedResourceIds.concat(displayedResourcesIds));
+      const newSelectedResourcesIds = selectedResourceIds.concat(
+        displayedResourcesIds
+      );
+      setSelectedResourceIds(newSelectedResourcesIds);
     }
   };
 
@@ -158,9 +161,10 @@ const BatchResourceDialog = ({
       setSelectedResourceIds([]);
     }
   };
+
   useEffect(() => {
     setDisplayedResources(resources);
-  }, [resources]);
+  }, [resources, open]);
 
   return (
     <Dialog
@@ -181,6 +185,7 @@ const BatchResourceDialog = ({
               : t("selectAllResources")}
           </Typography>
           <Checkbox
+            disabled={!displayedResourcesIds?.length}
             disableFocusRipple
             edge="end"
             color="primary"
@@ -206,6 +211,9 @@ const BatchResourceDialog = ({
       />
       <DialogContent>
         <List>
+          {displayedResources?.length === 0 && (
+            <Typography>{t("noAvailableResource")}</Typography>
+          )}
           {displayedResources &&
             displayedResources.map((resource) => (
               <BatchResourceListItem
