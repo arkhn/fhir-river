@@ -443,7 +443,7 @@ export const getDefinitionNodeById = (
   root: DefinitionNode
 ): DefinitionNode | undefined => {
   if (root.definition.id === id) return root;
-  for (const next of root.childrenDefinitions) {
+  for (const next of [...root.childrenDefinitions, ...root.sliceDefinitions]) {
     const result = getDefinitionNodeById(id, next);
     if (result) return result;
   }
