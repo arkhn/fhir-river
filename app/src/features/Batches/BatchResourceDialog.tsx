@@ -162,6 +162,10 @@ const BatchResourceDialog = ({
     }
   };
 
+  /**
+   * If the dialog opening state or if the resources changes,
+   * set displayed resources with all the resources of the source.
+   */
   useEffect(() => {
     setDisplayedResources(resources);
   }, [resources, open]);
