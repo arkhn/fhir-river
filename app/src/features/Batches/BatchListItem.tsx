@@ -47,6 +47,14 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const { t } = useTranslation();
   const batchEnd = batch.completed_at ?? batch.canceled_at;
 
+  const isBatchInProgress = !batch.completed_at && !batch.canceled_at;
+  const hasBatchCompletedWithErrors =
+    batch.completed_at && batch.errors.length > 0;
+  const hasBatchCompletedWithoutError =
+    batch.completed_at && batch.errors.length === 0;
+  const isBatchRunning = !batch.canceled_at && !batch.completed_at;
+  const hasBatchStopped = batch.completed_at || batch.canceled_at;
+
   const getBatchDuration = (batch: Batch) => {
     if (batchEnd) {
       const start = moment(batch.created_at);
@@ -83,8 +91,8 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
       <div>
         <div className={classes.title}>
           <Typography variant="subtitle2">
-            {!batch.completed_at && !batch.canceled_at && t("batchInProgress")}
-            {batch.completed_at && batch.errors.length > 0 && (
+            {isBatchInProgress && t("batchInProgress")}
+            {hasBatchCompletedWithErrors && (
               <>
                 {t("batchErrors", {
                   count: batch.errors.length,
@@ -103,14 +111,11 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
                 )}
               </>
             )}
-
-            {batch.completed_at &&
-              batch.errors.length === 0 &&
-              t("batchSuccess")}
+            {hasBatchCompletedWithoutError && t("batchSuccess")}
             {batch.canceled_at && t("batchCanceled")}
           </Typography>
         </div>
-        {(batch.completed_at || batch.canceled_at) && (
+        {hasBatchStopped && (
           <Typography variant="body2" color="textSecondary">
             {`${getBatchDuration(batch)} | ${t("resource", {
               count: batch.resources.length,
@@ -130,9 +135,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         >
           {t("retry")}
         </Button>
-        {!batch.canceled_at && !batch.completed_at && (
-          <BatchCancel batch={batch} />
-        )}
+        {isBatchRunning && <BatchCancel batch={batch} />}
       </div>
     </Paper>
   );
