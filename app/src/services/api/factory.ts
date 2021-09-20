@@ -3,6 +3,11 @@ import * as faker from "faker";
 import { Factory } from "fishery";
 
 import {
+  DefinitionNode,
+  ElementNode,
+} from "features/FhirResourceTree/resourceTreeSlice";
+
+import {
   Attribute,
   Credential,
   Filter,
@@ -72,7 +77,7 @@ export const resourceFactory = Factory.define<Resource>(
 export const attributeFactory = Factory.define<Attribute>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
-    path: faker.lorem.word(),
+    path: associations.path || faker.lorem.word(),
     definition_id: faker.lorem.word(),
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
@@ -146,7 +151,7 @@ export const filterFactory = Factory.define<Filter>(
 );
 
 export const structureDefinitionFactory = Factory.define<IStructureDefinition>(
-  ({ sequence, associations }) => {
+  ({ associations }) => {
     const structureDefName = associations.name || faker.lorem.word();
     return {
       resourceType: "StructureDefinition",
@@ -157,12 +162,99 @@ export const structureDefinitionFactory = Factory.define<IStructureDefinition>(
             id: structureDefName,
           },
           {
-            path: `${structureDefName}.subject${sequence}`,
-            id: `${structureDefName}.subject${sequence}`,
+            path: `${structureDefName}.subject`,
+            id: `${structureDefName}.subject`,
             type: [{ code: "Annotation" }],
+            max: "*",
           },
         ],
       },
     };
   }
 );
+
+export const definitionNodeFactory = Factory.define<DefinitionNode>(() => ({
+  definition: { id: "Observation.code", path: "Observation.code" },
+  childrenDefinitions: [
+    {
+      definition: {
+        id: "Observation.code.coding",
+        path: "Observation.code.coding",
+      },
+      childrenDefinitions: [],
+      sliceDefinitions: [],
+    },
+  ],
+  sliceDefinitions: [
+    {
+      definition: {
+        id: "Observation.code:codeSlice",
+        path: "Observation.code",
+        sliceName: "codeSlice",
+      },
+      childrenDefinitions: [
+        {
+          definition: {
+            id: "Observation.code:codeSlice.coding",
+            path: "Observation.code.coding",
+          },
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+        },
+      ],
+      sliceDefinitions: [],
+    },
+  ],
+}));
+
+export const elementNodeFactory = Factory.define<
+  ElementNode,
+  { childrenIndexes: number[] }
+>(({ transientParams }) => {
+  return {
+    id: "Observation.code.coding",
+    path: "Observation.code.coding",
+    isArray: true,
+    name: "coding",
+    type: "CodeableConcept",
+    isRequired: false,
+    kind: "complex",
+    definitionNode: {
+      childrenDefinitions: [],
+      sliceDefinitions: [],
+      definition: {},
+    },
+    children:
+      transientParams.childrenIndexes?.map((index) => ({
+        id: "Observation.code.coding",
+        path: `Observation.code.coding[${index}]`,
+        isArray: false,
+        name: "coding",
+        type: "CodeableConcept",
+        isRequired: false,
+        kind: "complex",
+        children: [
+          {
+            id: "Observation.code.coding.type",
+            path: `Observation.code.coding[${index}].type`,
+            isArray: false,
+            name: "type",
+            type: "Type",
+            isRequired: false,
+            kind: "primitive",
+            children: [],
+            definitionNode: {
+              childrenDefinitions: [],
+              sliceDefinitions: [],
+              definition: {},
+            },
+          },
+        ],
+        definitionNode: {
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+          definition: {},
+        },
+      })) ?? [],
+  };
+});
