@@ -132,5 +132,6 @@
   "batchInProgress": "⏳ In progress...",
   "batchErrors": "⚠️ {{errors}} errors",
   "batchSuccess": "✅ Success",
-  "batchCanceled": "🚫 Canceled"
+  "batchCanceled": "🚫 Canceled",
+  "noAvailableResource": "No available resource"
 }
