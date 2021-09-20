@@ -86,6 +86,11 @@ python django/manage.py migrate
 python django/manage.py runserver
 ```
 
+### Registering the oauth application
+
+In order to register a local OIDC application, use the admin interface of the identity provider
+See [documentation](https://github.com/arkhn/o-provider/blob/main/FAQ.md#comment-cr%C3%A9er-une-application-)
+
 ### Code quality
 
 Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
