@@ -65,12 +65,12 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const getCreatedAtDate = (date: string) =>
     new Date(date).toLocaleString().split(",").join(" -");
 
-  const handleBatchRetry = (batchId: string) => (
+  const handleBatchRetry = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
     // TODO: batch retry is not implemented yet
-    console.log(batchId);
+    console.log("Retrying a batch is not yet implemented !");
   };
 
   return (
@@ -125,7 +125,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         <Button
           variant="outlined"
           startIcon={<Replay />}
-          onClick={handleBatchRetry(batch.id)}
+          onClick={handleBatchRetry}
           className={classes.margin}
         >
           {t("retry")}
