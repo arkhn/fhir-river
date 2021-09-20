@@ -55,7 +55,7 @@ class DBConnection:
         except KeyError:
             raise ValueError(
                 "db_config specifies the wrong database model. "
-                "Only 'POSTGRES', 'ORACLE' and 'MSSQL' are currently supported."
+                f"Only {', '.join(DB_DRIVERS)} are currently supported."
             )
         try:
             [connection_type, target_name] = database.split(":", 1)
