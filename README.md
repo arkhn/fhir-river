@@ -11,9 +11,15 @@ Using **Pyrog**, you can represent the data from any data sources in the FHIR st
 
 Using **River** and your Pyrog mappings, you can ETL your data, from a data source to a FHIR data warehouse.
 
+## Pyrog
+
 ![source_view](./static/source_view.png)
 
+## ETL Flow
+
 ![ETL flow](./diagrams/batch_process.png)
+
+## Authentication flow using OpenID connect
 
 ![Authentication flow](./diagrams/openidconnect.png)
 
