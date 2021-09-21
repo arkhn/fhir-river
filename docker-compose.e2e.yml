@@ -1,0 +1,142 @@
+version: "3.7"
+
+x-service-env: &service-env
+  - ENV=test
+  - DEBUG=False
+  - LOG_LEVEL=DEBUG
+  - SECRET_KEY=USE_IN_TESTS_ONLY
+  - ALLOWED_HOSTS=*
+  - CORS_ALLOW_ALL_ORIGINS=True
+  - CORS_ALLOW_CREDENTIALS=True
+  - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
+  - POSTGRES_HOST=postgres-river
+  - POSTGRES_PORT=5432
+  - POSTGRES_DB=test
+  - POSTGRES_USER=test
+  - POSTGRES_PASSWORD=test
+  - REDIS_DB=0
+  - REDIS_HOST=redis
+  - REDIS_PORT=6379
+  - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+  - FHIR_API_URL=http://jpaltime:8080/fhir
+
+services:
+  river-api:
+    image: arkhn/river:${IMAGE_TAG:-latest}
+    build: .
+    environment: *service-env
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
+
+  extractor:
+    image: arkhn/river:${IMAGE_TAG:-latest}
+    build: .
+    command: extractor
+    environment: *service-env
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
+
+  transformer:
+    image: arkhn/river:${IMAGE_TAG:-latest}
+    build: .
+    command: transformer
+    environment: *service-env
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
+
+  topicleaner:
+    image: arkhn/river:${IMAGE_TAG:-latest}
+    build: .
+    command: topicleaner
+    environment: *service-env
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
+
+  loader:
+    image: arkhn/hapi-river:${IMAGE_TAG:-latest}
+    build: ./hapi-loader
+    restart: on-failure
+    volumes:
+      - ./hapi-loader/application.e2e.yaml:/app/application.yaml
+
+  jpaltime:
+    image: arkhn/jpaltime:arm  # TODO file with versions for tests
+    restart: on-failure
+    ports:
+      - 8080:8080
+    volumes:
+      - ./application.jpaltime.e2e.yaml:/opt/hapi/application.yaml
+    environment:
+      - SPRING_CONFIG_LOCATION=file:///opt/hapi/application.yaml
+      - JDK_JAVA_OPTIONS=-Xmx4g
+
+  postgres-river:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - postgres-river-data:/var/lib/postgresql/data
+
+  # TODO merge both postgres?
+  postgres-hapi:
+    image: postgres:12
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: hapi
+      POSTGRES_PASSWORD: hapi
+      POSTGRES_DB: hapi
+    volumes:
+      - postgres-hapi-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.0.7
+    ports:
+      - 6379:6379
+    restart: on-failure
+
+  zookeeper:
+    image: zookeeper:3.4.10
+    restart: on-failure
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.6.0
+    restart: on-failure
+    # This port mapping is required by the containerized kafka
+    ports:
+      - "19092:19092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONNECTIONS_FROM_HOST://:19092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,CONNECTIONS_FROM_HOST://localhost:19092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONNECTIONS_FROM_HOST:PLAINTEXT
+      - KAFKA_DELETE_TOPIC_ENABLE=true
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_HEAP_OPTS=-Xmx256M -Xms128M
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mimic:
+    image: arkhn/mimic:latest
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - mimic-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-river-data:
+  postgres-hapi-data:
+  mimic-data:

@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    jdbcUrl: "jdbc:postgresql://postgres-hapi:5432/hapi"
+    username: hapi
+    password: hapi
+    driverClassName: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        search:
+          enabled: false
+  redis:
+    host: redis
+    port: 6379
+    db_index: 0
+  batch:
+    job:
+      enabled: false
+
+hapi:
+  loader:
+    concurrency: 8
+    kafka:
+      bootstrapAddress: kafka:9092
+      topicPattern: "^transform.*"
+      groupId: loader
+      replicationFactor: 1
+  fhir:
+    fhir_version: R4
+    daoconfig_client_id_strategy: null
+    bulk_export_enabled: false
+    enforce_referential_integrity_on_delete: false
+    enforce_referential_integrity_on_write: false
+    allow_cascading_deletes: false
+    allow_external_references: false
+    allow_multiple_delete: false
+    allow_inline_match_url_references: true
