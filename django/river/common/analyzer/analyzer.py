@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class Analyzer:
     def __init__(self):
         # Store analyses
-        self.analyses: dict = {}
+        self.analyses: dict[str, Analysis] = {}
         self.scripts_repo = ScriptsRepository()
         self._cur_analysis = Analysis()
         self._columns_data = {}
