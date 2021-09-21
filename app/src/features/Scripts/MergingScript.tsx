@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import { useApiInputGroupsUpdateMutation } from "services/api/endpoints";
@@ -47,6 +48,7 @@ type MergingScriptProps = {
 const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [updateInputGroup] = useApiInputGroupsUpdateMutation();
   const { data: scripts } = useApiScriptsListQuery({});
 
@@ -64,8 +66,7 @@ const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
           inputGroupRequest: { ...inputGroup, merging_script: scriptName },
         });
       } catch (error) {
-        // TODO: Handle errors nicely
-        console.error(error);
+        enqueueSnackbar(error.error, { variant: "error" });
       }
     }
   };

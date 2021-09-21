@@ -1,7 +1,5 @@
-# No resources, no owners
 {
-    "name": "test",
-    "version": "",
+    "id": "cktlnp4e500020tmzjro5cdug",
     "resources": [],
     "credential": {
         "host": "mimic",
@@ -11,5 +9,9 @@
         "password": "test",
         "model": "POSTGRES",
         "owners": []
-    }
+    },
+    "name": "no-resource-no-owner",
+    "version": "",
+    "updated_at": "2021-09-15T17:26:02.621953+02:00",
+    "created_at": "2021-09-15T17:26:02.621984+02:00"
 }

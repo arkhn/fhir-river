@@ -323,3 +323,5 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Arkhn's River API",
     "VERSION": "0.1.0",
 }
+
+DEFAULT_FHIR_API_CLASS = "common.adapters.fhir_api.HapiFhirAPI"

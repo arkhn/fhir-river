@@ -7,8 +7,8 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { difference, head } from "lodash";
+import { useSnackbar } from "notistack";
 
-import Alert from "common/components/Alert";
 import {
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
@@ -35,8 +35,7 @@ const CredentialOwnersSelect = ({
 }: CredentialOwnersSelectProps): JSX.Element => {
   const classes = useStyles();
 
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
+  const { enqueueSnackbar } = useSnackbar();
   const [error, setError] = useState<string | undefined>(undefined);
 
   const availableOwnersNames = credential.available_owners;
@@ -79,7 +78,8 @@ const CredentialOwnersSelect = ({
           const data = apiValidationErrorFromResponse<Partial<Owner>>(
             e as FetchBaseQueryError
           );
-          if (data?.non_field_errors) setAlert(head(data.non_field_errors));
+          if (data?.non_field_errors)
+            enqueueSnackbar(head(data.non_field_errors), { variant: "error" });
           if (data?.name) setError(head(data.name));
         }
         return;
@@ -115,12 +115,6 @@ const CredentialOwnersSelect = ({
         value={owners?.map((owner) => owner.name)}
         onChange={handleOwnerChange}
         disableClearable
-      />
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
       />
     </div>
   );

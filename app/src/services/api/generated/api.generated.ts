@@ -1405,6 +1405,9 @@ export type Resource = {
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
   logical_reference: string;
   updated_at: string;
   created_at: string;

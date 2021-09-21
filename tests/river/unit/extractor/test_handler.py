@@ -1,7 +1,7 @@
 import pytest
 
-from river.adapters.event_publisher import FakeEventPublisher
-from river.adapters.progression_counter import FakeProgressionCounter, Progression
+from river.adapters.event_publisher import InMemoryEventPublisher
+from river.adapters.progression_counter import InMemoryProgressionCounter, Progression
 from river.common.analyzer import Analyzer
 from river.domain.events import BatchEvent, ExtractedRecord
 from river.extractor.service import batch_resource_handler
@@ -9,13 +9,16 @@ from river.extractor.service import batch_resource_handler
 pytestmark = pytest.mark.django_db
 
 
-def test_batch_resource_handler(batch, mimic_mapping):
+def test_batch_resource_handler(batch_factory, snapshot):
     # FIXME: use a dedicated fixture for the patient mapping
     # instead of the first resource of mimic mappings.
-    resource_id = mimic_mapping["resources"][0]["id"]
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
+
+    batch = batch_factory.create(id="test-batch_id")
     event = BatchEvent(batch_id=batch.id, resource_id=resource_id)
-    publisher = FakeEventPublisher()
-    counter = FakeProgressionCounter()
+    publisher = InMemoryEventPublisher()
+    counter = InMemoryProgressionCounter()
     analyzer = Analyzer()
 
     batch_resource_handler(event, publisher, counter, analyzer)
@@ -26,3 +29,4 @@ def test_batch_resource_handler(batch, mimic_mapping):
     assert counter.get(f"{batch.id}:{resource_id}") == Progression(
         extracted=len(publisher._events[f"extract.{batch.id}"]), loaded=None, failed=None
     )
+    assert publisher._events[f"extract.{batch.id}"] == snapshot

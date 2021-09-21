@@ -69,6 +69,17 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+  mimic:
+    image: arkhn/mimic:latest
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - mimic-data:/var/lib/postgresql/data
+
   river-api:
     image: river
     build: .
@@ -151,6 +162,7 @@ services:
 
 volumes:
   db-data:
+  mimic-data:
 
 networks:
   default:

@@ -17,6 +17,7 @@ from typing import Mapping
 
 from rest_framework import serializers
 
+from common.adapters.fhir_api import fhir_api
 from pagai.database_explorer.database_explorer import DatabaseExplorer
 from pyrog.models import (
     Attribute,
@@ -24,12 +25,13 @@ from pyrog.models import (
     Condition,
     Credential,
     Filter,
-    Input,
     InputGroup,
     Join,
     Owner,
     Resource,
     Source,
+    SQLInput,
+    StaticInput,
 )
 from river.common.database_connection.db_connection import DBConnection
 
@@ -72,19 +74,18 @@ class _OwnerField(serializers.PrimaryKeyRelatedField):
 
 
 class MappingJoinSerializer(serializers.ModelSerializer):
-    columns = _ColumnField(many=True)
+    left = _ColumnField()
+    right = _ColumnField()
 
     class Meta:
         model = Join
-        fields = ["columns"]
+        fields = ["left", "right"]
 
 
 class MappingColumnSerializer(serializers.ModelSerializer):
-    joins = MappingJoinSerializer(many=True, required=False, default=[])
-
     class Meta:
         model = Column
-        fields = ["id", "table", "column", "joins"]
+        fields = ["id", "table", "column"]
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
 
@@ -94,7 +95,6 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
         fields = ["id", "name", "columns"]
-        read_only_fields = ["schema"]
         extra_kwargs = {"id": {"read_only": False}}  # Put `id` in validated data
 
     def to_internal_value(self, data):
@@ -106,7 +106,7 @@ class MappingOwnerSerializer(serializers.ModelSerializer):
             data["schema"] = explorer.get_owner_schema(name)
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().to_internal_value(data)
 
 
 class MappingPartialCredentialSerializer(serializers.ModelSerializer):
@@ -127,37 +127,45 @@ class MappingCredentialSerializer(MappingPartialCredentialSerializer):
             db_connection.close()
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().validate(data)
 
 
-class MappingInputSerializer(serializers.ModelSerializer):
+class MappingStaticInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaticInput
+        fields = ["value"]
+
+
+class MappingSQLInputSerializer(serializers.ModelSerializer):
     column = _ColumnField(allow_null=True)
+    joins = MappingJoinSerializer(many=True)
 
     class Meta:
-        model = Input
-        fields = ["script", "concept_map_id", "static_value", "column"]
+        model = SQLInput
+        fields = ["script", "concept_map_id", "column", "joins"]
 
 
 class MappingConditionSerializer(serializers.ModelSerializer):
-    column = _ColumnField()
+    sql_input = MappingSQLInputSerializer()
 
     class Meta:
         model = Condition
         fields = [
             "action",
-            "column",
+            "sql_input",
             "value",
             "relation",
         ]
 
 
 class MappingInputGroupSerializer(serializers.ModelSerializer):
-    inputs = MappingInputSerializer(many=True, required=False, default=[])
+    static_inputs = MappingStaticInputSerializer(many=True, required=False, default=[])
+    sql_inputs = MappingSQLInputSerializer(many=True, required=False, default=[])
     conditions = MappingConditionSerializer(many=True, required=False, default=[])
 
     class Meta:
         model = InputGroup
-        fields = ["id", "merging_script", "inputs", "conditions"]
+        fields = ["id", "merging_script", "static_inputs", "sql_inputs", "conditions"]
 
 
 class MappingAttributeSerializer(serializers.ModelSerializer):
@@ -169,11 +177,11 @@ class MappingAttributeSerializer(serializers.ModelSerializer):
 
 
 class MappingFilterSerializer(serializers.ModelSerializer):
-    sql_column = _ColumnField()
+    sql_input = MappingSQLInputSerializer()
 
     class Meta:
         model = Filter
-        fields = ["relation", "value", "sql_column"]
+        fields = ["relation", "value", "sql_input"]
 
 
 class MappingResourceSerializer(serializers.ModelSerializer):
@@ -190,11 +198,20 @@ class MappingResourceSerializer(serializers.ModelSerializer):
             "primary_key_table",
             "primary_key_column",
             "definition_id",
+            "definition",
             "logical_reference",
             "primary_key_owner",
             "attributes",
             "filters",
         ]
+
+    def to_representation(self, instance):
+        if not instance.definition:
+            request = self.context.get("request")
+            auth_token = request.session.get("oidc_access_token") if request else None
+            instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
+            instance.save()
+        return super().to_representation(instance)
 
 
 class MappingSerializer(serializers.ModelSerializer):
@@ -240,12 +257,7 @@ class MappingSerializer(serializers.ModelSerializer):
 
             owner_by_id[owner_data["id"]] = owner
 
-            # Intermediate list (ordered) to track Join instances
-            joins = []
-
             for column_data in columns_data:
-                joins_data = column_data.pop("joins")
-
                 column = Column.objects.create(
                     owner=owner,
                     **{**column_data, "id": None},  # Ignore provided `id` field
@@ -253,38 +265,29 @@ class MappingSerializer(serializers.ModelSerializer):
 
                 column_by_id[column_data["id"]] = column
 
-                for _ in joins_data:
-                    joins.append(Join.objects.create(column=column))
-
-                # Put back the joins data for the second pass
-                column_data["joins"] = joins_data
-
-            # Second pass to set the references to joins on columns,
-            # now that all columns have been created.
-            for column_data in columns_data:
-                joins_data = column_data.pop("joins")
-                for join_data in joins_data:
-                    # Order is important
-                    join = joins.pop(0)
-                    for column_data in join_data["columns"]:
-                        column = column_by_id[column_data]
-                        column.join = join
-                        column.save(update_fields=["join", "updated_at"])
-
         # Main hierarchy
         for resource_data in resources_data:
             filters_data = resource_data.pop("filters")
             attributes_data = resource_data.pop("attributes")
-            owner_data = resource_data.pop("primary_key_owner")
+            owner_id = resource_data.pop("primary_key_owner")
 
-            owner = owner_by_id[owner_data]
+            owner = owner_by_id[owner_id]
             resource = Resource.objects.create(primary_key_owner=owner, source=source, **{**resource_data, "id": None})
 
             for filter_data in filters_data:
-                column_data = filter_data.pop("sql_column")
+                sql_input_data = filter_data.pop("sql_input")
+                column_id = sql_input_data.pop("column")
+                column = column_by_id[column_id]
+                joins_data = sql_input_data.pop("joins")
 
-                column = column_by_id[column_data]
-                Filter.objects.create(resource=resource, sql_column=column, **filter_data)
+                sql_input = SQLInput.objects.create(column=column, **sql_input_data)
+
+                for join_data in joins_data:
+                    left_col = column_by_id[join_data["left"]]
+                    right_col = column_by_id[join_data["right"]]
+                    Join.objects.create(sql_input=sql_input, left=left_col, right=right_col)
+
+                Filter.objects.create(resource=resource, sql_input=sql_input, **filter_data)
 
             for attribute_data in attributes_data:
                 input_groups_data = attribute_data.pop("input_groups")
@@ -292,34 +295,40 @@ class MappingSerializer(serializers.ModelSerializer):
                 attribute = Attribute.objects.create(resource=resource, **attribute_data)
 
                 for input_group_data in input_groups_data:
-                    inputs_data = input_group_data.pop("inputs")
+                    static_inputs_data = input_group_data.pop("static_inputs")
+                    sql_inputs_data = input_group_data.pop("sql_inputs")
                     conditions_data = input_group_data.pop("conditions")
-
                     input_group = InputGroup.objects.create(attribute=attribute, **{**input_group_data, "id": None})
 
-                    for input_data in inputs_data:
-                        static_value = input_data.pop("static_value")
-                        column_id = input_data.pop("column")
+                    for static_input_data in static_inputs_data:
+                        StaticInput.objects.create(input_group=input_group, **static_input_data)
 
-                        if static_value:
-                            Input.objects.create(
-                                input_group=input_group,
-                                static_value=static_value,
-                                **input_data,
-                            )
-                        else:
-                            column = column_by_id[column_id]
-                            Input.objects.create(
-                                input_group=input_group,
-                                column=column,
-                                **input_data,
-                            )
+                    for sql_input_data in sql_inputs_data:
+                        column_id = sql_input_data.pop("column")
+                        column = column_by_id[column_id]
+                        joins_data = sql_input_data.pop("joins")
+
+                        sql_input = SQLInput.objects.create(input_group=input_group, column=column, **sql_input_data)
+
+                        for join_data in joins_data:
+                            left_col = column_by_id[join_data["left"]]
+                            right_col = column_by_id[join_data["right"]]
+                            Join.objects.create(sql_input=sql_input, left=left_col, right=right_col)
 
                     for condition_data in conditions_data:
-                        column_data = condition_data.pop("column")
+                        sql_input_data = condition_data.pop("sql_input")
+                        column_id = sql_input_data.pop("column")
+                        column = column_by_id[column_id]
+                        joins_data = sql_input_data.pop("joins")
 
-                        column = column_by_id[column_data]
-                        Condition.objects.create(input_group=input_group, column=column, **condition_data)
+                        sql_input = SQLInput.objects.create(column=column, **sql_input_data)
+
+                        for join_data in joins_data:
+                            left_col = column_by_id[join_data["left"]]
+                            right_col = column_by_id[join_data["right"]]
+                            Join.objects.create(sql_input=sql_input, left=left_col, right=right_col)
+
+                        Condition.objects.create(input_group=input_group, sql_input=sql_input, **condition_data)
 
         return source
 

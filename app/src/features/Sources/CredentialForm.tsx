@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
@@ -6,10 +6,10 @@ import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import { head, isEqual } from "lodash";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import {
   useApiCredentialsCreateMutation,
@@ -138,10 +138,8 @@ type CredentialFormProps = {
 const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
 
   const {
     isLoading: isCredentialsLoading,
@@ -190,7 +188,7 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
       const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
         e as FetchBaseQueryError
       );
-      setAlert(head(data?.non_field_errors));
+      enqueueSnackbar(head(data?.non_field_errors), { variant: "error" });
     }
   };
 
@@ -225,12 +223,6 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             )}
           </Button>
         }
-      />
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
       />
     </div>
   );

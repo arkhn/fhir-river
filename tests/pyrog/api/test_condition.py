@@ -12,7 +12,7 @@ pytestmark = pytest.mark.django_db
 def test_create_condition(
     api_client,
     action,
-    column,
+    sql_input,
     value,
     input_group,
     relation,
@@ -22,7 +22,7 @@ def test_create_condition(
 
     data = {
         "action": action,
-        "column": column.id,
+        "sql_input": sql_input.id,
         "value": value,
         "input_group": input_group.id,
         "relation": relation,

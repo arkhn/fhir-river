@@ -15,6 +15,7 @@ import {
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -48,17 +49,16 @@ const useStyles = makeStyles((theme) => ({
 type BatchResourceDialogType = {
   open: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
-  setAlert: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 const BatchResourceDialog = ({
   open,
   onClose,
-  setAlert,
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { sourceId: id } = useParams<{ sourceId: string }>();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data: resources } = useApiResourcesListQuery(
     { source: id },
@@ -151,7 +151,7 @@ const BatchResourceDialog = ({
           },
         }).unwrap();
       } catch (e) {
-        setAlert(e.message as string);
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     };
 

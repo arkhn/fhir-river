@@ -1,0 +1,10 @@
+# name: test_with_real_analysis
+  '
+  SELECT public.patients.subject_id AS patients_subject_id_a9fb9667, public.patients.gender AS patients_gender_8035bbd1, public.patients.dob AS patients_dob_f873eb32, admissions_1.marital_status AS admissions_tal_status_63a5ec83, admissions_1.language AS admissions_language_d00ed22f, public.patients.dod AS patients_dod_9fd82e01, public.patients.row_id AS patients_row_id_ba3a4e99 
+  FROM public.patients LEFT OUTER JOIN public.admissions AS admissions_1 ON admissions_1.subject_id = public.patients.subject_id
+  '
+---
+# name: test_with_real_analysis.1
+  <class 'dict'> {
+  }
+---

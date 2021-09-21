@@ -112,8 +112,14 @@ const Preview = (): JSX.Element => {
     ExplorationResponse | null | undefined
   >(undefined);
 
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
+  const [alerts, setAlerts] = useState<string[] | undefined>(undefined);
+  const handleAlertClose = (index: number) => {
+    if (alerts) {
+      const newAlerts = [...alerts];
+      newAlerts.splice(index, 1);
+      setAlerts(newAlerts);
+    }
+  };
 
   const [preview, setPreview] = useState<IResource | undefined>(undefined);
 
@@ -146,7 +152,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          setAlert(e.message);
+          setAlerts([e.error]);
         }
       };
       explore();
@@ -166,7 +172,6 @@ const Preview = (): JSX.Element => {
       const primaryKey = mapping.primary_key_column;
       const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
       const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
-
       if (primaryKeyValue) {
         const previewCreate = async () => {
           try {
@@ -178,9 +183,9 @@ const Preview = (): JSX.Element => {
             }).unwrap();
             setPreview(previewResult.instances[0]);
             if (previewResult.errors.length > 0)
-              setAlert(previewResult.errors[0]);
+              setAlerts(previewResult.errors);
           } catch (e) {
-            setAlert(e.message);
+            setAlerts([e.error]);
           }
         };
         previewCreate();
@@ -238,15 +243,17 @@ const Preview = (): JSX.Element => {
           )}
         </Table>
       </TableContainer>
-      {alert && (
-        <Alert
-          className={classes.alert}
-          severity="error"
-          onClose={handleAlertClose}
-        >
-          {alert}
-        </Alert>
-      )}
+      {alerts &&
+        alerts.map((message, index) => (
+          <Alert
+            key={index}
+            className={classes.alert}
+            severity="error"
+            onClose={() => handleAlertClose(index)}
+          >
+            {message}
+          </Alert>
+        ))}
       {preview ? (
         <div className={classes.preview}>
           <ReactJson

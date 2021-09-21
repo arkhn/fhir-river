@@ -11,13 +11,13 @@ class CredentialFilterSet(filters.FilterSet):
 class ColumnFilterSet(filters.FilterSet):
     class Meta:
         model = models.Column
-        fields = ["join", "input"]
+        fields = ["joined_left", "joined_right", "sql_input"]
 
 
 class JoinFilterSet(filters.FilterSet):
     class Meta:
         model = models.Join
-        fields = ["column"]
+        fields = ["sql_input"]
 
 
 class FilterFilterSet(filters.FilterSet):
@@ -52,9 +52,15 @@ class InputGroupFilterSet(filters.FilterSet):
         fields = ["attribute"]
 
 
-class InputFilterSet(filters.FilterSet):
+class StaticInputFilterSet(filters.FilterSet):
     class Meta:
-        model = models.Input
+        model = models.StaticInput
+        fields = ["input_group"]
+
+
+class SQLInputFilterSet(filters.FilterSet):
+    class Meta:
+        model = models.SQLInput
         fields = ["input_group"]
 
 

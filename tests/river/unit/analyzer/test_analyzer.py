@@ -5,13 +5,13 @@ from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.condition import Condition
 from river.common.analyzer.input_group import InputGroup
 from river.common.analyzer.sql_column import SqlColumn
-from river.common.analyzer.sql_filter import SqlFilter
 from river.common.analyzer.sql_join import SqlJoin
 
 
 def test_cache_analysis_redis(mimic_mapping):
     batch_id = uuid4()
-    resource_id = "patient-resource-id"
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
     analyzer = Analyzer()
 
     res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
@@ -55,102 +55,78 @@ def test_get_primary_key_missing_field():
     assert analyzer.get_primary_key(resource_mapping) is None
 
 
-def test_analyze_mapping(mimic_mapping):
+def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
-    resource_id = "join-resource-id"
+    # Encounter
+    resource_id = "cktlnp0hz00500mmzpor3i6hn"
 
     analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    assert len(analysis.attributes) == 2
-    assert analyzer.get_analysis_columns(analysis) == {
-        SqlColumn("public", "patients", "row_id"),
-        SqlColumn(
-            "public",
-            "admissions",
-            "admission_type",
-            joins=[
-                SqlJoin(
-                    SqlColumn("public", "patients", "subject_id"),
-                    SqlColumn("public", "admissions", "subject_id"),
-                )
-            ],
-        ),
-    }
-    assert analysis.filters == [
-        SqlFilter(
-            SqlColumn(
-                "public",
-                "admissions",
-                "admission_type",
-                joins=[
-                    SqlJoin(
-                        SqlColumn("public", "patients", "subject_id"),
-                        SqlColumn("public", "admissions", "subject_id"),
-                    )
-                ],
-            ),
-            "=",
-            "EMERGENCY",
-        ),
+    assert len(analysis.attributes) == 9
+    assert analysis == snapshot
+    assert analyzer.get_analysis_columns(analysis) == snapshot
+    assert analysis.filters == snapshot
+    assert analysis.reference_paths == [
+        ["subject"],
+        ["location", "location"],
+        ["diagnosis", "condition"],
+        ["serviceProvider"],
     ]
-    assert analysis.reference_paths == [["generalPractitioner"], ["link", "other"]]
 
 
-def test_analyze_attribute(dict_map_gender):
+def test_analyze_attribute(dict_map_gender, structure_definitions):
     analyzer = Analyzer()
     analyzer._cur_analysis.primary_key_column = SqlColumn("mimiciii", "patients", "subject_id")
     analyzer._cur_analysis.definition_id = "Patient"
+    analyzer._cur_analysis.definition = next(
+        iter(
+            [
+                structure_definition
+                for structure_definition in structure_definitions
+                if structure_definition["id"] == analyzer._cur_analysis.definition_id
+            ]
+        )
+    )
     analyzer._columns_data = {
         "ck8ooenw827004kp41nv3kcmq": {
             "owner": "mimiciii",
             "table": "patients",
             "column": "gender",
-            "joins": [{"columns": ["ckdyl65kj0196gu9ku2dy0ygg", "ckdyl65kj0197gu9k1lrvx3bl"]}],
         },
         "ckdyl65kj0196gu9ku2dy0ygg": {
             "owner": "mimiciii",
             "table": "patients",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kj0197gu9k1lrvx3bl": {
             "owner": "mimiciii",
             "table": "admissions",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kl0335gu9kup0hwhe0": {
             "owner": "mimiciii",
             "table": "admissions",
             "column": "expire_flag",
-            "joins": [
-                {"columns": ["ckdyl65kj0196gu9ku2dy0ygb", "ckdyl65kj0197gu9k1lrvx3bb"]},
-                {"columns": ["ckdyl65kj0196gu9ku2dy0yga", "ckdyl65kj0197gu9k1lrvx3ba"]},
-            ],
         },
         "ckdyl65kj0196gu9ku2dy0ygb": {
             "owner": "mimiciii",
             "table": "patients",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kj0197gu9k1lrvx3bb": {
             "owner": "mimiciii",
             "table": "join_table",
             "column": "subject_id",
-            "joins": [],
         },
         "ckdyl65kj0196gu9ku2dy0yga": {
             "owner": "mimiciii",
             "table": "join_table",
             "column": "adm_id",
-            "joins": [],
         },
         "ckdyl65kj0197gu9k1lrvx3ba": {
             "owner": "mimiciii",
             "table": "admissions",
             "column": "adm_id",
-            "joins": [],
         },
     }
     attribute_mapping = {
@@ -163,13 +139,14 @@ def test_analyze_attribute(dict_map_gender):
             {
                 "id": "ckdom8lgq0045m29ksz6vudvc",
                 "merging_script": None,
-                "inputs": [
+                "static_inputs": [],
+                "sql_inputs": [
                     {
-                        "script": None,
+                        "script": "",
                         "concept_map_id": "id_cm_gender",
                         "concept_map": dict_map_gender,
-                        "static_value": None,
                         "column": "ck8ooenw827004kp41nv3kcmq",
+                        "joins": [{"left": "ckdyl65kj0196gu9ku2dy0ygg", "right": "ckdyl65kj0197gu9k1lrvx3bl"}],
                     }
                 ],
                 "conditions": [
@@ -177,7 +154,15 @@ def test_analyze_attribute(dict_map_gender):
                         "action": "EXCLUDE",
                         "relation": "EQ",
                         "value": "1",
-                        "column": "ckdyl65kl0335gu9kup0hwhe0",
+                        "sql_input": {
+                            "script": "",
+                            "concept_map_id": "",
+                            "column": "ckdyl65kl0335gu9kup0hwhe0",
+                            "joins": [
+                                {"left": "ckdyl65kj0196gu9ku2dy0ygb", "right": "ckdyl65kj0197gu9k1lrvx3bb"},
+                                {"left": "ckdyl65kj0196gu9ku2dy0yga", "right": "ckdyl65kj0197gu9k1lrvx3ba"},
+                            ],
+                        },
                     }
                 ],
             }

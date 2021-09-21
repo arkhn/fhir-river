@@ -40,6 +40,7 @@ class Resource(models.Model):
     primary_key_table = models.TextField()
     primary_key_column = models.TextField()
     definition_id = models.TextField()
+    definition = models.JSONField()
     logical_reference = models.UUIDField(default=uuid.uuid4, editable=False)
     primary_key_owner = models.ForeignKey("Owner", related_name="resources", on_delete=models.CASCADE)
 
@@ -100,33 +101,43 @@ class InputGroup(models.Model):
 
 class Input(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    input_group = models.ForeignKey(InputGroup, related_name="inputs", on_delete=models.CASCADE)
-    script = models.TextField(blank=True, default="")
-    concept_map_id = models.TextField(blank=True, default="")
-    column = models.OneToOneField("Column", blank=True, null=True, on_delete=models.CASCADE)
-    static_value = models.TextField(blank=True, null=True, default=None)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
+class StaticInput(Input):
+    input_group = models.ForeignKey(InputGroup, related_name="static_inputs", on_delete=models.CASCADE)
+    value = models.TextField(blank=True, null=True, default=None)
+
+
+class SQLInput(Input):
+    input_group = models.ForeignKey(
+        InputGroup, blank=True, null=True, related_name="sql_inputs", on_delete=models.CASCADE
+    )
+    column = models.OneToOneField("Column", related_name="sql_input", on_delete=models.CASCADE)
+    script = models.TextField(blank=True, default="")
+    concept_map_id = models.TextField(blank=True, default="")
 
 
 class Column(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     table = models.TextField()
     column = models.TextField()
-    join = models.ForeignKey("Join", related_name="columns", blank=True, null=True, on_delete=models.CASCADE)
     owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ["updated_at"]
-
 
 class Join(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    column = models.ForeignKey(Column, related_name="joins", on_delete=models.CASCADE)
+    sql_input = models.ForeignKey(SQLInput, related_name="joins", on_delete=models.CASCADE)
+    left = models.ForeignKey(Column, related_name="joined_left", on_delete=models.CASCADE)
+    right = models.ForeignKey(Column, related_name="joined_right", on_delete=models.CASCADE)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -148,7 +159,7 @@ class Condition(models.Model):
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     action = models.TextField(choices=Action.choices)
-    column = models.OneToOneField(Column, on_delete=models.CASCADE)
+    sql_input = models.OneToOneField(SQLInput, on_delete=models.CASCADE)
     value = models.TextField(blank=True, default="")
     input_group = models.ForeignKey(InputGroup, related_name="conditions", on_delete=models.CASCADE)
     relation = models.TextField(choices=Relation.choices, default=Relation.EQUAL)
@@ -168,7 +179,7 @@ class Filter(models.Model):
     relation = models.TextField(choices=Relation.choices)
     value = models.TextField(blank=True, default="")
     resource = models.ForeignKey(Resource, related_name="filters", on_delete=models.CASCADE)
-    sql_column = models.OneToOneField(Column, on_delete=models.CASCADE)
+    sql_input = models.OneToOneField(SQLInput, on_delete=models.CASCADE)
 
 
 class Owner(models.Model):

@@ -171,7 +171,8 @@ WHERE
 DELETE FROM
     pyrog_column
 WHERE
-    "join_id" NOT IN (
+    "join_id" IS NOT NULL
+    AND "join_id" NOT IN (
         SELECT
             id
         FROM

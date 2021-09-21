@@ -1,6 +1,5 @@
-# Missing reference to column
 {
-    "name": "test",
+    "name": "missing-reference",
     "version": "",
     "resources": [
         {
@@ -18,14 +17,14 @@
                     "input_groups": [
                         {
                             "merging_script": "",
-                            "inputs": [
-                                {
+                            "sql_inputs": [
+                            {
                                     "script": "",
                                     "concept_map_id": "",
-                                    "static_value": "",
                                     "column": "reference-to-column"
                                 }
                             ],
+                            "static_inputs": [],
                             "conditions": []
                         }
                     ]
@@ -38,6 +37,8 @@
         "host": "mimic",
         "port": 5432,
         "database": "default",
+        "login": "test",
+        "password": "test",
         "model": "POSTGRES",
         "owners": [
             {
