@@ -64,10 +64,17 @@ class HapiFhirAPI(FhirAPI):
         return response.json()
 
     def validate(self, resource_type: str, payload: dict, auth_token=None):
-        """
-        Calls the /<resource_type>/$validate endpoint of HAPI FHIR.
+        """Calls the /<resource_type>/$validate endpoint of HAPI FHIR.
         Note that this function does not raise an exception if the status is not 2XX.
-        It returns the OperationOutcome containing the details about validation errors.
+
+        Args:
+            resource_type (str): the resource type
+            payload (dict): the FHIR instance
+            auth_token ([type], optional): The authentication token to access FHIR API.
+            Defaults to None.
+
+        Returns:
+            (dict): OperationOutcome containing the details about validation errors.
         """
         headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
         response = requests.post(
@@ -75,7 +82,10 @@ class HapiFhirAPI(FhirAPI):
             json=payload,
             headers=headers,
         )
-        return response.json()
+        try:
+            return response.json()
+        except Exception:
+            response.raise_for_status()
 
     def retrieve(self, resource_type, resource_id, auth_token=None):
         headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
