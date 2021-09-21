@@ -4,6 +4,7 @@ import { Link, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Replay } from "@material-ui/icons";
 import moment from "moment";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
@@ -36,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
   title: {
     display: "flex",
   },
+  link: {
+    marginLeft: theme.spacing(1),
+  },
 }));
 
 const createKibanaLink = (batchCreation: string, batchEnd: string) => {
@@ -46,6 +50,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const batchEnd = batch.completed_at ?? batch.canceled_at;
+  const { enqueueSnackbar } = useSnackbar();
 
   const isBatchInProgress = !batch.completed_at && !batch.canceled_at;
   const hasBatchCompletedWithErrors =
@@ -73,12 +78,11 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const getCreatedAtDate = (date: string) =>
     new Date(date).toLocaleString().split(",").join(" -");
 
-  const handleBatchRetry = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
+  const handleBatchRetry = () => {
     // TODO: batch retry is not implemented yet
-    console.log("Retrying a batch is not yet implemented !");
+    enqueueSnackbar("Retrying a batch is not yet implemented !", {
+      variant: "warning",
+    });
   };
 
   return (
@@ -92,24 +96,22 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         <div className={classes.title}>
           <Typography variant="subtitle2">
             {isBatchInProgress && t("batchInProgress")}
-            {hasBatchCompletedWithErrors && (
-              <>
-                {t("batchErrors", {
-                  count: batch.errors.length,
-                })}{" "}
-                {batchEnd && (
-                  <Link
-                    target="_blank"
-                    rel="noopener"
-                    href={createKibanaLink(
-                      new Date(batch.created_at).toISOString(),
-                      new Date(batchEnd).toISOString()
-                    )}
-                  >
-                    ({t("seeOnKibana")})
-                  </Link>
+            {hasBatchCompletedWithErrors &&
+              t("batchErrors", {
+                count: batch.errors.length,
+              })}
+            {(isBatchInProgress || hasBatchCompletedWithErrors) && (
+              <Link
+                className={classes.link}
+                target="_blank"
+                rel="noopener"
+                href={createKibanaLink(
+                  new Date(batch.created_at).toISOString(),
+                  batchEnd ?? "now"
                 )}
-              </>
+              >
+                ({t("seeOnKibana")})
+              </Link>
             )}
             {hasBatchCompletedWithoutError && t("batchSuccess")}
             {batch.canceled_at && t("batchCanceled")}
