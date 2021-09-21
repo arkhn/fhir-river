@@ -1,4 +1,4 @@
-# name: test_preview
+# name: TestPreview.test_preview
   <class 'dict'> {
     'birthDate': '2094-03-05',
     'deceasedDateTime': '2165-08-12',
@@ -27,5 +27,19 @@
       ],
     },
     'resourceType': 'Patient',
+  }
+---
+# name: TestPreview.test_preview_with_validation_error
+  <class 'dict'> {
+    'code': 'invalid',
+    'diagnostics': 'shit happened',
+    'severity': 'error',
+  }
+---
+# name: TestPreview.test_preview_with_validation_exception
+  <class 'dict'> {
+    'code': '',
+    'diagnostics': 'fhir-api-returned-an-internal-server-error',
+    'severity': 'error',
   }
 ---
