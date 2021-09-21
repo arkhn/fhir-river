@@ -32,6 +32,8 @@ services:
 
   river:
     image: arkhn/river:${IMAGE_TAG:-latest}
+    build:
+      context: .
     entrypoint: ""
     # keep container alive for test commands with `docker-compose exec`
     command: tail -F anything
@@ -72,6 +74,10 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
+
   redis:
     image: redis:6.0.7
     ports:
