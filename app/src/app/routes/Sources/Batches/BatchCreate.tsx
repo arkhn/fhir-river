@@ -23,7 +23,7 @@ const BatchCreate = (): JSX.Element => {
   const classes = useStyles();
 
   const [open, setOpen] = useState(false);
-  
+
   const handleOpenModal = () => {
     setOpen(true);
   };
