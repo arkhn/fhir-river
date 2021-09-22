@@ -17,10 +17,11 @@ export const EditedButton = withStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fill: theme.palette.common.white,
+    fill: theme.palette.text.primary,
   },
   containedPrimary: {
     border: `1px solid ${theme.palette.primary.dark}`,
+    "& .MuiButton-startIcon": { fill: theme.palette.common.white },
   },
   containedSecondary: {
     border: `1px solid ${theme.palette.secondary.dark}`,

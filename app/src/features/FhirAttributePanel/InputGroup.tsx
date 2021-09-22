@@ -2,20 +2,8 @@ import React, { useEffect, useMemo, useState, useCallback } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import {
-  Grid,
-  ListItemText,
-  makeStyles,
-  Menu,
-  MenuItem,
-  Paper,
-} from "@material-ui/core";
+import { Grid, makeStyles, Paper } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import {
-  bindMenu,
-  bindTrigger,
-  usePopupState,
-} from "material-ui-popup-state/hooks";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
@@ -68,9 +56,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row-reverse",
   },
-  deleteIcon: {
-    fill: theme.palette.text.primary,
-  },
   buttonsContainer: {
     position: "relative",
     top: theme.spacing(-4.4),
@@ -87,22 +72,16 @@ const InputGroup = ({
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-  const popupState = usePopupState({
-    variant: "popover",
-    popupId: "popup",
-  });
-
   const { data: mapping } = useCurrentMapping();
 
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
   const [updateInputGroups] = useApiInputGroupsUpdateMutation();
 
-  const [conditions, setConditions] = useState<Partial<ConditionType>[]>([]);
-
   const [createColumn] = useApiColumnsCreateMutation();
-
   const [createStaticInput] = useApiStaticInputsCreateMutation();
   const [createSqlInput] = useApiSqlInputsCreateMutation();
+
+  const [conditions, setConditions] = useState<Partial<ConditionType>[]>([]);
 
   const [deleteCondition] = useApiConditionsDestroyMutation();
 
@@ -188,10 +167,16 @@ const InputGroup = ({
     inputGroupIndex,
   ]);
 
-  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) =>
-    popupState.open(e);
+  const handleConditionDelete = (index: number) => () => {
+    const conditionToDelete = conditions[index];
+    if (conditionToDelete?.id) {
+      deleteCondition({ id: conditionToDelete.id });
+    } else {
+      setConditions(conditions.filter((_, _index) => _index !== index));
+    }
+  };
 
-  const handleCreateSqlInput = async () => {
+  const handleAddSqlInput = async () => {
     if (mapping) {
       try {
         const inputColumn = await createColumn({
@@ -210,11 +195,9 @@ const InputGroup = ({
       } catch (e) {
         enqueueSnackbar(e.error, { variant: "error" });
       }
-      popupState.close();
     }
   };
-
-  const handleCreateStaticInput = async () => {
+  const handleAddStaticInput = async () => {
     try {
       await createStaticInput({
         staticInputRequest: {
@@ -222,18 +205,8 @@ const InputGroup = ({
           value: "",
         },
       });
-    } catch (error) {
-      //
-    }
-    popupState.close();
-  };
-
-  const handleConditionDelete = (index: number) => () => {
-    const conditionToDelete = conditions[index];
-    if (conditionToDelete?.id) {
-      deleteCondition({ id: conditionToDelete.id });
-    } else {
-      setConditions(conditions.filter((_, _index) => _index !== index));
+    } catch (e) {
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 
@@ -250,34 +223,27 @@ const InputGroup = ({
           >
             <Grid item>
               <Button
-                {...bindTrigger(popupState)}
                 size="small"
                 variant={"outlined"}
                 className={classes.button}
-                startIcon={<Add />}
-                onClick={handleMenuClick}
+                startIcon={<Icon icon={IconNames.ALIGN_LEFT} iconSize={12} />}
+                onClick={handleAddStaticInput}
               >
-                {t("addInput")}
+                {t("addStaticInput")}
               </Button>
-              <Menu
-                {...bindMenu(popupState)}
-                getContentAnchorEl={null}
-                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                transformOrigin={{ vertical: "top", horizontal: "left" }}
+            </Grid>
+            <Grid item>
+              <Button
+                size="small"
+                variant={"outlined"}
+                className={classes.button}
+                startIcon={
+                  <Icon icon={IconNames.COLUMN_LAYOUT} iconSize={12} />
+                }
+                onClick={handleAddSqlInput}
               >
-                <MenuItem>
-                  <ListItemText
-                    primary={t("static")}
-                    onClick={handleCreateStaticInput}
-                  />
-                </MenuItem>
-                <MenuItem>
-                  <ListItemText
-                    primary={t("fromAColumn")}
-                    onClick={handleCreateSqlInput}
-                  />
-                </MenuItem>
-              </Menu>
+                {t("addColumnInput")}
+              </Button>
             </Grid>
             <Grid item>
               <Button
@@ -296,9 +262,7 @@ const InputGroup = ({
                 variant="outlined"
                 className={classes.button}
                 onClick={handleDeleteInputGroup}
-                startIcon={
-                  <Icon icon={IconNames.TRASH} className={classes.deleteIcon} />
-                }
+                startIcon={<Icon icon={IconNames.TRASH} iconSize={12} />}
               >
                 {t("deleteGroup")}
               </Button>
