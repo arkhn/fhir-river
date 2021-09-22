@@ -1,0 +1,11 @@
+# name: test_inmemory_fhir_api_validate
+  <class 'dict'> {
+    'issue': <class 'list'> [
+    ],
+    'resourceType': 'OperationOutcome',
+    'text': <class 'dict'> {
+      'div': '<p> it went fine bro </p>',
+      'status': 'generated',
+    },
+  }
+---

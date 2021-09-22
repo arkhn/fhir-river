@@ -53,13 +53,16 @@ class HapiFhirAPI(FhirAPI):
         self._headers = {"Cache-Control": "no-cache", "Content-Type": "application/fhir+json"}
         self._url = settings.FHIR_API_URL
 
-    def create(self, resource_type: str, payload: dict, auth_token=None):
+    def _query(self, url, payload=None, auth_token=None):
         headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
-        response = requests.post(
-            f"{self._url}/{resource_type}/",
+        return requests.post(
+            url,
             json=payload,
             headers=headers,
         )
+
+    def create(self, resource_type: str, payload: dict, auth_token=None):
+        response = self._query(f"{self._url}/{resource_type}/", payload, auth_token)
         response.raise_for_status()
         return response.json()
 
@@ -71,29 +74,18 @@ class HapiFhirAPI(FhirAPI):
             resource_type (str): the resource type
             payload (dict): the FHIR instance
             auth_token ([type], optional): The authentication token to access FHIR API.
-            Defaults to None.
 
         Returns:
             (dict): OperationOutcome containing the details about validation errors.
         """
-        headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
-        response = requests.post(
-            f"{self._url}/{resource_type}/$validate",
-            json=payload,
-            headers=headers,
-        )
+        response = self._query(f"{self._url}/{resource_type}/$validate", payload, auth_token)
         try:
             return response.json()
         except Exception:
             response.raise_for_status()
 
     def retrieve(self, resource_type, resource_id, auth_token=None):
-        headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
-
-        response = requests.get(
-            f"{self._url}/{resource_type}/{resource_id}",
-            headers=headers,
-        )
+        response = self._query(f"{self._url}/{resource_type}/{resource_id}", auth_token=auth_token)
         response.raise_for_status()
         return response.json()
 
