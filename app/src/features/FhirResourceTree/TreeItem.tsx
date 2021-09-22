@@ -51,9 +51,7 @@ const TreeItem = ({
     isComplex &&
     hasParentExpanded &&
     !elementNode.isArray &&
-    elementNode.definitionNode.childrenDefinitions.filter(
-      ({ definition }) => !definition.sliceName
-    ).length === 0;
+    elementNode.definitionNode.childrenDefinitions.length === 0;
   const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
     {
       definitionId: elementNode.type ?? "",

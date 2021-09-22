@@ -96,6 +96,32 @@ const isElementArray = ({ max, sliceName }: IElementDefinition): boolean =>
   (max && (max === "*" || +max > 1) && !sliceName) || false;
 
 /**
+ * @param definitionPath Current definition path
+ * @param parentPath Path of the parent element
+ * @param index Index of the current item
+ * @returns Computed path for ElementNode
+ */
+const computeElementNodePath = (
+  definitionPath?: string,
+  parentPath?: string,
+  index?: number
+): string => {
+  // If elementNode is an array item of parent, we just need to add index to parent path
+  if (parentPath && index !== undefined) {
+    return `${parentPath}[${index}]`;
+  }
+
+  // If parentPath is defined and there is no index, we build node path from parent path
+  // and the last name of definitionPath
+  if (parentPath && index === undefined) {
+    return `${parentPath}.${definitionPath?.split(".").pop()}`;
+  }
+
+  //Else, we just return the definitionPath with an index if it is defined
+  return `${definitionPath}${index !== undefined ? `[${index}]` : ""}`;
+};
+
+/**
  * Creates an ElementNode from the corresponding DefinitionNode item
  * @param nodeDefinition NodeDefinition created from ElementDefinition snapshot's item
  * @param params Set of index and parentPath used to generate the ElementNode path attribute
@@ -106,12 +132,11 @@ export const createElementNode = (
 ): ElementNode => {
   const { index, parentPath } = params;
   const { definition } = nodeDefinition;
-  const elementPath =
-    parentPath && index !== undefined
-      ? `${parentPath}[${index}]`
-      : parentPath
-      ? `${parentPath}.${definition.path?.split(".").pop()}`
-      : `${definition.path}${index !== undefined ? `[${index}]` : ""}`;
+  const elementPath = computeElementNodePath(
+    definition.path,
+    parentPath,
+    index
+  );
   const elementName = `${definition.id?.split(".").pop()}`;
   return {
     id:
@@ -274,6 +299,7 @@ export const buildTree = (
 ): ElementNode => {
   const currentNode = createElementNode(nodeDefinition, {
     parentPath:
+      // If the parent is of choice kind (ie value[x]), we need to remove value[x] from its path to rightly set the child path instead
       parentElementNode?.kind !== "choice"
         ? parentElementNode?.path
         : parentElementNode?.path.split(".").slice(0, -1).join("."),
@@ -414,6 +440,19 @@ export const buildTreeDefinition = (
  */
 export const computePathWithoutIndexes = (node: { path: string }): string =>
   node.path.replace(/[[]\d+]$/, "");
+
+/**
+ * Computes path's index :
+ * `Identifier[0].type.coding[3]` -> 3
+ * `Identifier[0].type.coding` -> undefined
+ * @param node
+ */
+export const getPathItemIndex = (node: {
+  path: string;
+}): number | undefined => {
+  const strIndex = node.path.match(/[[](\d+)]$/)?.pop();
+  return strIndex ? +strIndex : undefined;
+};
 
 /**
  *

@@ -10,6 +10,9 @@ import {
 import { getElementNodeByPath } from "features/FhirResourceTree/resourceTreeUtils";
 import { useApiAttributesRetrieveQuery } from "services/api/endpoints";
 
+/**
+ * @returns The ElementNode which path is the one affected to the attribute found from URL
+ */
 const useGetSelectedNode = (): ElementNode | undefined => {
   const { attributeId } = useParams<{
     attributeId?: string;
@@ -32,7 +35,6 @@ const useGetSelectedNode = (): ElementNode | undefined => {
     }
   }, [selectedAttribute, rootElementNode, isSelectedAttributeUninitialized]);
   return selectedNode;
-  return;
 };
 
 export default useGetSelectedNode;

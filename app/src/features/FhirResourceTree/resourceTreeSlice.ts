@@ -11,6 +11,7 @@ import {
   getElementNodeByPath,
   getDefinitionNodeById,
   getDefinitionNodeFromItemAttribute,
+  getPathItemIndex,
 } from "./resourceTreeUtils";
 
 export type ElementKind = "complex" | "primitive" | "choice" | undefined;
@@ -45,7 +46,7 @@ const resourceTreeSlice = createSlice({
   name: "resourceTree",
   initialState,
   reducers: {
-    rootNodeDefinitionUpdate: (
+    rootNodeDefinitionUpdated: (
       state,
       { payload }: PayloadAction<{ id?: string; data: DefinitionNode }>
     ) => {
@@ -61,7 +62,7 @@ const resourceTreeSlice = createSlice({
           nodeDefinition.childrenDefinitions = data.childrenDefinitions;
       }
     },
-    rootElementNodeUpdate: (
+    rootElementNodeUpdated: (
       state,
       {
         payload,
@@ -97,10 +98,10 @@ const resourceTreeSlice = createSlice({
           );
           if (attributeElementDefinition) {
             const parentPath = computePathWithoutIndexes(attribute);
-            const itemIndex = attribute.path.match(/[[](\d+)]$/)?.pop() ?? 0;
+            const itemIndex = getPathItemIndex(attribute) ?? 0;
             const attributeElementNode = createElementNode(
               attributeElementDefinition,
-              { parentPath, index: +itemIndex }
+              { parentPath, index: itemIndex }
             );
             const parent = getElementNodeByPath(parentPath, rootElementNode);
             if (
@@ -144,8 +145,8 @@ export const selectRootElementNode = (
 ): ElementNode | undefined => state.resourceTree.rootElementNode;
 
 export const {
-  rootNodeDefinitionUpdate,
-  rootElementNodeUpdate,
+  rootNodeDefinitionUpdated,
+  rootElementNodeUpdated,
   attibuteItemsAdded,
   attributeNodesDeleted,
 } = resourceTreeSlice.actions;
