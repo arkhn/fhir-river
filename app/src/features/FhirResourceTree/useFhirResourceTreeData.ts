@@ -10,8 +10,8 @@ import {
   selectRootElementNode,
   attributeNodesDeleted,
   DefinitionNode,
-  rootNodeDefinitionUpdate,
-  rootElementNodeUpdate,
+  rootNodeDefinitionUpdated,
+  rootElementNodeUpdated,
   attibuteItemsAdded,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
@@ -29,6 +29,17 @@ import {
   useApiAttributesCreateMutation,
 } from "services/api/endpoints";
 
+/**
+ * This hook computes the DefinitionNode tree structure from a fetched structureDefinition.
+ * It also provides several help functions to either create or delete items and add extensions.
+ *
+ * When the DefinitionNode is built, it gets dispatched into the resourceTreeSlice store and also dispatches
+ * an action to build the elementNode tree
+ * @param params Contains the definitionId to fetch the structureDefinition from.
+ * Node represents sur current node from which we want to inject the sub-tree
+ * @param options Skip param to prevent structureDefinition fetching
+ * @returns
+ */
 const useFhirResourceTreeData = (
   params: {
     definitionId: string;
@@ -92,11 +103,11 @@ const useFhirResourceTreeData = (
           ),
         }));
       }
-      const elementDefinition = elementDefinitions[0];
-      if (!elementDefinition) return undefined;
+      const rootElementDefinition = elementDefinitions[0];
+      if (!rootElementDefinition) return undefined;
 
       const currentRootDefinitionNode: DefinitionNode = createDefinitionNode(
-        elementDefinition
+        rootElementDefinition
       );
       buildTreeDefinition(
         elementDefinitions.slice(1),
@@ -104,13 +115,14 @@ const useFhirResourceTreeData = (
         currentRootDefinitionNode
       );
       dispatch(
-        rootNodeDefinitionUpdate({
+        rootNodeDefinitionUpdated({
           data: currentRootDefinitionNode,
           id: node?.definitionNode.definition.id,
         })
       );
       return currentRootDefinitionNode;
     }
+    // We limit definition tree computing only on structureDefintition and nodeDefinition change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [structureDefinition, nodeDefinition]);
 
@@ -168,9 +180,11 @@ const useFhirResourceTreeData = (
 
   // Trigger NodeElement tree building when DefinitionNode tree changes
   useEffect(() => {
-    if (data && (!node || node.children.length === 0)) {
+    const isNodeEitherRootOrDoesNotHaveChildren =
+      !node || node.children.length === 0;
+    if (data && isNodeEitherRootOrDoesNotHaveChildren) {
       dispatch(
-        rootElementNodeUpdate({
+        rootElementNodeUpdated({
           rootNodeDefinition: data,
           nodePath: node?.path,
         })
