@@ -119,7 +119,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         </div>
         {hasBatchStopped && (
           <Typography variant="body2" color="textSecondary">
-            {`${getBatchDuration(batch)} | ${t("resource", {
+            {`${getBatchDuration(batch)} | ${t("resourceWithCount", {
               count: batch.resources.length,
             })}`}
           </Typography>
