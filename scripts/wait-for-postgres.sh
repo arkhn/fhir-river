@@ -12,7 +12,7 @@ shift
   
 until psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$host:$port/$database" -c '\q'; do
   >&2 echo "Postgres is unavailable - sleeping"
-  sleep 1
+  sleep 10
 done
   
 >&2 echo "Postgres is up - executing command"
