@@ -53,7 +53,7 @@ class HapiFhirAPI(FhirAPI):
         self._headers = {"Cache-Control": "no-cache", "Content-Type": "application/fhir+json"}
         self._url = settings.FHIR_API_URL
 
-    def _query(self, url, payload=None, auth_token=None):
+    def _post(self, url, payload=None, auth_token=None):
         headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
         return requests.post(
             url,
@@ -61,8 +61,12 @@ class HapiFhirAPI(FhirAPI):
             headers=headers,
         )
 
+    def _get(self, url, auth_token=None):
+        headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
+        return requests.get(url, headers=headers)
+
     def create(self, resource_type: str, payload: dict, auth_token=None):
-        response = self._query(f"{self._url}/{resource_type}/", payload, auth_token)
+        response = self._post(f"{self._url}/{resource_type}/", payload, auth_token)
         response.raise_for_status()
         return response.json()
 
@@ -78,14 +82,14 @@ class HapiFhirAPI(FhirAPI):
         Returns:
             (dict): OperationOutcome containing the details about validation errors.
         """
-        response = self._query(f"{self._url}/{resource_type}/$validate", payload, auth_token)
+        response = self._post(f"{self._url}/{resource_type}/$validate", payload, auth_token)
         try:
             return response.json()
         except Exception:
             response.raise_for_status()
 
     def retrieve(self, resource_type, resource_id, auth_token=None):
-        response = self._query(f"{self._url}/{resource_type}/{resource_id}", auth_token=auth_token)
+        response = self._get(f"{self._url}/{resource_type}/{resource_id}", auth_token=auth_token)
         response.raise_for_status()
         return response.json()
 
