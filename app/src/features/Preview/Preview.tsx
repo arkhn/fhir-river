@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import { IResource } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
@@ -32,10 +32,12 @@ import {
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
 import {
-  ExplorationRequestRequest,
+  apiValidationErrorFromResponse,
+  ApiValidationError,
+} from "services/api/errors";
+import {
   ExplorationResponse,
   OperationOutcomeIssue,
-  PreviewRequestRequest,
   PreviewResponse,
 } from "services/api/generated/api.generated";
 
@@ -148,66 +150,31 @@ const Preview = (): JSX.Element => {
 
   const [apiExploreCreate] = useApiExploreCreateMutation();
 
-  useEffect(() => {
-    if (mappingId && owner && exploration === undefined) {
-      setExploration(null);
-
-      const explore = async () => {
-        try {
-          const exploration = await apiExploreCreate({
-            explorationRequestRequest: {
-              owner: owner?.name ?? "",
-              table: mapping?.primary_key_table ?? "",
-              resource_id: mappingId,
-            },
-          }).unwrap();
-          setExploration(exploration);
-        } catch (e) {
-          const error = e as FetchBaseQueryError;
-          const data = error.data as ExplorationRequestRequest;
-          data.resource_id &&
-            enqueueSnackbar(
-              t<string>("catchErrorPrompt", {
-                query: "Exploration",
-                errorStatus: error.status,
-                errorKey: "Resource Id",
-                errorText: data.resource_id,
-              }),
-              { variant: "error" }
-            );
-          data.owner &&
-            enqueueSnackbar(
-              t<string>("catchErrorPrompt", {
-                query: "Exploration",
-                errorStatus: error.status,
-                errorKey: "Owner",
-                errorText: data.owner,
-              }),
-              { variant: "error" }
-            );
-          data.table &&
-            enqueueSnackbar(
-              t<string>("catchErrorPrompt", {
-                query: "Exploration",
-                errorStatus: error.status,
-                errorKey: "Table",
-                errorText: data.table,
-              }),
-              { variant: "error" }
-            );
-        }
-      };
-      explore();
-    }
-  }, [
-    apiExploreCreate,
-    exploration,
-    mapping?.primary_key_table,
-    mappingId,
-    owner,
-    enqueueSnackbar,
-    t,
-  ]);
+  const handleError = useCallback(
+    (
+      errors: ApiValidationError<unknown> | undefined,
+      errorType: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR",
+      errorField: string
+    ) => {
+      if (errors) {
+        const errorKey = Object.keys(errors);
+        errorKey.forEach((key) => {
+          enqueueSnackbar(
+            t<string>("catchErrorPrompt", {
+              query: errorField,
+              errorStatus: errorType,
+              errorKey: key,
+              errorText: errors[key as keyof typeof errors],
+            }),
+            {
+              variant: "error",
+            }
+          );
+        });
+      }
+    },
+    [enqueueSnackbar, t]
+  );
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
@@ -228,27 +195,47 @@ const Preview = (): JSX.Element => {
             setPreview(previewResult.instances[0]);
             if (previewResult.errors.length > 0)
               setAlerts(previewResult.errors);
-          } catch (e) {
-            console.log(e);
-            const error = e as FetchBaseQueryError;
-            const data: PreviewRequestRequest = error.data as PreviewRequestRequest;
-            data.primary_key_values &&
-              data.primary_key_values.map((id) =>
-                enqueueSnackbar(`${error.status} : Primary Key Value : ${id}`, {
-                  variant: "error",
-                })
-              );
-            data.resource_id &&
-              enqueueSnackbar(
-                `Preview Error type ${error.status} : Resource Id : ${data.resource_id}`,
-                { variant: "error" }
-              );
+          } catch (error) {
+            const typedError = error as FetchBaseQueryError;
+            const errorData = apiValidationErrorFromResponse(typedError);
+            handleError(errorData, typedError.status, "Preview");
           }
         };
         previewCreate();
       }
     }
   };
+
+  useEffect(() => {
+    if (mappingId && owner && exploration === undefined) {
+      setExploration(null);
+
+      const explore = async () => {
+        try {
+          const exploration = await apiExploreCreate({
+            explorationRequestRequest: {
+              owner: owner?.name ?? "",
+              table: mapping?.primary_key_table ?? "",
+              resource_id: mappingId,
+            },
+          }).unwrap();
+          setExploration(exploration);
+        } catch (error) {
+          const typedError = error as FetchBaseQueryError;
+          const errorData = apiValidationErrorFromResponse(typedError);
+          handleError(errorData, typedError.status, "Exploration");
+        }
+      };
+      explore();
+    }
+  }, [
+    apiExploreCreate,
+    exploration,
+    mapping?.primary_key_table,
+    mappingId,
+    owner,
+    handleError,
+  ]);
 
   return (
     <Container className={classes.container} maxWidth="xl">

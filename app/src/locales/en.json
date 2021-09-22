@@ -121,5 +121,6 @@
   "generateURI": "Generate URI",
   "chooseExistingURI": "Choose existing URI",
   "selectSource": "Select a source",
-  "selectMapping": "Select a mapping"
+  "selectMapping": "Select a mapping",
+  "catchErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}"
 }
