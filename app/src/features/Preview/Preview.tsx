@@ -17,7 +17,9 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import Alert, { Color } from "@material-ui/lab/Alert";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useParams } from "react-router-dom";
@@ -30,8 +32,10 @@ import {
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
 import {
+  ExplorationRequestRequest,
   ExplorationResponse,
   OperationOutcomeIssue,
+  PreviewRequestRequest,
   PreviewResponse,
 } from "services/api/generated/api.generated";
 
@@ -108,6 +112,7 @@ const useStyles = makeStyles((theme) => ({
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { mappingId } = useParams<{
     mappingId?: string;
@@ -120,6 +125,8 @@ const Preview = (): JSX.Element => {
   const [alerts, setAlerts] = useState<OperationOutcomeIssue[] | undefined>(
     undefined
   );
+  const [preview, setPreview] = useState<IResource | undefined>(undefined);
+
   const handleAlertClose = (index: number) => {
     if (alerts) {
       const newAlerts = [...alerts];
@@ -127,9 +134,6 @@ const Preview = (): JSX.Element => {
       setAlerts(newAlerts);
     }
   };
-
-  const [preview, setPreview] = useState<IResource | undefined>(undefined);
-
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
@@ -159,13 +163,38 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (e) {
-          setAlerts([
-            {
-              severity: "error",
-              diagnostics: e.error,
-              code: "internal",
-            },
-          ]);
+          const error = e as FetchBaseQueryError;
+          const data = error.data as ExplorationRequestRequest;
+          data.resource_id &&
+            enqueueSnackbar(
+              t<string>("catchErrorPrompt", {
+                query: "Exploration",
+                errorStatus: error.status,
+                errorKey: "Resource Id",
+                errorText: data.resource_id,
+              }),
+              { variant: "error" }
+            );
+          data.owner &&
+            enqueueSnackbar(
+              t<string>("catchErrorPrompt", {
+                query: "Exploration",
+                errorStatus: error.status,
+                errorKey: "Owner",
+                errorText: data.owner,
+              }),
+              { variant: "error" }
+            );
+          data.table &&
+            enqueueSnackbar(
+              t<string>("catchErrorPrompt", {
+                query: "Exploration",
+                errorStatus: error.status,
+                errorKey: "Table",
+                errorText: data.table,
+              }),
+              { variant: "error" }
+            );
         }
       };
       explore();
@@ -176,6 +205,8 @@ const Preview = (): JSX.Element => {
     mapping?.primary_key_table,
     mappingId,
     owner,
+    enqueueSnackbar,
+    t,
   ]);
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
@@ -198,13 +229,20 @@ const Preview = (): JSX.Element => {
             if (previewResult.errors.length > 0)
               setAlerts(previewResult.errors);
           } catch (e) {
-            setAlerts([
-              {
-                severity: "error",
-                diagnostics: e.error,
-                code: "internal",
-              },
-            ]);
+            console.log(e);
+            const error = e as FetchBaseQueryError;
+            const data: PreviewRequestRequest = error.data as PreviewRequestRequest;
+            data.primary_key_values &&
+              data.primary_key_values.map((id) =>
+                enqueueSnackbar(`${error.status} : Primary Key Value : ${id}`, {
+                  variant: "error",
+                })
+              );
+            data.resource_id &&
+              enqueueSnackbar(
+                `Preview Error type ${error.status} : Resource Id : ${data.resource_id}`,
+                { variant: "error" }
+              );
           }
         };
         previewCreate();
