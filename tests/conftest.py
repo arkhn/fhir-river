@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def api_client():
     from rest_framework.test import APIClient
 
