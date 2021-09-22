@@ -4,13 +4,37 @@ from django.conf import settings
 
 import requests
 import responses
-from common.adapters.fhir_api import HapiFhirAPI
+from common.adapters.fhir_api import HapiFhirAPI, InMemoryFhirAPI
 
 
-def test_fhir_api():
-    fhir_api = HapiFhirAPI()
+def test_inmemory_fhir_api_create():
+    resource = {"deceased": "not yet"}
 
-    assert fhir_api._headers == {"Cache-Control": "no-cache", "Content-Type": "application/fhir+json"}
+    fhir_api = InMemoryFhirAPI()
+    created = fhir_api.create("Patient", resource)
+
+    assert {**resource, "id": created["id"]} == created
+    assert len(fhir_api._db["Patient"]) == 1
+
+    fhir_api.create("Patient", resource)
+    assert len(fhir_api._db["Patient"]) == 2
+
+
+def test_inmemory_fhir_api_validate(snapshot):
+    resource = {"deceased": "not yet"}
+
+    fhir_api = InMemoryFhirAPI()
+    res = fhir_api.validate("Patient", resource)
+    assert res == snapshot
+
+
+def test_inmemory_fhir_api_retrieve():
+    resource = {"deceased": "not yet"}
+
+    fhir_api = InMemoryFhirAPI()
+    created = fhir_api.create("Patient", resource)
+    res = fhir_api.retrieve("Patient", created["id"])
+    assert res == created
 
 
 @responses.activate
@@ -18,7 +42,7 @@ def test_fhir_api():
     "auth_token,response,status",
     [("xxx-auth-token", {"ok": 1}, 200), ("xxx-auth-token", {"ok": 0}, 400), (None, "missing auth token", 503)],
 )
-def test_fhir_api_create(response, status, auth_token):
+def test_hapi_fhir_api_create(response, status, auth_token):
     def call_and_assert():
         resp = HapiFhirAPI().create(resource_type, {"id": "toto"}, auth_token)
         assert len(responses.calls) == 1
@@ -39,7 +63,7 @@ def test_fhir_api_create(response, status, auth_token):
     "auth_token,response,status",
     [("xxx-auth-token", {"ok": 1}, 200), ("xxx-auth-token", {"ok": 0}, 400), (None, "missing auth token", 503)],
 )
-def test_fhir_api_validate(auth_token, response, status):
+def test_hapi_fhir_api_validate(auth_token, response, status):
     resource_type = "Patient"
     responses.add(responses.POST, f"{settings.FHIR_API_URL}/{resource_type}/$validate", json=response, status=status)
     resp = HapiFhirAPI().validate(resource_type, {"id": "toto"}, "xxx-auth-token")
@@ -54,7 +78,7 @@ def test_fhir_api_validate(auth_token, response, status):
     "auth_token,response,status",
     [("xxx-auth-token", {"ok": 1}, 200), ("xxx-auth-token", {"ok": 0}, 400), (None, "missing auth token", 503)],
 )
-def test_fhr_api_retrieve(auth_token, response, status):
+def test_hapi_fhir_api_retrieve(auth_token, response, status):
     def call_and_assert():
         resp = HapiFhirAPI().retrieve(resource_type, resource_id, "xxx-auth-token")
         assert len(responses.calls) == 1
