@@ -40,6 +40,7 @@ markers = '''
     kafka: mark a test as requiring kafka
     redis: mark a test as requiring redis
     pyrog: mark a test as requiring pyrog api
+    fhir_api: mark a test as requiring fhir api
     pagai: mark test that requires access to tests databases
     as_user: force authenticate the api_client fixture to the user fixure
     as_other_user: force authenticate the api_client fixture to the other_user fixture
