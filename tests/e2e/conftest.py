@@ -10,7 +10,7 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fi
 
 from . import settings
 
-DATA_DIR = Path(__file__).resolve().parent / "data"
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 
 @pytest.fixture(scope="session")
@@ -20,7 +20,7 @@ def fhir_client() -> SyncFHIRClient:
 
 @pytest.fixture(scope="session", autouse=True)
 def load_concept_maps():
-    with open(DATA_DIR / "conceptMaps.json") as concept_maps_file:
+    with open(DATA_FIXTURES_DIR / "concept_maps.json") as concept_maps_file:
         concept_maps = json.load(concept_maps_file)
         for entry in concept_maps.get("entry", []):
             resource = entry.get("resource")
@@ -35,7 +35,7 @@ def load_concept_maps():
 
 @pytest.fixture(scope="session")
 def mappings():
-    with open(DATA_DIR / "mapping.json") as mapping_file:
+    with open(DATA_FIXTURES_DIR / "mimic_mapping.json") as mapping_file:
         mapping = json.load(mapping_file)
         return mapping
 

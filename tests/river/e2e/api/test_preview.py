@@ -7,11 +7,10 @@ from syrupy.filters import paths
 pytestmark = pytest.mark.django_db
 
 
-@pytest.mark.export_data("mimic_mapping.json")
-def test_preview(api_client, export_data, snapshot):
+def test_preview(api_client, mimic_mapping, snapshot):
     url = reverse("sources-list")
 
-    response = api_client.post(url + "import/", export_data, format="json")
+    response = api_client.post(url + "import/", mimic_mapping, format="json")
 
     assert response.status_code == 201, response.data
 
