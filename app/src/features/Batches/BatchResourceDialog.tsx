@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 type BatchResourceDialogType = {
   open: boolean;
-  onClose: React.Dispatch<React.SetStateAction<boolean>>;
+  onClose: () => void;
 };
 
 const BatchResourceDialog = ({
@@ -100,7 +100,7 @@ const BatchResourceDialog = ({
 
   const onCloseModal = () => {
     setSelectedResourceIds([]);
-    onClose(false);
+    onClose();
   };
 
   const handleSearchResource = (
@@ -155,7 +155,7 @@ const BatchResourceDialog = ({
 
     if (selectedResourceIds.length > 0) {
       batchCreate();
-      onClose(false);
+      onClose();
       setSelectedResourceIds([]);
     }
   };
