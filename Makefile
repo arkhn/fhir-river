@@ -10,4 +10,4 @@ setup-e2e:
 		java -jar /app/hapi-fhir-cli.jar upload-definitions -v r4 -t http://localhost:8080/fhir
 
 run-e2e:
-	docker-compose -f $(docker-compose-e2e) exec -T river-api pytest tests/e2e
+	docker-compose -f $(docker-compose-e2e) exec -T river-api pytest tests -m "e2e"
