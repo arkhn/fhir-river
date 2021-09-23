@@ -77,10 +77,9 @@ jobs:
           TEST_MSSQL_DB: ${{ secrets.TEST_MSSQL_DB }}
           TEST_MSSQL_LOGIN: ${{ secrets.TEST_MSSQL_LOGIN }}
           TEST_MSSQL_PASSWORD: ${{ secrets.TEST_MSSQL_PASSWORD }}
-        run: |
-          docker-compose -f ./docker-compose.test.yml up -d
-          POSTGRES_USER=mimic POSTGRES_PASSWORD=mimic ./scripts/wait-for-postgres.sh localhost 15432 mimic
-          docker-compose -f ./docker-compose.test.yml exec -T river pytest -m "not e2e" -vv
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        run: make unit-tests
 
   test-hapi:
     runs-on: ubuntu-18.04
