@@ -160,7 +160,7 @@ const Preview = (): JSX.Element => {
         const errorKey = Object.keys(errors);
         errorKey.forEach((key) => {
           enqueueSnackbar(
-            t<string>("catchErrorPrompt", {
+            t<string>("catchValidationErrorPrompt", {
               query: errorField,
               errorStatus: errorType,
               errorKey: key,
@@ -197,8 +197,10 @@ const Preview = (): JSX.Element => {
               setAlerts(previewResult.errors);
           } catch (error) {
             const typedError = error as FetchBaseQueryError;
-            const errorData = apiValidationErrorFromResponse(typedError);
-            handleError(errorData, typedError.status, "Preview");
+            const validationError = apiValidationErrorFromResponse(typedError);
+            if (validationError)
+              handleError(validationError, typedError.status, "Preview");
+            else enqueueSnackbar(error.error, { variant: "error" });
           }
         };
         previewCreate();
@@ -222,8 +224,10 @@ const Preview = (): JSX.Element => {
           setExploration(exploration);
         } catch (error) {
           const typedError = error as FetchBaseQueryError;
-          const errorData = apiValidationErrorFromResponse(typedError);
-          handleError(errorData, typedError.status, "Exploration");
+          const validationError = apiValidationErrorFromResponse(typedError);
+          if (validationError)
+            handleError(validationError, typedError.status, "Exploration");
+          else enqueueSnackbar(error.error, { variant: "error" });
         }
       };
       explore();
@@ -235,6 +239,7 @@ const Preview = (): JSX.Element => {
     mappingId,
     owner,
     handleError,
+    enqueueSnackbar,
   ]);
 
   return (
