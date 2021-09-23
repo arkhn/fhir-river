@@ -1,3 +1,4 @@
+from json.decoder import JSONDecodeError
 from uuid import uuid4
 
 from django.conf import settings
@@ -85,8 +86,13 @@ class HapiFhirAPI(FhirAPI):
         response = self._post(f"{self._url}/{resource_type}/$validate", payload, auth_token)
         try:
             return response.json()
-        except Exception:
-            response.raise_for_status()
+        except JSONDecodeError:
+            # format error as an OperationOutcome
+            # https://www.hl7.org/fhir/operationoutcome-definitions.html
+            return {
+                "resourceType": "OperationOutcome",
+                "issue": [{"severity": "error", "code": "", "diagnostics": response.text}],
+            }
 
     def retrieve(self, resource_type, resource_id, auth_token=None):
         response = self._get(f"{self._url}/{resource_type}/{resource_id}", auth_token=auth_token)

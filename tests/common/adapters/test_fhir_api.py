@@ -74,6 +74,21 @@ def test_hapi_fhir_api_validate(auth_token, response, status):
 
 
 @responses.activate
+def test_hapi_fhir_api_validate_error(snapshot):
+    resource_type = "Patient"
+
+    def request_callback(request):
+        return (500, {}, "500 internal server error")
+
+    responses.add_callback(
+        responses.POST, f"{settings.FHIR_API_URL}/{resource_type}/$validate", callback=request_callback
+    )
+    resp = HapiFhirAPI().validate(resource_type, {"id": "toto"}, "xxx-auth-token")
+    assert len(responses.calls) == 1
+    assert resp == snapshot
+
+
+@responses.activate
 @pytest.mark.parametrize(
     "auth_token,response,status",
     [("xxx-auth-token", {"ok": 1}, 200), ("xxx-auth-token", {"ok": 0}, 400), (None, "missing auth token", 503)],

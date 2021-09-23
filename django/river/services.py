@@ -69,12 +69,7 @@ def preview(
             document = transformer.create_fhir_document(transformed_data, analysis, primary_key_value)
             documents.append(document)
             resource_type = document.get("resourceType")
-            try:
-                validation_response = fhir_api.validate(resource_type, document, fhir_api_auth_token)
-                errors.extend(validation_response.get("issue"))
-            except Exception as e:
-                # format error in the same way as OperationOutcome.issue
-                # https://www.hl7.org/fhir/operationoutcome-definitions.html#OperationOutcome.issue
-                errors.append({"severity": "error", "code": "", "diagnostics": str(e)})
+            validation_response = fhir_api.validate(resource_type, document, fhir_api_auth_token)
+            errors.extend(validation_response.get("issue"))
 
     return documents, errors
