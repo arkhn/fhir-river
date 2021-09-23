@@ -51,7 +51,6 @@ jobs:
 
   unit-tests:
     runs-on: ubuntu-18.04
-    needs: [build-and-publish]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -62,8 +61,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_LOGIN }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - id: docker-tag
-        run: echo "::set-output name=river-version::sha-${GITHUB_SHA::7}"
       - id: tests
         env:
           IMAGE_TAG: ${{ steps.docker-tag.outputs.river-version }}
@@ -131,30 +128,19 @@ jobs:
 
   integration:
     runs-on: ubuntu-18.04
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.draft == false }}
-    needs: [build-and-publish, build-and-publish-hapi]
     steps:
-      # FIXME(simonvadee): find a better way to compute the docker tag for fhir-river images:
-      # crazy-max/ghaction-docker-meta@v1 always tag the image with sha-{first-7-SHA-characters}
-      # however we cannot use ${{ jobs.build-and-publish.steps.docker_meta.tags }} because it's
-      # a string like: "arkhn/river-loader:sha-d1e2a3d,arkhn/river-loader:1.2.3"
-      - id: docker-tag
-        run: echo "::set-output name=docker-version::sha-${GITHUB_SHA::7}"
-
-      - name: Provision, deploy and test
-        uses: docker://arkhn/testy-action:0.5.10
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          cloudToken: ${{ secrets.TESTY_CLOUD_TOKEN }}
-          cloudProjectId: ${{ secrets.TESTY_CLOUD_PROJECT_ID }}
-          cloudKey: ${{ secrets.TESTY_CLOUD_KEY }}
-          contextName: river-ci-${{ github.sha }}
-          dockerUsername: ${{ secrets.DOCKER_LOGIN }}
-          dockerPassword: ${{ secrets.DOCKER_PASSWORD }}
-          deploymentToken: ${{ secrets.GIT_USER_KEY }}
-          deploymentRef: v4
-          versions: |
-            {
-              "fhir_river": "${{ steps.docker-tag.outputs.docker-version }}",
-              "hapi_loader": "${{ steps.docker-tag.outputs.docker-version }}",
-              "testy": "v4"
-            }
+          python-version: 3.8
+      - uses: docker/login-action@v1
+        name: login to arkhn registry
+        with:
+          username: ${{ secrets.DOCKER_LOGIN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - id: tests
+        env:
+          JPALTIME_IMAGE_TAG: 0.2.10
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        run: make e2e-tests
