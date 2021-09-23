@@ -1,6 +1,6 @@
-import logging
 import time
 
+import pytest
 from confluent_kafka.admin import AdminClient
 
 import requests
@@ -8,7 +8,7 @@ import requests
 from . import settings
 from .conftest import send_batch
 
-logger = logging.getLogger(__file__)
+pytestmark = pytest.mark.e2e
 
 
 def cancel_batch(batch_id):

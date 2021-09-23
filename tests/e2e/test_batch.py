@@ -1,13 +1,13 @@
-import logging
 import time
 
+import pytest
 from confluent_kafka.admin import AdminClient
 
 from fhirpy import SyncFHIRClient
 
 from . import settings
 
-logger = logging.getLogger(__file__)
+pytestmark = pytest.mark.e2e
 
 
 def test_batch(batch):
