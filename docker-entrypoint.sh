@@ -8,15 +8,15 @@ set -e
 
 export DJANGO_SETTINGS_MODULE=settings.base
 
+# Perform migrations
+python django/manage.py migrate
+
 if [[ "$#" -gt 0 ]]; then
   python django/manage.py "$@"
 else
   # Skip static files collection (not used)
   # python django/manage.py collectstatic --no-input
   if [[ "${ENV}" == "dev" || "${ENV}" == "test" ]]; then
-    python django/manage.py migrate
-  fi
-  if [[ "${ENV}" == "dev" ]]; then
     python django/manage.py createsuperuser --no-input || echo "Skipping."
     python django/manage.py runserver 0.0.0.0:8000
   else
