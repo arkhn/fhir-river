@@ -22,7 +22,7 @@ x-service-env: &service-env
 
 services:
   river-api:
-    image: arkhn/river:${IMAGE_TAG:-latest}
+    image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
     build: .
     environment: *service-env
     volumes:
@@ -30,7 +30,7 @@ services:
       - ./tests:/srv/tests
 
   extractor:
-    image: arkhn/river:${IMAGE_TAG:-latest}
+    image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
     build: .
     command: extractor
     environment: *service-env
@@ -39,7 +39,7 @@ services:
       - ./tests:/srv/tests
 
   transformer:
-    image: arkhn/river:${IMAGE_TAG:-latest}
+    image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
     build: .
     command: transformer
     environment: *service-env
@@ -48,7 +48,7 @@ services:
       - ./tests:/srv/tests
 
   topicleaner:
-    image: arkhn/river:${IMAGE_TAG:-latest}
+    image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
     build: .
     command: topicleaner
     environment: *service-env
@@ -57,14 +57,14 @@ services:
       - ./tests:/srv/tests
 
   loader:
-    image: arkhn/hapi-river:${IMAGE_TAG:-latest}
+    image: arkhn/hapi-river:${RIVER_IMAGE_TAG:-latest}
     build: ./hapi-loader
     restart: on-failure
     volumes:
       - ./hapi-loader/application.e2e.yaml:/app/application.yaml
 
   jpaltime:
-    image: arkhn/jpaltime:arm  # TODO file with versions for tests
+    image: arkhn/jpaltime:${JPALTIME_IMAGE_TAG:-latest}
     restart: on-failure
     ports:
       - 8080:8080
@@ -112,7 +112,7 @@ services:
     restart: on-failure
     # This port mapping is required by the containerized kafka
     ports:
-      - "19092:19092"
+      - 19092:19092
     depends_on:
       - zookeeper
     environment:
