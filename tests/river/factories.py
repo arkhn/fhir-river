@@ -4,7 +4,7 @@ import factory
 
 from tests.conftest import load_mapping
 
-DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 
 def mimic_mapping():
