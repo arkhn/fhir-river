@@ -82,7 +82,8 @@ const useStyles = makeStyles((theme) => ({
 
 const AttributeInputGroup = ({
   inputGroup,
-}: AttributeInputGroupProps): JSX.Element => {
+}: // FIXME: isConditionRequired ?
+AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const popupState = usePopupState({
@@ -128,10 +129,10 @@ const AttributeInputGroup = ({
     inputGroup: inputGroup.id,
   });
 
+  // After conditions have been fetched from the api, update the total list of conditions
   useEffect(() => {
-    const newConditions = conditions.filter(({ id }) => !id);
-    if (apiConditions) setConditions([...apiConditions, ...newConditions]);
-  }, [apiConditions, conditions]);
+    if (apiConditions) setConditions([...apiConditions]);
+  }, [apiConditions]);
 
   useEffect(() => {
     if (inputs && inputs.length <= 1 && inputGroup.merging_script !== "") {

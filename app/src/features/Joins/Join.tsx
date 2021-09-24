@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import { isEqual } from "lodash";
 
 import useColumn from "features/Columns/useColumn";
@@ -57,13 +56,11 @@ const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
     else setRightColumn(_rightColumn);
   };
 
-  if (!leftColumn || !rightColumn) return <CircularProgress />;
-
   return (
     <JoinSelect
       key={`join-${join.id}`}
-      leftColumn={leftColumn}
-      rightColumn={rightColumn}
+      leftColumn={leftColumn ?? {}}
+      rightColumn={rightColumn ?? {}}
       onChange={handleJoinChange}
       onDelete={onDelete}
     />

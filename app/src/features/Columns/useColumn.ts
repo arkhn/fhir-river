@@ -27,7 +27,7 @@ const useColumn = (
     async (_column: Partial<Column>) => {
       const isColumnPartial =
         !_column.owner || !_column.table || !_column.column;
-      if (!isColumnPartial && !isEqual(_column, column)) {
+      if (column && !isColumnPartial && !isEqual(_column, column)) {
         try {
           const column_ = _column.id
             ? await partialUpdateColumn({
