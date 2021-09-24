@@ -13,18 +13,18 @@ import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
 import ExistingURIDialog from "features/Inputs/ExistingURIDialog";
 import {
-  useApiInputsDestroyMutation,
-  useApiInputsUpdateMutation,
+  useApiStaticInputsDestroyMutation,
+  useApiStaticInputsUpdateMutation,
 } from "services/api/endpoints";
 import {
-  Input,
+  StaticInput as StaticInputType,
   useApiSourcesExportRetrieveQuery,
 } from "services/api/generated/api.generated";
 
 import { URI_STATIC_VALUE_PREFIX } from "../../constants";
 
 type StaticInputProps = {
-  input: Input;
+  input: StaticInputType;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -68,10 +68,10 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     mappingId?: string;
   }>();
   const classes = useStyles();
-  const [staticValue, setStaticValue] = useState(input.static_value ?? "");
+  const [staticValue, setStaticValue] = useState(input.value ?? "");
   const [isExistingURIDialogOpen, setExistingURIDialogOpen] = useState(false);
-  const [deleteInput] = useApiInputsDestroyMutation();
-  const [updateInput] = useApiInputsUpdateMutation();
+  const [deleteInput] = useApiStaticInputsDestroyMutation();
+  const [updateInput] = useApiStaticInputsUpdateMutation();
   const { data: mappings } = useApiSourcesExportRetrieveQuery(
     { id: sourceId ?? "" },
     { skip: !sourceId }
@@ -92,7 +92,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     try {
       await deleteInput({ id: input.id });
     } catch (error) {
-      console.error(error);
+      // TODO: Handle errors nicely
     }
   };
 
@@ -103,14 +103,14 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   };
 
   const handleInputBlur = async () => {
-    if (staticValue !== input.static_value) {
+    if (staticValue !== input.value) {
       try {
         await updateInput({
           id: input.id,
-          inputRequest: { ...input, static_value: staticValue },
+          staticInputRequest: { ...input, value: staticValue },
         });
       } catch (error) {
-        console.error(error);
+        // TODO: Handle errors nicely
       }
     }
   };
@@ -121,7 +121,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
       try {
         await updateInput({
           id: input.id,
-          inputRequest: { ...input, static_value: staticValue },
+          staticInputRequest: { ...input, value: staticValue },
         });
         setStaticValue(staticValue);
       } catch (error) {
@@ -131,14 +131,14 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   };
 
   const handleFhirResourceAutocompleteChange = async (value: string) => {
-    if (value !== input.static_value) {
+    if (value !== input.value) {
       try {
         await updateInput({
           id: input.id,
-          inputRequest: { ...input, static_value: value },
+          staticInputRequest: { ...input, value },
         });
       } catch (error) {
-        console.error(error);
+        // TODO: Handle errors nicely
       }
     }
   };
@@ -153,7 +153,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     try {
       await updateInput({
         id: input.id,
-        inputRequest: { ...input, static_value: staticValue },
+        staticInputRequest: { ...input, value: staticValue },
       });
       setStaticValue(staticValue);
     } catch (error) {
@@ -167,7 +167,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
         <Grid item xs={7}>
           {isNodeTypeURI && isNodeNameType ? (
             <FhirResourceAutocomplete
-              value={input.static_value ?? ""}
+              value={input.value ?? ""}
               onChange={handleFhirResourceAutocompleteChange}
             />
           ) : (

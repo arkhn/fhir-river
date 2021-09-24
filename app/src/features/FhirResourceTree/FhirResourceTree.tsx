@@ -21,7 +21,7 @@ import {
   useApiResourcesRetrieveQuery,
   useApiAttributesListQuery,
   useApiInputGroupsCreateMutation,
-  useApiInputsCreateMutation,
+  useApiStaticInputsCreateMutation,
 } from "services/api/endpoints";
 
 import { getNode } from "./resourceTreeUtils";
@@ -76,7 +76,7 @@ const FhirResourceTree = (): JSX.Element => {
   );
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
-  const [createInput] = useApiInputsCreateMutation();
+  const [createStaticInput] = useApiStaticInputsCreateMutation();
   const selectedNode = useGetSelectedNode();
 
   const handleSelectNode = async (
@@ -111,10 +111,10 @@ const FhirResourceTree = (): JSX.Element => {
           const isNodeNameType = node?.name === "type";
           // Create a static input for node of type "URI" & name "type"
           if (isNodeTypeURI && isNodeNameType) {
-            createInput({
-              inputRequest: {
+            createStaticInput({
+              staticInputRequest: {
                 input_group: inputGroup.id,
-                static_value: "",
+                value: "",
               },
             });
           }

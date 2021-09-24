@@ -139,9 +139,10 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/columns/`,
         params: {
-          input: queryArg.input,
-          join: queryArg.join,
+          joined_left: queryArg.joinedLeft,
+          joined_right: queryArg.joinedRight,
           ordering: queryArg.ordering,
+          sql_input: queryArg.sqlInput,
         },
       }),
     }),
@@ -422,64 +423,10 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiInputsList: build.query<ApiInputsListApiResponse, ApiInputsListApiArg>({
-      query: (queryArg) => ({
-        url: `/api/inputs/`,
-        params: {
-          input_group: queryArg.inputGroup,
-          ordering: queryArg.ordering,
-        },
-      }),
-    }),
-    apiInputsCreate: build.mutation<
-      ApiInputsCreateApiResponse,
-      ApiInputsCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/`,
-        method: "POST",
-        body: queryArg.inputRequest,
-      }),
-    }),
-    apiInputsRetrieve: build.query<
-      ApiInputsRetrieveApiResponse,
-      ApiInputsRetrieveApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/inputs/${queryArg.id}/` }),
-    }),
-    apiInputsUpdate: build.mutation<
-      ApiInputsUpdateApiResponse,
-      ApiInputsUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.inputRequest,
-      }),
-    }),
-    apiInputsPartialUpdate: build.mutation<
-      ApiInputsPartialUpdateApiResponse,
-      ApiInputsPartialUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.patchedInputRequest,
-      }),
-    }),
-    apiInputsDestroy: build.mutation<
-      ApiInputsDestroyApiResponse,
-      ApiInputsDestroyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
     apiJoinsList: build.query<ApiJoinsListApiResponse, ApiJoinsListApiArg>({
       query: (queryArg) => ({
         url: `/api/joins/`,
-        params: { column: queryArg.column, ordering: queryArg.ordering },
+        params: { ordering: queryArg.ordering, sql_input: queryArg.sqlInput },
       }),
     }),
     apiJoinsCreate: build.mutation<
@@ -733,6 +680,120 @@ export const api = createApi({
         body: queryArg.mappingRequest,
       }),
     }),
+    apiSqlInputsList: build.query<
+      ApiSqlInputsListApiResponse,
+      ApiSqlInputsListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/`,
+        params: {
+          input_group: queryArg.inputGroup,
+          ordering: queryArg.ordering,
+        },
+      }),
+    }),
+    apiSqlInputsCreate: build.mutation<
+      ApiSqlInputsCreateApiResponse,
+      ApiSqlInputsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/`,
+        method: "POST",
+        body: queryArg.sqlInputRequest,
+      }),
+    }),
+    apiSqlInputsRetrieve: build.query<
+      ApiSqlInputsRetrieveApiResponse,
+      ApiSqlInputsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/sql-inputs/${queryArg.id}/` }),
+    }),
+    apiSqlInputsUpdate: build.mutation<
+      ApiSqlInputsUpdateApiResponse,
+      ApiSqlInputsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.sqlInputRequest,
+      }),
+    }),
+    apiSqlInputsPartialUpdate: build.mutation<
+      ApiSqlInputsPartialUpdateApiResponse,
+      ApiSqlInputsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedSqlInputRequest,
+      }),
+    }),
+    apiSqlInputsDestroy: build.mutation<
+      ApiSqlInputsDestroyApiResponse,
+      ApiSqlInputsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiStaticInputsList: build.query<
+      ApiStaticInputsListApiResponse,
+      ApiStaticInputsListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/`,
+        params: {
+          input_group: queryArg.inputGroup,
+          ordering: queryArg.ordering,
+        },
+      }),
+    }),
+    apiStaticInputsCreate: build.mutation<
+      ApiStaticInputsCreateApiResponse,
+      ApiStaticInputsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/`,
+        method: "POST",
+        body: queryArg.staticInputRequest,
+      }),
+    }),
+    apiStaticInputsRetrieve: build.query<
+      ApiStaticInputsRetrieveApiResponse,
+      ApiStaticInputsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/static-inputs/${queryArg.id}/` }),
+    }),
+    apiStaticInputsUpdate: build.mutation<
+      ApiStaticInputsUpdateApiResponse,
+      ApiStaticInputsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.staticInputRequest,
+      }),
+    }),
+    apiStaticInputsPartialUpdate: build.mutation<
+      ApiStaticInputsPartialUpdateApiResponse,
+      ApiStaticInputsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedStaticInputRequest,
+      }),
+    }),
+    apiStaticInputsDestroy: build.mutation<
+      ApiStaticInputsDestroyApiResponse,
+      ApiStaticInputsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
     apiUserRetrieve: build.query<
       ApiUserRetrieveApiResponse,
       ApiUserRetrieveApiArg
@@ -820,10 +881,11 @@ export type ApiBatchesRetryCreateApiArg = {
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
-  input?: string;
-  join?: string;
+  joinedLeft?: string[];
+  joinedRight?: string[];
   /** Which field to use when ordering the results. */
   ordering?: string;
+  sqlInput?: string;
 };
 export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
 export type ApiColumnsCreateApiArg = {
@@ -985,43 +1047,11 @@ export type ApiInputGroupsDestroyApiArg = {
   /** A unique value identifying this input group. */
   id: string;
 };
-export type ApiInputsListApiResponse = /** status 200  */ Input[];
-export type ApiInputsListApiArg = {
-  inputGroup?: string;
-  /** Which field to use when ordering the results. */
-  ordering?: string;
-};
-export type ApiInputsCreateApiResponse = /** status 201  */ Input;
-export type ApiInputsCreateApiArg = {
-  inputRequest: InputRequest;
-};
-export type ApiInputsRetrieveApiResponse = /** status 200  */ Input;
-export type ApiInputsRetrieveApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-};
-export type ApiInputsUpdateApiResponse = /** status 200  */ Input;
-export type ApiInputsUpdateApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-  inputRequest: InputRequest;
-};
-export type ApiInputsPartialUpdateApiResponse = /** status 200  */ Input;
-export type ApiInputsPartialUpdateApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-  patchedInputRequest: PatchedInputRequest;
-};
-export type ApiInputsDestroyApiResponse = unknown;
-export type ApiInputsDestroyApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-};
 export type ApiJoinsListApiResponse = /** status 200  */ Join[];
 export type ApiJoinsListApiArg = {
-  column?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
+  sqlInput?: string;
 };
 export type ApiJoinsCreateApiResponse = /** status 201  */ Join;
 export type ApiJoinsCreateApiArg = {
@@ -1164,6 +1194,71 @@ export type ApiSourcesImportCreateApiResponse = /** status 200  */ Mapping;
 export type ApiSourcesImportCreateApiArg = {
   mappingRequest: MappingRequest;
 };
+export type ApiSqlInputsListApiResponse = /** status 200  */ SQLInput[];
+export type ApiSqlInputsListApiArg = {
+  inputGroup?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type ApiSqlInputsCreateApiResponse = /** status 201  */ SQLInput;
+export type ApiSqlInputsCreateApiArg = {
+  sqlInputRequest: SQLInputRequest;
+};
+export type ApiSqlInputsRetrieveApiResponse = /** status 200  */ SQLInput;
+export type ApiSqlInputsRetrieveApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+};
+export type ApiSqlInputsUpdateApiResponse = /** status 200  */ SQLInput;
+export type ApiSqlInputsUpdateApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+  sqlInputRequest: SQLInputRequest;
+};
+export type ApiSqlInputsPartialUpdateApiResponse = /** status 200  */ SQLInput;
+export type ApiSqlInputsPartialUpdateApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+  patchedSqlInputRequest: PatchedSQLInputRequest;
+};
+export type ApiSqlInputsDestroyApiResponse = unknown;
+export type ApiSqlInputsDestroyApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+};
+export type ApiStaticInputsListApiResponse = /** status 200  */ StaticInput[];
+export type ApiStaticInputsListApiArg = {
+  inputGroup?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type ApiStaticInputsCreateApiResponse = /** status 201  */ StaticInput;
+export type ApiStaticInputsCreateApiArg = {
+  staticInputRequest: StaticInputRequest;
+};
+export type ApiStaticInputsRetrieveApiResponse = /** status 200  */ StaticInput;
+export type ApiStaticInputsRetrieveApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+};
+export type ApiStaticInputsUpdateApiResponse = /** status 200  */ StaticInput;
+export type ApiStaticInputsUpdateApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+  staticInputRequest: StaticInputRequest;
+};
+export type ApiStaticInputsPartialUpdateApiResponse =
+  /** status 200  */ StaticInput;
+export type ApiStaticInputsPartialUpdateApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+  patchedStaticInputRequest: PatchedStaticInputRequest;
+};
+export type ApiStaticInputsDestroyApiResponse = unknown;
+export type ApiStaticInputsDestroyApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+};
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
 export type ApiUserRetrieveApiArg = {};
 export type Attribute = {
@@ -1221,22 +1316,16 @@ export type Column = {
   column: string;
   updated_at: string;
   created_at: string;
-  join?: string | null;
-  input?: string | null;
   owner: string;
 };
 export type ColumnRequest = {
   table: string;
   column: string;
-  join?: string | null;
-  input?: string | null;
   owner: string;
 };
 export type PatchedColumnRequest = {
   table?: string;
   column?: string;
-  join?: string | null;
-  input?: string | null;
   owner?: string;
 };
 export type ActionEnum = "INCLUDE" | "EXCLUDE";
@@ -1253,21 +1342,21 @@ export type Condition = {
   action: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
-  column: string;
+  sql_input: string;
   input_group: string;
 };
 export type ConditionRequest = {
   action: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
-  column: string;
+  sql_input: string;
   input_group: string;
 };
 export type PatchedConditionRequest = {
   action?: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
-  column?: string;
+  sql_input?: string;
   input_group?: string;
 };
 export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
@@ -1317,19 +1406,19 @@ export type Filter = {
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
-  sql_column: string;
+  sql_input: string;
 };
 export type FilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
-  sql_column: string;
+  sql_input: string;
 };
 export type PatchedFilterRequest = {
   relation?: FilterRelationEnum;
   value?: string;
   resource?: string;
-  sql_column?: string;
+  sql_input?: string;
 };
 export type InputGroup = {
   id: string;
@@ -1346,38 +1435,23 @@ export type PatchedInputGroupRequest = {
   merging_script?: string;
   attribute?: string;
 };
-export type Input = {
-  id: string;
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  updated_at: string;
-  created_at: string;
-  input_group: string;
-};
-export type InputRequest = {
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  input_group: string;
-};
-export type PatchedInputRequest = {
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  input_group?: string;
-};
 export type Join = {
   id: string;
   updated_at: string;
   created_at: string;
-  column: string;
+  sql_input: string;
+  left: string;
+  right: string;
 };
 export type JoinRequest = {
-  column: string;
+  sql_input: string;
+  left: string;
+  right: string;
 };
 export type PatchedJoinRequest = {
-  column?: string;
+  sql_input?: string;
+  left?: string;
+  right?: string;
 };
 export type Owner = {
   id: string;
@@ -1457,22 +1531,30 @@ export type PatchedSourceRequest = {
   name?: string;
   version?: string;
 };
-export type MappingInput = {
+export type MappingStaticInput = {
+  value?: string | null;
+};
+export type MappingJoin = {
+  left: string;
+  right: string;
+};
+export type MappingSQLInput = {
   script?: string;
   concept_map_id?: string;
-  static_value?: string | null;
   column: string | null;
+  joins: MappingJoin[];
 };
 export type MappingCondition = {
   action: ActionEnum;
-  column: string;
+  sql_input: MappingSQLInput;
   value?: string;
   relation?: ConditionRelationEnum;
 };
 export type MappingInputGroup = {
   id: string;
   merging_script?: string;
-  inputs?: MappingInput[];
+  static_inputs?: MappingStaticInput[];
+  sql_inputs?: MappingSQLInput[];
   conditions?: MappingCondition[];
 };
 export type MappingAttribute = {
@@ -1484,7 +1566,7 @@ export type MappingAttribute = {
 export type MappingFilter = {
   relation: FilterRelationEnum;
   value?: string;
-  sql_column: string;
+  sql_input: MappingSQLInput;
 };
 export type MappingResource = {
   id: string;
@@ -1492,19 +1574,18 @@ export type MappingResource = {
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
   logical_reference: string;
   primary_key_owner: string;
   attributes?: MappingAttribute[];
   filters?: MappingFilter[];
 };
-export type MappingJoin = {
-  columns: string[];
-};
 export type MappingColumn = {
   id: string;
   table: string;
   column: string;
-  joins?: MappingJoin[];
 };
 export type MappingOwner = {
   id: string;
@@ -1545,21 +1626,29 @@ export type Mapping = {
   updated_at: string;
   created_at: string;
 };
-export type MappingInputRequest = {
+export type MappingStaticInputRequest = {
+  value?: string | null;
+};
+export type MappingJoinRequest = {
+  left: string;
+  right: string;
+};
+export type MappingSQLInputRequest = {
   script?: string;
   concept_map_id?: string;
-  static_value?: string | null;
   column: string | null;
+  joins: MappingJoinRequest[];
 };
 export type MappingConditionRequest = {
   action: ActionEnum;
-  column: string;
+  sql_input: MappingSQLInputRequest;
   value?: string;
   relation?: ConditionRelationEnum;
 };
 export type MappingInputGroupRequest = {
   merging_script?: string;
-  inputs?: MappingInputRequest[];
+  static_inputs?: MappingStaticInputRequest[];
+  sql_inputs?: MappingSQLInputRequest[];
   conditions?: MappingConditionRequest[];
 };
 export type MappingAttributeRequest = {
@@ -1571,26 +1660,25 @@ export type MappingAttributeRequest = {
 export type MappingFilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
-  sql_column: string;
+  sql_input: MappingSQLInputRequest;
 };
 export type MappingResourceRequest = {
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
   logical_reference: string;
   primary_key_owner: string;
   attributes?: MappingAttributeRequest[];
   filters?: MappingFilterRequest[];
 };
-export type MappingJoinRequest = {
-  columns: string[];
-};
 export type MappingColumnRequest = {
   id: string;
   table: string;
   column: string;
-  joins?: MappingJoinRequest[];
 };
 export type MappingOwnerRequest = {
   id: string;
@@ -1611,6 +1699,42 @@ export type MappingRequest = {
   credential: MappingCredentialRequest;
   name: string;
   version?: string;
+};
+export type SQLInput = {
+  id: string;
+  updated_at: string;
+  created_at: string;
+  script?: string;
+  concept_map_id?: string;
+  input_group?: string | null;
+  column: string;
+};
+export type SQLInputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  input_group?: string | null;
+  column: string;
+};
+export type PatchedSQLInputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  input_group?: string | null;
+  column?: string;
+};
+export type StaticInput = {
+  id: string;
+  updated_at: string;
+  created_at: string;
+  value?: string | null;
+  input_group: string;
+};
+export type StaticInputRequest = {
+  value?: string | null;
+  input_group: string;
+};
+export type PatchedStaticInputRequest = {
+  value?: string | null;
+  input_group?: string;
 };
 export type User = {
   id: string;
@@ -1663,12 +1787,6 @@ export const {
   useApiInputGroupsUpdateMutation,
   useApiInputGroupsPartialUpdateMutation,
   useApiInputGroupsDestroyMutation,
-  useApiInputsListQuery,
-  useApiInputsCreateMutation,
-  useApiInputsRetrieveQuery,
-  useApiInputsUpdateMutation,
-  useApiInputsPartialUpdateMutation,
-  useApiInputsDestroyMutation,
   useApiJoinsListQuery,
   useApiJoinsCreateMutation,
   useApiJoinsRetrieveQuery,
@@ -1699,5 +1817,17 @@ export const {
   useApiSourcesDestroyMutation,
   useApiSourcesExportRetrieveQuery,
   useApiSourcesImportCreateMutation,
+  useApiSqlInputsListQuery,
+  useApiSqlInputsCreateMutation,
+  useApiSqlInputsRetrieveQuery,
+  useApiSqlInputsUpdateMutation,
+  useApiSqlInputsPartialUpdateMutation,
+  useApiSqlInputsDestroyMutation,
+  useApiStaticInputsListQuery,
+  useApiStaticInputsCreateMutation,
+  useApiStaticInputsRetrieveQuery,
+  useApiStaticInputsUpdateMutation,
+  useApiStaticInputsPartialUpdateMutation,
+  useApiStaticInputsDestroyMutation,
   useApiUserRetrieveQuery,
 } = api;

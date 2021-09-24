@@ -1,0 +1,96 @@
+import React, { useState, useCallback, useEffect } from "react";
+
+import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/AddCircleOutline";
+import { useTranslation } from "react-i18next";
+
+import Join from "features/Joins/Join";
+import {
+  useApiJoinsListQuery,
+  useApiJoinsDestroyMutation,
+} from "services/api/endpoints";
+import {
+  SQLInput,
+  Join as JoinType,
+} from "services/api/generated/api.generated";
+
+const useStyles = makeStyles(() => ({
+  button: {
+    textTransform: "none",
+  },
+}));
+
+type SqlInputJoinListProps = {
+  sqlInputId: SQLInput["id"];
+};
+
+const SqlInputJoinList = ({
+  sqlInputId,
+}: SqlInputJoinListProps): JSX.Element => {
+  const { t } = useTranslation();
+  const classes = useStyles();
+
+  const [inputJoins, setInputJoins] = useState<Partial<JoinType>[]>([]);
+  const [deleteJoin] = useApiJoinsDestroyMutation();
+
+  const {
+    data: apiInputJoins,
+    isSuccess: areInputJoinsLoaded,
+  } = useApiJoinsListQuery(
+    { sqlInput: sqlInputId ?? "" },
+    { skip: !sqlInputId }
+  );
+
+  useEffect(() => {
+    const newInputJoins = inputJoins.filter(({ id }) => !id);
+    if (apiInputJoins) setInputJoins([...apiInputJoins, ...newInputJoins]);
+  }, [apiInputJoins, inputJoins]);
+
+  const handleJoinAdd = useCallback(() => {
+    if (sqlInputId) {
+      const newJoin = { sql_input: sqlInputId };
+      setInputJoins([...inputJoins, newJoin]);
+    }
+  }, [inputJoins, sqlInputId]);
+
+  const handleJoinDelete = (index: number) => () => {
+    const joinToDelete = inputJoins[index];
+    if (joinToDelete?.id) {
+      deleteJoin({ id: joinToDelete.id });
+    } else {
+      setInputJoins(inputJoins.filter((_, _index) => _index !== index));
+    }
+  };
+
+  // Creates a join if join list is loaded and empty
+  useEffect(() => {
+    if (areInputJoinsLoaded && apiInputJoins && apiInputJoins.length === 0) {
+      handleJoinAdd();
+    }
+  }, [apiInputJoins, areInputJoinsLoaded, handleJoinAdd]);
+
+  return (
+    <Grid container direction="column" spacing={1}>
+      {inputJoins &&
+        inputJoins.map((join, index) => (
+          <Join
+            key={`${join.id}_${index}`}
+            join={join}
+            onDelete={handleJoinDelete(index)}
+          />
+        ))}
+      <Grid item>
+        <Button
+          className={classes.button}
+          startIcon={<AddIcon />}
+          onClick={handleJoinAdd}
+          variant="outlined"
+        >
+          <Typography>{t("addJoin")}</Typography>
+        </Button>
+      </Grid>
+    </Grid>
+  );
+};
+
+export default SqlInputJoinList;

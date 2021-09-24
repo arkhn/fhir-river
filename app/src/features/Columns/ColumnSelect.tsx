@@ -38,12 +38,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type ColumnSelectsProps = {
-  pendingColumn: Partial<Column>;
+  column: Partial<Column>;
   onChange?: (column: Partial<Column>) => void;
 };
 
 const ColumnSelects = ({
-  pendingColumn,
+  column,
   onChange,
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
@@ -62,7 +62,7 @@ const ColumnSelects = ({
     }
   );
 
-  const { table, column, owner: ownerId } = pendingColumn;
+  const { table, column: column_, owner: ownerId } = column;
   const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
   const schema = selectedOwner?.schema as Record<string, string[]>;
   const defaultValue = {
@@ -103,7 +103,7 @@ const ColumnSelects = ({
   );
 
   const isTableSelected = !!table;
-  const isColumnSelected = !!column;
+  const isColumnSelected = !!column_;
 
   const prevTable = usePrevious(table);
   const hasTableChanged = prevTable !== table;
@@ -113,13 +113,13 @@ const ColumnSelects = ({
     value: { id: string; label: string } | null
   ) => {
     if (value) {
-      const [_owner, _table] = value.id.split("/");
+      const [owner_, table_] = value.id.split("/");
       onChange &&
         onChange({
-          ...pendingColumn,
-          table: _table,
-          owner: _owner,
-          column: undefined,
+          ...column,
+          table: table_,
+          owner: owner_,
+          column: "",
         });
     }
   };
@@ -129,7 +129,7 @@ const ColumnSelects = ({
   ) => {
     onChange &&
       onChange({
-        ...pendingColumn,
+        ...column,
         column: value,
       });
   };
@@ -137,17 +137,17 @@ const ColumnSelects = ({
   useEffect(() => {
     if (schema && table) {
       const isColumnInTable =
-        pendingColumn.column && schema[table]?.includes(pendingColumn.column);
+        column.column && schema[table]?.includes(column.column);
       if (hasTableChanged && !isColumnInTable) {
         onChange &&
           onChange({
-            ...pendingColumn,
+            ...column,
             column: undefined,
           });
       }
       setColumns(schema[table] ?? []);
     }
-  }, [schema, hasTableChanged, pendingColumn, table, onChange]);
+  }, [schema, hasTableChanged, column, table, onChange]);
 
   return (
     <>
@@ -194,7 +194,7 @@ const ColumnSelects = ({
         <Autocomplete
           className={classes.autocomplete}
           options={columns}
-          value={column ?? ""}
+          value={column_ ?? ""}
           onChange={handleColumnChange}
           selectOnFocus
           openOnFocus
