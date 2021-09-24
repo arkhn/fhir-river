@@ -20,14 +20,6 @@ def test_inmemory_fhir_api_create():
     assert len(fhir_api._db["Patient"]) == 2
 
 
-def test_inmemory_fhir_api_validate(snapshot):
-    resource = {"deceased": "not yet"}
-
-    fhir_api = InMemoryFhirAPI()
-    res = fhir_api.validate("Patient", resource)
-    assert res == snapshot
-
-
 def test_inmemory_fhir_api_retrieve():
     resource = {"deceased": "not yet"}
 
@@ -38,24 +30,25 @@ def test_inmemory_fhir_api_retrieve():
 
 
 @responses.activate
-@pytest.mark.parametrize(
-    "auth_token,response,status",
-    [("xxx-auth-token", {"ok": 1}, 200), ("xxx-auth-token", {"ok": 0}, 400), (None, "missing auth token", 503)],
-)
-def test_hapi_fhir_api_create(response, status, auth_token):
-    def call_and_assert():
-        resp = HapiFhirAPI().create(resource_type, {"id": "toto"}, auth_token)
-        assert len(responses.calls) == 1
-        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
-        assert resp == response
-
+def test_hapi_fhir_api_create():
     resource_type = "Patient"
-    responses.add(responses.POST, f"{settings.FHIR_API_URL}/{resource_type}/", json=response, status=status)
-    if status != 200:
-        with pytest.raises(requests.exceptions.HTTPError):
-            call_and_assert()
-    else:
-        call_and_assert()
+    responses.add(responses.POST, f"{settings.FHIR_API_URL}/{resource_type}/", json={"ok": 1}, status=200)
+    resp = HapiFhirAPI().create(resource_type, {"id": "toto"}, "xxx-auth-token")
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.headers.get("Authorization") == "Bearer xxx-auth-token"
+    assert resp == {"ok": 1}
+
+
+@responses.activate
+@pytest.mark.parametrize("auth_token,status", [("xxx-auth-token", 400), (None, 503)])
+def test_hapi_fhir_api_create_failure(status, auth_token):
+    resource_type = "Patient"
+    responses.add(responses.POST, f"{settings.FHIR_API_URL}/{resource_type}/", status=status)
+    with pytest.raises(requests.exceptions.HTTPError):
+        HapiFhirAPI().create(resource_type, {"id": "toto"}, auth_token)
+    assert len(responses.calls) == 1
+    if auth_token:
+        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
 
 
 @responses.activate
@@ -74,7 +67,7 @@ def test_hapi_fhir_api_validate(auth_token, response, status):
 
 
 @responses.activate
-def test_hapi_fhir_api_validate_error(snapshot):
+def test_hapi_fhir_api_validate_failure():
     resource_type = "Patient"
 
     def request_callback(request):
@@ -85,28 +78,31 @@ def test_hapi_fhir_api_validate_error(snapshot):
     )
     resp = HapiFhirAPI().validate(resource_type, {"id": "toto"}, "xxx-auth-token")
     assert len(responses.calls) == 1
-    assert resp == snapshot
+    assert resp == {
+        "resourceType": "OperationOutcome",
+        "issue": [{"severity": "error", "code": "", "diagnostics": "500 internal server error"}],
+    }
 
 
 @responses.activate
-@pytest.mark.parametrize(
-    "auth_token,response,status",
-    [("xxx-auth-token", {"ok": 1}, 200), ("xxx-auth-token", {"ok": 0}, 400), (None, "missing auth token", 503)],
-)
-def test_hapi_fhir_api_retrieve(auth_token, response, status):
-    def call_and_assert():
-        resp = HapiFhirAPI().retrieve(resource_type, resource_id, "xxx-auth-token")
-        assert len(responses.calls) == 1
-        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
-        assert resp == response
-
+def test_hapi_fhir_api_retrieve():
     resource_type = "Patient"
     resource_id = "resource-id"
-    responses.add(
-        responses.GET, f"{settings.FHIR_API_URL}/{resource_type}/{resource_id}", json=response, status=status
-    )
-    if status != 200:
-        with pytest.raises(requests.exceptions.HTTPError):
-            call_and_assert()
-    else:
-        call_and_assert()
+    responses.add(responses.GET, f"{settings.FHIR_API_URL}/{resource_type}/{resource_id}", json={"ok": 1}, status=200)
+    resp = HapiFhirAPI().retrieve(resource_type, resource_id, "xxx-auth-token")
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.headers.get("Authorization") == "Bearer xxx-auth-token"
+    assert resp == {"ok": 1}
+
+
+@responses.activate
+@pytest.mark.parametrize("auth_token,status", [("xxx-auth-token", 400), (None, 503)])
+def test_hapi_fhir_api_retrieve_failure(auth_token, status):
+    resource_type = "Patient"
+    resource_id = "resource-id"
+    responses.add(responses.GET, f"{settings.FHIR_API_URL}/{resource_type}/{resource_id}", status=status)
+    with pytest.raises(requests.exceptions.HTTPError):
+        HapiFhirAPI().retrieve(resource_type, resource_id, "xxx-auth-token")
+    assert len(responses.calls) == 1
+    if auth_token:
+        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
