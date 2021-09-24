@@ -26,7 +26,11 @@ const useSqlInput = (
   const onChange = useCallback(
     async (changedSqlInput: Partial<SQLInput>) => {
       const isSqlInputPartial = !changedSqlInput.column;
-      if (!isSqlInputPartial && !isEqual(changedSqlInput, sqlInput)) {
+      if (
+        sqlInput &&
+        !isSqlInputPartial &&
+        !isEqual(changedSqlInput, sqlInput)
+      ) {
         try {
           const sqlInput_ = changedSqlInput.id
             ? await partialUpdateSqlInput({

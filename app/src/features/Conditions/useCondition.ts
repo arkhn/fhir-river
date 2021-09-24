@@ -27,7 +27,7 @@ const useCondition = (
     async (_condition: Partial<Condition>) => {
       const isConditionPartial =
         !_condition.action || !_condition.sql_input || !_condition.input_group;
-      if (!isConditionPartial && !isEqual(_condition, condition)) {
+      if (condition && !isConditionPartial && !isEqual(_condition, condition)) {
         try {
           const condition_ = _condition.id
             ? await partialUpdateCondition({

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
@@ -33,18 +33,15 @@ const SqlInputJoinList = ({
   const [inputJoins, setInputJoins] = useState<Partial<JoinType>[]>([]);
   const [deleteJoin] = useApiJoinsDestroyMutation();
 
-  const {
-    data: apiInputJoins,
-    isSuccess: areInputJoinsLoaded,
-  } = useApiJoinsListQuery(
+  const { data: apiInputJoins, isSuccess } = useApiJoinsListQuery(
     { sqlInput: sqlInputId ?? "" },
     { skip: !sqlInputId }
   );
 
+  // After joins have been fetched from the api, we update the list of joins
   useEffect(() => {
-    const newInputJoins = inputJoins.filter(({ id }) => !id);
-    if (apiInputJoins) setInputJoins([...apiInputJoins, ...newInputJoins]);
-  }, [apiInputJoins, inputJoins]);
+    if (apiInputJoins) setInputJoins([...apiInputJoins]);
+  }, [apiInputJoins]);
 
   const handleJoinAdd = useCallback(() => {
     if (sqlInputId) {
@@ -64,10 +61,10 @@ const SqlInputJoinList = ({
 
   // Creates a join if join list is loaded and empty
   useEffect(() => {
-    if (areInputJoinsLoaded && apiInputJoins && apiInputJoins.length === 0) {
+    if (isSuccess && !inputJoins.length) {
       handleJoinAdd();
     }
-  }, [apiInputJoins, areInputJoinsLoaded, handleJoinAdd]);
+  }, [handleJoinAdd, inputJoins.length, isSuccess]);
 
   return (
     <Grid container direction="column" spacing={1}>

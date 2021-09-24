@@ -13,10 +13,10 @@ type UseJoinProps = Partial<Join> | undefined;
 const useJoin = (
   initialJoin: UseJoinProps
 ): [
-  Join: Partial<Join> | undefined,
-  onChange: (Join: Partial<Join>) => void
+  join: Partial<Join> | undefined,
+  onChange: (join: Partial<Join>) => void
 ] => {
-  const [Join, setJoin] = useState<Partial<Join> | undefined>(initialJoin);
+  const [join, setJoin] = useState<Partial<Join> | undefined>(initialJoin);
 
   const [createJoin] = useApiJoinsCreateMutation();
   const [partialUpdateJoin] = useApiJoinsPartialUpdateMutation();
@@ -24,7 +24,7 @@ const useJoin = (
   const onChange = useCallback(
     async (_join: Partial<Join>) => {
       const isJoinPartial = !_join.left || !_join.right || !_join.sql_input;
-      if (!isJoinPartial && !isEqual(_join, Join)) {
+      if (join && !isJoinPartial && !isEqual(_join, join)) {
         try {
           const join_ = _join.id
             ? await partialUpdateJoin({
@@ -41,10 +41,10 @@ const useJoin = (
         }
       } else setJoin(_join);
     },
-    [Join, createJoin, partialUpdateJoin]
+    [join, createJoin, partialUpdateJoin]
   );
 
-  return [Join, onChange];
+  return [join, onChange];
 };
 
 export default useJoin;
