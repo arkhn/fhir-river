@@ -152,8 +152,11 @@ const CreateMapping = (): JSX.Element => {
             ...mapping,
           } as ResourceRequest,
         }).unwrap();
-        const referencedColumns = columns.filter(({ id }) =>
-          sqlInputs.some(({ column }) => column === id)
+
+        const referencedColumns = columns.filter(
+          ({ id }) =>
+            sqlInputs.some(({ column }) => column === id) ||
+            joins.some(({ left, right }) => left === id || right === id)
         );
 
         try {
