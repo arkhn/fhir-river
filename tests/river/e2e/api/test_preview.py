@@ -83,20 +83,3 @@ def test_preview_with_validation_error(mock_validate, api_client, patient_mappin
     assert len(response.data["instances"]) == 1
     operation_outcome = response.data["errors"][0]
     assert operation_outcome == snapshot()
-
-
-@patch("river.services.fhir_api.validate", side_effect=Exception("fhir-api-returned-an-internal-server-error"))
-def test_preview_with_validation_exception(mock_validate, api_client, patient_mapping, snapshot):
-    url = reverse("preview")
-
-    data = {
-        "resource_id": patient_mapping,
-        "primary_key_values": ["10006"],
-    }
-    response = api_client.post(url, data, format="json")
-
-    assert response.status_code == 200, response.data
-    assert len(response.data["errors"]) == 1, response.data["errors"]
-    assert len(response.data["instances"]) == 1
-    operation_outcome = response.data["errors"][0]
-    assert operation_outcome == snapshot()
