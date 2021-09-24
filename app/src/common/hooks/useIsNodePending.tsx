@@ -2,12 +2,17 @@ import { useMemo } from "react";
 
 import { useParams } from "react-router";
 
-import { ElementNode } from "features/FhirResourceTree/resourceTreeSlice";
+import type { ElementNode } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   useApiAttributesListQuery,
   useApiInputGroupsListQuery,
-  useApiInputsListQuery,
+  useApiSqlInputsListQuery,
+  useApiStaticInputsListQuery,
 } from "services/api/endpoints";
+import type {
+  SQLInput,
+  StaticInput,
+} from "services/api/generated/api.generated";
 
 const useIsNodePending = (node: ElementNode): boolean => {
   const { mappingId } = useParams<{ mappingId?: string }>();
@@ -24,7 +29,20 @@ const useIsNodePending = (node: ElementNode): boolean => {
       skip: !attributes,
     }
   );
-  const { data: inputs } = useApiInputsListQuery({}, { skip: !inputGroups });
+  const { data: sqlInputs } = useApiSqlInputsListQuery(
+    {},
+    { skip: !inputGroups }
+  );
+  const { data: staticInputs } = useApiStaticInputsListQuery(
+    {},
+    { skip: !inputGroups }
+  );
+
+  const inputs: (SQLInput | StaticInput)[] | undefined = useMemo(() => {
+    if (!sqlInputs) return staticInputs;
+    if (!staticInputs) return sqlInputs;
+    return [...sqlInputs, ...staticInputs];
+  }, [sqlInputs, staticInputs]);
 
   const inputGroupsWithInputs = useMemo(() => {
     if (inputs && inputGroups) {

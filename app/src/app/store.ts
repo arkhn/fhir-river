@@ -10,6 +10,8 @@ import column from "features/Columns/columnSlice";
 import condition from "features/Conditions/conditionSlice";
 import resourceTree from "features/FhirResourceTree/resourceTreeSlice";
 import filter from "features/Filters/filterSlice";
+import sqlInput from "features/Inputs/sqlInputSlice";
+import staticInput from "features/Inputs/staticInputSlice";
 import join from "features/Joins/joinSlice";
 import resource from "features/Mappings/resourceSlice";
 import source from "features/Sources/sourceSlice";
@@ -24,6 +26,8 @@ const appReducer = combineReducers({
   resource,
   source,
   resourceTree,
+  sqlInput,
+  staticInput,
 });
 export type RootState = ReturnType<typeof appReducer>;
 

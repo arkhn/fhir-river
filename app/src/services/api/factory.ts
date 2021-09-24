@@ -10,6 +10,8 @@ import {
   Source,
   Owner,
   Column,
+  SQLInput,
+  InputGroup,
 } from "./generated/api.generated";
 
 export const sourceFactory = Factory.define<Source>(({ sequence }) => ({
@@ -87,11 +89,34 @@ export const columnFactory = Factory.define<Column>(
   })
 );
 
+const inputGroupFactory = Factory.define<InputGroup>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    attribute: associations.attribute || attributeFactory.build().id,
+    merging_script: faker.lorem.word(),
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
+  })
+);
+
+export const sqlInputFactory = Factory.define<SQLInput>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    script: faker.lorem.word(),
+    concept_map_id: faker.lorem.word(),
+    column: associations.column || columnFactory.build().id,
+    input_group: associations.input_group || inputGroupFactory.build().id,
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
+  })
+);
+
 export const filterFactory = Factory.define<Filter>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     relation: "<",
-    sql_column: associations.sql_column || columnFactory.build().id,
+    value: faker.lorem.word(),
+    sql_input: associations.sql_input || sqlInputFactory.build().id,
     resource: associations.resource || resourceFactory.build().id,
   })
 );

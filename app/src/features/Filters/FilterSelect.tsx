@@ -1,19 +1,21 @@
 import React, { ChangeEvent } from "react";
 
-import { Grid, TextField, makeStyles, IconButton } from "@material-ui/core";
+import {
+  CircularProgress,
+  Grid,
+  TextField,
+  makeStyles,
+  IconButton,
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch, useAppSelector } from "app/store";
 import Select from "common/components/Select";
 import ColumnSelect from "features/Columns/ColumnSelect";
-import {
-  columnRemoved,
-  columnSelectors,
-  columnUpdated,
-} from "features/Columns/columnSlice";
+import { columnSelectors, columnUpdated } from "features/Columns/columnSlice";
+import { sqlInputSelectors } from "features/Inputs/sqlInputSlice";
 import FilterJoinList from "features/Joins/FilterJoinList";
-import { joinRemoved, joinSelectors } from "features/Joins/joinSlice";
 import type { Column, Filter } from "services/api/generated/api.generated";
 
 import { filterRemoved, filterUpdated } from "./filterSlice";
@@ -35,23 +37,21 @@ type FilterSelectsProps = {
   filter: Partial<Filter>;
 };
 
-const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
+const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useAppDispatch();
 
-  const filterColumn = useAppSelector((state) =>
-    columnSelectors.selectById(state, filter.sql_column ?? "")
+  const filterSqlInput = useAppSelector((state) =>
+    sqlInputSelectors.selectById(state, filter.sql_input ?? "")
   );
-  const joins = useAppSelector(joinSelectors.selectAll);
-  const filterJoins = joins.filter((join) => join.column === filterColumn?.id);
-  const columns = useAppSelector(columnSelectors.selectAll);
+  const filterColumn = useAppSelector((state) =>
+    columnSelectors.selectById(state, filterSqlInput?.column ?? "")
+  );
 
   const handleFilterColumnChange = (column?: Partial<Column>) => {
-    if (filter.sql_column)
-      dispatch(
-        columnUpdated({ id: filter.sql_column, changes: { ...column } })
-      );
+    if (filterColumn?.id)
+      dispatch(columnUpdated({ id: filterColumn.id, changes: { ...column } }));
   };
 
   const handleRelationChange = (
@@ -78,24 +78,15 @@ const FilterSelect = ({ filter }: FilterSelectsProps): JSX.Element | null => {
   };
 
   const handleFilterDelete = () => {
-    filterJoins.forEach((join) => {
-      columns
-        .filter((column) => column.id === join.column)
-        .forEach((column) => {
-          if (column.id) dispatch(columnRemoved(column.id));
-        });
-      if (join.id) dispatch(joinRemoved(join.id));
-    });
-    if (filter.sql_column) dispatch(columnRemoved(filter.sql_column));
     if (filter.id) dispatch(filterRemoved(filter.id));
   };
 
-  if (!filterColumn) return null;
+  if (!filterColumn) return <CircularProgress />;
   return (
     <Grid item container direction="column" spacing={2}>
       <Grid item container xs={12} spacing={2}>
         <ColumnSelect
-          pendingColumn={filterColumn}
+          column={filterColumn}
           onChange={handleFilterColumnChange}
         />
         <Grid item>

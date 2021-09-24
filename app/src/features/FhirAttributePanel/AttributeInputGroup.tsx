@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -11,35 +11,37 @@ import {
   Paper,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import differenceBy from "lodash/differenceBy";
 import {
   bindMenu,
   bindTrigger,
   usePopupState,
 } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
-import { v4 as uuid } from "uuid";
+import { useParams } from "react-router-dom";
 
-import { useAppDispatch, useAppSelector } from "app/store";
 import Button from "common/components/Button";
-import {
-  conditionAdded,
-  conditionsAdded,
-  conditionSelectors,
-} from "features/Conditions/conditionSlice";
+import Condition from "features/Conditions/Condition";
 import SqlInput from "features/Inputs/SqlInput";
 import StaticInput from "features/Inputs/StaticInput";
 import MergingScript from "features/Scripts/MergingScript";
 import {
   useApiInputGroupsDestroyMutation,
-  useApiInputsCreateMutation,
-  useApiInputsListQuery,
+  useApiSqlInputsCreateMutation,
+  useApiStaticInputsCreateMutation,
+  useApiStaticInputsListQuery,
+  useApiSqlInputsListQuery,
   useApiConditionsListQuery,
   useApiInputGroupsUpdateMutation,
+  useApiColumnsCreateMutation,
+  useApiResourcesRetrieveQuery,
+  useApiConditionsDestroyMutation,
 } from "services/api/endpoints";
-import { InputGroup } from "services/api/generated/api.generated";
-
-import Condition from "./Condition";
+import type {
+  Condition as ConditionType,
+  InputGroup,
+  SQLInput,
+  StaticInput as StaticInputType,
+} from "services/api/generated/api.generated";
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
@@ -80,67 +82,56 @@ const useStyles = makeStyles((theme) => ({
 
 const AttributeInputGroup = ({
   inputGroup,
-  isConditionRequired,
 }: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const dispatch = useAppDispatch();
-
   const popupState = usePopupState({
     variant: "popover",
     popupId: "popup",
   });
-  const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
-  const [updateInputGroups] = useApiInputGroupsUpdateMutation();
-  const [createInput] = useApiInputsCreateMutation();
-  const { data: inputs } = useApiInputsListQuery({ inputGroup: inputGroup.id });
-  const {
-    data: apiConditions,
-    isError,
-    isFetching,
-  } = useApiConditionsListQuery({
-    inputGroup: inputGroup.id,
-  });
-  const conditions = useAppSelector((state) =>
-    conditionSelectors
-      .selectAll(state)
-      .filter((condition) => condition.input_group === inputGroup.id)
+  const { mappingId } = useParams<{ mappingId?: string }>();
+
+  const { data: mapping } = useApiResourcesRetrieveQuery(
+    { id: mappingId ?? "" },
+    { skip: !mappingId }
   );
 
+  const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
+  const [updateInputGroups] = useApiInputGroupsUpdateMutation();
+
+  const [conditions, setConditions] = useState<Partial<ConditionType>[]>([]);
+
+  const [createColumn] = useApiColumnsCreateMutation();
+
+  const [createStaticInput] = useApiStaticInputsCreateMutation();
+  const [createSqlInput] = useApiSqlInputsCreateMutation();
+
+  const [deleteCondition] = useApiConditionsDestroyMutation();
+
+  const { data: sqlInputs } = useApiSqlInputsListQuery({
+    inputGroup: inputGroup.id,
+  });
+  const { data: staticInputs } = useApiStaticInputsListQuery({
+    inputGroup: inputGroup.id,
+  });
+
+  const inputs: (SQLInput | StaticInputType)[] | undefined = useMemo(() => {
+    if (!sqlInputs) return staticInputs;
+    if (!staticInputs) return sqlInputs;
+    // FIXME: DATE
+    return [...sqlInputs, ...staticInputs].sort(
+      (a, b) => +b.created_at - +a.created_at
+    );
+  }, [sqlInputs, staticInputs]);
+
+  const { data: apiConditions } = useApiConditionsListQuery({
+    inputGroup: inputGroup.id,
+  });
+
   useEffect(() => {
-    if (apiConditions && !isError && !isFetching) {
-      const conditionDiff = differenceBy(
-        apiConditions,
-        conditions,
-        (condition) => condition.id
-      );
-      if (conditions.length === 0 && isConditionRequired) {
-        dispatch(
-          conditionAdded({
-            id: uuid(),
-            action: "INCLUDE",
-            input_group: inputGroup.id,
-            pending: true,
-          })
-        );
-      }
-      if (conditionDiff.length > 0) {
-        dispatch(
-          conditionsAdded(
-            conditionDiff.map((condition) => ({ ...condition, pending: false }))
-          )
-        );
-      }
-    }
-  }, [
-    apiConditions,
-    conditions,
-    dispatch,
-    isError,
-    isFetching,
-    isConditionRequired,
-    inputGroup,
-  ]);
+    const newConditions = conditions.filter(({ id }) => !id);
+    if (apiConditions) setConditions([...apiConditions, ...newConditions]);
+  }, [apiConditions, conditions]);
 
   useEffect(() => {
     if (inputs && inputs.length <= 1 && inputGroup.merging_script !== "") {
@@ -157,45 +148,62 @@ const AttributeInputGroup = ({
         id: inputGroup.id,
       }).unwrap();
     } catch (e) {
-      //
+      // TODO: handle errors nicely
     }
   };
 
-  const handleCreateInput = async (isStatic: boolean) => {
+  const handleCreateCondition = () => {
+    const newCondition = { input_group: inputGroup.id };
+    setConditions([...conditions, newCondition]);
+  };
+
+  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) =>
+    popupState.open(e);
+
+  const handleCreateSqlInput = async () => {
+    if (mapping) {
+      try {
+        const inputColumn = await createColumn({
+          columnRequest: {
+            table: mapping.primary_key_table,
+            column: mapping.primary_key_column,
+            owner: mapping.primary_key_owner,
+          },
+        }).unwrap();
+        await createSqlInput({
+          sqlInputRequest: {
+            input_group: inputGroup.id,
+            column: inputColumn.id,
+          },
+        }).unwrap();
+      } catch (error) {
+        // TODO: handle error nicely
+      }
+      popupState.close();
+    }
+  };
+
+  const handleCreateStaticInput = async () => {
     try {
-      await createInput({
-        inputRequest: {
+      await createStaticInput({
+        staticInputRequest: {
           input_group: inputGroup.id,
-          static_value: isStatic ? "" : null,
+          value: "",
         },
       });
     } catch (error) {
       //
     }
-  };
-
-  const handleCreateCondition = () => {
-    dispatch(
-      conditionAdded({
-        id: uuid(),
-        action: "INCLUDE",
-        input_group: inputGroup.id,
-        pending: true,
-      })
-    );
-  };
-
-  const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    popupState.open(e);
-  };
-
-  const handleAddSqlInput = () => {
-    handleCreateInput(false);
     popupState.close();
   };
-  const handleAddStaticInput = () => {
-    handleCreateInput(true);
-    popupState.close();
+
+  const handleConditionDelete = (index: number) => () => {
+    const conditionToDelete = conditions[index];
+    if (conditionToDelete?.id) {
+      deleteCondition({ id: conditionToDelete.id });
+    } else {
+      setConditions(conditions.filter((_, _index) => _index !== index));
+    }
   };
 
   return (
@@ -229,13 +237,13 @@ const AttributeInputGroup = ({
                 <MenuItem>
                   <ListItemText
                     primary={t("static")}
-                    onClick={handleAddStaticInput}
+                    onClick={handleCreateStaticInput}
                   />
                 </MenuItem>
                 <MenuItem>
                   <ListItemText
                     primary={t("fromAColumn")}
-                    onClick={handleAddSqlInput}
+                    onClick={handleCreateSqlInput}
                   />
                 </MenuItem>
               </Menu>
@@ -266,14 +274,14 @@ const AttributeInputGroup = ({
             </Grid>
           </Grid>
           <Grid item container spacing={1}>
-            {inputs &&
-              inputs.map((input) =>
-                input.static_value === null ? (
-                  <SqlInput input={input} key={input.id} />
-                ) : (
-                  <StaticInput input={input} key={input.id} />
-                )
-              )}
+            {staticInputs &&
+              staticInputs.map((input) => (
+                <StaticInput input={input} key={input.id} />
+              ))}
+            {sqlInputs &&
+              sqlInputs.map((input) => (
+                <SqlInput input={input} key={input.id} />
+              ))}
             {inputs && inputs.length > 1 && (
               <MergingScript inputGroup={inputGroup} />
             )}
@@ -286,8 +294,12 @@ const AttributeInputGroup = ({
             className={classes.conditionListContainer}
           >
             {conditions &&
-              conditions.map((condition) => (
-                <Condition condition={condition} key={condition.id} />
+              conditions.map((condition, index) => (
+                <Condition
+                  condition={condition}
+                  key={`${condition.id}_${index}`}
+                  onDelete={handleConditionDelete(index)}
+                />
               ))}
           </Grid>
         </Grid>
