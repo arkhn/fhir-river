@@ -61,21 +61,20 @@ const SqlInputJoinList = ({
 
   // Creates a join if join list is loaded and empty
   useEffect(() => {
-    if (isSuccess && !inputJoins.length) {
+    if (isSuccess && !apiInputJoins?.length && !inputJoins.length) {
       handleJoinAdd();
     }
-  }, [handleJoinAdd, inputJoins.length, isSuccess]);
+  }, [apiInputJoins?.length, handleJoinAdd, inputJoins.length, isSuccess]);
 
   return (
     <Grid container direction="column" spacing={1}>
-      {inputJoins &&
-        inputJoins.map((join, index) => (
-          <Join
-            key={`${join.id}_${index}`}
-            join={join}
-            onDelete={handleJoinDelete(index)}
-          />
-        ))}
+      {inputJoins.map((join, index) => (
+        <Join
+          key={`${join.id}_${index}`}
+          join={join}
+          onDelete={handleJoinDelete(index)}
+        />
+      ))}
       <Grid item>
         <Button
           className={classes.button}
