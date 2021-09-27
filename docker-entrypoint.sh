@@ -8,9 +8,6 @@ set -e
 
 export DJANGO_SETTINGS_MODULE=settings.base
 
-# Perform migrations
-python django/manage.py migrate
-
 if [[ "$#" -gt 0 ]]; then
   python django/manage.py "$@"
 else
@@ -19,6 +16,8 @@ else
   if [[ "${ENV}" == "dev" || "${ENV}" == "test" ]]; then
     python django/manage.py createsuperuser --no-input || echo "Skipping."
     python django/manage.py runserver 0.0.0.0:8000
+  elif [[ "${ENV}" == "testy" ]]; then
+    pytest tests -m "e2e"
   else
     export UWSGI_PROCESSES=${UWSGI_PROCESSES:-5}
     export UWSGI_THREADS=${UWSGI_THREADS:-4}
