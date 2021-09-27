@@ -8,11 +8,15 @@ import {
 } from "services/api/endpoints";
 import type { Join } from "services/api/generated/api.generated";
 
-type UseJoinProps = Partial<Join> | undefined;
+type UseJoinProps = {
+  initialJoin?: Partial<Join> | undefined;
+  hasRetrieveStarted?: boolean;
+};
 
-const useJoin = (
-  initialJoin: UseJoinProps
-): [
+const useJoin = ({
+  initialJoin,
+  hasRetrieveStarted,
+}: UseJoinProps): [
   join: Partial<Join> | undefined,
   onChange: (join: Partial<Join>) => void
 ] => {
@@ -24,7 +28,11 @@ const useJoin = (
   const onChange = useCallback(
     async (_join: Partial<Join>) => {
       const isJoinPartial = !_join.left || !_join.right || !_join.sql_input;
-      if (join && !isJoinPartial && !isEqual(_join, join)) {
+      if (
+        (!hasRetrieveStarted || join) &&
+        !isJoinPartial &&
+        !isEqual(_join, join)
+      ) {
         try {
           const join_ = _join.id
             ? await partialUpdateJoin({
@@ -41,7 +49,7 @@ const useJoin = (
         }
       } else setJoin(_join);
     },
-    [join, createJoin, partialUpdateJoin]
+    [join, createJoin, partialUpdateJoin, hasRetrieveStarted]
   );
 
   return [join, onChange];

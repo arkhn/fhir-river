@@ -8,11 +8,15 @@ import {
 } from "services/api/endpoints";
 import type { Column } from "services/api/generated/api.generated";
 
-type UseColumnProps = Partial<Column> | undefined;
+type UseColumnProps = {
+  initialColumn?: Partial<Column>;
+  hasRetrieveStarted?: boolean;
+};
 
-const useColumn = (
-  initialColumn: UseColumnProps
-): [
+const useColumn = ({
+  initialColumn,
+  hasRetrieveStarted,
+}: UseColumnProps): [
   column: Partial<Column> | undefined,
   onChange: (column: Partial<Column>) => void
 ] => {
@@ -27,7 +31,11 @@ const useColumn = (
     async (_column: Partial<Column>) => {
       const isColumnPartial =
         !_column.owner || !_column.table || !_column.column;
-      if (column && !isColumnPartial && !isEqual(_column, column)) {
+      if (
+        (!hasRetrieveStarted || column) &&
+        !isColumnPartial &&
+        !isEqual(_column, column)
+      ) {
         try {
           const column_ = _column.id
             ? await partialUpdateColumn({
@@ -42,7 +50,7 @@ const useColumn = (
         }
       } else setColumn(_column);
     },
-    [column, createColumn, partialUpdateColumn]
+    [column, createColumn, hasRetrieveStarted, partialUpdateColumn]
   );
 
   return [column, onChange];
