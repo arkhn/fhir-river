@@ -104,3 +104,9 @@ def load_concept_maps():
 @pytest.fixture
 def mimic_mapping():
     return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def load_structure_definitions(structure_definitions):
+    for structure_definition in structure_definitions:
+        fhir_api.create("StructureDefinition", structure_definition)
