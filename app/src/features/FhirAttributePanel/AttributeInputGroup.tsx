@@ -109,21 +109,30 @@ AttributeInputGroupProps): JSX.Element => {
 
   const [deleteCondition] = useApiConditionsDestroyMutation();
 
-  const { data: sqlInputs } = useApiSqlInputsListQuery({
+  const {
+    data: sqlInputs,
+    isLoading: isSqlInputsLoading,
+  } = useApiSqlInputsListQuery({
     inputGroup: inputGroup.id,
   });
-  const { data: staticInputs } = useApiStaticInputsListQuery({
+  const {
+    data: staticInputs,
+    isLoading: isStaticInputsLoading,
+  } = useApiStaticInputsListQuery({
     inputGroup: inputGroup.id,
   });
 
   const inputs: (SQLInput | StaticInputType)[] | undefined = useMemo(() => {
+    if (isSqlInputsLoading || isStaticInputsLoading) {
+      return;
+    }
     if (!sqlInputs) return staticInputs;
     if (!staticInputs) return sqlInputs;
     // FIXME: DATE
     return [...sqlInputs, ...staticInputs].sort(
       (a, b) => +b.created_at - +a.created_at
     );
-  }, [sqlInputs, staticInputs]);
+  }, [isSqlInputsLoading, isStaticInputsLoading, sqlInputs, staticInputs]);
 
   const { data: apiConditions } = useApiConditionsListQuery({
     inputGroup: inputGroup.id,
