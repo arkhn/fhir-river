@@ -83,38 +83,55 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
   const classes = useStyles();
   const mapping = useCurrentMapping();
 
-  const { data: apiConditionSqlInput } = useApiSqlInputsRetrieveQuery(
+  const {
+    data: apiConditionSqlInput,
+    isUninitialized: isSqlInputUninitialized,
+  } = useApiSqlInputsRetrieveQuery(
     {
       id: condition.sql_input ?? "",
     },
     { skip: !condition.sql_input }
   );
 
-  const { data: apiConditionColumn } = useApiColumnsRetrieveQuery(
+  const {
+    data: apiConditionColumn,
+    isUninitialized: isColumnUninitialized,
+  } = useApiColumnsRetrieveQuery(
     {
-      id: apiConditionSqlInput?.id ?? "",
+      id: apiConditionSqlInput?.column ?? "",
     },
-    { skip: !apiConditionSqlInput?.id }
+    { skip: !apiConditionSqlInput?.column }
   );
 
-  const [conditionColumn, setConditionColumn] = useColumn(apiConditionColumn);
+  const [conditionColumn, setConditionColumn] = useColumn({
+    initialColumn: apiConditionColumn,
+    hasRetrieveStarted: !isColumnUninitialized,
+  });
   // As soon as the condition column is fetched, we set its value
   useEffect(() => {
-    if (apiConditionColumn) setConditionColumn(apiConditionColumn);
-  }, [apiConditionColumn, setConditionColumn]);
+    if (apiConditionColumn && !conditionColumn)
+      setConditionColumn(apiConditionColumn);
+  }, [apiConditionColumn, setConditionColumn, conditionColumn]);
 
-  const [sqlInput, setSqlInput] = useSqlInput(apiConditionSqlInput);
+  const [sqlInput, setSqlInput] = useSqlInput({
+    initialSqlInput: apiConditionSqlInput,
+    hasRetrieveStarted: !isSqlInputUninitialized,
+  });
   // As soon as the condition sql input is fetched, we set its value
   useEffect(() => {
-    if (apiConditionSqlInput) setSqlInput(apiConditionSqlInput);
-  }, [apiConditionSqlInput, setSqlInput]);
+    if (apiConditionSqlInput && !sqlInput) {
+      setSqlInput(apiConditionSqlInput);
+    }
+  }, [apiConditionSqlInput, setSqlInput, sqlInput]);
   // As soon as a condition column is created, we add its id to the sql input
   useEffect(() => {
     if (!sqlInput?.column && conditionColumn?.id)
       setSqlInput({ ...sqlInput, column: conditionColumn.id });
   }, [conditionColumn?.id, setSqlInput, sqlInput]);
 
-  const [_condition, setCondition] = useCondition(condition);
+  const [_condition, setCondition] = useCondition({
+    initialCondition: condition,
+  });
   // As soon as the condition sql input is created, we add its id to the condition
   useEffect(() => {
     if (!_condition?.sql_input && sqlInput?.id)
@@ -142,8 +159,8 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
     });
   };
 
-  const handleValueChange = (
-    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  const handleInputBlur = (
+    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setCondition({
       ..._condition,
@@ -186,8 +203,8 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
           <Grid item>
             {!hideValueInput && (
               <TextField
-                value={_condition?.value ?? ""}
-                onChange={handleValueChange}
+                defaultValue={_condition?.value ?? ""}
+                onBlur={handleInputBlur}
                 placeholder={t("typeValue")}
                 variant="outlined"
                 size="small"
