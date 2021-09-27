@@ -154,7 +154,10 @@ AttributeInputGroupProps): JSX.Element => {
   };
 
   const handleCreateCondition = () => {
-    const newCondition = { input_group: inputGroup.id };
+    const newCondition: Partial<ConditionType> = {
+      input_group: inputGroup.id,
+      action: "INCLUDE",
+    };
     setConditions([...conditions, newCondition]);
   };
 
