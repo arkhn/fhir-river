@@ -16,28 +16,37 @@ type JoinProps = {
 };
 
 const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
-  const { data: apiLeftColumn } = useApiColumnsRetrieveQuery(
-    { id: join.left ?? "" },
-    { skip: !join.left }
-  );
-  const { data: apiRightColumn } = useApiColumnsRetrieveQuery(
+  const {
+    data: apiLeftColumn,
+    isUninitialized: isLeftColumnUninitialized,
+  } = useApiColumnsRetrieveQuery({ id: join.left ?? "" }, { skip: !join.left });
+  const {
+    data: apiRightColumn,
+    isUninitialized: isRightColumnUninitialized,
+  } = useApiColumnsRetrieveQuery(
     { id: join.right ?? "" },
     { skip: !join.right }
   );
 
-  const [leftColumn, setLeftColumn] = useColumn(apiLeftColumn);
+  const [leftColumn, setLeftColumn] = useColumn({
+    initialColumn: apiLeftColumn,
+    hasRetrieveStarted: !isLeftColumnUninitialized,
+  });
   // As soon as the left column is fetched, we set its value
   useEffect(() => {
     if (apiLeftColumn) setLeftColumn(apiLeftColumn);
   }, [apiLeftColumn, setLeftColumn]);
 
-  const [rightColumn, setRightColumn] = useColumn(apiRightColumn);
+  const [rightColumn, setRightColumn] = useColumn({
+    initialColumn: apiRightColumn,
+    hasRetrieveStarted: !isRightColumnUninitialized,
+  });
   // As soon as the right column is fetched, we set its value
   useEffect(() => {
     if (apiRightColumn) setRightColumn(apiRightColumn);
   }, [apiRightColumn, setRightColumn]);
 
-  const [_join, setJoin] = useJoin(join);
+  const [_join, setJoin] = useJoin({ initialJoin: join });
   // As soon as the left/right columns are created, we add their ids to the join
   useEffect(() => {
     if (!_join?.left && leftColumn?.id)
