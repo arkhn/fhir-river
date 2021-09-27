@@ -8,11 +8,15 @@ import {
 } from "services/api/endpoints";
 import type { Condition } from "services/api/generated/api.generated";
 
-type UseConditionProps = Partial<Condition> | undefined;
+type UseConditionProps = {
+  initialCondition?: Partial<Condition>;
+  hasRetrieveStarted?: boolean;
+};
 
-const useCondition = (
-  initialCondition: UseConditionProps
-): [
+const useCondition = ({
+  initialCondition,
+  hasRetrieveStarted,
+}: UseConditionProps): [
   condition: Partial<Condition> | undefined,
   onChange: (condition: Partial<Condition>) => void
 ] => {
@@ -27,7 +31,11 @@ const useCondition = (
     async (_condition: Partial<Condition>) => {
       const isConditionPartial =
         !_condition.action || !_condition.sql_input || !_condition.input_group;
-      if (condition && !isConditionPartial && !isEqual(_condition, condition)) {
+      if (
+        (!hasRetrieveStarted || condition) &&
+        !isConditionPartial &&
+        !isEqual(_condition, condition)
+      ) {
         try {
           const condition_ = _condition.id
             ? await partialUpdateCondition({
@@ -44,7 +52,7 @@ const useCondition = (
         }
       } else setCondition(_condition);
     },
-    [condition, createCondition, partialUpdateCondition]
+    [condition, createCondition, partialUpdateCondition, hasRetrieveStarted]
   );
 
   return [condition, onChange];

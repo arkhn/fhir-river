@@ -8,11 +8,15 @@ import {
 } from "services/api/endpoints";
 import type { SQLInput } from "services/api/generated/api.generated";
 
-type UseSqlInputProps = Partial<SQLInput> | undefined;
+type UseSqlInputProps = {
+  initialSqlInput?: Partial<SQLInput>;
+  hasRetrieveStarted?: boolean;
+};
 
-const useSqlInput = (
-  initialSqlInput: UseSqlInputProps
-): [
+const useSqlInput = ({
+  initialSqlInput,
+  hasRetrieveStarted,
+}: UseSqlInputProps): [
   sqlInput: Partial<SQLInput> | undefined,
   onChange: (sqlInput: Partial<SQLInput>) => void
 ] => {
@@ -27,7 +31,7 @@ const useSqlInput = (
     async (changedSqlInput: Partial<SQLInput>) => {
       const isSqlInputPartial = !changedSqlInput.column;
       if (
-        sqlInput &&
+        (!hasRetrieveStarted || sqlInput) &&
         !isSqlInputPartial &&
         !isEqual(changedSqlInput, sqlInput)
       ) {
@@ -47,7 +51,7 @@ const useSqlInput = (
         }
       } else setSqlInput(changedSqlInput);
     },
-    [createSqlInput, partialUpdateSqlInput, sqlInput]
+    [createSqlInput, hasRetrieveStarted, partialUpdateSqlInput, sqlInput]
   );
 
   return [sqlInput, onChange];
