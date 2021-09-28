@@ -30,7 +30,7 @@ const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
 
   const [leftColumn, setLeftColumn] = useColumn({
     initialColumn: apiLeftColumn,
-    hasRetrieveStarted: !isLeftColumnUninitialized,
+    exists: !isLeftColumnUninitialized,
   });
   // As soon as the left column is fetched, we set its value
   useEffect(() => {
@@ -39,7 +39,7 @@ const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
 
   const [rightColumn, setRightColumn] = useColumn({
     initialColumn: apiRightColumn,
-    hasRetrieveStarted: !isRightColumnUninitialized,
+    exists: !isRightColumnUninitialized,
   });
   // As soon as the right column is fetched, we set its value
   useEffect(() => {

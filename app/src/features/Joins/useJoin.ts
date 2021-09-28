@@ -9,13 +9,19 @@ import {
 import type { Join } from "services/api/generated/api.generated";
 
 type UseJoinProps = {
+  /**
+   * Initial join value
+   */
   initialJoin?: Partial<Join> | undefined;
-  hasRetrieveStarted?: boolean;
+  /**
+   * Specifies if the object already exists in the backend
+   */
+  exists?: boolean;
 };
 
 const useJoin = ({
   initialJoin,
-  hasRetrieveStarted,
+  exists,
 }: UseJoinProps): [
   join: Partial<Join> | undefined,
   onChange: (join: Partial<Join>) => void
@@ -28,11 +34,7 @@ const useJoin = ({
   const onChange = useCallback(
     async (_join: Partial<Join>) => {
       const isJoinPartial = !_join.left || !_join.right || !_join.sql_input;
-      if (
-        (!hasRetrieveStarted || join) &&
-        !isJoinPartial &&
-        !isEqual(_join, join)
-      ) {
+      if ((!exists || join) && !isJoinPartial && !isEqual(_join, join)) {
         try {
           const join_ = _join.id
             ? await partialUpdateJoin({
@@ -49,7 +51,7 @@ const useJoin = ({
         }
       } else setJoin(_join);
     },
-    [join, createJoin, partialUpdateJoin, hasRetrieveStarted]
+    [join, createJoin, partialUpdateJoin, exists]
   );
 
   return [join, onChange];

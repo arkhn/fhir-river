@@ -105,7 +105,7 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
 
   const [conditionColumn, setConditionColumn] = useColumn({
     initialColumn: apiConditionColumn,
-    hasRetrieveStarted: !isColumnUninitialized,
+    exists: !isColumnUninitialized,
   });
   // As soon as the condition column is fetched, we set its value
   useEffect(() => {
@@ -115,7 +115,7 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
 
   const [sqlInput, setSqlInput] = useSqlInput({
     initialSqlInput: apiConditionSqlInput,
-    hasRetrieveStarted: !isSqlInputUninitialized,
+    exists: !isSqlInputUninitialized,
   });
   // As soon as the condition sql input is fetched, we set its value
   useEffect(() => {

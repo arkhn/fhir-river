@@ -9,13 +9,19 @@ import {
 import type { Condition } from "services/api/generated/api.generated";
 
 type UseConditionProps = {
+  /**
+   * Initial condition value
+   */
   initialCondition?: Partial<Condition>;
-  hasRetrieveStarted?: boolean;
+  /**
+   * Specifies if the object already exists in the backend
+   */
+  exists?: boolean;
 };
 
 const useCondition = ({
   initialCondition,
-  hasRetrieveStarted,
+  exists,
 }: UseConditionProps): [
   condition: Partial<Condition> | undefined,
   onChange: (condition: Partial<Condition>) => void
@@ -32,7 +38,7 @@ const useCondition = ({
       const isConditionPartial =
         !_condition.action || !_condition.sql_input || !_condition.input_group;
       if (
-        (!hasRetrieveStarted || condition) &&
+        (!exists || condition) &&
         !isConditionPartial &&
         !isEqual(_condition, condition)
       ) {
@@ -52,7 +58,7 @@ const useCondition = ({
         }
       } else setCondition(_condition);
     },
-    [condition, createCondition, partialUpdateCondition, hasRetrieveStarted]
+    [condition, createCondition, partialUpdateCondition, exists]
   );
 
   return [condition, onChange];
