@@ -34,8 +34,8 @@ const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
   });
   // As soon as the left column is fetched, we set its value
   useEffect(() => {
-    if (apiLeftColumn) setLeftColumn(apiLeftColumn);
-  }, [apiLeftColumn, setLeftColumn]);
+    if (apiLeftColumn && !leftColumn) setLeftColumn(apiLeftColumn);
+  }, [apiLeftColumn, setLeftColumn, leftColumn]);
 
   const [rightColumn, setRightColumn] = useColumn({
     initialColumn: apiRightColumn,
@@ -43,8 +43,8 @@ const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
   });
   // As soon as the right column is fetched, we set its value
   useEffect(() => {
-    if (apiRightColumn) setRightColumn(apiRightColumn);
-  }, [apiRightColumn, setRightColumn]);
+    if (apiRightColumn && !rightColumn) setRightColumn(apiRightColumn);
+  }, [apiRightColumn, setRightColumn, rightColumn]);
 
   const [_join, setJoin] = useJoin({ initialJoin: join });
   // As soon as the left/right columns are created, we add their ids to the join
