@@ -107,14 +107,11 @@ const EditMapping = (): JSX.Element => {
     setEditLoading(true);
 
     if (resource && initialState) {
-      // const columnsWithoutJoin = columns.filter((column) => !column.join);
-      // const columnsWithJoin = columns.filter((column) => Boolean(column.join));
-      // const prevColumnsWithoutJoin = initialState.columns.filter(
-      //   (column) => !column.join
-      // );
-      // const prevColumnsWithJoin = initialState.columns.filter((column) =>
-      //   Boolean(column.join)
-      // );
+      const referencedColumns = columns.filter(
+        ({ id }) =>
+          sqlInputs.some(({ column }) => column === id) ||
+          joins.some(({ left, right }) => left === id || right === id)
+      );
 
       //Resource update
       if (!isEqual(resource, initialState.resource)) {
@@ -129,7 +126,7 @@ const EditMapping = (): JSX.Element => {
       try {
         // Columns creation/update
         const createdOrUpdatedColumns = await Promise.all(
-          columns.map((column) => {
+          referencedColumns.map((column) => {
             const prevColumn = initialState.columns.find(
               ({ id }) => id === column.id
             );
@@ -157,7 +154,7 @@ const EditMapping = (): JSX.Element => {
             const prevSqlInput = initialState.sqlInputs.find(
               ({ id }) => id === sqlInput.id
             );
-            const index = columns.findIndex(
+            const index = referencedColumns.findIndex(
               (column) => column.id === sqlInput.column
             );
             if (!prevSqlInput) {
@@ -227,12 +224,19 @@ const EditMapping = (): JSX.Element => {
             const index = sqlInputs.findIndex(
               (sqlInput) => sqlInput.id === join.sql_input
             );
-
+            const leftColumnIndex = referencedColumns.findIndex(
+              ({ id }) => id === join.left
+            );
+            const rightColumnIndex = referencedColumns.findIndex(
+              ({ id }) => id === join.right
+            );
             if (!prevJoin) {
               // Join is created
               return createJoin({
                 joinRequest: {
                   sql_input: createdOrUpdatedSqlInputs[index]?.id ?? "",
+                  left: createdOrUpdatedColumns[leftColumnIndex]?.id ?? "",
+                  right: createdOrUpdatedColumns[rightColumnIndex]?.id ?? "",
                 } as JoinRequest,
               }).unwrap();
             } else if (!isEqual(prevJoin, join)) {
