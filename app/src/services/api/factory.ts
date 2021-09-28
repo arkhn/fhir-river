@@ -12,6 +12,7 @@ import {
   Column,
   SQLInput,
   InputGroup,
+  Condition,
 } from "./generated/api.generated";
 
 export const sourceFactory = Factory.define<Source>(({ sequence }) => ({
@@ -89,7 +90,7 @@ export const columnFactory = Factory.define<Column>(
   })
 );
 
-const inputGroupFactory = Factory.define<InputGroup>(
+export const inputGroupFactory = Factory.define<InputGroup>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     attribute: associations.attribute || attributeFactory.build().id,
@@ -108,6 +109,17 @@ export const sqlInputFactory = Factory.define<SQLInput>(
     input_group: associations.input_group || inputGroupFactory.build().id,
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
+  })
+);
+
+export const conditionFactory = Factory.define<Condition>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    action: associations.action || "INCLUDE",
+    sql_input: associations.sql_input || sqlInputFactory.build().id,
+    input_group: associations.input_group || inputGroupFactory.build().id,
+    relation: associations.relation,
+    value: associations.value,
   })
 );
 
