@@ -1,5 +1,7 @@
 from unittest import mock
 
+import pytest
+
 from river.common.analyzer import Analyzer
 from river.common.analyzer.analysis import Analysis
 from river.common.analyzer.attribute import Attribute
@@ -10,6 +12,8 @@ from river.common.analyzer.sql_filter import SqlFilter
 from river.common.analyzer.sql_join import SqlJoin
 from river.common.database_connection.db_connection import DBConnection
 from river.extractor.query_builder import QueryBuilder
+
+pytestmark = pytest.mark.mimic
 
 
 def make_query_builder(analysis, pk_values=None):
@@ -32,18 +36,11 @@ def test_with_real_analysis(mimic_mapping, snapshot):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_sqlalchemy_query(mock_sha1):
+def test_sqlalchemy_query(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     attribute_a = Attribute(path="path", definition_id="string")
     input_group_a = InputGroup(id_="group", attribute=attribute_a)
