@@ -13,11 +13,11 @@ if [[ "$#" -gt 0 ]]; then
 else
   # Skip static files collection (not used)
   # python django/manage.py collectstatic --no-input
-  if [[ "${ENV}" == "dev" || "${ENV}" == "test" ]]; then
+  if [[ "${ENV}" == "testy" ]]; then
+    pytest tests -m "e2e"
+  elif [[ "${ENV}" == "dev" ]]; then
     python django/manage.py createsuperuser --no-input || echo "Skipping."
     python django/manage.py runserver 0.0.0.0:8000
-  elif [[ "${ENV}" == "testy" ]]; then
-    pytest tests -m "e2e"
   else
     export UWSGI_PROCESSES=${UWSGI_PROCESSES:-5}
     export UWSGI_THREADS=${UWSGI_THREADS:-4}
