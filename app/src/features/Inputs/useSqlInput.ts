@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
+import { useSnackbar } from "notistack";
 
 import {
   useApiSqlInputsCreateMutation,
@@ -26,6 +27,7 @@ const useSqlInput = ({
   sqlInput: Partial<SQLInput> | undefined,
   onChange: (sqlInput: Partial<SQLInput>) => void
 ] => {
+  const { enqueueSnackbar } = useSnackbar();
   const [sqlInput, setSqlInput] = useState<Partial<SQLInput> | undefined>(
     initialSqlInput
   );
@@ -52,12 +54,11 @@ const useSqlInput = ({
               }).unwrap();
           setSqlInput(sqlInput_);
         } catch (e) {
-          // TODO: use snackbar
-          console.error(e);
+          enqueueSnackbar(e.error, { variant: "error" });
         }
       } else setSqlInput(changedSqlInput);
     },
-    [createSqlInput, exists, partialUpdateSqlInput, sqlInput]
+    [createSqlInput, enqueueSnackbar, exists, partialUpdateSqlInput, sqlInput]
   );
 
   return [sqlInput, onChange];

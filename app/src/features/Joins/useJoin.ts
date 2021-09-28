@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
+import { useSnackbar } from "notistack";
 
 import {
   useApiJoinsCreateMutation,
@@ -26,6 +27,7 @@ const useJoin = ({
   join: Partial<Join> | undefined,
   onChange: (join: Partial<Join>) => void
 ] => {
+  const { enqueueSnackbar } = useSnackbar();
   const [join, setJoin] = useState<Partial<Join> | undefined>(initialJoin);
 
   const [createJoin] = useApiJoinsCreateMutation();
@@ -46,12 +48,11 @@ const useJoin = ({
               }).unwrap();
           setJoin(join_);
         } catch (e) {
-          // TODO: use snackbar
-          console.error(e);
+          enqueueSnackbar(e.error, { variant: "error" });
         }
       } else setJoin(_join);
     },
-    [join, createJoin, partialUpdateJoin, exists]
+    [exists, join, partialUpdateJoin, createJoin, enqueueSnackbar]
   );
 
   return [join, onChange];

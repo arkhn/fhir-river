@@ -8,8 +8,7 @@ import {
   makeStyles,
   CircularProgress,
 } from "@material-ui/core";
-// FIXME: error management
-// import { useSnackbar } from "notistack";
+import { useSnackbar } from "notistack";
 
 import ColumnSelects from "features/Columns/ColumnSelect";
 import SqlInputJoinList from "features/Joins/SqlInputJoinList";
@@ -70,8 +69,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const classes = useStyles();
-  // FIXME: error management
-  // const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const mapping = useCurrentMapping();
 
@@ -99,8 +97,8 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
-    } catch (error) {
-      // TODO: Handle errors nicely
+    } catch (e) {
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 
@@ -111,8 +109,8 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
           id: column.id,
           columnRequest: column as Column,
         }).unwrap();
-      } catch (error) {
-        // TODO: Handle errors nicely
+      } catch (e) {
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     }
     setInputColumn({ ...column });

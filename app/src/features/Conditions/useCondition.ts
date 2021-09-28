@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
+import { useSnackbar } from "notistack";
 
 import {
   useApiConditionsCreateMutation,
@@ -26,6 +27,7 @@ const useCondition = ({
   condition: Partial<Condition> | undefined,
   onChange: (condition: Partial<Condition>) => void
 ] => {
+  const { enqueueSnackbar } = useSnackbar();
   const [condition, setCondition] = useState<Partial<Condition> | undefined>(
     initialCondition
   );
@@ -53,12 +55,17 @@ const useCondition = ({
               }).unwrap();
           setCondition(condition_);
         } catch (e) {
-          // TODO: use snackbar
-          console.error(e);
+          enqueueSnackbar(e.error, { variant: "error" });
         }
       } else setCondition(_condition);
     },
-    [condition, createCondition, partialUpdateCondition, exists]
+    [
+      exists,
+      condition,
+      partialUpdateCondition,
+      createCondition,
+      enqueueSnackbar,
+    ]
   );
 
   return [condition, onChange];
