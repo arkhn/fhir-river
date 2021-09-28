@@ -9,13 +9,19 @@ import {
 import type { Column } from "services/api/generated/api.generated";
 
 type UseColumnProps = {
+  /**
+   * Initial column value
+   */
   initialColumn?: Partial<Column>;
-  hasRetrieveStarted?: boolean;
+  /**
+   * Specifies if the object already exists in the backend
+   */
+  exists?: boolean;
 };
 
 const useColumn = ({
   initialColumn,
-  hasRetrieveStarted,
+  exists,
 }: UseColumnProps): [
   column: Partial<Column> | undefined,
   onChange: (column: Partial<Column>) => void
@@ -32,7 +38,7 @@ const useColumn = ({
       const isColumnPartial =
         !_column.owner || !_column.table || !_column.column;
       if (
-        (!hasRetrieveStarted || column) &&
+        (!exists || column) &&
         !isColumnPartial &&
         !isEqual(_column, column)
       ) {
@@ -50,7 +56,7 @@ const useColumn = ({
         }
       } else setColumn(_column);
     },
-    [column, createColumn, hasRetrieveStarted, partialUpdateColumn]
+    [column, createColumn, exists, partialUpdateColumn]
   );
 
   return [column, onChange];

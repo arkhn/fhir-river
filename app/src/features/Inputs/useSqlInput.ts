@@ -9,13 +9,19 @@ import {
 import type { SQLInput } from "services/api/generated/api.generated";
 
 type UseSqlInputProps = {
+  /**
+   * Initial join value
+   */
   initialSqlInput?: Partial<SQLInput>;
-  hasRetrieveStarted?: boolean;
+  /**
+   * Specifies if the object already exists in the backend
+   */
+  exists?: boolean;
 };
 
 const useSqlInput = ({
   initialSqlInput,
-  hasRetrieveStarted,
+  exists,
 }: UseSqlInputProps): [
   sqlInput: Partial<SQLInput> | undefined,
   onChange: (sqlInput: Partial<SQLInput>) => void
@@ -31,7 +37,7 @@ const useSqlInput = ({
     async (changedSqlInput: Partial<SQLInput>) => {
       const isSqlInputPartial = !changedSqlInput.column;
       if (
-        (!hasRetrieveStarted || sqlInput) &&
+        (!exists || sqlInput) &&
         !isSqlInputPartial &&
         !isEqual(changedSqlInput, sqlInput)
       ) {
@@ -51,7 +57,7 @@ const useSqlInput = ({
         }
       } else setSqlInput(changedSqlInput);
     },
-    [createSqlInput, hasRetrieveStarted, partialUpdateSqlInput, sqlInput]
+    [createSqlInput, exists, partialUpdateSqlInput, sqlInput]
   );
 
   return [sqlInput, onChange];
