@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -17,12 +17,12 @@ import {
   usePopupState,
 } from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 
 import Button from "common/components/Button";
 import Condition from "features/Conditions/Condition";
 import SqlInput from "features/Inputs/SqlInput";
 import StaticInput from "features/Inputs/StaticInput";
+import useCurrentMapping from "features/Mappings/useCurrentMapping";
 import MergingScript from "features/Scripts/MergingScript";
 import {
   useApiInputGroupsDestroyMutation,
@@ -33,7 +33,6 @@ import {
   useApiConditionsListQuery,
   useApiInputGroupsUpdateMutation,
   useApiColumnsCreateMutation,
-  useApiResourcesRetrieveQuery,
   useApiConditionsDestroyMutation,
 } from "services/api/endpoints";
 import type {
@@ -45,7 +44,7 @@ import type {
 
 type AttributeInputGroupProps = {
   inputGroup: InputGroup;
-  isConditionRequired: boolean;
+  inputGroupIndex: number;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -82,20 +81,16 @@ const useStyles = makeStyles((theme) => ({
 
 const AttributeInputGroup = ({
   inputGroup,
-}: // FIXME: isConditionRequired ?
-AttributeInputGroupProps): JSX.Element => {
+  inputGroupIndex,
+}: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const popupState = usePopupState({
     variant: "popover",
     popupId: "popup",
   });
-  const { mappingId } = useParams<{ mappingId?: string }>();
 
-  const { data: mapping } = useApiResourcesRetrieveQuery(
-    { id: mappingId ?? "" },
-    { skip: !mappingId }
-  );
+  const mapping = useCurrentMapping();
 
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
   const [updateInputGroups] = useApiInputGroupsUpdateMutation();
@@ -134,7 +129,10 @@ AttributeInputGroupProps): JSX.Element => {
     );
   }, [isSqlInputsLoading, isStaticInputsLoading, sqlInputs, staticInputs]);
 
-  const { data: apiConditions } = useApiConditionsListQuery({
+  const {
+    data: apiConditions,
+    isSuccess: hasApiConditionsLoaded,
+  } = useApiConditionsListQuery({
     inputGroup: inputGroup.id,
   });
 
@@ -162,13 +160,32 @@ AttributeInputGroupProps): JSX.Element => {
     }
   };
 
-  const handleCreateCondition = () => {
+  const handleCreateCondition = useCallback(() => {
     const newCondition: Partial<ConditionType> = {
       input_group: inputGroup.id,
       action: "INCLUDE",
     };
     setConditions([...conditions, newCondition]);
-  };
+  }, [conditions, inputGroup.id]);
+
+  // Auto-create a condition when none exists for InputGroups with index > 0
+  useEffect(() => {
+    const isInputGroupConditionsEmpty =
+      apiConditions?.length === 0 && conditions.length === 0;
+    if (
+      hasApiConditionsLoaded &&
+      isInputGroupConditionsEmpty &&
+      inputGroupIndex > 0
+    ) {
+      handleCreateCondition();
+    }
+  }, [
+    apiConditions?.length,
+    conditions.length,
+    handleCreateCondition,
+    hasApiConditionsLoaded,
+    inputGroupIndex,
+  ]);
 
   const handleMenuClick = (e: React.MouseEvent<HTMLButtonElement>) =>
     popupState.open(e);
