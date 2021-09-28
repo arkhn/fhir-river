@@ -84,7 +84,7 @@ const FhirAttributePanel = (): JSX.Element => {
                 <AttributeInputGroup
                   key={inputGroup.id}
                   inputGroup={inputGroup}
-                  isConditionRequired={index > 0}
+                  inputGroupIndex={index}
                 />
               ))}
           </Grid>
