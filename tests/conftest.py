@@ -32,8 +32,22 @@ def load_export_data(path: Path) -> dict:
         return json.loads(f.read())
 
 
+MIMIC_CREDENTIALS = {
+    "host": os.environ.get("MIMIC_HOST", "mimic"),
+    "port": int(os.environ.get("MIMIC_PORT", 5432)),
+    "database": os.environ.get("MIMIC_DB", "mimic"),
+    "login": os.environ.get("MIMIC_LOGIN", "mimic"),
+    "password": os.environ.get("MIMIC_PASSWORD", "mimic"),
+    "model": "POSTGRES",
+}
+
+
+@pytest.fixture
+def mimic_credentials():
+    return MIMIC_CREDENTIALS
+
+
 def load_mapping(path: Path) -> dict:
     data = load_export_data(path)
-    if os.environ.get("ENV") == "dev":
-        data["credential"] = {**data["credential"], "host": "localhost", "port": 15432}
+    data["credential"] = {**data["credential"], **MIMIC_CREDENTIALS}
     return data

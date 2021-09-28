@@ -127,15 +127,3 @@ def load_concept_map(concept_map):
 @pytest.fixture
 def mimic_mapping():
     return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
-
-
-@pytest.fixture
-def mimic_credentials():
-    return {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }

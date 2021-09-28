@@ -17,9 +17,9 @@ services:
     ports:
       - 15432:5432
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: test
+      POSTGRES_USER: mimic
+      POSTGRES_PASSWORD: mimic
+      POSTGRES_DB: mimic
     volumes:
       - mimic-data:/var/lib/postgresql/data
 
@@ -61,6 +61,12 @@ services:
       - TEST_MSSQL_DB
       - TEST_MSSQL_LOGIN
       - TEST_MSSQL_PASSWORD
+
+      - MIMIC_HOST=mimic
+      - MIMIC_PORT=5432
+      - MIMIC_DB=mimic
+      - MIMIC_LOGIN=mimic
+      - MIMIC_PASSWORD=mimic
 
       - DEBUG=True
       - SECRET_KEY=USE_IN_TESTS_ONLY
