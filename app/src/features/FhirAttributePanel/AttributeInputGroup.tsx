@@ -16,6 +16,7 @@ import {
   bindTrigger,
   usePopupState,
 } from "material-ui-popup-state/hooks";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
@@ -84,6 +85,7 @@ const AttributeInputGroup = ({
   inputGroupIndex,
 }: AttributeInputGroupProps): JSX.Element => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const popupState = usePopupState({
     variant: "popover",
@@ -156,7 +158,7 @@ const AttributeInputGroup = ({
         id: inputGroup.id,
       }).unwrap();
     } catch (e) {
-      // TODO: handle errors nicely
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 
@@ -206,8 +208,8 @@ const AttributeInputGroup = ({
             column: inputColumn.id,
           },
         }).unwrap();
-      } catch (error) {
-        // TODO: handle error nicely
+      } catch (e) {
+        enqueueSnackbar(e.error, { variant: "error" });
       }
       popupState.close();
     }

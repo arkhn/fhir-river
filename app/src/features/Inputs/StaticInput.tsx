@@ -4,6 +4,7 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
@@ -63,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 
 const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
@@ -77,11 +79,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     { skip: !sourceId }
   );
   const currentMapping = useMemo(
-    () =>
-      mappings?.resources?.find(
-        // TODO : Fix Resource type by adding it {id: string} in river-schema.yml
-        (resource) => resource.id === mappingId
-      ),
+    () => mappings?.resources?.find((resource) => resource.id === mappingId),
     [mappings, mappingId]
   );
   const selectedNode = useGetSelectedNode();
@@ -91,8 +89,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
-    } catch (error) {
-      // TODO: Handle errors nicely
+    } catch (e) {
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 
@@ -109,8 +107,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           id: input.id,
           staticInputRequest: { ...input, value: staticValue },
         });
-      } catch (error) {
-        // TODO: Handle errors nicely
+      } catch (e) {
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     }
   };
@@ -124,8 +122,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           staticInputRequest: { ...input, value: staticValue },
         });
         setStaticValue(staticValue);
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     }
   };
@@ -137,8 +135,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           id: input.id,
           staticInputRequest: { ...input, value },
         });
-      } catch (error) {
-        // TODO: Handle errors nicely
+      } catch (e) {
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     }
   };
