@@ -92,12 +92,7 @@ def export_data(request):
     return load_mapping(DATA_FIXTURES_DIR / marker.args[0])
 
 
-@pytest.fixture
-def mimic_mapping():
-    return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
-
-
-@pytest.fixture
+@pytest.fixture(scope="session")
 def structure_definitions() -> list:
     data = load_export_data(DATA_FIXTURES_DIR / "structure_definitions_bundle.json")
     return [item["resource"] for item in data["entry"]]
@@ -118,12 +113,29 @@ def concept_map():
     }
 
 
+@pytest.fixture(autouse=True, scope="session")
+def load_structure_definitions(structure_definitions):
+    for structure_definition in structure_definitions:
+        fhir_api.create("StructureDefinition", structure_definition)
+
+
 @pytest.fixture(autouse=True)
 def load_concept_map(concept_map):
     fhir_api.create("ConceptMap", concept_map)
 
 
-@pytest.fixture(autouse=True)
-def load_structure_definitions(structure_definitions):
-    for structure_definition in structure_definitions:
-        fhir_api.create("StructureDefinition", structure_definition)
+@pytest.fixture
+def mimic_mapping():
+    return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
+
+
+@pytest.fixture
+def mimic_credentials():
+    return {
+        "host": "mimic",
+        "port": 5432,
+        "database": "test",
+        "login": "test",
+        "password": "test",
+        "model": "POSTGRES",
+    }

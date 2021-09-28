@@ -124,18 +124,11 @@ def test_sqlalchemy_query(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_2hop_joins(mock_sha1):
+def test_2hop_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)
@@ -175,18 +168,11 @@ def test_2hop_joins(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_1and2hop_joins(mock_sha1):
+def test_1and2hop_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)
@@ -240,18 +226,11 @@ def test_1and2hop_joins(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_duplicated_joins(mock_sha1):
+def test_duplicated_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     attribute_a = Attribute(path="path", definition_id="string")
     input_group_a = InputGroup(id_="group", attribute=attribute_a)
@@ -325,18 +304,11 @@ def test_duplicated_joins(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_apply_filters(mock_sha1):
+def test_apply_filters(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.add_filter(SqlFilter(SqlColumn("public", "admissions", "admittime"), "LIKE", "2150-08-29"))
@@ -367,18 +339,11 @@ def test_apply_filters(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_apply_filters_single_value(mock_sha1):
+def test_apply_filters_single_value(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
 
@@ -397,18 +362,11 @@ def test_apply_filters_single_value(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_filters_with_joins(mock_sha1):
+def test_filters_with_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.add_filter(
@@ -442,18 +400,11 @@ def test_filters_with_joins(mock_sha1):
 
 
 @mock.patch("river.common.analyzer.sql_column.hashlib.sha1")
-def test_conditions_with_joins(mock_sha1):
+def test_conditions_with_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = {
-        "host": "mimic",
-        "port": 5432,
-        "database": "test",
-        "login": "test",
-        "password": "test",
-        "model": "POSTGRES",
-    }
+    analysis.source_credentials = mimic_credentials
 
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)
