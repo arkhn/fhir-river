@@ -18,8 +18,10 @@ e2e-tests: setup-e2e-tests run-e2e-tests
 setup-e2e-tests:
 	docker-compose -f $(docker-compose-e2e) up -d --build
 	./scripts/wait-for-postgres.sh localhost 15432 test
+	./scripts/wait-for-webservice.sh http://localhost:8080/hapi
 	docker-compose -f $(docker-compose-e2e) exec -T jpaltime \
-		java -jar /app/hapi-fhir-cli.jar upload-definitions -v r4 -t http://localhost:8080/fhir
+		java -jar /app/hapi-fhir-cli.jar upload-definitions -v r4 -t http://localhost:8080/hapi/fhir
+	docker-compose -f $(docker-compose-e2e) run river-api migrate
 
 run-e2e-tests:
 	$(eval markers := $(skip_markers) $(if $(skip_markers), and) e2e)

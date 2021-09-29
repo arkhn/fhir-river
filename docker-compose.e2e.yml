@@ -18,7 +18,7 @@ x-service-env: &service-env
   - REDIS_HOST=redis
   - REDIS_PORT=6379
   - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-  - FHIR_API_URL=http://jpaltime:8080/fhir
+  - FHIR_API_URL=http://jpaltime:8080/hapi/fhir
 
 services:
   river-api:

@@ -35,3 +35,6 @@ hapi:
     allow_external_references: false
     allow_multiple_delete: false
     allow_inline_match_url_references: true
+
+elasticsearch:
+  enabled: false
