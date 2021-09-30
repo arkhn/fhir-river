@@ -162,6 +162,7 @@ const ColumnSelects = ({
           onChange={handleOwnerTableChange}
           selectOnFocus
           openOnFocus
+          data-testid="table_input"
           clearOnBlur
           disableClearable
           handleHomeEndKeys
@@ -201,6 +202,7 @@ const ColumnSelects = ({
           clearOnBlur
           disableClearable
           handleHomeEndKeys
+          data-testid="column_input"
           renderInput={(params) => (
             <TextField
               {...params}
