@@ -41,13 +41,6 @@ class SourceViewSet(viewsets.ModelViewSet):
     def export_mapping(self, request, pk=None):
         return self.retrieve(request)
 
-    def get_queryset(self):
-        """Limit visibility of sources."""
-        if self.request.user.is_superuser:
-            return self.queryset
-
-        return self.queryset.filter(users=self.request.user)
-
     def perform_create(self, serializer):
         """Try to assign a owner to the new source."""
 
