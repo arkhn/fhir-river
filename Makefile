@@ -1,4 +1,4 @@
-docker-compose-e2e = ./docker-compose.e2e.yml
+docker-compose-e2e = ./e2e/docker-compose.yml
 docker-compose-unit-tests = ./docker-compose.test.yml
 
 skip_markers ?=
@@ -25,4 +25,4 @@ setup-e2e-tests:
 
 run-e2e-tests:
 	$(eval markers := $(skip_markers) $(if $(skip_markers), and) e2e)
-	docker-compose -f $(docker-compose-e2e) exec -T river-api pytest tests -m "$(markers)"
+	docker-compose -f $(docker-compose-e2e) run --entrypoint pytest river-api tests -m "$(markers)"
