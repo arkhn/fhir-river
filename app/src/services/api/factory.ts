@@ -13,6 +13,7 @@ import {
   SQLInput,
   InputGroup,
   Condition,
+  Join,
 } from "./generated/api.generated";
 
 export const sourceFactory = Factory.define<Source>(({ sequence }) => ({
@@ -43,7 +44,7 @@ export const ownerFactory = Factory.define<Owner>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     name: "public",
-    schema: { table: ["column"] },
+    schema: associations.schema || { table: ["column"] },
     credential: associations.credential || credentialFactory.build().id,
   })
 );
@@ -120,6 +121,17 @@ export const conditionFactory = Factory.define<Condition>(
     input_group: associations.input_group || inputGroupFactory.build().id,
     relation: associations.relation,
     value: associations.value,
+  })
+);
+
+export const joinFactory = Factory.define<Join>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    sql_input: associations.sql_input || sqlInputFactory.build().id,
+    left: associations.left || sqlInputFactory.build().id,
+    right: associations.right || sqlInputFactory.build().id,
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
   })
 );
 
