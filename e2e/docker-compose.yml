@@ -1,8 +1,7 @@
 version: "3.7"
 
 x-service-env: &service-env
-  - ENV=test
-  - DEBUG=False
+  - DEBUG=True
   - LOG_LEVEL=DEBUG
   - SECRET_KEY=USE_IN_TESTS_ONLY
   - ALLOWED_HOSTS=*
@@ -23,45 +22,47 @@ x-service-env: &service-env
 services:
   river-api:
     image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
-    build: .
+    build: ..
     environment: *service-env
+    ports:
+      - 8000:8000
     volumes:
-      - ./django:/srv/django
-      - ./tests:/srv/tests
+      - ../django:/srv/django
+      - ../tests:/srv/tests
 
   extractor:
     image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
-    build: .
+    build: ..
     command: extractor
     environment: *service-env
     volumes:
-      - ./django:/srv/django
-      - ./tests:/srv/tests
+      - ../django:/srv/django
+      - ../tests:/srv/tests
 
   transformer:
     image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
-    build: .
+    build: ..
     command: transformer
     environment: *service-env
     volumes:
-      - ./django:/srv/django
-      - ./tests:/srv/tests
+      - ../django:/srv/django
+      - ../tests:/srv/tests
 
   topicleaner:
     image: arkhn/river:${RIVER_IMAGE_TAG:-latest}
-    build: .
+    build: ..
     command: topicleaner
     environment: *service-env
     volumes:
-      - ./django:/srv/django
-      - ./tests:/srv/tests
+      - ../django:/srv/django
+      - ../tests:/srv/tests
 
   loader:
     image: arkhn/hapi-river:${RIVER_IMAGE_TAG:-latest}
-    build: ./hapi-loader
+    build: ../hapi-loader
     restart: on-failure
     volumes:
-      - ./hapi-loader/application.e2e.yaml:/app/application.yaml
+      - ./application.loader.yaml:/app/application.yaml
 
   jpaltime:
     image: arkhn/jpaltime:${JPALTIME_IMAGE_TAG:-latest}
@@ -69,7 +70,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./application.jpaltime.e2e.yaml:/opt/hapi/application.yaml
+      - ./application.jpaltime.yaml:/opt/hapi/application.yaml
     environment:
       - SPRING_CONFIG_LOCATION=file:///opt/hapi/application.yaml
       - JDK_JAVA_OPTIONS=-Xmx4g

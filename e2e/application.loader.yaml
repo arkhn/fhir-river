@@ -8,7 +8,7 @@ spring:
     properties:
       hibernate:
         search:
-          enabled: false
+          enabled: true
   redis:
     host: redis
     port: 6379
