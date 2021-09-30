@@ -83,20 +83,14 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
   const classes = useStyles();
   const mapping = useCurrentMapping();
 
-  const {
-    data: apiConditionSqlInput,
-    isUninitialized: isSqlInputUninitialized,
-  } = useApiSqlInputsRetrieveQuery(
+  const { data: apiConditionSqlInput } = useApiSqlInputsRetrieveQuery(
     {
       id: condition.sql_input ?? "",
     },
     { skip: !condition.sql_input }
   );
 
-  const {
-    data: apiConditionColumn,
-    isUninitialized: isColumnUninitialized,
-  } = useApiColumnsRetrieveQuery(
+  const { data: apiConditionColumn } = useApiColumnsRetrieveQuery(
     {
       id: apiConditionSqlInput?.column ?? "",
     },
@@ -105,7 +99,7 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
 
   const [conditionColumn, setConditionColumn] = useColumn({
     initialColumn: apiConditionColumn,
-    exists: !isColumnUninitialized,
+    exists: apiConditionSqlInput?.column !== undefined,
   });
   // As soon as the condition column is fetched, we set its value
   useEffect(() => {
@@ -115,7 +109,7 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
 
   const [sqlInput, setSqlInput] = useSqlInput({
     initialSqlInput: apiConditionSqlInput,
-    exists: !isSqlInputUninitialized,
+    exists: condition.sql_input !== undefined,
   });
   // As soon as the condition sql input is fetched, we set its value
   useEffect(() => {

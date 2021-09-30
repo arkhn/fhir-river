@@ -16,21 +16,18 @@ type JoinProps = {
 };
 
 const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
-  const {
-    data: apiLeftColumn,
-    isUninitialized: isLeftColumnUninitialized,
-  } = useApiColumnsRetrieveQuery({ id: join.left ?? "" }, { skip: !join.left });
-  const {
-    data: apiRightColumn,
-    isUninitialized: isRightColumnUninitialized,
-  } = useApiColumnsRetrieveQuery(
+  const { data: apiLeftColumn } = useApiColumnsRetrieveQuery(
+    { id: join.left ?? "" },
+    { skip: !join.left }
+  );
+  const { data: apiRightColumn } = useApiColumnsRetrieveQuery(
     { id: join.right ?? "" },
     { skip: !join.right }
   );
 
   const [leftColumn, setLeftColumn] = useColumn({
     initialColumn: apiLeftColumn,
-    exists: !isLeftColumnUninitialized,
+    exists: join.left !== undefined,
   });
   // As soon as the left column is fetched, we set its value
   useEffect(() => {
@@ -39,7 +36,7 @@ const Join = ({ join, onDelete }: JoinProps): JSX.Element => {
 
   const [rightColumn, setRightColumn] = useColumn({
     initialColumn: apiRightColumn,
-    exists: !isRightColumnUninitialized,
+    exists: join.right !== undefined,
   });
   // As soon as the right column is fetched, we set its value
   useEffect(() => {
