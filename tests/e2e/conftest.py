@@ -55,7 +55,11 @@ def uploaded_mapping(mappings):
         len([resource["id"] for resource in created_mapping["resources"]]) > 0
     ), f"no resource ids in mapping: {created_mapping}"
 
-    return created_mapping
+    yield created_mapping
+    response = requests.delete(f"{settings.RIVER_API_URL}/sources/{created_mapping['id']}/", json=mappings)
+    assert (
+        response.status_code == 201
+    ), f"api DELETE /sources/{created_mapping['id']}/ returned an error: {response.text}"
 
 
 @pytest.fixture(scope="session")
