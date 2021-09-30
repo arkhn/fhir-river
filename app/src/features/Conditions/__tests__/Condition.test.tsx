@@ -28,16 +28,20 @@ import {
 
 import Condition from "../Condition";
 
-const mapping = resourceFactory.build();
+const mapping = resourceFactory.build({
+  primary_key_owner: "public",
+  primary_key_table: "table",
+  primary_key_column: "column",
+});
 const credential = credentialFactory.build();
 const owner = ownerFactory.build(
   {},
   { associations: { credential: credential.id } }
 );
 const column = columnFactory.build({
-  column: "column",
-  table: "table",
-  owner: "public",
+  column: mapping.primary_key_column,
+  table: mapping.primary_key_table,
+  owner: mapping.primary_key_owner,
 });
 const sqlInput = sqlInputFactory.build({ column: column.id });
 const inputGroup = inputGroupFactory.build({});
@@ -145,20 +149,18 @@ describe("Condition creation", () => {
     await screen.findByText(/condition/i);
 
     // column table selection
-    userEvent.click(await screen.findByPlaceholderText(/select table/i));
+    userEvent.click(screen.getByTestId("table_input"));
     userEvent.click(await screen.findByRole("option", { name: /^table$/i }));
 
     // column column selection
-    userEvent.click(await screen.findByPlaceholderText(/select column/i));
+    userEvent.click(screen.getByTestId("column_input"));
     userEvent.click(await screen.findByRole("option", { name: /^column$/i }));
 
-    userEvent.click(await screen.findByText(/select operation/i));
-    userEvent.click(await screen.findByRole("option", { name: /<=/i }));
+    userEvent.click(screen.getByText(/select operation/i));
+    userEvent.click(screen.getByRole("option", { name: /<=/i }));
 
     await screen.findByRole("button", { name: /<=/i });
-
-    const valueInput = screen.getByPlaceholderText(/type value/i);
-    userEvent.type(valueInput, "toto");
-    valueInput.blur();
+    expect(screen.getByDisplayValue("table")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("column")).toBeInTheDocument();
   });
 });
