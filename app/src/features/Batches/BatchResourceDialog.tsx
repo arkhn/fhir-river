@@ -127,7 +127,9 @@ const BatchResourceDialog = ({
   };
 
   const handleSelectAllClick = () => {
-    if (areAllDisplayedResourcesSelected || isCheckboxIndeterminate) {
+    if (displayedResourcesIds && selectedResourceIds.length === 0) {
+      setSelectedResourceIds(displayedResourcesIds);
+    } else if (areAllDisplayedResourcesSelected || isCheckboxIndeterminate) {
       const resourcesIdsToKeep = selectedResourceIds.filter(
         (id) => !displayedResourcesIds?.includes(id)
       );

@@ -32,6 +32,7 @@
     "js-cookie": "^2.2.1",
     "lodash": "^4.17.21",
     "material-ui-popup-state": "^1.8.3",
+    "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "notistack": "^1.0.10",
     "react": "^17.0.1",
