@@ -44,7 +44,7 @@ const useSqlInput = ({
         !isEqual(changedSqlInput, sqlInput)
       ) {
         try {
-          const sqlInput_ = changedSqlInput.id
+          const apiSqlInput = changedSqlInput.id
             ? await partialUpdateSqlInput({
                 id: changedSqlInput.id,
                 patchedSqlInputRequest: changedSqlInput,
@@ -52,7 +52,7 @@ const useSqlInput = ({
             : await createSqlInput({
                 sqlInputRequest: changedSqlInput as SQLInput,
               }).unwrap();
-          setSqlInput(sqlInput_);
+          setSqlInput(apiSqlInput);
         } catch (e) {
           enqueueSnackbar(e.error, { variant: "error" });
         }

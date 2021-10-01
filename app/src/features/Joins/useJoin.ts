@@ -34,23 +34,24 @@ const useJoin = ({
   const [partialUpdateJoin] = useApiJoinsPartialUpdateMutation();
 
   const onChange = useCallback(
-    async (_join: Partial<Join>) => {
-      const isJoinPartial = !_join.left || !_join.right || !_join.sql_input;
-      if ((!exists || join) && !isJoinPartial && !isEqual(_join, join)) {
+    async (changedJoin: Partial<Join>) => {
+      const isJoinPartial =
+        !changedJoin.left || !changedJoin.right || !changedJoin.sql_input;
+      if ((!exists || join) && !isJoinPartial && !isEqual(changedJoin, join)) {
         try {
-          const join_ = _join.id
+          const apiJoin = changedJoin.id
             ? await partialUpdateJoin({
-                id: _join.id,
-                patchedJoinRequest: _join,
+                id: changedJoin.id,
+                patchedJoinRequest: changedJoin,
               }).unwrap()
             : await createJoin({
-                joinRequest: _join as Join,
+                joinRequest: changedJoin as Join,
               }).unwrap();
-          setJoin(join_);
+          setJoin(apiJoin);
         } catch (e) {
           enqueueSnackbar(e.error, { variant: "error" });
         }
-      } else setJoin(_join);
+      } else setJoin(changedJoin);
     },
     [exists, join, partialUpdateJoin, createJoin, enqueueSnackbar]
   );

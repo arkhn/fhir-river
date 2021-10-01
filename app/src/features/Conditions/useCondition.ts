@@ -36,28 +36,30 @@ const useCondition = ({
   const [partialUpdateCondition] = useApiConditionsPartialUpdateMutation();
 
   const onChange = useCallback(
-    async (_condition: Partial<Condition>) => {
+    async (changedCondition: Partial<Condition>) => {
       const isConditionPartial =
-        !_condition.action || !_condition.sql_input || !_condition.input_group;
+        !changedCondition.action ||
+        !changedCondition.sql_input ||
+        !changedCondition.input_group;
       if (
         (!exists || condition) &&
         !isConditionPartial &&
-        !isEqual(_condition, condition)
+        !isEqual(changedCondition, condition)
       ) {
         try {
-          const condition_ = _condition.id
+          const apiCondition = changedCondition.id
             ? await partialUpdateCondition({
-                id: _condition.id,
-                patchedConditionRequest: _condition,
+                id: changedCondition.id,
+                patchedConditionRequest: changedCondition,
               }).unwrap()
             : await createCondition({
-                conditionRequest: _condition as Condition,
+                conditionRequest: changedCondition as Condition,
               }).unwrap();
-          setCondition(condition_);
+          setCondition(apiCondition);
         } catch (e) {
           enqueueSnackbar(e.error, { variant: "error" });
         }
-      } else setCondition(_condition);
+      } else setCondition(changedCondition);
     },
     [
       exists,
