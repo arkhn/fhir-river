@@ -125,9 +125,8 @@ const AttributeInputGroup = ({
     }
     if (!sqlInputs) return staticInputs;
     if (!staticInputs) return sqlInputs;
-    // FIXME: DATE
     return [...sqlInputs, ...staticInputs].sort(
-      (a, b) => +b.created_at - +a.created_at
+      (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
     );
   }, [isSqlInputsLoading, isStaticInputsLoading, sqlInputs, staticInputs]);
 
