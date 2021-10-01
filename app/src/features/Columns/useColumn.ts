@@ -36,26 +36,28 @@ const useColumn = ({
   const [partialUpdateColumn] = useApiColumnsPartialUpdateMutation();
 
   const onChange = useCallback(
-    async (_column: Partial<Column>) => {
+    async (changedColumn: Partial<Column>) => {
       const isColumnPartial =
-        !_column.owner || !_column.table || !_column.column;
+        !changedColumn.owner || !changedColumn.table || !changedColumn.column;
       if (
         (!exists || column) &&
         !isColumnPartial &&
-        !isEqual(_column, column)
+        !isEqual(changedColumn, column)
       ) {
         try {
-          const column_ = _column.id
+          const apiColumn = changedColumn.id
             ? await partialUpdateColumn({
-                id: _column.id,
-                patchedColumnRequest: _column,
+                id: changedColumn.id,
+                patchedColumnRequest: changedColumn,
               }).unwrap()
-            : await createColumn({ columnRequest: _column as Column }).unwrap();
-          setColumn(column_);
+            : await createColumn({
+                columnRequest: changedColumn as Column,
+              }).unwrap();
+          setColumn(apiColumn);
         } catch (e) {
           enqueueSnackbar(e.error, { variant: "error" });
         }
-      } else setColumn(_column);
+      } else setColumn(changedColumn);
     },
     [column, createColumn, enqueueSnackbar, exists, partialUpdateColumn]
   );
