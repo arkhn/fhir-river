@@ -89,7 +89,13 @@ const useFhirResourceTreeData = (
     // Else, we need to populate children DefinitionNode
     else if (structureDefinition?.snapshot) {
       let elementDefinitions = structureDefinition.snapshot.element;
-      // Prefix paths with node definition's path
+      /**
+       * Prefix paths with node definition's path
+       * ie: structureDefinition of Reference
+       * root definition node is of Observation type
+       * We change Reference elementDefintion path/ids to prefix those with Observation paths
+       * Reference.type => Observation.reference.type
+       */
       if (nodeDefinition) {
         elementDefinitions = elementDefinitions.map((elementDefinition) => ({
           ...elementDefinition,
@@ -180,9 +186,8 @@ const useFhirResourceTreeData = (
 
   // Trigger NodeElement tree building when DefinitionNode tree changes
   useEffect(() => {
-    const isNodeEitherRootOrDoesNotHaveChildren =
-      !node || node.children.length === 0;
-    if (data && isNodeEitherRootOrDoesNotHaveChildren) {
+    const isNodeRootOrChildless = !node || node.children.length === 0;
+    if (data && isNodeRootOrChildless) {
       dispatch(
         rootElementNodeUpdated({
           rootNodeDefinition: data,

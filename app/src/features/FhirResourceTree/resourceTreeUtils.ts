@@ -139,10 +139,7 @@ export const createElementNode = (
   );
   const elementName = `${definition.id?.split(".").pop()}`;
   return {
-    id:
-      `${nodeDefinition.definition.id}${
-        index !== undefined ? `[${index}]` : ""
-      }` ?? uuid(),
+    id: `${definition.id}${index !== undefined ? `[${index}]` : ""}` ?? uuid(),
     name: elementName,
     children: [],
     path: elementPath,
@@ -306,7 +303,7 @@ export const buildTree = (
   });
   const isCurrentNodeRoot = !currentNode.path.includes(".");
 
-  // If current nodeDefinition has slices, we add them to its children
+  // If current nodeDefinition has slices, we add them as slice items
   nodeDefinition.sliceDefinitions.forEach((sliceDefinition, index) => {
     if (
       sliceDefinition.definition.max &&
@@ -341,17 +338,18 @@ export const buildTree = (
     });
   }
 
-  if (parentElementNode) {
-    const isParentRoot = !parentElementNode.path.includes(".");
+  const isParentRoot =
+    parentElementNode !== undefined && !parentElementNode.path.includes(".");
 
-    // If parent is not of type array, we add its childrenDefinitions as children
-    if (!parentElementNode.isArray || isParentRoot) {
+  if (
+    parentElementNode === undefined ||
+    !parentElementNode.isArray ||
+    isParentRoot
+  ) {
+    if (parentElementNode !== undefined) {
       parentElementNode.children.push(currentNode);
-      nodeDefinition.childrenDefinitions.forEach((childDefinition) => {
-        buildTree(childDefinition, currentNode);
-      });
     }
-  } else {
+
     nodeDefinition.childrenDefinitions.forEach((childDefinition) =>
       buildTree(childDefinition, currentNode)
     );
@@ -361,25 +359,21 @@ export const buildTree = (
 };
 
 /**
- * Mutates the `rootNodeDefinition` parameter to set the whole DefinitionNode tree
+ * Mutates the `rootDefinitionNode` parameter to set the whole DefinitionNode tree
  * @param elementDefinitions Snapshot's elementDefinition array
- * @param rootNodeDefinition The DefinitionNode root of the tree
- * @param previousElementNodeDefinition
+ * @param rootDefinitionNode The DefinitionNode root of the tree
+ * @param previousDefinitionNode
  */
 export const buildTreeDefinition = (
   elementDefinitions: IElementDefinition[],
-  rootNodeDefinition: DefinitionNode,
-  previousElementNodeDefinition: DefinitionNode
+  rootDefinitionNode: DefinitionNode,
+  previousDefinitionNode: DefinitionNode
 ): void => {
   const [currentElementDefinition, ...rest] = elementDefinitions;
   if (!currentElementDefinition) return;
 
   if (isOmittedElement(currentElementDefinition)) {
-    buildTreeDefinition(
-      rest,
-      rootNodeDefinition,
-      previousElementNodeDefinition
-    );
+    buildTreeDefinition(rest, rootDefinitionNode, previousDefinitionNode);
     return;
   }
 
@@ -387,49 +381,56 @@ export const buildTreeDefinition = (
     currentElementDefinition
   );
 
-  if (
-    isSliceOf(
-      currentElementDefinition,
-      previousElementNodeDefinition.definition
-    )
-  ) {
-    previousElementNodeDefinition.sliceDefinitions.push(currentDefinitionNode);
-    buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+  /**
+   * currentElementDefinition path => Observation.category:VSCat
+   * previousDefinitionNode path => Observation.category
+   */
+  if (isSliceOf(currentElementDefinition, previousDefinitionNode.definition)) {
+    previousDefinitionNode.sliceDefinitions.push(currentDefinitionNode);
+    buildTreeDefinition(rest, rootDefinitionNode, currentDefinitionNode);
   } else if (
+    /**
+     * currentElementDefinition path => Observation.category.type
+     * previousDefinitionNode path => Observation.category
+     */
     isElementDefinitionChildOf(
       currentElementDefinition,
-      previousElementNodeDefinition.definition
+      previousDefinitionNode.definition
     )
   ) {
+    /**
+     * currentElementDefinition path => Observation.value[x]
+     */
     if (getKind(currentElementDefinition) === "choice") {
       currentDefinitionNode.childrenDefinitions = getChildrenChoicesDefinition(
         currentElementDefinition
       );
     }
 
+    /**
+     * previousDefinitionNode path => Observation.value[x]
+     */
     if (
-      getKind(previousElementNodeDefinition.definition) === "choice" &&
-      previousElementNodeDefinition.childrenDefinitions.length > 0
+      getKind(previousDefinitionNode.definition) === "choice" &&
+      previousDefinitionNode.childrenDefinitions.length > 0
     ) {
-      previousElementNodeDefinition.childrenDefinitions.forEach(
+      previousDefinitionNode.childrenDefinitions.forEach(
         (prevChildDefinition) => {
           prevChildDefinition.childrenDefinitions.push(currentDefinitionNode);
-          buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+          buildTreeDefinition(rest, rootDefinitionNode, currentDefinitionNode);
         }
       );
     } else {
-      previousElementNodeDefinition.childrenDefinitions.push(
-        currentDefinitionNode
-      );
-      buildTreeDefinition(rest, rootNodeDefinition, currentDefinitionNode);
+      previousDefinitionNode.childrenDefinitions.push(currentDefinitionNode);
+      buildTreeDefinition(rest, rootDefinitionNode, currentDefinitionNode);
     }
   } else {
     const parent = getDefinitionNodeParent(
-      previousElementNodeDefinition,
-      rootNodeDefinition
+      previousDefinitionNode,
+      rootDefinitionNode
     );
     if (parent)
-      buildTreeDefinition(elementDefinitions, rootNodeDefinition, parent);
+      buildTreeDefinition(elementDefinitions, rootDefinitionNode, parent);
   }
 };
 
