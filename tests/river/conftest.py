@@ -87,7 +87,7 @@ def clear_redis(request):
         request.addfinalizer(_clear_redis)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def structure_definitions() -> list:
     data = load_export_data(DATA_FIXTURES_DIR / "structure_definitions_bundle.json")
     return [item["resource"] for item in data["entry"]]
