@@ -130,7 +130,7 @@ _Warning_: the `django/` and `tests/` are mounted as volumes into a docker conta
 ### End-to-end
 
 The following command runs river services (`api`, `extractor`, `transformer`, `loader`, `topicleaner`) and dependencies (`kafka`, `zookeeper`, `postgres`, `jpaltime`, `mimic`, `redis`) inside docker with `docker-compose` (it might be a lot to ask for your poor laptop...). It then runs end-to-end tests inside a dedicated container.
-Basically, end-to-end tests consist in importing a mapping (mimic), running a full batch
+Basically, end-to-end tests consist in importing a mapping (mimic), running a full batch, waiting for the end of it and finally asserting that the result of the batch conforms to expectations.
 
 ```bash
 # Run end-to-end tests in docker
@@ -138,6 +138,10 @@ make e2e-tests
 ```
 
 This command executes 2 targets: `setup-e2e-tests` (that prepares all the container for the tests) and `run-e2e-tests` (that actually run the tests). Note that it may be more realiable to run e2e tests in 2 steps because some of the services may take a while to start.
+
+### End-to-end (using a remote environment)
+
+An alternative to running end-to-end tests locally in docker-compose is to run them against a remote environment (which is usually already deployed, making things much faster). [Follow the guide!](https://github.com/arkhn/deployment/blob/the-future/stack/documentation/testy.md#how-to-run-integration-tests-on-my-local-changes-) (this page is only accessible for Arkhn team members).
 
 ### OpenAPI schema generation
 
