@@ -106,14 +106,19 @@ Code quality is enforced with `pre-commit` hooks: `black`, `isort`, `flake8`
 pre-commit install
 ```
 
-### Tests
+## Tests
 
 ### Unit
 
 ```bash
 # Run tests in dedicated virtual env
-make unit-tests
+make unit-tests skip_markers=<skip_markers>
+
+# For instance
+make unit-tests skip_markers="not pagai"
 ```
+
+The `skip_markers` argument is here to skip some tests, you can use it as you would use pytest's `-m` flag.
 
 ---
 
@@ -131,6 +136,8 @@ Basically, end-to-end tests consist in importing a mapping (mimic), running a fu
 # Run end-to-end tests in docker
 make e2e-tests
 ```
+
+This command executes 2 targets: `setup-e2e-tests` (that prepares all the container for the tests) and `run-e2e-tests` (that actually run the tests). Note that it may be more realiable to run e2e tests in 2 steps because some of the services may take a while to start.
 
 ### OpenAPI schema generation
 
