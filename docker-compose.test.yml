@@ -38,6 +38,8 @@ services:
     # keep container alive for test commands with `docker-compose exec`
     command: tail -F anything
     environment:
+      - PYTHONDONTWRITEBYTECODE=1
+
       - TEST_ORACLE_11_HOST=ora11
       - TEST_ORACLE_11_PORT=1521
       - TEST_ORACLE_11_DB=xe
@@ -50,7 +52,7 @@ services:
       - TEST_POSTGRES_LOGIN=test
       - TEST_POSTGRES_PASSWORD=test
 
-      - TEST_ORACLE_HOST
+      - TEST_ORACLE_HOSTq
       - TEST_ORACLE_PORT
       - TEST_ORACLE_DB
       - TEST_ORACLE_LOGIN

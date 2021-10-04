@@ -58,7 +58,7 @@ def uploaded_mapping(mappings):
     yield created_mapping
     response = requests.delete(f"{settings.RIVER_API_URL}/sources/{created_mapping['id']}/", json=mappings)
     assert (
-        response.status_code == 201
+        response.status_code == 204
     ), f"api DELETE /sources/{created_mapping['id']}/ returned an error: {response.text}"
 
 
