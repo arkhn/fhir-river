@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
-import { Resource } from "services/api/generated/api.generated";
+import type { Resource } from "services/api/generated/api.generated";
 
 const useCurrentMapping = (): Resource | undefined => {
   const { mappingId } = useParams<{ mappingId?: Resource["id"] }>();

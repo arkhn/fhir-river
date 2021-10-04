@@ -63,6 +63,10 @@ This React-Redux project follows the overall [Redux style guide](https://redux.j
 
 [The more your tests resemble the way your software is used, the more confidence they can give you.](https://testing-library.com/docs/guiding-principles)
 
+### Naming guidelines
+https://github.com/kettanaito/naming-cheatsheet
+
+
 # App Dependencies
 
 ## [Redux ToolKit](https://redux-toolkit.js.org/)
