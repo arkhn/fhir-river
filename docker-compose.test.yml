@@ -52,7 +52,7 @@ services:
       - TEST_POSTGRES_LOGIN=test
       - TEST_POSTGRES_PASSWORD=test
 
-      - TEST_ORACLE_HOSTq
+      - TEST_ORACLE_HOST
       - TEST_ORACLE_PORT
       - TEST_ORACLE_DB
       - TEST_ORACLE_LOGIN
