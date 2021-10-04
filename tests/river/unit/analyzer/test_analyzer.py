@@ -8,7 +8,7 @@ from river.common.analyzer.sql_column import SqlColumn
 from river.common.analyzer.sql_join import SqlJoin
 
 
-def test_cache_analysis_redis(mimic_mapping):
+def test_cache_analysis(mimic_mapping):
     batch_id = uuid4()
     # Patient - feat_6_join
     resource_id = "cktlnp0ji006e0mmzat7dwb98"
