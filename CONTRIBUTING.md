@@ -13,9 +13,15 @@ python django/manage.py docs [--http HOST:PORT]
 ## Project structure
 
     .
+    ├── app/               # Pyrog React App
+    ├── diagrams/          # Nice drawings of the stack
     ├── django/            # Backend (api, ETL services, etc.)
+    ├── hapi-loader/       # Loader service (based on HAPI fhir)
     ├── monitoring/        # Configs for monitoring services
-    ├── tests/             # Backend tests
+    ├── requirements/      # Python dependencies
+    ├── scripts/           # Shell scripts utils
+    ├── tests/             # Python backend tests
+    ├── e2e/               # End-to-end tests
     ├── pyrog-schema.yml   # OpenAPI spec for the pyrog api
     └── .template.env      # Template env file
 
@@ -102,9 +108,28 @@ pre-commit install
 
 ### Tests
 
+### Unit
+
 ```bash
 # Run tests in dedicated virtual env
-tox
+make unit-tests
+```
+
+---
+
+_Warning_: the `django/` and `tests/` are mounted as volumes into a docker container. If your folder contains python bytecode (`__pycache__` folders), there might be an error when running pytest inside the `river` container. You can fix this by removing the pre-compiled bytecode files locally:
+`find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf`
+
+---
+
+### End-to-end
+
+The following command runs river services (`api`, `extractor`, `transformer`, `loader`, `topicleaner`) and dependencies (`kafka`, `zookeeper`, `postgres`, `jpaltime`, `mimic`, `redis`) inside docker with `docker-compose` (it might be a lot to ask for your poor laptop...). It then runs end-to-end tests inside a dedicated container.
+Basically, end-to-end tests consist in importing a mapping (mimic), running a full batch
+
+```bash
+# Run end-to-end tests in docker
+make e2e-tests
 ```
 
 ### OpenAPI schema generation
