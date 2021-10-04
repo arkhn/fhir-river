@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
 import { useAppDispatch } from "app/store";
 import { columnsAdded, columnsRemoved } from "features/Columns/columnSlice";
@@ -44,23 +44,23 @@ const useInitMappingEdit = (): {
   };
 } => {
   const dispatch = useAppDispatch();
-  const mapping = useCurrentMapping();
-  const { data: mappingFilters } = useApiFiltersListQuery(
-    { resource: mapping?.id },
-    { skip: !mapping?.id }
-  );
-  const { data: sqlInputs } = useApiSqlInputsListQuery(
+  const { data: mapping, isLoading: isMappingLoading } = useCurrentMapping();
+  const {
+    data: mappingFilters,
+    isLoading: isFiltersLoading,
+  } = useApiFiltersListQuery({ resource: mapping?.id }, { skip: !mapping?.id });
+  const {
+    data: sqlInputs,
+    isLoading: isSqlInputsLoading,
+  } = useApiSqlInputsListQuery({}, { skip: !mapping?.id });
+  const { data: joins, isLoading: isJoinsLoading } = useApiJoinsListQuery(
     {},
     { skip: !mapping?.id }
   );
-  const { data: joins } = useApiJoinsListQuery({}, { skip: !mapping?.id });
-  const { data: columns } = useApiColumnsListQuery({}, { skip: !mapping?.id });
-
-  const [isMappingInit, setMappingInit] = useState(false);
-  const [isFiltersInit, setFiltersInit] = useState(false);
-  const [isSqlInputsInit, setSqlInputsInit] = useState(false);
-  const [isJoinsInit, setJoinsInit] = useState(false);
-  const [isColumnsInit, setColumnsInit] = useState(false);
+  const { data: columns, isLoading: isColumnsLoading } = useApiColumnsListQuery(
+    {},
+    { skip: !mapping?.id }
+  );
 
   const resetEditMapping = useCallback(() => {
     dispatch(resourcesRemoved());
@@ -71,35 +71,30 @@ const useInitMappingEdit = (): {
   }, [dispatch]);
 
   useEffect(() => {
-    if (mapping && !isMappingInit) {
+    if (mapping && !isMappingLoading) {
       dispatch(resourceAdded(mapping));
-      setMappingInit(true);
     }
-  }, [dispatch, mapping, isMappingInit]);
+  }, [dispatch, mapping, isMappingLoading]);
   useEffect(() => {
-    if (mappingFilters && !isFiltersInit) {
+    if (mappingFilters && !isFiltersLoading) {
       dispatch(filtersAdded(mappingFilters));
-      setFiltersInit(true);
     }
-  }, [dispatch, mappingFilters, isFiltersInit]);
+  }, [dispatch, mappingFilters, isFiltersLoading]);
   useEffect(() => {
-    if (sqlInputs && !isSqlInputsInit) {
+    if (sqlInputs && !isSqlInputsLoading) {
       dispatch(sqlInputsAdded(sqlInputs));
-      setSqlInputsInit(true);
     }
-  }, [dispatch, isSqlInputsInit, sqlInputs]);
+  }, [dispatch, isSqlInputsLoading, sqlInputs]);
   useEffect(() => {
-    if (joins && !isJoinsInit) {
+    if (joins && !isJoinsLoading) {
       dispatch(joinsAdded(joins));
-      setJoinsInit(true);
     }
-  }, [dispatch, joins, isJoinsInit]);
+  }, [dispatch, joins, isJoinsLoading]);
   useEffect(() => {
-    if (columns && !isColumnsInit) {
+    if (columns && !isColumnsLoading) {
       dispatch(columnsAdded(columns));
-      setColumnsInit(true);
     }
-  }, [dispatch, columns, isColumnsInit]);
+  }, [dispatch, columns, isColumnsLoading]);
 
   useEffect(() => {
     return resetEditMapping;
@@ -118,13 +113,12 @@ const useInitMappingEdit = (): {
     };
 
   return {
-    isLoading: !(
-      isMappingInit &&
-      isFiltersInit &&
-      isSqlInputsInit &&
-      isJoinsInit &&
-      isColumnsInit
-    ),
+    isLoading:
+      isMappingLoading ||
+      isFiltersLoading ||
+      isSqlInputsLoading ||
+      isJoinsLoading ||
+      isColumnsLoading,
     data,
   };
 };

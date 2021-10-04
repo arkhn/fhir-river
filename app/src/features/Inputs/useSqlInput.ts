@@ -20,6 +20,11 @@ type UseSqlInputProps = {
   exists?: boolean;
 };
 
+/**
+ * Hook handling pending sqlInputs the same way a classic useState hook would.
+ * It supports back sqlInput creation & updates.
+ * @returns A tuple with the pending sqlInput stored in state & an onChange function
+ */
 const useSqlInput = ({
   initialSqlInput,
   exists,

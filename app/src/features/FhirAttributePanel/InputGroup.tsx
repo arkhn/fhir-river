@@ -38,13 +38,13 @@ import {
 } from "services/api/endpoints";
 import type {
   Condition as ConditionType,
-  InputGroup,
+  InputGroup as InputGroupType,
   SQLInput,
   StaticInput as StaticInputType,
 } from "services/api/generated/api.generated";
 
-type AttributeInputGroupProps = {
-  inputGroup: InputGroup;
+type InputGroupProps = {
+  inputGroup: InputGroupType;
   inputGroupIndex: number;
 };
 
@@ -80,10 +80,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AttributeInputGroup = ({
+const InputGroup = ({
   inputGroup,
   inputGroupIndex,
-}: AttributeInputGroupProps): JSX.Element => {
+}: InputGroupProps): JSX.Element => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
@@ -92,7 +92,7 @@ const AttributeInputGroup = ({
     popupId: "popup",
   });
 
-  const mapping = useCurrentMapping();
+  const { data: mapping } = useCurrentMapping();
 
   const [deleteInputGroups] = useApiInputGroupsDestroyMutation();
   const [updateInputGroups] = useApiInputGroupsUpdateMutation();
@@ -339,4 +339,4 @@ const AttributeInputGroup = ({
   );
 };
 
-export default AttributeInputGroup;
+export default InputGroup;
