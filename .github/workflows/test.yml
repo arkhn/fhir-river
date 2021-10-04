@@ -1,4 +1,4 @@
-name: main
+name: test
 
 on:
   push:
@@ -36,8 +36,6 @@ jobs:
           TEST_MSSQL_DB: ${{ secrets.TEST_MSSQL_DB }}
           TEST_MSSQL_LOGIN: ${{ secrets.TEST_MSSQL_LOGIN }}
           TEST_MSSQL_PASSWORD: ${{ secrets.TEST_MSSQL_PASSWORD }}
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
         run: make unit-tests
 
   test-hapi:
