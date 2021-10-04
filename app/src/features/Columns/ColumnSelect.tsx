@@ -62,18 +62,17 @@ const ColumnSelects = ({
     }
   );
 
-  const { table, column: column_, owner: ownerId } = column;
-  const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
+  const selectedOwner = credentialOwners?.find(({ id }) => id === column.owner);
   const schema = selectedOwner?.schema as Record<string, string[]>;
   const defaultValue = {
     id: "/",
     label: "/",
   };
   const ownerTable =
-    table && selectedOwner
+    column.table && selectedOwner
       ? {
-          id: `${selectedOwner.id}/${table}`,
-          label: `${selectedOwner.name}/${table}`,
+          id: `${selectedOwner.id}/${column.table}`,
+          label: `${selectedOwner.name}/${column.table}`,
         }
       : defaultValue;
 
@@ -87,9 +86,9 @@ const ColumnSelects = ({
             const ownerTables = Object.keys(owner.schema);
             return [
               ...acc,
-              ...ownerTables.map((_table) => ({
-                id: `${owner.id}/${_table}`,
-                label: `${owner.name}/${_table}`,
+              ...ownerTables.map((table) => ({
+                id: `${owner.id}/${table}`,
+                label: `${owner.name}/${table}`,
               })),
             ];
           },
@@ -99,26 +98,28 @@ const ColumnSelects = ({
 
   const tableOptions = getTableOptions(credentialOwners);
   const [columns, setColumns] = useState<string[]>(
-    table && schema && table in schema ? schema[table] ?? [] : []
+    column.table && schema && column.table in schema
+      ? schema[column.table] ?? []
+      : []
   );
 
-  const isTableSelected = !!table;
-  const isColumnSelected = !!column_;
+  const isTableSelected = !!column.table;
+  const isColumnSelected = !!column.column;
 
-  const prevTable = usePrevious(table);
-  const hasTableChanged = prevTable !== table;
+  const prevTable = usePrevious(column.table);
+  const hasTableChanged = prevTable !== column.table;
 
   const handleOwnerTableChange = (
     _: React.ChangeEvent<Record<string, never>>,
     value: { id: string; label: string } | null
   ) => {
     if (value) {
-      const [owner_, table_] = value.id.split("/");
+      const [owner, table] = value.id.split("/");
       onChange &&
         onChange({
           ...column,
-          table: table_,
-          owner: owner_,
+          table,
+          owner,
           column: "",
         });
     }
@@ -135,9 +136,9 @@ const ColumnSelects = ({
   };
 
   useEffect(() => {
-    if (schema && table) {
+    if (schema && column.table) {
       const isColumnInTable =
-        column.column && schema[table]?.includes(column.column);
+        column.column && schema[column.table]?.includes(column.column);
       if (hasTableChanged && !isColumnInTable) {
         onChange &&
           onChange({
@@ -145,9 +146,9 @@ const ColumnSelects = ({
             column: undefined,
           });
       }
-      setColumns(schema[table] ?? []);
+      setColumns(schema[column.table] ?? []);
     }
-  }, [schema, hasTableChanged, column, table, onChange]);
+  }, [schema, hasTableChanged, column, column.table, onChange]);
 
   return (
     <>
@@ -195,7 +196,7 @@ const ColumnSelects = ({
         <Autocomplete
           className={classes.autocomplete}
           options={columns}
-          value={column_ ?? ""}
+          value={column.column ?? ""}
           onChange={handleColumnChange}
           selectOnFocus
           openOnFocus

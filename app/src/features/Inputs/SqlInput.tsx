@@ -71,7 +71,7 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
 
-  const mapping = useCurrentMapping();
+  const { data: mapping } = useCurrentMapping();
 
   const [inputColumn, setInputColumn] = useState<Partial<Column> | undefined>(
     undefined
@@ -123,9 +123,7 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
         sqlInputRequest: { ...input, script: script ? script.name : "" },
       });
     } catch (e) {
-      // FIXME: error management
-      // const error = e as FetchBaseQueryError;
-      // enqueueSnackbar(error.error, { variant: "error" });
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 

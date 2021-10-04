@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import Button from "common/components/Button";
-import AttributeInputGroup from "features/FhirAttributePanel/AttributeInputGroup";
+import InputGroup from "features/FhirAttributePanel/InputGroup";
 import {
   useApiAttributesRetrieveQuery,
   useApiInputGroupsListQuery,
@@ -81,7 +81,7 @@ const FhirAttributePanel = (): JSX.Element => {
           <Grid container spacing={4} direction="column">
             {attributeInputGroups &&
               attributeInputGroups.map((inputGroup, index) => (
-                <AttributeInputGroup
+                <InputGroup
                   key={inputGroup.id}
                   inputGroup={inputGroup}
                   inputGroupIndex={index}

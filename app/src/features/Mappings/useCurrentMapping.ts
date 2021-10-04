@@ -3,15 +3,18 @@ import { useParams } from "react-router";
 import { useApiResourcesRetrieveQuery } from "services/api/endpoints";
 import type { Resource } from "services/api/generated/api.generated";
 
-const useCurrentMapping = (): Resource | undefined => {
+const useCurrentMapping = (): {
+  data: Resource | undefined;
+  isLoading: boolean;
+} => {
   const { mappingId } = useParams<{ mappingId?: Resource["id"] }>();
 
-  const { data: mapping } = useApiResourcesRetrieveQuery(
+  const { data, isLoading } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
   );
 
-  return mapping;
+  return { data, isLoading };
 };
 
 export default useCurrentMapping;

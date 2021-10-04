@@ -20,6 +20,11 @@ type UseConditionProps = {
   exists?: boolean;
 };
 
+/**
+ * Hook handling pending conditions the same way a classic useState hook would.
+ * It supports back condition creation & updates.
+ * @returns A tuple with the pending condition stored in state & an onChange function
+ */
 const useCondition = ({
   initialCondition,
   exists,

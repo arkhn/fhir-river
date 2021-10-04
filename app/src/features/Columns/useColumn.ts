@@ -20,6 +20,11 @@ type UseColumnProps = {
   exists?: boolean;
 };
 
+/**
+ * Hook handling pending columns the same way a classic useState hook would.
+ * It supports back column creation & updates.
+ * @returns A tuple with the pending column stored in state & an onChange function
+ */
 const useColumn = ({
   initialColumn,
   exists,

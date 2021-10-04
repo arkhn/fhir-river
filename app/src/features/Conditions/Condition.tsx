@@ -81,7 +81,7 @@ type ConditionProps = {
 const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const mapping = useCurrentMapping();
+  const { data: mapping } = useCurrentMapping();
 
   const { data: apiConditionSqlInput } = useApiSqlInputsRetrieveQuery(
     {

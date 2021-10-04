@@ -20,6 +20,11 @@ type UseJoinProps = {
   exists?: boolean;
 };
 
+/**
+ * Hook handling pending joins the same way a classic useState hook would.
+ * It supports back join creation & updates.
+ * @returns A tuple with the pending join stored in state & an onChange function
+ */
 const useJoin = ({
   initialJoin,
   exists,
