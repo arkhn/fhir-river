@@ -46,23 +46,6 @@ def test_retrieve_source(api_client, source):
     assert response.status_code == 200, response.data
 
 
-def test_retrieve_source_unauthenticated(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    response = api_client.get(url)
-
-    assert response.status_code == 404, response.data
-
-
-@pytest.mark.as_other_user
-def test_retrieve_source_forbidden(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    response = api_client.get(url)
-
-    assert response.status_code == 404, response.data
-
-
 @pytest.mark.as_user
 @pytest.mark.export_data("valid/mimic.json")
 def test_can_import_mapping(api_client, export_data):
@@ -106,21 +89,13 @@ def test_list_sources(api_client, user, other_user, source_factory):
     response = api_client.get(url)
 
     assert response.status_code == 200, response.data
-    assert {source.id for source in user.sources.all()} == {item["id"] for item in response.data}
-    assert all(source.id not in {item["id"] for item in response.data} for source in other_user.sources.all())
+    assert {source.id for source in [*user.sources.all(), *other_user.sources.all()]} == {
+        item["id"] for item in response.data
+    }
     assert all(
         parse(response.data[i]["created_at"]) <= parse(response.data[i + 1]["created_at"])
         for i in range(len(response.data) - 1)
     )
-
-
-def test_list_sources_unauthenticated(api_client, source):
-    url = reverse("sources-list")
-
-    response = api_client.get(url)
-
-    assert response.status_code == 200, response.data
-    assert len(response.data) == 0
 
 
 @pytest.mark.as_user
@@ -138,25 +113,6 @@ def test_update_source(api_client, source, name, version, status_code):
     assert response.status_code == status_code, response.data
 
 
-def test_update_source_unauthenticated(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    data = {"name": faker.word()}
-    response = api_client.patch(url, data)
-
-    assert response.status_code == 404, response.data
-
-
-@pytest.mark.as_other_user
-def test_update_source_forbidden(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    data = {"name": faker.word()}
-    response = api_client.patch(url, data)
-
-    assert response.status_code == 404, response.data
-
-
 @pytest.mark.as_user
 def test_delete_source(api_client, source):
     url = reverse("sources-detail", kwargs={"pk": source.id})
@@ -164,20 +120,3 @@ def test_delete_source(api_client, source):
     response = api_client.delete(url)
 
     assert response.status_code == 204, response.data
-
-
-def test_delete_source_unauthenticated(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    response = api_client.delete(url)
-
-    assert response.status_code == 404, response.data
-
-
-@pytest.mark.as_other_user
-def test_delete_source_forbidden(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
-
-    response = api_client.delete(url)
-
-    assert response.status_code == 404, response.data

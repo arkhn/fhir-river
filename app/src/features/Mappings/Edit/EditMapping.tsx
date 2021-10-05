@@ -20,10 +20,10 @@ import { useAppSelector } from "app/store";
 import Button from "common/components/Button";
 import { columnSelectors } from "features/Columns/columnSlice";
 import { filterSelectors } from "features/Filters/filterSlice";
+import { sqlInputSelectors } from "features/Inputs/sqlInputSlice";
 import { joinSelectors } from "features/Joins/joinSlice";
 import TableStep from "features/Mappings/Create/TableStep";
 import { resourceSelectors } from "features/Mappings/resourceSlice";
-import useEditMapping from "features/Mappings/useEditMapping";
 import {
   useApiColumnsCreateMutation,
   useApiColumnsUpdateMutation,
@@ -35,6 +35,9 @@ import {
   useApiJoinsCreateMutation,
   useApiJoinsUpdateMutation,
   useApiResourcesUpdateMutation,
+  useApiSqlInputsDestroyMutation,
+  useApiSqlInputsCreateMutation,
+  useApiSqlInputsUpdateMutation,
 } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 import type {
@@ -43,7 +46,11 @@ import type {
   CredentialRequest,
   FilterRequest,
   JoinRequest,
+  SQLInput,
+  SQLInputRequest,
 } from "services/api/generated/api.generated";
+
+import useInitMappingEdit from "../useInitMappingEdit";
 
 const useStyles = makeStyles((theme) => ({
   contentContainer: {
@@ -61,13 +68,16 @@ const EditMapping = (): JSX.Element => {
     sourceId?: string;
     mappingId?: string;
   }>();
-  const { isLoading, data: initialState } = useEditMapping();
-  const { resource, filters, joins, columns } = useAppSelector((state) => ({
-    resource: resourceSelectors.selectById(state, mappingId ?? ""),
-    filters: filterSelectors.selectAll(state),
-    joins: joinSelectors.selectAll(state),
-    columns: columnSelectors.selectAll(state),
-  }));
+  const { isLoading, data: initialState } = useInitMappingEdit();
+  const { resource, filters, sqlInputs, joins, columns } = useAppSelector(
+    (state) => ({
+      resource: resourceSelectors.selectById(state, mappingId ?? ""),
+      filters: filterSelectors.selectAll(state),
+      sqlInputs: sqlInputSelectors.selectAll(state),
+      joins: joinSelectors.selectAll(state),
+      columns: columnSelectors.selectAll(state),
+    })
+  );
   const mapping = useAppSelector((state) =>
     resourceSelectors.selectById(state, mappingId ?? "")
   );
@@ -77,6 +87,10 @@ const EditMapping = (): JSX.Element => {
   const [deleteColumn] = useApiColumnsDestroyMutation();
   const [createColumn] = useApiColumnsCreateMutation();
   const [updateColumn] = useApiColumnsUpdateMutation();
+
+  const [deleteSqlInput] = useApiSqlInputsDestroyMutation();
+  const [createSqlInput] = useApiSqlInputsCreateMutation();
+  const [updateSqlInput] = useApiSqlInputsUpdateMutation();
 
   const [deleteFilter] = useApiFiltersDestroyMutation();
   const [createFilter] = useApiFiltersCreateMutation();
@@ -93,15 +107,10 @@ const EditMapping = (): JSX.Element => {
     setEditLoading(true);
 
     if (resource && initialState) {
-      const columnsWithoutJoin = columns.filter(
-        (column) => !Boolean(column.join)
-      );
-      const columnsWithJoin = columns.filter((column) => Boolean(column.join));
-      const prevColumnsWithoutJoin = initialState.columns.filter(
-        (column) => !Boolean(column.join)
-      );
-      const prevColumnsWithJoin = initialState.columns.filter((column) =>
-        Boolean(column.join)
+      const referencedColumns = columns.filter(
+        ({ id }) =>
+          sqlInputs.some(({ column }) => column === id) ||
+          joins.some(({ left, right }) => left === id || right === id)
       );
 
       //Resource update
@@ -115,10 +124,10 @@ const EditMapping = (): JSX.Element => {
         }).unwrap();
       }
       try {
-        // Columns without join creation/update
+        // Columns creation/update
         const createdOrUpdatedColumns = await Promise.all(
-          columnsWithoutJoin.map((column) => {
-            const prevColumn = prevColumnsWithoutJoin.find(
+          referencedColumns.map((column) => {
+            const prevColumn = initialState.columns.find(
               ({ id }) => id === column.id
             );
             if (!prevColumn) {
@@ -139,14 +148,47 @@ const EditMapping = (): JSX.Element => {
           })
         );
 
+        // SqlInputs creation/update
+        const createdOrUpdatedSqlInputs = await Promise.all(
+          sqlInputs.map((sqlInput) => {
+            const prevSqlInput = initialState.sqlInputs.find(
+              ({ id }) => id === sqlInput.id
+            );
+            const index = referencedColumns.findIndex(
+              (column) => column.id === sqlInput.column
+            );
+            if (!prevSqlInput) {
+              // SqlInput is created
+              return createSqlInput({
+                sqlInputRequest: {
+                  ...sqlInput,
+                  column: createdOrUpdatedColumns[index]?.id ?? "",
+                } as SQLInputRequest,
+              }).unwrap();
+            } else if (!isEqual(sqlInput, prevSqlInput)) {
+              // Filter is updated
+              return updateSqlInput({
+                id: prevSqlInput.id,
+                sqlInputRequest: {
+                  ...prevSqlInput,
+                  ...sqlInput,
+                },
+              }).unwrap();
+            } else {
+              // Filter is unchanged
+              return sqlInput as SQLInput;
+            }
+          })
+        );
+
         // Filters creation/update
         await Promise.all(
           filters.map((filter) => {
             const prevFilter = initialState.filters.find(
               ({ id }) => id === filter.id
             );
-            const index = columnsWithoutJoin.findIndex(
-              (column) => column.id === filter.sql_column
+            const index = sqlInputs.findIndex(
+              (sqlInput) => sqlInput.id === filter.sql_input
             );
             if (!prevFilter) {
               // Filter is created
@@ -154,7 +196,7 @@ const EditMapping = (): JSX.Element => {
                 filterRequest: {
                   ...filter,
                   resource: resource.id,
-                  sql_column: createdOrUpdatedColumns[index]?.id ?? "",
+                  sql_input: createdOrUpdatedSqlInputs[index]?.id ?? "",
                 } as FilterRequest,
               }).unwrap();
             } else if (!isEqual(filter, prevFilter)) {
@@ -174,20 +216,27 @@ const EditMapping = (): JSX.Element => {
         );
 
         // Joins creation/update
-        const createdOrUpdatedJoins = await Promise.all(
+        await Promise.all(
           joins.map((join) => {
             const prevJoin = initialState.joins.find(
               ({ id }) => id === join.id
             );
-            const index = columnsWithoutJoin.findIndex(
-              (column) => column.id === join.column
+            const index = sqlInputs.findIndex(
+              (sqlInput) => sqlInput.id === join.sql_input
             );
-
+            const leftColumnIndex = referencedColumns.findIndex(
+              ({ id }) => id === join.left
+            );
+            const rightColumnIndex = referencedColumns.findIndex(
+              ({ id }) => id === join.right
+            );
             if (!prevJoin) {
               // Join is created
               return createJoin({
                 joinRequest: {
-                  column: createdOrUpdatedColumns[index]?.id ?? "",
+                  sql_input: createdOrUpdatedSqlInputs[index]?.id ?? "",
+                  left: createdOrUpdatedColumns[leftColumnIndex]?.id ?? "",
+                  right: createdOrUpdatedColumns[rightColumnIndex]?.id ?? "",
                 } as JoinRequest,
               }).unwrap();
             } else if (!isEqual(prevJoin, join)) {
@@ -203,42 +252,15 @@ const EditMapping = (): JSX.Element => {
           })
         );
 
-        // Join columns creation/update
-        await Promise.all(
-          columnsWithJoin.map((column) => {
-            const prevColumn = prevColumnsWithJoin.find(
-              ({ id }) => id === column.id
-            );
-            const index = joins.findIndex((join) => join.id === column.join);
-
-            if (!prevColumn) {
-              // Column is created
-              return createColumn({
-                columnRequest: {
-                  ...column,
-                  join: createdOrUpdatedJoins[index]?.id ?? "",
-                } as ColumnRequest,
-              }).unwrap();
-            } else if (!isEqual(prevColumn, column)) {
-              // Column is updated
-              return updateColumn({
-                id: prevColumn.id,
-                columnRequest: {
-                  ...prevColumn,
-                  ...column,
-                },
-              }).unwrap();
-            } else {
-              // Column is unchanged
-              return column as Column;
-            }
-          })
-        );
-
         // Delete order is inverted from creation order
-        const deletedColumnsWithoutJoin = differenceBy(
-          prevColumnsWithoutJoin,
-          columnsWithoutJoin,
+        const deletedColumns = differenceBy(
+          initialState.columns,
+          columns,
+          ({ id }) => id
+        );
+        const deletedSqlInputs = differenceBy(
+          initialState.sqlInputs,
+          sqlInputs,
           ({ id }) => id
         );
         const deletedFilters = differenceBy(
@@ -251,14 +273,14 @@ const EditMapping = (): JSX.Element => {
           joins,
           ({ id }) => id
         );
-        const deletedColumnsWithJoin = differenceBy(
-          prevColumnsWithJoin,
-          columnsWithJoin,
-          ({ id }) => id
+        await Promise.all(
+          deletedColumns.map((column) =>
+            deleteColumn({ id: column.id }).unwrap()
+          )
         );
         await Promise.all(
-          deletedColumnsWithJoin.map((column) =>
-            deleteColumn({ id: column.id }).unwrap()
+          deletedSqlInputs.map((sqlInput) =>
+            deleteSqlInput({ id: sqlInput.id }).unwrap()
           )
         );
         await Promise.all(
@@ -267,11 +289,6 @@ const EditMapping = (): JSX.Element => {
         await Promise.all(
           deletedFilters.map((filter) =>
             deleteFilter({ id: filter.id }).unwrap()
-          )
-        );
-        await Promise.all(
-          deletedColumnsWithoutJoin.map((column) =>
-            deleteColumn({ id: column.id }).unwrap()
           )
         );
       } catch (error) {

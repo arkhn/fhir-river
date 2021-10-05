@@ -3,6 +3,11 @@ import * as faker from "faker";
 import { Factory } from "fishery";
 
 import {
+  DefinitionNode,
+  ElementNode,
+} from "features/FhirResourceTree/resourceTreeSlice";
+
+import {
   Attribute,
   Credential,
   Filter,
@@ -10,6 +15,10 @@ import {
   Source,
   Owner,
   Column,
+  SQLInput,
+  InputGroup,
+  Condition,
+  Join,
 } from "./generated/api.generated";
 
 export const sourceFactory = Factory.define<Source>(({ sequence }) => ({
@@ -40,7 +49,7 @@ export const ownerFactory = Factory.define<Owner>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     name: "public",
-    schema: { table: ["column"] },
+    schema: associations.schema || { table: ["column"] },
     credential: associations.credential || credentialFactory.build().id,
   })
 );
@@ -68,7 +77,7 @@ export const resourceFactory = Factory.define<Resource>(
 export const attributeFactory = Factory.define<Attribute>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
-    path: faker.lorem.word(),
+    path: associations.path || faker.lorem.word(),
     definition_id: faker.lorem.word(),
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
@@ -87,17 +96,62 @@ export const columnFactory = Factory.define<Column>(
   })
 );
 
+export const inputGroupFactory = Factory.define<InputGroup>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    attribute: associations.attribute || attributeFactory.build().id,
+    merging_script: faker.lorem.word(),
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
+  })
+);
+
+export const sqlInputFactory = Factory.define<SQLInput>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    script: faker.lorem.word(),
+    concept_map_id: faker.lorem.word(),
+    column: associations.column || columnFactory.build().id,
+    input_group: associations.input_group || inputGroupFactory.build().id,
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
+  })
+);
+
+export const conditionFactory = Factory.define<Condition>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    action: associations.action || "INCLUDE",
+    sql_input: associations.sql_input || sqlInputFactory.build().id,
+    input_group: associations.input_group || inputGroupFactory.build().id,
+    relation: associations.relation,
+    value: associations.value,
+  })
+);
+
+export const joinFactory = Factory.define<Join>(
+  ({ sequence, associations }) => ({
+    id: sequence.toString(),
+    sql_input: associations.sql_input || sqlInputFactory.build().id,
+    left: associations.left || sqlInputFactory.build().id,
+    right: associations.right || sqlInputFactory.build().id,
+    updated_at: faker.date.past().toString(),
+    created_at: faker.date.past().toString(),
+  })
+);
+
 export const filterFactory = Factory.define<Filter>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     relation: "<",
-    sql_column: associations.sql_column || columnFactory.build().id,
+    value: faker.lorem.word(),
+    sql_input: associations.sql_input || sqlInputFactory.build().id,
     resource: associations.resource || resourceFactory.build().id,
   })
 );
 
 export const structureDefinitionFactory = Factory.define<IStructureDefinition>(
-  ({ sequence, associations }) => {
+  ({ associations }) => {
     const structureDefName = associations.name || faker.lorem.word();
     return {
       resourceType: "StructureDefinition",
@@ -108,12 +162,99 @@ export const structureDefinitionFactory = Factory.define<IStructureDefinition>(
             id: structureDefName,
           },
           {
-            path: `${structureDefName}.subject${sequence}`,
-            id: `${structureDefName}.subject${sequence}`,
+            path: `${structureDefName}.subject`,
+            id: `${structureDefName}.subject`,
             type: [{ code: "Annotation" }],
+            max: "*",
           },
         ],
       },
     };
   }
 );
+
+export const definitionNodeFactory = Factory.define<DefinitionNode>(() => ({
+  definition: { id: "Observation.code", path: "Observation.code" },
+  childrenDefinitions: [
+    {
+      definition: {
+        id: "Observation.code.coding",
+        path: "Observation.code.coding",
+      },
+      childrenDefinitions: [],
+      sliceDefinitions: [],
+    },
+  ],
+  sliceDefinitions: [
+    {
+      definition: {
+        id: "Observation.code:codeSlice",
+        path: "Observation.code",
+        sliceName: "codeSlice",
+      },
+      childrenDefinitions: [
+        {
+          definition: {
+            id: "Observation.code:codeSlice.coding",
+            path: "Observation.code.coding",
+          },
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+        },
+      ],
+      sliceDefinitions: [],
+    },
+  ],
+}));
+
+export const elementNodeFactory = Factory.define<
+  ElementNode,
+  { childrenIndexes: number[] }
+>(({ transientParams }) => {
+  return {
+    id: "Observation.code.coding",
+    path: "Observation.code.coding",
+    isArray: true,
+    name: "coding",
+    type: "CodeableConcept",
+    isRequired: false,
+    kind: "complex",
+    definitionNode: {
+      childrenDefinitions: [],
+      sliceDefinitions: [],
+      definition: {},
+    },
+    children:
+      transientParams.childrenIndexes?.map((index) => ({
+        id: "Observation.code.coding",
+        path: `Observation.code.coding[${index}]`,
+        isArray: false,
+        name: "coding",
+        type: "CodeableConcept",
+        isRequired: false,
+        kind: "complex",
+        children: [
+          {
+            id: "Observation.code.coding.type",
+            path: `Observation.code.coding[${index}].type`,
+            isArray: false,
+            name: "type",
+            type: "Type",
+            isRequired: false,
+            kind: "primitive",
+            children: [],
+            definitionNode: {
+              childrenDefinitions: [],
+              sliceDefinitions: [],
+              definition: {},
+            },
+          },
+        ],
+        definitionNode: {
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+          definition: {},
+        },
+      })) ?? [],
+  };
+});

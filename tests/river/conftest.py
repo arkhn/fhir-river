@@ -1,4 +1,5 @@
 import inspect
+import json
 import time
 from pathlib import Path
 
@@ -16,7 +17,7 @@ from tests.pyrog.factories import ResourceFactory, SourceFactory
 
 from . import factories
 
-DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 register(factories.BatchFactory)
 register(factories.ErrorFactory)
@@ -86,10 +87,18 @@ def clear_redis(request):
         request.addfinalizer(_clear_redis)
 
 
-@pytest.fixture
-def export_data(request):
-    marker = request.node.get_closest_marker("export_data")
-    return load_mapping(DATA_FIXTURES_DIR / marker.args[0])
+@pytest.fixture(scope="session")
+def structure_definitions() -> list:
+    data = load_export_data(DATA_FIXTURES_DIR / "structure_definitions_bundle.json")
+    return [item["resource"] for item in data["entry"]]
+
+
+@pytest.fixture(autouse=True)
+def load_concept_maps():
+    with open(DATA_FIXTURES_DIR / "concept_maps.json") as concept_maps_file:
+        concept_maps = json.load(concept_maps_file)
+        for entry in concept_maps.get("entry", []):
+            fhir_api.create("ConceptMap", entry.get("resource"))
 
 
 @pytest.fixture
@@ -97,33 +106,7 @@ def mimic_mapping():
     return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
 
 
-@pytest.fixture
-def structure_definitions() -> list:
-    data = load_export_data(DATA_FIXTURES_DIR / "structure_definitions_bundle.json")
-    return [item["resource"] for item in data["entry"]]
-
-
-@pytest.fixture
-def concept_map():
-    return {
-        "id": "8d45157a-12c5-4da2-8b80-0c5607fa37d7",
-        "group": [
-            {
-                "element": [
-                    {"code": "F", "target": [{"code": "female", "equivalence": "equal"}]},
-                    {"code": "M", "target": [{"code": "male", "equivalence": "equal"}]},
-                ]
-            }
-        ],
-    }
-
-
-@pytest.fixture(autouse=True)
-def load_concept_map(concept_map):
-    fhir_api.create("ConceptMap", concept_map)
-
-
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True, scope="session")
 def load_structure_definitions(structure_definitions):
     for structure_definition in structure_definitions:
         fhir_api.create("StructureDefinition", structure_definition)

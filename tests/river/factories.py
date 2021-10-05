@@ -4,10 +4,9 @@ import factory
 
 from tests.conftest import load_mapping
 
-DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 
-# FIXME: this should be declared as a fixture in conftest.py
 def mimic_mapping():
     return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
 

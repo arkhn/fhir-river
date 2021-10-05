@@ -1,0 +1,32 @@
+# name: test_preview
+  <class 'dict'> {
+    'id': '21f20a6b-c3fa-5bd5-8fb2-4629315491c7',
+    'identifier': <class 'list'> [
+      <class 'dict'> {
+        'system': 'http://terminology.arkhn.org/b8efd322-3e38-4072-9c68-e62e15d84d04',
+        'value': '10006',
+      },
+    ],
+    'meta': <class 'dict'> {
+      'tag': <class 'list'> [
+        <class 'dict'> {
+          'code': 'cktlnp0bb00020mmz5fks20ij',
+          'system': 'http://terminology.arkhn.org/CodeSystem/source',
+        },
+        <class 'dict'> {
+          'code': 'cktlnp0f300300mmznmyqln70',
+          'system': 'http://terminology.arkhn.org/CodeSystem/resource',
+        },
+      ],
+    },
+    'name': <class 'list'> [
+      <class 'dict'> {
+        'given': <class 'list'> [
+          'Jean',
+          'Georges',
+        ],
+      },
+    ],
+    'resourceType': 'Patient',
+  }
+---

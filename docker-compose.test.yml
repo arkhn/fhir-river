@@ -17,9 +17,9 @@ services:
     ports:
       - 15432:5432
     environment:
-      POSTGRES_USER: test
-      POSTGRES_PASSWORD: test
-      POSTGRES_DB: test
+      POSTGRES_USER: mimic
+      POSTGRES_PASSWORD: mimic
+      POSTGRES_DB: mimic
     volumes:
       - mimic-data:/var/lib/postgresql/data
 
@@ -32,10 +32,14 @@ services:
 
   river:
     image: arkhn/river:${IMAGE_TAG:-latest}
+    build:
+      context: .
     entrypoint: ""
     # keep container alive for test commands with `docker-compose exec`
     command: tail -F anything
     environment:
+      - PYTHONDONTWRITEBYTECODE=1
+
       - TEST_ORACLE_11_HOST=ora11
       - TEST_ORACLE_11_PORT=1521
       - TEST_ORACLE_11_DB=xe
@@ -60,6 +64,12 @@ services:
       - TEST_MSSQL_LOGIN
       - TEST_MSSQL_PASSWORD
 
+      - MIMIC_HOST=mimic
+      - MIMIC_PORT=5432
+      - MIMIC_DB=mimic
+      - MIMIC_LOGIN=mimic
+      - MIMIC_PASSWORD=mimic
+
       - DEBUG=True
       - SECRET_KEY=USE_IN_TESTS_ONLY
       - ALLOWED_HOSTS=*
@@ -72,6 +82,10 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
+
   redis:
     image: redis:6.0.7
     ports:
