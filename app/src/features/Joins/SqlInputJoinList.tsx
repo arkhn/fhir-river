@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import { Button, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Button, Grid, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
@@ -14,12 +14,6 @@ import {
   Join as JoinType,
 } from "services/api/generated/api.generated";
 
-const useStyles = makeStyles(() => ({
-  button: {
-    textTransform: "none",
-  },
-}));
-
 type SqlInputJoinListProps = {
   sqlInputId: SQLInput["id"];
 };
@@ -28,7 +22,6 @@ const SqlInputJoinList = ({
   sqlInputId,
 }: SqlInputJoinListProps): JSX.Element => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const [inputJoins, setInputJoins] = useState<Partial<JoinType>[]>([]);
   const [deleteJoin] = useApiJoinsDestroyMutation();
@@ -77,7 +70,6 @@ const SqlInputJoinList = ({
       ))}
       <Grid item>
         <Button
-          className={classes.button}
           startIcon={<AddIcon />}
           onClick={handleJoinAdd}
           variant="outlined"

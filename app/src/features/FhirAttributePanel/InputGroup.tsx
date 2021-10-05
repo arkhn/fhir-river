@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
   },
   button: {
-    textTransform: "none",
     backgroundColor: theme.palette.background.default,
     "&:hover": {
       backgroundColor: theme.palette.background.paper,

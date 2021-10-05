@@ -20,7 +20,6 @@ import {
 const useStyles = makeStyles((theme) => ({
   button: {
     marginLeft: theme.spacing(3),
-    textTransform: "none",
     width: "fit-content",
     minWidth: 150,
   },

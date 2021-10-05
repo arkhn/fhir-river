@@ -26,9 +26,6 @@ const useStyles = makeStyles((theme) => ({
   iconSelected: {
     fill: theme.palette.primary.main,
   },
-  button: {
-    textTransform: "none",
-  },
   iconButton: {
     "& > span > span": {
       height: theme.spacing(2),
@@ -83,7 +80,6 @@ const CleaningScriptButton = ({
   return (
     <>
       <Button
-        className={classes.button}
         onClick={handleMenuToggle}
         color={isInputScriptSelected ? "primary" : "default"}
         startIcon={
