@@ -13,6 +13,9 @@ run-unit-tests:
 	$(eval markers := $(skip_markers) $(if $(skip_markers), and) not e2e)
 	docker-compose -f $(docker-compose-unit-tests) run --entrypoint pytest river -m "$(markers)"
 
+stop-unit-tests:
+	docker-compose -f $(docker-compose-unit-tests) down
+
 e2e-tests: setup-e2e-tests run-e2e-tests
 
 setup-e2e-tests:
@@ -26,3 +29,6 @@ setup-e2e-tests:
 run-e2e-tests:
 	$(eval markers := $(skip_markers) $(if $(skip_markers), and) e2e)
 	docker-compose -f $(docker-compose-e2e) run --entrypoint pytest river-api tests -m "$(markers)"
+
+stop-e2e-tests:
+	docker-compose -f $(docker-compose-e2e) down
