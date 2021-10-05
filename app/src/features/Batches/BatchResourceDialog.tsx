@@ -157,8 +157,7 @@ const BatchResourceDialog = ({
 
     if (selectedResourceIds.length > 0) {
       batchCreate();
-      onClose();
-      setSelectedResourceIds([]);
+      onCloseModal();
     }
   };
 
