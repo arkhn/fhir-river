@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -6,21 +6,18 @@ import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
 import clsx from "clsx";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 
 import Button from "common/components/Button";
 import FhirResourceAutocomplete from "common/components/FhirResourceAutocomplete";
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
 import ExistingURIDialog from "features/Inputs/ExistingURIDialog";
+import useCurrentMapping from "features/Mappings/useCurrentMapping";
 import {
   useApiStaticInputsDestroyMutation,
   useApiStaticInputsUpdateMutation,
 } from "services/api/endpoints";
-import {
-  StaticInput as StaticInputType,
-  useApiSourcesExportRetrieveQuery,
-} from "services/api/generated/api.generated";
+import { StaticInput as StaticInputType } from "services/api/generated/api.generated";
 
 import { URI_STATIC_VALUE_PREFIX } from "../../constants";
 
@@ -65,23 +62,12 @@ const useStyles = makeStyles((theme) => ({
 const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
-    mappingId?: string;
-  }>();
+  const { data: mapping } = useCurrentMapping();
   const classes = useStyles();
   const [staticValue, setStaticValue] = useState(input.value ?? "");
   const [isExistingURIDialogOpen, setExistingURIDialogOpen] = useState(false);
   const [deleteInput] = useApiStaticInputsDestroyMutation();
   const [updateInput] = useApiStaticInputsUpdateMutation();
-  const { data: mappings } = useApiSourcesExportRetrieveQuery(
-    { id: sourceId ?? "" },
-    { skip: !sourceId }
-  );
-  const currentMapping = useMemo(
-    () => mappings?.resources?.find((resource) => resource.id === mappingId),
-    [mappings, mappingId]
-  );
   const selectedNode = useGetSelectedNode();
   const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI(selectedNode);
   const isNodeTypeURI = selectedNode?.type === "uri";
@@ -114,8 +100,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   };
 
   const handleGenerateURIClick = async () => {
-    if (currentMapping) {
-      const staticValue = `${URI_STATIC_VALUE_PREFIX}${currentMapping.logical_reference}`;
+    if (mapping) {
+      const staticValue = `${URI_STATIC_VALUE_PREFIX}${mapping.logical_reference}`;
       try {
         await updateInput({
           id: input.id,
@@ -196,7 +182,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             <Button
               variant="outlined"
               onClick={handleGenerateURIClick}
-              disabled={!currentMapping}
+              disabled={!mapping}
             >
               {t("generateURI")}
             </Button>
