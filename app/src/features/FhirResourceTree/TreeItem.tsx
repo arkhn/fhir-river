@@ -66,6 +66,7 @@ const TreeItem = ({
     }
   );
 
+  // Set hasExpanded to true is current node path is in expandedNodes path array
   useEffect(() => {
     if (expandedNodes.includes(elementNode.path) && !hasExpanded) {
       setHasExpanded(true);
