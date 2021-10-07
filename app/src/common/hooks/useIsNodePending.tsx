@@ -10,9 +10,33 @@ import {
   useApiStaticInputsListQuery,
 } from "services/api/endpoints";
 import type {
+  Attribute,
   SQLInput,
   StaticInput,
 } from "services/api/generated/api.generated";
+
+/**
+ * Tests if node is a direct parent of attribute and if node kind is choice
+ *
+ * ie: returns true if
+ * Node path => `Observation.effective[x]` & attribute path => `Observation.effectiveBoolean`
+ * @param attribute The attribute that has an input
+ * @param node The current node to be tested as the attribute ancestor
+ * @returns True if node kind is "choice" and node is a parent of attribute
+ */
+const isAttributeChoiceOfNode = (
+  attribute: Attribute,
+  node: ElementNode
+): boolean => {
+  // Node kind has to be "choice"
+  if (node.kind !== "choice") return false;
+
+  const isNodeParentOfAttribute = node.children.some(
+    ({ path }) => path === attribute.path
+  );
+
+  return isNodeParentOfAttribute;
+};
 
 const useIsNodePending = (node: ElementNode): boolean => {
   const { mappingId } = useParams<{ mappingId?: string }>();
@@ -66,7 +90,9 @@ const useIsNodePending = (node: ElementNode): boolean => {
     attributesWithInputs !== undefined &&
     attributesWithInputs.some(
       (attribute) =>
-        attribute.path === node.path || attribute.path.startsWith(node.path)
+        attribute.path === node.path ||
+        attribute.path.startsWith(node.path) ||
+        isAttributeChoiceOfNode(attribute, node)
     )
   );
 };
