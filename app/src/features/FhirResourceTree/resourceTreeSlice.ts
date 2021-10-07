@@ -137,6 +137,10 @@ const resourceTreeSlice = createSlice({
         });
       }
     },
+    resourceTreeSliceStateReseted: (state) => {
+      state.rootElementNode = undefined;
+      state.rootNodeDefinition = undefined;
+    },
   },
 });
 
@@ -149,5 +153,6 @@ export const {
   rootElementNodeUpdated,
   attibuteItemsAdded,
   attributeNodesDeleted,
+  resourceTreeSliceStateReseted,
 } = resourceTreeSlice.actions;
 export default resourceTreeSlice.reducer;
