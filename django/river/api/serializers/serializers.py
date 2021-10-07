@@ -28,7 +28,7 @@ class PreviewRequestSerializer(serializers.Serializer):
 
 
 class OperationOutcomeIssueSerializer(serializers.Serializer):
-    severity = serializers.CharField()
+    severity = serializers.ChoiceField(choices=["fatal", "error", "warning", "information"])
     code = serializers.CharField()
     diagnostics = serializers.CharField(allow_blank=True)
     location = serializers.ListField(child=serializers.CharField())
