@@ -48,7 +48,7 @@ const TreeItem = ({
     elementNode.isArray &&
     elementNode.children.length === 0;
   const [hasExpanded, setHasExpanded] = useState(
-    expandedNodes.includes(elementNode.id)
+    expandedNodes.includes(elementNode.path)
   );
   const isComplex = elementNode.kind === "complex";
   const hasToFetchNodeDefinition =
@@ -67,10 +67,10 @@ const TreeItem = ({
   );
 
   useEffect(() => {
-    if (expandedNodes.includes(elementNode.id) && !hasExpanded) {
+    if (expandedNodes.includes(elementNode.path) && !hasExpanded) {
       setHasExpanded(true);
     }
-  }, [elementNode.id, expandedNodes, hasExpanded]);
+  }, [elementNode.path, expandedNodes, hasExpanded]);
 
   const handleIconClick = () => {
     setHasExpanded(true);
