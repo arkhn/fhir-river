@@ -13,6 +13,7 @@ import {
   rootNodeDefinitionUpdated,
   rootElementNodeUpdated,
   attibuteItemsAdded,
+  resourceTreeSliceStateReseted,
 } from "features/FhirResourceTree/resourceTreeSlice";
 import {
   getElementNodeByPath,
@@ -242,6 +243,15 @@ const useFhirResourceTreeData = (
     addItemToEmptyArray();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attributes, isAttributesFetching]);
+
+  // Reset Resource tree slice state when tree is unmounted
+  useEffect(() => {
+    return () => {
+      if (!node) {
+        dispatch(resourceTreeSliceStateReseted());
+      }
+    };
+  }, [dispatch, node]);
 
   return {
     rootElementNode,
