@@ -12,8 +12,8 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
-import { useSnackbar } from "notistack";
 import { difference } from "lodash";
+import { useSnackbar } from "notistack";
 import { useHistory, useParams } from "react-router-dom";
 
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
@@ -79,10 +79,7 @@ const FhirResourceTree = (): JSX.Element => {
     { resource: mapping?.id ?? "" },
     { skip: !mapping }
   );
-  const {
-    ids: nodeAncestorsIds,
-    hasReachedTarget,
-  } = useGetSelectedAttributeAncestors(rootElementNode);
+  const nodeAncestorsIds = useGetSelectedAttributeAncestors();
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
   const [createStaticInput] = useApiStaticInputsCreateMutation();
@@ -93,14 +90,9 @@ const FhirResourceTree = (): JSX.Element => {
 
     if (nodesToExpand.length > 0 && !hasAlreadyExpandedToTarget) {
       setExpandedNodes([...expandedNodes, ...nodesToExpand]);
-      hasReachedTarget && setHasAlreadyExpandedToTarget(hasReachedTarget);
+      setHasAlreadyExpandedToTarget(true);
     }
-  }, [
-    expandedNodes,
-    hasAlreadyExpandedToTarget,
-    hasReachedTarget,
-    nodeAncestorsIds,
-  ]);
+  }, [expandedNodes, hasAlreadyExpandedToTarget, nodeAncestorsIds]);
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
@@ -192,7 +184,12 @@ const FhirResourceTree = (): JSX.Element => {
         defaultExpandIcon={<ChevronRightIcon />}
       >
         {rootElementNode?.children.map((node) => (
-          <TreeItem key={node.path} elementNode={node} hasParentExpanded />
+          <TreeItem
+            key={node.path}
+            elementNode={node}
+            hasParentExpanded
+            expandedNodes={expandedNodes}
+          />
         ))}
       </TreeView>
     </Container>
