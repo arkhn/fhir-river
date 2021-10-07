@@ -85,6 +85,7 @@ const FhirResourceTree = (): JSX.Element => {
   const [createStaticInput] = useApiStaticInputsCreateMutation();
   const selectedNode = useGetSelectedNode();
 
+  // Expand attribute ancestors nodes only once
   useEffect(() => {
     const nodesToExpand = difference(nodeAncestorsIds, expandedNodes);
 
