@@ -104,6 +104,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// OperationOutcomeIssue with `severity` values matching the Alert prop `severity` values
+type AlertOperationOutcomeIssue = Partial<
+  Omit<OperationOutcomeIssue, "severity">
+> & {
+  severity: Color;
+};
+
+/**
+ * Returns a matching Alert `severity` value from OperationOutcomeIssue
+ *
+ * issue.severity === "information" => "info"
+ * @param issue OperationOutcomeIssue
+ */
+const getAlertSeverityFromOperationOutcomeIssue = (
+  issue: OperationOutcomeIssue
+): Color => {
+  let alertSeverity: Color = "info";
+  switch (issue.severity) {
+    case "error":
+    case "warning":
+      alertSeverity = issue.severity;
+      break;
+    case "information":
+      alertSeverity = "info";
+      break;
+  }
+  return alertSeverity;
+};
+
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -116,9 +145,9 @@ const Preview = (): JSX.Element => {
     ExplorationResponse | null | undefined
   >(undefined);
 
-  const [alerts, setAlerts] = useState<OperationOutcomeIssue[] | undefined>(
-    undefined
-  );
+  const [alerts, setAlerts] = useState<
+    AlertOperationOutcomeIssue[] | undefined
+  >(undefined);
   const handleAlertClose = (index: number) => {
     if (alerts) {
       const newAlerts = [...alerts];
@@ -195,7 +224,12 @@ const Preview = (): JSX.Element => {
             }).unwrap();
             setPreview(previewResult.instances[0]);
             if (previewResult.errors.length > 0)
-              setAlerts(previewResult.errors);
+              setAlerts(
+                previewResult.errors.map((error) => ({
+                  ...error,
+                  severity: getAlertSeverityFromOperationOutcomeIssue(error),
+                }))
+              );
           } catch (e) {
             setAlerts([
               {
@@ -266,7 +300,7 @@ const Preview = (): JSX.Element => {
           <Alert
             key={index}
             className={classes.alert}
-            severity={issue.severity as Color}
+            severity={issue.severity}
             onClose={() => handleAlertClose(index)}
           >
             {issue.diagnostics}
