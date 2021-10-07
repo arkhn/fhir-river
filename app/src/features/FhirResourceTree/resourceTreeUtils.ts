@@ -554,3 +554,25 @@ export const createElementDefinitionPathOrId = (
   const suffix = childPathOrId.split(".").slice(1).join(".");
   return `${parentPathOrId}${suffix ? `.${suffix}` : ""}`;
 };
+
+/**
+ * `Observation.code.coding[0].type` => `[Observation.code, Observation.code.coding, Observation.code.coding[0]]`
+ * @param path Path to decompose
+ * @returns Ancestors paths
+ */
+export const getAncestorsPaths = (path: string): string[] =>
+  path.split(".").reduce((acc: string[], val, index, array) => {
+    const decomposedValuePath =
+      computePathWithoutIndexes(val) !== val
+        ? [computePathWithoutIndexes(val), val]
+        : [val];
+    if (index === 0) return [];
+    if (index === 1) {
+      return decomposedValuePath.map((_val) => `${array[0]}.${_val}`);
+    } else {
+      return [
+        ...acc,
+        ...decomposedValuePath.map((_val) => `${acc[acc.length - 1]}.${_val}`),
+      ];
+    }
+  }, []);

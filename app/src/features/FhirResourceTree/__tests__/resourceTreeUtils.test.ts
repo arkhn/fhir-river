@@ -14,6 +14,7 @@ import {
   createElementDefinitionPathOrId,
   createElementNode,
   findChildAttributes,
+  getAncestorsPaths,
   getDefinitionNodeById,
   getDefinitionNodeFromItemAttribute,
   getDefinitionNodeParent,
@@ -255,5 +256,39 @@ describe("createElementNode", () => {
     });
     const resultPath = "Encounter.subject[3]";
     expect(elementNode.path).toEqual(resultPath);
+  });
+});
+
+describe("getAncestorsPaths", () => {
+  it("simple path", () => {
+    const path = "Observation.code";
+    expect(getAncestorsPaths(path)).toStrictEqual([path]);
+  });
+
+  it("more complexe path", () => {
+    const path = "Observation.code.coding";
+    expect(getAncestorsPaths(path)).toStrictEqual(["Observation.code", path]);
+  });
+
+  it("path with array item", () => {
+    const path = "Observation.code.coding[0]";
+    expect(getAncestorsPaths(path)).toStrictEqual([
+      "Observation.code",
+      "Observation.code.coding",
+      path,
+    ]);
+  });
+  it("very nested path with array item", () => {
+    const path = "Observation.code.coding[0].type.code.coding[3].type";
+    expect(getAncestorsPaths(path)).toStrictEqual([
+      "Observation.code",
+      "Observation.code.coding",
+      "Observation.code.coding[0]",
+      "Observation.code.coding[0].type",
+      "Observation.code.coding[0].type.code",
+      "Observation.code.coding[0].type.code.coding",
+      "Observation.code.coding[0].type.code.coding[3]",
+      path,
+    ]);
   });
 });
