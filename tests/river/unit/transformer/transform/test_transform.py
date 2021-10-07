@@ -68,7 +68,6 @@ def test_transform(dict_map_code):
     analysis = Analysis()
     analysis.attributes = [attr_name, attr_language, attr_static, attr_static_list]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
-    # FIXME defintion is absent from analysis
     analysis.definition_id = "Patient"
     analysis.definition = fhir_api.retrieve("StructureDefinition", analysis.definition_id)
     analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
@@ -164,7 +163,6 @@ def test_transform_with_condition_arrays(dict_map_code):
     analysis = Analysis()
     analysis.attributes = [attr_name, attr_language, attr_language_sys, attr_status]
     analysis.primary_key_column = SqlColumn("PUBLIC", "PATIENTS", "ID")
-    # FIXME defintion is absent from analysis
     analysis.definition_id = "Patient"
     analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
     analysis.definition = fhir_api.retrieve("StructureDefinition", "Patient")
@@ -181,6 +179,30 @@ def test_transform_with_condition_arrays(dict_map_code):
         "status": "active",
         "language": [{"code": "abc", "system": "SYS"}, {"system": "SYS"}, {"code": "fed", "system": "SYS"}],
         "resourceType": "Patient",
+    }
+
+
+def test_create_fhir_document():
+    analysis = Analysis()
+    analysis.attributes = []
+    analysis.primary_key_column = SqlColumn("PUBLIC", "CHARTEVENTS", "ID")
+    analysis.definition_id = "vitalsigns"
+    analysis.definition = fhir_api.retrieve("StructureDefinition", analysis.definition_id)
+    analysis.logical_reference = "9a07bc7d-1e7b-46ff-afd5-f9356255b2f6"
+
+    primary_key_value = "xxx"
+
+    transformer = Transformer()
+    actual = transformer.create_fhir_document({}, analysis, primary_key_value)
+
+    assert actual == {
+        "id": actual["id"],
+        "meta": {
+            "lastUpdated": actual["meta"]["lastUpdated"],
+            "tag": actual["meta"]["tag"],
+            "profile": ["http://hl7.org/fhir/StructureDefinition/vitalsigns"],
+        },
+        "resourceType": "Observation",
     }
 
 
