@@ -2,6 +2,11 @@ import React, { FC, ReactElement } from "react";
 
 import { MuiThemeProvider } from "@material-ui/core";
 import { render, RenderOptions, RenderResult } from "@testing-library/react";
+import {
+  renderHook,
+  RenderHookOptions,
+  RenderHookResult,
+} from "@testing-library/react-hooks";
 import { createMemoryHistory, MemoryHistory } from "history";
 import { SnackbarProvider } from "notistack";
 import { Provider } from "react-redux";
@@ -55,6 +60,33 @@ const renderWithRouter = (
   );
 };
 
+const renderHookWithRouter = <TProps, TResult>(
+  hook: (props: TProps) => TResult,
+  options?: RenderHookOptions<TProps>,
+  {
+    path = "/",
+    route = "/",
+    history = createMemoryHistory({ initialEntries: [route] }),
+  }: { path?: string; route?: string; history?: MemoryHistory<unknown> } = {}
+): RenderHookResult<TProps, TResult> => {
+  return renderHook(hook, {
+    // eslint-disable-next-line react/display-name
+    wrapper: ({ children }) => (
+      <Wrapper>
+        <Router history={history}>
+          <LocationDisplay />
+          <Switch>
+            <Route exact path={path}>
+              {children}
+            </Route>
+          </Switch>
+        </Router>
+      </Wrapper>
+    ),
+    ...options,
+  });
+};
+
 export * from "@testing-library/react";
 
-export { renderWithRouter as render };
+export { renderWithRouter as render, renderHookWithRouter as renderHook };
