@@ -179,11 +179,15 @@ const Preview = (): JSX.Element => {
   const [apiExploreCreate] = useApiExploreCreateMutation();
 
   const handleValidationError = useCallback(
-    (
-      errors: ApiValidationError<unknown> | undefined,
-      errorStatus: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR",
-      errorField: string
-    ) => {
+    ({
+      errors,
+      errorStatus,
+      errorField,
+    }: {
+      errors?: ApiValidationError<unknown>;
+      errorStatus: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR";
+      errorField: string;
+    }) => {
       if (errors) {
         const errorEntries = Object.entries(errors);
         errorEntries.forEach(([key, text]) => {
@@ -208,27 +212,33 @@ const Preview = (): JSX.Element => {
 
   const handleError = useCallback(
     (error: FetchBaseQueryError) => {
-      const typedError = error;
-      const validationError = apiValidationErrorFromResponse(typedError);
-      if (validationError)
-        handleValidationError(validationError, typedError.status, "Preview");
-      else if (typedError.status === "PARSING_ERROR") {
-        enqueueSnackbar(
-          t<string>("catchValidationErrorPrompt", {
-            query: typedError.status,
-            errorStatus: typedError.originalStatus.toString(),
-            errorText: typedError.error,
-          }),
-          { variant: "error" }
-        );
-      } else if (
-        (typedError.status === "FETCH_ERROR" ||
-          typedError.status === "CUSTOM_ERROR") &&
-        typedError.data
-      ) {
-        enqueueSnackbar(`${typedError.status} : ${typedError.data as string}`, {
-          variant: "error",
-        });
+      const validationError = apiValidationErrorFromResponse(error);
+      switch (error.status) {
+        case "PARSING_ERROR":
+          enqueueSnackbar(
+            t<string>("catchValidationErrorPrompt", {
+              query: error.status,
+              errorStatus: error.originalStatus.toString(),
+              errorText: error.error,
+            }),
+            { variant: "error" }
+          );
+          break;
+        case "FETCH_ERROR":
+        case "CUSTOM_ERROR":
+          error.data &&
+            enqueueSnackbar(`${error.status} : ${error.data as string}`, {
+              variant: "error",
+            });
+          break;
+        default:
+          validationError &&
+            handleValidationError({
+              errors: validationError,
+              errorStatus: error.status,
+              errorField: "Preview",
+            });
+          break;
       }
     },
     [enqueueSnackbar, handleValidationError, t]
@@ -274,14 +284,14 @@ const Preview = (): JSX.Element => {
 
       const explore = async () => {
         try {
-          const exploration = await apiExploreCreate({
+          const _exploration = await apiExploreCreate({
             explorationRequestRequest: {
               owner: owner?.name ?? "",
               table: mapping?.primary_key_table ?? "",
               resource_id: mappingId,
             },
           }).unwrap();
-          setExploration(exploration);
+          setExploration(_exploration);
         } catch (error) {
           handleError(error as FetchBaseQueryError);
         }
