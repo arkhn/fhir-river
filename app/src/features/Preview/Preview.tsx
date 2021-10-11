@@ -363,7 +363,7 @@ const Preview = (): JSX.Element => {
           <Alert
             key={index}
             className={classes.alert}
-            severity={issue.severity as Color}
+            severity={issue.severity}
             onClose={() => handleAlertClose(index)}
           >
             {issue.diagnostics}
