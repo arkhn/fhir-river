@@ -1468,8 +1468,8 @@ export type OperationOutcomeIssue = {
   diagnostics: string;
   location?: string[];
   expression?: string;
-export type SeverityEnum = "fatal" | "error" | "warning" | "information";
 };
+export type SeverityEnum = "fatal" | "error" | "warning" | "information";
 export type PreviewResponse = {
   instances: {
     [key: string]: any;
