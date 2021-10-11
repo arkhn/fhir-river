@@ -3393,6 +3393,27 @@ components:
       - ORACLE
       - SQLLITE
       type: string
+    OperationOutcomeIssue:
+      type: object
+      properties:
+        severity:
+          $ref: '#/components/schemas/SeverityEnum'
+        code:
+          type: string
+        diagnostics:
+          type: string
+        location:
+          type: array
+          items:
+            type: string
+        expression:
+          type: string
+      required:
+      - code
+      - diagnostics
+      - expression
+      - location
+      - severity
     Owner:
       type: object
       properties:
@@ -3746,6 +3767,13 @@ components:
       - category
       - description
       - name
+    SeverityEnum:
+      enum:
+      - fatal
+      - error
+      - warning
+      - information
+      type: string
     Source:
       type: object
       properties:

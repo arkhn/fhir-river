@@ -254,7 +254,7 @@ KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_PO
 
 # API URLs
 
-FHIR_API_URL = os.environ.get("FHIR_API_URL", "http://fhir-api:2000")
+FHIR_API_URL = os.environ.get("FHIR_API_URL", "http://jpaltime:8080/hapi/fhir")
 
 # Prometheus
 

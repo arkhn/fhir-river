@@ -11,16 +11,29 @@ import {
 export const EditedButton = withStyles((theme) => ({
   root: {
     textTransform: "none",
+    minHeight: 38,
+  },
+  sizeSmall: {
+    minHeight: 34,
+  },
+  sizeLarge: {
+    minHeight: 42,
   },
   startIcon: {
     height: 12,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fill: theme.palette.common.white,
+    fill: theme.palette.text.primary,
+  },
+  contained: {
+    "&.Mui-disabled": {
+      border: "1px solid transparent",
+    },
   },
   containedPrimary: {
     border: `1px solid ${theme.palette.primary.dark}`,
+    "& .MuiButton-startIcon": { fill: theme.palette.common.white },
   },
   containedSecondary: {
     border: `1px solid ${theme.palette.secondary.dark}`,
@@ -30,9 +43,6 @@ export const EditedButton = withStyles((theme) => ({
     "& .MuiButton-startIcon": {
       fill: theme.palette.secondary.contrastText,
     },
-  },
-  disabled: {
-    border: "none",
   },
   colorInherit: {
     "& .MuiButton-startIcon": {

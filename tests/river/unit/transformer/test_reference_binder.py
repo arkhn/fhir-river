@@ -6,8 +6,12 @@ from river.transformer.errors import IncompleteIdentifierError
 from river.transformer.reference_binder import ReferenceBinder
 
 
-def test_identifier_to_reference(identifier):
-    binder = ReferenceBinder()
+@pytest.fixture(scope="module")
+def binder():
+    return ReferenceBinder()
+
+
+def test_identifier_to_reference(identifier, binder):
     resource_type = "Patient"
 
     reference = binder.identifier_to_reference(identifier, resource_type).split("/")
@@ -16,32 +20,37 @@ def test_identifier_to_reference(identifier):
     UUID(reference[1], version=5)
 
 
-def test_invalid_identifier_to_reference(identifier):
-    binder = ReferenceBinder()
-    resource_type = "Patient"
+@pytest.mark.parametrize(
+    "invalid_identifier,expected_error",
+    [
+        (
+            {"system": "http://terminology.arkhn.org/mimic_id/3fd9abb2-c4dc-4dc7-a2f8-888d5714aac4"},
+            IncompleteIdentifierError,
+        ),
+        (
+            {"system": "http://terminology.arkhn.org/mimic_id/3fd9abb2-c4dc-4dc7-a2f8-888d5714aac4", "value": ""},
+            IncompleteIdentifierError,
+        ),
+        (
+            {"value": "123"},
+            IncompleteIdentifierError,
+        ),
+        (
+            {"system": "", "value": "123"},
+            IncompleteIdentifierError,
+        ),
+        (
+            {"system": "invalid_system", "value": "123"},
+            ValueError,
+        ),
+    ],
+)
+def test_invalid_identifier_to_reference(invalid_identifier, expected_error, binder):
+    with pytest.raises(expected_error):
+        binder.identifier_to_reference(invalid_identifier, "Patient")
 
-    identifier_without_value = {"system": identifier["system"]}
-    identifier_with_empty_value = {"system": identifier["system"], "value": ""}
 
-    with pytest.raises(IncompleteIdentifierError):
-        binder.identifier_to_reference(identifier_without_value, resource_type)
-        binder.identifier_to_reference(identifier_with_empty_value, resource_type)
-
-    identifier_without_system = {"value": identifier["value"]}
-    identifier_with_empty_system = {"value": identifier["value"], "system": ""}
-
-    with pytest.raises(IncompleteIdentifierError):
-        binder.identifier_to_reference(identifier_without_system, resource_type)
-        binder.identifier_to_reference(identifier_with_empty_system, resource_type)
-
-    identifier_with_invalid_system = {"system": "invalid_system", "value": identifier["value"]}
-
-    with pytest.raises(ValueError):
-        binder.identifier_to_reference(identifier_with_invalid_system, resource_type)
-
-
-def test_resolve_references(patient):
-    binder = ReferenceBinder()
+def test_resolve_references(patient, binder):
     patient_reference_paths = [["generalPractitioner"], ["managingOrganization"], ["identifier", "assigner"]]
     resolved_patient = binder.resolve_references(patient, patient_reference_paths)
 

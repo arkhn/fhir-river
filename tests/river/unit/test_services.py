@@ -4,6 +4,7 @@ from river.adapters.event_publisher import InMemoryEventPublisher
 from river.adapters.topics import InMemoryTopicsManager
 from river.domain.events import BatchEvent
 from river.services import abort, batch, preview
+from syrupy.filters import paths
 
 pytestmark = pytest.mark.django_db
 
@@ -37,9 +38,11 @@ def test_abort(batch):
 def test_retry(batch):
     pass
 
-
-# TODO improve test to verify what's in documents
-def test_preview(mimic_mapping):
-    documents, errors = preview(mimic_mapping, mimic_mapping["resources"][0]["id"], None, "authtokenxxx")
+def test_preview(mimic_mapping, snapshot):
+    # label: patient-resource-id
+    resource_id = "cktlnp0f300300mmznmyqln70"
+    documents, errors = preview(mimic_mapping, resource_id, [10006], "authtokenxxx")
 
     assert len(errors) == 0
+    assert len(documents) == 1
+    assert documents[0] == snapshot(exclude=paths("meta.lastUpdated"))

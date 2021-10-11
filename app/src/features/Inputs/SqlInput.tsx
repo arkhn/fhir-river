@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -9,35 +9,25 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { useSnackbar } from "notistack";
-import { useParams } from "react-router-dom";
-import { v4 as uuid } from "uuid";
 
-import { useAppDispatch, useAppSelector } from "app/store";
 import ColumnSelects from "features/Columns/ColumnSelect";
-import {
-  columnAdded,
-  columnUpdated,
-  columnSelectors,
-  PendingColumn,
-} from "features/Columns/columnSlice";
-import ColumnJoinList from "features/Joins/ColumnJoinList";
+import SqlInputJoinList from "features/Joins/SqlInputJoinList";
+import useCurrentMapping from "features/Mappings/useCurrentMapping";
 import CleaningScriptButton from "features/Scripts/CleaningScriptButton";
 import {
-  useApiColumnsListQuery,
-  useApiColumnsCreateMutation,
   useApiColumnsUpdateMutation,
-  useApiInputsDestroyMutation,
-  useApiInputsUpdateMutation,
-  useApiResourcesRetrieveQuery,
+  useApiSqlInputsDestroyMutation,
+  useApiSqlInputsUpdateMutation,
+  useApiColumnsRetrieveQuery,
 } from "services/api/endpoints";
 import {
-  ColumnRequest,
-  Input,
+  SQLInput,
   Scripts,
+  Column,
 } from "services/api/generated/api.generated";
 
 type SqlInputProps = {
-  input: Input;
+  input: SQLInput;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -46,9 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconSelected: {
     fill: theme.palette.primary.main,
-  },
-  button: {
-    textTransform: "none",
   },
   columnSelect: { width: "fit-content" },
   iconButtonContainer: {
@@ -79,112 +66,71 @@ const useStyles = makeStyles((theme) => ({
 
 const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const classes = useStyles();
-  const dispatch = useAppDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const [deleteInput] = useApiInputsDestroyMutation();
-  const [createColumn] = useApiColumnsCreateMutation();
-  const [updateColumn] = useApiColumnsUpdateMutation();
-  const [updateInput] = useApiInputsUpdateMutation();
-  const { mappingId } = useParams<{ mappingId?: string }>();
-  const { data: inputColumns, isSuccess } = useApiColumnsListQuery({
-    input: input.id,
-  });
-  const {
-    data: mapping,
-    isLoading: mappingLoading,
-  } = useApiResourcesRetrieveQuery(
-    { id: mappingId ?? "" },
-    { skip: !mappingId }
+
+  const { data: mapping } = useCurrentMapping();
+
+  const [inputColumn, setInputColumn] = useState<Partial<Column> | undefined>(
+    undefined
   );
 
-  const inputColumn = useAppSelector((state) =>
-    columnSelectors
-      .selectAll(state)
-      .find((column) => column?.input === input.id)
-  );
-  const isMappingPKTableAndInputColumnTableDifferent =
-    inputColumn?.table &&
-    mapping &&
-    (inputColumn.owner !== mapping.primary_key_owner ||
-      inputColumn.table !== mapping.primary_key_table);
+  const [deleteInput] = useApiSqlInputsDestroyMutation();
+  const [updateInput] = useApiSqlInputsUpdateMutation();
+
+  const [updateColumn] = useApiColumnsUpdateMutation();
+
+  const { data: apiInputColumn } = useApiColumnsRetrieveQuery({
+    id: input.column,
+  });
 
   useEffect(() => {
-    if (inputColumns && !inputColumn && mapping) {
-      if (inputColumns[0]) {
-        dispatch(columnAdded({ ...inputColumns[0], pending: false }));
-      } else if (isSuccess && inputColumns.length === 0 && mapping) {
-        dispatch(
-          columnAdded({
-            id: uuid(),
-            input: input.id,
-            pending: true,
-            table: mapping.primary_key_table,
-            owner: mapping.primary_key_owner,
-          })
-        );
-      }
-    }
-  }, [inputColumns, dispatch, inputColumn, input.id, isSuccess, mapping]);
+    setInputColumn(apiInputColumn);
+  }, [apiInputColumn]);
+
+  const isMappingPKTableAndInputColumnTableDifferent =
+    inputColumn?.owner !== mapping?.primary_key_owner ||
+    inputColumn?.table !== mapping?.primary_key_table;
 
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 
-  const handleColumnChange = async (column: PendingColumn) => {
-    if (column.id) {
-      dispatch(columnUpdated({ id: column.id, changes: column }));
-    }
-
+  const handleColumnChange = async (column: Partial<Column>) => {
     if (column.id && column.table && column.column && column.owner) {
       try {
-        const newColumn = column.pending
-          ? await createColumn({
-              columnRequest: column as ColumnRequest,
-            }).unwrap()
-          : await updateColumn({
-              id: column.id,
-              columnRequest: column as ColumnRequest,
-            }).unwrap();
-
-        dispatch(
-          columnUpdated({
-            id: column.id,
-            changes: { ...newColumn, pending: false },
-          })
-        );
-      } catch (error) {
-        console.error(error);
+        await updateColumn({
+          id: column.id,
+          columnRequest: column as Column,
+        }).unwrap();
+      } catch (e) {
+        enqueueSnackbar(e.error, { variant: "error" });
       }
     }
+    setInputColumn({ ...column });
   };
 
   const handleScriptChange = async (script: Scripts | null) => {
     try {
       await updateInput({
         id: input.id,
-        inputRequest: { ...input, script: script ? script.name : "" },
+        sqlInputRequest: { ...input, script: script ? script.name : "" },
       });
-    } catch (error) {
-      enqueueSnackbar(error.error, { variant: "error" });
+    } catch (e) {
+      enqueueSnackbar(e.error, { variant: "error" });
     }
   };
 
-  if (mappingLoading) {
-    return <CircularProgress />;
-  }
+  if (!mapping || !inputColumn) return <CircularProgress />;
 
   return (
     <Grid item container direction="column" spacing={1}>
       <Grid item container alignItems="center" spacing={1}>
         <Grid item spacing={1} container className={classes.columnSelect}>
-          <ColumnSelects
-            pendingColumn={inputColumn ?? {}}
-            onChange={handleColumnChange}
-          />
+          <ColumnSelects column={inputColumn} onChange={handleColumnChange} />
         </Grid>
         <Grid item>
           <CleaningScriptButton
@@ -202,10 +148,10 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
           </IconButton>
         </Grid>
       </Grid>
-      {isMappingPKTableAndInputColumnTableDifferent && !inputColumn?.pending && (
+      {isMappingPKTableAndInputColumnTableDifferent && (
         <Grid item container>
           <div className={classes.leftShift}>
-            <ColumnJoinList column={inputColumn} mapping={mapping} />
+            <SqlInputJoinList sqlInputId={input.id} />
           </div>
         </Grid>
       )}

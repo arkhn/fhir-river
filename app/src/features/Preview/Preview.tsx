@@ -98,7 +98,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     alignSelf: "flex-start",
     marginBottom: theme.spacing(2),
-    textTransform: "none",
     color: theme.palette.text.secondary,
     "&:hover": {
       backgroundColor: "inherit",
@@ -110,6 +109,35 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
 }));
+
+// OperationOutcomeIssue with `severity` values matching the Alert prop `severity` values
+type AlertOperationOutcomeIssue = Partial<
+  Omit<OperationOutcomeIssue, "severity">
+> & {
+  severity: Color;
+};
+
+/**
+ * Returns a matching Alert `severity` value from OperationOutcomeIssue
+ *
+ * issue.severity === "information" => "info"
+ * @param issue OperationOutcomeIssue
+ */
+const getAlertSeverityFromOperationOutcomeIssue = (
+  issue: OperationOutcomeIssue
+): Color => {
+  let alertSeverity: Color = "info";
+  switch (issue.severity) {
+    case "error":
+    case "warning":
+      alertSeverity = issue.severity;
+      break;
+    case "information":
+      alertSeverity = "info";
+      break;
+  }
+  return alertSeverity;
+};
 
 const Preview = (): JSX.Element => {
   const classes = useStyles();
@@ -123,10 +151,10 @@ const Preview = (): JSX.Element => {
   const [exploration, setExploration] = useState<
     ExplorationResponse | null | undefined
   >(undefined);
+  const [alerts, setAlerts] = useState<
+    AlertOperationOutcomeIssue[] | undefined
+  >(undefined);
 
-  const [alerts, setAlerts] = useState<OperationOutcomeIssue[] | undefined>(
-    undefined
-  );
   const [preview, setPreview] = useState<IResource | undefined>(undefined);
 
   const handleAlertClose = (index: number) => {
@@ -176,6 +204,40 @@ const Preview = (): JSX.Element => {
     [enqueueSnackbar, t]
   );
 
+  useEffect(() => {
+    if (mappingId && owner && exploration === undefined) {
+      setExploration(null);
+
+      const explore = async () => {
+        try {
+          const exploration = await apiExploreCreate({
+            explorationRequestRequest: {
+              owner: owner?.name ?? "",
+              table: mapping?.primary_key_table ?? "",
+              resource_id: mappingId,
+            },
+          }).unwrap();
+          setExploration(exploration);
+        } catch (e) {
+          setAlerts([
+            {
+              severity: "error",
+              diagnostics: e.error,
+              code: "internal",
+            },
+          ]);
+        }
+      };
+      explore();
+    }
+  }, [
+    apiExploreCreate,
+    exploration,
+    mapping?.primary_key_table,
+    mappingId,
+    owner,
+  ]);
+
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
@@ -194,7 +256,12 @@ const Preview = (): JSX.Element => {
             }).unwrap();
             setPreview(previewResult.instances[0]);
             if (previewResult.errors.length > 0)
-              setAlerts(previewResult.errors);
+              setAlerts(
+                previewResult.errors.map((error) => ({
+                  ...error,
+                  severity: getAlertSeverityFromOperationOutcomeIssue(error),
+                }))
+              );
           } catch (error) {
             const typedError = error as FetchBaseQueryError;
             const validationError = apiValidationErrorFromResponse(typedError);
@@ -226,7 +293,7 @@ const Preview = (): JSX.Element => {
           const typedError = error as FetchBaseQueryError;
           const validationError = apiValidationErrorFromResponse(typedError);
           if (validationError)
-            handleError(validationError, typedError.status, "Exploration");
+            handleError(validationError, typedError.status, "Preview");
           else enqueueSnackbar(error.error, { variant: "error" });
         }
       };

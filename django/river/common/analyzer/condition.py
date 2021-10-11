@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, List, NewType, Tuple, Union
+from typing import Any, Dict, NewType, Tuple
 
 from river.common.analyzer.sql_column import SqlColumn
 from river.common.errors import OperationOutcome
@@ -26,18 +26,17 @@ CONDITION_RELATION_TO_FUNCTION = {
 
 UNARY_RELATIONS = ["NULL", "NOTNULL"]
 
-DataDictKey = NewType("DataDictKey", Tuple[str, Tuple[str, str]])
-DataDictValue = NewType("DataDictValue", Union[str, List[str]])
+DataDictKey = NewType("DataDictKey", Tuple[str, str])
 
 
 class Condition:
-    def __init__(self, action: str = None, sql_column: SqlColumn = None, relation: str = None, value: str = None):
+    def __init__(self, action: str, sql_column: SqlColumn, relation: str, value: str):
         self.action = action
         self.sql_column = sql_column
         self.relation = relation
         self.value = value.split(",") if relation == "IN" else value
 
-    def check(self, data: Dict[DataDictKey, DataDictValue]):
+    def check(self, data: Dict[DataDictKey, Any]):
         value_data = data[(CONDITION_FLAG, self.sql_column.col_name_with_joins())]
 
         try:

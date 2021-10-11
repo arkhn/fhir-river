@@ -6,7 +6,7 @@ FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
 def test_format_concept_map():
-    actual = concept_maps.format_concept_map("cm_gender", "validToken")
+    actual = concept_maps.format_concept_map("8d45157a-12c5-4da2-8b80-0c5607fa37d7", "validToken")
     expected = {
         "F": "female",
         "M": "male",
@@ -15,7 +15,11 @@ def test_format_concept_map():
 
 
 def test_dereference_concept_map():
-    mapping = {"attributes": [{"input_groups": [{"sql_inputs": [{"concept_map_id": "cm_gender"}]}]}]}
+    mapping = {
+        "attributes": [
+            {"input_groups": [{"sql_inputs": [{"concept_map_id": "8d45157a-12c5-4da2-8b80-0c5607fa37d7"}]}]}
+        ]
+    }
 
     concept_maps.dereference_concept_map(mapping, "validToken")
 

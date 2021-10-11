@@ -8,6 +8,8 @@ from river.extractor.errors import ImproperMappingError
 from sqlalchemy import Column as AlchemyColumn
 from sqlalchemy import Table, and_
 from sqlalchemy.orm import Query, aliased
+from sqlalchemy.sql.elements import BooleanClauseList
+from sqlalchemy.sql.expression import Label
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ def handle_between_filter(col, value):
     return and_(col.__ge__(min_val), col.__le__(max_val))
 
 
-SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], Callable]] = {
+SQL_RELATIONS_TO_METHOD: Dict[str, Callable[[AlchemyColumn, str], BooleanClauseList]] = {
     "<": lambda col, value: col.__lt__(value),
     "<=": lambda col, value: col.__le__(value),
     "<>": lambda col, value: col.__ne__(value),
@@ -188,7 +190,7 @@ class QueryBuilder:
 
         return query
 
-    def get_column(self, column: SqlColumn, table: Table = None) -> AlchemyColumn:
+    def get_column(self, column: SqlColumn, table: Table = None) -> Label:
         """Get the sql alchemy column corresponding to the SqlColumn (custom type)
         from the analysis.
         """

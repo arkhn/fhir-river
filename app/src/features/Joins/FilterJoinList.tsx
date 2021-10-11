@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 
-import { Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
@@ -10,20 +10,14 @@ import Button from "common/components/Button";
 import {
   columnAdded,
   columnSelectors,
-  columnRemoved,
   columnUpdated,
 } from "features/Columns/columnSlice";
+import { sqlInputSelectors } from "features/Inputs/sqlInputSlice";
 import { resourceSelectors } from "features/Mappings/resourceSlice";
-import { Column, Filter } from "services/api/generated/api.generated";
+import { Column, Filter, Join } from "services/api/generated/api.generated";
 
 import JoinSelect from "./JoinSelect";
 import { joinAdded, joinRemoved, joinSelectors } from "./joinSlice";
-
-const useStyles = makeStyles(() => ({
-  button: {
-    textTransform: "none",
-  },
-}));
 
 type JoinProps = {
   filter: Partial<Filter>;
@@ -31,11 +25,13 @@ type JoinProps = {
 
 const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const { t } = useTranslation();
-  const classes = useStyles();
   const dispatch = useAppDispatch();
 
+  const filterSqlInput = useAppSelector((state) =>
+    sqlInputSelectors.selectById(state, filter.sql_input ?? "")
+  );
   const filterColumn = useAppSelector((state) =>
-    columnSelectors.selectById(state, filter.sql_column ?? "")
+    columnSelectors.selectById(state, filterSqlInput?.column ?? "")
   );
   const mapping = useAppSelector((state) =>
     resourceSelectors.selectById(state, filter.resource ?? "")
@@ -45,29 +41,26 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
   const filterJoins = useAppSelector((state) =>
     joinSelectors
       .selectAll(state)
-      .filter((join) => join.column === filterColumn?.id)
+      .filter((join) => join.sql_input === filterSqlInput?.id)
   );
 
-  const columnsByJoin = (joinId?: string) =>
-    columns.filter((column) => column.join === joinId) as [
-      Partial<Column>,
-      Partial<Column>
-    ];
+  const getColumnById = (id: Column["id"]): Partial<Column> | undefined =>
+    columns.find((column) => column.id === id);
 
   const handleJoinAdd = useCallback(() => {
     const joinId = uuid();
+    const leftColumnId = uuid();
+    const rightColumnId = uuid();
     dispatch(
       columnAdded({
-        id: uuid(),
-        join: joinId,
+        id: leftColumnId,
         owner: mapping?.primary_key_owner,
         table: mapping?.primary_key_table,
       })
     );
     dispatch(
       columnAdded({
-        id: uuid(),
-        join: joinId,
+        id: rightColumnId,
         owner: filterColumn?.owner,
         table: filterColumn?.table,
       })
@@ -75,12 +68,14 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
     dispatch(
       joinAdded({
         id: joinId,
-        column: filterColumn?.id,
+        sql_input: filter.sql_input,
+        left: leftColumnId,
+        right: rightColumnId,
       })
     );
   }, [
     dispatch,
-    filterColumn?.id,
+    filter.sql_input,
     filterColumn?.owner,
     filterColumn?.table,
     mapping?.primary_key_owner,
@@ -93,8 +88,9 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
     (filterColumn.owner !== mapping.primary_key_owner ||
       filterColumn.table !== mapping.primary_key_table);
 
+  // Add a join automatically if we're on a different table and if there isn't one already
   useEffect(() => {
-    if (filterJoins.length === 0 && isMappingPKTableAndFilterTableDifferent)
+    if (!filterJoins.length && isMappingPKTableAndFilterTableDifferent)
       handleJoinAdd();
   }, [filterJoins, handleJoinAdd, isMappingPKTableAndFilterTableDifferent]);
 
@@ -112,18 +108,13 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
     }
   };
 
-  const handleJoinDelete = (joinId: string) => {
-    const columns = columnsByJoin(joinId);
-    columns.forEach((column) => {
-      if (column.id) dispatch(columnRemoved(column.id));
-    });
+  const handleJoinDelete = (joinId: Join["id"]) => () =>
     dispatch(joinRemoved(joinId));
-  };
 
   if (!filterColumn) return null;
   return (
     <Grid container direction="column" spacing={1}>
-      {filterColumn.join && (
+      {filterJoins.length > 0 && (
         <Grid item>
           <Typography gutterBottom={false}>{t("joinOn")}</Typography>
         </Grid>
@@ -131,14 +122,14 @@ const FilterJoinList = ({ filter }: JoinProps): JSX.Element | null => {
       {filterJoins.map((join) => (
         <JoinSelect
           key={`join-${join.id}`}
-          columns={columnsByJoin(join.id)}
+          leftColumn={getColumnById(join.left ?? "") ?? {}}
+          rightColumn={getColumnById(join.right ?? "") ?? {}}
           onChange={handleJoinChange}
-          onDelete={handleJoinDelete}
+          onDelete={handleJoinDelete(join.id ?? "")}
         />
       ))}
       <Grid item>
         <Button
-          className={classes.button}
           startIcon={<AddIcon />}
           onClick={handleJoinAdd}
           variant="outlined"

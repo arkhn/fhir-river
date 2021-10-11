@@ -37,6 +37,7 @@ export const complexTypes: string[] = [
   "Identifier",
   "ProdCharacteristic",
   "Range",
+  "SimpleQuantity",
   "TriggerDefinition",
   "Timing",
 ];

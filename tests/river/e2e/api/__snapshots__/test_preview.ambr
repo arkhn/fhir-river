@@ -36,10 +36,3 @@
     'severity': 'error',
   }
 ---
-# name: test_preview_with_validation_exception
-  <class 'dict'> {
-    'code': '',
-    'diagnostics': 'fhir-api-returned-an-internal-server-error',
-    'severity': 'error',
-  }
----
