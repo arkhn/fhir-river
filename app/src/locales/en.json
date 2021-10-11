@@ -124,7 +124,6 @@
   "chooseExistingURI": "Choose existing URI",
   "selectSource": "Select a source",
   "selectMapping": "Select a mapping",
-  "catchErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}",
   "second": "{{ count }} second",
   "second_plural": "{{ count }} seconds",
   "minute": "{{ count }} minute",
@@ -150,5 +149,5 @@
   "batchSuccess": "✅ Success",
   "batchCanceled": "🚫 Canceled",
   "noAvailableResource": "No available resource",
-  "catchValidationErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} {{errorText}}"
+  "catchValidationErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}"
 }

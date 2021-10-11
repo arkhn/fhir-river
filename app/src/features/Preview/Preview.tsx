@@ -181,23 +181,25 @@ const Preview = (): JSX.Element => {
   const handleValidationError = useCallback(
     (
       errors: ApiValidationError<unknown> | undefined,
-      errorType: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR",
+      errorStatus: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR",
       errorField: string
     ) => {
       if (errors) {
         const errorEntries = Object.entries(errors);
         errorEntries.forEach(([key, text]) => {
-          enqueueSnackbar(
-            t<string>("catchValidationErrorPrompt", {
-              query: errorField,
-              errorStatus: errorType,
-              errorKey: key,
-              errorText: text,
-            }),
-            {
-              variant: "error",
-            }
-          );
+          for (const error in text) {
+            enqueueSnackbar(
+              t<string>("catchValidationErrorPrompt", {
+                query: errorField,
+                errorStatus: errorStatus,
+                errorKey: key,
+                errorText: text[error],
+              }),
+              {
+                variant: "error",
+              }
+            );
+          }
         });
       }
     },
