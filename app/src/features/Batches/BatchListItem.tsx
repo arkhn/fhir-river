@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Link, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -54,7 +54,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const isBatchRunning = !batch.canceled_at && !batch.completed_at;
   const hasBatchStopped = batch.completed_at || batch.canceled_at;
 
-  const getBatchDuration = (batch: Batch) => {
+  const batchDuration = useMemo(() => {
     if (batchEnd) {
       const { years, months, days, hours, minutes, seconds } = DateTime.fromISO(
         batchEnd
@@ -76,7 +76,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         seconds ? `${t("second", { count: seconds })} ` : ""
       }`;
     }
-  };
+  }, [batch.created_at, batchEnd, t]);
 
   const getCreatedAtDate = (date: string) =>
     new Date(date).toLocaleString().split(",").join(" -");
@@ -115,7 +115,7 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         </div>
         {hasBatchStopped && (
           <Typography variant="body2" color="textSecondary">
-            {`${getBatchDuration(batch)} | ${t("resourceWithCount", {
+            {`${batchDuration} | ${t("resourceWithCount", {
               count: batch.resources.length,
             })}`}
           </Typography>

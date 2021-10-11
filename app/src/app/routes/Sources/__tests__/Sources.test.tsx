@@ -242,8 +242,8 @@ describe("Sources page", () => {
     server.use(
       rest.get(
         "http://example.com/api/owners/",
-        (_, rest: ResponseComposition<ApiOwnersListApiResponse>, ctx) =>
-          rest.once(
+        (_, _rest: ResponseComposition<ApiOwnersListApiResponse>, ctx) =>
+          _rest.once(
             ctx.json<ApiOwnersListApiResponse>([credential_owner])
           )
       )

@@ -51,9 +51,9 @@ const FhirResourceAutocomplete = ({
 
   const handleValueChange = (
     event: React.ChangeEvent<Record<string, never>>,
-    value: string
+    newValue: string
   ) => {
-    onChange && onChange(value);
+    onChange && onChange(newValue);
   };
 
   return (

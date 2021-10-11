@@ -57,12 +57,12 @@ const BatchResourceDialog = ({
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { sourceId: id } = useParams<{ sourceId: string }>();
+  const { sourceId } = useParams<{ sourceId: string }>();
   const { enqueueSnackbar } = useSnackbar();
 
   const { data: resources } = useApiResourcesListQuery(
-    { source: id },
-    { skip: !Boolean(id) }
+    { source: sourceId },
+    { skip: !Boolean(sourceId) }
   );
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 

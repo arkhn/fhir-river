@@ -1,7 +1,10 @@
 import { createSlice, createAction } from "@reduxjs/toolkit";
 
 import type { RootState } from "app/store";
-import type { Source, Credential } from "services/api/generated/api.generated";
+import type {
+  Source as SourceType,
+  Credential as CredentialType,
+} from "services/api/generated/api.generated";
 
 export enum EditTypeEnum {
   Source = "SOURCE",
@@ -10,17 +13,19 @@ export enum EditTypeEnum {
 }
 
 type SourceSliceState = {
-  current?: Source;
-  credential?: Credential;
+  current?: SourceType;
+  credential?: CredentialType;
   editType?: EditTypeEnum;
 };
 
 const initialState: SourceSliceState = {};
 
-export const editSource = createAction<Source>("editSource");
-export const sourceEdited = createAction<Source>("sourceEdited");
-export const editCredential = createAction<Source>("editCredential");
-export const credentialEdited = createAction<Credential>("credentialEdited");
+export const editSource = createAction<SourceType>("editSource");
+export const sourceEdited = createAction<SourceType>("sourceEdited");
+export const editCredential = createAction<SourceType>("editCredential");
+export const credentialEdited = createAction<CredentialType>(
+  "credentialEdited"
+);
 
 const sourceSlice = createSlice({
   name: "source",
@@ -53,12 +58,12 @@ const sourceSlice = createSlice({
 
 export const { initSource, createSource } = sourceSlice.actions;
 
-export const selectSourceCurrent = (state: RootState): Source | undefined =>
+export const selectSourceCurrent = (state: RootState): SourceType | undefined =>
   state.source.current;
 export const selectEditType = (state: RootState): EditTypeEnum | undefined =>
   state.source.editType;
 export const selectSourceCredential = (
   state: RootState
-): Credential | undefined => state.source.credential;
+): CredentialType | undefined => state.source.credential;
 
 export default sourceSlice.reducer;

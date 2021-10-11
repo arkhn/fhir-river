@@ -60,9 +60,9 @@ const MappingSelectButton = ({
     }
     setPopperOpen(false);
   };
-  const handleMappingChange = (mapping: Resource) => () => {
+  const handleMappingClick = (selectedMapping: Resource) => () => {
     handlePopperClose();
-    history.push(`/sources/${source.id}/mappings/${mapping.id}`);
+    history.push(`/sources/${source.id}/mappings/${selectedMapping.id}`);
   };
 
   return (
@@ -96,7 +96,7 @@ const MappingSelectButton = ({
                       <MenuItem
                         key={_mapping.id}
                         selected={mapping.id === _mapping.id}
-                        onClick={handleMappingChange(_mapping)}
+                        onClick={handleMappingClick(_mapping)}
                       >
                         <MappingInfo mapping={_mapping} />
                       </MenuItem>
