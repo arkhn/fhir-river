@@ -60,14 +60,14 @@ const Select = ({
         </MenuItem>
       )}
       {options &&
-        options.map((value) =>
-          typeof value === "string" ? (
-            <MenuItem key={value} value={value}>
-              {value}
+        options.map((option) =>
+          typeof option === "string" ? (
+            <MenuItem key={option} value={option}>
+              {option}
             </MenuItem>
           ) : (
-            <MenuItem key={value.id} value={value.id}>
-              {value.label}
+            <MenuItem key={option.id} value={option.id}>
+              {option.label}
             </MenuItem>
           )
         )}

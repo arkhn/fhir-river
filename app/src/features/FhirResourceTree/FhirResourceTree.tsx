@@ -97,9 +97,10 @@ const FhirResourceTree = (): JSX.Element => {
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
-    path: string
+    nodePath: string
   ) => {
-    const node = rootElementNode && getElementNodeByPath(path, rootElementNode);
+    const node =
+      rootElementNode && getElementNodeByPath(nodePath, rootElementNode);
     if (
       node &&
       node.kind === "primitive" &&

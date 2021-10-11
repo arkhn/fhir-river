@@ -161,11 +161,11 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const isLoading = isCreateCredentialLoading || isUpdateCredentialLoading;
 
   const handleCredentialSubmit = async (
-    credentialInputs: CredentialFormInputs
+    newCredentialInputs: CredentialFormInputs
   ) => {
     if (
       credential &&
-      isEqual(credential, { ...credential, ...credentialInputs })
+      isEqual(credential, { ...credential, ...newCredentialInputs })
     ) {
       dispatch(credentialEdited(credential));
       return;
@@ -177,11 +177,11 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             id: credential.id,
             credentialRequest: {
               source: credential.source,
-              ...credentialInputs,
+              ...newCredentialInputs,
             },
           }).unwrap()
         : await createCredential({
-            credentialRequest: { source: source.id, ...credentialInputs },
+            credentialRequest: { source: source.id, ...newCredentialInputs },
           }).unwrap();
       dispatch(credentialEdited(submittedCredential));
     } catch (e) {

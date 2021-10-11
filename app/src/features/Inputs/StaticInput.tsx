@@ -64,7 +64,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const { enqueueSnackbar } = useSnackbar();
   const { data: mapping } = useCurrentMapping();
   const classes = useStyles();
-  const [staticValue, setStaticValue] = useState(input.value ?? "");
+  const [staticInputValue, setStaticInputValue] = useState(input.value ?? "");
   const [isExistingURIDialogOpen, setExistingURIDialogOpen] = useState(false);
   const [deleteInput] = useApiStaticInputsDestroyMutation();
   const [updateInput] = useApiStaticInputsUpdateMutation();
@@ -83,15 +83,15 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const handleStaticValueChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
-    setStaticValue(event.target.value);
+    setStaticInputValue(event.target.value);
   };
 
   const handleInputBlur = async () => {
-    if (staticValue !== input.value) {
+    if (staticInputValue !== input.value) {
       try {
         await updateInput({
           id: input.id,
-          staticInputRequest: { ...input, value: staticValue },
+          staticInputRequest: { ...input, value: staticInputValue },
         });
       } catch (e) {
         enqueueSnackbar(e.error, { variant: "error" });
@@ -107,7 +107,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           id: input.id,
           staticInputRequest: { ...input, value: staticValue },
         });
-        setStaticValue(staticValue);
+        setStaticInputValue(staticValue);
       } catch (e) {
         enqueueSnackbar(e.error, { variant: "error" });
       }
@@ -139,7 +139,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
         id: input.id,
         staticInputRequest: { ...input, value: staticValue },
       });
-      setStaticValue(staticValue);
+      setStaticInputValue(staticValue);
     } catch (error) {
       console.error(error);
     }
@@ -161,7 +161,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
               fullWidth
               placeholder={t("typeStaticValueHere")}
               className={classes.input}
-              value={staticValue}
+              value={staticInputValue}
               onChange={handleStaticValueChange}
               onBlur={handleInputBlur}
               InputProps={{
@@ -169,7 +169,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
                   <Icon
                     icon={IconNames.ALIGN_LEFT}
                     className={clsx(classes.inputStartAdornment, {
-                      [classes.primaryColor]: !!staticValue,
+                      [classes.primaryColor]: !!staticInputValue,
                     })}
                   />
                 ),

@@ -177,6 +177,7 @@ const Preview = (): JSX.Element => {
   );
 
   const [apiExploreCreate] = useApiExploreCreateMutation();
+  const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleValidationError = useCallback(
     ({
@@ -243,8 +244,6 @@ const Preview = (): JSX.Element => {
     },
     [enqueueSnackbar, handleValidationError, t]
   );
-
-  const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
   const handleFhirIconClick = (index: number) => async () => {
     if (exploration && mappingId && mapping?.primary_key_column) {

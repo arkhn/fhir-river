@@ -23,9 +23,9 @@ const BatchCancel = ({
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
   const handleBatchCancel = (batchId: string) => async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    e.stopPropagation();
+    event.stopPropagation();
     try {
       await apiBatchesDestroy({ id: batchId }).unwrap();
     } catch (e) {
