@@ -178,21 +178,21 @@ const Preview = (): JSX.Element => {
 
   const [apiExploreCreate] = useApiExploreCreateMutation();
 
-  const handleError = useCallback(
+  const handleValidationError = useCallback(
     (
       errors: ApiValidationError<unknown> | undefined,
       errorType: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR",
       errorField: string
     ) => {
       if (errors) {
-        const errorKey = Object.keys(errors);
-        errorKey.forEach((key) => {
+        const errorEntries = Object.entries(errors);
+        errorEntries.forEach(([key, text]) => {
           enqueueSnackbar(
             t<string>("catchValidationErrorPrompt", {
               query: errorField,
               errorStatus: errorType,
               errorKey: key,
-              errorText: errors[key as keyof typeof errors],
+              errorText: text,
             }),
             {
               variant: "error",
@@ -204,39 +204,33 @@ const Preview = (): JSX.Element => {
     [enqueueSnackbar, t]
   );
 
-  useEffect(() => {
-    if (mappingId && owner && exploration === undefined) {
-      setExploration(null);
-
-      const explore = async () => {
-        try {
-          const exploration = await apiExploreCreate({
-            explorationRequestRequest: {
-              owner: owner?.name ?? "",
-              table: mapping?.primary_key_table ?? "",
-              resource_id: mappingId,
-            },
-          }).unwrap();
-          setExploration(exploration);
-        } catch (e) {
-          setAlerts([
-            {
-              severity: "error",
-              diagnostics: e.error,
-              code: "internal",
-            },
-          ]);
-        }
-      };
-      explore();
-    }
-  }, [
-    apiExploreCreate,
-    exploration,
-    mapping?.primary_key_table,
-    mappingId,
-    owner,
-  ]);
+  const handleError = useCallback(
+    (error: FetchBaseQueryError) => {
+      const typedError = error;
+      const validationError = apiValidationErrorFromResponse(typedError);
+      if (validationError)
+        handleValidationError(validationError, typedError.status, "Preview");
+      else if (typedError.status === "PARSING_ERROR") {
+        enqueueSnackbar(
+          t<string>("catchValidationErrorPrompt", {
+            query: typedError.status,
+            errorStatus: typedError.originalStatus.toString(),
+            errorText: typedError.error,
+          }),
+          { variant: "error" }
+        );
+      } else if (
+        (typedError.status === "FETCH_ERROR" ||
+          typedError.status === "CUSTOM_ERROR") &&
+        typedError.data
+      ) {
+        enqueueSnackbar(`${typedError.status} : ${typedError.data as string}`, {
+          variant: "error",
+        });
+      }
+    },
+    [enqueueSnackbar, handleValidationError, t]
+  );
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
@@ -263,11 +257,7 @@ const Preview = (): JSX.Element => {
                 }))
               );
           } catch (error) {
-            const typedError = error as FetchBaseQueryError;
-            const validationError = apiValidationErrorFromResponse(typedError);
-            if (validationError)
-              handleError(validationError, typedError.status, "Preview");
-            else enqueueSnackbar(error.error, { variant: "error" });
+            handleError(error as FetchBaseQueryError);
           }
         };
         previewCreate();
@@ -275,6 +265,7 @@ const Preview = (): JSX.Element => {
     }
   };
 
+  // load the data for the table preview list
   useEffect(() => {
     if (mappingId && owner && exploration === undefined) {
       setExploration(null);
@@ -290,11 +281,7 @@ const Preview = (): JSX.Element => {
           }).unwrap();
           setExploration(exploration);
         } catch (error) {
-          const typedError = error as FetchBaseQueryError;
-          const validationError = apiValidationErrorFromResponse(typedError);
-          if (validationError)
-            handleError(validationError, typedError.status, "Preview");
-          else enqueueSnackbar(error.error, { variant: "error" });
+          handleError(error as FetchBaseQueryError);
         }
       };
       explore();
@@ -382,8 +369,8 @@ const Preview = (): JSX.Element => {
       ) : (
         <div className={classes.texts}>
           <Typography>
-            {t("clickOnAFireIcon")}{" "}
-            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
+            {t("clickOnAFireIcon")}
+            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />
             {t("inOrderToPreview")}
           </Typography>
         </div>
