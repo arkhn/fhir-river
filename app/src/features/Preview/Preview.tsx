@@ -349,7 +349,7 @@ const Preview = (): JSX.Element => {
                   </TableCell>
                   {columnData.map((cell, i) => (
                     <TableCell className={classes.cells} key={i}>
-                      {cell}
+                      {cell.toString()}
                     </TableCell>
                   ))}
                 </TableRow>
