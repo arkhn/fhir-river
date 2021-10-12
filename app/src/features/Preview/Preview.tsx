@@ -248,7 +248,10 @@ const Preview = (): JSX.Element => {
   const handleFhirIconClick = (index: number) => async () => {
     if (exploration && mappingId && mapping?.primary_key_column) {
       const primaryKey = mapping.primary_key_column;
-      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
+      // FIXME: See https://github.com/arkhn/fhir-river/issues/670
+      const primaryKeyIndex = exploration.fields
+        .map((field) => field.toLowerCase())
+        .indexOf(primaryKey.toLowerCase());
       const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
       if (primaryKeyValue) {
         const previewCreate = async () => {
