@@ -10,12 +10,12 @@ import {
   useApiJoinsDestroyMutation,
 } from "services/api/endpoints";
 import {
-  SQLInput,
+  SqlInput,
   Join as JoinType,
 } from "services/api/generated/api.generated";
 
 type SqlInputJoinListProps = {
-  sqlInputId: SQLInput["id"];
+  sqlInputId: SqlInput["id"];
 };
 
 const SqlInputJoinList = ({

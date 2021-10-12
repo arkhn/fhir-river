@@ -46,8 +46,8 @@ import type {
   CredentialRequest,
   FilterRequest,
   JoinRequest,
-  SQLInput,
-  SQLInputRequest,
+  SqlInput,
+  SqlInputRequest,
 } from "services/api/generated/api.generated";
 
 import useInitMappingEdit from "../useInitMappingEdit";
@@ -163,7 +163,7 @@ const EditMapping = (): JSX.Element => {
                 sqlInputRequest: {
                   ...sqlInput,
                   column: createdOrUpdatedColumns[index]?.id ?? "",
-                } as SQLInputRequest,
+                } as SqlInputRequest,
               }).unwrap();
             } else if (!isEqual(sqlInput, prevSqlInput)) {
               // Filter is updated
@@ -176,7 +176,7 @@ const EditMapping = (): JSX.Element => {
               }).unwrap();
             } else {
               // Filter is unchanged
-              return sqlInput as SQLInput;
+              return sqlInput as SqlInput;
             }
           })
         );

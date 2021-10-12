@@ -23,7 +23,7 @@ import {
   Filter,
   Join,
   Resource,
-  SQLInput,
+  SqlInput,
 } from "services/api/generated/api.generated";
 
 import useCurrentMapping from "./useCurrentMapping";
@@ -38,7 +38,7 @@ const useInitMappingEdit = (): {
   data?: {
     resource: Resource;
     filters: Filter[];
-    sqlInputs: SQLInput[];
+    sqlInputs: SqlInput[];
     joins: Join[];
     columns: Column[];
   };

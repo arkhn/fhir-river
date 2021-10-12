@@ -11,7 +11,7 @@ import {
 } from "services/api/endpoints";
 import type {
   Attribute,
-  SQLInput,
+  SqlInput,
   StaticInput,
 } from "services/api/generated/api.generated";
 
@@ -62,7 +62,7 @@ const useIsNodePending = (node: ElementNode): boolean => {
     { skip: !inputGroups }
   );
 
-  const inputs: (SQLInput | StaticInput)[] | undefined = useMemo(() => {
+  const inputs: (SqlInput | StaticInput)[] | undefined = useMemo(() => {
     if (!sqlInputs) return staticInputs;
     if (!staticInputs) return sqlInputs;
     return [...sqlInputs, ...staticInputs];

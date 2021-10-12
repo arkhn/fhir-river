@@ -7,13 +7,13 @@ import {
   useApiSqlInputsCreateMutation,
   useApiSqlInputsPartialUpdateMutation,
 } from "services/api/endpoints";
-import type { SQLInput } from "services/api/generated/api.generated";
+import type { SqlInput } from "services/api/generated/api.generated";
 
 type UseSqlInputProps = {
   /**
    * Initial join value
    */
-  initialSqlInput?: Partial<SQLInput>;
+  initialSqlInput?: Partial<SqlInput>;
   /**
    * Specifies if the object already exists in the backend
    */
@@ -29,11 +29,11 @@ const useSqlInput = ({
   initialSqlInput,
   exists,
 }: UseSqlInputProps): [
-  sqlInput: Partial<SQLInput> | undefined,
-  onChange: (sqlInput: Partial<SQLInput>) => void
+  sqlInput: Partial<SqlInput> | undefined,
+  onChange: (sqlInput: Partial<SqlInput>) => void
 ] => {
   const { enqueueSnackbar } = useSnackbar();
-  const [sqlInput, setSqlInput] = useState<Partial<SQLInput> | undefined>(
+  const [sqlInput, setSqlInput] = useState<Partial<SqlInput> | undefined>(
     initialSqlInput
   );
 
@@ -41,7 +41,7 @@ const useSqlInput = ({
   const [partialUpdateSqlInput] = useApiSqlInputsPartialUpdateMutation();
 
   const onChange = useCallback(
-    async (changedSqlInput: Partial<SQLInput>) => {
+    async (changedSqlInput: Partial<SqlInput>) => {
       const isSqlInputPartial = !changedSqlInput.column;
       if (
         (!exists || sqlInput) &&
@@ -55,7 +55,7 @@ const useSqlInput = ({
                 patchedSqlInputRequest: changedSqlInput,
               }).unwrap()
             : await createSqlInput({
-                sqlInputRequest: changedSqlInput as SQLInput,
+                sqlInputRequest: changedSqlInput as SqlInput,
               }).unwrap();
           setSqlInput(apiSqlInput);
         } catch (e) {

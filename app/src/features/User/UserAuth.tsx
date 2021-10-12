@@ -31,7 +31,7 @@ const UserAuth = (): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const { isLoading, data: user } = useApiUserRetrieveQuery({});
+  const { isLoading, data: user } = useApiUserRetrieveQuery();
   const [oidcLogout] = useOidcLogoutMutation();
 
   const handleLogout = () => {

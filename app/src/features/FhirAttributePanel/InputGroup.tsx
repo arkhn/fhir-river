@@ -27,7 +27,7 @@ import {
 import type {
   Condition as ConditionType,
   InputGroup as InputGroupType,
-  SQLInput,
+  SqlInput as SqlInputType,
   StaticInput as StaticInputType,
 } from "services/api/generated/api.generated";
 
@@ -97,7 +97,7 @@ const InputGroup = ({
     inputGroup: inputGroup.id,
   });
 
-  const inputs: (SQLInput | StaticInputType)[] | undefined = useMemo(() => {
+  const inputs: (SqlInputType | StaticInputType)[] | undefined = useMemo(() => {
     if (isSqlInputsLoading || isStaticInputsLoading) {
       return;
     }

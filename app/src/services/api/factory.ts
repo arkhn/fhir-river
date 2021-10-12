@@ -15,7 +15,7 @@ import {
   Source,
   Owner,
   Column,
-  SQLInput,
+  SqlInput,
   InputGroup,
   Condition,
   Join,
@@ -106,7 +106,7 @@ export const inputGroupFactory = Factory.define<InputGroup>(
   })
 );
 
-export const sqlInputFactory = Factory.define<SQLInput>(
+export const sqlInputFactory = Factory.define<SqlInput>(
   ({ sequence, associations }) => ({
     id: sequence.toString(),
     script: faker.lorem.word(),
