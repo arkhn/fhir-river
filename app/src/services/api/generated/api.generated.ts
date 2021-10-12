@@ -825,7 +825,8 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse =
+  /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -931,7 +932,8 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse =
+  /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -943,7 +945,7 @@ export type ApiConditionsDestroyApiArg = {
   id: string;
 };
 export type ApiCoreVersionRetrieveApiResponse = unknown;
-export type ApiCoreVersionRetrieveApiArg = {};
+export type ApiCoreVersionRetrieveApiArg = void;
 export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
   /** Which field to use when ordering the results. */
@@ -965,7 +967,8 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse =
+  /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -976,7 +979,8 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
-export type ApiExploreCreateApiResponse = /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiResponse =
+  /** status 200  */ ExplorationResponse;
 export type ApiExploreCreateApiArg = {
   explorationRequestRequest: ExplorationRequestRequest;
 };
@@ -1031,7 +1035,8 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse =
+  /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -1075,7 +1080,7 @@ export type ApiJoinsDestroyApiArg = {
   id: string;
 };
 export type ApiListOwnersCreateApiResponse = unknown;
-export type ApiListOwnersCreateApiArg = {};
+export type ApiListOwnersCreateApiArg = void;
 export type ApiOwnerSchemaCreateApiResponse = unknown;
 export type ApiOwnerSchemaCreateApiArg = {
   owner: string;
@@ -1147,7 +1152,7 @@ export type ApiResourcesDestroyApiArg = {
   id: string;
 };
 export type ApiScriptsListApiResponse = /** status 200  */ Scripts[];
-export type ApiScriptsListApiArg = {};
+export type ApiScriptsListApiArg = void;
 export type ApiSourcesListApiResponse = /** status 200  */ Source[];
 export type ApiSourcesListApiArg = {
   /** Which field to use when ordering the results. */
@@ -1179,7 +1184,8 @@ export type ApiSourcesDestroyApiArg = {
   /** A unique value identifying this source. */
   id: string;
 };
-export type ApiSourcesExportRetrieveApiResponse = /** status 200  */ MappingWithPartialCredential;
+export type ApiSourcesExportRetrieveApiResponse =
+  /** status 200  */ MappingWithPartialCredential;
 export type ApiSourcesExportRetrieveApiArg = {
   /** A unique value identifying this source. */
   id: string;
@@ -1188,32 +1194,32 @@ export type ApiSourcesImportCreateApiResponse = /** status 200  */ Mapping;
 export type ApiSourcesImportCreateApiArg = {
   mappingRequest: MappingRequest;
 };
-export type ApiSqlInputsListApiResponse = /** status 200  */ SQLInput[];
+export type ApiSqlInputsListApiResponse = /** status 200  */ SqlInput[];
 export type ApiSqlInputsListApiArg = {
   inputGroup?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
 };
-export type ApiSqlInputsCreateApiResponse = /** status 201  */ SQLInput;
+export type ApiSqlInputsCreateApiResponse = /** status 201  */ SqlInput;
 export type ApiSqlInputsCreateApiArg = {
-  sqlInputRequest: SQLInputRequest;
+  sqlInputRequest: SqlInputRequest;
 };
-export type ApiSqlInputsRetrieveApiResponse = /** status 200  */ SQLInput;
+export type ApiSqlInputsRetrieveApiResponse = /** status 200  */ SqlInput;
 export type ApiSqlInputsRetrieveApiArg = {
   /** A unique value identifying this sql input. */
   id: string;
 };
-export type ApiSqlInputsUpdateApiResponse = /** status 200  */ SQLInput;
+export type ApiSqlInputsUpdateApiResponse = /** status 200  */ SqlInput;
 export type ApiSqlInputsUpdateApiArg = {
   /** A unique value identifying this sql input. */
   id: string;
-  sqlInputRequest: SQLInputRequest;
+  sqlInputRequest: SqlInputRequest;
 };
-export type ApiSqlInputsPartialUpdateApiResponse = /** status 200  */ SQLInput;
+export type ApiSqlInputsPartialUpdateApiResponse = /** status 200  */ SqlInput;
 export type ApiSqlInputsPartialUpdateApiArg = {
   /** A unique value identifying this sql input. */
   id: string;
-  patchedSqlInputRequest: PatchedSQLInputRequest;
+  patchedSqlInputRequest: PatchedSqlInputRequest;
 };
 export type ApiSqlInputsDestroyApiResponse = unknown;
 export type ApiSqlInputsDestroyApiArg = {
@@ -1241,7 +1247,8 @@ export type ApiStaticInputsUpdateApiArg = {
   id: string;
   staticInputRequest: StaticInputRequest;
 };
-export type ApiStaticInputsPartialUpdateApiResponse = /** status 200  */ StaticInput;
+export type ApiStaticInputsPartialUpdateApiResponse =
+  /** status 200  */ StaticInput;
 export type ApiStaticInputsPartialUpdateApiArg = {
   /** A unique value identifying this static input. */
   id: string;
@@ -1253,7 +1260,7 @@ export type ApiStaticInputsDestroyApiArg = {
   id: string;
 };
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
-export type ApiUserRetrieveApiArg = {};
+export type ApiUserRetrieveApiArg = void;
 export type Attribute = {
   id: string;
   path: string;
@@ -1386,7 +1393,7 @@ export type PatchedCredentialRequest = {
 };
 export type ExplorationResponse = {
   fields: string[];
-  rows: string[][];
+  rows: any[][];
 };
 export type ExplorationRequestRequest = {
   resource_id: string;
@@ -1539,7 +1546,7 @@ export type MappingJoin = {
   left: string;
   right: string;
 };
-export type MappingSQLInput = {
+export type MappingSqlInput = {
   script?: string;
   concept_map_id?: string;
   column: string | null;
@@ -1547,7 +1554,7 @@ export type MappingSQLInput = {
 };
 export type MappingCondition = {
   action: ActionEnum;
-  sql_input: MappingSQLInput;
+  sql_input: MappingSqlInput;
   value?: string;
   relation?: ConditionRelationEnum;
 };
@@ -1555,7 +1562,7 @@ export type MappingInputGroup = {
   id: string;
   merging_script?: string;
   static_inputs?: MappingStaticInput[];
-  sql_inputs?: MappingSQLInput[];
+  sql_inputs?: MappingSqlInput[];
   conditions?: MappingCondition[];
 };
 export type MappingAttribute = {
@@ -1567,7 +1574,7 @@ export type MappingAttribute = {
 export type MappingFilter = {
   relation: FilterRelationEnum;
   value?: string;
-  sql_input: MappingSQLInput;
+  sql_input: MappingSqlInput;
 };
 export type MappingResource = {
   id: string;
@@ -1634,7 +1641,7 @@ export type MappingJoinRequest = {
   left: string;
   right: string;
 };
-export type MappingSQLInputRequest = {
+export type MappingSqlInputRequest = {
   script?: string;
   concept_map_id?: string;
   column: string | null;
@@ -1642,14 +1649,14 @@ export type MappingSQLInputRequest = {
 };
 export type MappingConditionRequest = {
   action: ActionEnum;
-  sql_input: MappingSQLInputRequest;
+  sql_input: MappingSqlInputRequest;
   value?: string;
   relation?: ConditionRelationEnum;
 };
 export type MappingInputGroupRequest = {
   merging_script?: string;
   static_inputs?: MappingStaticInputRequest[];
-  sql_inputs?: MappingSQLInputRequest[];
+  sql_inputs?: MappingSqlInputRequest[];
   conditions?: MappingConditionRequest[];
 };
 export type MappingAttributeRequest = {
@@ -1661,7 +1668,7 @@ export type MappingAttributeRequest = {
 export type MappingFilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
-  sql_input: MappingSQLInputRequest;
+  sql_input: MappingSqlInputRequest;
 };
 export type MappingResourceRequest = {
   label?: string;
@@ -1701,7 +1708,7 @@ export type MappingRequest = {
   name: string;
   version?: string;
 };
-export type SQLInput = {
+export type SqlInput = {
   id: string;
   updated_at: string;
   created_at: string;
@@ -1710,13 +1717,13 @@ export type SQLInput = {
   input_group?: string | null;
   column: string;
 };
-export type SQLInputRequest = {
+export type SqlInputRequest = {
   script?: string;
   concept_map_id?: string;
   input_group?: string | null;
   column: string;
 };
-export type PatchedSQLInputRequest = {
+export type PatchedSqlInputRequest = {
   script?: string;
   concept_map_id?: string;
   input_group?: string | null;
