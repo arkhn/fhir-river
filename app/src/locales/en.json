@@ -110,8 +110,8 @@
   "exportMapping": "Export mapping",
   "ETLDashboard": "ETL Dashboard",
   "newMapping": "New mapping",
-  "clickOnAFireIcon": "Click on a",
-  "inOrderToPreview": "icon in order to preview a line as a FHIR instance",
+  "clickOnAFireIcon": "Click on a ",
+  "inOrderToPreview": " icon in order to preview a line as a FHIR instance",
   "back": "Back",
   "useThisGroupIf": "Use this group if...",
   "resources": "Resources",
@@ -148,5 +148,6 @@
   "batchErrors": "⚠️ {{errors}} errors",
   "batchSuccess": "✅ Success",
   "batchCanceled": "🚫 Canceled",
-  "noAvailableResource": "No available resource"
+  "noAvailableResource": "No available resource",
+  "catchValidationErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}"
 }

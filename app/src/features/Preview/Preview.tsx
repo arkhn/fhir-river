@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import { IResource } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
@@ -17,7 +17,9 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import Alert, { Color } from "@material-ui/lab/Alert";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useParams } from "react-router-dom";
@@ -29,6 +31,10 @@ import {
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
+import {
+  apiValidationErrorFromResponse,
+  ApiValidationError,
+} from "services/api/errors";
 import {
   ExplorationResponse,
   OperationOutcomeIssue,
@@ -136,6 +142,7 @@ const getAlertSeverityFromOperationOutcomeIssue = (
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { mappingId } = useParams<{
     mappingId?: string;
@@ -144,10 +151,12 @@ const Preview = (): JSX.Element => {
   const [exploration, setExploration] = useState<
     ExplorationResponse | null | undefined
   >(undefined);
-
   const [alerts, setAlerts] = useState<
     AlertOperationOutcomeIssue[] | undefined
   >(undefined);
+
+  const [preview, setPreview] = useState<IResource | undefined>(undefined);
+
   const handleAlertClose = (index: number) => {
     if (alerts) {
       const newAlerts = [...alerts];
@@ -155,9 +164,6 @@ const Preview = (): JSX.Element => {
       setAlerts(newAlerts);
     }
   };
-
-  const [preview, setPreview] = useState<IResource | undefined>(undefined);
-
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
@@ -172,39 +178,71 @@ const Preview = (): JSX.Element => {
 
   const [apiExploreCreate] = useApiExploreCreateMutation();
 
-  useEffect(() => {
-    if (mappingId && owner && exploration === undefined) {
-      setExploration(null);
+  const handleValidationError = useCallback(
+    ({
+      errors,
+      errorStatus,
+      errorField,
+    }: {
+      errors?: ApiValidationError<unknown>;
+      errorStatus: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR";
+      errorField: string;
+    }) => {
+      if (errors) {
+        const errorEntries = Object.entries(errors);
+        errorEntries.forEach(([key, text]) => {
+          for (const error in text) {
+            enqueueSnackbar(
+              t<string>("catchValidationErrorPrompt", {
+                query: errorField,
+                errorStatus: errorStatus,
+                errorKey: key,
+                errorText: text[error],
+              }),
+              {
+                variant: "error",
+              }
+            );
+          }
+        });
+      }
+    },
+    [enqueueSnackbar, t]
+  );
 
-      const explore = async () => {
-        try {
-          const exploration = await apiExploreCreate({
-            explorationRequestRequest: {
-              owner: owner?.name ?? "",
-              table: mapping?.primary_key_table ?? "",
-              resource_id: mappingId,
-            },
-          }).unwrap();
-          setExploration(exploration);
-        } catch (e) {
-          setAlerts([
-            {
-              severity: "error",
-              diagnostics: e.error,
-              code: "internal",
-            },
-          ]);
-        }
-      };
-      explore();
-    }
-  }, [
-    apiExploreCreate,
-    exploration,
-    mapping?.primary_key_table,
-    mappingId,
-    owner,
-  ]);
+  const handleError = useCallback(
+    (error: FetchBaseQueryError) => {
+      const validationError = apiValidationErrorFromResponse(error);
+      switch (error.status) {
+        case "PARSING_ERROR":
+          enqueueSnackbar(
+            t<string>("catchValidationErrorPrompt", {
+              query: error.status,
+              errorStatus: error.originalStatus.toString(),
+              errorText: error.error,
+            }),
+            { variant: "error" }
+          );
+          break;
+        case "FETCH_ERROR":
+        case "CUSTOM_ERROR":
+          error.data &&
+            enqueueSnackbar(`${error.status} : ${error.data as string}`, {
+              variant: "error",
+            });
+          break;
+        default:
+          validationError &&
+            handleValidationError({
+              errors: validationError,
+              errorStatus: error.status,
+              errorField: "Preview",
+            });
+          break;
+      }
+    },
+    [enqueueSnackbar, handleValidationError, t]
+  );
 
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
@@ -230,20 +268,45 @@ const Preview = (): JSX.Element => {
                   severity: getAlertSeverityFromOperationOutcomeIssue(error),
                 }))
               );
-          } catch (e) {
-            setAlerts([
-              {
-                severity: "error",
-                diagnostics: e.error,
-                code: "internal",
-              },
-            ]);
+          } catch (error) {
+            handleError(error as FetchBaseQueryError);
           }
         };
         previewCreate();
       }
     }
   };
+
+  // load the data for the table preview list
+  useEffect(() => {
+    if (mappingId && owner && exploration === undefined) {
+      setExploration(null);
+
+      const explore = async () => {
+        try {
+          const _exploration = await apiExploreCreate({
+            explorationRequestRequest: {
+              owner: owner?.name ?? "",
+              table: mapping?.primary_key_table ?? "",
+              resource_id: mappingId,
+            },
+          }).unwrap();
+          setExploration(_exploration);
+        } catch (error) {
+          handleError(error as FetchBaseQueryError);
+        }
+      };
+      explore();
+    }
+  }, [
+    apiExploreCreate,
+    exploration,
+    mapping?.primary_key_table,
+    mappingId,
+    owner,
+    handleError,
+    enqueueSnackbar,
+  ]);
 
   return (
     <Container className={classes.container} maxWidth="xl">
@@ -318,8 +381,8 @@ const Preview = (): JSX.Element => {
       ) : (
         <div className={classes.texts}>
           <Typography>
-            {t("clickOnAFireIcon")}{" "}
-            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
+            {t("clickOnAFireIcon")}
+            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />
             {t("inOrderToPreview")}
           </Typography>
         </div>
