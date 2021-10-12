@@ -19,6 +19,7 @@ def test_inmemory_fhir_api_create():
     fhir_api.create("Patient", resource)
     assert len(fhir_api._db["Patient"]) == 2
 
+
 def test_inmemory_fhir_api_retrieve():
     resource = {"deceased": "not yet"}
 
@@ -48,6 +49,7 @@ def test_hapi_fhir_api_create_failure(status, auth_token):
     assert len(responses.calls) == 1
     if auth_token:
         assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
+
 
 @responses.activate
 @pytest.mark.parametrize(

@@ -38,6 +38,7 @@ def test_abort(batch):
 def test_retry(batch):
     pass
 
+
 def test_preview(mimic_mapping, snapshot):
     # label: patient-resource-id
     resource_id = "cktlnp0f300300mmznmyqln70"

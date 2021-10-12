@@ -74,6 +74,7 @@ class HapiFhirAPI(FhirAPI):
     def validate(self, resource_type: str, payload: dict, auth_token=None):
         """Calls the /<resource_type>/$validate endpoint of HAPI FHIR.
         Note that this function does not raise an exception if the status is not 2XX.
+
         Args:
             resource_type (str): the resource type
             payload (dict): the FHIR instance
@@ -92,6 +93,7 @@ class HapiFhirAPI(FhirAPI):
                 "resourceType": "OperationOutcome",
                 "issue": [{"severity": "error", "code": "", "diagnostics": response.text}],
             }
+
     def retrieve(self, resource_type, resource_id, auth_token=None):
         response = self._get(f"{self._url}/{resource_type}/{resource_id}", auth_token=auth_token)
         response.raise_for_status()
