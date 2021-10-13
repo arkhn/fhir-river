@@ -13,8 +13,8 @@ export const api = createApi({
         params: {
           ordering: queryArg.ordering,
           path: queryArg.path,
+          project: queryArg.project,
           resource: queryArg.resource,
-          source: queryArg.source,
         },
       }),
     }),
@@ -73,7 +73,7 @@ export const api = createApi({
           limit: queryArg.limit,
           offset: queryArg.offset,
           ordering: queryArg.ordering,
-          source: queryArg.source,
+          project: queryArg.project,
         },
       }),
     }),
@@ -257,7 +257,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/credentials/`,
-        params: { ordering: queryArg.ordering, source: queryArg.source },
+        params: { ordering: queryArg.ordering, project: queryArg.project },
       }),
     }),
     apiCredentialsCreate: build.mutation<
@@ -550,13 +550,83 @@ export const api = createApi({
         body: queryArg.previewRequestRequest,
       }),
     }),
+    apiProjectsList: build.query<
+      ApiProjectsListApiResponse,
+      ApiProjectsListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/projects/`,
+        params: { ordering: queryArg.ordering },
+      }),
+    }),
+    apiProjectsCreate: build.mutation<
+      ApiProjectsCreateApiResponse,
+      ApiProjectsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/projects/`,
+        method: "POST",
+        body: queryArg.projectRequest,
+      }),
+    }),
+    apiProjectsRetrieve: build.query<
+      ApiProjectsRetrieveApiResponse,
+      ApiProjectsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/projects/${queryArg.id}/` }),
+    }),
+    apiProjectsUpdate: build.mutation<
+      ApiProjectsUpdateApiResponse,
+      ApiProjectsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/projects/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.projectRequest,
+      }),
+    }),
+    apiProjectsPartialUpdate: build.mutation<
+      ApiProjectsPartialUpdateApiResponse,
+      ApiProjectsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/projects/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedProjectRequest,
+      }),
+    }),
+    apiProjectsDestroy: build.mutation<
+      ApiProjectsDestroyApiResponse,
+      ApiProjectsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/projects/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiProjectsExportRetrieve: build.query<
+      ApiProjectsExportRetrieveApiResponse,
+      ApiProjectsExportRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/projects/${queryArg.id}/export/` }),
+    }),
+    apiProjectsImportCreate: build.mutation<
+      ApiProjectsImportCreateApiResponse,
+      ApiProjectsImportCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/projects/import/`,
+        method: "POST",
+        body: queryArg.mappingRequest,
+      }),
+    }),
     apiResourcesList: build.query<
       ApiResourcesListApiResponse,
       ApiResourcesListApiArg
     >({
       query: (queryArg) => ({
         url: `/api/resources/`,
-        params: { ordering: queryArg.ordering, source: queryArg.source },
+        params: { ordering: queryArg.ordering, project: queryArg.project },
       }),
     }),
     apiResourcesCreate: build.mutation<
@@ -609,76 +679,6 @@ export const api = createApi({
       ApiScriptsListApiArg
     >({
       query: () => ({ url: `/api/scripts/` }),
-    }),
-    apiSourcesList: build.query<
-      ApiSourcesListApiResponse,
-      ApiSourcesListApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/`,
-        params: { ordering: queryArg.ordering },
-      }),
-    }),
-    apiSourcesCreate: build.mutation<
-      ApiSourcesCreateApiResponse,
-      ApiSourcesCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/`,
-        method: "POST",
-        body: queryArg.sourceRequest,
-      }),
-    }),
-    apiSourcesRetrieve: build.query<
-      ApiSourcesRetrieveApiResponse,
-      ApiSourcesRetrieveApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/sources/${queryArg.id}/` }),
-    }),
-    apiSourcesUpdate: build.mutation<
-      ApiSourcesUpdateApiResponse,
-      ApiSourcesUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.sourceRequest,
-      }),
-    }),
-    apiSourcesPartialUpdate: build.mutation<
-      ApiSourcesPartialUpdateApiResponse,
-      ApiSourcesPartialUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.patchedSourceRequest,
-      }),
-    }),
-    apiSourcesDestroy: build.mutation<
-      ApiSourcesDestroyApiResponse,
-      ApiSourcesDestroyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
-    apiSourcesExportRetrieve: build.query<
-      ApiSourcesExportRetrieveApiResponse,
-      ApiSourcesExportRetrieveApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/sources/${queryArg.id}/export/` }),
-    }),
-    apiSourcesImportCreate: build.mutation<
-      ApiSourcesImportCreateApiResponse,
-      ApiSourcesImportCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/sources/import/`,
-        method: "POST",
-        body: queryArg.mappingRequest,
-      }),
     }),
     apiSqlInputsList: build.query<
       ApiSqlInputsListApiResponse,
@@ -807,8 +807,8 @@ export type ApiAttributesListApiArg = {
   /** Which field to use when ordering the results. */
   ordering?: string;
   path?: string;
+  project?: string;
   resource?: string;
-  source?: string;
 };
 export type ApiAttributesCreateApiResponse = /** status 201  */ Attribute;
 export type ApiAttributesCreateApiArg = {
@@ -825,8 +825,7 @@ export type ApiAttributesUpdateApiArg = {
   id: string;
   attributeRequest: AttributeRequest;
 };
-export type ApiAttributesPartialUpdateApiResponse =
-  /** status 200  */ Attribute;
+export type ApiAttributesPartialUpdateApiResponse = /** status 200  */ Attribute;
 export type ApiAttributesPartialUpdateApiArg = {
   /** A unique value identifying this attribute. */
   id: string;
@@ -845,7 +844,7 @@ export type ApiBatchesListApiArg = {
   offset?: number;
   /** Which field to use when ordering the results. */
   ordering?: string;
-  source?: string[];
+  project?: string[];
 };
 export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
 export type ApiBatchesCreateApiArg = {
@@ -932,8 +931,7 @@ export type ApiConditionsUpdateApiArg = {
   id: string;
   conditionRequest: ConditionRequest;
 };
-export type ApiConditionsPartialUpdateApiResponse =
-  /** status 200  */ Condition;
+export type ApiConditionsPartialUpdateApiResponse = /** status 200  */ Condition;
 export type ApiConditionsPartialUpdateApiArg = {
   /** A unique value identifying this condition. */
   id: string;
@@ -950,7 +948,7 @@ export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
   /** Which field to use when ordering the results. */
   ordering?: string;
-  source?: string;
+  project?: string;
 };
 export type ApiCredentialsCreateApiResponse = /** status 201  */ Credential;
 export type ApiCredentialsCreateApiArg = {
@@ -967,8 +965,7 @@ export type ApiCredentialsUpdateApiArg = {
   id: string;
   credentialRequest: CredentialRequest;
 };
-export type ApiCredentialsPartialUpdateApiResponse =
-  /** status 200  */ Credential;
+export type ApiCredentialsPartialUpdateApiResponse = /** status 200  */ Credential;
 export type ApiCredentialsPartialUpdateApiArg = {
   /** A unique value identifying this credential. */
   id: string;
@@ -979,8 +976,7 @@ export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
 };
-export type ApiExploreCreateApiResponse =
-  /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiResponse = /** status 200  */ ExplorationResponse;
 export type ApiExploreCreateApiArg = {
   explorationRequestRequest: ExplorationRequestRequest;
 };
@@ -1035,8 +1031,7 @@ export type ApiInputGroupsUpdateApiArg = {
   id: string;
   inputGroupRequest: InputGroupRequest;
 };
-export type ApiInputGroupsPartialUpdateApiResponse =
-  /** status 200  */ InputGroup;
+export type ApiInputGroupsPartialUpdateApiResponse = /** status 200  */ InputGroup;
 export type ApiInputGroupsPartialUpdateApiArg = {
   /** A unique value identifying this input group. */
   id: string;
@@ -1119,11 +1114,51 @@ export type ApiPreviewCreateApiResponse = /** status 200  */ PreviewResponse;
 export type ApiPreviewCreateApiArg = {
   previewRequestRequest: PreviewRequestRequest;
 };
+export type ApiProjectsListApiResponse = /** status 200  */ Project[];
+export type ApiProjectsListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type ApiProjectsCreateApiResponse = /** status 201  */ Project;
+export type ApiProjectsCreateApiArg = {
+  projectRequest: ProjectRequest;
+};
+export type ApiProjectsRetrieveApiResponse = /** status 200  */ Project;
+export type ApiProjectsRetrieveApiArg = {
+  /** A unique value identifying this project. */
+  id: string;
+};
+export type ApiProjectsUpdateApiResponse = /** status 200  */ Project;
+export type ApiProjectsUpdateApiArg = {
+  /** A unique value identifying this project. */
+  id: string;
+  projectRequest: ProjectRequest;
+};
+export type ApiProjectsPartialUpdateApiResponse = /** status 200  */ Project;
+export type ApiProjectsPartialUpdateApiArg = {
+  /** A unique value identifying this project. */
+  id: string;
+  patchedProjectRequest: PatchedProjectRequest;
+};
+export type ApiProjectsDestroyApiResponse = unknown;
+export type ApiProjectsDestroyApiArg = {
+  /** A unique value identifying this project. */
+  id: string;
+};
+export type ApiProjectsExportRetrieveApiResponse = /** status 200  */ MappingWithPartialCredential;
+export type ApiProjectsExportRetrieveApiArg = {
+  /** A unique value identifying this project. */
+  id: string;
+};
+export type ApiProjectsImportCreateApiResponse = /** status 200  */ Mapping;
+export type ApiProjectsImportCreateApiArg = {
+  mappingRequest: MappingRequest;
+};
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
   /** Which field to use when ordering the results. */
   ordering?: string;
-  source?: string;
+  project?: string;
 };
 export type ApiResourcesCreateApiResponse = /** status 201  */ Resource;
 export type ApiResourcesCreateApiArg = {
@@ -1153,47 +1188,6 @@ export type ApiResourcesDestroyApiArg = {
 };
 export type ApiScriptsListApiResponse = /** status 200  */ Scripts[];
 export type ApiScriptsListApiArg = void;
-export type ApiSourcesListApiResponse = /** status 200  */ Source[];
-export type ApiSourcesListApiArg = {
-  /** Which field to use when ordering the results. */
-  ordering?: string;
-};
-export type ApiSourcesCreateApiResponse = /** status 201  */ Source;
-export type ApiSourcesCreateApiArg = {
-  sourceRequest: SourceRequest;
-};
-export type ApiSourcesRetrieveApiResponse = /** status 200  */ Source;
-export type ApiSourcesRetrieveApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-};
-export type ApiSourcesUpdateApiResponse = /** status 200  */ Source;
-export type ApiSourcesUpdateApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-  sourceRequest: SourceRequest;
-};
-export type ApiSourcesPartialUpdateApiResponse = /** status 200  */ Source;
-export type ApiSourcesPartialUpdateApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-  patchedSourceRequest: PatchedSourceRequest;
-};
-export type ApiSourcesDestroyApiResponse = unknown;
-export type ApiSourcesDestroyApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-};
-export type ApiSourcesExportRetrieveApiResponse =
-  /** status 200  */ MappingWithPartialCredential;
-export type ApiSourcesExportRetrieveApiArg = {
-  /** A unique value identifying this source. */
-  id: string;
-};
-export type ApiSourcesImportCreateApiResponse = /** status 200  */ Mapping;
-export type ApiSourcesImportCreateApiArg = {
-  mappingRequest: MappingRequest;
-};
 export type ApiSqlInputsListApiResponse = /** status 200  */ SqlInput[];
 export type ApiSqlInputsListApiArg = {
   inputGroup?: string;
@@ -1247,8 +1241,7 @@ export type ApiStaticInputsUpdateApiArg = {
   id: string;
   staticInputRequest: StaticInputRequest;
 };
-export type ApiStaticInputsPartialUpdateApiResponse =
-  /** status 200  */ StaticInput;
+export type ApiStaticInputsPartialUpdateApiResponse = /** status 200  */ StaticInput;
 export type ApiStaticInputsPartialUpdateApiArg = {
   /** A unique value identifying this static input. */
   id: string;
@@ -1371,7 +1364,7 @@ export type Credential = {
   model: ModelEnum;
   updated_at: string;
   created_at: string;
-  source: string;
+  project: string;
 };
 export type CredentialRequest = {
   host: string;
@@ -1380,7 +1373,7 @@ export type CredentialRequest = {
   login: string;
   password: string;
   model: ModelEnum;
-  source: string;
+  project: string;
 };
 export type PatchedCredentialRequest = {
   host?: string;
@@ -1389,7 +1382,7 @@ export type PatchedCredentialRequest = {
   login?: string;
   password?: string;
   model?: ModelEnum;
-  source?: string;
+  project?: string;
 };
 export type ExplorationResponse = {
   fields: string[];
@@ -1487,43 +1480,7 @@ export type PreviewRequestRequest = {
   resource_id: string;
   primary_key_values: string[];
 };
-export type Resource = {
-  id: string;
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  definition: {
-    [key: string]: any;
-  };
-  logical_reference: string;
-  updated_at: string;
-  created_at: string;
-  source: string;
-  primary_key_owner: string;
-};
-export type ResourceRequest = {
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  source: string;
-  primary_key_owner: string;
-};
-export type PatchedResourceRequest = {
-  label?: string;
-  primary_key_table?: string;
-  primary_key_column?: string;
-  definition_id?: string;
-  source?: string;
-  primary_key_owner?: string;
-};
-export type Scripts = {
-  name: string;
-  description: string;
-  category: string;
-};
-export type Source = {
+export type Project = {
   id: string;
   name: string;
   version?: string;
@@ -1531,11 +1488,11 @@ export type Source = {
   created_at: string;
   users: string[];
 };
-export type SourceRequest = {
+export type ProjectRequest = {
   name: string;
   version?: string;
 };
-export type PatchedSourceRequest = {
+export type PatchedProjectRequest = {
   name?: string;
   version?: string;
 };
@@ -1708,6 +1665,42 @@ export type MappingRequest = {
   name: string;
   version?: string;
 };
+export type Resource = {
+  id: string;
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
+  logical_reference: string;
+  updated_at: string;
+  created_at: string;
+  project: string;
+  primary_key_owner: string;
+};
+export type ResourceRequest = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  project: string;
+  primary_key_owner: string;
+};
+export type PatchedResourceRequest = {
+  label?: string;
+  primary_key_table?: string;
+  primary_key_column?: string;
+  definition_id?: string;
+  project?: string;
+  primary_key_owner?: string;
+};
+export type Scripts = {
+  name: string;
+  description: string;
+  category: string;
+};
 export type SqlInput = {
   id: string;
   updated_at: string;
@@ -1810,6 +1803,14 @@ export const {
   useApiOwnersPartialUpdateMutation,
   useApiOwnersDestroyMutation,
   useApiPreviewCreateMutation,
+  useApiProjectsListQuery,
+  useApiProjectsCreateMutation,
+  useApiProjectsRetrieveQuery,
+  useApiProjectsUpdateMutation,
+  useApiProjectsPartialUpdateMutation,
+  useApiProjectsDestroyMutation,
+  useApiProjectsExportRetrieveQuery,
+  useApiProjectsImportCreateMutation,
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
   useApiResourcesRetrieveQuery,
@@ -1817,14 +1818,6 @@ export const {
   useApiResourcesPartialUpdateMutation,
   useApiResourcesDestroyMutation,
   useApiScriptsListQuery,
-  useApiSourcesListQuery,
-  useApiSourcesCreateMutation,
-  useApiSourcesRetrieveQuery,
-  useApiSourcesUpdateMutation,
-  useApiSourcesPartialUpdateMutation,
-  useApiSourcesDestroyMutation,
-  useApiSourcesExportRetrieveQuery,
-  useApiSourcesImportCreateMutation,
   useApiSqlInputsListQuery,
   useApiSqlInputsCreateMutation,
   useApiSqlInputsRetrieveQuery,
