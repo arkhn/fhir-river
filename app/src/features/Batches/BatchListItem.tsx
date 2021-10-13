@@ -3,7 +3,7 @@ import React from "react";
 import { Link, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Replay } from "@material-ui/icons";
-import moment from "moment";
+import { DateTime } from "luxon";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
@@ -62,15 +62,17 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
 
   const getBatchDuration = (batch: Batch) => {
     if (batchEnd) {
-      const start = moment(batch.created_at);
-      const end = moment(batchEnd);
-      const diff = moment.duration(end.diff(start));
-      return `${diff.years() ? `${t("year", { count: diff.years() })} ` : ""}${
-        diff.months() ? `${t("month", { count: diff.months() })} ` : ""
-      }${diff.days() ? `${t("day", { count: diff.days() })} ` : ""}${
-        diff.hours() ? `${t("hour", { count: diff.hours() })} ` : ""
-      }${diff.minutes() ? `${t("minute", { count: diff.minutes() })} ` : ""}${
-        diff.seconds() ? `${t("second", { count: diff.seconds() })} ` : ""
+      const { years, months, days, hours, minutes, seconds } = DateTime.fromISO(
+        batchEnd
+      )
+        .diff(DateTime.fromISO(batch.created_at))
+        .toObject();
+      return `${years ? `${t("year", { count: years })} ` : ""}${
+        months ? `${t("month", { count: months })} ` : ""
+      }${days ? `${t("day", { count: days })} ` : ""}${
+        hours ? `${t("hour", { count: hours })} ` : ""
+      }${minutes ? `${t("minute", { count: minutes })} ` : ""}${
+        seconds ? `${t("second", { count: seconds })} ` : ""
       }`;
     }
   };
