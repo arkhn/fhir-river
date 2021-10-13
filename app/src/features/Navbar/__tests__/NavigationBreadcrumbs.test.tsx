@@ -5,25 +5,25 @@ import { setupServer } from "msw/node";
 
 import { resetState, store } from "app/store";
 import { render, screen, waitFor } from "common/test/test-utils";
-import { sourceFactory, resourceFactory } from "services/api/factory";
+import { projectFactory, resourceFactory } from "services/api/factory";
 import {
   ApiFiltersListApiResponse,
   ApiResourcesListApiResponse,
   ApiResourcesRetrieveApiResponse,
-  ApiSourcesRetrieveApiResponse,
+  ApiProjectsRetrieveApiResponse,
 } from "services/api/generated/api.generated";
 
 import Navbar from "../Navbar";
 
-const source = sourceFactory.build();
+const project = projectFactory.build();
 const mapping = resourceFactory.build(
   {},
-  { associations: { source: source.id } }
+  { associations: { project: project.id } }
 );
 
 const handlers = [
-  rest.get(`http://example.com/api/sources/${source.id}/`, (_, res, ctx) =>
-    res(ctx.json<ApiSourcesRetrieveApiResponse>(source))
+  rest.get(`http://example.com/api/sources/${project.id}/`, (_, res, ctx) =>
+    res(ctx.json<ApiProjectsRetrieveApiResponse>(project))
   ),
   rest.get(`http://example.com/api/resources/${mapping.id}/`, (_, res, ctx) =>
     res(ctx.json<ApiResourcesRetrieveApiResponse>(mapping))
@@ -48,19 +48,19 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Navigation breadcrumbs", () => {
-  it("should only display the source name", async () => {
+  it("should only display the project name", async () => {
     render(<Navbar />, undefined, {
       path: "/sources/:sourceId",
-      route: `/sources/${source.id}`,
+      route: `/sources/${project.id}`,
     });
 
     await waitFor(() => screen.getByText("source_1"));
   });
 
-  it("should display the source name and mapping name", async () => {
+  it("should display the project name and mapping name", async () => {
     render(<Navbar />, undefined, {
       path: "/sources/:sourceId/mappings/:mappingId",
-      route: `/sources/${source.id}/mappings/${mapping.id}`,
+      route: `/sources/${project.id}/mappings/${mapping.id}`,
     });
 
     await waitFor(() => screen.getByText("source_1"));

@@ -31,7 +31,7 @@ const MappingCreationStepper = forwardRef(
       >
         <Step>
           <StepLabel StepIconComponent={StepIcon}>
-            {t("defineSourceTable")}
+            {t("defineProjectTable")}
           </StepLabel>
         </Step>
         <Step>

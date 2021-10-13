@@ -12,8 +12,8 @@ import { PUBLIC_URL } from "../../constants";
 import AppBar from "./AppBar";
 import PageNotFound from "./PageNotFound";
 import Mapping from "./Sources/Mappings/Mapping";
-import SourceMappings from "./Sources/SourceMappings";
-import Sources from "./Sources/Sources";
+import ProjectMappings from "./Sources/ProjectMappings";
+import Projects from "./Sources/Projects";
 
 const useStyles = makeStyles((theme) => ({
   body: {
@@ -29,36 +29,36 @@ const Router = (): JSX.Element => {
       <AppBar />
       <div className={classes.body}>
         <Switch>
-          <Route exact path={["/", "/sources"]}>
-            <Sources />
+          <Route exact path={["/", "/projects"]}>
+            <Projects />
           </Route>
-          <Route exact path="/sources/:sourceId">
-            <SourceMappings />
+          <Route exact path="/projects/:projectId">
+            <ProjectMappings />
           </Route>
-          <Route exact path="/sources/:sourceId/batches">
+          <Route exact path="/projects/:projectId/batches">
             <Batches />
           </Route>
-          <Route exact path="/sources/:sourceId/mappings">
+          <Route exact path="/projects/:projectId/mappings">
             <CreateMapping />
           </Route>
-          <Route exact path="/sources/:sourceId/mappings/:mappingId">
+          <Route exact path="/projects/:projectId/mappings/:mappingId">
             <Mapping />
           </Route>
           <Route
             exact
-            path="/sources/:sourceId/mappings/:mappingId/attributes/:attributeId"
+            path="/projects/:projectId/mappings/:mappingId/attributes/:attributeId"
           >
             <Mapping />
           </Route>
-          <Route exact path="/sources/:sourceId/mappings/:mappingId/edit">
+          <Route exact path="/projects/:projectId/mappings/:mappingId/edit">
             <EditMapping />
           </Route>
-          <Route exact path="/sources/:sourceId/mappings/:mappingId/preview">
+          <Route exact path="/projects/:projectId/mappings/:mappingId/preview">
             <Preview />
           </Route>
           <Route
             exact
-            path="/sources/:sourceId/mappings/:mappingId/attributes/:attributeId/preview"
+            path="/projects/:projectId/mappings/:mappingId/attributes/:attributeId/preview"
           >
             <Preview />
           </Route>

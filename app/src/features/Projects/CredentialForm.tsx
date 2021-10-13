@@ -19,10 +19,10 @@ import {
 import { apiValidationErrorFromResponse } from "services/api/errors";
 import type {
   CredentialRequest,
-  Source,
+  Project,
 } from "services/api/generated/api.generated";
 
-import { credentialEdited } from "./sourceSlice";
+import { credentialEdited } from "./projectSlice";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type CredentialFormInputs = Omit<CredentialRequest, "source">;
+type CredentialFormInputs = Omit<CredentialRequest, "project">;
 
 const credentialInputs: (
   t: TFunction
@@ -132,10 +132,10 @@ const credentialInputs: (
 ];
 
 type CredentialFormProps = {
-  source: Source;
+  project: Project;
 };
 
-const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
+const CredentialForm = ({ project }: CredentialFormProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -145,7 +145,7 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
     isLoading: isCredentialsLoading,
     data: credentials,
   } = useApiCredentialsListQuery({
-    source: source.id,
+    project: project.id,
   });
   const credential = head(credentials);
 
@@ -176,12 +176,12 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
         ? await updateCredential({
             id: credential.id,
             credentialRequest: {
-              source: credential.source,
+              project: credential.project,
               ...newCredentialInputs,
             },
           }).unwrap()
         : await createCredential({
-            credentialRequest: { source: source.id, ...newCredentialInputs },
+            credentialRequest: { project: project.id, ...newCredentialInputs },
           }).unwrap();
       dispatch(credentialEdited(submittedCredential));
     } catch (e) {

@@ -8,7 +8,7 @@ import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
-import { useApiSourcesImportCreateMutation } from "services/api/endpoints";
+import { useApiProjectsImportCreateMutation } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 import { MappingRequest } from "services/api/generated/api.generated";
 
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 type CredentialFormInputs = Omit<MappingRequest["credential"], "owners">;
 
-const UploadSourceButton = (): JSX.Element => {
+const UploadProjectButton = (): JSX.Element => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
@@ -37,7 +37,7 @@ const UploadSourceButton = (): JSX.Element => {
   const [mappingRequest, setMappingRequest] = useState<
     MappingRequest | undefined
   >();
-  const [apiSourceImportCreate] = useApiSourcesImportCreateMutation();
+  const [apiProjectImportCreate] = useApiProjectsImportCreateMutation();
 
   let fileReader: FileReader | null = null;
 
@@ -69,7 +69,7 @@ const UploadSourceButton = (): JSX.Element => {
   ) => {
     if (mappingRequest) {
       try {
-        await apiSourceImportCreate({
+        await apiProjectImportCreate({
           mappingRequest: {
             ...mappingRequest,
             credential: { ...credentialInputs, ...mappingRequest.credential },
@@ -109,7 +109,7 @@ const UploadSourceButton = (): JSX.Element => {
           fullWidth={false}
           startIcon={<Icon icon={IconNames.IMPORT} />}
         >
-          {t("importSource")}
+          {t("importProject")}
         </Button>
       </label>
       <CredentialDialog
@@ -122,4 +122,4 @@ const UploadSourceButton = (): JSX.Element => {
   );
 };
 
-export default UploadSourceButton;
+export default UploadProjectButton;

@@ -6,15 +6,15 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch } from "app/store";
 import Button from "common/components/Button";
 
-import { createSource } from "./sourceSlice";
+import { createProject } from "./projectSlice";
 
-type SourceCreateProps = ButtonProps;
+type ProjectCreateProps = ButtonProps;
 
-const SourceCreate = ({ ...buttonProps }: SourceCreateProps): JSX.Element => {
+const ProjectCreate = ({ ...buttonProps }: ProjectCreateProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
-  const handleCreateSource = () => dispatch(createSource());
+  const handleCreateSource = () => dispatch(createProject());
 
   return (
     <Button
@@ -23,9 +23,9 @@ const SourceCreate = ({ ...buttonProps }: SourceCreateProps): JSX.Element => {
       variant="contained"
       onClick={handleCreateSource}
     >
-      {t("newSource")}
+      {t("newProject")}
     </Button>
   );
 };
 
-export default SourceCreate;
+export default ProjectCreate;

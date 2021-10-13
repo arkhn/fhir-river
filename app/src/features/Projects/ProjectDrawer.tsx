@@ -8,14 +8,14 @@ import Button from "common/components/Button";
 
 import CredentialForm from "./CredentialForm";
 import CredentialOwnersSelect from "./CredentialOwnersSelect";
-import SourceForm from "./SourceForm";
+import ProjectForm from "./ProjectForm";
 import {
-  selectSourceCurrent,
+  selectProjectCurrent,
   selectEditType,
-  selectSourceCredential,
+  selectProjectCredential,
   EditTypeEnum,
-  initSource,
-} from "./sourceSlice";
+  initProject,
+} from "./projectSlice";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -33,17 +33,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceDrawer = (): JSX.Element => {
+const ProjectDrawer = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const source = useAppSelector(selectSourceCurrent);
-  const credential = useAppSelector(selectSourceCredential);
+  const project = useAppSelector(selectProjectCurrent);
+  const credential = useAppSelector(selectProjectCredential);
   const editType = useAppSelector(selectEditType);
 
   const isDrawerOpen = Boolean(editType);
-  const handleDrawerClose = () => dispatch(initSource());
+  const handleDrawerClose = () => dispatch(initProject());
 
   return (
     <Drawer
@@ -52,9 +52,9 @@ const SourceDrawer = (): JSX.Element => {
       onClose={handleDrawerClose}
       anchor="right"
     >
-      {editType === EditTypeEnum.Source && <SourceForm />}
-      {editType === EditTypeEnum.Credential && source && (
-        <CredentialForm source={source} />
+      {editType === EditTypeEnum.Project && <ProjectForm />}
+      {editType === EditTypeEnum.Credential && project && (
+        <CredentialForm project={project} />
       )}
       {editType === EditTypeEnum.Owners && credential && (
         <>
@@ -77,4 +77,4 @@ const SourceDrawer = (): JSX.Element => {
   );
 };
 
-export default SourceDrawer;
+export default ProjectDrawer;

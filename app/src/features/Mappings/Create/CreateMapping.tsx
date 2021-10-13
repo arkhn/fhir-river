@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateMapping = (): JSX.Element => {
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
   const stepperRef = useRef<HTMLDivElement>();
   const classes = useStyles();
   const history = useHistory();
@@ -225,7 +225,7 @@ const CreateMapping = (): JSX.Element => {
         }
 
         resetCreateMapping();
-        history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
+        history.push(`/projects/${projectId}/mappings/${createdMapping.id}`);
       } catch (e) {
         enqueueSnackbar(e.error, { variant: "error" });
       }
@@ -240,10 +240,10 @@ const CreateMapping = (): JSX.Element => {
     dispatch(
       resourceAdded({
         id: uuid(),
-        source: sourceId,
+        project: projectId,
       })
     );
-  }, [dispatch, sourceId]);
+  }, [dispatch, projectId]);
   useEffect(() => resetCreateMapping, [resetCreateMapping]);
 
   const handlePrevStep = () => {

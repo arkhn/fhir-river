@@ -28,12 +28,12 @@ const MappingsToolbar = (): JSX.Element => {
   const history = useHistory();
   const { t } = useTranslation();
 
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
 
-  const { data: mappings } = useApiResourcesListQuery({ source: sourceId });
+  const { data: mappings } = useApiResourcesListQuery({ project: projectId });
 
   const handleCreateMappingClick = () => {
-    history.push(`/sources/${sourceId}/mappings`);
+    history.push(`/projects/${projectId}/mappings`);
   };
 
   return (

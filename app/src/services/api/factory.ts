@@ -12,7 +12,7 @@ import {
   Credential,
   Filter,
   Resource,
-  Source,
+  Project,
   Owner,
   Column,
   SqlInput,
@@ -21,7 +21,7 @@ import {
   Join,
 } from "./generated/api.generated";
 
-export const sourceFactory = Factory.define<Source>(({ sequence }) => ({
+export const projectFactory = Factory.define<Project>(({ sequence }) => ({
   id: sequence.toString(),
   name: `source_${sequence}`,
   updated_at: faker.date.past().toString(),
@@ -39,7 +39,7 @@ export const credentialFactory = Factory.define<Credential>(
     login: faker.internet.userName(),
     password: faker.internet.password(),
     model: "POSTGRES",
-    source: associations.source || sourceFactory.build().id,
+    project: associations.project || projectFactory.build().id,
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
   })
@@ -69,7 +69,7 @@ export const resourceFactory = Factory.define<Resource>(
     logical_reference: faker.datatype.uuid(),
     updated_at: faker.date.past().toString(),
     created_at: faker.date.past().toString(),
-    source: associations.source || sourceFactory.build().id,
+    project: associations.project || projectFactory.build().id,
     label: `resource_${sequence}`,
   })
 );

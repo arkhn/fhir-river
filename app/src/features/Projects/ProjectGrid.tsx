@@ -2,9 +2,9 @@ import React from "react";
 
 import { CircularProgress, Grid, makeStyles } from "@material-ui/core";
 
-import { useApiSourcesListQuery } from "services/api/endpoints";
+import { useApiProjectsListQuery } from "services/api/endpoints";
 
-import SourceCard from "./SourceCard";
+import ProjectCard from "./ProjectCard";
 
 const useStyles = makeStyles((theme) => ({
   gridContainer: {
@@ -13,18 +13,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceGrid = (): JSX.Element => {
+const ProjectGrid = (): JSX.Element => {
   const classes = useStyles();
-  const { isLoading, data: sources } = useApiSourcesListQuery({});
+  const { isLoading, data: projects } = useApiProjectsListQuery({});
 
   return (
     <Grid className={classes.gridContainer} container spacing={3}>
       {isLoading ? (
         <CircularProgress />
       ) : (
-        sources?.map((source) => (
-          <Grid item key={source.id}>
-            <SourceCard source={source} />
+        projects?.map((project) => (
+          <Grid item key={project.id}>
+            <ProjectCard project={project} />
           </Grid>
         ))
       )}
@@ -32,4 +32,4 @@ const SourceGrid = (): JSX.Element => {
   );
 };
 
-export default SourceGrid;
+export default ProjectGrid;

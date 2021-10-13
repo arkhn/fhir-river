@@ -13,8 +13,10 @@ import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
 import Select from "common/components/Select";
-import { useApiSourcesListQuery } from "services/api/endpoints";
-import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
+import {
+  useApiProjectsListQuery,
+  useApiProjectsExportRetrieveQuery,
+} from "services/api/endpoints";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,18 +38,18 @@ const ExistingURIDialog = ({
 }: ExistingURIDialogProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const [source, setSource] = useState("");
+  const [project, setProject] = useState("");
   const [mapping, setMapping] = useState("");
-  const { data: sources } = useApiSourcesListQuery({});
-  const { data: mappings } = useApiSourcesExportRetrieveQuery(
-    { id: source ?? "" },
-    { skip: !source }
+  const { data: projects } = useApiProjectsListQuery({});
+  const { data: mappings } = useApiProjectsExportRetrieveQuery(
+    { id: project ?? "" },
+    { skip: !project }
   );
 
-  // Reset Mapping select when source changes
+  // Reset Mapping select when project changes
   useEffect(() => {
     setMapping("");
-  }, [source]);
+  }, [project]);
 
   const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
     props.onClose && props.onClose(e);
@@ -57,7 +59,7 @@ const ExistingURIDialog = ({
       name?: string | undefined;
       value: unknown;
     }>
-  ) => setSource(event.target.value as string);
+  ) => setProject(event.target.value as string);
 
   const handleMappingChange = (
     event: React.ChangeEvent<{
@@ -88,12 +90,12 @@ const ExistingURIDialog = ({
         <Grid container spacing={2} alignItems="center">
           <Grid item>
             <Select
-              value={source}
+              value={project}
               options={
-                sources?.map(({ name, id }) => ({ id, label: name })) ?? []
+                projects?.map(({ name, id }) => ({ id, label: name })) ?? []
               }
               onChange={handleSourceChange}
-              emptyOption={t("selectSource")}
+              emptyOption={t("selectProject")}
             />
           </Grid>
           <Grid>

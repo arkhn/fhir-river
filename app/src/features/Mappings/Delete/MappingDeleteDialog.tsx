@@ -16,8 +16,8 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
   const { t } = useTranslation();
   const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
+  const { projectId, mappingId } = useParams<{
+    projectId?: string;
     mappingId?: string;
   }>();
   const [
@@ -30,7 +30,7 @@ const MappingDeleteDialog = (props: DialogProps): JSX.Element => {
       try {
         await deleteMapping({ id: mappingId }).unwrap();
         props.onClose && props.onClose({}, "escapeKeyDown");
-        history.replace(`/sources/${sourceId}`);
+        history.replace(`/projects/${projectId}`);
       } catch (e) {
         const data = apiValidationErrorFromResponse<Partial<ResourceRequest>>(
           e as FetchBaseQueryError

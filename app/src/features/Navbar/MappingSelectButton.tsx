@@ -17,7 +17,7 @@ import { useHistory } from "react-router-dom";
 import Button from "common/components/Button";
 import MappingInfo from "features/Mappings/MappingInfo";
 import { useApiResourcesListQuery } from "services/api/endpoints";
-import { Resource, Source } from "services/api/generated/api.generated";
+import { Resource, Project } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -28,12 +28,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type MappingSelectButtonProps = {
-  source: Source;
+  project: Project;
   mapping: Resource;
 };
 
 const MappingSelectButton = ({
-  source,
+  project,
   mapping,
 }: MappingSelectButtonProps): JSX.Element => {
   const classes = useStyles();
@@ -44,7 +44,7 @@ const MappingSelectButton = ({
   const {
     data: mappings,
     isLoading: isMappingsLoading,
-  } = useApiResourcesListQuery({ source: source.id });
+  } = useApiResourcesListQuery({ project: project.id });
 
   const handlePopperToggle = () => {
     setPopperOpen(!isPopperOpen);
@@ -62,7 +62,7 @@ const MappingSelectButton = ({
   };
   const handleMappingClick = (selectedMapping: Resource) => () => {
     handlePopperClose();
-    history.push(`/sources/${source.id}/mappings/${selectedMapping.id}`);
+    history.push(`/projects/${project.id}/mappings/${selectedMapping.id}`);
   };
 
   return (

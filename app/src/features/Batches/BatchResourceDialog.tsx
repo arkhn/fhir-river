@@ -57,12 +57,12 @@ const BatchResourceDialog = ({
 }: BatchResourceDialogType): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { sourceId } = useParams<{ sourceId: string }>();
+  const { projectId } = useParams<{ projectId: string }>();
   const { enqueueSnackbar } = useSnackbar();
 
   const { data: resources } = useApiResourcesListQuery(
-    { source: sourceId },
-    { skip: !Boolean(sourceId) }
+    { project: projectId },
+    { skip: !Boolean(projectId) }
   );
   const [apiBatchCreate] = useApiBatchesCreateMutation();
 
@@ -163,7 +163,7 @@ const BatchResourceDialog = ({
 
   /**
    * If the dialog opening state or if the resources changes,
-   * set displayed resources with all the resources of the source.
+   * set displayed resources with all the resources of the project.
    */
   useEffect(() => {
     setDisplayedResources(resources);

@@ -49,10 +49,10 @@ const ColumnSelects = ({
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
 
   const { data: credentials } = useApiCredentialsListQuery({
-    source: sourceId,
+    project: projectId,
   });
   const { data: credentialOwners } = useApiOwnersListQuery(
     {

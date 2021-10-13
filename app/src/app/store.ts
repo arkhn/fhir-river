@@ -14,7 +14,7 @@ import sqlInput from "features/Inputs/sqlInputSlice";
 import staticInput from "features/Inputs/staticInputSlice";
 import join from "features/Joins/joinSlice";
 import resource from "features/Mappings/resourceSlice";
-import source from "features/Sources/sourceSlice";
+import project from "features/Projects/projectSlice";
 import { api } from "services/api/endpoints";
 
 const appReducer = combineReducers({
@@ -24,7 +24,7 @@ const appReducer = combineReducers({
   filter,
   join,
   resource,
-  source,
+  project,
   resourceTree,
   sqlInput,
   staticInput,

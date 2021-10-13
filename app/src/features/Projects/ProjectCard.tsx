@@ -21,11 +21,11 @@ import { useHistory } from "react-router";
 
 import { useAppDispatch } from "app/store";
 import DeleteDialog from "common/components/DeleteDialog";
-import { useApiSourcesDestroyMutation } from "services/api/endpoints";
-import { Source } from "services/api/generated/api.generated";
+import { useApiProjectsDestroyMutation } from "services/api/endpoints";
+import { Project } from "services/api/generated/api.generated";
 
-import SourceCardInfo from "./SourceCardInfo";
-import { editSource } from "./sourceSlice";
+import ProjectCardInfo from "./ProjectCardInfo";
+import { editProject } from "./projectSlice";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,11 +50,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type SourceCardProps = {
-  source: Source;
+type ProjectCardProps = {
+  project: Project;
 };
 
-const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
+const ProjectCard = ({ project }: ProjectCardProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
@@ -64,12 +64,12 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const [
-    deleteSource,
+    deleteProject,
     { isLoading: isDeleteLoading },
-  ] = useApiSourcesDestroyMutation({});
+  ] = useApiProjectsDestroyMutation({});
 
   const handleCardClick = () => {
-    history.push(`/sources/${source.id}`);
+    history.push(`/projects/${project.id}`);
   };
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -78,10 +78,10 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleEditSource = () => {
-    dispatch(editSource(source));
+    dispatch(editProject(project));
     handleMenuClose();
   };
-  const handleDeleteSource = () => deleteSource({ id: source.id });
+  const handleDeleteSource = () => deleteProject({ id: project.id });
 
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
@@ -100,7 +100,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
         onClick={handleCardClick}
       >
         <CardHeader
-          title={source.name}
+          title={project.name}
           titleTypographyProps={{ variant: "h6" }}
           action={
             <>
@@ -108,14 +108,14 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
                 onClick={handleMenuClick}
                 className={classes.actionButton}
                 size="small"
-                aria-label={`${source.name} menu`}
+                aria-label={`${project.name} menu`}
               >
                 <MoreIcon />
               </IconButton>
             </>
           }
         />
-        <SourceCardInfo source={source} />
+        <ProjectCardInfo project={project} />
       </Card>
       <Menu
         anchorEl={anchorEl}
@@ -153,7 +153,7 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
         </MenuItem>
       </Menu>
       <DeleteDialog
-        title={t("deleteSourcePrompt", { sourceName: source.name })}
+        title={t("deleteProjectPrompt", { projectName: project.name })}
         open={isDeleteDialogOpen}
         onClose={handleDeleteDialogClose}
         onDelete={handleDeleteSource}
@@ -163,4 +163,4 @@ const SourceCard = ({ source }: SourceCardProps): JSX.Element => {
   );
 };
 
-export default SourceCard;
+export default ProjectCard;

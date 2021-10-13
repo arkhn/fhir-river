@@ -11,16 +11,16 @@ import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "app/store";
 import Button from "common/components/Button";
 import {
-  useApiSourcesCreateMutation,
-  useApiSourcesUpdateMutation,
+  useApiProjectsCreateMutation,
+  useApiProjectsUpdateMutation,
 } from "services/api/endpoints";
 import {
   ApiValidationError,
   apiValidationErrorFromResponse,
 } from "services/api/errors";
-import type { SourceRequest } from "services/api/generated/api.generated";
+import type { ProjectRequest } from "services/api/generated/api.generated";
 
-import { sourceEdited, selectSourceCurrent } from "./sourceSlice";
+import { projectEdited, selectProjectCurrent } from "./projectSlice";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
+const projectInputs: (t: TFunction) => FormInputProperty<ProjectRequest>[] = (
   t
 ) => [
   {
@@ -53,41 +53,41 @@ const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
   },
 ];
 
-const SourceForm = (): JSX.Element => {
+const ProjectForm = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
 
   const [errors, setErrors] = useState<
-    ApiValidationError<SourceRequest> | undefined
+    ApiValidationError<ProjectRequest> | undefined
   >(undefined);
 
-  const source = useAppSelector(selectSourceCurrent);
+  const project = useAppSelector(selectProjectCurrent);
 
   const [
-    apiSourcesCreate,
-    { isLoading: isCreateSourceLoading },
-  ] = useApiSourcesCreateMutation();
+    apiProjectsCreate,
+    { isLoading: isCreateProjectLoading },
+  ] = useApiProjectsCreateMutation();
   const [
-    apiSourcesUpdate,
+    apiProjectsUpdate,
     { isLoading: isUpdateSourceLoading },
-  ] = useApiSourcesUpdateMutation();
+  ] = useApiProjectsUpdateMutation();
 
-  const isLoading = isCreateSourceLoading || isUpdateSourceLoading;
+  const isLoading = isCreateProjectLoading || isUpdateSourceLoading;
 
-  const handleSourceSubmit = async (sourceRequest: SourceRequest) => {
-    if (source && isEqual(source, { ...source, ...sourceRequest })) {
-      dispatch(sourceEdited(source));
+  const handleProjectSubmit = async (projectRequest: ProjectRequest) => {
+    if (project && isEqual(project, { ...project, ...projectRequest })) {
+      dispatch(projectEdited(project));
       return;
     }
 
     try {
-      const submittedSource = source
-        ? await apiSourcesUpdate({ id: source.id, sourceRequest }).unwrap()
-        : await apiSourcesCreate({ sourceRequest }).unwrap();
-      dispatch(sourceEdited(submittedSource));
+      const submittedSource = project
+        ? await apiProjectsUpdate({ id: project.id, projectRequest }).unwrap()
+        : await apiProjectsCreate({ projectRequest }).unwrap();
+      dispatch(projectEdited(submittedSource));
     } catch (e) {
-      const data = apiValidationErrorFromResponse<SourceRequest>(
+      const data = apiValidationErrorFromResponse<ProjectRequest>(
         e as FetchBaseQueryError
       );
       setErrors(data);
@@ -96,16 +96,16 @@ const SourceForm = (): JSX.Element => {
 
   return (
     <div className={classes.formContainer}>
-      <Form<SourceRequest>
-        properties={sourceInputs(t)}
-        submit={handleSourceSubmit}
+      <Form<ProjectRequest>
+        properties={projectInputs(t)}
+        submit={handleProjectSubmit}
         formStyle={{ display: "block" }}
-        defaultValues={source}
+        defaultValues={project}
         displaySubmitButton={false}
         validationErrors={errors}
         formHeader={
           <Typography className={classes.title} variant="h5">
-            {source ? t("editSource") : t("newSource")}
+            {project ? t("editProject") : t("newProject")}
           </Typography>
         }
         formFooter={
@@ -118,10 +118,10 @@ const SourceForm = (): JSX.Element => {
           >
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
-            ) : source ? (
-              t("updateSource")
+            ) : project ? (
+              t("updateProject")
             ) : (
-              t("createSource")
+              t("createProject")
             )}
           </Button>
         }
@@ -130,4 +130,4 @@ const SourceForm = (): JSX.Element => {
   );
 };
 
-export default SourceForm;
+export default ProjectForm;

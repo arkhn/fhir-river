@@ -6,22 +6,22 @@ import { useParams } from "react-router-dom";
 
 import { useAppDispatch } from "app/store";
 import Button from "common/components/Button";
-import { useApiSourcesRetrieveQuery } from "services/api/endpoints";
+import { useApiProjectsRetrieveQuery } from "services/api/endpoints";
 
-import { editCredential } from "./sourceSlice";
+import { editCredential } from "./projectSlice";
 
-type SourceEditButtonProps = ButtonProps;
+type CredentialEditButtonProps = ButtonProps;
 
 const CredentialEditButton = ({
   ...buttonProps
-}: SourceEditButtonProps): JSX.Element => {
+}: CredentialEditButtonProps): JSX.Element => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { sourceId: id } = useParams<{ sourceId: string }>();
+  const { projectId: id } = useParams<{ projectId: string }>();
 
-  const { data: source } = useApiSourcesRetrieveQuery({ id }, { skip: !id });
+  const { data: project } = useApiProjectsRetrieveQuery({ id }, { skip: !id });
   const handleSourceEdit = () => {
-    if (source) dispatch(editCredential(source));
+    if (project) dispatch(editCredential(project));
   };
 
   return (

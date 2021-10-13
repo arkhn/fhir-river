@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useLocation, useParams } from "react-router-dom";
 
 import {
-  useApiSourcesRetrieveQuery,
+  useApiProjectsRetrieveQuery,
   useApiResourcesRetrieveQuery,
 } from "services/api/endpoints";
 
@@ -76,17 +76,17 @@ const useStyles = makeStyles((theme) => ({
 const Navbar = (props: MuiBreadcrumbsProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
+  const { projectId, mappingId } = useParams<{
+    projectId?: string;
     mappingId?: string;
   }>();
   const location = useLocation();
 
-  const { data: source } = useApiSourcesRetrieveQuery(
+  const { data: project } = useApiProjectsRetrieveQuery(
     {
-      id: sourceId ?? "",
+      id: projectId ?? "",
     },
-    { skip: !sourceId }
+    { skip: !projectId }
   );
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
@@ -95,7 +95,7 @@ const Navbar = (props: MuiBreadcrumbsProps): JSX.Element => {
     { skip: !mappingId }
   );
   const isEtl = location.pathname.endsWith("batches");
-  const isSource = sourceId && location.pathname.endsWith(sourceId);
+  const isSource = projectId && location.pathname.endsWith(projectId);
 
   return (
     <div className={classes.breadcrumbsContainer}>
@@ -116,18 +116,18 @@ const Navbar = (props: MuiBreadcrumbsProps): JSX.Element => {
           to="/"
           className={classes.breadCrumbLinks}
         >
-          {t("sources")}
+          {t("projects")}
         </Link>
-        {source && (
+        {project && (
           <Link
             className={clsx(classes.breadCrumbLinks, {
-              [classes.mainCrumb]: source && !mapping && !isEtl,
+              [classes.mainCrumb]: project && !mapping && !isEtl,
             })}
             variant="h5"
             color={!isSource ? "textSecondary" : "textPrimary"}
-            to={`/sources/${source.id}`}
+            to={`/projects/${project.id}`}
           >
-            {source.name}
+            {project.name}
           </Link>
         )}
         {isEtl && (
@@ -142,9 +142,9 @@ const Navbar = (props: MuiBreadcrumbsProps): JSX.Element => {
             {t("ETLDashboard")}
           </Link>
         )}
-        {source && mapping && (
+        {project && mapping && (
           <div>
-            <MappingSelectButton mapping={mapping} source={source} />
+            <MappingSelectButton mapping={mapping} project={project} />
             <EditMappingButton />
           </div>
         )}

@@ -12,19 +12,19 @@ import {
   waitForElementToBeRemoved,
 } from "common/test/test-utils";
 import {
-  sourceFactory,
+  projectFactory,
   credentialFactory,
   resourceFactory,
   attributeFactory,
   ownerFactory,
 } from "services/api/factory";
 import type {
-  SourceRequest,
+  ProjectRequest,
   CredentialRequest,
   OwnerRequest,
-  ApiSourcesListApiResponse,
-  ApiSourcesCreateApiResponse,
-  ApiSourcesUpdateApiResponse,
+  ApiProjectsListApiResponse,
+  ApiProjectsCreateApiResponse,
+  ApiProjectsUpdateApiResponse,
   ApiCredentialsListApiResponse,
   ApiCredentialsCreateApiResponse,
   ApiOwnersListApiResponse,
@@ -33,21 +33,21 @@ import type {
   ApiResourcesListApiResponse,
 } from "services/api/generated/api.generated";
 
-import Sources from "../Sources";
+import Projects from "../Projects";
 
-const source = sourceFactory.build();
-const source_credential = credentialFactory.build(
+const project = projectFactory.build();
+const project_credential = credentialFactory.build(
   {},
-  { associations: { source: source.id } }
+  { associations: { project: project.id } }
 );
 const credential_owner = ownerFactory.build(
   {},
-  { associations: { credential: source_credential.id } }
+  { associations: { credential: project_credential.id } }
 );
 const source_resources = resourceFactory.buildList(
   2,
   {},
-  { associations: { source: source.id } }
+  { associations: { project: project.id } }
 );
 const source_attributes = [
   attributeFactory.build(
@@ -67,8 +67,8 @@ const source_attributes = [
 const handlers = [
   rest.get(
     "http://example.com/api/sources/",
-    (_, res: ResponseComposition<ApiSourcesListApiResponse>, ctx) =>
-      res(ctx.json<ApiSourcesListApiResponse>([]))
+    (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
+      res(ctx.json<ApiProjectsListApiResponse>([]))
   ),
   rest.delete("http://example.com/api/sources/:id/", (_, res, ctx) =>
     res(ctx.status(204))
@@ -100,25 +100,25 @@ beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
   store.dispatch(resetState());
 });
-beforeEach(() => render(<Sources />));
+beforeEach(() => render(<Projects />));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("Sources page", () => {
-  test("creating a new source", async () => {
-    userEvent.click(screen.getByRole("button", { name: /new source/i }));
+  test("creating a new project", async () => {
+    userEvent.click(screen.getByRole("button", { name: /new project/i }));
 
     server.use(
       rest.post(
         "http://example.com/api/sources/",
         (
-          req: RestRequest<SourceRequest>,
-          res: ResponseComposition<ApiSourcesCreateApiResponse>,
+          req: RestRequest<ProjectRequest>,
+          res: ResponseComposition<ApiProjectsCreateApiResponse>,
           ctx
         ) =>
           res.once(
-            ctx.json<ApiSourcesCreateApiResponse>({
-              ...source,
+            ctx.json<ApiProjectsCreateApiResponse>({
+              ...project,
               ...req.body,
             })
           )
@@ -128,11 +128,11 @@ describe("Sources page", () => {
     server.use(
       rest.get(
         "http://example.com/api/sources/",
-        (_, res: ResponseComposition<ApiSourcesListApiResponse>, ctx) =>
+        (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
           res.once(
-            ctx.json<ApiSourcesListApiResponse>([
+            ctx.json<ApiProjectsListApiResponse>([
               {
-                ...source,
+                ...project,
                 name: "source_1",
               },
             ])
@@ -140,7 +140,7 @@ describe("Sources page", () => {
       )
     );
 
-    screen.getByRole("heading", { name: /new source/i });
+    screen.getByRole("heading", { name: /new project/i });
     userEvent.type(
       screen.getByRole("textbox", {
         name: /name/i,
@@ -150,12 +150,12 @@ describe("Sources page", () => {
 
     userEvent.click(
       screen.getByRole("button", {
-        name: /create source/i,
+        name: /create project/i,
       })
     );
 
     await waitForElementToBeRemoved(() =>
-      screen.getByRole("heading", { name: /new source/i })
+      screen.getByRole("heading", { name: /new project/i })
     );
     await waitFor(() =>
       screen.getByRole("heading", { name: /new credential/i })
@@ -171,7 +171,7 @@ describe("Sources page", () => {
         ) =>
           res.once(
             ctx.json<ApiCredentialsCreateApiResponse>({
-              ...source_credential,
+              ...project_credential,
               ...req.body,
             })
           )
@@ -186,12 +186,12 @@ describe("Sources page", () => {
           res: ResponseComposition<ApiCredentialsListApiResponse>,
           ctx
         ) => {
-          const sourceId = req.url.searchParams.get("source");
+          const sourceId = req.url.searchParams.get("project");
           return res.once(
             ctx.json<ApiCredentialsListApiResponse>([
               {
-                ...source_credential,
-                source: sourceId ?? "",
+                ...project_credential,
+                project: sourceId ?? "",
                 host: "localhost",
                 port: 5432,
                 database: "river",
@@ -257,26 +257,26 @@ describe("Sources page", () => {
     userEvent.click(screen.getByRole("button", { name: /done/i }));
   });
 
-  test("the existing source is present", async () => {
+  test("the existing project is present", async () => {
     screen.getByText("source_1");
   });
 
-  test("the source mappings and attributes count", async () => {
+  test("the project mappings and attributes count", async () => {
     screen.getByText("2 mappings");
   });
 
-  test("updating a source", async () => {
+  test("updating a project", async () => {
     server.use(
       rest.put(
         "http://example.com/api/sources/:id/",
         (
-          req: RestRequest<SourceRequest>,
-          res: ResponseComposition<ApiSourcesUpdateApiResponse>,
+          req: RestRequest<ProjectRequest>,
+          res: ResponseComposition<ApiProjectsUpdateApiResponse>,
           ctx
         ) =>
           res.once(
-            ctx.json<ApiSourcesUpdateApiResponse>({
-              ...source,
+            ctx.json<ApiProjectsUpdateApiResponse>({
+              ...project,
               ...req.body,
             })
           )
@@ -286,11 +286,11 @@ describe("Sources page", () => {
     server.use(
       rest.get(
         "http://example.com/api/sources/",
-        (_, res: ResponseComposition<ApiSourcesListApiResponse>, ctx) =>
+        (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
           res.once(
-            ctx.json<ApiSourcesListApiResponse>([
+            ctx.json<ApiProjectsListApiResponse>([
               {
-                ...source,
+                ...project,
                 name: "source_1_edited",
               },
             ])
@@ -300,7 +300,7 @@ describe("Sources page", () => {
 
     userEvent.click(screen.getByRole("button", { name: /source_1 menu/i }));
     userEvent.click(screen.getByRole("menuitem", { name: /edit/i }));
-    screen.getByRole("heading", { name: /edit source/i });
+    screen.getByRole("heading", { name: /edit project/i });
 
     userEvent.type(
       screen.getByRole("textbox", {
@@ -310,12 +310,12 @@ describe("Sources page", () => {
     );
     userEvent.click(
       screen.getByRole("button", {
-        name: /update source/i,
+        name: /update project/i,
       })
     );
 
     await waitForElementToBeRemoved(() =>
-      screen.getByRole("heading", { name: /edit source/i })
+      screen.getByRole("heading", { name: /edit project/i })
     );
     await waitFor(() =>
       screen.getByRole("heading", { name: /edit credential/i })
@@ -335,12 +335,12 @@ describe("Sources page", () => {
     screen.getByText("source_1_edited");
   });
 
-  test("deleting a source", async () => {
+  test("deleting a project", async () => {
     server.use(
       rest.get(
         "http://example.com/api/sources/",
-        (_, res: ResponseComposition<ApiSourcesListApiResponse>, ctx) =>
-          res.once(ctx.json<ApiSourcesListApiResponse>([]))
+        (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
+          res.once(ctx.json<ApiProjectsListApiResponse>([]))
       )
     );
 

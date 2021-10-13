@@ -59,8 +59,8 @@ const FhirResourceTree = (): JSX.Element => {
   const [hasAlreadyExpandedToTarget, setHasAlreadyExpandedToTarget] = useState(
     false
   );
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
+  const { projectId, mappingId } = useParams<{
+    projectId?: string;
     mappingId?: string;
   }>();
   const { data: mapping } = useApiResourcesRetrieveQuery(
@@ -136,14 +136,14 @@ const FhirResourceTree = (): JSX.Element => {
             });
           }
           history.push(
-            `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
+            `/projects/${projectId}/mappings/${mappingId}/attributes/${attribute.id}`
           );
         } catch (error) {
           enqueueSnackbar(error.error, { variant: "error" });
         }
       } else {
         history.push(
-          `/sources/${sourceId}/mappings/${mappingId}/attributes/${selectedNodeAttribute.id}`
+          `/projects/${projectId}/mappings/${mappingId}/attributes/${selectedNodeAttribute.id}`
         );
       }
     }

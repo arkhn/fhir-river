@@ -11,32 +11,32 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import Button from "common/components/Button";
-import { useApiSourcesExportRetrieveQuery } from "services/api/generated/api.generated";
+import { useApiProjectsExportRetrieveQuery } from "services/api/endpoints";
 
-const SourceExportButton = (props: MuiButtonProps): JSX.Element => {
+const ProjectExportButton = (props: MuiButtonProps): JSX.Element => {
   const { t } = useTranslation();
   const exportButtonRef = useRef<HTMLAnchorElement | null>(null);
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
 
   const {
-    data: serializedSource,
-    isLoading: isSerializedSourceLoading,
-  } = useApiSourcesExportRetrieveQuery(
-    { id: sourceId ?? "" },
-    { skip: !sourceId, refetchOnMountOrArgChange: true }
+    data: serializedProject,
+    isLoading: isSerializedProjectLoading,
+  } = useApiProjectsExportRetrieveQuery(
+    { id: projectId ?? "" },
+    { skip: !projectId, refetchOnMountOrArgChange: true }
   );
 
   const handleExportMappingClick = () => {
-    if (serializedSource) {
+    if (serializedProject) {
       const data = `text/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(serializedSource)
+        JSON.stringify(serializedProject)
       )}`;
 
       if (exportButtonRef && exportButtonRef.current) {
         exportButtonRef.current.setAttribute("href", `data:${data}`);
         exportButtonRef.current.setAttribute(
           "download",
-          `${serializedSource.name}.json`
+          `${serializedProject.name}.json`
         );
       }
     }
@@ -50,14 +50,14 @@ const SourceExportButton = (props: MuiButtonProps): JSX.Element => {
       color="secondary"
       startIcon={<Icon icon={IconNames.EXPORT} />}
       ref={exportButtonRef}
-      disabled={isSerializedSourceLoading}
+      disabled={isSerializedProjectLoading}
       onClick={handleExportMappingClick}
       disableElevation
     >
-      {isSerializedSourceLoading && <CircularProgress size="small" />}
+      {isSerializedProjectLoading && <CircularProgress size="small" />}
       <Typography>{t("exportMapping")}</Typography>
     </Button>
   );
 };
 
-export default SourceExportButton;
+export default ProjectExportButton;

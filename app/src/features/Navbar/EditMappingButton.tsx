@@ -32,8 +32,8 @@ const useStyles = makeStyles((theme) => ({
 const EditMappingButton = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
+  const { projectId, mappingId } = useParams<{
+    projectId?: string;
     mappingId?: string;
   }>();
   const history = useHistory();
@@ -56,7 +56,7 @@ const EditMappingButton = (): JSX.Element => {
 
   const handleEditSourceTableClick = () => {
     handleMenuClose();
-    history.push(`/sources/${sourceId}/mappings/${mappingId}/edit`);
+    history.push(`/projects/${projectId}/mappings/${mappingId}/edit`);
   };
   const handleEditNameClick = () => {
     handleMenuClose();
@@ -95,7 +95,7 @@ const EditMappingButton = (): JSX.Element => {
         </MenuItem>
         <MenuItem>
           <ListItemText
-            primary={t("editSourceTable")}
+            primary={t("editProjectTable")}
             onClick={handleEditSourceTableClick}
           />
         </MenuItem>

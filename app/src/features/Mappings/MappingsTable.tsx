@@ -24,16 +24,16 @@ const useStyles = makeStyles(() => ({
 
 const MappingsTable = (): JSX.Element => {
   const classes = useStyles();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
   const history = useHistory();
 
   const {
     data: mappings,
     isLoading: isMappingLoading,
-  } = useApiResourcesListQuery({ source: sourceId });
+  } = useApiResourcesListQuery({ project: projectId });
 
   const handleMappingRowClick = (mapping: Resource) => () => {
-    history.push(`/sources/${sourceId}/mappings/${mapping.id}`);
+    history.push(`/projects/${projectId}/mappings/${mapping.id}`);
   };
 
   return isMappingLoading ? (

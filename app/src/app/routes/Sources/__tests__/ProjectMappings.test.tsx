@@ -11,28 +11,28 @@ import {
   credentialFactory,
   filterFactory,
   resourceFactory,
-  sourceFactory,
+  projectFactory,
 } from "services/api/factory";
 import {
   ApiResourcesListApiResponse,
   ApiFiltersListApiResponse,
   ApiAttributesListApiResponse,
-  ApiSourcesRetrieveApiResponse,
+  ApiProjectsRetrieveApiResponse,
   ApiCredentialsListApiResponse,
 } from "services/api/generated/api.generated";
 
-import SourceMappings from "../SourceMappings";
+import ProjectMappings from "../ProjectMappings";
 
-const source = sourceFactory.build();
-const source_credential = credentialFactory.build(
+const project = projectFactory.build();
+const project_credential = credentialFactory.build(
   {},
   {
-    associations: { source: source.id },
+    associations: { project: project.id },
   }
 );
 const source_resource = resourceFactory.build(
   {},
-  { associations: { source: source.id } }
+  { associations: { project: project.id } }
 );
 
 const resource_attributes = attributeFactory.buildList(
@@ -48,7 +48,7 @@ const resource_filters = filterFactory.buildList(
 
 const handlers = [
   rest.get("http://example.com/api/sources/:id/", (_, res, ctx) =>
-    res(ctx.json<ApiSourcesRetrieveApiResponse>(source))
+    res(ctx.json<ApiProjectsRetrieveApiResponse>(project))
   ),
   rest.get(
     "http://example.com/api/resources/",
@@ -71,7 +71,7 @@ const handlers = [
     "http://example.com/api/credentials/",
     (_, res: ResponseComposition<ApiCredentialsListApiResponse>, ctx) =>
       res(
-        ctx.json<ApiCredentialsListApiResponse>([source_credential])
+        ctx.json<ApiCredentialsListApiResponse>([project_credential])
       )
   ),
 ];
@@ -83,9 +83,9 @@ beforeAll(() => {
   store.dispatch(resetState());
 });
 beforeEach(() =>
-  render(<SourceMappings />, undefined, {
+  render(<ProjectMappings />, undefined, {
     path: "/sources/:sourceId",
-    route: `/sources/${source.id}`,
+    route: `/sources/${project.id}`,
   })
 );
 afterEach(() => server.resetHandlers());
@@ -102,19 +102,19 @@ describe("Source mappings page", () => {
     await screen.findByRole("heading", { name: /edit credential/i });
 
     expect(screen.getByRole("textbox", { name: /host/i })).toHaveValue(
-      source_credential.host
+      project_credential.host
     );
     expect(screen.getByRole("spinbutton", { name: /port/i })).toHaveValue(
-      source_credential.port
+      project_credential.port
     );
     expect(screen.getByRole("textbox", { name: /database/i })).toHaveValue(
-      source_credential.database
+      project_credential.database
     );
     expect(screen.getByRole("textbox", { name: /login/i })).toHaveValue(
-      source_credential.login
+      project_credential.login
     );
     expect(screen.getByLabelText("password")).toHaveValue(
-      source_credential.password
+      project_credential.password
     );
   });
 });

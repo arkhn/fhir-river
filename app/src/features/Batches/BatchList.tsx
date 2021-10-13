@@ -36,7 +36,7 @@ const PAGE_SIZE = 10;
 
 const BatchList = (): JSX.Element => {
   const classes = useStyles();
-  const { sourceId } = useParams<{ sourceId: string }>();
+  const { projectId } = useParams<{ projectId: string }>();
 
   const [page, setPage] = useState(1);
   const handlePageChange = (
@@ -52,7 +52,7 @@ const BatchList = (): JSX.Element => {
     {
       limit,
       offset,
-      source: [sourceId],
+      project: [projectId],
       ordering: "-created_at",
     }
   );

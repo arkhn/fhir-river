@@ -2,46 +2,46 @@ import { createSlice, createAction } from "@reduxjs/toolkit";
 
 import type { RootState } from "app/store";
 import type {
-  Source as SourceType,
+  Project as ProjectType,
   Credential as CredentialType,
 } from "services/api/generated/api.generated";
 
 export enum EditTypeEnum {
-  Source = "SOURCE",
+  Project = "PROJECT",
   Credential = "CREDENTIAL",
   Owners = "OWNERS",
 }
 
-type SourceSliceState = {
-  current?: SourceType;
+type ProjectSliceState = {
+  current?: ProjectType;
   credential?: CredentialType;
   editType?: EditTypeEnum;
 };
 
-const initialState: SourceSliceState = {};
+const initialState: ProjectSliceState = {};
 
-export const editSource = createAction<SourceType>("editSource");
-export const sourceEdited = createAction<SourceType>("sourceEdited");
-export const editCredential = createAction<SourceType>("editCredential");
+export const editProject = createAction<ProjectType>("editProject");
+export const projectEdited = createAction<ProjectType>("projectEdited");
+export const editCredential = createAction<ProjectType>("editCredential");
 export const credentialEdited = createAction<CredentialType>(
   "credentialEdited"
 );
 
-const sourceSlice = createSlice({
-  name: "source",
+const projectSlice = createSlice({
+  name: "project",
   initialState,
   reducers: {
-    initSource: () => initialState,
-    createSource: (state) => {
-      state.editType = EditTypeEnum.Source;
+    initProject: () => initialState,
+    createProject: (state) => {
+      state.editType = EditTypeEnum.Project;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(editSource, (state, { payload }) => {
+    builder.addCase(editProject, (state, { payload }) => {
       state.current = payload;
-      state.editType = EditTypeEnum.Source;
+      state.editType = EditTypeEnum.Project;
     });
-    builder.addCase(sourceEdited, (state, { payload }) => {
+    builder.addCase(projectEdited, (state, { payload }) => {
       state.current = payload;
       state.editType = EditTypeEnum.Credential;
     });
@@ -56,14 +56,15 @@ const sourceSlice = createSlice({
   },
 });
 
-export const { initSource, createSource } = sourceSlice.actions;
+export const { initProject, createProject } = projectSlice.actions;
 
-export const selectSourceCurrent = (state: RootState): SourceType | undefined =>
-  state.source.current;
-export const selectEditType = (state: RootState): EditTypeEnum | undefined =>
-  state.source.editType;
-export const selectSourceCredential = (
+export const selectProjectCurrent = (
   state: RootState
-): CredentialType | undefined => state.source.credential;
+): ProjectType | undefined => state.project.current;
+export const selectEditType = (state: RootState): EditTypeEnum | undefined =>
+  state.project.editType;
+export const selectProjectCredential = (
+  state: RootState
+): CredentialType | undefined => state.project.credential;
 
-export default sourceSlice.reducer;
+export default projectSlice.reducer;

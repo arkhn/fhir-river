@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import CardContentItem from "common/components/CardContentItem";
 import { useApiResourcesListQuery } from "services/api/endpoints";
-import type { Source } from "services/api/generated/api.generated";
+import type { Project } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -20,18 +20,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type SourceCardInfoProps = {
-  source: Source;
+type ProjectCardInfoProps = {
+  project: Project;
 };
 
-const SourceCardInfo = ({ source }: SourceCardInfoProps): JSX.Element => {
+const ProjectCardInfo = ({ project }: ProjectCardInfoProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
 
   const {
     data: mappings,
     isLoading: isMappingsLoading,
-  } = useApiResourcesListQuery({ source: source.id });
+  } = useApiResourcesListQuery({ project: project.id });
 
   const isSourceInfoLoading = isMappingsLoading;
 
@@ -61,4 +61,4 @@ const SourceCardInfo = ({ source }: SourceCardInfoProps): JSX.Element => {
   );
 };
 
-export default SourceCardInfo;
+export default ProjectCardInfo;

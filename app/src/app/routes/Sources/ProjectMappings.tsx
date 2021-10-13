@@ -10,10 +10,10 @@ import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
 import Navbar from "features/Navbar/Navbar";
-import CredentialEditButton from "features/Sources/CredentialEditButton";
-import SourceDrawer from "features/Sources/SourceDrawer";
+import CredentialEditButton from "features/Projects/CredentialEditButton";
+import ProjectDrawer from "features/Projects/ProjectDrawer";
 
-import SourceExportButton from "./SourceExportButton";
+import ProjectExportButton from "./ProjectExportButton";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -21,14 +21,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SourceMappings = (): JSX.Element => {
+const ProjectMappings = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const history = useHistory();
-  const { sourceId } = useParams<{ sourceId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
 
   const handleLaunchClick = () => {
-    history.push(`/sources/${sourceId}/batches`);
+    history.push(`/projects/${projectId}/batches`);
   };
 
   return (
@@ -43,7 +43,7 @@ const SourceMappings = (): JSX.Element => {
             />
           </Grid>
           <Grid item>
-            <SourceExportButton />
+            <ProjectExportButton />
           </Grid>
           <Grid item>
             <Button
@@ -61,9 +61,9 @@ const SourceMappings = (): JSX.Element => {
         <MappingsToolbar />
         <MappingsTable />
       </Container>
-      <SourceDrawer />
+      <ProjectDrawer />
     </Container>
   );
 };
 
-export default SourceMappings;
+export default ProjectMappings;

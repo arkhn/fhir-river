@@ -64,8 +64,8 @@ const EditMapping = (): JSX.Element => {
   const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
   const [isEditLoading, setEditLoading] = useState(false);
-  const { sourceId, mappingId } = useParams<{
-    sourceId?: string;
+  const { projectId, mappingId } = useParams<{
+    projectId?: string;
     mappingId?: string;
   }>();
   const { isLoading, data: initialState } = useInitMappingEdit();
@@ -300,7 +300,7 @@ const EditMapping = (): JSX.Element => {
         setEditLoading(false);
       }
 
-      history.push(`/sources/${sourceId}/mappings/${mappingId}`);
+      history.push(`/projects/${projectId}/mappings/${mappingId}`);
     }
   };
 
@@ -320,7 +320,7 @@ const EditMapping = (): JSX.Element => {
         ) : mapping ? (
           <>
             <Typography variant="h6" gutterBottom>
-              Source table
+              {t("projectTable")}
             </Typography>
             <div className={classes.contentContainer}>
               <TableStep mapping={mapping} />
