@@ -10,7 +10,7 @@ class Project(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField(unique=True)
     version = models.TextField(blank=True, default="")
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="sources", through="SourceUser")
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="sources", through="ProjectUser")
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -19,18 +19,18 @@ class Project(models.Model):
         return self.name
 
 
-class SourceUser(models.Model):
+class ProjectUser(models.Model):
     class Meta:
         unique_together = (("user", "source"),)
 
-    class SourceRole(models.TextChoices):
+    class ProjectRole(models.TextChoices):
         WRITER = "WRITER"
         READER = "READER"
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_sources", on_delete=models.CASCADE)
     source = models.ForeignKey(Project, related_name="source_users", on_delete=models.CASCADE)
-    role = models.TextField(choices=SourceRole.choices, default=SourceRole.READER)
+    role = models.TextField(choices=ProjectRole.choices, default=ProjectRole.READER)
 
 
 class Resource(models.Model):

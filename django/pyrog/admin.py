@@ -8,7 +8,7 @@ class Source(admin.ModelAdmin):
     list_display = ("id", "name")
 
 
-@admin.register(models.SourceUser)
+@admin.register(models.ProjectUser)
 class SourceUser(admin.ModelAdmin):
     list_display = ("id", "source", "user", "role")
 

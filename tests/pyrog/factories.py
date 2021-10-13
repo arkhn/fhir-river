@@ -17,7 +17,7 @@ class SourceFactory(factory.django.DjangoModelFactory):
 
 class SourceUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.SourceUser
+        model = models.ProjectUser
 
     id = factory.Sequence(lambda n: f"source_user_id_{n:04d}")
     user = factory.SubFactory("tests.pyrog.factories.UserFactory")
