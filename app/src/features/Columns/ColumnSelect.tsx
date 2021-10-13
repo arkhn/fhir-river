@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
+import AutocompletePopper from "common/components/AutocompletePopper";
 import usePrevious from "common/hooks/usePrevious";
 import {
   useApiCredentialsListQuery,
@@ -154,6 +155,7 @@ const ColumnSelects = ({
     <>
       <Grid item>
         <Autocomplete
+          PopperComponent={AutocompletePopper}
           className={classes.autocomplete}
           options={tableOptions}
           groupBy={(option) => option.label.split("/")[0] ?? ""}
@@ -194,6 +196,7 @@ const ColumnSelects = ({
       </Grid>
       <Grid item>
         <Autocomplete
+          PopperComponent={AutocompletePopper}
           className={classes.autocomplete}
           options={columns}
           value={column.column ?? ""}

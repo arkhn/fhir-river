@@ -1,17 +1,11 @@
 import React from "react";
 
-import {
-  Grid,
-  makeStyles,
-  Popper,
-  PopperProps,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Grid, makeStyles, TextField, Typography } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
+import AutocompletePopper from "common/components/AutocompletePopper";
 import { useApiInputGroupsUpdateMutation } from "services/api/endpoints";
 import {
   InputGroup,
@@ -45,16 +39,6 @@ const useStyles = makeStyles((theme) => ({
 
 type MergingScriptProps = {
   inputGroup: InputGroup;
-};
-
-const CustomPopper = function (props: PopperProps) {
-  return (
-    <Popper
-      {...props}
-      style={{ width: "fit-content", maxWidth: "90vw" }}
-      placement="bottom-start"
-    />
-  );
 };
 
 const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
@@ -91,7 +75,7 @@ const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
       <Grid item>
         {mergingScripts && (
           <Autocomplete
-            PopperComponent={CustomPopper}
+            PopperComponent={AutocompletePopper}
             openOnFocus
             options={mergingScripts.map((mergingScript) => mergingScript.name)}
             fullWidth
