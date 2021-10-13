@@ -63,7 +63,7 @@ const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [updateInputGroup] = useApiInputGroupsUpdateMutation();
-  const { data: mergingScripts } = useApiScriptsListQuery({});
+  const { data: mergingScripts } = useApiScriptsListQuery();
 
   const handleMergingScriptSelect = async (
     event: React.ChangeEvent<Record<string, never>>,

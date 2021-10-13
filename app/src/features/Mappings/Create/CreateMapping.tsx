@@ -42,7 +42,7 @@ import type {
   ColumnRequest,
   FilterRequest,
   JoinRequest,
-  SQLInputRequest,
+  SqlInputRequest,
 } from "services/api/generated/api.generated";
 
 import {
@@ -178,7 +178,7 @@ const CreateMapping = (): JSX.Element => {
                 sqlInputRequest: {
                   ...sqlInput,
                   column: createdColumns[index]?.id ?? "",
-                } as SQLInputRequest,
+                } as SqlInputRequest,
               }).unwrap();
             })
           );

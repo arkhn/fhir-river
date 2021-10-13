@@ -18,4 +18,4 @@ class ExplorationRequestSerializer(serializers.Serializer):
 
 class ExplorationResponseSerializer(serializers.Serializer):
     fields = serializers.ListField(child=serializers.CharField())
-    rows = serializers.ListField(child=serializers.ListField(child=serializers.CharField()))
+    rows = serializers.ListField(child=serializers.ListField())

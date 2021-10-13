@@ -20,14 +20,14 @@ import {
   useApiSqlInputsUpdateMutation,
   useApiColumnsRetrieveQuery,
 } from "services/api/endpoints";
-import {
-  SQLInput,
+import type {
+  SqlInput as SqlInputType,
   Scripts,
   Column,
 } from "services/api/generated/api.generated";
 
 type SqlInputProps = {
-  input: SQLInput;
+  input: SqlInputType;
 };
 
 const useStyles = makeStyles((theme) => ({

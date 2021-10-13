@@ -2778,8 +2778,7 @@ components:
           type: array
           items:
             type: array
-            items:
-              type: string
+            items: {}
       required:
       - fields
       - rows

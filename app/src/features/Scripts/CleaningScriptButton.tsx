@@ -60,9 +60,10 @@ const CleaningScriptButton = ({
   const isInputScriptSelected = scriptName !== undefined && scriptName !== "";
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { data: scripts, isLoading: isScriptsLoading } = useApiScriptsListQuery(
-    {}
-  );
+  const {
+    data: scripts,
+    isLoading: isScriptsLoading,
+  } = useApiScriptsListQuery();
 
   const handleMenuToggle = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
