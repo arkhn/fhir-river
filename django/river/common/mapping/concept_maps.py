@@ -18,6 +18,6 @@ def format_concept_map(concept_map_id: str, auth_token: Optional[str]):
     concept_map = {}
     for group in concept_map_resource["group"]:
         for element in group["element"]:
-            # NOTE we only handle a single target for each source
+            # NOTE we only handle a single target for each project
             concept_map[element["code"]] = element["target"][0]["code"]
     return concept_map

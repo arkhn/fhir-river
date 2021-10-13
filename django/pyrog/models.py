@@ -10,7 +10,7 @@ class Project(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField(unique=True)
     version = models.TextField(blank=True, default="")
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="sources", through="ProjectUser")
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="projects", through="ProjectUser")
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -21,21 +21,21 @@ class Project(models.Model):
 
 class ProjectUser(models.Model):
     class Meta:
-        unique_together = (("user", "source"),)
+        unique_together = (("user", "project"),)
 
     class ProjectRole(models.TextChoices):
         WRITER = "WRITER"
         READER = "READER"
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_sources", on_delete=models.CASCADE)
-    source = models.ForeignKey(Project, related_name="source_users", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_projects", on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name="source_users", on_delete=models.CASCADE)
     role = models.TextField(choices=ProjectRole.choices, default=ProjectRole.READER)
 
 
 class Resource(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    source = models.ForeignKey(Project, related_name="resources", on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name="resources", on_delete=models.CASCADE)
     label = models.TextField(blank=True, default="")
     primary_key_table = models.TextField()
     primary_key_column = models.TextField()
@@ -56,7 +56,7 @@ class Credential(models.Model):
         SQLLITE = "SQLLITE"
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    source = models.OneToOneField(Project, on_delete=models.CASCADE)
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
     host = models.TextField()
     port = models.IntegerField()
     database = models.TextField()

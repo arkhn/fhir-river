@@ -42,11 +42,11 @@ class SourceViewSet(viewsets.ModelViewSet):
         return self.retrieve(request)
 
     def perform_create(self, serializer):
-        """Try to assign a owner to the new source."""
+        """Try to assign a owner to the new project."""
 
         source = serializer.save()
 
-        # To give the source a owner, the request must be authenticated
+        # To give the project a owner, the request must be authenticated
         if not self.request.user.is_anonymous:
             source.users.add(self.request.user)
             source.save()

@@ -12,7 +12,7 @@ class SourceFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"source_id_{n:04d}")
     name = factory.Sequence(lambda n: f"source_{n}")
-    source_user = factory.RelatedFactory("tests.pyrog.factories.SourceUserFactory", factory_related_name="source")
+    source_user = factory.RelatedFactory("tests.pyrog.factories.SourceUserFactory", factory_related_name="project")
 
 
 class SourceUserFactory(factory.django.DjangoModelFactory):

@@ -31,7 +31,7 @@ def test_create_resource(
     url = reverse("resources-list")
 
     data = {
-        "source": source.id,
+        "project": source.id,
         "primary_key_owner": owner.id,
         "label": label,
         "primary_key_table": primary_key_table,
@@ -75,7 +75,7 @@ def test_filter_resources_by_source(api_client, source_factory, resource_factory
     first_source_resources = resource_factory.create_batch(2, source=first_source)
     resource_factory.create_batch(2, source=second_source)
 
-    response = api_client.get(url, {"source": first_source.id})
+    response = api_client.get(url, {"project": first_source.id})
 
     assert response.status_code == 200, response.data
     assert {resource_data["id"] for resource_data in response.json()} == {

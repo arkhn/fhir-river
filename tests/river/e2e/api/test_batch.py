@@ -49,7 +49,7 @@ def test_filter_batches_by_sources(api_client, batch_factory, source_factory, re
     batch_factory.create_batch(3, resources=second_source_resources)
 
     url = reverse("batches-list")
-    response = api_client.get(url, {"source": [first_source.id]})
+    response = api_client.get(url, {"project": [first_source.id]})
 
     assert response.status_code == 200, response.data
     assert {batch_data["id"] for batch_data in response.json()} == {

@@ -48,7 +48,7 @@ def test_create_credential(
     url = reverse("credentials-list")
 
     data = {
-        "source": source.id,
+        "project": source.id,
         "host": host,
         "port": port,
         "database": database,
@@ -104,7 +104,7 @@ def test_filter_credentials_by_source(
     first_source_credentials = credential_factory.create(source=first_source)
     credential_factory.create(source=second_source)
 
-    response = api_client.get(url, {"source": first_source.id})
+    response = api_client.get(url, {"project": first_source.id})
 
     assert response.status_code == 200, response.data
     assert {credential_data["id"] for credential_data in response.json()} == {first_source_credentials.id}

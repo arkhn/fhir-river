@@ -32,7 +32,7 @@ class Extractor:
     def extract(self, analysis: Analysis, pk_values: Optional[List[Any]] = None):
         """Main method of the Extractor class.
         It builds the sql alchemy query that will fetch the columns needed from the
-        source DB, run it and returns the result as an sqlalchemy ResultProxy.
+        project DB, run it and returns the result as an sqlalchemy ResultProxy.
 
         Args:
             analysis: an Analyis instance built by the Analyzer.

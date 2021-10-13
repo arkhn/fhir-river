@@ -33,7 +33,7 @@ def test_create_and_assign_source(api_client, user, name, version, status_code):
     if status_code != 201:
         return
 
-    # Check that the new source has been assigned to the authenticated user
+    # Check that the new project has been assigned to the authenticated user
     assert user.sources.filter(id=response.data["id"]).exists()
 
 
@@ -64,7 +64,7 @@ def test_can_import_mapping_several_times(api_client, export_data):
     response = api_client.post(url + "import/", export_data, format="json")
     assert response.status_code == 201, response.data
 
-    # Change source name
+    # Change project name
     export_data["name"] = "other_name"
     response = api_client.post(url + "import/", export_data, format="json")
     assert response.status_code == 201, response.data

@@ -10,7 +10,7 @@ class Source(admin.ModelAdmin):
 
 @admin.register(models.ProjectUser)
 class SourceUser(admin.ModelAdmin):
-    list_display = ("id", "source", "user", "role")
+    list_display = ("id", "project", "user", "role")
 
 
 @admin.register(models.Resource)

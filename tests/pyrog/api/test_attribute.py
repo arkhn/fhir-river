@@ -82,7 +82,7 @@ def test_filter_attributes_by_source(api_client, source_factory, resource_factor
     first_source_attributes = attribute_factory.create_batch(2, resource=first_resource)
     attribute_factory.create_batch(3, resource=second_resource)
 
-    response = api_client.get(url, {"source": first_source.id})
+    response = api_client.get(url, {"project": first_source.id})
 
     assert response.status_code == 200, response.data
     assert {attribute_data["id"] for attribute_data in response.json()} == {

@@ -17,7 +17,7 @@ class ProgressionCounter:
     """Abstract class used to track the progression of an ETL.
 
     A `ProgressionCounter` is basically a key-value store.
-    The keys should identify a (batch, pyrog source) couple and each key gives access to
+    The keys should identify a (batch, pyrog project) couple and each key gives access to
     2 values. One of this value is the number of resources extracted for the
     corresponding key and the other is the number of resources currenlty loaded in the
     target DB.

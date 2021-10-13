@@ -131,7 +131,7 @@ class ReferenceBinder:
         system and value.
         The system is an url formatted as http://terminology.arkhn.org/{UUIDv4}.
         The UUIDv4 is the id of the mapping of the referenced resource.
-        The value is the source database id of the referenced resource.
+        The value is the project database id of the referenced resource.
         :param reference_type:
         :return: a literal reference formatted as ResourceType/ResourceId
         """
