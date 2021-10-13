@@ -4,12 +4,12 @@ from pyrog import models
 
 
 @admin.register(models.Project)
-class Source(admin.ModelAdmin):
+class Project(admin.ModelAdmin):
     list_display = ("id", "name")
 
 
 @admin.register(models.ProjectUser)
-class SourceUser(admin.ModelAdmin):
+class ProjectUser(admin.ModelAdmin):
     list_display = ("id", "project", "user", "role")
 
 

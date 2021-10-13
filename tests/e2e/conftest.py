@@ -66,11 +66,11 @@ def uploaded_mapping(mimic_mapping, destroy_mimic_source):
     """
     try:
         # send a batch request
-        response = requests.post(f"{settings.RIVER_API_URL}/sources/import/", json=mimic_mapping)
+        response = requests.post(f"{settings.RIVER_API_URL}/projects/import/", json=mimic_mapping)
     except requests.exceptions.ConnectionError:
         raise Exception("Could not connect to the api service")
 
-    assert response.status_code == 201, f"api POST /sources/import/ returned an error: {response.text}"
+    assert response.status_code == 201, f"api POST /projects/import/ returned an error: {response.text}"
 
     created_mapping = response.json()
     assert (

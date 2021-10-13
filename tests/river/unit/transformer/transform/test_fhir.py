@@ -224,7 +224,7 @@ def test_build_metadata(mock_datetime):
     assert metadata == {
         "lastUpdated": "now",
         "tag": [
-            {"system": fhir.ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
+            {"system": fhir.ARKHN_PROJECT_CODE_SYSTEM, "code": "sourceId"},
             {"system": fhir.ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }
@@ -249,7 +249,7 @@ def test_build_metadata_for_profiles(mock_datetime):
         "lastUpdated": "now",
         "profile": ["u/r/l"],
         "tag": [
-            {"system": fhir.ARKHN_SOURCE_CODE_SYSTEM, "code": "sourceId"},
+            {"system": fhir.ARKHN_PROJECT_CODE_SYSTEM, "code": "sourceId"},
             {"system": fhir.ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }

@@ -11,8 +11,8 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.mark.parametrize("name, version, status_code", [(faker.word(), faker.word(), 201), ("", faker.word(), 400)])
-def test_create_source(api_client, name, version, status_code):
-    url = reverse("sources-list")
+def test_create_project(api_client, name, version, status_code):
+    url = reverse("projects-list")
 
     data = {"name": name, "version": version}
     response = api_client.post(url, data)
@@ -22,8 +22,8 @@ def test_create_source(api_client, name, version, status_code):
 
 @pytest.mark.as_user
 @pytest.mark.parametrize("name, version, status_code", [(faker.word(), faker.word(), 201), ("", faker.word(), 400)])
-def test_create_and_assign_source(api_client, user, name, version, status_code):
-    url = reverse("sources-list")
+def test_create_and_assign_project(api_client, user, name, version, status_code):
+    url = reverse("projects-list")
 
     data = {"name": name, "version": version}
     response = api_client.post(url, data)
@@ -34,12 +34,12 @@ def test_create_and_assign_source(api_client, user, name, version, status_code):
         return
 
     # Check that the new project has been assigned to the authenticated user
-    assert user.sources.filter(id=response.data["id"]).exists()
+    assert user.projects.filter(id=response.data["id"]).exists()
 
 
 @pytest.mark.as_user
-def test_retrieve_source(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
+def test_retrieve_project(api_client, project):
+    url = reverse("projects-detail", kwargs={"pk": project.id})
 
     response = api_client.get(url)
 
@@ -49,7 +49,7 @@ def test_retrieve_source(api_client, source):
 @pytest.mark.as_user
 @pytest.mark.export_data("valid/mimic.json")
 def test_can_import_mapping(api_client, export_data):
-    url = reverse("sources-list")
+    url = reverse("projects-list")
 
     response = api_client.post(url + "import/", export_data, format="json")
 
@@ -59,7 +59,7 @@ def test_can_import_mapping(api_client, export_data):
 @pytest.mark.as_user
 @pytest.mark.export_data("valid/mimic.json")
 def test_can_import_mapping_several_times(api_client, export_data):
-    url = reverse("sources-list")
+    url = reverse("projects-list")
 
     response = api_client.post(url + "import/", export_data, format="json")
     assert response.status_code == 201, response.data
@@ -74,22 +74,22 @@ def test_can_import_mapping_several_times(api_client, export_data):
 
 
 @pytest.mark.as_user
-def test_list_sources(api_client, user, other_user, source_factory):
-    url = reverse("sources-list")
+def test_list_projects(api_client, user, other_user, project_factory):
+    url = reverse("projects-list")
 
-    # Assign 3 sources to the authenticated user
-    source_factory.create_batch(3, source_user__user=user)
-    assert user.sources.count() == 3
-    assert other_user.sources.count() == 0
-    # Assign 3 other sources to the other user
-    source_factory.create_batch(3, source_user__user=other_user)
-    assert user.sources.count() == 3
-    assert other_user.sources.count() == 3
+    # Assign 3 projects to the authenticated user
+    project_factory.create_batch(3, project_user__user=user)
+    assert user.projects.count() == 3
+    assert other_user.projects.count() == 0
+    # Assign 3 other projects to the other user
+    project_factory.create_batch(3, project_user__user=other_user)
+    assert user.projects.count() == 3
+    assert other_user.projects.count() == 3
 
     response = api_client.get(url)
 
     assert response.status_code == 200, response.data
-    assert {source.id for source in [*user.sources.all(), *other_user.sources.all()]} == {
+    assert {project.id for project in [*user.projects.all(), *other_user.projects.all()]} == {
         item["id"] for item in response.data
     }
     assert all(
@@ -100,8 +100,8 @@ def test_list_sources(api_client, user, other_user, source_factory):
 
 @pytest.mark.as_user
 @pytest.mark.parametrize("name, version, status_code", [(faker.word(), None, 200), (None, faker.word(), 200)])
-def test_update_source(api_client, source, name, version, status_code):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
+def test_update_project(api_client, project, name, version, status_code):
+    url = reverse("projects-detail", kwargs={"pk": project.id})
 
     data = {}
     if name:
@@ -114,8 +114,8 @@ def test_update_source(api_client, source, name, version, status_code):
 
 
 @pytest.mark.as_user
-def test_delete_source(api_client, source):
-    url = reverse("sources-detail", kwargs={"pk": source.id})
+def test_delete_project(api_client, project):
+    url = reverse("projects-detail", kwargs={"pk": project.id})
 
     response = api_client.delete(url)
 

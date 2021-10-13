@@ -44,7 +44,7 @@ def test_preview(api_client, patient_mapping, snapshot):
 
     # exclude the following attributes from the snapshort assertion:
     # - lastUpdated: changes at each run
-    # - meta.tag.*.code: source_id or resource_id,
+    # - meta.tag.*.code: project_id or resource_id,
     # changes at each run since the mapping is re-imported
     assert fhir_instance == snapshot(exclude=paths("meta.lastUpdated", "meta.tag.0.code", "meta.tag.1.code"))
 

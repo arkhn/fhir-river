@@ -26,9 +26,9 @@ class FhirProxyView(ProxyView):
         return headers
 
 
-class SourceViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(viewsets.ModelViewSet):
     queryset = models.Project.objects.all()
-    serializer_class = basic_serializers.SourceSerializer
+    serializer_class = basic_serializers.ProjectSerializer
     filter_backends = [drf_filters.OrderingFilter]
     ordering_fields = ["created_at"]
     ordering = ["created_at"]
@@ -44,12 +44,12 @@ class SourceViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Try to assign a owner to the new project."""
 
-        source = serializer.save()
+        project = serializer.save()
 
         # To give the project a owner, the request must be authenticated
         if not self.request.user.is_anonymous:
-            source.users.add(self.request.user)
-            source.save()
+            project.users.add(self.request.user)
+            project.save()
 
 
 class ResourceViewSet(viewsets.ModelViewSet):

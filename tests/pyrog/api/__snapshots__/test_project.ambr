@@ -1,4 +1,4 @@
-# name: test_retrieve_full_source
+# name: test_retrieve_full_project
   <class 'dict'> {
     'credential': <class 'dict'> {
       'database': 'river',
@@ -22,7 +22,7 @@
       ],
       'port': 5432,
     },
-    'name': 'source_1',
+    'name': 'project_1',
     'resources': <class 'list'> [
       <class 'dict'> {
         'attributes': <class 'list'> [

@@ -13,8 +13,8 @@ from sqlalchemy.exc import NoSuchTableError
 from . import factories
 from .settings import DATABASES
 
-register(factories.SourceFactory)
-register(factories.SourceUserFactory)
+register(factories.ProjectFactory)
+register(factories.ProjectUserFactory)
 register(factories.ResourceFactory)
 register(factories.CredentialFactory)
 register(factories.OwnerFactory)

@@ -50,7 +50,7 @@ def preview(
     analyzer = Analyzer()
     analysis = analyzer.analyze(resource_id, mapping)
 
-    db_connection = DBConnection(analysis.source_credentials)
+    db_connection = DBConnection(analysis.project_credentials)
     with db_connection.session_scope() as session:
         extractor = Extractor(session, db_connection.metadata)
         df = extractor.extract(analysis, primary_key_values)

@@ -17,7 +17,7 @@ pytestmark = pytest.mark.mimic
 
 
 def make_query_builder(analysis, pk_values=None):
-    db_connection = DBConnection(analysis.source_credentials)
+    db_connection = DBConnection(analysis.project_credentials)
     with db_connection.session_scope() as session:
         return QueryBuilder(session, db_connection.metadata, analysis, pk_values)
 
@@ -40,7 +40,7 @@ def test_sqlalchemy_query(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     attribute_a = Attribute(path="path", definition_id="string")
     input_group_a = InputGroup(id_="group", attribute=attribute_a)
@@ -125,7 +125,7 @@ def test_2hop_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)
@@ -169,7 +169,7 @@ def test_1and2hop_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)
@@ -227,7 +227,7 @@ def test_duplicated_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     attribute_a = Attribute(path="path", definition_id="string")
     input_group_a = InputGroup(id_="group", attribute=attribute_a)
@@ -305,7 +305,7 @@ def test_apply_filters(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.add_filter(SqlFilter(SqlColumn("public", "admissions", "admittime"), "LIKE", "2150-08-29"))
@@ -340,7 +340,7 @@ def test_apply_filters_single_value(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
 
@@ -363,7 +363,7 @@ def test_filters_with_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     analysis.primary_key_column = SqlColumn("public", "patients", "subject_id")
     analysis.add_filter(
@@ -401,7 +401,7 @@ def test_conditions_with_joins(mock_sha1, mimic_credentials):
     mock_sha1.return_value.hexdigest.return_value = "hash"
 
     analysis = Analysis()
-    analysis.source_credentials = mimic_credentials
+    analysis.project_credentials = mimic_credentials
 
     attribute = Attribute(path="path", definition_id="string")
     input_group = InputGroup(id_="group", attribute=attribute)

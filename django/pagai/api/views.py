@@ -55,11 +55,11 @@ class ExploreView(generics.GenericAPIView):
 
         analyzer = Analyzer()
         resource = models.Resource.objects.get(id=data["resource_id"])
-        source = models.Project.objects.get(id=resource.project.id)
-        mappings = MappingSerializer(source).data
+        project = models.Project.objects.get(id=resource.project.id)
+        mappings = MappingSerializer(project).data
         analysis = analyzer.analyze(resource.id, mappings)
 
-        credentials = analysis.source_credentials
+        credentials = analysis.project_credentials
 
         try:
             db_connection = DBConnection(credentials)

@@ -7,8 +7,8 @@ from river.common.analyzer.sql_filter import SqlFilter
 
 class Analysis:
     def __init__(self):
-        self.source_id: str = None
-        self.source_credentials: Dict = None
+        self.project_id: str = None
+        self.project_credentials: Dict = None
         self.resource_id: str = None
         self.definition_id: str = None
         self.definition: str = None

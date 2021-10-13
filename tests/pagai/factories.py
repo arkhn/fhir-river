@@ -7,22 +7,22 @@ from django.conf import settings
 from pyrog import models
 
 
-class SourceFactory(factory.django.DjangoModelFactory):
+class ProjectFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.Source"
+        model = "pyrog.Project"
 
-    id = factory.Sequence(lambda n: f"source_id_{n:04d}")
-    name = factory.Sequence(lambda n: f"source_{n}")
-    source_user = factory.RelatedFactory("tests.pagai.factories.SourceUserFactory", factory_related_name="project")
+    id = factory.Sequence(lambda n: f"project_id_{n:04d}")
+    name = factory.Sequence(lambda n: f"project_{n}")
+    project_user = factory.RelatedFactory("tests.pagai.factories.ProjectUserFactory", factory_related_name="project")
 
 
-class SourceUserFactory(factory.django.DjangoModelFactory):
+class ProjectUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = "pyrog.SourceUser"
+        model = "pyrog.ProjectUser"
 
-    id = factory.Sequence(lambda n: f"source_user_id_{n:04d}")
+    id = factory.Sequence(lambda n: f"project_user_id_{n:04d}")
     user = factory.SubFactory("tests.pagai.factories.UserFactory")
-    source = factory.SubFactory(SourceFactory)
+    project = factory.SubFactory(ProjectFactory)
 
 
 class CredentialFactory(factory.django.DjangoModelFactory):
@@ -35,7 +35,7 @@ class CredentialFactory(factory.django.DjangoModelFactory):
         model = "pyrog.Credential"
 
     id = factory.Sequence(lambda n: f"credential_id_{n:04d}")
-    source = factory.SubFactory(SourceFactory)
+    project = factory.SubFactory(ProjectFactory)
     host = settings.DATABASES["default"]["HOST"]
     port = settings.DATABASES["default"]["PORT"]
     database = settings.DATABASES["default"]["NAME"]
@@ -49,7 +49,7 @@ class ResourceFactory(factory.django.DjangoModelFactory):
         model = "pyrog.Resource"
 
     id = factory.Sequence(lambda n: f"resource_id_{n:04d}")
-    source = factory.SubFactory(SourceFactory)
+    project = factory.SubFactory(ProjectFactory)
     primary_key_owner = factory.SubFactory("tests.pagai.factories.OwnerFactory")
     logical_reference = factory.Sequence(lambda n: uuid4())
 

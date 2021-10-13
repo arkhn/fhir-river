@@ -71,7 +71,7 @@ def batch_resource_handler(
 ):
     batch = models.Batch.objects.get(id=event.batch_id)
     analysis = analyzer.analyze(event.resource_id, batch.mappings)
-    db_connection = DBConnection(analysis.source_credentials)
+    db_connection = DBConnection(analysis.project_credentials)
     with db_connection.session_scope() as session:
         extractor = Extractor(session, db_connection.metadata)
         query = extractor.extract(analysis)

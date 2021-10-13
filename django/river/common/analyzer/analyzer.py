@@ -69,8 +69,8 @@ class Analyzer:
             raise OperationOutcome(f"resource with id {resource_id} was not found in the provided mapping")
 
         self._cur_analysis.primary_key_column = self.get_primary_key(resource_mapping)
-        self._cur_analysis.source_id = mappings["id"]
-        self._cur_analysis.source_credentials = {k: v for k, v in mappings["credential"].items() if k != "owners"}
+        self._cur_analysis.project_id = mappings["id"]
+        self._cur_analysis.project_credentials = {k: v for k, v in mappings["credential"].items() if k != "owners"}
         self._cur_analysis.resource_id = resource_id
         self._cur_analysis.definition_id = resource_mapping.get("definition_id")
         self._cur_analysis.definition = resource_mapping.get("definition")

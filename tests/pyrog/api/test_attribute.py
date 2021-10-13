@@ -74,19 +74,19 @@ def test_filter_attributes_by_resource(api_client, resource_factory, attribute_f
     }
 
 
-def test_filter_attributes_by_source(api_client, source_factory, resource_factory, attribute_factory):
+def test_filter_attributes_by_project(api_client, project_factory, resource_factory, attribute_factory):
     url = reverse("attributes-list")
-    first_source, second_source = source_factory.create_batch(2)
-    first_resource = resource_factory(source=first_source)
-    second_resource = resource_factory(source=second_source)
-    first_source_attributes = attribute_factory.create_batch(2, resource=first_resource)
+    first_project, second_project = project_factory.create_batch(2)
+    first_resource = resource_factory(project=first_project)
+    second_resource = resource_factory(project=second_project)
+    first_project_attributes = attribute_factory.create_batch(2, resource=first_resource)
     attribute_factory.create_batch(3, resource=second_resource)
 
-    response = api_client.get(url, {"project": first_source.id})
+    response = api_client.get(url, {"project": first_project.id})
 
     assert response.status_code == 200, response.data
     assert {attribute_data["id"] for attribute_data in response.json()} == {
-        attribute.id for attribute in first_source_attributes
+        attribute.id for attribute in first_project_attributes
     }
 
 

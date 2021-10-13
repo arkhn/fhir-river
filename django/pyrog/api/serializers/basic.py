@@ -9,7 +9,7 @@ from pyrog import models
 from river.common.database_connection.db_connection import DBConnection
 
 
-class SourceSerializer(serializers.ModelSerializer):
+class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Project
         fields = "__all__"

@@ -4,7 +4,7 @@ from river import models
 
 
 class BatchFilterSet(filters.FilterSet):
-    """BatchFilterSet filters a list of batches by sources of their resources"""
+    """BatchFilterSet filters a list of batches by projects of their resources"""
 
     project = filters.ModelMultipleChoiceFilter("resources__project", queryset=pyrog_models.Project.objects.all())
 

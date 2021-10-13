@@ -4,7 +4,7 @@ from datetime import datetime
 
 from river.common.analyzer.attribute import Attribute
 
-ARKHN_SOURCE_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/source"
+ARKHN_PROJECT_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/project"
 ARKHN_RESOURCE_CODE_SYSTEM = "http://terminology.arkhn.org/CodeSystem/resource"
 
 
@@ -35,7 +35,7 @@ def build_metadata(analysis):
 
     # add custom tags
     metadata["tag"] = [
-        {"system": ARKHN_SOURCE_CODE_SYSTEM, "code": analysis.source_id},
+        {"system": ARKHN_PROJECT_CODE_SYSTEM, "code": analysis.project_id},
         {"system": ARKHN_RESOURCE_CODE_SYSTEM, "code": analysis.resource_id},
     ]
 

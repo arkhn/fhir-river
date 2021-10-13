@@ -41,19 +41,19 @@ def test_list_batch(api_client, batch_factory):
     assert len(response.data) == 3
 
 
-def test_filter_batches_by_sources(api_client, batch_factory, source_factory, resource_factory):
-    first_source, second_source = source_factory.create_batch(2)
-    first_source_resources = resource_factory.create_batch(2, source=first_source)
-    second_source_resources = resource_factory.create_batch(2, source=second_source)
-    first_source_resources_batches = batch_factory.create_batch(2, resources=first_source_resources)
-    batch_factory.create_batch(3, resources=second_source_resources)
+def test_filter_batches_by_projects(api_client, batch_factory, project_factory, resource_factory):
+    first_project, second_project = project_factory.create_batch(2)
+    first_project_resources = resource_factory.create_batch(2, project=first_project)
+    second_project_resources = resource_factory.create_batch(2, project=second_project)
+    first_project_resources_batches = batch_factory.create_batch(2, resources=first_project_resources)
+    batch_factory.create_batch(3, resources=second_project_resources)
 
     url = reverse("batches-list")
-    response = api_client.get(url, {"project": [first_source.id]})
+    response = api_client.get(url, {"project": [first_project.id]})
 
     assert response.status_code == 200, response.data
     assert {batch_data["id"] for batch_data in response.json()} == {
-        batch.id for batch in first_source_resources_batches
+        batch.id for batch in first_project_resources_batches
     }
 
 

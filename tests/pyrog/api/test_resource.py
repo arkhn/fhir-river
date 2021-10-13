@@ -19,7 +19,7 @@ pytestmark = pytest.mark.django_db
 )
 def test_create_resource(
     api_client,
-    source,
+    project,
     owner,
     label,
     primary_key_table,
@@ -31,7 +31,7 @@ def test_create_resource(
     url = reverse("resources-list")
 
     data = {
-        "project": source.id,
+        "project": project.id,
         "primary_key_owner": owner.id,
         "label": label,
         "primary_key_table": primary_key_table,
@@ -69,17 +69,17 @@ def test_list_resources(api_client, resource_factory):
     )
 
 
-def test_filter_resources_by_source(api_client, source_factory, resource_factory):
+def test_filter_resources_by_project(api_client, project_factory, resource_factory):
     url = reverse("resources-list")
-    first_source, second_source = source_factory.create_batch(2)
-    first_source_resources = resource_factory.create_batch(2, source=first_source)
-    resource_factory.create_batch(2, source=second_source)
+    first_project, second_project = project_factory.create_batch(2)
+    first_project_resources = resource_factory.create_batch(2, project=first_project)
+    resource_factory.create_batch(2, project=second_project)
 
-    response = api_client.get(url, {"project": first_source.id})
+    response = api_client.get(url, {"project": first_project.id})
 
     assert response.status_code == 200, response.data
     assert {resource_data["id"] for resource_data in response.json()} == {
-        resource.id for resource in first_source_resources
+        resource.id for resource in first_project_resources
     }
 
 

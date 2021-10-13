@@ -6,8 +6,8 @@ from pytest_factoryboy import register
 
 from . import factories
 
-register(factories.SourceFactory)
-register(factories.SourceUserFactory)
+register(factories.ProjectFactory)
+register(factories.ProjectUserFactory)
 register(factories.ResourceFactory)
 register(factories.CredentialFactory)
 register(factories.AttributeFactory)

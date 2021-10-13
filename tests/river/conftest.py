@@ -13,7 +13,7 @@ from django.conf import settings
 
 from common.adapters.fhir_api import fhir_api
 from tests.conftest import load_export_data, load_mapping
-from tests.pyrog.factories import ResourceFactory, SourceFactory
+from tests.pyrog.factories import ResourceFactory, ProjectFactory
 
 from . import factories
 
@@ -22,7 +22,7 @@ DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 register(factories.BatchFactory)
 register(factories.ErrorFactory)
 register(ResourceFactory)
-register(SourceFactory)
+register(ProjectFactory)
 
 
 def get_factories():

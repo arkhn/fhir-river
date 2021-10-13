@@ -36,7 +36,7 @@ pytestmark = pytest.mark.django_db
 )
 def test_create_credential(
     api_client,
-    source,
+    project,
     host,
     port,
     database,
@@ -48,7 +48,7 @@ def test_create_credential(
     url = reverse("credentials-list")
 
     data = {
-        "project": source.id,
+        "project": project.id,
         "host": host,
         "port": port,
         "database": database,
@@ -93,21 +93,21 @@ def test_list_credentials(api_client, credential_factory):
     )
 
 
-def test_filter_credentials_by_source(
+def test_filter_credentials_by_project(
     api_client,
-    source_factory,
+    project_factory,
     credential_factory,
 ):
     url = reverse("credentials-list")
 
-    first_source, second_source = source_factory.create_batch(2)
-    first_source_credentials = credential_factory.create(source=first_source)
-    credential_factory.create(source=second_source)
+    first_project, second_project = project_factory.create_batch(2)
+    first_project_credentials = credential_factory.create(project=first_project)
+    credential_factory.create(project=second_project)
 
-    response = api_client.get(url, {"project": first_source.id})
+    response = api_client.get(url, {"project": first_project.id})
 
     assert response.status_code == 200, response.data
-    assert {credential_data["id"] for credential_data in response.json()} == {first_source_credentials.id}
+    assert {credential_data["id"] for credential_data in response.json()} == {first_project_credentials.id}
 
 
 @pytest.mark.parametrize(

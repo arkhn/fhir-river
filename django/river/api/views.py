@@ -31,10 +31,10 @@ class BatchViewSet(viewsets.ModelViewSet):
         resources = serializer.validated_data["resources"]
 
         # Store serialized mapping
-        # FIXME we consider that all the resources come from the same Source
+        # FIXME we consider that all the resources come from the same Project
         resource = next(iter(resources))
-        source = pyrog_models.Project.objects.get(id=resource.project.id)
-        mappings = MappingSerializer(source).data
+        project = pyrog_models.Project.objects.get(id=resource.project.id)
+        mappings = MappingSerializer(project).data
 
         auth_token = self.request.session.get("oidc_access_token")
         for mapping in mappings["resources"]:
@@ -73,10 +73,10 @@ class PreviewEndpoint(generics.GenericAPIView):
         data = serializer.validated_data
         resource_id = data["resource_id"]
 
-        # FIXME we consider that all the resources come from the same Source
+        # FIXME we consider that all the resources come from the same Project
         resource = pyrog_models.Resource.objects.get(id=resource_id)
-        source = pyrog_models.Project.objects.get(id=resource.project.id)
-        mappings = MappingSerializer(source).data
+        project = pyrog_models.Project.objects.get(id=resource.project.id)
+        mappings = MappingSerializer(project).data
 
         auth_token = self.request.session.get("oidc_access_token")
         for mapping in mappings["resources"]:
