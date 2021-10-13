@@ -2,12 +2,9 @@ import React from "react";
 
 import { Link, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { Replay } from "@material-ui/icons";
 import { DateTime } from "luxon";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
-import Button from "common/components/Button";
 import { Batch } from "services/api/generated/api.generated";
 
 import { KIBANA_URL } from "../../constants";
@@ -30,9 +27,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     flexWrap: "wrap",
-  },
-  margin: {
-    marginRight: theme.spacing(1),
+    gap: theme.spacing(1),
   },
   title: {
     display: "flex",
@@ -50,7 +45,6 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const batchEnd = batch.completed_at ?? batch.canceled_at;
-  const { enqueueSnackbar } = useSnackbar();
 
   const isBatchInProgress = !batch.completed_at && !batch.canceled_at;
   const hasBatchCompletedWithErrors =
@@ -86,13 +80,6 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
 
   const getCreatedAtDate = (date: string) =>
     new Date(date).toLocaleString().split(",").join(" -");
-
-  const handleBatchRetry = () => {
-    // TODO: batch retry is not implemented yet
-    enqueueSnackbar("Retrying a batch is not yet implemented !", {
-      variant: "warning",
-    });
-  };
 
   return (
     <Paper
@@ -135,17 +122,9 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
         )}
       </div>
       <div className={classes.listItemActions}>
-        <Typography variant="subtitle2" className={classes.margin}>
+        <Typography variant="subtitle2">
           {getCreatedAtDate(batch.created_at)}
         </Typography>
-        <Button
-          variant="outlined"
-          startIcon={<Replay />}
-          onClick={handleBatchRetry}
-          className={classes.margin}
-        >
-          {t("retry")}
-        </Button>
         {isBatchRunning && <BatchCancel batch={batch} />}
       </div>
     </Paper>
