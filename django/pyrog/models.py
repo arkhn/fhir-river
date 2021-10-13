@@ -29,7 +29,7 @@ class ProjectUser(models.Model):
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_projects", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, related_name="source_users", on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name="project_users", on_delete=models.CASCADE)
     role = models.TextField(choices=ProjectRole.choices, default=ProjectRole.READER)
 
 
