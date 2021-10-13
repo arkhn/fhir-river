@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
 import Button from "common/components/Button";
-import InputGroup from "features/FhirAttributePanel/InputGroup";
+import InputGroup from "features/InputGroups/InputGroup";
 import {
   useApiAttributesRetrieveQuery,
   useApiInputGroupsListQuery,
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FhirAttributePanel = (): JSX.Element => {
+const Attribute = (): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
   const { attributeId } = useParams<{
@@ -104,4 +104,4 @@ const FhirAttributePanel = (): JSX.Element => {
   );
 };
 
-export default FhirAttributePanel;
+export default Attribute;
