@@ -18,7 +18,7 @@ import { api as generatedApi } from "./generated/api.generated";
 const tagTypes = [
   "Users",
   "Columns",
-  "Sources",
+  "Projects",
   "Resources",
   "Attributes",
   "Owners",
@@ -138,25 +138,25 @@ export const api = generatedApi
         invalidatesTags: invalidatesOne("Columns"),
       },
       /**
-       *  Sources
+       *  Projects
        */
-      apiSourcesList: {
-        providesTags: providesList("Sources"),
+      apiProjectsList: {
+        providesTags: providesList("Projects"),
       },
-      apiSourcesCreate: {
-        invalidatesTags: invalidatesList("Sources"),
+      apiProjectsCreate: {
+        invalidatesTags: invalidatesList("Projects"),
       },
-      apiSourcesRetrieve: {
-        providesTags: providesOne("Sources"),
+      apiProjectsRetrieve: {
+        providesTags: providesOne("Projects"),
       },
-      apiSourcesUpdate: {
-        invalidatesTags: invalidatesOne("Sources"),
+      apiProjectsUpdate: {
+        invalidatesTags: invalidatesOne("Projects"),
       },
-      apiSourcesDestroy: {
-        invalidatesTags: invalidatesOne("Sources"),
+      apiProjectsDestroy: {
+        invalidatesTags: invalidatesOne("Projects"),
       },
-      apiSourcesImportCreate: {
-        invalidatesTags: invalidatesList("Sources"),
+      apiProjectsImportCreate: {
+        invalidatesTags: invalidatesList("Projects"),
       },
       /**
        * Resources
@@ -356,14 +356,14 @@ export const {
   useApiColumnsUpdateMutation,
   useApiColumnsPartialUpdateMutation,
   useApiColumnsDestroyMutation,
-  // Sources
-  useApiSourcesListQuery,
-  useApiSourcesCreateMutation,
-  useApiSourcesRetrieveQuery,
-  useApiSourcesUpdateMutation,
-  useApiSourcesDestroyMutation,
-  useApiSourcesImportCreateMutation,
-  useApiSourcesExportRetrieveQuery,
+  // Projects
+  useApiProjectsListQuery,
+  useApiProjectsCreateMutation,
+  useApiProjectsRetrieveQuery,
+  useApiProjectsUpdateMutation,
+  useApiProjectsDestroyMutation,
+  useApiProjectsImportCreateMutation,
+  useApiProjectsExportRetrieveQuery,
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
