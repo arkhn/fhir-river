@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from pyrog.api.serializers.mapping import MappingWithPartialCredentialSerializer
-from pyrog.models import Source
+from pyrog.models import Project
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
         dest_folder = options.get("dest")
 
-        sources = Source.objects.all()
+        sources = Project.objects.all()
         for source in sources:
             new_mapping = MappingWithPartialCredentialSerializer(source).data
             with open(f"{dest_folder}/{source.name}.json", "w") as f:

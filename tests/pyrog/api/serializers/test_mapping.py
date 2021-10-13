@@ -11,7 +11,7 @@ from pyrog.models import (
     InputGroup,
     Join,
     Resource,
-    Source,
+    Project,
     SQLInput,
     StaticInput,
 )
@@ -38,7 +38,7 @@ def test_create(export_data):
         pytest.fail(json.dumps(serializer.errors))
     serializer.save()
 
-    assert Source.objects.count() == 1
+    assert Project.objects.count() == 1
     assert Resource.objects.count() == 2
     assert Attribute.objects.count() == 2
     assert InputGroup.objects.count() == 3

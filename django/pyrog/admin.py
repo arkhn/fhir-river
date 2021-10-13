@@ -3,7 +3,7 @@ from django.contrib import admin
 from pyrog import models
 
 
-@admin.register(models.Source)
+@admin.register(models.Project)
 class Source(admin.ModelAdmin):
     list_display = ("id", "name")
 

@@ -11,7 +11,7 @@ from river.common.database_connection.db_connection import DBConnection
 
 class SourceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Source
+        model = models.Project
         fields = "__all__"
 
 

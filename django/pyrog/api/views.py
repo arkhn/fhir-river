@@ -27,7 +27,7 @@ class FhirProxyView(ProxyView):
 
 
 class SourceViewSet(viewsets.ModelViewSet):
-    queryset = models.Source.objects.all()
+    queryset = models.Project.objects.all()
     serializer_class = basic_serializers.SourceSerializer
     filter_backends = [drf_filters.OrderingFilter]
     ordering_fields = ["created_at"]

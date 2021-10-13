@@ -29,7 +29,7 @@ from pyrog.models import (
     Join,
     Owner,
     Resource,
-    Source,
+    Project,
     SQLInput,
     StaticInput,
 )
@@ -219,7 +219,7 @@ class MappingSerializer(serializers.ModelSerializer):
     credential = MappingCredentialSerializer()
 
     class Meta:
-        model = Source
+        model = Project
         exclude = ["users"]
 
     def create(self, validated_data):
@@ -239,7 +239,7 @@ class MappingSerializer(serializers.ModelSerializer):
         credential_data = validated_data.pop("credential")
         owners_data = credential_data.pop("owners")
 
-        source = Source.objects.create(**{**validated_data, "id": None})
+        source = Project.objects.create(**{**validated_data, "id": None})
         credential = Credential.objects.create(source=source, **credential_data)
 
         # Registries to track owner and column instances by their exported ids

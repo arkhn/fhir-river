@@ -39,7 +39,7 @@ class ResourceFilterSet(filters.FilterSet):
 
 
 class AttributeFilterSet(filters.FilterSet):
-    source = filters.ModelChoiceFilter("resource__source", queryset=models.Source.objects.all())
+    source = filters.ModelChoiceFilter("resource__source", queryset=models.Project.objects.all())
 
     class Meta:
         model = models.Attribute

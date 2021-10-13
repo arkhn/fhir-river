@@ -6,7 +6,7 @@ from django.db import models
 from cuid import cuid
 
 
-class Source(models.Model):
+class Project(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     name = models.TextField(unique=True)
     version = models.TextField(blank=True, default="")
@@ -29,13 +29,13 @@ class SourceUser(models.Model):
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="user_sources", on_delete=models.CASCADE)
-    source = models.ForeignKey(Source, related_name="source_users", on_delete=models.CASCADE)
+    source = models.ForeignKey(Project, related_name="source_users", on_delete=models.CASCADE)
     role = models.TextField(choices=SourceRole.choices, default=SourceRole.READER)
 
 
 class Resource(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    source = models.ForeignKey(Source, related_name="resources", on_delete=models.CASCADE)
+    source = models.ForeignKey(Project, related_name="resources", on_delete=models.CASCADE)
     label = models.TextField(blank=True, default="")
     primary_key_table = models.TextField()
     primary_key_column = models.TextField()
@@ -56,7 +56,7 @@ class Credential(models.Model):
         SQLLITE = "SQLLITE"
 
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
-    source = models.OneToOneField(Source, on_delete=models.CASCADE)
+    source = models.OneToOneField(Project, on_delete=models.CASCADE)
     host = models.TextField()
     port = models.IntegerField()
     database = models.TextField()

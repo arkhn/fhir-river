@@ -8,7 +8,7 @@ from pyrog import models
 
 class SourceFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.Source
+        model = models.Project
 
     id = factory.Sequence(lambda n: f"source_id_{n:04d}")
     name = factory.Sequence(lambda n: f"source_{n}")
