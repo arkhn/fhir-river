@@ -44,33 +44,33 @@ const credential_owner = ownerFactory.build(
   {},
   { associations: { credential: project_credential.id } }
 );
-const source_resources = resourceFactory.buildList(
+const project_resources = resourceFactory.buildList(
   2,
   {},
   { associations: { project: project.id } }
 );
-const source_attributes = [
+const project_attributes = [
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0]?.id } }
+    { associations: { resource: project_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0]?.id } }
+    { associations: { resource: project_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[1]?.id } }
+    { associations: { resource: project_resources[1]?.id } }
   ),
 ];
 
 const handlers = [
   rest.get(
-    "http://example.com/api/sources/",
+    "http://example.com/api/projects/",
     (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
       res(ctx.json<ApiProjectsListApiResponse>([]))
   ),
-  rest.delete("http://example.com/api/sources/:id/", (_, res, ctx) =>
+  rest.delete("http://example.com/api/projects/:id/", (_, res, ctx) =>
     res(ctx.status(204))
   ),
   rest.get(
@@ -86,12 +86,12 @@ const handlers = [
   rest.get(
     "http://example.com/api/resources/",
     (_, res: ResponseComposition<ApiResourcesListApiResponse>, ctx) =>
-      res(ctx.json<ApiResourcesListApiResponse>(source_resources))
+      res(ctx.json<ApiResourcesListApiResponse>(project_resources))
   ),
   rest.get(
     "http://example.com/api/attributes/",
     (_, res: ResponseComposition<ApiAttributesListApiResponse>, ctx) =>
-      res(ctx.json<ApiAttributesListApiResponse>(source_attributes))
+      res(ctx.json<ApiAttributesListApiResponse>(project_attributes))
   ),
 ];
 const server = setupServer(...handlers);
@@ -104,13 +104,13 @@ beforeEach(() => render(<Projects />));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe("Sources page", () => {
+describe("Projects page", () => {
   test("creating a new project", async () => {
     userEvent.click(screen.getByRole("button", { name: /new project/i }));
 
     server.use(
       rest.post(
-        "http://example.com/api/sources/",
+        "http://example.com/api/projects/",
         (
           req: RestRequest<ProjectRequest>,
           res: ResponseComposition<ApiProjectsCreateApiResponse>,
@@ -127,13 +127,13 @@ describe("Sources page", () => {
 
     server.use(
       rest.get(
-        "http://example.com/api/sources/",
+        "http://example.com/api/projects/",
         (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
           res.once(
             ctx.json<ApiProjectsListApiResponse>([
               {
                 ...project,
-                name: "source_1",
+                name: "project_1",
               },
             ])
           )
@@ -145,7 +145,7 @@ describe("Sources page", () => {
       screen.getByRole("textbox", {
         name: /name/i,
       }),
-      "source_1"
+      "project_1"
     );
 
     userEvent.click(
@@ -186,12 +186,12 @@ describe("Sources page", () => {
           res: ResponseComposition<ApiCredentialsListApiResponse>,
           ctx
         ) => {
-          const sourceId = req.url.searchParams.get("project");
+          const projectId = req.url.searchParams.get("project");
           return res.once(
             ctx.json<ApiCredentialsListApiResponse>([
               {
                 ...project_credential,
-                project: sourceId ?? "",
+                project: projectId ?? "",
                 host: "localhost",
                 port: 5432,
                 database: "river",
@@ -258,7 +258,7 @@ describe("Sources page", () => {
   });
 
   test("the existing project is present", async () => {
-    screen.getByText("source_1");
+    screen.getByText("project_1");
   });
 
   test("the project mappings and attributes count", async () => {
@@ -268,7 +268,7 @@ describe("Sources page", () => {
   test("updating a project", async () => {
     server.use(
       rest.put(
-        "http://example.com/api/sources/:id/",
+        "http://example.com/api/projects/:id/",
         (
           req: RestRequest<ProjectRequest>,
           res: ResponseComposition<ApiProjectsUpdateApiResponse>,
@@ -285,20 +285,20 @@ describe("Sources page", () => {
 
     server.use(
       rest.get(
-        "http://example.com/api/sources/",
+        "http://example.com/api/projects/",
         (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
           res.once(
             ctx.json<ApiProjectsListApiResponse>([
               {
                 ...project,
-                name: "source_1_edited",
+                name: "project_1_edited",
               },
             ])
           )
       )
     );
 
-    userEvent.click(screen.getByRole("button", { name: /source_1 menu/i }));
+    userEvent.click(screen.getByRole("button", { name: /project_1 menu/i }));
     userEvent.click(screen.getByRole("menuitem", { name: /edit/i }));
     screen.getByRole("heading", { name: /edit project/i });
 
@@ -306,7 +306,7 @@ describe("Sources page", () => {
       screen.getByRole("textbox", {
         name: /name/i,
       }),
-      "source_1_edited"
+      "project_1_edited"
     );
     userEvent.click(
       screen.getByRole("button", {
@@ -332,24 +332,24 @@ describe("Sources page", () => {
 
     userEvent.click(screen.getByRole("button", { name: /done/i }));
 
-    screen.getByText("source_1_edited");
+    screen.getByText("project_1_edited");
   });
 
   test("deleting a project", async () => {
     server.use(
       rest.get(
-        "http://example.com/api/sources/",
+        "http://example.com/api/projects/",
         (_, res: ResponseComposition<ApiProjectsListApiResponse>, ctx) =>
           res.once(ctx.json<ApiProjectsListApiResponse>([]))
       )
     );
 
     userEvent.click(
-      screen.getByRole("button", { name: /source_1_edited menu/i })
+      screen.getByRole("button", { name: /project_1_edited menu/i })
     );
     userEvent.click(screen.getByRole("menuitem", { name: /delete/i }));
     userEvent.click(screen.getByRole("button", { name: /yes, delete/i }));
 
-    await waitForElementToBeRemoved(() => screen.getByText("source_1_edited"));
+    await waitForElementToBeRemoved(() => screen.getByText("project_1_edited"));
   });
 });

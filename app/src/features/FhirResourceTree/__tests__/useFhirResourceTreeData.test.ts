@@ -49,8 +49,8 @@ describe("useFhirResourceTreeData", () => {
       useFhirResourceTreeData,
       { initialProps: { definitionId: "Observation" } },
       {
-        path: "/sources/:sourceId/mappings/:mappingId",
-        route: `/sources/sourceId/mappings/${mapping.id}`,
+        path: "/projects/:projectId/mappings/:mappingId",
+        route: `/projects/projectId/mappings/${mapping.id}`,
       }
     );
 

@@ -141,8 +141,9 @@ describe("Condition creation", () => {
       />,
       undefined,
       {
-        path: "/sources/:sourceId/mappings/:mappingId/attributes/:attributeId",
-        route: `/sources/sourceId/mappings/${mapping.id}/attributes/attributeId`,
+        path:
+          "/projects/:projectId/mappings/:mappingId/attributes/:attributeId",
+        route: `/projects/projectId/mappings/${mapping.id}/attributes/attributeId`,
       }
     );
 

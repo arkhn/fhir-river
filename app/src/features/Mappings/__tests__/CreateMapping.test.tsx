@@ -90,14 +90,14 @@ describe("Mapping creation page", () => {
     store.dispatch(
       resourceAdded({
         id: resource.id,
-        source: "sourceId",
+        project: "projectId",
       })
     );
     render(<CreateMapping />, undefined, {
-      path: "/sources/:sourceId/mappings",
-      route: `/sources/sourceId/mappings`,
+      path: "/projects/:projectId/mappings",
+      route: `/projects/projectId/mappings`,
     });
-    await screen.findByText(/define a source table/i);
+    await screen.findByText(/define a project table/i);
     await screen.findByText(/select a fhir resource/i);
     await screen.findByText(/choose a fhir profile/i);
     await screen.findByText(/name mapping/i);
@@ -114,7 +114,7 @@ describe("Mapping creation page", () => {
 
     // Second step header text
     await screen.findByText(
-      /^please select the fhir resource that you want to generate from the source$/i
+      /^please select the fhir resource that you want to generate from the project$/i
     );
 
     // FHIR Resource selection
@@ -160,7 +160,7 @@ describe("Mapping creation page", () => {
 
     await waitFor(() =>
       expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "sources/sourceId/mappings/1"
+        "projects/projectId/mappings/1"
       )
     );
   });

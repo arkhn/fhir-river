@@ -22,7 +22,7 @@ const mapping = resourceFactory.build(
 );
 
 const handlers = [
-  rest.get(`http://example.com/api/sources/${project.id}/`, (_, res, ctx) =>
+  rest.get(`http://example.com/api/projects/${project.id}/`, (_, res, ctx) =>
     res(ctx.json<ApiProjectsRetrieveApiResponse>(project))
   ),
   rest.get(`http://example.com/api/resources/${mapping.id}/`, (_, res, ctx) =>
@@ -50,20 +50,20 @@ afterAll(() => server.close());
 describe("Navigation breadcrumbs", () => {
   it("should only display the project name", async () => {
     render(<Navbar />, undefined, {
-      path: "/sources/:sourceId",
-      route: `/sources/${project.id}`,
+      path: "/projects/:projectId",
+      route: `/projects/${project.id}`,
     });
 
-    await waitFor(() => screen.getByText("source_1"));
+    await waitFor(() => screen.getByText("project_1"));
   });
 
   it("should display the project name and mapping name", async () => {
     render(<Navbar />, undefined, {
-      path: "/sources/:sourceId/mappings/:mappingId",
-      route: `/sources/${project.id}/mappings/${mapping.id}`,
+      path: "/projects/:projectId/mappings/:mappingId",
+      route: `/projects/${project.id}/mappings/${mapping.id}`,
     });
 
-    await waitFor(() => screen.getByText("source_1"));
+    await waitFor(() => screen.getByText("project_1"));
     await waitFor(() => screen.getByText("resource_1"));
   });
 });

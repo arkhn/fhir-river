@@ -23,7 +23,7 @@ import {
 
 export const projectFactory = Factory.define<Project>(({ sequence }) => ({
   id: sequence.toString(),
-  name: `source_${sequence}`,
+  name: `project_${sequence}`,
   updated_at: faker.date.past().toString(),
   created_at: faker.date.past().toString(),
   users: [],

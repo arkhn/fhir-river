@@ -30,7 +30,7 @@ const project_credential = credentialFactory.build(
     associations: { project: project.id },
   }
 );
-const source_resource = resourceFactory.build(
+const project_resource = resourceFactory.build(
   {},
   { associations: { project: project.id } }
 );
@@ -38,23 +38,23 @@ const source_resource = resourceFactory.build(
 const resource_attributes = attributeFactory.buildList(
   2,
   {},
-  { associations: { resource: source_resource.id } }
+  { associations: { resource: project_resource.id } }
 );
 const resource_filters = filterFactory.buildList(
   2,
   {},
-  { associations: { resource: source_resource.id } }
+  { associations: { resource: project_resource.id } }
 );
 
 const handlers = [
-  rest.get("http://example.com/api/sources/:id/", (_, res, ctx) =>
+  rest.get("http://example.com/api/projects/:id/", (_, res, ctx) =>
     res(ctx.json<ApiProjectsRetrieveApiResponse>(project))
   ),
   rest.get(
     "http://example.com/api/resources/",
     (_, res: ResponseComposition<ApiResourcesListApiResponse>, ctx) =>
       res(
-        ctx.json<ApiResourcesListApiResponse>([source_resource])
+        ctx.json<ApiResourcesListApiResponse>([project_resource])
       )
   ),
   rest.get(
@@ -84,14 +84,14 @@ beforeAll(() => {
 });
 beforeEach(() =>
   render(<ProjectMappings />, undefined, {
-    path: "/sources/:sourceId",
-    route: `/sources/${project.id}`,
+    path: "/projects/:projectId",
+    route: `/projects/${project.id}`,
   })
 );
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe("Source mappings page", () => {
+describe("Project mappings page", () => {
   it("should display the existing mappings", async () => {
     await waitFor(() => screen.getByText("resource_1"));
   });
