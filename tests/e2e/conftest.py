@@ -1,16 +1,25 @@
 import json
 from pathlib import Path
-from time import sleep
+from time import sleep, time
 
 import pytest
 
 import requests
 from fhirpy import SyncFHIRClient
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
+from tests.conftest import load_mapping
 
 from . import settings
 
 DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
+
+
+def destroy_sources():
+    """Removes all sources from river-api"""
+    response = requests.get(f"{settings.RIVER_API_URL}/sources/")
+    for source in response.json():
+        response = requests.delete(f"{settings.RIVER_API_URL}/sources/{source['id']}/")
+        print(f"api DELETE /sources/{source['id']}/ returned an error: {response.status_code}")
 
 
 @pytest.fixture(scope="session")
@@ -34,17 +43,27 @@ def load_concept_maps():
 
 
 @pytest.fixture(scope="session")
-def mappings():
-    with open(DATA_FIXTURES_DIR / "mimic_mapping.json") as mapping_file:
-        mapping = json.load(mapping_file)
-        return mapping
+def mimic_mapping():
+    return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
 
 
 @pytest.fixture(scope="session")
-def uploaded_mapping(mappings):
+def uploaded_mapping(mimic_mapping):
+    """Impots the mimic mapping to river-api
+
+    Args:
+        mimic_mapping (dict): the mimic mapping fixture loaded as dict
+
+    Raises:
+        Exception: when the mapping could not be uploaded
+
+    Yields:
+        dict: The uploaded mapping
+    """
+    destroy_sources()
     try:
         # send a batch request
-        response = requests.post(f"{settings.RIVER_API_URL}/sources/import/", json=mappings)
+        response = requests.post(f"{settings.RIVER_API_URL}/sources/import/", json=mimic_mapping)
     except requests.exceptions.ConnectionError:
         raise Exception("Could not connect to the api service")
 
@@ -56,10 +75,12 @@ def uploaded_mapping(mappings):
     ), f"no resource ids in mapping: {created_mapping}"
 
     yield created_mapping
-    response = requests.delete(f"{settings.RIVER_API_URL}/sources/{created_mapping['id']}/", json=mappings)
-    assert (
-        response.status_code == 204
-    ), f"api DELETE /sources/{created_mapping['id']}/ returned an error: {response.text}"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def destroy_uploaded_mapping():
+    yield
+    destroy_sources()
 
 
 @pytest.fixture(scope="session")
@@ -67,12 +88,14 @@ def batch(uploaded_mapping):
     # Send Patient and Encounter batch
     batch = send_batch(uploaded_mapping)
 
-    while True:
+    start_time = time()
+    while time() < start_time + settings.BATCH_DURATION_TIMEOUT:
         sleep(10)
         updated_batch = retrieve_batch(batch["id"])
         if updated_batch["completed_at"] is not None:
-            yield batch
-            break
+            return batch
+    requests.delete(f"{settings.RIVER_API_URL}/batches/{batch['id']}/")
+    raise Exception(f"timeout of {settings.BATCH_DURATION_TIMEOUT} exceeded, exiting")
 
 
 def send_batch(mapping) -> dict:
