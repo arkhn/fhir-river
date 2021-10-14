@@ -64,9 +64,14 @@ const BatchListItem = ({ batch }: BatchListItemType): JSX.Element => {
     if (batchEnd) {
       const { years, months, days, hours, minutes, seconds } = DateTime.fromISO(
         batchEnd
-      )
-        .diff(DateTime.fromISO(batch.created_at))
-        .toObject();
+      ).diff(DateTime.fromISO(batch.created_at), [
+        "years",
+        "months",
+        "days",
+        "hours",
+        "minutes",
+        "seconds",
+      ]);
       return `${years ? `${t("year", { count: years })} ` : ""}${
         months ? `${t("month", { count: months })} ` : ""
       }${days ? `${t("day", { count: days })} ` : ""}${
