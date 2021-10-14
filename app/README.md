@@ -34,7 +34,7 @@ This React-Redux project follows the overall [Redux style guide](https://redux.j
     │   ├── App.tsx                     # root React component
     │   └── /routes                     # router and layout folders
     │       ├── Router.tsx              # Router component
-    │       ├── Sources.tsx             # root Page component
+    │       ├── Projects.tsx             # root Page component
     │       └── /resources
     │           └── Resources.tsx
     ├── /common                         # hooks, generic components, utils, etc
@@ -109,21 +109,21 @@ This typescript package lets us manage and handle FHIR R4 object models in our a
 
 Routes source code is located in folder `src/routes/`
 
-### Sources
+### Projects
 
-![Sources](public/screenshots/sources.png "Sources")
+![Projects](public/screenshots/projects.png "Projects")
 
-- URL: `/` or `/sources`
+- URL: `/` or `/projects`
 - Features:
-  - [Sources](#sourcesFeature)
+  - [Projects](#projectsFeature)
 
-### SourceMappings
+### ProjectMappings
 
-![SourceMappings](public/screenshots/sourceMappings.png "SourceMappings")
+![ProjectMappings](public/screenshots/projectMappings.png "ProjectMappings")
 
-- URL: `/sources/:sourceId`
+- URL: `/projects/:projectId`
 - Features:
-  - [Sources](#sourcesFeature)
+  - [Projects](#projectsFeature)
   - [Mappings](#mappingsFeature)
   - [NavBar](#navBarFeature)
 
@@ -131,7 +131,7 @@ Routes source code is located in folder `src/routes/`
 
 ![Batches](public/screenshots/batches.png "Batches")
 
-- URL: `/sources/:sourceId/batches`
+- URL: `/projects/:projectId/batches`
 - Features:
   - [Batches](#batchesFeature)
   - [NavBar](#navBarFeature)
@@ -140,7 +140,7 @@ Routes source code is located in folder `src/routes/`
 
 ![CreateMapping](public/screenshots/createMapping.png "CreateMapping")
 
-- URL: `/sources/:sourceId/batches`
+- URL: `/projects/:projectId/batches`
 - Features:
   - [Columns](#columnsFeature)
   - [Filters](#filtersFeature)
@@ -151,7 +151,7 @@ Routes source code is located in folder `src/routes/`
 
 ![Mapping](public/screenshots/mapping.png "Mapping")
 
-- URL: `/sources/:sourceId/mappings/:mappingId`
+- URL: `/projects/:projectId/mappings/:mappingId`
 - Features:
   - [FhirAttributePanel](#fhirAttributePanelFeature)
   - [FhirResourceTree](#fhirResourceTreeFeature)
@@ -164,7 +164,7 @@ Routes source code is located in folder `src/routes/`
 
 ![EditMapping](public/screenshots/editMapping.png "EditMapping")
 
-- URL: `/sources/:sourceId/mappings/:mappingId/edit`
+- URL: `/projects/:projectId/mappings/:mappingId/edit`
 - Features:
   - [Columns](#columnsFeature)
   - [Filters](#filtersFeature)
@@ -175,7 +175,7 @@ Routes source code is located in folder `src/routes/`
 
 ![Preview](public/screenshots/preview.png "Preview")
 
-- URL: `/sources/:sourceId/mappings/:mappingId/preview` or `/sources/:sourceId/mappings/:mappingId/attributes/:attributeId/preview`
+- URL: `/projects/:projectId/mappings/:mappingId/preview` or `/projects/:projectId/mappings/:mappingId/attributes/:attributeId/preview`
 - Features:
   - [Mappings](#mappingsFeature)
   - [NavBar](#navBarFeature)
@@ -374,11 +374,11 @@ This feature folder contains sub folders for different purposes regarding mappin
 
   - MappingInfo
 
-    This component describes the UI displayed to show basic infos about a mapping in the SourceMappings component.
+    This component describes the UI displayed to show basic infos about a mapping in the ProjectMappings component.
 
   - MappingsTable
 
-    This is the table displayed in the SourceMappings component to list all the available mappings for the current source. All lines are basically a MappingInfo component.
+    This is the table displayed in the ProjectMappings component to list all the available mappings for the current project. All lines are basically a MappingInfo component.
 
   - MappingsToolbar
 
@@ -426,55 +426,55 @@ This feature folder contains sub folders for different purposes regarding mappin
 
   This component is simply a UI component listing a script for both CleaningScriptButton & MergingScript components.
 
-### <a id="sourcesFeature">Sources</a>
+### <a id="projectFeature">Projects</a>
 
 - CredentialDialog
 
-  This dialog is opened when importing a serialized mapping from the source page. As this data should only miss username and password for database authentication, we use this dialog to allow the user to submit those.
+  This dialog is opened when importing a serialized mapping from the project page. As this data should only miss username and password for database authentication, we use this dialog to allow the user to submit those.
 
 - CredentialEditButton
 
-  Button displayed in SourceMappings route page to open a drawer in order to edit source credentials
+  Button displayed in ProjectMappings route page to open a drawer in order to edit project credentials
 
 - CredentialForm
 
-  This component loads and displays the current source credentials informations
+  This component loads and displays the current project credentials informations
 
 - CredentialOwnerSelect
 
   Displays an Autocomplete component listing all the available owners for the given credentials.
 
-- SourceCard
+- ProjectCard
 
-  Basic card component displayed in the Source route component.
+  Basic card component displayed in the Project route component.
 
-- SourceCardInfo
+- ProjectCardInfo
 
-  Displays the content of the SourceCard component.
+  Displays the content of the ProjectCard component.
 
-- SourceCreate
+- ProjectCreate
 
-  This component is a simple button dispatching a createSource action into the sourceSlice.
+  This component is a simple button dispatching a createProject action into the projectSlice.
 
-- SourceDrawer
+- ProjectDrawer
 
-  Drawer that displays dynamically the different steps needed to create/edit a source name, its credentials and its owners.
+  Drawer that displays dynamically the different steps needed to create/edit a project name, its credentials and its owners.
 
-- SourceForm
+- ProjectForm
 
-  Simple form component that lets the user create a new source with a name, or import one.
+  Simple form component that lets the user create a new project with a name, or import one.
 
-- SourceGrid
+- ProjectGrid
 
-  A grid component listing all the available sources as cards.
+  A grid component listing all the available projects as cards.
 
-- sourceSlice
+- projectSlice
 
-  A slice to create/edit sources before applying the changes in the back-end.
+  A slice to create/edit projects before applying the changes in the back-end.
 
-- UploadSourceButton
+- UploadProjectButton
 
-  This button lets the user upload a source JSON file.
+  This button lets the user upload a project JSON file.
 
 ### <a id="userFeature">User</a>
 
