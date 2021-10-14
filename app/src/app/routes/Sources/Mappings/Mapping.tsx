@@ -3,7 +3,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import clsx from "clsx";
 
-import FhirAttributePanel from "features/FhirAttributePanel/FhirAttributePanel";
+import Attribute from "features/Attributes/Attribute";
 import FhirResourceTree from "features/FhirResourceTree/FhirResourceTree";
 
 import MappingHeader from "./MappingHeader";
@@ -40,7 +40,7 @@ const Mapping = (): JSX.Element => {
           <FhirResourceTree />
         </div>
         <div className={clsx(classes.rightContainer, classes.scrollContainer)}>
-          <FhirAttributePanel />
+          <Attribute />
         </div>
       </div>
     </>
