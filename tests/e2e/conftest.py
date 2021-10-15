@@ -14,12 +14,15 @@ from . import settings
 DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 
-def destroy_sources():
-    """Removes all sources from river-api"""
+def destroy_source(source):
+    """Removes source from river-api if exists"""
     response = requests.get(f"{settings.RIVER_API_URL}/sources/")
-    for source in response.json():
-        response = requests.delete(f"{settings.RIVER_API_URL}/sources/{source['id']}/")
-        print(f"api DELETE /sources/{source['id']}/ returned an error: {response.status_code}")
+    for existing_source in response.json():
+        if existing_source["name"] == source["name"]:
+            response = requests.delete(f"{settings.RIVER_API_URL}/sources/{source['id']}/")
+            assert (
+                response.status_code == 204
+            ), f"api DELETE /sources/{source['id']}/ returned an error: {response.text}"
 
 
 @pytest.fixture(scope="session")
@@ -60,7 +63,7 @@ def uploaded_mapping(mimic_mapping):
     Yields:
         dict: The uploaded mapping
     """
-    destroy_sources()
+    destroy_source(mimic_mapping)
     try:
         # send a batch request
         response = requests.post(f"{settings.RIVER_API_URL}/sources/import/", json=mimic_mapping)
@@ -75,12 +78,6 @@ def uploaded_mapping(mimic_mapping):
     ), f"no resource ids in mapping: {created_mapping}"
 
     yield created_mapping
-
-
-@pytest.fixture(scope="session", autouse=True)
-def destroy_uploaded_mapping():
-    yield
-    destroy_sources()
 
 
 @pytest.fixture(scope="session")
