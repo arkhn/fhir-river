@@ -14,15 +14,16 @@ from . import settings
 DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 
-def destroy_source(source):
+@pytest.fixture(scope="session")
+def destroy_mimic_source(mimic_mapping):
     """Removes source from river-api if exists"""
     response = requests.get(f"{settings.RIVER_API_URL}/sources/")
     for existing_source in response.json():
-        if existing_source["name"] == source["name"]:
-            response = requests.delete(f"{settings.RIVER_API_URL}/sources/{source['id']}/")
+        if existing_source["name"] == mimic_mapping["name"]:
+            response = requests.delete(f"{settings.RIVER_API_URL}/sources/{existing_source['id']}/")
             assert (
                 response.status_code == 204
-            ), f"api DELETE /sources/{source['id']}/ returned an error: {response.text}"
+            ), f"api DELETE /sources/{existing_source['id']}/ returned an error: {response.text}"
 
 
 @pytest.fixture(scope="session")
@@ -51,7 +52,7 @@ def mimic_mapping():
 
 
 @pytest.fixture(scope="session")
-def uploaded_mapping(mimic_mapping):
+def uploaded_mapping(mimic_mapping, destroy_mimic_source):
     """Impots the mimic mapping to river-api
 
     Args:
@@ -63,7 +64,6 @@ def uploaded_mapping(mimic_mapping):
     Yields:
         dict: The uploaded mapping
     """
-    destroy_source(mimic_mapping)
     try:
         # send a batch request
         response = requests.post(f"{settings.RIVER_API_URL}/sources/import/", json=mimic_mapping)
