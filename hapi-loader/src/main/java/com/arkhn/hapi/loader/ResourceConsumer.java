@@ -17,6 +17,9 @@ import ca.uhn.fhir.parser.IParser;
 import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SpringBootApplication
 public class ResourceConsumer extends SpringBootServletInitializer {
 
@@ -35,6 +38,8 @@ public class ResourceConsumer extends SpringBootServletInitializer {
 
     @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
     public static class ResourceListener {
+
+        private static final Logger logger = LoggerFactory.getLogger(ResourceListener.class);
 
         @Autowired
         DaoRegistry daoRegistry;
@@ -59,6 +64,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             try {
                 r = parser.parseResource(message.getFhirObject().toString());
             } catch (ca.uhn.fhir.parser.DataFormatException e) {
+                logger.error(String.format("Could not parse resource: %s", e.toString()));
                 redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 return;
             }
@@ -70,6 +76,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 // TODO how does the following method tells us that something wrong happened
                 dao.update(r);
             } catch (Exception e) {
+                logger.error(String.format("Could not insert resource: %s", e.toString()));
                 redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 return;
             }
