@@ -6,7 +6,6 @@ on:
       - "app/**"
     branches:
       - main
-      - v4
     tags:
       - "v*"
   pull_request:
