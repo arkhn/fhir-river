@@ -1,5 +1,6 @@
-from common.scripts.merging import merge_instant
 import pytest
+
+from common.scripts.merging import merge_instant
 
 
 def test_merge_instant():
