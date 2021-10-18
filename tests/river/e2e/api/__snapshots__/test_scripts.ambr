@@ -33,6 +33,11 @@
     <class 'dict'> {
       'category': 'cleaning',
       'description': None,
+      'name': 'clean_epoch_dateTime',
+    },
+    <class 'dict'> {
+      'category': 'cleaning',
+      'description': None,
       'name': 'clean_instant',
     },
     <class 'dict'> {
@@ -142,6 +147,11 @@
       'category': 'merging',
       'description': 'Merging script with a simple concatenation and a " " separator',
       'name': 'merge_concat',
+    },
+    <class 'dict'> {
+      'category': 'merging',
+      'description': 'Merging script with a simple concatenation, no separator',
+      'name': 'merge_concat_without_separator',
     },
     <class 'dict'> {
       'category': 'merging',
