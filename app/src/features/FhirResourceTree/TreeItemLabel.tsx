@@ -1,5 +1,6 @@
 import React, { SyntheticEvent, useMemo } from "react";
 
+import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconName, IconNames } from "@blueprintjs/icons";
 import {
@@ -17,6 +18,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import IconButton from "common/components/IconButton";
+import useGetNodeItemAttributes from "common/hooks/useGetNodeItemAttributes";
 
 import { ElementNode } from "./resourceTreeSlice";
 import TreeNodeBadge from "./TreeNodeBadge";
@@ -75,10 +77,12 @@ const TreeItemLabel = ({
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
   const { t } = useTranslation();
+  const nodeChildItemAttributes = useGetNodeItemAttributes(elementNode);
   const popupState = usePopupState({
     variant: "popover",
     popupId: `popup-${elementNode.id}`,
   });
+  // [itemDefinition, ...sliceDefinitions]
   const nodeDefinitions = useMemo(
     () => [
       elementNode.definitionNode.definition,
@@ -91,6 +95,8 @@ const TreeItemLabel = ({
       elementNode.definitionNode.sliceDefinitions,
     ]
   );
+  const hasElementNodeSliceDefinitions =
+    elementNode.definitionNode.sliceDefinitions.length > 0;
 
   let iconName: IconName | null = null;
 
@@ -113,40 +119,43 @@ const TreeItemLabel = ({
         : (iconName = IconNames.LAYERS);
   }
 
-  const handleDeleteItemClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
+  const handleStopPropagation = (e: SyntheticEvent) => e.stopPropagation();
+
+  const isMenuItemDisabled = (definition: IElementDefinition): boolean => {
+    const definitionChildItemsLength =
+      nodeChildItemAttributes?.filter(
+        ({ slice_name }) => slice_name === (definition.sliceName ?? "")
+      ).length ?? 0;
+    const hasItemCountLimitBeenReached =
+      definition.max !== undefined &&
+      definition.max !== "*" &&
+      definitionChildItemsLength >= +definition.max;
+    return hasItemCountLimitBeenReached;
+  };
+
+  const handleDeleteItemClick = () => {
     onDeleteItem();
   };
 
-  const handleAddExtensionClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
+  const handleAddExtensionClick = () => {
     onAddExtension();
   };
 
-  const handlePoppupClose = (e: SyntheticEvent) => {
-    e.stopPropagation();
+  const handlePoppupClose = () => {
     popupState.close();
   };
 
   const handleAddItemClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    e.stopPropagation();
-    if (nodeDefinitions.length > 1) {
+    if (hasElementNodeSliceDefinitions) {
       popupState.open(e);
     } else {
       onCreateItem();
     }
   };
 
-  const handleAddItemOrSlice = (sliceName?: string) => (
-    e: React.MouseEvent<HTMLLIElement>
-  ) => {
-    e.stopPropagation();
+  const handleAddItemOrSlice = (sliceName?: string) => () => {
     onCreateItem(sliceName);
     popupState.close();
   };
@@ -171,60 +180,79 @@ const TreeItemLabel = ({
       >
         {elementNode.type}
       </Typography>
-      {elementNode.kind === "complex" && !elementNode.isArray && (
-        <Tooltip title={t<string>("addExtension")} arrow>
-          <div>
-            <IconButton
-              icon={IconNames.CODE_BLOCK}
-              onClick={handleAddExtensionClick}
-            />
-          </div>
-        </Tooltip>
-      )}
-      {isArrayItem && (
-        <Tooltip
-          title={t<string>(
-            elementNode.sliceName ? "deleteSlice" : "deleteItem"
-          )}
-          arrow
-        >
-          <div>
-            <IconButton
-              icon={IconNames.TRASH}
-              onClick={handleDeleteItemClick}
-            />
-          </div>
-        </Tooltip>
-      )}
-      {elementNode.isArray && elementNode.type !== "Extension" && (
-        <>
-          <Tooltip title={t<string>("addItem")} arrow>
+      <div
+        className={classes.treeItemContainer}
+        onClick={handleStopPropagation}
+      >
+        {elementNode.kind === "complex" && !elementNode.isArray && (
+          <Tooltip title={t<string>("addExtension")} arrow>
             <div>
               <IconButton
-                icon={IconNames.ADD}
-                {...bindTrigger(popupState)}
-                onClick={handleAddItemClick}
+                icon={IconNames.CODE_BLOCK}
+                onClick={handleAddExtensionClick}
               />
             </div>
           </Tooltip>
-          {nodeDefinitions.length > 1 && (
-            <Menu {...bindMenu(popupState)} onClose={handlePoppupClose}>
-              {nodeDefinitions.map(({ id, sliceName }) => (
-                <MenuItem key={id} onClick={handleAddItemOrSlice(sliceName)}>
-                  <>
-                    <Icon
-                      className={classes.icon}
-                      icon={sliceName ? IconNames.PIE_CHART : IconNames.ADD}
-                      iconSize={15}
-                    />
-                    <Typography>{sliceName ?? t("item")}</Typography>
-                  </>
-                </MenuItem>
-              ))}
-            </Menu>
-          )}
-        </>
-      )}
+        )}
+        {isArrayItem && (
+          <Tooltip
+            title={t<string>(
+              elementNode.sliceName ? "deleteSlice" : "deleteItem"
+            )}
+            arrow
+          >
+            <div>
+              <IconButton
+                icon={IconNames.TRASH}
+                onClick={handleDeleteItemClick}
+              />
+            </div>
+          </Tooltip>
+        )}
+        {elementNode.isArray && elementNode.type !== "Extension" && (
+          <>
+            <Tooltip title={t<string>("addItem")} arrow>
+              <div>
+                <IconButton
+                  icon={IconNames.ADD}
+                  {...bindTrigger(popupState)}
+                  disabled={
+                    !hasElementNodeSliceDefinitions &&
+                    isMenuItemDisabled(elementNode.definitionNode.definition)
+                  }
+                  onClick={handleAddItemClick}
+                />
+              </div>
+            </Tooltip>
+            {hasElementNodeSliceDefinitions && (
+              <Menu {...bindMenu(popupState)} onClose={handlePoppupClose}>
+                {nodeDefinitions.map((definition) => (
+                  <MenuItem
+                    key={definition.id}
+                    onClick={handleAddItemOrSlice(definition.sliceName)}
+                    disabled={isMenuItemDisabled(definition)}
+                  >
+                    <>
+                      <Icon
+                        className={classes.icon}
+                        icon={
+                          definition.sliceName
+                            ? IconNames.PIE_CHART
+                            : IconNames.ADD
+                        }
+                        iconSize={15}
+                      />
+                      <Typography>
+                        {definition.sliceName ?? t("item")}
+                      </Typography>
+                    </>
+                  </MenuItem>
+                ))}
+              </Menu>
+            )}
+          </>
+        )}
+      </div>
       <TreeNodeBadge elementNode={elementNode} />
     </div>
   );
