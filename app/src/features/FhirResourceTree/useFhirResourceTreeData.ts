@@ -136,7 +136,7 @@ const useFhirResourceTreeData = (
   const deleteItem = useCallback(async () => {
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
 
-    if (attributeToDelete && !attributeToDelete.slice_name) {
+    if (attributeToDelete) {
       const childAttributes =
         attributes && findChildAttributes(attributeToDelete, attributes);
       childAttributes &&
