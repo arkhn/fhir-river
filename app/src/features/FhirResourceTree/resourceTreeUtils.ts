@@ -35,7 +35,8 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
     const baseResource = parsedPath[0];
     return baseResource ? omittedResources.includes(baseResource) : false;
   }
-  return false;
+
+  return elementDefinition.max !== undefined && +elementDefinition.max === 0;
 };
 
 /**
