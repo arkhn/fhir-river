@@ -6,7 +6,6 @@ on:
       - 'app/**'
     branches:
       - main
-      - v4
   pull_request:
     paths-ignore:
       - 'app/**'
