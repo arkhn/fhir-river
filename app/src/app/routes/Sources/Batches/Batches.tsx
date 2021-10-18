@@ -1,29 +1,25 @@
 import React from "react";
 
-import { Container, makeStyles } from "@material-ui/core";
+import { Container } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
-import BatchCreate from "features/Batches/BatchCreate";
+import BatchCreate from "app/routes/Sources/Batches/BatchCreate";
 import BatchList from "features/Batches/BatchList";
-import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import Navbar from "features/Navbar/Navbar";
 
-const useStyles = makeStyles((theme) => ({
-  header: {
+const useStyles = makeStyles(() => ({
+  root: {
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: theme.mixins.breadcrumbBar.height,
-    padding: theme.spacing(0, 5),
+    flexDirection: "column",
+    height: "100%",
   },
 }));
 
 const Batches = (): JSX.Element => {
   const classes = useStyles();
   return (
-    <Container maxWidth="xl">
-      <div className={classes.header}>
-        <NavigationBreadcrumbs />
-      </div>
+    <Container maxWidth="xl" className={classes.root}>
+      <Navbar />
       <BatchCreate />
       <BatchList />
     </Container>

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { makeStyles } from "@material-ui/core";
 import clsx from "clsx";
@@ -6,17 +6,16 @@ import clsx from "clsx";
 import useIsNodePending from "common/hooks/useIsNodePending";
 
 import { ElementNode } from "./resourceTreeSlice";
-import { isTreeElementNodeRequired } from "./resourceTreeUtils";
 
 const useStyles = makeStyles((theme) => ({
   badgeContainer: {
     display: "flex",
     alignItems: "center",
-    paddingInline: theme.spacing(0.5),
+    paddingInline: theme.spacing(0.5, 1.2),
   },
   badge: {
-    height: theme.spacing(0.7),
-    width: theme.spacing(0.7),
+    height: theme.spacing(1),
+    width: theme.spacing(1),
     borderRadius: 5,
   },
   required: {
@@ -34,18 +33,20 @@ type TreeNodeBadgeProps = {
 const TreeNodeBadge = ({ elementNode }: TreeNodeBadgeProps): JSX.Element => {
   const classes = useStyles();
   const isPending = useIsNodePending(elementNode);
-  const isRequired = useMemo(() => isTreeElementNodeRequired(elementNode), [
-    elementNode,
-  ]);
+  const isRequired = elementNode.isRequired;
   return (
-    <div className={classes.badgeContainer}>
-      <div
-        className={clsx(classes.badge, {
-          [classes.required]: isRequired && !isPending,
-          [classes.pending]: isPending,
-        })}
-      />
-    </div>
+    <>
+      {(isRequired || isPending) && (
+        <div className={classes.badgeContainer}>
+          <div
+            className={clsx(classes.badge, {
+              [classes.required]: isRequired && !isPending,
+              [classes.pending]: isPending,
+            })}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

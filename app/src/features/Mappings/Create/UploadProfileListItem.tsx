@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useRef } from "react";
 
 import { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import {
@@ -9,10 +9,10 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import Alert from "common/components/Alert";
 import { useApiStructureDefinitionCreateMutation } from "services/api/endpoints";
 import { Resource } from "services/api/generated/api.generated";
 
@@ -50,15 +50,14 @@ const UploadProfileListItem = ({
   const dispatch = useAppDispatch();
   const classes = useStyles();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [alert, setAlert] = useState<string | undefined>(undefined);
   const [
     createStructureDefinition,
     { isLoading },
   ] = useApiStructureDefinitionCreateMutation();
+  const { enqueueSnackbar } = useSnackbar();
 
   let fileReader: FileReader | null = null;
 
-  const handleAlertClose = () => setAlert(undefined);
   const handleFileRead = async () => {
     const content = fileReader?.result;
     if (content && mapping.id) {
@@ -79,10 +78,11 @@ const UploadProfileListItem = ({
           })
         );
       } else {
-        setAlert(
+        enqueueSnackbar(
           t("errorProfileUpload", {
             originalType: originalStructureDefinition?.type,
-          })
+          }),
+          { variant: "error" }
         );
       }
 
@@ -121,12 +121,6 @@ const UploadProfileListItem = ({
           <ListItemText primary={t("importNewProfile")} />
         )}
       </ListItem>
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
-      />
     </label>
   );
 };

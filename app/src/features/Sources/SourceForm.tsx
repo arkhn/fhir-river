@@ -2,12 +2,7 @@ import React, { useState } from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
-import {
-  CircularProgress,
-  makeStyles,
-  Typography,
-  Divider,
-} from "@material-ui/core";
+import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import { isEqual } from "lodash";
@@ -26,7 +21,6 @@ import {
 import type { SourceRequest } from "services/api/generated/api.generated";
 
 import { sourceEdited, selectSourceCurrent } from "./sourceSlice";
-import UploadSourceButton from "./UploadSourceButton";
 
 const useStyles = makeStyles((theme) => ({
   formContainer: {
@@ -39,12 +33,8 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginLeft: theme.spacing(3),
-    textTransform: "none",
     width: "auto",
     minWidth: 150,
-  },
-  divider: {
-    marginBlock: theme.spacing(5),
   },
 }));
 
@@ -57,6 +47,9 @@ const sourceInputs: (t: TFunction) => FormInputProperty<SourceRequest>[] = (
     label: t("name"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
 ];
 
@@ -126,15 +119,13 @@ const SourceForm = (): JSX.Element => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : source ? (
-              <Typography>{t("updateSource")}</Typography>
+              t("updateSource")
             ) : (
-              <Typography>{t("createSource")}</Typography>
+              t("createSource")
             )}
           </Button>
         }
       />
-      <Divider className={classes.divider} variant="middle" />
-      <UploadSourceButton />
     </div>
   );
 };

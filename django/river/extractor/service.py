@@ -2,9 +2,9 @@ import logging
 
 from confluent_kafka import KafkaError, KafkaException
 
+from river import models
 from river.adapters.event_publisher import EventPublisher
 from river.adapters.event_subscriber import EventSubscriber
-from river.adapters.mappings import MappingsRepository
 from river.adapters.progression_counter import ProgressionCounter
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
@@ -68,10 +68,9 @@ def batch_resource_handler(
     publisher: EventPublisher,
     counter: ProgressionCounter,
     analyzer: Analyzer,
-    mappings_repo: MappingsRepository,
 ):
-    mapping = mappings_repo.get(event.batch_id, event.resource_id)
-    analysis = analyzer.analyze(mapping)
+    batch = models.Batch.objects.get(id=event.batch_id)
+    analysis = analyzer.analyze(event.resource_id, batch.mappings)
     db_connection = DBConnection(analysis.source_credentials)
     with db_connection.session_scope() as session:
         extractor = Extractor(session, db_connection.metadata)
@@ -82,7 +81,6 @@ def batch_resource_handler(
 def bootstrap(
     subscriber: EventSubscriber,
     publisher: EventPublisher,
-    mappings_repo: MappingsRepository,
     counter: ProgressionCounter,
 ) -> Service:
     analyzer = Analyzer()
@@ -93,7 +91,6 @@ def bootstrap(
             publisher=publisher,
             counter=counter,
             analyzer=analyzer,
-            mappings_repo=mappings_repo,
         )
     }
 

@@ -69,6 +69,17 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
+  mimic:
+    image: arkhn/mimic:latest
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: test
+    volumes:
+      - mimic-data:/var/lib/postgresql/data
+
   river-api:
     image: river
     build: .
@@ -86,7 +97,6 @@ services:
       - LOG_LEVEL=DEBUG
       - DEBUG=True
       - SECRET_KEY=whatever
-      - PYROG_API_URL=${PYROG_API_URL}
       - FHIR_API_URL=${FHIR_API_URL}
       - REDIS_HOST=river-redis
       - REDIS_PORT=6379
@@ -102,12 +112,13 @@ services:
       - DJANGO_SUPERUSER_PASSWORD=admin
       - OIDC_RP_CLIENT_ID=${OIDC_RP_CLIENT_ID}
       - OIDC_RP_CLIENT_SECRET=${OIDC_RP_CLIENT_SECRET}
-      - OIDC_RP_EXTRA_SCOPES=email
-      - OIDC_RP_SIGN_ALGO=RS256
+      - OIDC_RP_EXTRA_SCOPES=${OIDC_RP_EXTRA_SCOPES}
+      - OIDC_RP_SIGN_ALGO=${OIDC_RP_SIGN_ALGO}
       - OIDC_TOKEN_USE_BASIC_AUTH=${OIDC_TOKEN_USE_BASIC_AUTH}
       - LOGIN_REDIRECT_URL=${LOGIN_REDIRECT_URL}
       - LOGIN_REDIRECT_URL_FAILURE=${LOGIN_REDIRECT_URL_FAILURE}
       - LOGOUT_REDIRECT_URL=${LOGOUT_REDIRECT_URL}
+      - DISABLE_AUTH=${DISABLE_AUTH}
       # LPT: Always use 127.0.0.1 (not localhost) in public URLs redirecting to the provider
       # This is to prevent cookies in the browser from being shared and overridden by
       # different services running on the host.
@@ -151,6 +162,7 @@ services:
 
 volumes:
   db-data:
+  mimic-data:
 
 networks:
   default:

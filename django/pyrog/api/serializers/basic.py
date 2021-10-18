@@ -2,7 +2,9 @@ from typing import List
 
 from rest_framework import serializers
 
+from common.adapters.fhir_api import fhir_api
 from pagai.database_explorer.database_explorer import DatabaseExplorer
+from pagai.errors import ExplorationError
 from pyrog import models
 from river.common.database_connection.db_connection import DBConnection
 
@@ -42,7 +44,7 @@ class CredentialSerializer(serializers.ModelSerializer):
             db_connection.close()
         except Exception as e:
             raise serializers.ValidationError(e)
-        return data
+        return super().validate(data)
 
 
 class OwnerSerializer(serializers.ModelSerializer):
@@ -59,17 +61,29 @@ class OwnerSerializer(serializers.ModelSerializer):
             explorer = DatabaseExplorer(db_connection)
             name = data["name"] if "name" in data else self.instance.name
             data["schema"] = explorer.get_owner_schema(name)
+        except ExplorationError as e:
+            raise serializers.ValidationError({"name": [str(e)]})
         except Exception as e:
             raise serializers.ValidationError(e)
-        if not data["schema"]:
-            raise serializers.ValidationError({"name": [f"{name} schema is empty or does not exist"]})
-        return data
+        return super().validate(data)
 
 
 class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Resource
         fields = "__all__"
+        read_only_fields = ["definition"]
+
+    def validate(self, data):
+        if "definition_id" not in data:
+            return super().validate(data)
+        request = self.context.get("request")
+        auth_token = request.session.get("oidc_access_token") if request else None
+        try:
+            data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
+        except Exception as e:
+            raise serializers.ValidationError({"definition": [str(e)]})
+        return super().validate(data)
 
 
 class AttributeSerializer(serializers.ModelSerializer):
@@ -84,9 +98,15 @@ class InputGroupSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class InputSerializer(serializers.ModelSerializer):
+class StaticInputSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Input
+        model = models.StaticInput
+        fields = "__all__"
+
+
+class SQLInputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SQLInput
         fields = "__all__"
 
 

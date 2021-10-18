@@ -50,7 +50,7 @@ const MappingsToolbar = (): JSX.Element => {
           size="small"
           onClick={handleCreateMappingClick}
         >
-          <Typography>{t("newMapping")}</Typography>
+          {t("newMapping")}
         </Button>
       </Grid>
       <Grid item className={classes.rowContainer}>

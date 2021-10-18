@@ -8,7 +8,7 @@ from django_filters import rest_framework as django_filters
 from pyrog import models
 from pyrog.api import filters
 from pyrog.api.serializers import basic as basic_serializers
-from pyrog.api.serializers.import_export import MappingSerializer
+from pyrog.api.serializers.mapping import MappingSerializer, MappingWithPartialCredentialSerializer
 from revproxy.views import ProxyView
 
 
@@ -37,13 +37,9 @@ class SourceViewSet(viewsets.ModelViewSet):
     def import_mapping(self, request):
         return self.create(request)
 
-    @action(detail=True, methods=["get"], serializer_class=MappingSerializer, url_path="export")
+    @action(detail=True, methods=["get"], serializer_class=MappingWithPartialCredentialSerializer, url_path="export")
     def export_mapping(self, request, pk=None):
         return self.retrieve(request)
-
-    def get_queryset(self):
-        """Limit visibility of sources."""
-        return self.queryset.filter(users=self.request.user)
 
     def perform_create(self, serializer):
         """Try to assign a owner to the new source."""
@@ -92,11 +88,20 @@ class InputGroupViewSet(viewsets.ModelViewSet):
     ordering = ["created_at"]
 
 
-class InputViewSet(viewsets.ModelViewSet):
-    queryset = models.Input.objects.all()
-    serializer_class = basic_serializers.InputSerializer
+class StaticInputViewSet(viewsets.ModelViewSet):
+    queryset = models.StaticInput.objects.all()
+    serializer_class = basic_serializers.StaticInputSerializer
     filter_backends = [django_filters.DjangoFilterBackend, drf_filters.OrderingFilter]
-    filterset_class = filters.InputFilterSet
+    filterset_class = filters.StaticInputFilterSet
+    ordering_fields = ["created_at"]
+    ordering = ["created_at"]
+
+
+class SQLInputViewSet(viewsets.ModelViewSet):
+    queryset = models.SQLInput.objects.all()
+    serializer_class = basic_serializers.SQLInputSerializer
+    filter_backends = [django_filters.DjangoFilterBackend, drf_filters.OrderingFilter]
+    filterset_class = filters.SQLInputFilterSet
     ordering_fields = ["created_at"]
     ordering = ["created_at"]
 

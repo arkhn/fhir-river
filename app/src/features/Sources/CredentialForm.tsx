@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Form from "@arkhn/ui/lib/Form/Form";
 import type { FormInputProperty } from "@arkhn/ui/lib/Form/InputTypes";
@@ -6,10 +6,10 @@ import { CircularProgress, makeStyles, Typography } from "@material-ui/core";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { TFunction } from "i18next";
 import { head, isEqual } from "lodash";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import { useAppDispatch } from "app/store";
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import {
   useApiCredentialsCreateMutation,
@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginLeft: theme.spacing(3),
-    textTransform: "none",
     width: "auto",
     minWidth: 150,
   },
@@ -52,6 +51,9 @@ const credentialInputs: (
     label: t("host"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "number",
@@ -63,6 +65,9 @@ const credentialInputs: (
       min: 0,
       max: 65535,
     },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -70,6 +75,9 @@ const credentialInputs: (
     label: t("database"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -77,6 +85,9 @@ const credentialInputs: (
     label: t("username"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "text",
@@ -85,9 +96,15 @@ const credentialInputs: (
     label: t("password"),
     variant: "outlined",
     validationRules: { required: true },
+    containerStyle: {
+      margin: "16px 10px",
+    },
   },
   {
     type: "select",
+    containerStyle: {
+      margin: "16px 10px",
+    },
     selectOptions: [
       {
         id: "MSSQL",
@@ -121,10 +138,8 @@ type CredentialFormProps = {
 const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
-
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
 
   const {
     isLoading: isCredentialsLoading,
@@ -146,11 +161,11 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
   const isLoading = isCreateCredentialLoading || isUpdateCredentialLoading;
 
   const handleCredentialSubmit = async (
-    credentialInputs: CredentialFormInputs
+    newCredentialInputs: CredentialFormInputs
   ) => {
     if (
       credential &&
-      isEqual(credential, { ...credential, ...credentialInputs })
+      isEqual(credential, { ...credential, ...newCredentialInputs })
     ) {
       dispatch(credentialEdited(credential));
       return;
@@ -162,18 +177,18 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             id: credential.id,
             credentialRequest: {
               source: credential.source,
-              ...credentialInputs,
+              ...newCredentialInputs,
             },
           }).unwrap()
         : await createCredential({
-            credentialRequest: { source: source.id, ...credentialInputs },
+            credentialRequest: { source: source.id, ...newCredentialInputs },
           }).unwrap();
       dispatch(credentialEdited(submittedCredential));
     } catch (e) {
       const data = apiValidationErrorFromResponse<Partial<CredentialRequest>>(
         e as FetchBaseQueryError
       );
-      setAlert(head(data?.non_field_errors));
+      enqueueSnackbar(head(data?.non_field_errors), { variant: "error" });
     }
   };
 
@@ -202,18 +217,12 @@ const CredentialForm = ({ source }: CredentialFormProps): JSX.Element => {
             {isLoading ? (
               <CircularProgress color="inherit" size={23} />
             ) : credential ? (
-              <Typography>{t("updateCredential")}</Typography>
+              t("updateCredential")
             ) : (
-              <Typography>{t("createCredential")}</Typography>
+              t("createCredential")
             )}
           </Button>
         }
-      />
-      <Alert
-        severity="error"
-        open={!!alert}
-        onClose={handleAlertClose}
-        message={alert}
       />
     </div>
   );

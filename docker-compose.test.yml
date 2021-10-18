@@ -12,6 +12,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  mimic:
+    image: arkhn/mimic:latest
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_USER: mimic
+      POSTGRES_PASSWORD: mimic
+      POSTGRES_DB: mimic
+    volumes:
+      - mimic-data:/var/lib/postgresql/data
+
   ora11:
     image: wnameless/oracle-xe-11g-r2
     ports:
@@ -21,10 +32,14 @@ services:
 
   river:
     image: arkhn/river:${IMAGE_TAG:-latest}
+    build:
+      context: .
     entrypoint: ""
     # keep container alive for test commands with `docker-compose exec`
     command: tail -F anything
     environment:
+      - PYTHONDONTWRITEBYTECODE=1
+
       - TEST_ORACLE_11_HOST=ora11
       - TEST_ORACLE_11_PORT=1521
       - TEST_ORACLE_11_DB=xe
@@ -49,12 +64,27 @@ services:
       - TEST_MSSQL_LOGIN
       - TEST_MSSQL_PASSWORD
 
+      - MIMIC_HOST=mimic
+      - MIMIC_PORT=5432
+      - MIMIC_DB=mimic
+      - MIMIC_LOGIN=mimic
+      - MIMIC_PASSWORD=mimic
+
       - DEBUG=True
       - SECRET_KEY=USE_IN_TESTS_ONLY
       - ALLOWED_HOSTS=*
       - CORS_ALLOW_ALL_ORIGINS=True
       - CORS_ALLOW_CREDENTIALS=True
       - RF_DEFAULT_PERMISSION_CLASSES=rest_framework.permissions.AllowAny
+
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+    volumes:
+      - ./django:/srv/django
+      - ./tests:/srv/tests
 
   redis:
     image: redis:6.0.7
@@ -85,3 +115,4 @@ services:
 
 volumes:
   postgres-data:
+  mimic-data:

@@ -1,5 +1,6 @@
 import React from "react";
 
+import type { IStructureDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { makeStyles, Typography } from "@material-ui/core";
@@ -8,7 +9,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { useApiFiltersListQuery } from "services/api/endpoints";
-import { Resource } from "services/api/generated/api.generated";
+import type { Resource } from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,7 +46,12 @@ type MappingInfosProps = {
 const MappingInfos = ({ mapping }: MappingInfosProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+
   const { data: filters } = useApiFiltersListQuery({ resource: mapping.id });
+
+  const definition = mapping.definition as IStructureDefinition;
+  const title = definition.title || definition.name;
+
   const filtersCount = filters?.length ?? 0;
 
   return (
@@ -68,7 +74,7 @@ const MappingInfos = ({ mapping }: MappingInfosProps): JSX.Element => {
         className={clsx(classes.text, classes.definitionId)}
         color="textPrimary"
       >
-        {mapping.definition_id}
+        {title}
       </Typography>
       <Typography
         className={classes.text}

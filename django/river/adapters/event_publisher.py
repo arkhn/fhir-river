@@ -27,7 +27,7 @@ class EventPublisher:
         raise NotImplementedError
 
 
-class FakeEventPublisher(EventPublisher):
+class InMemoryEventPublisher(EventPublisher):
     """EventPublisher using an in-memory dict of lists as a data structure.
 
     Instead of relying on a complex message broker in basic tests, we mock such a system

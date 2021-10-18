@@ -4,21 +4,36 @@ import {
   Button as MuiButton,
   ButtonProps as MuiButtonProps,
   withStyles,
+  Typography,
+  TypographyProps,
 } from "@material-ui/core";
 
 export const EditedButton = withStyles((theme) => ({
   root: {
     textTransform: "none",
+    minHeight: 38,
+  },
+  sizeSmall: {
+    minHeight: 34,
+  },
+  sizeLarge: {
+    minHeight: 42,
   },
   startIcon: {
     height: 12,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    fill: theme.palette.common.white,
+    fill: theme.palette.text.primary,
+  },
+  contained: {
+    "&.Mui-disabled": {
+      border: "1px solid transparent",
+    },
   },
   containedPrimary: {
     border: `1px solid ${theme.palette.primary.dark}`,
+    "& .MuiButton-startIcon": { fill: theme.palette.common.white },
   },
   containedSecondary: {
     border: `1px solid ${theme.palette.secondary.dark}`,
@@ -28,9 +43,6 @@ export const EditedButton = withStyles((theme) => ({
     "& .MuiButton-startIcon": {
       fill: theme.palette.secondary.contrastText,
     },
-  },
-  disabled: {
-    border: "none",
   },
   colorInherit: {
     "& .MuiButton-startIcon": {
@@ -50,17 +62,23 @@ export const EditedButton = withStyles((theme) => ({
 type ButtonProps<C extends React.ElementType> = MuiButtonProps<
   C,
   { component?: C }
->;
+> & {
+  typographyColor?: TypographyProps["color"];
+};
 
 const Button = React.forwardRef(
   <C extends React.ElementType>(
-    { children, ...buttonProps }: ButtonProps<C>,
+    { typographyColor, children, ...buttonProps }: ButtonProps<C>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ref: any
   ): JSX.Element => {
     return (
       <EditedButton disableElevation {...buttonProps} ref={ref}>
-        {children}
+        {typeof children === "string" ? (
+          <Typography color={typographyColor}>{children}</Typography>
+        ) : (
+          children
+        )}
       </EditedButton>
     );
   }

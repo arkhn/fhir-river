@@ -14,6 +14,7 @@ sed -i \
     -e "s|{{API_URL}}|$API_URL|g" \
     -e "s|{{OIDC_LOGIN_URL}}|$OIDC_LOGIN_URL|g" \
     -e "s|{{CSRF_COOKIE_NAME}}|$CSRF_COOKIE_NAME|g" \
+    -e "s|{{KIBANA_URL}}|$KIBANA_URL|g" \
     ./build/index.html
 
 rm -rf "${STATIC_ROOT}" && cp -r ./build "${STATIC_ROOT}"

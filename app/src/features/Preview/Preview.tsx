@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
+import { IResource } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
@@ -14,22 +15,31 @@ import {
   TableHead,
   TableBody,
   useMediaQuery,
-  CircularProgress,
 } from "@material-ui/core";
+import Alert, { Color } from "@material-ui/lab/Alert";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
 import clsx from "clsx";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useParams } from "react-router-dom";
 
-import MappingHeader from "app/routes/Sources/Mappings/MappingHeader";
-import Alert from "common/components/Alert";
 import BackButton from "common/components/BackButton";
 import {
   useApiResourcesRetrieveQuery,
-  usePagaiExploreRetrieveQuery,
+  useApiExploreCreateMutation,
   useApiOwnersRetrieveQuery,
   useApiPreviewCreateMutation,
 } from "services/api/endpoints";
+import {
+  apiValidationErrorFromResponse,
+  ApiValidationError,
+} from "services/api/errors";
+import {
+  ExplorationResponse,
+  OperationOutcomeIssue,
+  PreviewResponse,
+} from "services/api/generated/api.generated";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -88,30 +98,72 @@ const useStyles = makeStyles((theme) => ({
   button: {
     alignSelf: "flex-start",
     marginBottom: theme.spacing(2),
-    textTransform: "none",
     color: theme.palette.text.secondary,
     "&:hover": {
       backgroundColor: "inherit",
       color: theme.palette.text.primary,
     },
   },
+  alert: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
+  },
 }));
+
+// OperationOutcomeIssue with `severity` values matching the Alert prop `severity` values
+type AlertOperationOutcomeIssue = Partial<
+  Omit<OperationOutcomeIssue, "severity">
+> & {
+  severity: Color;
+};
+
+/**
+ * Returns a matching Alert `severity` value from OperationOutcomeIssue
+ *
+ * issue.severity === "information" => "info"
+ * @param issue OperationOutcomeIssue
+ */
+const getAlertSeverityFromOperationOutcomeIssue = (
+  issue: OperationOutcomeIssue
+): Color => {
+  let alertSeverity: Color = "info";
+  switch (issue.severity) {
+    case "error":
+    case "warning":
+      alertSeverity = issue.severity;
+      break;
+    case "information":
+      alertSeverity = "info";
+      break;
+  }
+  return alertSeverity;
+};
 
 const Preview = (): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
 
-  const [alert, setAlert] = useState<string | undefined>(undefined);
-  const handleAlertClose = () => setAlert(undefined);
+  const [exploration, setExploration] = useState<
+    ExplorationResponse | null | undefined
+  >(undefined);
+  const [alerts, setAlerts] = useState<
+    AlertOperationOutcomeIssue[] | undefined
+  >(undefined);
 
-  const [preview, setPreview] = useState<Record<string, unknown> | undefined>(
-    undefined
-  );
+  const [preview, setPreview] = useState<IResource | undefined>(undefined);
 
+  const handleAlertClose = (index: number) => {
+    if (alerts) {
+      const newAlerts = [...alerts];
+      newAlerts.splice(index, 1);
+      setAlerts(newAlerts);
+    }
+  };
   const { data: mapping } = useApiResourcesRetrieveQuery(
     { id: mappingId ?? "" },
     { skip: !mappingId }
@@ -124,121 +176,220 @@ const Preview = (): JSX.Element => {
     { skip: !mapping }
   );
 
-  const {
-    data: exploration,
-    isLoading: isExplorationLoading,
-  } = usePagaiExploreRetrieveQuery(
-    {
-      resourceId: mapping?.id ?? "",
-      owner: owner?.name ?? "",
-      table: mapping?.primary_key_table ?? "",
-    },
-    { skip: !mapping || !owner }
-  );
-
+  const [apiExploreCreate] = useApiExploreCreateMutation();
   const [apiPreviewCreate] = useApiPreviewCreateMutation();
 
+  const handleValidationError = useCallback(
+    ({
+      errors,
+      errorStatus,
+      errorField,
+    }: {
+      errors?: ApiValidationError<unknown>;
+      errorStatus: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR";
+      errorField: string;
+    }) => {
+      if (errors) {
+        const errorEntries = Object.entries(errors);
+        errorEntries.forEach(([key, text]) => {
+          for (const error in text) {
+            enqueueSnackbar(
+              t<string>("catchValidationErrorPrompt", {
+                query: errorField,
+                errorStatus: errorStatus,
+                errorKey: key,
+                errorText: text[error],
+              }),
+              {
+                variant: "error",
+              }
+            );
+          }
+        });
+      }
+    },
+    [enqueueSnackbar, t]
+  );
+
+  const handleError = useCallback(
+    (error: FetchBaseQueryError) => {
+      const validationError = apiValidationErrorFromResponse(error);
+      switch (error.status) {
+        case "PARSING_ERROR":
+          enqueueSnackbar(
+            t<string>("catchValidationErrorPrompt", {
+              query: error.status,
+              errorStatus: error.originalStatus.toString(),
+              errorText: error.error,
+            }),
+            { variant: "error" }
+          );
+          break;
+        case "FETCH_ERROR":
+        case "CUSTOM_ERROR":
+          error.data &&
+            enqueueSnackbar(`${error.status} : ${error.data as string}`, {
+              variant: "error",
+            });
+          break;
+        default:
+          validationError &&
+            handleValidationError({
+              errors: validationError,
+              errorStatus: error.status,
+              errorField: "Preview",
+            });
+          break;
+      }
+    },
+    [enqueueSnackbar, handleValidationError, t]
+  );
+
   const handleFhirIconClick = (index: number) => async () => {
-    const primaryKey = mapping?.primary_key_table;
-    if (exploration && primaryKey && mapping) {
-      const primaryKeyIndex = exploration.fields.indexOf(primaryKey);
+    if (exploration && mappingId && mapping?.primary_key_column) {
+      const primaryKey = mapping.primary_key_column;
+      // FIXME: See https://github.com/arkhn/fhir-river/issues/670
+      const primaryKeyIndex = exploration.fields
+        .map((field) => field.toLowerCase())
+        .indexOf(primaryKey.toLowerCase());
       const primaryKeyValue = exploration.rows[index]?.[primaryKeyIndex];
-      try {
-        const previewResult = await apiPreviewCreate({
-          previewRequest: {
-            resource_id: mapping?.id,
-            primary_key_values: [primaryKeyValue ?? ""],
-          },
-        }).unwrap();
-        setPreview(previewResult);
-      } catch (e) {
-        setAlert(e.message);
+      if (primaryKeyValue) {
+        const previewCreate = async () => {
+          try {
+            const previewResult: PreviewResponse = await apiPreviewCreate({
+              previewRequestRequest: {
+                resource_id: mappingId,
+                primary_key_values: [primaryKeyValue],
+              },
+            }).unwrap();
+            setPreview(previewResult.instances[0]);
+            if (previewResult.errors.length > 0)
+              setAlerts(
+                previewResult.errors.map((error) => ({
+                  ...error,
+                  severity: getAlertSeverityFromOperationOutcomeIssue(error),
+                }))
+              );
+          } catch (error) {
+            handleError(error as FetchBaseQueryError);
+          }
+        };
+        previewCreate();
       }
     }
   };
 
-  if (isExplorationLoading) return <CircularProgress />;
+  // load the data for the table preview list
+  useEffect(() => {
+    if (mappingId && owner && exploration === undefined) {
+      setExploration(null);
+
+      const explore = async () => {
+        try {
+          const _exploration = await apiExploreCreate({
+            explorationRequestRequest: {
+              owner: owner?.name ?? "",
+              table: mapping?.primary_key_table ?? "",
+              resource_id: mappingId,
+            },
+          }).unwrap();
+          setExploration(_exploration);
+        } catch (error) {
+          handleError(error as FetchBaseQueryError);
+        }
+      };
+      explore();
+    }
+  }, [
+    apiExploreCreate,
+    exploration,
+    mapping?.primary_key_table,
+    mappingId,
+    owner,
+    handleError,
+    enqueueSnackbar,
+  ]);
+
   return (
-    <>
-      <MappingHeader />
-
-      <Container className={classes.container} maxWidth="xl">
-        <BackButton className={classes.button} />
-
-        <TableContainer className={classes.table}>
-          <Table size="small">
-            <TableHead>
-              <TableRow className={classes.cellsTitle}>
-                <TableCell className={classes.cells} />
-                {exploration &&
-                  exploration.fields.map((field, index) => (
-                    <TableCell
-                      className={classes.cells}
-                      key={`exploration-field-${index}`}
-                    >
-                      {field}
+    <Container className={classes.container} maxWidth="xl">
+      <BackButton className={classes.button} />
+      <TableContainer className={classes.table}>
+        <Table size="small">
+          <TableHead>
+            <TableRow className={classes.cellsTitle}>
+              <TableCell className={classes.cells} />
+              {exploration &&
+                exploration.fields.map((field, index) => (
+                  <TableCell
+                    className={classes.cells}
+                    key={`exploration-field-${index}`}
+                  >
+                    {field}
+                  </TableCell>
+                ))}
+            </TableRow>
+          </TableHead>
+          {exploration && (
+            <TableBody>
+              {exploration.rows.map((columnData, index) => (
+                <TableRow
+                  hover
+                  key={`exploration-row-${index}`}
+                  className={classes.rowBorder}
+                >
+                  <TableCell
+                    className={clsx(classes.fhirIconCell, classes.cellsTitle)}
+                    onClick={handleFhirIconClick(index)}
+                  >
+                    <IconButton size="small" className={classes.icon}>
+                      <Icon
+                        icon={IconNames.FLAME}
+                        iconSize={15}
+                        className={classes.iconFlame}
+                      />
+                    </IconButton>
+                  </TableCell>
+                  {columnData.map((cell, i) => (
+                    <TableCell className={classes.cells} key={i}>
+                      {cell.toString()}
                     </TableCell>
                   ))}
-              </TableRow>
-            </TableHead>
-            {exploration && (
-              <TableBody>
-                {exploration.rows.map((columnData, index) => (
-                  <TableRow
-                    hover
-                    key={`exploration-row-${index}`}
-                    className={classes.rowBorder}
-                  >
-                    <TableCell
-                      className={clsx(classes.fhirIconCell, classes.cellsTitle)}
-                      onClick={handleFhirIconClick(index)}
-                    >
-                      <IconButton size="small" className={classes.icon}>
-                        <Icon
-                          icon={IconNames.FLAME}
-                          iconSize={15}
-                          className={classes.iconFlame}
-                        />
-                      </IconButton>
-                    </TableCell>
-                    {columnData.map((cell, i) => (
-                      <TableCell className={classes.cells} key={i}>
-                        {cell}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
-          </Table>
-        </TableContainer>
-        <Alert
-          severity="error"
-          open={!!alert}
-          onClose={handleAlertClose}
-          message={alert}
-        />
-        {preview ? (
-          <div className={classes.preview}>
-            <ReactJson
-              src={preview}
-              theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
-              collapsed={1}
-              displayObjectSize={false}
-              displayDataTypes={false}
-            />
-          </div>
-        ) : (
-          <div className={classes.texts}>
-            <Typography>
-              {t("clickOnAFireIcon")}{" "}
-              <Icon icon={IconNames.FLAME} className={classes.iconFlame} />{" "}
-              {t("inOrderToPreview")}
-            </Typography>
-          </div>
-        )}
-      </Container>
-    </>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
+        </Table>
+      </TableContainer>
+      {alerts &&
+        alerts.map((issue, index) => (
+          <Alert
+            key={index}
+            className={classes.alert}
+            severity={issue.severity}
+            onClose={() => handleAlertClose(index)}
+          >
+            {issue.diagnostics}
+          </Alert>
+        ))}
+      {preview ? (
+        <div className={classes.preview}>
+          <ReactJson
+            src={preview}
+            theme={prefersDarkMode ? "summerfruit" : "summerfruit:inverted"}
+            displayObjectSize={false}
+            displayDataTypes={false}
+          />
+        </div>
+      ) : (
+        <div className={classes.texts}>
+          <Typography>
+            {t("clickOnAFireIcon")}
+            <Icon icon={IconNames.FLAME} className={classes.iconFlame} />
+            {t("inOrderToPreview")}
+          </Typography>
+        </div>
+      )}
+    </Container>
   );
 };
 

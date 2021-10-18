@@ -11,12 +11,18 @@ from pytest_factoryboy import register
 
 from django.conf import settings
 
+from common.adapters.fhir_api import fhir_api
+from tests.conftest import load_export_data, load_mapping
+from tests.pyrog.factories import ResourceFactory, SourceFactory
+
 from . import factories
 
-DATA_FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 register(factories.BatchFactory)
 register(factories.ErrorFactory)
+register(ResourceFactory)
+register(SourceFactory)
 
 
 def get_factories():
@@ -81,13 +87,26 @@ def clear_redis(request):
         request.addfinalizer(_clear_redis)
 
 
-@pytest.fixture
-def patient_mapping():
-    with (DATA_FIXTURES_DIR / "patient_mapping.json").open() as f:
-        return json.load(f)
+@pytest.fixture(scope="session")
+def structure_definitions() -> list:
+    data = load_export_data(DATA_FIXTURES_DIR / "structure_definitions_bundle.json")
+    return [item["resource"] for item in data["entry"]]
+
+
+@pytest.fixture(autouse=True)
+def load_concept_maps():
+    with open(DATA_FIXTURES_DIR / "concept_maps.json") as concept_maps_file:
+        concept_maps = json.load(concept_maps_file)
+        for entry in concept_maps.get("entry", []):
+            fhir_api.create("ConceptMap", entry.get("resource"))
 
 
 @pytest.fixture
-def users_to_patients_mapping():
-    with (DATA_FIXTURES_DIR / "users_to_patients_mapping.json").open() as f:
-        return json.load(f)
+def mimic_mapping():
+    return load_mapping(DATA_FIXTURES_DIR / "mimic_mapping.json")
+
+
+@pytest.fixture(autouse=True, scope="session")
+def load_structure_definitions(structure_definitions):
+    for structure_definition in structure_definitions:
+        fhir_api.create("StructureDefinition", structure_definition)

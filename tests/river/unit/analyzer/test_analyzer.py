@@ -1,4 +1,3 @@
-from unittest import mock
 from uuid import uuid4
 
 from river.common.analyzer import Analyzer
@@ -6,232 +5,162 @@ from river.common.analyzer.attribute import Attribute
 from river.common.analyzer.condition import Condition
 from river.common.analyzer.input_group import InputGroup
 from river.common.analyzer.sql_column import SqlColumn
-from river.common.analyzer.sql_filter import SqlFilter
 from river.common.analyzer.sql_join import SqlJoin
 
 
-def test_cache_analysis_redis(patient_mapping):
-    batch_id, resource_id = (uuid4(), uuid4())
+def test_cache_analysis(mimic_mapping):
+    batch_id = uuid4()
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
     analyzer = Analyzer()
 
-    res = analyzer.cache_analysis(batch_id, resource_id, patient_mapping)
+    res = analyzer.cache_analysis(batch_id, resource_id, mimic_mapping)
 
     assert res.definition_id == "Patient"
     assert res.primary_key_column.table == "patients"
-    assert res.primary_key_column.column == "row_id"
+    assert res.primary_key_column.column == "subject_id"
 
     assert analyzer.analyses[f"{batch_id}:{resource_id}"].definition_id == "Patient"
     assert analyzer.analyses[f"{batch_id}:{resource_id}"].primary_key_column.table == "patients"
-    assert analyzer.analyses[f"{batch_id}:{resource_id}"].primary_key_column.column == "row_id"
+    assert analyzer.analyses[f"{batch_id}:{resource_id}"].primary_key_column.column == "subject_id"
 
     cached_res = analyzer.load_analysis(batch_id, resource_id)
 
-    assert cached_res is not None
     assert cached_res == res
 
 
 def test_get_primary_key():
     analyzer = Analyzer()
 
-    # With owner
     resource_mapping = {
-        "primaryKeyOwner": {"name": "owner"},
-        "primaryKeyTable": "table",
-        "primaryKeyColumn": "col",
+        "primary_key_owner": "owner_id",
+        "primary_key_table": "table",
+        "primary_key_column": "col",
     }
-    primary_key = analyzer.get_primary_key(resource_mapping)
+    analyzer._owners_data = {"owner_id": "owner"}
 
-    assert primary_key == SqlColumn("owner", "table", "col")
+    assert analyzer.get_primary_key(resource_mapping) == SqlColumn("owner", "table", "col")
 
-    # With missing field
+
+def test_get_primary_key_missing_field():
+    analyzer = Analyzer()
+
     resource_mapping = {
-        "primaryKeyTable": "",
-        "primaryKeyColumn": "col",
-        "primaryKeyOwner": {"name": "owner"},
-        "definitionId": "fhirtype",
+        "primary_key_owner": "owner_id",
+        "primary_key_table": "",
+        "primary_key_column": "col",
     }
+    analyzer._owners_data = {"owner_id": "owner"}
+
     assert analyzer.get_primary_key(resource_mapping) is None
 
 
-def test_analyze_mapping(patient_mapping):
+def test_analyze_mapping(mimic_mapping, snapshot):
     analyzer = Analyzer()
+    # Encounter
+    resource_id = "cktlnp0hz00500mmzpor3i6hn"
 
-    analysis = analyzer.analyze_mapping(patient_mapping)
+    analysis = analyzer.analyze(resource_id, mimic_mapping)
 
-    assert len(analysis.attributes) == 18
-
-    assert analyzer.get_analysis_columns(analysis) == {
-        SqlColumn("mimiciii", "patients", "row_id"),
-        SqlColumn("mimiciii", "patients", "subject_id"),
-        SqlColumn("mimiciii", "patients", "dob"),
-        SqlColumn("mimiciii", "patients", "dod"),
-        SqlColumn("mimiciii", "patients", "expire_flag"),
-        SqlColumn("mimiciii", "patients", "gender"),
-        SqlColumn(
-            "mimiciii",
-            "admissions",
-            "admittime",
-            joins=[
-                SqlJoin(
-                    SqlColumn("mimiciii", "patients", "subject_id"), SqlColumn("mimiciii", "admissions", "subject_id")
-                )
-            ],
-        ),
-        SqlColumn(
-            "mimiciii",
-            "admissions",
-            "marital_status",
-            joins=[
-                SqlJoin(
-                    SqlColumn("mimiciii", "patients", "subject_id"), SqlColumn("mimiciii", "admissions", "subject_id")
-                )
-            ],
-        ),
-        SqlColumn(
-            "mimiciii",
-            "admissions",
-            "language",
-            joins=[
-                SqlJoin(
-                    SqlColumn("mimiciii", "patients", "subject_id"), SqlColumn("mimiciii", "admissions", "subject_id")
-                )
-            ],
-        ),
-    }
-    assert analysis.filters == [
-        SqlFilter(
-            SqlColumn(
-                "mimiciii",
-                "admissions",
-                "adm_date",
-                joins=[
-                    SqlJoin(
-                        SqlColumn("mimiciii", "patients", "subject_id"),
-                        SqlColumn("mimiciii", "admissions", "subject_id"),
-                    )
-                ],
-            ),
-            ">=",
-            "2012",
-        ),
+    assert len(analysis.attributes) == 9
+    assert analysis == snapshot
+    assert analyzer.get_analysis_columns(analysis) == snapshot
+    assert analysis.filters == snapshot
+    assert analysis.reference_paths == [
+        ["subject"],
+        ["location", "location"],
+        ["diagnosis", "condition"],
+        ["serviceProvider"],
     ]
-    assert analyzer.get_analysis_joins(analysis) == {
-        SqlJoin(SqlColumn("mimiciii", "patients", "subject_id"), SqlColumn("mimiciii", "admissions", "subject_id")),
-    }
-    assert analysis.reference_paths == [["generalPractitioner"], ["link", "other"]]
 
 
-def test_analyze_attribute(dict_map_gender):
+def test_analyze_attribute(dict_map_gender, structure_definitions):
     analyzer = Analyzer()
     analyzer._cur_analysis.primary_key_column = SqlColumn("mimiciii", "patients", "subject_id")
-
+    analyzer._cur_analysis.definition_id = "Patient"
+    analyzer._cur_analysis.definition = next(
+        iter(
+            [
+                structure_definition
+                for structure_definition in structure_definitions
+                if structure_definition["id"] == analyzer._cur_analysis.definition_id
+            ]
+        )
+    )
+    analyzer._columns_data = {
+        "ck8ooenw827004kp41nv3kcmq": {
+            "owner": "mimiciii",
+            "table": "patients",
+            "column": "gender",
+        },
+        "ckdyl65kj0196gu9ku2dy0ygg": {
+            "owner": "mimiciii",
+            "table": "patients",
+            "column": "subject_id",
+        },
+        "ckdyl65kj0197gu9k1lrvx3bl": {
+            "owner": "mimiciii",
+            "table": "admissions",
+            "column": "subject_id",
+        },
+        "ckdyl65kl0335gu9kup0hwhe0": {
+            "owner": "mimiciii",
+            "table": "admissions",
+            "column": "expire_flag",
+        },
+        "ckdyl65kj0196gu9ku2dy0ygb": {
+            "owner": "mimiciii",
+            "table": "patients",
+            "column": "subject_id",
+        },
+        "ckdyl65kj0197gu9k1lrvx3bb": {
+            "owner": "mimiciii",
+            "table": "join_table",
+            "column": "subject_id",
+        },
+        "ckdyl65kj0196gu9ku2dy0yga": {
+            "owner": "mimiciii",
+            "table": "join_table",
+            "column": "adm_id",
+        },
+        "ckdyl65kj0197gu9k1lrvx3ba": {
+            "owner": "mimiciii",
+            "table": "admissions",
+            "column": "adm_id",
+        },
+    }
     attribute_mapping = {
         "id": "ck8ooenpu26984kp4wyiz4yc2",
         "path": "gender",
-        "sliceName": None,
-        "definitionId": "code",
-        "resourceId": "ck8oo3on226974kp4ns32n7xs",
+        "definition_id": "code",
+        "resource_id": "ck8oo3on226974kp4ns32n7xs",
         "comments": [],
-        "inputGroups": [
+        "input_groups": [
             {
                 "id": "ckdom8lgq0045m29ksz6vudvc",
-                "mergingScript": None,
-                "attributeId": "ck8ooenpu26984kp4wyiz4yc2",
-                "inputs": [
+                "merging_script": None,
+                "static_inputs": [],
+                "sql_inputs": [
                     {
-                        "id": "ck8ooenw826994kp4whpirhdo",
-                        "script": None,
-                        "conceptMapId": "id_cm_gender",
-                        "conceptMap": dict_map_gender,
-                        "staticValue": None,
-                        "sqlValueId": "ck8ooenw827004kp41nv3kcmq",
-                        "inputGroupId": "ckdom8lgq0045m29ksz6vudvc",
-                        "sqlValue": {
-                            "id": "ck8ooenw827004kp41nv3kcmq",
-                            "owner": {"name": "mimiciii"},
-                            "table": "patients",
-                            "column": "gender",
-                            "joinId": None,
-                            "joins": [
-                                {
-                                    "id": "ckdyl65kj0195gu9k43qei6xp",
-                                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
-                                    "tables": [
-                                        {
-                                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
-                                            "owner": {"name": "mimiciii"},
-                                            "table": "patients",
-                                            "column": "subject_id",
-                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                                        },
-                                        {
-                                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
-                                            "owner": {"name": "mimiciii"},
-                                            "table": "admissions",
-                                            "column": "subject_id",
-                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                                        },
-                                    ],
-                                }
-                            ],
-                        },
+                        "script": "",
+                        "concept_map_id": "id_cm_gender",
+                        "concept_map": dict_map_gender,
+                        "column": "ck8ooenw827004kp41nv3kcmq",
+                        "joins": [{"left": "ckdyl65kj0196gu9ku2dy0ygg", "right": "ckdyl65kj0197gu9k1lrvx3bl"}],
                     }
                 ],
                 "conditions": [
                     {
-                        "id": "ckdyl65kl0334gu9ky8x57zvb",
                         "action": "EXCLUDE",
-                        "columnId": "ckdyl65kl0335gu9kup0hwhe0",
                         "relation": "EQ",
                         "value": "1",
-                        "inputGroupId": "ckdyl65kl0331gu9kjada4vf4",
-                        "sqlValue": {
-                            "id": "ckdyl65kl0335gu9kup0hwhe0",
-                            "owner": {"name": "mimiciii"},
-                            "table": "admissions",
-                            "column": "expire_flag",
-                            "joinId": "ckdyl65kj0195gu9k43qei6xq",
+                        "sql_input": {
+                            "script": "",
+                            "concept_map_id": "",
+                            "column": "ckdyl65kl0335gu9kup0hwhe0",
                             "joins": [
-                                {
-                                    "id": "ckdyl65kj0195gu9k43qei6xp",
-                                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
-                                    "tables": [
-                                        {
-                                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
-                                            "owner": {"name": "mimiciii"},
-                                            "table": "patients",
-                                            "column": "subject_id",
-                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                                        },
-                                        {
-                                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
-                                            "owner": {"name": "mimiciii"},
-                                            "table": "join_table",
-                                            "column": "subject_id",
-                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                                        },
-                                    ],
-                                },
-                                {
-                                    "id": "ckdyl65kj0195gu9k43qei6xp",
-                                    "columnId": "ckdyl65kj0194gu9k6ez7yirb",
-                                    "tables": [
-                                        {
-                                            "id": "ckdyl65kj0196gu9ku2dy0ygg",
-                                            "owner": {"name": "mimiciii"},
-                                            "table": "join_table",
-                                            "column": "adm_id",
-                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                                        },
-                                        {
-                                            "id": "ckdyl65kj0197gu9k1lrvx3bl",
-                                            "owner": {"name": "mimiciii"},
-                                            "table": "admissions",
-                                            "column": "adm_id",
-                                            "joinId": "ckdyl65kj0195gu9k43qei6xp",
-                                        },
-                                    ],
-                                },
+                                {"left": "ckdyl65kj0196gu9ku2dy0ygb", "right": "ckdyl65kj0197gu9k1lrvx3bb"},
+                                {"left": "ckdyl65kj0196gu9ku2dy0yga", "right": "ckdyl65kj0197gu9k1lrvx3ba"},
                             ],
                         },
                     }

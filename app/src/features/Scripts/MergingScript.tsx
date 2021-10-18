@@ -1,23 +1,16 @@
 import React from "react";
 
-import {
-  Grid,
-  makeStyles,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  Typography,
-} from "@material-ui/core";
-import clsx from "clsx";
+import { Grid, makeStyles, TextField, Typography } from "@material-ui/core";
+import { Autocomplete } from "@material-ui/lab";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
+import AutocompletePopper from "common/components/AutocompletePopper";
 import { useApiInputGroupsUpdateMutation } from "services/api/endpoints";
 import {
   InputGroup,
   useApiScriptsListQuery,
 } from "services/api/generated/api.generated";
-
-import ScriptMenuItem from "./ScriptListItem";
 
 const useStyles = makeStyles((theme) => ({
   badgeLabel: {
@@ -27,16 +20,20 @@ const useStyles = makeStyles((theme) => ({
     paddingInline: theme.spacing(1),
     paddingBlock: theme.spacing(0.5),
   },
-  menuPopup: {
-    maxHeight: 300,
-  },
-  select: {
+  autocomplete: {
     minWidth: 200,
     color: theme.palette.text.disabled,
+    cursor: "pointer",
   },
-  selected: {
-    fontWeight: 500,
-    color: theme.palette.text.primary,
+  mergingScript: {
+    display: "flex",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+  },
+  mergingScriptName: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -47,25 +44,23 @@ type MergingScriptProps = {
 const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+
   const [updateInputGroup] = useApiInputGroupsUpdateMutation();
-  const { data: scripts } = useApiScriptsListQuery({});
+  const { data: mergingScripts } = useApiScriptsListQuery();
 
   const handleMergingScriptSelect = async (
-    event: React.ChangeEvent<{
-      name?: string | undefined;
-      value: unknown;
-    }>
+    event: React.ChangeEvent<Record<string, never>>,
+    selectedScript: string | null
   ) => {
-    const scriptName = event.target.value as string;
-    if (scriptName !== inputGroup.merging_script) {
+    if (selectedScript && selectedScript !== inputGroup.merging_script) {
       try {
         await updateInputGroup({
           id: inputGroup.id,
-          inputGroupRequest: { ...inputGroup, merging_script: scriptName },
+          inputGroupRequest: { ...inputGroup, merging_script: selectedScript },
         });
       } catch (error) {
-        // TODO: Handle errors nicely
-        console.error(error);
+        enqueueSnackbar(error.error, { variant: "error" });
       }
     }
   };
@@ -78,43 +73,46 @@ const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
         </Typography>
       </Grid>
       <Grid item>
-        {scripts && (
-          <Select
-            className={classes.select}
-            value={inputGroup.merging_script}
+        {mergingScripts && (
+          <Autocomplete
+            PopperComponent={AutocompletePopper}
+            openOnFocus
+            options={mergingScripts.map((mergingScript) => mergingScript.name)}
+            fullWidth
+            disableClearable
             onChange={handleMergingScriptSelect}
-            variant="outlined"
-            input={
-              <OutlinedInput
+            classes={{ root: classes.autocomplete }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder={t("selectScript")}
+                variant="outlined"
+                size="small"
                 margin="dense"
-                inputProps={{
-                  className: clsx({
-                    [classes.selected]: inputGroup.merging_script !== "",
-                  }),
-                }}
               />
-            }
-            renderValue={(value) =>
-              value === "" ? t("selectScript") : (value as string)
-            }
-            displayEmpty
-            MenuProps={{
-              anchorOrigin: { horizontal: "left", vertical: "bottom" },
-              getContentAnchorEl: null,
-              PaperProps: {
-                className: classes.menuPopup,
-              },
+            )}
+            value={inputGroup.merging_script}
+            renderOption={(searchValue) => {
+              const searchResults = mergingScripts.find(
+                (mergingScript) => mergingScript.name === searchValue
+              );
+              if (searchResults)
+                return (
+                  <div className={classes.mergingScript}>
+                    <Typography className={classes.mergingScriptName}>
+                      {searchResults.name}
+                    </Typography>
+                    <Typography
+                      color="textSecondary"
+                      noWrap
+                      variant="subtitle2"
+                    >
+                      {searchResults.description}
+                    </Typography>
+                  </div>
+                );
             }}
-          >
-            <MenuItem disabled value="">
-              {t("selectScript")}
-            </MenuItem>
-            {scripts.map((script, index) => (
-              <MenuItem value={script.name} key={`${script.name}-${index}`}>
-                <ScriptMenuItem script={script} />
-              </MenuItem>
-            ))}
-          </Select>
+          />
         )}
       </Grid>
     </Grid>

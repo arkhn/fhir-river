@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
+import AutocompletePopper from "common/components/AutocompletePopper";
 import usePrevious from "common/hooks/usePrevious";
 import {
   useApiCredentialsListQuery,
@@ -38,12 +39,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 type ColumnSelectsProps = {
-  pendingColumn: Partial<Column>;
+  column: Partial<Column>;
   onChange?: (column: Partial<Column>) => void;
 };
 
 const ColumnSelects = ({
-  pendingColumn,
+  column,
   onChange,
 }: ColumnSelectsProps): JSX.Element => {
   const classes = useStyles();
@@ -62,18 +63,17 @@ const ColumnSelects = ({
     }
   );
 
-  const { table, column, owner: ownerId } = pendingColumn;
-  const selectedOwner = credentialOwners?.find(({ id }) => id === ownerId);
+  const selectedOwner = credentialOwners?.find(({ id }) => id === column.owner);
   const schema = selectedOwner?.schema as Record<string, string[]>;
   const defaultValue = {
     id: "/",
     label: "/",
   };
   const ownerTable =
-    table && selectedOwner
+    column.table && selectedOwner
       ? {
-          id: `${selectedOwner.id}/${table}`,
-          label: `${selectedOwner.name}/${table}`,
+          id: `${selectedOwner.id}/${column.table}`,
+          label: `${selectedOwner.name}/${column.table}`,
         }
       : defaultValue;
 
@@ -87,9 +87,9 @@ const ColumnSelects = ({
             const ownerTables = Object.keys(owner.schema);
             return [
               ...acc,
-              ...ownerTables.map((_table) => ({
-                id: `${owner.id}/${_table}`,
-                label: `${owner.name}/${_table}`,
+              ...ownerTables.map((table) => ({
+                id: `${owner.id}/${table}`,
+                label: `${owner.name}/${table}`,
               })),
             ];
           },
@@ -99,27 +99,29 @@ const ColumnSelects = ({
 
   const tableOptions = getTableOptions(credentialOwners);
   const [columns, setColumns] = useState<string[]>(
-    table && schema && table in schema ? schema[table] ?? [] : []
+    column.table && schema && column.table in schema
+      ? schema[column.table] ?? []
+      : []
   );
 
-  const isTableSelected = !!table;
-  const isColumnSelected = !!column;
+  const isTableSelected = !!column.table;
+  const isColumnSelected = !!column.column;
 
-  const prevTable = usePrevious(table);
-  const hasTableChanged = prevTable !== table;
+  const prevTable = usePrevious(column.table);
+  const hasTableChanged = prevTable !== column.table;
 
   const handleOwnerTableChange = (
     _: React.ChangeEvent<Record<string, never>>,
     value: { id: string; label: string } | null
   ) => {
     if (value) {
-      const [_owner, _table] = value.id.split("/");
+      const [owner, table] = value.id.split("/");
       onChange &&
         onChange({
-          ...pendingColumn,
-          table: _table,
-          owner: _owner,
-          column: undefined,
+          ...column,
+          table,
+          owner,
+          column: "",
         });
     }
   };
@@ -129,30 +131,31 @@ const ColumnSelects = ({
   ) => {
     onChange &&
       onChange({
-        ...pendingColumn,
+        ...column,
         column: value,
       });
   };
 
   useEffect(() => {
-    if (schema && table) {
+    if (schema && column.table) {
       const isColumnInTable =
-        pendingColumn.column && schema[table]?.includes(pendingColumn.column);
+        column.column && schema[column.table]?.includes(column.column);
       if (hasTableChanged && !isColumnInTable) {
         onChange &&
           onChange({
-            ...pendingColumn,
+            ...column,
             column: undefined,
           });
       }
-      setColumns(schema[table] ?? []);
+      setColumns(schema[column.table] ?? []);
     }
-  }, [schema, hasTableChanged, pendingColumn, table, onChange]);
+  }, [schema, hasTableChanged, column, column.table, onChange]);
 
   return (
     <>
       <Grid item>
         <Autocomplete
+          PopperComponent={AutocompletePopper}
           className={classes.autocomplete}
           options={tableOptions}
           groupBy={(option) => option.label.split("/")[0] ?? ""}
@@ -162,6 +165,7 @@ const ColumnSelects = ({
           onChange={handleOwnerTableChange}
           selectOnFocus
           openOnFocus
+          data-testid="table_input"
           clearOnBlur
           disableClearable
           handleHomeEndKeys
@@ -192,15 +196,17 @@ const ColumnSelects = ({
       </Grid>
       <Grid item>
         <Autocomplete
+          PopperComponent={AutocompletePopper}
           className={classes.autocomplete}
           options={columns}
-          value={column ?? ""}
+          value={column.column ?? ""}
           onChange={handleColumnChange}
           selectOnFocus
           openOnFocus
           clearOnBlur
           disableClearable
           handleHomeEndKeys
+          data-testid="column_input"
           renderInput={(params) => (
             <TextField
               {...params}

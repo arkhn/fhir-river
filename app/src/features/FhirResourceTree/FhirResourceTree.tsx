@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -12,19 +12,23 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
+import { difference } from "lodash";
+import { useSnackbar } from "notistack";
 import { useHistory, useParams } from "react-router-dom";
 
+import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import {
   useApiAttributesCreateMutation,
   useApiResourcesRetrieveQuery,
   useApiAttributesListQuery,
-  useApiAttributesRetrieveQuery,
   useApiInputGroupsCreateMutation,
+  useApiStaticInputsCreateMutation,
 } from "services/api/endpoints";
 
-import { getNode } from "./resourceTreeUtils";
+import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 import useFhirResourceTreeData from "./useFhirResourceTreeData";
+import useGetSelectedAttributeAncestors from "./useGetSelectedAttributeAncestors";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -51,25 +55,21 @@ const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
-  const { sourceId, mappingId, attributeId } = useParams<{
+  const { enqueueSnackbar } = useSnackbar();
+  const [hasAlreadyExpandedToTarget, setHasAlreadyExpandedToTarget] = useState(
+    false
+  );
+  const { sourceId, mappingId } = useParams<{
     sourceId?: string;
     mappingId?: string;
-    attributeId?: string;
   }>();
-  const {
-    data: selectedAttribute,
-    isUninitialized: isSelectedAttributeUninitialized,
-  } = useApiAttributesRetrieveQuery(
-    { id: attributeId ?? "" },
-    { skip: !attributeId }
-  );
   const { data: mapping } = useApiResourcesRetrieveQuery(
     {
       id: mappingId ?? "",
     },
     { skip: !mappingId }
   );
-  const { root, addExtension } = useFhirResourceTreeData(
+  const { rootElementNode, addExtension } = useFhirResourceTreeData(
     {
       definitionId: mapping?.definition_id ?? "",
     },
@@ -79,20 +79,28 @@ const FhirResourceTree = (): JSX.Element => {
     { resource: mapping?.id ?? "" },
     { skip: !mapping }
   );
+  const nodeAncestorsIds = useGetSelectedAttributeAncestors();
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
+  const [createStaticInput] = useApiStaticInputsCreateMutation();
+  const selectedNode = useGetSelectedNode();
 
-  const selectedNode = useMemo(() => {
-    if (!isSelectedAttributeUninitialized && selectedAttribute && root) {
-      return getNode("path", selectedAttribute.path, root);
+  // Expand attribute ancestors nodes only once
+  useEffect(() => {
+    const nodesToExpand = difference(nodeAncestorsIds, expandedNodes);
+
+    if (nodesToExpand.length > 0 && !hasAlreadyExpandedToTarget) {
+      setExpandedNodes([...expandedNodes, ...nodesToExpand]);
+      setHasAlreadyExpandedToTarget(true);
     }
-  }, [selectedAttribute, root, isSelectedAttributeUninitialized]);
+  }, [expandedNodes, hasAlreadyExpandedToTarget, nodeAncestorsIds]);
 
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
-    id: string
+    nodePath: string
   ) => {
-    const node = root && getNode("id", id, root);
+    const node =
+      rootElementNode && getElementNodeByPath(nodePath, rootElementNode);
     if (
       node &&
       node.kind === "primitive" &&
@@ -113,13 +121,25 @@ const FhirResourceTree = (): JSX.Element => {
               resource: mapping.id,
             },
           }).unwrap();
-          createInputGroup({ inputGroupRequest: { attribute: attribute.id } });
+          const inputGroup = await createInputGroup({
+            inputGroupRequest: { attribute: attribute.id },
+          }).unwrap();
+          const isNodeTypeURI = node?.type === "uri";
+          const isNodeNameType = node?.name === "type";
+          // Create a static input for node of type "URI" & name "type"
+          if (isNodeTypeURI && isNodeNameType) {
+            createStaticInput({
+              staticInputRequest: {
+                input_group: inputGroup.id,
+                value: "",
+              },
+            });
+          }
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );
         } catch (error) {
-          // TODO: Handle errors nicely
-          console.error(error);
+          enqueueSnackbar(error.error, { variant: "error" });
         }
       } else {
         history.push(
@@ -147,7 +167,7 @@ const FhirResourceTree = (): JSX.Element => {
           iconSize={15}
         />
         <Typography className={classes.headerTitle} color="textPrimary">
-          {root?.name}
+          {rootElementNode?.definitionNode.definition.id}
         </Typography>
         <IconButton onClick={handleAddExtensionClick} size="small">
           <Icon
@@ -158,15 +178,20 @@ const FhirResourceTree = (): JSX.Element => {
         </IconButton>
       </div>
       <TreeView
-        selected={selectedNode?.id ?? ""}
+        selected={selectedNode?.path ?? ""}
         expanded={expandedNodes}
         onNodeToggle={handleExpandNode}
         onNodeSelect={handleSelectNode}
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpandIcon={<ChevronRightIcon />}
       >
-        {root?.children.map((node) => (
-          <TreeItem key={node.id} elementNode={node} hasParentExpanded />
+        {rootElementNode?.children.map((node) => (
+          <TreeItem
+            key={node.path}
+            elementNode={node}
+            hasParentExpanded
+            expandedNodes={expandedNodes}
+          />
         ))}
       </TreeView>
     </Container>

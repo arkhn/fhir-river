@@ -7,20 +7,21 @@ import ColumnSelect from "features/Columns/ColumnSelect";
 import { Column } from "services/api/generated/api.generated";
 
 type JoinSelectsProps = {
-  columns: [Partial<Column>, Partial<Column>];
+  leftColumn: Partial<Column>;
+  rightColumn: Partial<Column>;
   onChange?: (
     leftColumn: Partial<Column>,
     rightColumn: Partial<Column>
   ) => void;
-  onDelete?: (joinId: string) => void;
+  onDelete?: () => void;
 };
 
 const JoinSelect = ({
-  columns,
+  leftColumn,
+  rightColumn,
   onChange,
   onDelete,
 }: JoinSelectsProps): JSX.Element => {
-  const [leftColumn, rightColumn] = columns;
   const handleLeftColumnChange = (column: Partial<Column>) => {
     onChange && onChange(column, rightColumn);
   };
@@ -28,20 +29,14 @@ const JoinSelect = ({
     onChange && onChange(leftColumn, column);
   };
   const handleJoinDelete = () => {
-    leftColumn.join && onDelete && onDelete(leftColumn.join);
+    onDelete && onDelete();
   };
 
   return (
     <Grid item container xs={12} spacing={2} alignItems="center">
-      <ColumnSelect
-        pendingColumn={leftColumn}
-        onChange={handleLeftColumnChange}
-      />
+      <ColumnSelect column={leftColumn} onChange={handleLeftColumnChange} />
       <Typography>==</Typography>
-      <ColumnSelect
-        pendingColumn={rightColumn}
-        onChange={handleRightColumnChange}
-      />
+      <ColumnSelect column={rightColumn} onChange={handleRightColumnChange} />
       <IconButton onClick={handleJoinDelete}>
         <CloseIcon />
       </IconButton>

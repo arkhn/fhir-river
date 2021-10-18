@@ -20,7 +20,6 @@ import {
 const useStyles = makeStyles((theme) => ({
   button: {
     marginLeft: theme.spacing(3),
-    textTransform: "none",
     width: "fit-content",
     minWidth: 150,
   },
@@ -70,7 +69,7 @@ const SourceDrawer = (): JSX.Element => {
             fullWidth={false}
             onClick={handleDrawerClose}
           >
-            <Typography>{t("done")}</Typography>
+            {t("done")}
           </Button>
         </>
       )}

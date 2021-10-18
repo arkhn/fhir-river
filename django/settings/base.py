@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd parties
+    "drf_spectacular",
     "rest_framework",
     "corsheaders",
     "django_filters",
@@ -129,10 +130,14 @@ AUTH_USER_MODEL = "users.User"
 # Auth backends
 # https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#specifying-authentication-backends
 
-AUTHENTICATION_BACKENDS = [
-    "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
+AUTHENTICATION_BACKENDS = (
+    []
+    if get_env_bool_value("DISABLE_AUTH", False)
+    else [
+        "mozilla_django_oidc.auth.OIDCAuthenticationBackend",
+        "django.contrib.auth.backends.ModelBackend",
+    ]
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -249,8 +254,7 @@ KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_PO
 
 # API URLs
 
-PYROG_API_URL = os.environ.get("PYROG_API_URL", "pyrog-server:1000")
-FHIR_API_URL = os.environ.get("FHIR_API_URL", "fhir-api:2000")
+FHIR_API_URL = os.environ.get("FHIR_API_URL", "http://jpaltime:8080/hapi/fhir")
 
 # Prometheus
 
@@ -282,6 +286,8 @@ LOGOUT_REDIRECT_URL = os.environ.get("LOGOUT_REDIRECT_URL")
 OIDC_OP_AUTHORIZATION_ENDPOINT = os.environ.get("OIDC_OP_AUTHORIZATION_ENDPOINT")
 OIDC_OP_TOKEN_ENDPOINT = os.environ.get("OIDC_OP_TOKEN_ENDPOINT")
 OIDC_OP_USER_ENDPOINT = os.environ.get("OIDC_OP_USER_ENDPOINT")
+OIDC_OP_LOGOUT_ENDPOINT = os.environ.get("OIDC_OP_LOGOUT_ENDPOINT")
+OIDC_OP_LOGOUT_URL_METHOD = os.environ.get("OIDC_OP_LOGOUT_URL_METHOD", "utils.auth.logout")
 
 if OIDC_RP_SIGN_ALGO == "RS256":
     OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT")
@@ -301,9 +307,7 @@ if SENTRY_ENABLED:
 
 # DRF Spectacular settings
 
-if get_env_bool_value("DRF_SPECTACULAR_ENABLED", False):
-    INSTALLED_APPS += ["drf_spectacular"]
-    REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
 
 SPECTACULAR_SETTINGS = {
     "POSTPROCESSING_HOOKS": [
@@ -318,3 +322,5 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Arkhn's River API",
     "VERSION": "0.1.0",
 }
+
+DEFAULT_FHIR_API_CLASS = "common.adapters.fhir_api.HapiFhirAPI"

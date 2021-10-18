@@ -31,7 +31,7 @@ const UserAuth = (): JSX.Element | null => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const { isLoading, data: user } = useApiUserRetrieveQuery({});
+  const { isLoading, data: user } = useApiUserRetrieveQuery();
   const [oidcLogout] = useOidcLogoutMutation();
 
   const handleLogout = () => {
@@ -48,8 +48,9 @@ const UserAuth = (): JSX.Element | null => {
           onClick={handleLogout}
           color="inherit"
           startIcon={<ExitToApp className={classes.icon} />}
+          typographyColor="textSecondary"
         >
-          <Typography color="textSecondary">{t("logout")}</Typography>
+          {t("logout")}
         </Button>
       </>
     );

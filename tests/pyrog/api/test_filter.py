@@ -14,7 +14,7 @@ def test_create_filter(
     relation,
     value,
     resource,
-    column,
+    sql_input,
     status_code,
 ):
     url = reverse("filters-list")
@@ -23,11 +23,11 @@ def test_create_filter(
         "relation": relation,
         "value": value,
         "resource": resource.id,
-        "sql_column": column.id,
+        "sql_input": sql_input.id,
     }
     response = api_client.post(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_retrieve_filter(api_client, filter):
@@ -35,7 +35,7 @@ def test_retrieve_filter(api_client, filter):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
 
 
 def test_list_filters(api_client, filter_factory):
@@ -44,7 +44,7 @@ def test_list_filters(api_client, filter_factory):
 
     response = api_client.get(url)
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert len(response.data) == 3
 
 
@@ -57,7 +57,7 @@ def test_filter_filters_by_resource(api_client, filter_factory, resource_factory
 
     response = api_client.get(url, {"resource": first_resource.id})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.data
     assert {filter_data["id"] for filter_data in response.json()} == {filter.id for filter in first_resource_filters}
 
 
@@ -77,7 +77,7 @@ def test_update_filter(
             data[field] = locals()[field]
     response = api_client.patch(url, data)
 
-    assert response.status_code == status_code
+    assert response.status_code == status_code, response.data
 
 
 def test_delete_filter(api_client, filter):
@@ -85,4 +85,4 @@ def test_delete_filter(api_client, filter):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
+    assert response.status_code == 204, response.data

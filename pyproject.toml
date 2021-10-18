@@ -7,7 +7,6 @@ force_grid_wrap = 0
 include_trailing_comma = true
 indent = 4
 known_django = "django"
-known_arkhn = "fhir.resources"
 known_first_party = "common,core,extractor,pagai,pyrog,river,transformer,utils"
 known_third_party = "confluent_kafka,dotenv,rest_framework,factory,pytest,faker,pytest_factoryboy,redis"
 line_length = 119
@@ -32,7 +31,7 @@ line-length = 119
 target-version = ["py38"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "settings.base"
+DJANGO_SETTINGS_MODULE = "settings.test"
 testpaths = "tests"
 python_paths = "django"
 markers = '''
@@ -41,6 +40,7 @@ markers = '''
     kafka: mark a test as requiring kafka
     redis: mark a test as requiring redis
     pyrog: mark a test as requiring pyrog api
+    fhir_api: mark a test as requiring fhir api
     pagai: mark test that requires access to tests databases
     as_user: force authenticate the api_client fixture to the user fixure
     as_other_user: force authenticate the api_client fixture to the other_user fixture

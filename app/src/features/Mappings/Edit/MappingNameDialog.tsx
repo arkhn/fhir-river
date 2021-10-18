@@ -9,14 +9,13 @@ import {
   TextField,
   DialogActions,
   makeStyles,
-  Typography,
 } from "@material-ui/core";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { head } from "lodash";
+import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 
-import Alert from "common/components/Alert";
 import Button from "common/components/Button";
 import {
   useApiResourcesRetrieveQuery,
@@ -38,7 +37,7 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
   const classes = useStyles();
   const { t } = useTranslation();
   const [name, setName] = useState("");
-  const [alert, setAlert] = useState<string | undefined>(undefined);
+  const { enqueueSnackbar } = useSnackbar();
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
@@ -60,7 +59,6 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
     setName(mapping?.label ?? "");
   }, [mapping]);
 
-  const handleAlertClose = () => setAlert(undefined);
   const handleNameChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
@@ -81,7 +79,7 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
         const data = apiValidationErrorFromResponse<Partial<ResourceRequest>>(
           e as FetchBaseQueryError
         );
-        setAlert(head(data?.non_field_errors));
+        enqueueSnackbar(head(data?.non_field_errors), { variant: "error" });
       }
     }
   };
@@ -118,7 +116,7 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
               disableRipple
               onClick={handleClose}
             >
-              <Typography>{t("cancel")}</Typography>
+              {t("cancel")}
             </Button>
             <Button
               className={classes.button}
@@ -127,19 +125,9 @@ const MappingNameDialog = (props: DialogProps): JSX.Element => {
               onClick={handleSubmit}
               disabled={isUpdateLoading}
             >
-              {isUpdateLoading ? (
-                <CircularProgress />
-              ) : (
-                <Typography>{t("confirm")}</Typography>
-              )}
+              {isUpdateLoading ? <CircularProgress /> : t("confirm")}
             </Button>
           </DialogActions>
-          <Alert
-            severity="error"
-            open={!!alert}
-            onClose={handleAlertClose}
-            message={alert}
-          />
         </>
       )}
     </Dialog>

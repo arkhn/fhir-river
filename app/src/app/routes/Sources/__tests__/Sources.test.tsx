@@ -52,15 +52,15 @@ const source_resources = resourceFactory.buildList(
 const source_attributes = [
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0].id } }
+    { associations: { resource: source_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[0].id } }
+    { associations: { resource: source_resources[0]?.id } }
   ),
   attributeFactory.build(
     {},
-    { associations: { resource: source_resources[1].id } }
+    { associations: { resource: source_resources[1]?.id } }
   ),
 ];
 
@@ -242,8 +242,8 @@ describe("Sources page", () => {
     server.use(
       rest.get(
         "http://example.com/api/owners/",
-        (_, rest: ResponseComposition<ApiOwnersListApiResponse>, ctx) =>
-          rest.once(
+        (_, _rest: ResponseComposition<ApiOwnersListApiResponse>, ctx) =>
+          _rest.once(
             ctx.json<ApiOwnersListApiResponse>([credential_owner])
           )
       )

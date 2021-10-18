@@ -9,6 +9,12 @@ paths:
       operationId: api_attributes_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: path
         schema:
@@ -199,6 +205,14 @@ paths:
         description: Which field to use when ordering the results.
         schema:
           type: string
+      - in: query
+        name: source
+        schema:
+          type: array
+          items:
+            type: string
+        explode: true
+        style: form
       tags:
       - api
       security:
@@ -228,6 +242,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/BatchRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -286,6 +301,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/BatchRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -374,6 +390,7 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/BatchRequest'
+        required: true
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -391,11 +408,29 @@ paths:
       description: ''
       parameters:
       - in: query
-        name: input
+        name: joined_left
+        schema:
+          type: array
+          items:
+            type: string
+        explode: true
+        style: form
+      - in: query
+        name: joined_right
+        schema:
+          type: array
+          items:
+            type: string
+        explode: true
+        style: form
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
         schema:
           type: string
       - in: query
-        name: join
+        name: sql_input
         schema:
           type: string
       tags:
@@ -735,6 +770,12 @@ paths:
       operationId: api_credentials_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -894,6 +935,35 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/explore/:
+    post:
+      operationId: api_explore_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExplorationRequestRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExplorationResponse'
+          description: ''
   /api/filters/:
     get:
       operationId: api_filters_list
@@ -1067,6 +1137,12 @@ paths:
         name: attribute
         schema:
           type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -1222,177 +1298,19 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/inputs/:
-    get:
-      operationId: api_inputs_list
-      description: ''
-      parameters:
-      - in: query
-        name: input_group
-        schema:
-          type: string
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Input'
-          description: ''
-    post:
-      operationId: api_inputs_create
-      description: ''
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InputRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/InputRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/InputRequest'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Input'
-          description: ''
-  /api/inputs/{id}/:
-    get:
-      operationId: api_inputs_retrieve
-      description: ''
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        description: A unique value identifying this input.
-        required: true
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Input'
-          description: ''
-    put:
-      operationId: api_inputs_update
-      description: ''
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        description: A unique value identifying this input.
-        required: true
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InputRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/InputRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/InputRequest'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Input'
-          description: ''
-    patch:
-      operationId: api_inputs_partial_update
-      description: ''
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        description: A unique value identifying this input.
-        required: true
-      tags:
-      - api
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedInputRequest'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedInputRequest'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedInputRequest'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Input'
-          description: ''
-    delete:
-      operationId: api_inputs_destroy
-      description: ''
-      parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        description: A unique value identifying this input.
-        required: true
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
   /api/joins/:
     get:
       operationId: api_joins_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
-        name: column
+        name: sql_input
         schema:
           type: string
       tags:
@@ -1549,6 +1467,38 @@ paths:
       - {}
       responses:
         '204':
+          description: No response body
+  /api/list-owners/:
+    post:
+      operationId: api_list_owners_create
+      description: ''
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/owner-schema/{owner}/:
+    post:
+      operationId: api_owner_schema_create
+      description: ''
+      parameters:
+      - in: path
+        name: owner
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
           description: No response body
   /api/owners/:
     get:
@@ -1724,13 +1674,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/PreviewRequestRequest'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/PreviewRequestRequest'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PreviewRequest'
+              $ref: '#/components/schemas/PreviewRequestRequest'
         required: true
       security:
       - cookieAuth: []
@@ -1741,13 +1691,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Preview'
+                $ref: '#/components/schemas/PreviewResponse'
           description: ''
   /api/resources/:
     get:
       operationId: api_resources_list
       description: ''
       parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       - in: query
         name: source
         schema:
@@ -1930,6 +1886,13 @@ paths:
     get:
       operationId: api_sources_list
       description: ''
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -2107,7 +2070,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mapping'
+                $ref: '#/components/schemas/MappingWithPartialCredential'
           description: ''
   /api/sources/import/:
     post:
@@ -2138,6 +2101,346 @@ paths:
               schema:
                 $ref: '#/components/schemas/Mapping'
           description: ''
+  /api/sql-inputs/:
+    get:
+      operationId: api_sql_inputs_list
+      description: ''
+      parameters:
+      - in: query
+        name: input_group
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SQLInput'
+          description: ''
+    post:
+      operationId: api_sql_inputs_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SQLInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SQLInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SQLInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SQLInput'
+          description: ''
+  /api/sql-inputs/{id}/:
+    get:
+      operationId: api_sql_inputs_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this sql input.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SQLInput'
+          description: ''
+    put:
+      operationId: api_sql_inputs_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this sql input.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SQLInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SQLInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SQLInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SQLInput'
+          description: ''
+    patch:
+      operationId: api_sql_inputs_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this sql input.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSQLInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSQLInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSQLInputRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SQLInput'
+          description: ''
+    delete:
+      operationId: api_sql_inputs_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this sql input.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/static-inputs/:
+    get:
+      operationId: api_static_inputs_list
+      description: ''
+      parameters:
+      - in: query
+        name: input_group
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaticInput'
+          description: ''
+    post:
+      operationId: api_static_inputs_create
+      description: ''
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaticInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaticInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaticInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaticInput'
+          description: ''
+  /api/static-inputs/{id}/:
+    get:
+      operationId: api_static_inputs_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this static input.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaticInput'
+          description: ''
+    put:
+      operationId: api_static_inputs_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this static input.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaticInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaticInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaticInputRequest'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaticInput'
+          description: ''
+    patch:
+      operationId: api_static_inputs_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this static input.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaticInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaticInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaticInputRequest'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaticInput'
+          description: ''
+    delete:
+      operationId: api_static_inputs_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this static input.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
   /api/user/:
     get:
       operationId: api_user_retrieve
@@ -2154,71 +2457,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: ''
-  /pagai/explore/{resource_id}/{owner}/{table}/:
-    get:
-      operationId: pagai_explore_retrieve
-      description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: resource_id
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: table
-        schema:
-          type: string
-        required: true
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Exploration'
-          description: ''
-  /pagai/list-owners/:
-    post:
-      operationId: pagai_list_owners_create
-      description: ''
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
-  /pagai/owner-schema/{owner}/:
-    post:
-      operationId: pagai_owner_schema_create
-      description: ''
-      parameters:
-      - in: path
-        name: owner
-        schema:
-          type: string
-        required: true
-      tags:
-      - pagai
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          description: No response body
 components:
   schemas:
     ActionEnum:
@@ -2289,19 +2527,27 @@ components:
           type: string
           format: date-time
           readOnly: true
-        deleted_at:
+        canceled_at:
           type: string
           format: date-time
           readOnly: true
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
         resources:
           type: array
           items:
             type: string
       required:
+      - canceled_at
+      - completed_at
       - created_at
-      - deleted_at
       - errors
       - id
+      - resources
       - updated_at
     BatchRequest:
       type: object
@@ -2310,6 +2556,8 @@ components:
           type: array
           items:
             type: string
+      required:
+      - resources
     Column:
       type: object
       properties:
@@ -2328,12 +2576,6 @@ components:
           type: string
           format: date-time
           readOnly: true
-        join:
-          type: string
-          nullable: true
-        input:
-          type: string
-          nullable: true
         owner:
           type: string
       required:
@@ -2350,12 +2592,6 @@ components:
           type: string
         column:
           type: string
-        join:
-          type: string
-          nullable: true
-        input:
-          type: string
-          nullable: true
         owner:
           type: string
       required:
@@ -2374,15 +2610,15 @@ components:
           type: string
         relation:
           $ref: '#/components/schemas/ConditionRelationEnum'
-        column:
+        sql_input:
           type: string
         input_group:
           type: string
       required:
       - action
-      - column
       - id
       - input_group
+      - sql_input
     ConditionRelationEnum:
       enum:
       - EQ
@@ -2402,14 +2638,14 @@ components:
           type: string
         relation:
           $ref: '#/components/schemas/ConditionRelationEnum'
-        column:
+        sql_input:
           type: string
         input_group:
           type: string
       required:
       - action
-      - column
       - input_group
+      - sql_input
     Credential:
       type: object
       properties:
@@ -2492,10 +2728,6 @@ components:
           readOnly: true
         event:
           type: string
-        message:
-          type: string
-        exception:
-          type: string
         created_at:
           type: string
           format: date-time
@@ -2504,36 +2736,38 @@ components:
           type: string
           format: date-time
           readOnly: true
-        deleted_at:
-          type: string
-          format: date-time
-          readOnly: true
         batch:
           type: string
       required:
       - batch
       - created_at
-      - deleted_at
       - event
       - id
-      - message
       - updated_at
     ErrorRequest:
       type: object
       properties:
         event:
           type: string
-        message:
-          type: string
-        exception:
-          type: string
         batch:
           type: string
       required:
       - batch
       - event
-      - message
-    Exploration:
+    ExplorationRequestRequest:
+      type: object
+      properties:
+        resource_id:
+          type: string
+        owner:
+          type: string
+        table:
+          type: string
+      required:
+      - owner
+      - resource_id
+      - table
+    ExplorationResponse:
       type: object
       properties:
         fields:
@@ -2544,8 +2778,7 @@ components:
           type: array
           items:
             type: array
-            items:
-              type: string
+            items: {}
       required:
       - fields
       - rows
@@ -2561,13 +2794,13 @@ components:
           type: string
         resource:
           type: string
-        sql_column:
+        sql_input:
           type: string
       required:
       - id
       - relation
       - resource
-      - sql_column
+      - sql_input
     FilterRelationEnum:
       enum:
       - '='
@@ -2587,40 +2820,12 @@ components:
           type: string
         resource:
           type: string
-        sql_column:
+        sql_input:
           type: string
       required:
       - relation
       - resource
-      - sql_column
-    Input:
-      type: object
-      properties:
-        id:
-          type: string
-          readOnly: true
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        updated_at:
-          type: string
-          format: date-time
-          readOnly: true
-        created_at:
-          type: string
-          format: date-time
-          readOnly: true
-        input_group:
-          type: string
-      required:
-      - created_at
-      - id
-      - input_group
-      - updated_at
+      - sql_input
     InputGroup:
       type: object
       properties:
@@ -2653,20 +2858,6 @@ components:
           type: string
       required:
       - attribute
-    InputRequest:
-      type: object
-      properties:
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        input_group:
-          type: string
-      required:
-      - input_group
     Join:
       type: object
       properties:
@@ -2681,20 +2872,32 @@ components:
           type: string
           format: date-time
           readOnly: true
-        column:
+        sql_input:
+          type: string
+        left:
+          type: string
+        right:
           type: string
       required:
-      - column
       - created_at
       - id
+      - left
+      - right
+      - sql_input
       - updated_at
     JoinRequest:
       type: object
       properties:
-        column:
+        sql_input:
+          type: string
+        left:
+          type: string
+        right:
           type: string
       required:
-      - column
+      - left
+      - right
+      - sql_input
     Mapping:
       type: object
       properties:
@@ -2704,10 +2907,10 @@ components:
         resources:
           type: array
           items:
-            $ref: '#/components/schemas/_Resource'
+            $ref: '#/components/schemas/MappingResource'
           default: []
         credential:
-          $ref: '#/components/schemas/_Credential'
+          $ref: '#/components/schemas/MappingCredential'
         name:
           type: string
         version:
@@ -2720,28 +2923,310 @@ components:
           type: string
           format: date-time
           readOnly: true
-        users:
-          type: array
-          items:
-            type: string
-          readOnly: true
       required:
       - created_at
       - credential
       - id
       - name
       - updated_at
-      - users
+    MappingAttribute:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingInputGroup'
+          default: []
+      required:
+      - definition_id
+      - path
+    MappingAttributeRequest:
+      type: object
+      properties:
+        path:
+          type: string
+        slice_name:
+          type: string
+        definition_id:
+          type: string
+        input_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingInputGroupRequest'
+          default: []
+      required:
+      - definition_id
+      - path
+    MappingColumn:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+      required:
+      - column
+      - id
+      - table
+    MappingColumnRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        table:
+          type: string
+        column:
+          type: string
+      required:
+      - column
+      - id
+      - table
+    MappingCondition:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        sql_input:
+          $ref: '#/components/schemas/MappingSQLInput'
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/ConditionRelationEnum'
+      required:
+      - action
+      - sql_input
+    MappingConditionRequest:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ActionEnum'
+        sql_input:
+          $ref: '#/components/schemas/MappingSQLInputRequest'
+        value:
+          type: string
+        relation:
+          $ref: '#/components/schemas/ConditionRelationEnum'
+      required:
+      - action
+      - sql_input
+    MappingCredential:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOwner'
+          default: []
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - database
+      - host
+      - login
+      - model
+      - password
+      - port
+    MappingCredentialRequest:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOwnerRequest'
+          default: []
+        login:
+          type: string
+        password:
+          type: string
+      required:
+      - database
+      - host
+      - login
+      - model
+      - password
+      - port
+    MappingFilter:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/FilterRelationEnum'
+        value:
+          type: string
+        sql_input:
+          $ref: '#/components/schemas/MappingSQLInput'
+      required:
+      - relation
+      - sql_input
+    MappingFilterRequest:
+      type: object
+      properties:
+        relation:
+          $ref: '#/components/schemas/FilterRelationEnum'
+        value:
+          type: string
+        sql_input:
+          $ref: '#/components/schemas/MappingSQLInputRequest'
+      required:
+      - relation
+      - sql_input
+    MappingInputGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        merging_script:
+          type: string
+        static_inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingStaticInput'
+          default: []
+        sql_inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingSQLInput'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingCondition'
+          default: []
+      required:
+      - id
+    MappingInputGroupRequest:
+      type: object
+      properties:
+        merging_script:
+          type: string
+        static_inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingStaticInputRequest'
+          default: []
+        sql_inputs:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingSQLInputRequest'
+          default: []
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingConditionRequest'
+          default: []
+    MappingJoin:
+      type: object
+      properties:
+        left:
+          type: string
+        right:
+          type: string
+      required:
+      - left
+      - right
+    MappingJoinRequest:
+      type: object
+      properties:
+        left:
+          type: string
+        right:
+          type: string
+      required:
+      - left
+      - right
+    MappingOwner:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingColumn'
+          default: []
+      required:
+      - id
+      - name
+    MappingOwnerRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        columns:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingColumnRequest'
+          default: []
+      required:
+      - id
+      - name
+    MappingPartialCredential:
+      type: object
+      properties:
+        host:
+          type: string
+        port:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        database:
+          type: string
+        model:
+          $ref: '#/components/schemas/ModelEnum'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingOwner'
+          default: []
+      required:
+      - database
+      - host
+      - model
+      - port
     MappingRequest:
       type: object
       properties:
         resources:
           type: array
           items:
-            $ref: '#/components/schemas/_ResourceRequest'
+            $ref: '#/components/schemas/MappingResourceRequest'
           default: []
         credential:
-          $ref: '#/components/schemas/_CredentialRequest'
+          $ref: '#/components/schemas/MappingCredentialRequest'
         name:
           type: string
         version:
@@ -2749,6 +3234,157 @@ components:
       required:
       - credential
       - name
+    MappingResource:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        definition:
+          type: object
+          additionalProperties: {}
+        logical_reference:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingAttribute'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingFilter'
+          default: []
+      required:
+      - definition
+      - definition_id
+      - id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    MappingResourceRequest:
+      type: object
+      properties:
+        label:
+          type: string
+        primary_key_table:
+          type: string
+        primary_key_column:
+          type: string
+        definition_id:
+          type: string
+        definition:
+          type: object
+          additionalProperties: {}
+        logical_reference:
+          type: string
+        primary_key_owner:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingAttributeRequest'
+          default: []
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingFilterRequest'
+          default: []
+      required:
+      - definition
+      - definition_id
+      - logical_reference
+      - primary_key_column
+      - primary_key_owner
+      - primary_key_table
+    MappingSQLInput:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        column:
+          type: string
+          nullable: true
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingJoin'
+      required:
+      - column
+      - joins
+    MappingSQLInputRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        column:
+          type: string
+          nullable: true
+        joins:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingJoinRequest'
+      required:
+      - column
+      - joins
+    MappingStaticInput:
+      type: object
+      properties:
+        value:
+          type: string
+          nullable: true
+    MappingStaticInputRequest:
+      type: object
+      properties:
+        value:
+          type: string
+          nullable: true
+    MappingWithPartialCredential:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/MappingResource'
+          default: []
+        credential:
+          $ref: '#/components/schemas/MappingPartialCredential'
+        name:
+          type: string
+        version:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - credential
+      - id
+      - name
+      - updated_at
     ModelEnum:
       enum:
       - MSSQL
@@ -2756,6 +3392,27 @@ components:
       - ORACLE
       - SQLLITE
       type: string
+    OperationOutcomeIssue:
+      type: object
+      properties:
+        severity:
+          $ref: '#/components/schemas/SeverityEnum'
+        code:
+          type: string
+        diagnostics:
+          type: string
+        location:
+          type: array
+          items:
+            type: string
+        expression:
+          type: string
+      required:
+      - code
+      - diagnostics
+      - expression
+      - location
+      - severity
     Owner:
       type: object
       properties:
@@ -2830,12 +3487,6 @@ components:
           type: string
         column:
           type: string
-        join:
-          type: string
-          nullable: true
-        input:
-          type: string
-          nullable: true
         owner:
           type: string
     PatchedConditionRequest:
@@ -2847,7 +3498,7 @@ components:
           type: string
         relation:
           $ref: '#/components/schemas/ConditionRelationEnum'
-        column:
+        sql_input:
           type: string
         input_group:
           type: string
@@ -2879,7 +3530,7 @@ components:
           type: string
         resource:
           type: string
-        sql_column:
+        sql_input:
           type: string
     PatchedInputGroupRequest:
       type: object
@@ -2888,22 +3539,14 @@ components:
           type: string
         attribute:
           type: string
-    PatchedInputRequest:
-      type: object
-      properties:
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        input_group:
-          type: string
     PatchedJoinRequest:
       type: object
       properties:
-        column:
+        sql_input:
+          type: string
+        left:
+          type: string
+        right:
           type: string
     PatchedOwnerRequest:
       type: object
@@ -2927,6 +3570,18 @@ components:
           type: string
         primary_key_owner:
           type: string
+    PatchedSQLInputRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        input_group:
+          type: string
+          nullable: true
+        column:
+          type: string
     PatchedSourceRequest:
       type: object
       properties:
@@ -2934,7 +3589,15 @@ components:
           type: string
         version:
           type: string
-    Preview:
+    PatchedStaticInputRequest:
+      type: object
+      properties:
+        value:
+          type: string
+          nullable: true
+        input_group:
+          type: string
+    PreviewRequestRequest:
       type: object
       properties:
         resource_id:
@@ -2946,18 +3609,21 @@ components:
       required:
       - primary_key_values
       - resource_id
-    PreviewRequest:
+    PreviewResponse:
       type: object
       properties:
-        resource_id:
-          type: string
-        primary_key_values:
+        instances:
           type: array
           items:
-            type: string
+            type: object
+            additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationOutcomeIssue'
       required:
-      - primary_key_values
-      - resource_id
+      - errors
+      - instances
     Resource:
       type: object
       properties:
@@ -2972,8 +3638,13 @@ components:
           type: string
         definition_id:
           type: string
+        definition:
+          type: object
+          additionalProperties: {}
+          readOnly: true
         logical_reference:
           type: string
+          format: uuid
           readOnly: true
         updated_at:
           type: string
@@ -2989,6 +3660,7 @@ components:
           type: string
       required:
       - created_at
+      - definition
       - definition_id
       - id
       - logical_reference
@@ -3018,6 +3690,48 @@ components:
       - primary_key_owner
       - primary_key_table
       - source
+    SQLInput:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        input_group:
+          type: string
+          nullable: true
+        column:
+          type: string
+      required:
+      - column
+      - created_at
+      - id
+      - updated_at
+    SQLInputRequest:
+      type: object
+      properties:
+        script:
+          type: string
+        concept_map_id:
+          type: string
+        input_group:
+          type: string
+          nullable: true
+        column:
+          type: string
+      required:
+      - column
     Scripts:
       type: object
       properties:
@@ -3031,6 +3745,13 @@ components:
       - category
       - description
       - name
+    SeverityEnum:
+      enum:
+      - fatal
+      - error
+      - warning
+      - information
+      type: string
     Source:
       type: object
       properties:
@@ -3069,6 +3790,40 @@ components:
           type: string
       required:
       - name
+    StaticInput:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        value:
+          type: string
+          nullable: true
+        input_group:
+          type: string
+      required:
+      - created_at
+      - id
+      - input_group
+      - updated_at
+    StaticInputRequest:
+      type: object
+      properties:
+        value:
+          type: string
+          nullable: true
+        input_group:
+          type: string
+      required:
+      - input_group
     User:
       type: object
       properties:
@@ -3089,350 +3844,6 @@ components:
       - email
       - id
       - username
-    _Attribute:
-      type: object
-      properties:
-        path:
-          type: string
-        slice_name:
-          type: string
-        definition_id:
-          type: string
-        input_groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/_InputGroup'
-          default: []
-      required:
-      - definition_id
-      - path
-    _AttributeRequest:
-      type: object
-      properties:
-        path:
-          type: string
-        slice_name:
-          type: string
-        definition_id:
-          type: string
-        input_groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/_InputGroupRequest'
-          default: []
-      required:
-      - definition_id
-      - path
-    _Column:
-      type: object
-      properties:
-        id:
-          type: string
-        table:
-          type: string
-        column:
-          type: string
-        joins:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Join'
-          default: []
-      required:
-      - column
-      - id
-      - table
-    _ColumnRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        table:
-          type: string
-        column:
-          type: string
-        joins:
-          type: array
-          items:
-            $ref: '#/components/schemas/_JoinRequest'
-          default: []
-      required:
-      - column
-      - id
-      - table
-    _Condition:
-      type: object
-      properties:
-        action:
-          $ref: '#/components/schemas/ActionEnum'
-        column:
-          type: string
-        value:
-          type: string
-        relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
-      required:
-      - action
-      - column
-    _ConditionRequest:
-      type: object
-      properties:
-        action:
-          $ref: '#/components/schemas/ActionEnum'
-        column:
-          type: string
-        value:
-          type: string
-        relation:
-          $ref: '#/components/schemas/ConditionRelationEnum'
-      required:
-      - action
-      - column
-    _Credential:
-      type: object
-      properties:
-        host:
-          type: string
-        port:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-        database:
-          type: string
-        model:
-          $ref: '#/components/schemas/ModelEnum'
-        owners:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Owner'
-          default: []
-      required:
-      - database
-      - host
-      - model
-      - port
-    _CredentialRequest:
-      type: object
-      properties:
-        host:
-          type: string
-        port:
-          type: integer
-          maximum: 2147483647
-          minimum: -2147483648
-        database:
-          type: string
-        model:
-          $ref: '#/components/schemas/ModelEnum'
-        owners:
-          type: array
-          items:
-            $ref: '#/components/schemas/_OwnerRequest'
-          default: []
-      required:
-      - database
-      - host
-      - model
-      - port
-    _Filter:
-      type: object
-      properties:
-        relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
-        value:
-          type: string
-        sql_column:
-          type: string
-      required:
-      - relation
-      - sql_column
-    _FilterRequest:
-      type: object
-      properties:
-        relation:
-          $ref: '#/components/schemas/FilterRelationEnum'
-        value:
-          type: string
-        sql_column:
-          type: string
-      required:
-      - relation
-      - sql_column
-    _Input:
-      type: object
-      properties:
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        column:
-          type: string
-          nullable: true
-      required:
-      - column
-    _InputGroup:
-      type: object
-      properties:
-        merging_script:
-          type: string
-        inputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Input'
-          default: []
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Condition'
-          default: []
-    _InputGroupRequest:
-      type: object
-      properties:
-        merging_script:
-          type: string
-        inputs:
-          type: array
-          items:
-            $ref: '#/components/schemas/_InputRequest'
-          default: []
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/_ConditionRequest'
-          default: []
-    _InputRequest:
-      type: object
-      properties:
-        script:
-          type: string
-        concept_map_id:
-          type: string
-        static_value:
-          type: string
-          nullable: true
-        column:
-          type: string
-          nullable: true
-      required:
-      - column
-    _Join:
-      type: object
-      properties:
-        columns:
-          type: array
-          items:
-            type: string
-      required:
-      - columns
-    _JoinRequest:
-      type: object
-      properties:
-        columns:
-          type: array
-          items:
-            type: string
-      required:
-      - columns
-    _Owner:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        schema:
-          type: object
-          additionalProperties: {}
-          nullable: true
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Column'
-          default: []
-      required:
-      - id
-      - name
-    _OwnerRequest:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        schema:
-          type: object
-          additionalProperties: {}
-          nullable: true
-        columns:
-          type: array
-          items:
-            $ref: '#/components/schemas/_ColumnRequest'
-          default: []
-      required:
-      - id
-      - name
-    _Resource:
-      type: object
-      properties:
-        label:
-          type: string
-        primary_key_table:
-          type: string
-        primary_key_column:
-          type: string
-        definition_id:
-          type: string
-        logical_reference:
-          type: string
-          readOnly: true
-        primary_key_owner:
-          type: string
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Attribute'
-          default: []
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/_Filter'
-          default: []
-      required:
-      - definition_id
-      - logical_reference
-      - primary_key_column
-      - primary_key_owner
-      - primary_key_table
-    _ResourceRequest:
-      type: object
-      properties:
-        label:
-          type: string
-        primary_key_table:
-          type: string
-        primary_key_column:
-          type: string
-        definition_id:
-          type: string
-        primary_key_owner:
-          type: string
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/_AttributeRequest'
-          default: []
-        filters:
-          type: array
-          items:
-            $ref: '#/components/schemas/_FilterRequest'
-          default: []
-      required:
-      - definition_id
-      - primary_key_column
-      - primary_key_owner
-      - primary_key_table
   securitySchemes:
     basicAuth:
       type: http

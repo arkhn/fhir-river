@@ -8,7 +8,6 @@ import {
   TextField,
   DialogActions,
   makeStyles,
-  Typography,
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
@@ -75,7 +74,7 @@ const SliceNameDialog = ({
           onClick={handleClose}
           color="inherit"
         >
-          <Typography>{t("cancel")}</Typography>
+          {t("cancel")}
         </Button>
         <Button
           className={classes.button}
@@ -83,7 +82,7 @@ const SliceNameDialog = ({
           variant="contained"
           onClick={handleSubmit}
         >
-          <Typography>{t("confirm")}</Typography>
+          {t("confirm")}
         </Button>
       </DialogActions>
     </Dialog>

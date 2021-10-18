@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { makeStyles } from "@material-ui/core";
 import { TreeItem as MuiTreeItem } from "@material-ui/lab";
@@ -12,6 +12,7 @@ type TreeItemProps = {
   elementNode: ElementNode;
   isArrayItem?: boolean;
   hasParentExpanded?: boolean;
+  expandedNodes: string[];
 };
 
 const useStyle = makeStyles((theme) => ({
@@ -39,29 +40,38 @@ const TreeItem = ({
   elementNode,
   isArrayItem,
   hasParentExpanded,
+  expandedNodes,
 }: TreeItemProps): JSX.Element => {
   const classes = useStyle();
-
   const isNodeHidden =
     elementNode.type === "Extension" &&
     elementNode.isArray &&
     elementNode.children.length === 0;
-  const [hasExpanded, setHasExpanded] = useState(false);
-  const isPrimitive = elementNode.kind === "primitive";
+  const [hasExpanded, setHasExpanded] = useState(
+    expandedNodes.includes(elementNode.path)
+  );
   const isComplex = elementNode.kind === "complex";
+  const hasToFetchNodeDefinition =
+    isComplex &&
+    hasParentExpanded &&
+    !elementNode.isArray &&
+    elementNode.definitionNode.childrenDefinitions.length === 0;
   const { createItem, deleteItem, addExtension } = useFhirResourceTreeData(
     {
       definitionId: elementNode.type ?? "",
       node: elementNode,
     },
     {
-      skip:
-        !isComplex ||
-        !hasParentExpanded ||
-        elementNode.isArray ||
-        elementNode.type === "BackboneElement",
+      skip: !hasToFetchNodeDefinition,
     }
   );
+
+  // Set hasExpanded to true is current node path is in expandedNodes path array
+  useEffect(() => {
+    if (expandedNodes.includes(elementNode.path) && !hasExpanded) {
+      setHasExpanded(true);
+    }
+  }, [elementNode.path, expandedNodes, hasExpanded]);
 
   const handleIconClick = () => {
     setHasExpanded(true);
@@ -72,7 +82,7 @@ const TreeItem = ({
 
   return (
     <MuiTreeItem
-      nodeId={elementNode.id}
+      nodeId={elementNode.path}
       className={clsx(classes.root, { [classes.hidden]: isNodeHidden })}
       label={
         <TreeItemLabel
@@ -86,16 +96,16 @@ const TreeItem = ({
       onIconClick={handleIconClick}
       onLabelClick={handleLabelClick}
     >
-      {elementNode.children.length > 0
-        ? elementNode.children.map((node) => (
-            <TreeItem
-              key={node.id}
-              elementNode={node}
-              isArrayItem={elementNode.isArray}
-              hasParentExpanded={hasExpanded}
-            />
-          ))
-        : !isPrimitive && !elementNode.isArray && <></>}
+      {elementNode.children.length > 0 &&
+        elementNode.children.map((childElementNode) => (
+          <TreeItem
+            key={childElementNode.path}
+            elementNode={childElementNode}
+            isArrayItem={elementNode.isArray}
+            hasParentExpanded={hasExpanded}
+            expandedNodes={expandedNodes}
+          />
+        ))}
     </MuiTreeItem>
   );
 };

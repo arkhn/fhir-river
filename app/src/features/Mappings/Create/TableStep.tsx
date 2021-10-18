@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Container, Grid, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/AddCircleOutline";
 import { useTranslation } from "react-i18next";
 
@@ -13,25 +13,11 @@ import type { Column, Resource } from "services/api/generated/api.generated";
 import FilterAddButton from "../../Filters/FilterAddButton";
 import { resourceUpdated } from "../resourceSlice";
 
-const useStyles = makeStyles((theme) => ({
-  button: {
-    textTransform: "none",
-  },
-  icon: {
-    paddingRight: theme.spacing(1),
-    fill: theme.palette.text.disabled,
-  },
-  inputSelected: {
-    fontWeight: 500,
-  },
-}));
-
 type TableStepProps = {
   mapping: Partial<Resource>;
 };
 
 const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
-  const classes = useStyles();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
@@ -61,10 +47,7 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
     <Container maxWidth="xl">
       <Grid container direction="column" spacing={2}>
         <Grid item container spacing={2}>
-          <ColumnSelect
-            pendingColumn={mappingColumn}
-            onChange={handleColumnChange}
-          />
+          <ColumnSelect column={mappingColumn} onChange={handleColumnChange} />
         </Grid>
         {filters && filters.length > 0 && (
           <Grid item container spacing={1} direction="column">
@@ -80,7 +63,6 @@ const TableStep = ({ mapping }: TableStepProps): JSX.Element => {
         )}
         <Grid item>
           <FilterAddButton
-            className={classes.button}
             startIcon={<AddIcon />}
             variant="outlined"
             mapping={mapping}

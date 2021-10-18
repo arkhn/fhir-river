@@ -2,6 +2,7 @@ import {
   IBundle,
   IStructureDefinition,
   IValueSet,
+  IConceptMap,
 } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Required } from "utility-types";
 
@@ -27,7 +28,8 @@ const tagTypes = [
   "StructureDefinition",
   "ValueSets",
   "InputGroups",
-  "Inputs",
+  "StaticInputs",
+  "SQLInputs",
   "Conditions",
   "Batches",
 ];
@@ -40,6 +42,13 @@ export const api = generatedApi
           url: `/oidc/logout/`,
           method: "POST",
         }),
+      }),
+      apiConceptMapsList: build.query<IConceptMap[], { ids?: string[] }>({
+        query: (queryArg) => ({
+          url: `/api/fhir/ConceptMap?_id=${queryArg.ids?.join(",") ?? ""}`,
+        }),
+        transformResponse: (response: IBundle) =>
+          response.entry?.map(({ resource }) => resource as IConceptMap) || [],
       }),
       apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
         query: (queryArg) => ({
@@ -120,6 +129,9 @@ export const api = generatedApi
         providesTags: providesOne("Columns"),
       },
       apiColumnsUpdate: {
+        invalidatesTags: invalidatesOne("Columns"),
+      },
+      apiColumnsPartialUpdate: {
         invalidatesTags: invalidatesOne("Columns"),
       },
       apiColumnsDestroy: {
@@ -233,6 +245,9 @@ export const api = generatedApi
       apiJoinsUpdate: {
         invalidatesTags: invalidatesOne("Joins"),
       },
+      apiJoinsPartialUpdate: {
+        invalidatesTags: invalidatesOne("Joins"),
+      },
       apiJoinsDestroy: {
         invalidatesTags: invalidatesOne("Joins"),
       },
@@ -258,19 +273,40 @@ export const api = generatedApi
         invalidatesTags: invalidatesOne("InputGroups"),
       },
       /**
-       * Inputs
+       * StaticInputs
        */
-      apiInputsList: {
-        providesTags: providesList("Inputs"),
+      apiStaticInputsList: {
+        providesTags: providesList("StaticInputs"),
       },
-      apiInputsCreate: {
-        invalidatesTags: invalidatesList("Inputs"),
+      apiStaticInputsCreate: {
+        invalidatesTags: invalidatesList("StaticInputs"),
       },
-      apiInputsDestroy: {
-        invalidatesTags: invalidatesOne("Inputs"),
+      apiStaticInputsDestroy: {
+        invalidatesTags: invalidatesOne("StaticInputs"),
       },
-      apiInputsUpdate: {
-        invalidatesTags: invalidatesOne("Inputs"),
+      apiStaticInputsUpdate: {
+        invalidatesTags: invalidatesOne("StaticInputs"),
+      },
+      /**
+       * SQLInputs
+       */
+      apiSqlInputsList: {
+        providesTags: providesList("SQLInputs"),
+      },
+      apiSqlInputsRetrieve: {
+        providesTags: providesOne("SQLInputs"),
+      },
+      apiSqlInputsCreate: {
+        invalidatesTags: invalidatesList("SQLInputs"),
+      },
+      apiSqlInputsDestroy: {
+        invalidatesTags: invalidatesOne("SQLInputs"),
+      },
+      apiSqlInputsUpdate: {
+        invalidatesTags: invalidatesOne("SQLInputs"),
+      },
+      apiSqlInputsPartialUpdate: {
+        invalidatesTags: invalidatesOne("SQLInputs"),
       },
       /**
        * Conditions
@@ -282,6 +318,9 @@ export const api = generatedApi
         invalidatesTags: invalidatesList("Conditions"),
       },
       apiConditionsUpdate: {
+        invalidatesTags: invalidatesOne("Conditions"),
+      },
+      apiConditionsPartialUpdate: {
         invalidatesTags: invalidatesOne("Conditions"),
       },
       apiConditionsDestroy: {
@@ -315,6 +354,7 @@ export const {
   useApiColumnsListQuery,
   useApiColumnsRetrieveQuery,
   useApiColumnsUpdateMutation,
+  useApiColumnsPartialUpdateMutation,
   useApiColumnsDestroyMutation,
   // Sources
   useApiSourcesListQuery,
@@ -323,6 +363,7 @@ export const {
   useApiSourcesUpdateMutation,
   useApiSourcesDestroyMutation,
   useApiSourcesImportCreateMutation,
+  useApiSourcesExportRetrieveQuery,
   // Resources
   useApiResourcesListQuery,
   useApiResourcesCreateMutation,
@@ -352,29 +393,40 @@ export const {
   useApiJoinsCreateMutation,
   useApiJoinsListQuery,
   useApiJoinsUpdateMutation,
+  useApiJoinsPartialUpdateMutation,
   useApiJoinsDestroyMutation,
   // ValueSets
   useApiValueSetsRetrieveQuery,
+  // ConceptMaps
+  useApiConceptMapsListQuery,
   // InputGroups
   useApiInputGroupsListQuery,
   useApiInputGroupsCreateMutation,
   useApiInputGroupsDestroyMutation,
   useApiInputGroupsUpdateMutation,
-  // Inputs
-  useApiInputsListQuery,
-  useApiInputsCreateMutation,
-  useApiInputsDestroyMutation,
-  useApiInputsUpdateMutation,
+  // StaticInputs
+  useApiStaticInputsListQuery,
+  useApiStaticInputsCreateMutation,
+  useApiStaticInputsDestroyMutation,
+  useApiStaticInputsUpdateMutation,
+  // SQLInputs
+  useApiSqlInputsListQuery,
+  useApiSqlInputsRetrieveQuery,
+  useApiSqlInputsCreateMutation,
+  useApiSqlInputsDestroyMutation,
+  useApiSqlInputsUpdateMutation,
+  useApiSqlInputsPartialUpdateMutation,
   // Conditions
   useApiConditionsListQuery,
   useApiConditionsCreateMutation,
   useApiConditionsUpdateMutation,
   useApiConditionsDestroyMutation,
+  useApiConditionsPartialUpdateMutation,
   // Batches
   useApiBatchesCreateMutation,
   useApiBatchesListQuery,
   useApiBatchesDestroyMutation,
   // Pagai
-  usePagaiExploreRetrieveQuery,
+  useApiExploreCreateMutation,
   useApiPreviewCreateMutation,
 } = api;

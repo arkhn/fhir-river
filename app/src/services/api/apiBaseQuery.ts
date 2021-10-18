@@ -6,7 +6,6 @@ import { API_URL, CSRF_COOKIE_NAME, OIDC_LOGIN_URL } from "../../constants";
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
   credentials: "include",
-  redirect: "manual",
   prepareHeaders: (headers) => {
     headers.set("X-Requested-With", "XMLHttpRequest");
     const token = Cookies.get(CSRF_COOKIE_NAME || "pyrog_csrftoken");

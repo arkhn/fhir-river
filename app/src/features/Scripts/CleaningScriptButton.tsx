@@ -3,9 +3,7 @@ import React, { useState } from "react";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
-  Button,
   makeStyles,
-  Typography,
   CircularProgress,
   Menu,
   MenuItem,
@@ -13,6 +11,7 @@ import {
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import {
   Scripts,
   useApiScriptsListQuery,
@@ -26,9 +25,6 @@ const useStyles = makeStyles((theme) => ({
   },
   iconSelected: {
     fill: theme.palette.primary.main,
-  },
-  button: {
-    textTransform: "none",
   },
   iconButton: {
     "& > span > span": {
@@ -64,9 +60,10 @@ const CleaningScriptButton = ({
   const isInputScriptSelected = scriptName !== undefined && scriptName !== "";
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { data: scripts, isLoading: isScriptsLoading } = useApiScriptsListQuery(
-    {}
-  );
+  const {
+    data: scripts,
+    isLoading: isScriptsLoading,
+  } = useApiScriptsListQuery();
 
   const handleMenuToggle = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,8 +81,6 @@ const CleaningScriptButton = ({
   return (
     <>
       <Button
-        size="small"
-        className={classes.button}
         onClick={handleMenuToggle}
         color={isInputScriptSelected ? "primary" : "default"}
         startIcon={
@@ -97,9 +92,7 @@ const CleaningScriptButton = ({
           />
         }
       >
-        <Typography>
-          {isInputScriptSelected ? scriptName : t("applyScript")}
-        </Typography>
+        {isInputScriptSelected ? scriptName : t("applyScript")}
       </Button>
       <Menu
         id="script-menu"

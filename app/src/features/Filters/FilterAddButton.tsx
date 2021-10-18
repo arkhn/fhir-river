@@ -1,11 +1,13 @@
 import React from "react";
 
-import { Button, ButtonProps, Typography } from "@material-ui/core";
+import { ButtonProps } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { v4 as uuid } from "uuid";
 
 import { useAppDispatch } from "app/store";
+import Button from "common/components/Button";
 import { columnAdded } from "features/Columns/columnSlice";
+import { sqlInputAdded } from "features/Inputs/sqlInputSlice";
 import { Resource } from "services/api/generated/api.generated";
 
 import { filterAdded } from "./filterSlice";
@@ -21,19 +23,21 @@ const FilterAddButton = ({
 
   const handleFilterAdd = () => {
     const columnId = uuid();
+    const sqlInputId = uuid();
     dispatch(columnAdded({ id: columnId }));
+    dispatch(sqlInputAdded({ id: sqlInputId, column: columnId }));
     dispatch(
       filterAdded({
         id: uuid(),
         resource: mapping.id,
-        sql_column: columnId,
+        sql_input: sqlInputId,
       })
     );
   };
 
   return (
     <Button {...props} onClick={handleFilterAdd}>
-      <Typography>{t("addFilter")}</Typography>
+      {t("addFilter")}
     </Button>
   );
 };

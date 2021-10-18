@@ -26,6 +26,9 @@ class Script:
     def apply(self, data_columns, static_inputs: List[str], attr_path, primary_key):
         raise NotImplementedError
 
+    def __repr__(self):
+        return f"<Script: {self.name}>"
+
 
 class MergingScript(Script):
     def apply(self, data_columns, static_inputs: List[str], attr_path, primary_key):
@@ -44,7 +47,7 @@ class CleaningScript(Script):
         try:
             return [self.func(val) for val in data_column]
         except Exception as e:
-            logger.exception(f"{self.script.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
+            logger.exception(f"{self.name}: Error cleaning {col_name} (at id = {primary_key}): {e}")
             return data_column
 
 

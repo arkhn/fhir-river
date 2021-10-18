@@ -1,26 +1,40 @@
+import datetime
+
 import pytest
 
-from river.adapters.event_publisher import FakeEventPublisher
-from river.adapters.mappings import FakeMappingsRepository
+from river.adapters.event_publisher import InMemoryEventPublisher
 from river.common.analyzer import Analyzer
-from river.domain.events import ExtractedRecord, TransformedRecord
+from river.domain.events import ExtractedRecord
 from river.transformer.reference_binder import ReferenceBinder
 from river.transformer.service import extracted_record_handler
 from river.transformer.transformer import Transformer
+from syrupy.filters import paths
 
 pytestmark = pytest.mark.django_db
 
 
-def test_extracted_resource_handler(batch, users_to_patients_mapping):
-    resource_id = users_to_patients_mapping["id"]
+def test_extracted_resource_handler(batch_factory, snapshot):
+    # FIXME: use a dedicated fixture for the patient mapping
+    # instead of the first resource of mimic mappings.
+    # Patient - feat_6_join
+    resource_id = "cktlnp0ji006e0mmzat7dwb98"
+
+    batch = batch_factory.create(id="test-batch-id")
     event = ExtractedRecord(
         batch_id=batch.id,
         resource_type="",
         resource_id=resource_id,
-        record={"users_user_email_b77906f9": "didier@chloroquine.org"},
+        record={
+            "patients_row_id_ba3a4e99": [31789],
+            "patients_subject_id_a9fb9667": ["didier@chloroquine.org"],
+            "patients_gender_8035bbd1": ["F"],
+            "patients_dob_f873eb32": [datetime.datetime(2057, 11, 15, 0, 0)],
+            "patients_dod_9fd82e01": [datetime.datetime(2114, 2, 20, 0, 0)],
+            "admissions_tal_status_63a5ec83": ["SINGLE", None],
+            "admissions_language_d00ed22f": ["RUSS", "ENGL"],
+        },
     )
-    publisher = FakeEventPublisher()
-    mappings_repo = FakeMappingsRepository({f"{batch.id}:{resource_id}": users_to_patients_mapping})
+    publisher = InMemoryEventPublisher()
     analyzer = Analyzer()
     transformer = Transformer()
     binder = ReferenceBinder()
@@ -31,27 +45,7 @@ def test_extracted_resource_handler(batch, users_to_patients_mapping):
         analyzer=analyzer,
         transformer=transformer,
         binder=binder,
-        mappings_repo=mappings_repo,
     )
 
     assert f"transform.{batch.id}" in publisher._events
-    event = publisher._events[f"transform.{batch.id}"][0]
-    assert publisher._events[f"transform.{batch.id}"] == [
-        TransformedRecord(
-            batch_id=batch.id,
-            resource_id=resource_id,
-            fhir_object={
-                "active": True,
-                "id": "3c3c2451-68e2-5aab-8b49-2f278f7108da",
-                "resourceType": "Patient",
-                "meta": {
-                    # hacky. The field should be properply ignore in comparison.
-                    "lastUpdated": event.fhir_object["meta"]["lastUpdated"],
-                    "tag": [
-                        {"system": "http://terminology.arkhn.org/CodeSystem/source", "code": "source_001"},
-                        {"system": "http://terminology.arkhn.org/CodeSystem/resource", "code": "resource_001"},
-                    ],
-                },
-            },
-        )
-    ]
+    assert publisher._events[f"transform.{batch.id}"][0].fhir_object == snapshot(exclude=paths("meta.lastUpdated"))

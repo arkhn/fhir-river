@@ -1,41 +1,55 @@
-from rest_framework import filters, generics, pagination, response, status, viewsets
+from rest_framework import filters as drf_filters
+from rest_framework import generics, pagination, response, status, viewsets
 from rest_framework.decorators import action
 
 from common.scripts import ScriptsRepository
-from river import models
+from django_filters import rest_framework as django_filters
+from drf_spectacular.utils import extend_schema
+from pyrog import models as pyrog_models
+from pyrog.api.serializers.mapping import MappingSerializer
+from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
-from river.adapters.mappings import RedisMappingsRepository
-from river.adapters.pyrog_client import APIPyrogClient
 from river.adapters.topics import KafkaTopicsManager
-from river.api import serializers
+from river.api import filters
+from river.api.serializers import serializers
+from river.common.mapping.concept_maps import dereference_concept_map
 from river.services import abort, batch, preview
 
 
 class BatchViewSet(viewsets.ModelViewSet):
-    queryset = models.Batch.objects.all()
+    queryset = river_models.Batch.objects.all()
     serializer_class = serializers.BatchSerializer
     pagination_class = pagination.LimitOffsetPagination
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [drf_filters.OrderingFilter, django_filters.DjangoFilterBackend]
+    filterset_class = filters.BatchFilterSet
     ordering_fields = ["created_at"]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        batch_instance = serializer.save()
 
-        data = serializer.validated_data
-        resource_ids = data["resources"]
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
+        resources = serializer.validated_data["resources"]
+
+        # Store serialized mapping
+        # FIXME we consider that all the resources come from the same Source
+        resource = next(iter(resources))
+        source = pyrog_models.Source.objects.get(id=resource.source.id)
+        mappings = MappingSerializer(source).data
+
+        auth_token = self.request.session.get("oidc_access_token")
+        for mapping in mappings["resources"]:
+            dereference_concept_map(mapping, auth_token)
+
+        serializer.validated_data["mappings"] = mappings
+
+        batch_instance = serializer.save()
 
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
-        pyrog_client = APIPyrogClient(authorization_header)
-        mappings_repo = RedisMappingsRepository()
 
-        batch(batch_instance, resource_ids, topics_manager, event_publisher, pyrog_client, mappings_repo)
+        batch(batch_instance.id, resources, topics_manager, event_publisher)
 
-        headers = self.get_success_headers(serializer.data)
-        return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
         batch_instance = self.get_object()
@@ -50,26 +64,29 @@ class BatchViewSet(viewsets.ModelViewSet):
         raise NotImplementedError
 
 
-class PreviewEndpoint(generics.CreateAPIView):
-    serializer_class = serializers.PreviewSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = serializers.PreviewSerializer(data=request.data)
+@extend_schema(request=serializers.PreviewRequestSerializer, responses={"200": serializers.PreviewResponseSerializer})
+class PreviewEndpoint(generics.GenericAPIView):
+    def post(self, request, *args, **kwargs):
+        serializer = serializers.PreviewRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        headers = self.get_success_headers(serializer.data)
 
         data = serializer.validated_data
         resource_id = data["resource_id"]
+
+        # FIXME we consider that all the resources come from the same Source
+        resource = pyrog_models.Resource.objects.get(id=resource_id)
+        source = pyrog_models.Source.objects.get(id=resource.source.id)
+        mappings = MappingSerializer(source).data
+
+        auth_token = self.request.session.get("oidc_access_token")
+        for mapping in mappings["resources"]:
+            dereference_concept_map(mapping, auth_token)
+
         primary_key_values = data["primary_key_values"]
-        authorization_header = request.META.get("HTTP_AUTHORIZATION")
 
-        pyrog_client = APIPyrogClient(authorization_header)
+        documents, errors = preview(mappings, resource_id, primary_key_values, auth_token)
 
-        documents, errors = preview(resource_id, primary_key_values, pyrog_client)
-
-        return response.Response(
-            {"instances": documents, "errors": errors}, status=status.HTTP_201_CREATED, headers=headers
-        )
+        return response.Response({"instances": documents, "errors": errors}, status=status.HTTP_200_OK)
 
 
 class ScriptsEndpoint(generics.ListAPIView):

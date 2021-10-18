@@ -2,31 +2,20 @@ import React from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Container, Grid, makeStyles } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router";
 
 import Button from "common/components/Button";
 import MappingsTable from "features/Mappings/MappingsTable";
 import MappingsToolbar from "features/Mappings/MappingsToolbar";
-import NavigationBreadcrumbs from "features/NavigationBreadcrumbs/NavigationBreadcrumbs";
+import Navbar from "features/Navbar/Navbar";
 import CredentialEditButton from "features/Sources/CredentialEditButton";
 import SourceDrawer from "features/Sources/SourceDrawer";
 
 import SourceExportButton from "./SourceExportButton";
 
 const useStyles = makeStyles((theme) => ({
-  header: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: theme.mixins.breadcrumbBar.height,
-    padding: theme.spacing(0, 5),
-  },
-  button: {
-    margin: theme.spacing(0.5),
-  },
   container: {
     padding: theme.spacing(0, 5),
   },
@@ -43,36 +32,37 @@ const SourceMappings = (): JSX.Element => {
   };
 
   return (
-    <>
-      <Container maxWidth="xl">
-        <div className={classes.header}>
-          <NavigationBreadcrumbs />
-          <Grid>
+    <Container maxWidth="xl">
+      <Navbar>
+        <Grid container spacing={1} justify="flex-end">
+          <Grid item>
             <CredentialEditButton
               variant="contained"
-              className={classes.button}
               color="secondary"
               startIcon={<Icon icon={IconNames.COG} />}
             />
+          </Grid>
+          <Grid item>
             <SourceExportButton />
+          </Grid>
+          <Grid item>
             <Button
               variant="contained"
               color="secondary"
-              className={classes.button}
               startIcon={<Icon icon={IconNames.FLAME} />}
               onClick={handleLaunchClick}
             >
-              <Typography>{t("launchETL")}</Typography>
+              {t("ETLDashboard")}
             </Button>
           </Grid>
-        </div>
-        <Container maxWidth="xl" className={classes.container}>
-          <MappingsToolbar />
-          <MappingsTable />
-        </Container>
+        </Grid>
+      </Navbar>
+      <Container maxWidth="xl" className={classes.container}>
+        <MappingsToolbar />
+        <MappingsTable />
       </Container>
       <SourceDrawer />
-    </>
+    </Container>
   );
 };
 

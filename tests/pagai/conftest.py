@@ -1,13 +1,24 @@
+import inspect
 import os.path as osp
 
 import pytest
+from factory import Factory
+from pytest_factoryboy import register
 
 import pandas as pd
 from river.common.database_connection.db_connection import DB_DRIVERS, URL_SUFFIXES
-from sqlalchemy import MetaData, Table, create_engine
+from sqlalchemy import MetaData, Table
 from sqlalchemy.exc import NoSuchTableError
 
+from . import factories
 from .settings import DATABASES
+
+register(factories.SourceFactory)
+register(factories.SourceUserFactory)
+register(factories.ResourceFactory)
+register(factories.CredentialFactory)
+register(factories.OwnerFactory)
+register(factories.UserFactory)
 
 
 def get_test_data_path(filename: str) -> str:
@@ -33,20 +44,10 @@ def table_exists(sql_engine, table_name):
         return False, None
 
 
-@pytest.fixture(scope="session", params=list(DATABASES.keys()))
+@pytest.fixture(params=list(DATABASES.keys()))
 def db_config(request):
     db_driver = request.param
-    db_config = DATABASES[db_driver]
-
-    sql_engine = create_engine(get_sql_url(db_driver, db_config))
-
-    # Load (or reload) test data into db.
-    load_table(sql_engine, "patients", "patients.csv")
-    load_table(sql_engine, "UPPERCASE", "patients-uppercase.csv")
-    load_table(sql_engine, "CaseSensitive", "patients-case-sensitive.csv")
-
-    db_config["model"] = db_driver
-    return db_config
+    return DATABASES[db_driver]
 
 
 def load_table(sql_engine, table_name, data_file):
@@ -60,3 +61,17 @@ def load_table(sql_engine, table_name, data_file):
         print("dropped existing test table:", table_name)
 
     data.to_sql(name=table_name, con=sql_engine)
+
+
+def get_factories():
+    return [
+        factory
+        for (_, factory) in inspect.getmembers(factories, lambda o: inspect.isclass(o) and issubclass(o, Factory))
+    ]
+
+
+@pytest.fixture
+def reset_factories_sequences():
+    """Reset all sequences for predictable values."""
+    for factory in get_factories():
+        factory.reset_sequence()

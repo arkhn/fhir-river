@@ -11,6 +11,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/attributes/`,
         params: {
+          ordering: queryArg.ordering,
           path: queryArg.path,
           resource: queryArg.resource,
           source: queryArg.source,
@@ -72,6 +73,7 @@ export const api = createApi({
           limit: queryArg.limit,
           offset: queryArg.offset,
           ordering: queryArg.ordering,
+          source: queryArg.source,
         },
       }),
     }),
@@ -136,7 +138,12 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/columns/`,
-        params: { input: queryArg.input, join: queryArg.join },
+        params: {
+          joined_left: queryArg.joinedLeft,
+          joined_right: queryArg.joinedRight,
+          ordering: queryArg.ordering,
+          sql_input: queryArg.sqlInput,
+        },
       }),
     }),
     apiColumnsCreate: build.mutation<
@@ -250,7 +257,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/credentials/`,
-        params: { source: queryArg.source },
+        params: { ordering: queryArg.ordering, source: queryArg.source },
       }),
     }),
     apiCredentialsCreate: build.mutation<
@@ -296,6 +303,16 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/credentials/${queryArg.id}/`,
         method: "DELETE",
+      }),
+    }),
+    apiExploreCreate: build.mutation<
+      ApiExploreCreateApiResponse,
+      ApiExploreCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/explore/`,
+        method: "POST",
+        body: queryArg.explorationRequestRequest,
       }),
     }),
     apiFiltersList: build.query<
@@ -358,7 +375,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/input-groups/`,
-        params: { attribute: queryArg.attribute },
+        params: { attribute: queryArg.attribute, ordering: queryArg.ordering },
       }),
     }),
     apiInputGroupsCreate: build.mutation<
@@ -406,61 +423,10 @@ export const api = createApi({
         method: "DELETE",
       }),
     }),
-    apiInputsList: build.query<ApiInputsListApiResponse, ApiInputsListApiArg>({
-      query: (queryArg) => ({
-        url: `/api/inputs/`,
-        params: { input_group: queryArg.inputGroup },
-      }),
-    }),
-    apiInputsCreate: build.mutation<
-      ApiInputsCreateApiResponse,
-      ApiInputsCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/`,
-        method: "POST",
-        body: queryArg.inputRequest,
-      }),
-    }),
-    apiInputsRetrieve: build.query<
-      ApiInputsRetrieveApiResponse,
-      ApiInputsRetrieveApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/inputs/${queryArg.id}/` }),
-    }),
-    apiInputsUpdate: build.mutation<
-      ApiInputsUpdateApiResponse,
-      ApiInputsUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "PUT",
-        body: queryArg.inputRequest,
-      }),
-    }),
-    apiInputsPartialUpdate: build.mutation<
-      ApiInputsPartialUpdateApiResponse,
-      ApiInputsPartialUpdateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "PATCH",
-        body: queryArg.patchedInputRequest,
-      }),
-    }),
-    apiInputsDestroy: build.mutation<
-      ApiInputsDestroyApiResponse,
-      ApiInputsDestroyApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/inputs/${queryArg.id}/`,
-        method: "DELETE",
-      }),
-    }),
     apiJoinsList: build.query<ApiJoinsListApiResponse, ApiJoinsListApiArg>({
       query: (queryArg) => ({
         url: `/api/joins/`,
-        params: { column: queryArg.column },
+        params: { ordering: queryArg.ordering, sql_input: queryArg.sqlInput },
       }),
     }),
     apiJoinsCreate: build.mutation<
@@ -506,6 +472,21 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/joins/${queryArg.id}/`,
         method: "DELETE",
+      }),
+    }),
+    apiListOwnersCreate: build.mutation<
+      ApiListOwnersCreateApiResponse,
+      ApiListOwnersCreateApiArg
+    >({
+      query: () => ({ url: `/api/list-owners/`, method: "POST" }),
+    }),
+    apiOwnerSchemaCreate: build.mutation<
+      ApiOwnerSchemaCreateApiResponse,
+      ApiOwnerSchemaCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/owner-schema/${queryArg.owner}/`,
+        method: "POST",
       }),
     }),
     apiOwnersList: build.query<ApiOwnersListApiResponse, ApiOwnersListApiArg>({
@@ -566,7 +547,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/preview/`,
         method: "POST",
-        body: queryArg.previewRequest,
+        body: queryArg.previewRequestRequest,
       }),
     }),
     apiResourcesList: build.query<
@@ -575,7 +556,7 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/resources/`,
-        params: { source: queryArg.source },
+        params: { ordering: queryArg.ordering, source: queryArg.source },
       }),
     }),
     apiResourcesCreate: build.mutation<
@@ -633,7 +614,10 @@ export const api = createApi({
       ApiSourcesListApiResponse,
       ApiSourcesListApiArg
     >({
-      query: () => ({ url: `/api/sources/` }),
+      query: (queryArg) => ({
+        url: `/api/sources/`,
+        params: { ordering: queryArg.ordering },
+      }),
     }),
     apiSourcesCreate: build.mutation<
       ApiSourcesCreateApiResponse,
@@ -696,39 +680,132 @@ export const api = createApi({
         body: queryArg.mappingRequest,
       }),
     }),
+    apiSqlInputsList: build.query<
+      ApiSqlInputsListApiResponse,
+      ApiSqlInputsListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/`,
+        params: {
+          input_group: queryArg.inputGroup,
+          ordering: queryArg.ordering,
+        },
+      }),
+    }),
+    apiSqlInputsCreate: build.mutation<
+      ApiSqlInputsCreateApiResponse,
+      ApiSqlInputsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/`,
+        method: "POST",
+        body: queryArg.sqlInputRequest,
+      }),
+    }),
+    apiSqlInputsRetrieve: build.query<
+      ApiSqlInputsRetrieveApiResponse,
+      ApiSqlInputsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/sql-inputs/${queryArg.id}/` }),
+    }),
+    apiSqlInputsUpdate: build.mutation<
+      ApiSqlInputsUpdateApiResponse,
+      ApiSqlInputsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.sqlInputRequest,
+      }),
+    }),
+    apiSqlInputsPartialUpdate: build.mutation<
+      ApiSqlInputsPartialUpdateApiResponse,
+      ApiSqlInputsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedSqlInputRequest,
+      }),
+    }),
+    apiSqlInputsDestroy: build.mutation<
+      ApiSqlInputsDestroyApiResponse,
+      ApiSqlInputsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/sql-inputs/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
+    apiStaticInputsList: build.query<
+      ApiStaticInputsListApiResponse,
+      ApiStaticInputsListApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/`,
+        params: {
+          input_group: queryArg.inputGroup,
+          ordering: queryArg.ordering,
+        },
+      }),
+    }),
+    apiStaticInputsCreate: build.mutation<
+      ApiStaticInputsCreateApiResponse,
+      ApiStaticInputsCreateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/`,
+        method: "POST",
+        body: queryArg.staticInputRequest,
+      }),
+    }),
+    apiStaticInputsRetrieve: build.query<
+      ApiStaticInputsRetrieveApiResponse,
+      ApiStaticInputsRetrieveApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/static-inputs/${queryArg.id}/` }),
+    }),
+    apiStaticInputsUpdate: build.mutation<
+      ApiStaticInputsUpdateApiResponse,
+      ApiStaticInputsUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/${queryArg.id}/`,
+        method: "PUT",
+        body: queryArg.staticInputRequest,
+      }),
+    }),
+    apiStaticInputsPartialUpdate: build.mutation<
+      ApiStaticInputsPartialUpdateApiResponse,
+      ApiStaticInputsPartialUpdateApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/${queryArg.id}/`,
+        method: "PATCH",
+        body: queryArg.patchedStaticInputRequest,
+      }),
+    }),
+    apiStaticInputsDestroy: build.mutation<
+      ApiStaticInputsDestroyApiResponse,
+      ApiStaticInputsDestroyApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/static-inputs/${queryArg.id}/`,
+        method: "DELETE",
+      }),
+    }),
     apiUserRetrieve: build.query<
       ApiUserRetrieveApiResponse,
       ApiUserRetrieveApiArg
     >({
       query: () => ({ url: `/api/user/` }),
     }),
-    pagaiExploreRetrieve: build.query<
-      PagaiExploreRetrieveApiResponse,
-      PagaiExploreRetrieveApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/pagai/explore/${queryArg.resourceId}/${queryArg.owner}/${queryArg.table}/`,
-      }),
-    }),
-    pagaiListOwnersCreate: build.mutation<
-      PagaiListOwnersCreateApiResponse,
-      PagaiListOwnersCreateApiArg
-    >({
-      query: () => ({ url: `/pagai/list-owners/`, method: "POST" }),
-    }),
-    pagaiOwnerSchemaCreate: build.mutation<
-      PagaiOwnerSchemaCreateApiResponse,
-      PagaiOwnerSchemaCreateApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/pagai/owner-schema/${queryArg.owner}/`,
-        method: "POST",
-      }),
-    }),
   }),
 });
 export type ApiAttributesListApiResponse = /** status 200  */ Attribute[];
 export type ApiAttributesListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
   path?: string;
   resource?: string;
   source?: string;
@@ -768,6 +845,7 @@ export type ApiBatchesListApiArg = {
   offset?: number;
   /** Which field to use when ordering the results. */
   ordering?: string;
+  source?: string[];
 };
 export type ApiBatchesCreateApiResponse = /** status 201  */ Batch;
 export type ApiBatchesCreateApiArg = {
@@ -803,8 +881,11 @@ export type ApiBatchesRetryCreateApiArg = {
 };
 export type ApiColumnsListApiResponse = /** status 200  */ Column[];
 export type ApiColumnsListApiArg = {
-  input?: string;
-  join?: string;
+  joinedLeft?: string[];
+  joinedRight?: string[];
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+  sqlInput?: string;
 };
 export type ApiColumnsCreateApiResponse = /** status 201  */ Column;
 export type ApiColumnsCreateApiArg = {
@@ -864,9 +945,11 @@ export type ApiConditionsDestroyApiArg = {
   id: string;
 };
 export type ApiCoreVersionRetrieveApiResponse = unknown;
-export type ApiCoreVersionRetrieveApiArg = {};
+export type ApiCoreVersionRetrieveApiArg = void;
 export type ApiCredentialsListApiResponse = /** status 200  */ Credential[];
 export type ApiCredentialsListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
   source?: string;
 };
 export type ApiCredentialsCreateApiResponse = /** status 201  */ Credential;
@@ -895,6 +978,11 @@ export type ApiCredentialsDestroyApiResponse = unknown;
 export type ApiCredentialsDestroyApiArg = {
   /** A unique value identifying this credential. */
   id: string;
+};
+export type ApiExploreCreateApiResponse =
+  /** status 200  */ ExplorationResponse;
+export type ApiExploreCreateApiArg = {
+  explorationRequestRequest: ExplorationRequestRequest;
 };
 export type ApiFiltersListApiResponse = /** status 200  */ Filter[];
 export type ApiFiltersListApiArg = {
@@ -929,6 +1017,8 @@ export type ApiFiltersDestroyApiArg = {
 export type ApiInputGroupsListApiResponse = /** status 200  */ InputGroup[];
 export type ApiInputGroupsListApiArg = {
   attribute?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
 };
 export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup;
 export type ApiInputGroupsCreateApiArg = {
@@ -957,39 +1047,11 @@ export type ApiInputGroupsDestroyApiArg = {
   /** A unique value identifying this input group. */
   id: string;
 };
-export type ApiInputsListApiResponse = /** status 200  */ Input[];
-export type ApiInputsListApiArg = {
-  inputGroup?: string;
-};
-export type ApiInputsCreateApiResponse = /** status 201  */ Input;
-export type ApiInputsCreateApiArg = {
-  inputRequest: InputRequest;
-};
-export type ApiInputsRetrieveApiResponse = /** status 200  */ Input;
-export type ApiInputsRetrieveApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-};
-export type ApiInputsUpdateApiResponse = /** status 200  */ Input;
-export type ApiInputsUpdateApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-  inputRequest: InputRequest;
-};
-export type ApiInputsPartialUpdateApiResponse = /** status 200  */ Input;
-export type ApiInputsPartialUpdateApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-  patchedInputRequest: PatchedInputRequest;
-};
-export type ApiInputsDestroyApiResponse = unknown;
-export type ApiInputsDestroyApiArg = {
-  /** A unique value identifying this input. */
-  id: string;
-};
 export type ApiJoinsListApiResponse = /** status 200  */ Join[];
 export type ApiJoinsListApiArg = {
-  column?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+  sqlInput?: string;
 };
 export type ApiJoinsCreateApiResponse = /** status 201  */ Join;
 export type ApiJoinsCreateApiArg = {
@@ -1016,6 +1078,12 @@ export type ApiJoinsDestroyApiResponse = unknown;
 export type ApiJoinsDestroyApiArg = {
   /** A unique value identifying this join. */
   id: string;
+};
+export type ApiListOwnersCreateApiResponse = unknown;
+export type ApiListOwnersCreateApiArg = void;
+export type ApiOwnerSchemaCreateApiResponse = unknown;
+export type ApiOwnerSchemaCreateApiArg = {
+  owner: string;
 };
 export type ApiOwnersListApiResponse = /** status 200  */ Owner[];
 export type ApiOwnersListApiArg = {
@@ -1047,12 +1115,14 @@ export type ApiOwnersDestroyApiArg = {
   /** A unique value identifying this owner. */
   id: string;
 };
-export type ApiPreviewCreateApiResponse = /** status 200  */ Preview;
+export type ApiPreviewCreateApiResponse = /** status 200  */ PreviewResponse;
 export type ApiPreviewCreateApiArg = {
-  previewRequest: PreviewRequest;
+  previewRequestRequest: PreviewRequestRequest;
 };
 export type ApiResourcesListApiResponse = /** status 200  */ Resource[];
 export type ApiResourcesListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
   source?: string;
 };
 export type ApiResourcesCreateApiResponse = /** status 201  */ Resource;
@@ -1082,9 +1152,12 @@ export type ApiResourcesDestroyApiArg = {
   id: string;
 };
 export type ApiScriptsListApiResponse = /** status 200  */ Scripts[];
-export type ApiScriptsListApiArg = {};
+export type ApiScriptsListApiArg = void;
 export type ApiSourcesListApiResponse = /** status 200  */ Source[];
-export type ApiSourcesListApiArg = {};
+export type ApiSourcesListApiArg = {
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
 export type ApiSourcesCreateApiResponse = /** status 201  */ Source;
 export type ApiSourcesCreateApiArg = {
   sourceRequest: SourceRequest;
@@ -1111,7 +1184,8 @@ export type ApiSourcesDestroyApiArg = {
   /** A unique value identifying this source. */
   id: string;
 };
-export type ApiSourcesExportRetrieveApiResponse = /** status 200  */ Mapping;
+export type ApiSourcesExportRetrieveApiResponse =
+  /** status 200  */ MappingWithPartialCredential;
 export type ApiSourcesExportRetrieveApiArg = {
   /** A unique value identifying this source. */
   id: string;
@@ -1120,20 +1194,73 @@ export type ApiSourcesImportCreateApiResponse = /** status 200  */ Mapping;
 export type ApiSourcesImportCreateApiArg = {
   mappingRequest: MappingRequest;
 };
+export type ApiSqlInputsListApiResponse = /** status 200  */ SqlInput[];
+export type ApiSqlInputsListApiArg = {
+  inputGroup?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type ApiSqlInputsCreateApiResponse = /** status 201  */ SqlInput;
+export type ApiSqlInputsCreateApiArg = {
+  sqlInputRequest: SqlInputRequest;
+};
+export type ApiSqlInputsRetrieveApiResponse = /** status 200  */ SqlInput;
+export type ApiSqlInputsRetrieveApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+};
+export type ApiSqlInputsUpdateApiResponse = /** status 200  */ SqlInput;
+export type ApiSqlInputsUpdateApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+  sqlInputRequest: SqlInputRequest;
+};
+export type ApiSqlInputsPartialUpdateApiResponse = /** status 200  */ SqlInput;
+export type ApiSqlInputsPartialUpdateApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+  patchedSqlInputRequest: PatchedSqlInputRequest;
+};
+export type ApiSqlInputsDestroyApiResponse = unknown;
+export type ApiSqlInputsDestroyApiArg = {
+  /** A unique value identifying this sql input. */
+  id: string;
+};
+export type ApiStaticInputsListApiResponse = /** status 200  */ StaticInput[];
+export type ApiStaticInputsListApiArg = {
+  inputGroup?: string;
+  /** Which field to use when ordering the results. */
+  ordering?: string;
+};
+export type ApiStaticInputsCreateApiResponse = /** status 201  */ StaticInput;
+export type ApiStaticInputsCreateApiArg = {
+  staticInputRequest: StaticInputRequest;
+};
+export type ApiStaticInputsRetrieveApiResponse = /** status 200  */ StaticInput;
+export type ApiStaticInputsRetrieveApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+};
+export type ApiStaticInputsUpdateApiResponse = /** status 200  */ StaticInput;
+export type ApiStaticInputsUpdateApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+  staticInputRequest: StaticInputRequest;
+};
+export type ApiStaticInputsPartialUpdateApiResponse =
+  /** status 200  */ StaticInput;
+export type ApiStaticInputsPartialUpdateApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+  patchedStaticInputRequest: PatchedStaticInputRequest;
+};
+export type ApiStaticInputsDestroyApiResponse = unknown;
+export type ApiStaticInputsDestroyApiArg = {
+  /** A unique value identifying this static input. */
+  id: string;
+};
 export type ApiUserRetrieveApiResponse = /** status 200  */ User;
-export type ApiUserRetrieveApiArg = {};
-export type PagaiExploreRetrieveApiResponse = /** status 200  */ Exploration;
-export type PagaiExploreRetrieveApiArg = {
-  owner: string;
-  resourceId: string;
-  table: string;
-};
-export type PagaiListOwnersCreateApiResponse = unknown;
-export type PagaiListOwnersCreateApiArg = {};
-export type PagaiOwnerSchemaCreateApiResponse = unknown;
-export type PagaiOwnerSchemaCreateApiArg = {
-  owner: string;
-};
+export type ApiUserRetrieveApiArg = void;
 export type Attribute = {
   id: string;
   path: string;
@@ -1158,11 +1285,8 @@ export type PatchedAttributeRequest = {
 export type Error = {
   id: string;
   event: string;
-  message: string;
-  exception?: string;
   created_at: string;
   updated_at: string;
-  deleted_at: string;
   batch: string;
 };
 export type Batch = {
@@ -1170,8 +1294,9 @@ export type Batch = {
   errors: Error[];
   created_at: string;
   updated_at: string;
-  deleted_at: string;
-  resources?: string[];
+  canceled_at: string | null;
+  completed_at: string | null;
+  resources: string[];
 };
 export type PaginatedBatchList = {
   count?: number;
@@ -1180,7 +1305,7 @@ export type PaginatedBatchList = {
   results?: Batch[];
 };
 export type BatchRequest = {
-  resources?: string[];
+  resources: string[];
 };
 export type PatchedBatchRequest = {
   resources?: string[];
@@ -1191,22 +1316,16 @@ export type Column = {
   column: string;
   updated_at: string;
   created_at: string;
-  join?: string | null;
-  input?: string | null;
   owner: string;
 };
 export type ColumnRequest = {
   table: string;
   column: string;
-  join?: string | null;
-  input?: string | null;
   owner: string;
 };
 export type PatchedColumnRequest = {
   table?: string;
   column?: string;
-  join?: string | null;
-  input?: string | null;
   owner?: string;
 };
 export type ActionEnum = "INCLUDE" | "EXCLUDE";
@@ -1223,21 +1342,21 @@ export type Condition = {
   action: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
-  column: string;
+  sql_input: string;
   input_group: string;
 };
 export type ConditionRequest = {
   action: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
-  column: string;
+  sql_input: string;
   input_group: string;
 };
 export type PatchedConditionRequest = {
   action?: ActionEnum;
   value?: string;
   relation?: ConditionRelationEnum;
-  column?: string;
+  sql_input?: string;
   input_group?: string;
 };
 export type ModelEnum = "MSSQL" | "POSTGRES" | "ORACLE" | "SQLLITE";
@@ -1272,25 +1391,34 @@ export type PatchedCredentialRequest = {
   model?: ModelEnum;
   source?: string;
 };
+export type ExplorationResponse = {
+  fields: string[];
+  rows: any[][];
+};
+export type ExplorationRequestRequest = {
+  resource_id: string;
+  owner: string;
+  table: string;
+};
 export type FilterRelationEnum = "=" | "<>" | "IN" | ">" | ">=" | "<" | "<=";
 export type Filter = {
   id: string;
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
-  sql_column: string;
+  sql_input: string;
 };
 export type FilterRequest = {
   relation: FilterRelationEnum;
   value?: string;
   resource: string;
-  sql_column: string;
+  sql_input: string;
 };
 export type PatchedFilterRequest = {
   relation?: FilterRelationEnum;
   value?: string;
   resource?: string;
-  sql_column?: string;
+  sql_input?: string;
 };
 export type InputGroup = {
   id: string;
@@ -1307,38 +1435,23 @@ export type PatchedInputGroupRequest = {
   merging_script?: string;
   attribute?: string;
 };
-export type Input = {
-  id: string;
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  updated_at: string;
-  created_at: string;
-  input_group: string;
-};
-export type InputRequest = {
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  input_group: string;
-};
-export type PatchedInputRequest = {
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  input_group?: string;
-};
 export type Join = {
   id: string;
   updated_at: string;
   created_at: string;
-  column: string;
+  sql_input: string;
+  left: string;
+  right: string;
 };
 export type JoinRequest = {
-  column: string;
+  sql_input: string;
+  left: string;
+  right: string;
 };
 export type PatchedJoinRequest = {
-  column?: string;
+  sql_input?: string;
+  left?: string;
+  right?: string;
 };
 export type Owner = {
   id: string;
@@ -1356,11 +1469,21 @@ export type PatchedOwnerRequest = {
   name?: string;
   credential?: string;
 };
-export type Preview = {
-  resource_id: string;
-  primary_key_values: string[];
+export type SeverityEnum = "fatal" | "error" | "warning" | "information";
+export type OperationOutcomeIssue = {
+  severity: SeverityEnum;
+  code: string;
+  diagnostics: string;
+  location: string[];
+  expression: string;
 };
-export type PreviewRequest = {
+export type PreviewResponse = {
+  instances: {
+    [key: string]: any;
+  }[];
+  errors: OperationOutcomeIssue[];
+};
+export type PreviewRequestRequest = {
   resource_id: string;
   primary_key_values: string[];
 };
@@ -1370,6 +1493,9 @@ export type Resource = {
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
   logical_reference: string;
   updated_at: string;
   created_at: string;
@@ -1413,153 +1539,215 @@ export type PatchedSourceRequest = {
   name?: string;
   version?: string;
 };
-export type _Input = {
+export type MappingStaticInput = {
+  value?: string | null;
+};
+export type MappingJoin = {
+  left: string;
+  right: string;
+};
+export type MappingSqlInput = {
   script?: string;
   concept_map_id?: string;
-  static_value?: string | null;
   column: string | null;
+  joins: MappingJoin[];
 };
-export type _Condition = {
+export type MappingCondition = {
   action: ActionEnum;
-  column: string;
+  sql_input: MappingSqlInput;
   value?: string;
   relation?: ConditionRelationEnum;
 };
-export type _InputGroup = {
+export type MappingInputGroup = {
+  id: string;
   merging_script?: string;
-  inputs?: _Input[];
-  conditions?: _Condition[];
+  static_inputs?: MappingStaticInput[];
+  sql_inputs?: MappingSqlInput[];
+  conditions?: MappingCondition[];
 };
-export type _Attribute = {
+export type MappingAttribute = {
   path: string;
   slice_name?: string;
   definition_id: string;
-  input_groups?: _InputGroup[];
+  input_groups?: MappingInputGroup[];
 };
-export type _Filter = {
+export type MappingFilter = {
   relation: FilterRelationEnum;
   value?: string;
-  sql_column: string;
+  sql_input: MappingSqlInput;
 };
-export type _Resource = {
+export type MappingResource = {
+  id: string;
   label?: string;
   primary_key_table: string;
   primary_key_column: string;
   definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
   logical_reference: string;
   primary_key_owner: string;
-  attributes?: _Attribute[];
-  filters?: _Filter[];
+  attributes?: MappingAttribute[];
+  filters?: MappingFilter[];
 };
-export type _Join = {
-  columns: string[];
-};
-export type _Column = {
+export type MappingColumn = {
   id: string;
   table: string;
   column: string;
-  joins?: _Join[];
 };
-export type _Owner = {
+export type MappingOwner = {
   id: string;
   name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
-  columns?: _Column[];
+  columns?: MappingColumn[];
 };
-export type _Credential = {
+export type MappingPartialCredential = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: _Owner[];
+  owners?: MappingOwner[];
 };
-export type Mapping = {
+export type MappingWithPartialCredential = {
   id: string;
-  resources?: _Resource[];
-  credential: _Credential;
+  resources?: MappingResource[];
+  credential: MappingPartialCredential;
   name: string;
   version?: string;
   updated_at: string;
   created_at: string;
-  users: string[];
 };
-export type _InputRequest = {
-  script?: string;
-  concept_map_id?: string;
-  static_value?: string | null;
-  column: string | null;
-};
-export type _ConditionRequest = {
-  action: ActionEnum;
-  column: string;
-  value?: string;
-  relation?: ConditionRelationEnum;
-};
-export type _InputGroupRequest = {
-  merging_script?: string;
-  inputs?: _InputRequest[];
-  conditions?: _ConditionRequest[];
-};
-export type _AttributeRequest = {
-  path: string;
-  slice_name?: string;
-  definition_id: string;
-  input_groups?: _InputGroupRequest[];
-};
-export type _FilterRequest = {
-  relation: FilterRelationEnum;
-  value?: string;
-  sql_column: string;
-};
-export type _ResourceRequest = {
-  label?: string;
-  primary_key_table: string;
-  primary_key_column: string;
-  definition_id: string;
-  primary_key_owner: string;
-  attributes?: _AttributeRequest[];
-  filters?: _FilterRequest[];
-};
-export type _JoinRequest = {
-  columns: string[];
-};
-export type _ColumnRequest = {
-  id: string;
-  table: string;
-  column: string;
-  joins?: _JoinRequest[];
-};
-export type _OwnerRequest = {
-  id: string;
-  name: string;
-  schema?: {
-    [key: string]: any;
-  } | null;
-  columns?: _ColumnRequest[];
-};
-export type _CredentialRequest = {
+export type MappingCredential = {
   host: string;
   port: number;
   database: string;
   model: ModelEnum;
-  owners?: _OwnerRequest[];
+  owners?: MappingOwner[];
+  login: string;
+  password: string;
 };
-export type MappingRequest = {
-  resources?: _ResourceRequest[];
-  credential: _CredentialRequest;
+export type Mapping = {
+  id: string;
+  resources?: MappingResource[];
+  credential: MappingCredential;
   name: string;
   version?: string;
+  updated_at: string;
+  created_at: string;
+};
+export type MappingStaticInputRequest = {
+  value?: string | null;
+};
+export type MappingJoinRequest = {
+  left: string;
+  right: string;
+};
+export type MappingSqlInputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  column: string | null;
+  joins: MappingJoinRequest[];
+};
+export type MappingConditionRequest = {
+  action: ActionEnum;
+  sql_input: MappingSqlInputRequest;
+  value?: string;
+  relation?: ConditionRelationEnum;
+};
+export type MappingInputGroupRequest = {
+  merging_script?: string;
+  static_inputs?: MappingStaticInputRequest[];
+  sql_inputs?: MappingSqlInputRequest[];
+  conditions?: MappingConditionRequest[];
+};
+export type MappingAttributeRequest = {
+  path: string;
+  slice_name?: string;
+  definition_id: string;
+  input_groups?: MappingInputGroupRequest[];
+};
+export type MappingFilterRequest = {
+  relation: FilterRelationEnum;
+  value?: string;
+  sql_input: MappingSqlInputRequest;
+};
+export type MappingResourceRequest = {
+  label?: string;
+  primary_key_table: string;
+  primary_key_column: string;
+  definition_id: string;
+  definition: {
+    [key: string]: any;
+  };
+  logical_reference: string;
+  primary_key_owner: string;
+  attributes?: MappingAttributeRequest[];
+  filters?: MappingFilterRequest[];
+};
+export type MappingColumnRequest = {
+  id: string;
+  table: string;
+  column: string;
+};
+export type MappingOwnerRequest = {
+  id: string;
+  name: string;
+  columns?: MappingColumnRequest[];
+};
+export type MappingCredentialRequest = {
+  host: string;
+  port: number;
+  database: string;
+  model: ModelEnum;
+  owners?: MappingOwnerRequest[];
+  login: string;
+  password: string;
+};
+export type MappingRequest = {
+  resources?: MappingResourceRequest[];
+  credential: MappingCredentialRequest;
+  name: string;
+  version?: string;
+};
+export type SqlInput = {
+  id: string;
+  updated_at: string;
+  created_at: string;
+  script?: string;
+  concept_map_id?: string;
+  input_group?: string | null;
+  column: string;
+};
+export type SqlInputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  input_group?: string | null;
+  column: string;
+};
+export type PatchedSqlInputRequest = {
+  script?: string;
+  concept_map_id?: string;
+  input_group?: string | null;
+  column?: string;
+};
+export type StaticInput = {
+  id: string;
+  updated_at: string;
+  created_at: string;
+  value?: string | null;
+  input_group: string;
+};
+export type StaticInputRequest = {
+  value?: string | null;
+  input_group: string;
+};
+export type PatchedStaticInputRequest = {
+  value?: string | null;
+  input_group?: string;
 };
 export type User = {
   id: string;
   email: string;
   username: string;
-};
-export type Exploration = {
-  fields: string[];
-  rows: string[][];
 };
 export const {
   useApiAttributesListQuery,
@@ -1594,6 +1782,7 @@ export const {
   useApiCredentialsUpdateMutation,
   useApiCredentialsPartialUpdateMutation,
   useApiCredentialsDestroyMutation,
+  useApiExploreCreateMutation,
   useApiFiltersListQuery,
   useApiFiltersCreateMutation,
   useApiFiltersRetrieveQuery,
@@ -1606,18 +1795,14 @@ export const {
   useApiInputGroupsUpdateMutation,
   useApiInputGroupsPartialUpdateMutation,
   useApiInputGroupsDestroyMutation,
-  useApiInputsListQuery,
-  useApiInputsCreateMutation,
-  useApiInputsRetrieveQuery,
-  useApiInputsUpdateMutation,
-  useApiInputsPartialUpdateMutation,
-  useApiInputsDestroyMutation,
   useApiJoinsListQuery,
   useApiJoinsCreateMutation,
   useApiJoinsRetrieveQuery,
   useApiJoinsUpdateMutation,
   useApiJoinsPartialUpdateMutation,
   useApiJoinsDestroyMutation,
+  useApiListOwnersCreateMutation,
+  useApiOwnerSchemaCreateMutation,
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersRetrieveQuery,
@@ -1640,8 +1825,17 @@ export const {
   useApiSourcesDestroyMutation,
   useApiSourcesExportRetrieveQuery,
   useApiSourcesImportCreateMutation,
+  useApiSqlInputsListQuery,
+  useApiSqlInputsCreateMutation,
+  useApiSqlInputsRetrieveQuery,
+  useApiSqlInputsUpdateMutation,
+  useApiSqlInputsPartialUpdateMutation,
+  useApiSqlInputsDestroyMutation,
+  useApiStaticInputsListQuery,
+  useApiStaticInputsCreateMutation,
+  useApiStaticInputsRetrieveQuery,
+  useApiStaticInputsUpdateMutation,
+  useApiStaticInputsPartialUpdateMutation,
+  useApiStaticInputsDestroyMutation,
   useApiUserRetrieveQuery,
-  usePagaiExploreRetrieveQuery,
-  usePagaiListOwnersCreateMutation,
-  usePagaiOwnerSchemaCreateMutation,
 } = api;

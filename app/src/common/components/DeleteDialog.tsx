@@ -9,7 +9,6 @@ import {
   DialogActions,
   makeStyles,
   CircularProgress,
-  Typography,
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -71,18 +70,14 @@ const DeleteDialog = ({
           onClick={handleClose}
           color="inherit"
         >
-          <Typography>{t("cancel")}</Typography>
+          {t("cancel")}
         </Button>
         <Button
           className={clsx(classes.button, classes.error)}
           variant="contained"
           onClick={onDelete}
         >
-          {isLoading ? (
-            <CircularProgress />
-          ) : (
-            <Typography>{t("confirmDelete")}</Typography>
-          )}
+          {isLoading ? <CircularProgress /> : t("confirmDelete")}
         </Button>
       </DialogActions>
     </Dialog>
