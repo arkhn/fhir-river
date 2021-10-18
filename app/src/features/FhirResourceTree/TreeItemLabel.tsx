@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { SyntheticEvent, useMemo } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconName, IconNames } from "@blueprintjs/icons";
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
-import { usePopupState } from "material-ui-popup-state/hooks";
+import {
+  makeStyles,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
+import {
+  usePopupState,
+  bindMenu,
+  bindTrigger,
+} from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
 
 import IconButton from "common/components/IconButton";
 
 import { ElementNode } from "./resourceTreeSlice";
-import SliceNameDialog from "./SliceNameDialog";
 import TreeNodeBadge from "./TreeNodeBadge";
 
 type TreeItemLabelProps = {
@@ -40,9 +49,9 @@ const useStyle = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     fill: theme.palette.icons.resourceTree.main,
+    marginRight: theme.spacing(1),
   },
   treeItemTitle: {
-    marginLeft: theme.spacing(1),
     fontWeight: 500,
   },
   treeItemType: {
@@ -70,7 +79,18 @@ const TreeItemLabel = ({
     variant: "popover",
     popupId: `popup-${elementNode.id}`,
   });
-  const [isSliceDialogOpen, setSliceDialogOpen] = useState(false);
+  const nodeDefinitions = useMemo(
+    () => [
+      elementNode.definitionNode.definition,
+      ...elementNode.definitionNode.sliceDefinitions.map(
+        ({ definition }) => definition
+      ),
+    ],
+    [
+      elementNode.definitionNode.definition,
+      elementNode.definitionNode.sliceDefinitions,
+    ]
+  );
 
   let iconName: IconName | null = null;
 
@@ -107,29 +127,28 @@ const TreeItemLabel = ({
     onAddExtension();
   };
 
-  const handleSliceDialogOpen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handlePoppupClose = (e: SyntheticEvent) => {
     e.stopPropagation();
     popupState.close();
-    setSliceDialogOpen(true);
-  };
-
-  const handleSliceDialogClose = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setSliceDialogOpen(false);
-  };
-
-  const handleAddSlice = (name: string) => {
-    onCreateItem(name);
   };
 
   const handleAddItemClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.stopPropagation();
+    if (nodeDefinitions.length > 1) {
+      popupState.open(e);
+    } else {
+      onCreateItem();
+    }
+  };
+
+  const handleAddItemOrSlice = (sliceName?: string) => (
+    e: React.MouseEvent<HTMLLIElement>
+  ) => {
+    e.stopPropagation();
+    onCreateItem(sliceName);
     popupState.close();
-    onCreateItem();
   };
 
   return (
@@ -181,22 +200,29 @@ const TreeItemLabel = ({
         <>
           <Tooltip title={t<string>("addItem")} arrow>
             <div>
-              <IconButton icon={IconNames.ADD} onClick={handleAddItemClick} />
-            </div>
-          </Tooltip>
-          <Tooltip title={t<string>("addSlice")} arrow>
-            <div>
               <IconButton
-                icon={IconNames.PIE_CHART}
-                onClick={handleSliceDialogOpen}
+                icon={IconNames.ADD}
+                {...bindTrigger(popupState)}
+                onClick={handleAddItemClick}
               />
             </div>
           </Tooltip>
-          <SliceNameDialog
-            onSubmit={handleAddSlice}
-            open={isSliceDialogOpen}
-            onClose={handleSliceDialogClose}
-          />
+          {nodeDefinitions.length > 1 && (
+            <Menu {...bindMenu(popupState)} onClose={handlePoppupClose}>
+              {nodeDefinitions.map(({ id, sliceName }) => (
+                <MenuItem key={id} onClick={handleAddItemOrSlice(sliceName)}>
+                  <>
+                    <Icon
+                      className={classes.icon}
+                      icon={sliceName ? IconNames.PIE_CHART : IconNames.ADD}
+                      iconSize={15}
+                    />
+                    <Typography>{sliceName ?? "Item"}</Typography>
+                  </>
+                </MenuItem>
+              ))}
+            </Menu>
+          )}
         </>
       )}
       <TreeNodeBadge elementNode={elementNode} />

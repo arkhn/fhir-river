@@ -301,42 +301,6 @@ export const buildTree = (
         ? parentElementNode?.path
         : parentElementNode?.path.split(".").slice(0, -1).join("."),
   });
-  const isCurrentNodeRoot = !currentNode.path.includes(".");
-
-  // If current nodeDefinition has slices, we add them as slice items
-  nodeDefinition.sliceDefinitions.forEach((sliceDefinition, index) => {
-    if (
-      sliceDefinition.definition.max &&
-      (sliceDefinition.definition.max === "*" ||
-        +sliceDefinition.definition.max > 0)
-    ) {
-      const sliceElementNode = createElementNode(sliceDefinition, {
-        index: currentNode.isArray ? index : undefined,
-        parentPath: currentNode.path,
-      });
-      currentNode.children.push(sliceElementNode);
-      sliceDefinition.childrenDefinitions.forEach((sliceChildDefinition) => {
-        buildTree(sliceChildDefinition, sliceElementNode);
-      });
-    }
-  });
-
-  // If current node is array, has no children and has definitions, we add an item
-  if (
-    !isCurrentNodeRoot &&
-    currentNode.isArray &&
-    currentNode.children.length === 0 &&
-    nodeDefinition.childrenDefinitions.length > 0
-  ) {
-    const itemNode = createElementNode(nodeDefinition, {
-      index: currentNode.children.length,
-      parentPath: currentNode.path,
-    });
-    currentNode.children.push(itemNode);
-    nodeDefinition.childrenDefinitions.forEach((childNodeDefinition) => {
-      buildTree(childNodeDefinition, itemNode);
-    });
-  }
 
   const isParentRoot =
     parentElementNode !== undefined && !parentElementNode.path.includes(".");
@@ -505,6 +469,14 @@ export const getDefinitionNodeFromItemAttribute = (
     attributePathWithoutIndex,
     rootElementNode
   );
+
+  if (attribute.slice_name) {
+    const sliceDefinitionNode = attributeParentElementNode?.definitionNode.sliceDefinitions.find(
+      ({ definition }) => definition.sliceName === attribute.slice_name
+    );
+
+    if (sliceDefinitionNode) return sliceDefinitionNode;
+  }
 
   return attributeParentElementNode?.definitionNode;
 };
