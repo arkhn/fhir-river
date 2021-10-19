@@ -105,7 +105,7 @@ const FhirResourceTree = (): JSX.Element => {
   ) => {
     const fixedValueKey = Object.keys(
       node.definitionNode.definition
-    ).find((objectKey) => objectKey.includes("fixed"));
+    ).find((elementDefinitionKey) => elementDefinitionKey.includes("fixed"));
     if (fixedValueKey && node) {
       const fixedValue =
         node.definitionNode.definition[
