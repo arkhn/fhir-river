@@ -148,6 +148,11 @@ WHERE
             id
         FROM
             pyrog_owner
+    )
+    and (
+        ("input" is not null AND "input" IN ( SELECT id from pyrog_input))
+        or
+        ("join" is not null)
     );
 
 INSERT INTO
@@ -268,6 +273,12 @@ SELECT
 FROM
     pyrog."Comment"
 WHERE
-    "attribute" is NOT NULL;
+    "attribute" is NOT NULL
+        AND "attribute" IN (
+        SELECT
+            id
+        FROM
+            pyrog_attribute
+    );
 
 COMMIT;
