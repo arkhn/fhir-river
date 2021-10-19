@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
@@ -24,7 +25,9 @@ import {
   useApiInputGroupsCreateMutation,
   useApiStaticInputsCreateMutation,
 } from "services/api/endpoints";
+import { InputGroup } from "services/api/generated/api.generated";
 
+import { ElementNode } from "./resourceTreeSlice";
 import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 import useFhirResourceTreeData from "./useFhirResourceTreeData";
@@ -95,6 +98,28 @@ const FhirResourceTree = (): JSX.Element => {
     }
   }, [expandedNodes, hasAlreadyExpandedToTarget, nodeAncestorsIds]);
 
+  const createStaticInputWithFixedValue = (
+    node: ElementNode,
+    inputGroup: InputGroup
+  ) => {
+    const fixedValueKey = Object.keys(
+      node.definitionNode.definition
+    ).find((objectKey) => objectKey.includes("fixed"));
+    if (fixedValueKey && node) {
+      const fixedValue =
+        node.definitionNode.definition[
+          fixedValueKey as keyof IElementDefinition
+        ];
+      if (typeof fixedValue === "string")
+        createStaticInput({
+          staticInputRequest: {
+            input_group: inputGroup.id,
+            value: fixedValue,
+          },
+        });
+    }
+  };
+
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
     nodePath: string
@@ -135,6 +160,8 @@ const FhirResourceTree = (): JSX.Element => {
               },
             });
           }
+          // Create a static input for nodes with a fixed value
+          createStaticInputWithFixedValue(node, inputGroup);
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );

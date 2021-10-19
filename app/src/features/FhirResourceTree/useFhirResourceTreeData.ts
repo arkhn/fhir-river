@@ -234,7 +234,6 @@ const useFhirResourceTreeData = (
         const hasNodeChildren = attributes.some(({ path }) =>
           path.startsWith(node.path)
         );
-
         if (!hasNodeChildren) {
           await createItem();
         }

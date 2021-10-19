@@ -145,6 +145,15 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   };
 
+  const isDisabled = () => {
+    if (selectedNode) {
+      const fixedValueKey = Object.keys(
+        selectedNode?.definitionNode.definition
+      ).find((objectKey) => objectKey.includes("fixed"));
+      return fixedValueKey ? true : false;
+    }
+  };
+
   return (
     <Grid container item alignItems="center" direction="row" spacing={1}>
       <Grid item container alignItems="center" xs={10} spacing={2}>
@@ -158,6 +167,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             <TextField
               variant="outlined"
               size="small"
+              disabled={isDisabled()}
               fullWidth
               placeholder={t("typeStaticValueHere")}
               className={classes.input}
