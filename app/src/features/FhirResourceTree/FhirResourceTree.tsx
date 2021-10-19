@@ -27,6 +27,7 @@ import {
 } from "services/api/endpoints";
 import { InputGroup } from "services/api/generated/api.generated";
 
+import { primitiveTypes } from "./fhirResource";
 import { ElementNode } from "./resourceTreeSlice";
 import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
@@ -110,11 +111,11 @@ const FhirResourceTree = (): JSX.Element => {
         node.definitionNode.definition[
           fixedValueKey as keyof IElementDefinition
         ];
-      if (typeof fixedValue === "string")
+      if (node.type && primitiveTypes.includes(node.type) && fixedValue)
         createStaticInput({
           staticInputRequest: {
             input_group: inputGroup.id,
-            value: fixedValue,
+            value: fixedValue?.toString(),
           },
         });
     }
