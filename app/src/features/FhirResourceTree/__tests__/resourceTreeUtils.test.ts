@@ -291,4 +291,13 @@ describe("getAncestorsPaths", () => {
       path,
     ]);
   });
+  it("path with multiple choice", () => {
+    const path = "Observation.component[3].valueQuantity";
+    expect(getAncestorsPaths(path)).toStrictEqual([
+      "Observation.component",
+      "Observation.component[3]",
+      "Observation.component[3].value[x]",
+      path,
+    ]);
+  });
 });
