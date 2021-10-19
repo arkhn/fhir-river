@@ -556,16 +556,26 @@ export const createElementDefinitionPathOrId = (
 };
 
 /**
- * `Observation.code.coding[0].type` => `[Observation.code, Observation.code.coding, Observation.code.coding[0]]`
+ * `Observation.component[3].valueQuantity` => `[Observation.component, Observation.component[3], Observation.component[3].value[x], Observation.component[3].valueQuantity]`
  * @param path Path to decompose
  * @returns Ancestors paths
  */
-export const getAncestorsPaths = (path: string): string[] =>
-  path.split(".").reduce((acc: string[], val, index, array) => {
-    const decomposedValuePath =
-      computePathWithoutIndexes(val) !== val
-        ? [computePathWithoutIndexes(val), val]
-        : [val];
+export const getAncestorsPaths = (path: string): string[] => {
+  const fhirTypes = [...complexTypes, ...primitiveTypes].map(upperFirst);
+  return path.split(".").reduce((acc: string[], val, index, array) => {
+    const valEndingType = fhirTypes.find((type) => val.endsWith(type));
+    const valWithoutIndex = computePathWithoutIndexes(val);
+
+    const decomposedValuePath: string[] = [];
+
+    if (valWithoutIndex !== val) {
+      decomposedValuePath.push(valWithoutIndex);
+    } else if (valEndingType !== undefined) {
+      const valMultipleChoiceParent = val.replace(valEndingType, "[x]");
+      decomposedValuePath.push(valMultipleChoiceParent);
+    }
+    decomposedValuePath.push(val);
+
     if (index === 0) return [];
     if (index === 1) {
       return decomposedValuePath.map((_val) => `${array[0]}.${_val}`);
@@ -576,3 +586,4 @@ export const getAncestorsPaths = (path: string): string[] =>
       ];
     }
   }, []);
+};
