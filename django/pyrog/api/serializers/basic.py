@@ -1,6 +1,6 @@
 from typing import List
 
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 from common.adapters.fhir_api import fhir_api
 from pagai.database_explorer.database_explorer import DatabaseExplorer
@@ -75,6 +75,19 @@ class ResourceSerializer(serializers.ModelSerializer):
         read_only_fields = ["definition"]
 
     def validate(self, data):
+        """called on resource creation.
+        We fetch the StructureDefinition from fhir-api before
+        validating and saving the resource to the database.
+
+        Args:
+            data ([dict]): the resource instance
+
+        Raises:
+            serializers.ValidationError: if the StructureDeifnition cannot be fetched
+
+        Returns:
+            [dict]: the instance
+        """
         if "definition_id" not in data:
             return super().validate(data)
         request = self.context.get("request")
@@ -82,8 +95,29 @@ class ResourceSerializer(serializers.ModelSerializer):
         try:
             data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
         except Exception as e:
-            raise serializers.ValidationError({"definition": [str(e)]})
+            raise serializers.ValidationError({"definition": [str(e)]}, code=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return super().validate(data)
+
+    def to_representation(self, instance):
+        """called on resource retrieval
+        If the StructureDefinition is not filled in the resource instance
+        we fetch it from fhir-api and update the databse object.
+
+        Args:
+            instance ([dict]): the resource instance
+
+        Returns:
+            [OrderedDict]: the serialized resource
+        """
+        if not instance.definition:
+            request = self.context.get("request")
+            auth_token = request.session.get("oidc_access_token") if request else None
+            try:
+                instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
+                instance.save()
+            except Exception as e:
+                raise serializers.ValidationError({"definition": [str(e)]}, code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return super().to_representation(instance)
 
 
 class AttributeSerializer(serializers.ModelSerializer):
