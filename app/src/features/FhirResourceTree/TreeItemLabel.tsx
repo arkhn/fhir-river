@@ -217,7 +217,7 @@ const TreeItemLabel = ({
                       icon={sliceName ? IconNames.PIE_CHART : IconNames.ADD}
                       iconSize={15}
                     />
-                    <Typography>{sliceName ?? "Item"}</Typography>
+                    <Typography>{sliceName ?? t("item")}</Typography>
                   </>
                 </MenuItem>
               ))}

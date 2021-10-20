@@ -101,6 +101,7 @@
   "addCondition": "Add a condition",
   "addSlice": "Add a slice",
   "addItem": "Add an item",
+  "item": "Item",
   "convertToSlice": "Convert to slice",
   "deleteSlice": "Delete slice",
   "deleteItem": "Delete item",
