@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import {
@@ -27,7 +26,6 @@ import {
 } from "services/api/endpoints";
 import { InputGroup } from "services/api/generated/api.generated";
 
-import { primitiveTypes } from "./fhirResource";
 import { ElementNode } from "./resourceTreeSlice";
 import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
@@ -99,25 +97,21 @@ const FhirResourceTree = (): JSX.Element => {
     }
   }, [expandedNodes, hasAlreadyExpandedToTarget, nodeAncestorsIds]);
 
-  const createStaticInputWithFixedValue = (
+  const createStaticInputWithFixedValue = async (
     node: ElementNode,
     inputGroup: InputGroup
   ) => {
-    const fixedValueKey = Object.keys(
+    const fixedEntry = Object.entries(
       node.definitionNode.definition
-    ).find((elementDefinitionKey) => elementDefinitionKey.includes("fixed"));
-    if (fixedValueKey && node) {
-      const fixedValue =
-        node.definitionNode.definition[
-          fixedValueKey as keyof IElementDefinition
-        ];
-      if (node.type && primitiveTypes.includes(node.type) && fixedValue)
-        createStaticInput({
-          staticInputRequest: {
-            input_group: inputGroup.id,
-            value: fixedValue?.toString(),
-          },
-        });
+    ).find(([key]) => key.startsWith("fixed"));
+    if (fixedEntry && node.kind === "primitive") {
+      const fixedValue = fixedEntry[1];
+      await createStaticInput({
+        staticInputRequest: {
+          input_group: inputGroup.id,
+          value: fixedValue.toString(),
+        },
+      });
     }
   };
 
@@ -162,7 +156,7 @@ const FhirResourceTree = (): JSX.Element => {
             });
           }
           // Create a static input for nodes with a fixed value
-          createStaticInputWithFixedValue(node, inputGroup);
+          await createStaticInputWithFixedValue(node, inputGroup);
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );
