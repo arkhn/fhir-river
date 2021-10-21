@@ -11,8 +11,6 @@ const useCreateStaticInputFromFixedValue = (params: {
   mappingId?: string;
 }): {
   createStaticInputWithFixedValue: () => Promise<void>;
-  isFixedValue: boolean;
-  inputIsDisabled: (value: string | null | undefined) => boolean;
 } => {
   const { node, mappingId } = params;
   const [createAttribute] = useApiAttributesCreateMutation();
@@ -26,12 +24,6 @@ const useCreateStaticInputFromFixedValue = (params: {
       );
   };
   const fixedEntry = getFixedEntry();
-
-  const isFixedValue = fixedEntry ? true : false;
-
-  const inputIsDisabled = (value: string | null | undefined) => {
-    return value && fixedEntry ? fixedEntry[1] === value : false;
-  };
 
   const createStaticInputWithFixedValue = async () => {
     if (
@@ -62,8 +54,6 @@ const useCreateStaticInputFromFixedValue = (params: {
 
   return {
     createStaticInputWithFixedValue,
-    isFixedValue,
-    inputIsDisabled,
   };
 };
 

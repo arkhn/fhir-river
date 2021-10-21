@@ -80,7 +80,6 @@ const useFhirResourceTreeData = (
   const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
   const {
-    isFixedValue,
     createStaticInputWithFixedValue,
   } = useCreateStaticInputFromFixedValue({ node, mappingId });
 
@@ -94,7 +93,7 @@ const useFhirResourceTreeData = (
     const selectedNodeAttribute = attributes?.find(
       ({ path }) => path === node?.path
     );
-    if (isFixedValue && !selectedNodeAttribute) {
+    if (!selectedNodeAttribute) {
       createStaticInputWithFixedValue();
     }
     if (node && node.children.length === 0 && options?.skip) {
