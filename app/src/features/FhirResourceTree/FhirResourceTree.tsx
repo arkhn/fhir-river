@@ -24,9 +24,7 @@ import {
   useApiInputGroupsCreateMutation,
   useApiStaticInputsCreateMutation,
 } from "services/api/endpoints";
-import { InputGroup } from "services/api/generated/api.generated";
 
-import { ElementNode } from "./resourceTreeSlice";
 import { getElementNodeByPath } from "./resourceTreeUtils";
 import TreeItem from "./TreeItem";
 import useFhirResourceTreeData from "./useFhirResourceTreeData";
@@ -97,24 +95,6 @@ const FhirResourceTree = (): JSX.Element => {
     }
   }, [expandedNodes, hasAlreadyExpandedToTarget, nodeAncestorsIds]);
 
-  const createStaticInputWithFixedValue = async (
-    node: ElementNode,
-    inputGroup: InputGroup
-  ) => {
-    const fixedEntry = Object.entries(
-      node.definitionNode.definition
-    ).find(([key]) => key.startsWith("fixed"));
-    if (fixedEntry && node.kind === "primitive") {
-      const fixedValue = fixedEntry[1];
-      await createStaticInput({
-        staticInputRequest: {
-          input_group: inputGroup.id,
-          value: fixedValue.toString(),
-        },
-      });
-    }
-  };
-
   const handleSelectNode = async (
     _: React.ChangeEvent<unknown>,
     nodePath: string
@@ -155,8 +135,6 @@ const FhirResourceTree = (): JSX.Element => {
               },
             });
           }
-          // Create a static input for nodes with a fixed value
-          await createStaticInputWithFixedValue(node, inputGroup);
           history.push(
             `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
           );

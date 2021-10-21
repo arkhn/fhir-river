@@ -11,6 +11,7 @@ import Button from "common/components/Button";
 import FhirResourceAutocomplete from "common/components/FhirResourceAutocomplete";
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
+import useCreateStaticInputFromFixedValue from "features/FhirResourceTree/useCreateStaticInputFromFixedValue";
 import ExistingURIDialog from "features/Inputs/ExistingURIDialog";
 import useCurrentMapping from "features/Mappings/useCurrentMapping";
 import {
@@ -81,6 +82,10 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   };
 
+  const { inputIsDisabled } = useCreateStaticInputFromFixedValue({
+    node: selectedNode,
+  });
+
   const handleStaticValueChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
@@ -146,16 +151,6 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   };
 
-  const isDisabled = () => {
-    if (selectedNode) {
-      const fixedEntry = Object.entries(
-        selectedNode.definitionNode.definition
-      ).find(([key]) => key.startsWith("fixed"));
-      if (fixedEntry && fixedEntry[1] === input.value) return true;
-      else return false;
-    }
-  };
-
   return (
     <Grid container item alignItems="center" direction="row" spacing={1}>
       <Grid item container alignItems="center" xs={10} spacing={2}>
@@ -169,7 +164,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             <TextField
               variant="outlined"
               size="small"
-              disabled={isDisabled()}
+              disabled={inputIsDisabled(input.value)}
               fullWidth
               placeholder={t("typeStaticValueHere")}
               className={classes.input}
@@ -194,7 +189,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             <Button
               variant="outlined"
               onClick={handleGenerateURIClick}
-              disabled={!mapping}
+              disabled={!mapping || inputIsDisabled(input.value)}
             >
               {t("generateURI")}
             </Button>
@@ -217,7 +212,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
       </Grid>
       <Grid item className={classes.iconButtonContainer}>
         <IconButton
-          disabled={isDisabled()}
+          disabled={inputIsDisabled(input.value)}
           size="small"
           className={classes.iconButton}
           onClick={handleDeleteInput}
