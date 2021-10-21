@@ -147,10 +147,11 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
 
   const isDisabled = () => {
     if (selectedNode) {
-      const fixedValueKey = Object.keys(
-        selectedNode?.definitionNode.definition
-      ).find((objectKey) => objectKey.includes("fixed"));
-      return fixedValueKey ? true : false;
+      const fixedEntry = Object.entries(
+        selectedNode.definitionNode.definition
+      ).find(([key]) => key.startsWith("fixed"));
+      if (fixedEntry && fixedEntry[1] === input.value) return true;
+      else return false;
     }
   };
 
@@ -215,6 +216,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
       </Grid>
       <Grid item className={classes.iconButtonContainer}>
         <IconButton
+          disabled={isDisabled()}
           size="small"
           className={classes.iconButton}
           onClick={handleDeleteInput}
