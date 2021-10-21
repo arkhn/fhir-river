@@ -31,12 +31,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
-  icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
-  },
   iconButton: {
     "& > span > span": {
       height: theme.spacing(2),
+      fill: theme.palette.getContrastText(theme.palette.background.paper),
+    },
+    "&.Mui-disabled > span > span": {
+      fill: theme.palette.divider,
     },
     border: `1px solid ${
       theme.palette.type === "dark"
@@ -221,7 +222,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           className={classes.iconButton}
           onClick={handleDeleteInput}
         >
-          <Icon icon={IconNames.TRASH} className={classes.icon} />
+          <Icon icon={IconNames.TRASH} />
         </IconButton>
       </Grid>
     </Grid>
