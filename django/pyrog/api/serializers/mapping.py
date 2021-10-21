@@ -15,7 +15,7 @@ If the source database connection fails, the mapping is not recorded.
 
 from typing import Mapping
 
-from rest_framework import serializers
+from rest_framework import serializers, status
 
 from common.adapters.fhir_api import fhir_api
 from pagai.database_explorer.database_explorer import DatabaseExplorer
@@ -206,11 +206,24 @@ class MappingResourceSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
+        """called on mapping export.
+        The StructureDefinition is fetched from fhir-api
+        if not preset in the instance.
+
+        Args:
+            instance ([dict]): the resource instance
+
+        Returns:
+            [OrderedDict]: the serialized resource
+        """
         if not instance.definition:
             request = self.context.get("request")
             auth_token = request.session.get("oidc_access_token") if request else None
-            instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
-            instance.save()
+            try:
+                instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
+                instance.save()
+            except Exception as e:
+                raise serializers.ValidationError({"definition": [str(e)]}, code=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return super().to_representation(instance)
 
 

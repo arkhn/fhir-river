@@ -16,7 +16,10 @@ import {
   ElementKind,
   DefinitionNode,
 } from "features/FhirResourceTree/resourceTreeSlice";
-import { Attribute } from "services/api/generated/api.generated";
+import {
+  Attribute,
+  AttributeRequest,
+} from "services/api/generated/api.generated";
 
 /**
  * Checks if `elementDefinition` has to be ignored from tree building algorithm
@@ -35,7 +38,8 @@ const isOmittedElement = (elementDefinition: IElementDefinition): boolean => {
     const baseResource = parsedPath[0];
     return baseResource ? omittedResources.includes(baseResource) : false;
   }
-  return false;
+
+  return elementDefinition.max !== undefined && +elementDefinition.max === 0;
 };
 
 /**
@@ -301,42 +305,6 @@ export const buildTree = (
         ? parentElementNode?.path
         : parentElementNode?.path.split(".").slice(0, -1).join("."),
   });
-  const isCurrentNodeRoot = !currentNode.path.includes(".");
-
-  // If current nodeDefinition has slices, we add them as slice items
-  nodeDefinition.sliceDefinitions.forEach((sliceDefinition, index) => {
-    if (
-      sliceDefinition.definition.max &&
-      (sliceDefinition.definition.max === "*" ||
-        +sliceDefinition.definition.max > 0)
-    ) {
-      const sliceElementNode = createElementNode(sliceDefinition, {
-        index: currentNode.isArray ? index : undefined,
-        parentPath: currentNode.path,
-      });
-      currentNode.children.push(sliceElementNode);
-      sliceDefinition.childrenDefinitions.forEach((sliceChildDefinition) => {
-        buildTree(sliceChildDefinition, sliceElementNode);
-      });
-    }
-  });
-
-  // If current node is array, has no children and has definitions, we add an item
-  if (
-    !isCurrentNodeRoot &&
-    currentNode.isArray &&
-    currentNode.children.length === 0 &&
-    nodeDefinition.childrenDefinitions.length > 0
-  ) {
-    const itemNode = createElementNode(nodeDefinition, {
-      index: currentNode.children.length,
-      parentPath: currentNode.path,
-    });
-    currentNode.children.push(itemNode);
-    nodeDefinition.childrenDefinitions.forEach((childNodeDefinition) => {
-      buildTree(childNodeDefinition, itemNode);
-    });
-  }
 
   const isParentRoot =
     parentElementNode !== undefined && !parentElementNode.path.includes(".");
@@ -506,6 +474,14 @@ export const getDefinitionNodeFromItemAttribute = (
     rootElementNode
   );
 
+  if (attribute.slice_name) {
+    const sliceDefinitionNode = attributeParentElementNode?.definitionNode.sliceDefinitions.find(
+      ({ definition }) => definition.sliceName === attribute.slice_name
+    );
+
+    if (sliceDefinitionNode) return sliceDefinitionNode;
+  }
+
   return attributeParentElementNode?.definitionNode;
 };
 
@@ -523,22 +499,22 @@ export const findChildAttributes = (
 };
 
 /**
- * Returns the first available index from the parent node path
- * ie: if parent has 3 children and their path indexes are respectively 1, 2 & 3
+ * Returns the first available index from the `childrenPaths` array
+ * ie: if `childrenPaths` has 3 items and their path indexes are respectively 1, 2 & 3
  * it will return 0.
- * If all path indexes are taken by the parent children, returns parent.childen.length
- * @param parent Parent node from which we want to create the child path
+ * If all path indexes are taken by the items, returns `childrenPaths.length`
+ * @param childrenPaths children paths array
  */
-export const computeChildPathIndex = (parent: ElementNode): number => {
-  const childIndexes = parent.children
+export const computeChildPathIndex = (childrenPaths: string[]): number => {
+  const childIndexes = childrenPaths
     // /[[](\d+)]$/ => matches the last path index. ie: for Identifier[0].type.coding[4] => matches 4
-    .map(({ path }) => path.match(/[[](\d+)]$/)?.[1])
+    .map((path) => path.match(/[[](\d+)]$/)?.[1])
     .filter(Boolean)
     .map((index) => +(index as string));
-  for (let i = 0; i <= parent.children.length; i++) {
+  for (let i = 0; i <= childrenPaths.length; i++) {
     if (!childIndexes.includes(i)) return i;
   }
-  return parent.children.length;
+  return childrenPaths.length;
 };
 
 /**
@@ -556,16 +532,26 @@ export const createElementDefinitionPathOrId = (
 };
 
 /**
- * `Observation.code.coding[0].type` => `[Observation.code, Observation.code.coding, Observation.code.coding[0]]`
+ * `Observation.component[3].valueQuantity` => `[Observation.component, Observation.component[3], Observation.component[3].value[x], Observation.component[3].valueQuantity]`
  * @param path Path to decompose
  * @returns Ancestors paths
  */
-export const getAncestorsPaths = (path: string): string[] =>
-  path.split(".").reduce((acc: string[], val, index, array) => {
-    const decomposedValuePath =
-      computePathWithoutIndexes(val) !== val
-        ? [computePathWithoutIndexes(val), val]
-        : [val];
+export const getAncestorsPaths = (path: string): string[] => {
+  const fhirTypes = [...complexTypes, ...primitiveTypes].map(upperFirst);
+  return path.split(".").reduce((acc: string[], val, index, array) => {
+    const valEndingType = fhirTypes.find((type) => val.endsWith(type));
+    const valWithoutIndex = computePathWithoutIndexes(val);
+
+    const decomposedValuePath: string[] = [];
+
+    if (valWithoutIndex !== val) {
+      decomposedValuePath.push(valWithoutIndex);
+    } else if (valEndingType !== undefined) {
+      const valMultipleChoiceParent = val.replace(valEndingType, "[x]");
+      decomposedValuePath.push(valMultipleChoiceParent);
+    }
+    decomposedValuePath.push(val);
+
     if (index === 0) return [];
     if (index === 1) {
       return decomposedValuePath.map((_val) => `${array[0]}.${_val}`);
@@ -576,3 +562,63 @@ export const getAncestorsPaths = (path: string): string[] =>
       ];
     }
   }, []);
+};
+
+/**
+ * Computes an array of AttributeRequests created for the `node` children slice items.
+ * What is in the array depends on the min cardinality of the `node` slice definitions
+ * & if slice items are already created or not.
+ * @param node Current ElementNode
+ * @param attributes Mapping attributes already existing
+ * @param mappingId Mapping id
+ */
+export const computeArrayItemsAttributeRequests = (
+  node: ElementNode,
+  attributes: Attribute[],
+  mappingId: string
+): AttributeRequest[] => {
+  const nodeChildrenAttribute = attributes.filter(
+    ({ path }) => computePathWithoutIndexes(path) === node.path
+  );
+  const nodeChildrenAttributePaths = nodeChildrenAttribute.map(
+    ({ path }) => path
+  );
+
+  // First create attribute requests for slice items
+  const attributeRequests = [
+    ...node.definitionNode.sliceDefinitions,
+    node.definitionNode,
+  ].reduce((acc: AttributeRequest[], { definition }) => {
+    const isDefinitionSlice = definition.sliceName !== undefined;
+    const minCardinality = definition.min ?? 0;
+
+    /**
+     * If definitionNode is a slice, we only count this type of slice items
+     * Else, if definitionNode is a "simple" definition, we count ALL the items
+     */
+    const itemsCount = isDefinitionSlice
+      ? nodeChildrenAttribute.filter(
+          ({ slice_name }) => slice_name === (definition.sliceName ?? "")
+        ).length
+      : nodeChildrenAttributePaths.length;
+    if (minCardinality > itemsCount) {
+      const itemCountDiff = minCardinality - itemsCount;
+      const itemAttributeRequests: AttributeRequest[] = [];
+      for (let itemIndex = 0; itemIndex < itemCountDiff; itemIndex++) {
+        const pathIndex = computeChildPathIndex(nodeChildrenAttributePaths);
+        const attributePath = `${node.path}[${pathIndex}]`;
+        nodeChildrenAttributePaths.push(attributePath);
+        itemAttributeRequests.push({
+          definition_id: node.type ?? "",
+          path: attributePath,
+          resource: mappingId,
+          slice_name: definition.sliceName,
+        });
+      }
+      return [...acc, ...itemAttributeRequests];
+    }
+
+    return [...acc];
+  }, []);
+  return attributeRequests;
+};

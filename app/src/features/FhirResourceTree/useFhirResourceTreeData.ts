@@ -22,6 +22,7 @@ import {
   buildTreeDefinition,
   createDefinitionNode,
   createElementDefinitionPathOrId,
+  computeArrayItemsAttributeRequests,
 } from "features/FhirResourceTree/resourceTreeUtils";
 import {
   useApiStructureDefinitionRetrieveQuery,
@@ -136,7 +137,7 @@ const useFhirResourceTreeData = (
   const deleteItem = useCallback(async () => {
     const attributeToDelete = attributes?.find(({ path }) => path === nodePath);
 
-    if (attributeToDelete && !attributeToDelete.slice_name) {
+    if (attributeToDelete) {
       const childAttributes =
         attributes && findChildAttributes(attributeToDelete, attributes);
       childAttributes &&
@@ -151,7 +152,8 @@ const useFhirResourceTreeData = (
       if (nodePath && rootElementNode) {
         const parentNode = getElementNodeByPath(nodePath, rootElementNode);
         if (parentNode && parentNode.isArray && parentNode.type && mappingId) {
-          const pathIndex = computeChildPathIndex(parentNode);
+          const childrenPaths = parentNode.children.map(({ path }) => path);
+          const pathIndex = computeChildPathIndex(childrenPaths);
           const attributePath = `${parentNode.path}[${pathIndex}]`;
           await createAttribute({
             attributeRequest: {
@@ -173,7 +175,8 @@ const useFhirResourceTreeData = (
       ({ type }) => type === "Extension"
     );
     if (extensionArrayNode && extensionArrayNode.type && mappingId) {
-      const pathIndex = computeChildPathIndex(extensionArrayNode);
+      const childrenPaths = extensionArrayNode.children.map(({ path }) => path);
+      const pathIndex = computeChildPathIndex(childrenPaths);
       const attributePath = `${extensionArrayNode.path}[${pathIndex}]`;
       await createAttribute({
         attributeRequest: {
@@ -220,7 +223,14 @@ const useFhirResourceTreeData = (
     }
   }, [dispatch, attributes, prevAttributes, rootElementNode, node]);
 
-  // Add attribute items to array nodes
+  /**
+   * Add attribute items / slice items to array nodes
+   * We create simple/slice items if existing items count is less than what's specified
+   * by the definition min cardinality attribute.
+   *
+   * If we don't have to, and that the array node is empty, we still create a simple
+   * item in it
+   */
   useEffect(() => {
     const addItemToEmptyArray = async () => {
       if (
@@ -228,13 +238,27 @@ const useFhirResourceTreeData = (
         node.isArray &&
         attributes &&
         node.type !== "Extension" &&
-        node.children.length === 0 &&
-        !isAttributesFetching
+        !isAttributesFetching &&
+        mappingId
       ) {
+        const itemsAttributeRequests = computeArrayItemsAttributeRequests(
+          node,
+          attributes,
+          mappingId
+        );
+
+        await Promise.all(
+          itemsAttributeRequests.map((attributeRequest) =>
+            createAttribute({ attributeRequest }).unwrap()
+          )
+        );
+
         const hasNodeChildren = attributes.some(({ path }) =>
           path.startsWith(node.path)
         );
-        if (!hasNodeChildren) {
+
+        // We create an item only of array node has no items
+        if (!hasNodeChildren && itemsAttributeRequests.length === 0) {
           await createItem();
         }
       }

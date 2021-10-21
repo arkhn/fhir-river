@@ -173,39 +173,45 @@ export const structureDefinitionFactory = Factory.define<IStructureDefinition>(
   }
 );
 
-export const definitionNodeFactory = Factory.define<DefinitionNode>(() => ({
-  definition: { id: "Observation.code", path: "Observation.code" },
-  childrenDefinitions: [
-    {
-      definition: {
-        id: "Observation.code.coding",
-        path: "Observation.code.coding",
-      },
-      childrenDefinitions: [],
-      sliceDefinitions: [],
+export const definitionNodeFactory = Factory.define<DefinitionNode>(
+  ({ associations }) => ({
+    definition: {
+      id: "Observation.code",
+      path: "Observation.code",
     },
-  ],
-  sliceDefinitions: [
-    {
-      definition: {
-        id: "Observation.code:codeSlice",
-        path: "Observation.code",
-        sliceName: "codeSlice",
-      },
-      childrenDefinitions: [
-        {
-          definition: {
-            id: "Observation.code:codeSlice.coding",
-            path: "Observation.code.coding",
-          },
-          childrenDefinitions: [],
-          sliceDefinitions: [],
+    childrenDefinitions: [
+      {
+        definition: {
+          id: "Observation.code.coding",
+          path: "Observation.code.coding",
         },
-      ],
-      sliceDefinitions: [],
-    },
-  ],
-}));
+        childrenDefinitions: [],
+        sliceDefinitions: [],
+      },
+    ],
+    sliceDefinitions: [
+      {
+        definition: {
+          id: "Observation.code:codeSlice",
+          path: "Observation.code",
+          sliceName: "codeSlice",
+          min: associations.sliceDefinitions?.[0]?.definition.min,
+        },
+        childrenDefinitions: [
+          {
+            definition: {
+              id: "Observation.code:codeSlice.coding",
+              path: "Observation.code.coding",
+            },
+            childrenDefinitions: [],
+            sliceDefinitions: [],
+          },
+        ],
+        sliceDefinitions: [],
+      },
+    ],
+  })
+);
 
 export const elementNodeFactory = Factory.define<
   ElementNode,

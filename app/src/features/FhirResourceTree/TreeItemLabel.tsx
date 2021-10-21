@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { SyntheticEvent, useMemo } from "react";
 
+import { IElementDefinition } from "@ahryman40k/ts-fhir-types/lib/R4";
 import { Icon } from "@blueprintjs/core";
 import { IconName, IconNames } from "@blueprintjs/icons";
-import { makeStyles, Tooltip, Typography } from "@material-ui/core";
-import { usePopupState } from "material-ui-popup-state/hooks";
+import {
+  makeStyles,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from "@material-ui/core";
+import {
+  usePopupState,
+  bindMenu,
+  bindTrigger,
+} from "material-ui-popup-state/hooks";
 import { useTranslation } from "react-i18next";
 
 import IconButton from "common/components/IconButton";
+import useGetNodeItemAttributes from "common/hooks/useGetNodeItemAttributes";
 
 import { ElementNode } from "./resourceTreeSlice";
-import SliceNameDialog from "./SliceNameDialog";
 import TreeNodeBadge from "./TreeNodeBadge";
 
 type TreeItemLabelProps = {
@@ -40,9 +51,9 @@ const useStyle = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     fill: theme.palette.icons.resourceTree.main,
+    marginRight: theme.spacing(1),
   },
   treeItemTitle: {
-    marginLeft: theme.spacing(1),
     fontWeight: 500,
   },
   treeItemType: {
@@ -66,11 +77,26 @@ const TreeItemLabel = ({
 }: TreeItemLabelProps): JSX.Element => {
   const classes = useStyle();
   const { t } = useTranslation();
+  const nodeChildItemAttributes = useGetNodeItemAttributes(elementNode);
   const popupState = usePopupState({
     variant: "popover",
     popupId: `popup-${elementNode.id}`,
   });
-  const [isSliceDialogOpen, setSliceDialogOpen] = useState(false);
+  // [itemDefinition, ...sliceDefinitions]
+  const nodeDefinitions = useMemo(
+    () => [
+      elementNode.definitionNode.definition,
+      ...elementNode.definitionNode.sliceDefinitions.map(
+        ({ definition }) => definition
+      ),
+    ],
+    [
+      elementNode.definitionNode.definition,
+      elementNode.definitionNode.sliceDefinitions,
+    ]
+  );
+  const hasElementNodeSliceDefinitions =
+    elementNode.definitionNode.sliceDefinitions.length > 0;
 
   let iconName: IconName | null = null;
 
@@ -93,43 +119,45 @@ const TreeItemLabel = ({
         : (iconName = IconNames.LAYERS);
   }
 
-  const handleDeleteItemClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
+  const handleStopPropagation = (e: SyntheticEvent) => e.stopPropagation();
+
+  const isMenuItemDisabled = (definition: IElementDefinition): boolean => {
+    const definitionChildItemsLength =
+      nodeChildItemAttributes?.filter(
+        ({ slice_name }) => slice_name === (definition.sliceName ?? "")
+      ).length ?? 0;
+    const hasItemCountLimitBeenReached =
+      definition.max !== undefined &&
+      definition.max !== "*" &&
+      definitionChildItemsLength >= +definition.max;
+    return hasItemCountLimitBeenReached;
+  };
+
+  const handleDeleteItemClick = () => {
     onDeleteItem();
   };
 
-  const handleAddExtensionClick = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
+  const handleAddExtensionClick = () => {
     onAddExtension();
   };
 
-  const handleSliceDialogOpen = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.stopPropagation();
+  const handlePoppupClose = () => {
     popupState.close();
-    setSliceDialogOpen(true);
-  };
-
-  const handleSliceDialogClose = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setSliceDialogOpen(false);
-  };
-
-  const handleAddSlice = (name: string) => {
-    onCreateItem(name);
   };
 
   const handleAddItemClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    e.stopPropagation();
+    if (hasElementNodeSliceDefinitions) {
+      popupState.open(e);
+    } else {
+      onCreateItem();
+    }
+  };
+
+  const handleAddItemOrSlice = (sliceName?: string) => () => {
+    onCreateItem(sliceName);
     popupState.close();
-    onCreateItem();
   };
 
   return (
@@ -152,53 +180,79 @@ const TreeItemLabel = ({
       >
         {elementNode.type}
       </Typography>
-      {elementNode.kind === "complex" && !elementNode.isArray && (
-        <Tooltip title={t<string>("addExtension")} arrow>
-          <div>
-            <IconButton
-              icon={IconNames.CODE_BLOCK}
-              onClick={handleAddExtensionClick}
-            />
-          </div>
-        </Tooltip>
-      )}
-      {isArrayItem && (
-        <Tooltip
-          title={t<string>(
-            elementNode.sliceName ? "deleteSlice" : "deleteItem"
-          )}
-          arrow
-        >
-          <div>
-            <IconButton
-              icon={IconNames.TRASH}
-              onClick={handleDeleteItemClick}
-            />
-          </div>
-        </Tooltip>
-      )}
-      {elementNode.isArray && elementNode.type !== "Extension" && (
-        <>
-          <Tooltip title={t<string>("addItem")} arrow>
-            <div>
-              <IconButton icon={IconNames.ADD} onClick={handleAddItemClick} />
-            </div>
-          </Tooltip>
-          <Tooltip title={t<string>("addSlice")} arrow>
+      <div
+        className={classes.treeItemContainer}
+        onClick={handleStopPropagation}
+      >
+        {elementNode.kind === "complex" && !elementNode.isArray && (
+          <Tooltip title={t<string>("addExtension")} arrow>
             <div>
               <IconButton
-                icon={IconNames.PIE_CHART}
-                onClick={handleSliceDialogOpen}
+                icon={IconNames.CODE_BLOCK}
+                onClick={handleAddExtensionClick}
               />
             </div>
           </Tooltip>
-          <SliceNameDialog
-            onSubmit={handleAddSlice}
-            open={isSliceDialogOpen}
-            onClose={handleSliceDialogClose}
-          />
-        </>
-      )}
+        )}
+        {isArrayItem && (
+          <Tooltip
+            title={t<string>(
+              elementNode.sliceName ? "deleteSlice" : "deleteItem"
+            )}
+            arrow
+          >
+            <div>
+              <IconButton
+                icon={IconNames.TRASH}
+                onClick={handleDeleteItemClick}
+              />
+            </div>
+          </Tooltip>
+        )}
+        {elementNode.isArray && elementNode.type !== "Extension" && (
+          <>
+            <Tooltip title={t<string>("addItem")} arrow>
+              <div>
+                <IconButton
+                  icon={IconNames.ADD}
+                  {...bindTrigger(popupState)}
+                  disabled={
+                    !hasElementNodeSliceDefinitions &&
+                    isMenuItemDisabled(elementNode.definitionNode.definition)
+                  }
+                  onClick={handleAddItemClick}
+                />
+              </div>
+            </Tooltip>
+            {hasElementNodeSliceDefinitions && (
+              <Menu {...bindMenu(popupState)} onClose={handlePoppupClose}>
+                {nodeDefinitions.map((definition) => (
+                  <MenuItem
+                    key={definition.id}
+                    onClick={handleAddItemOrSlice(definition.sliceName)}
+                    disabled={isMenuItemDisabled(definition)}
+                  >
+                    <>
+                      <Icon
+                        className={classes.icon}
+                        icon={
+                          definition.sliceName
+                            ? IconNames.PIE_CHART
+                            : IconNames.ADD
+                        }
+                        iconSize={15}
+                      />
+                      <Typography>
+                        {definition.sliceName ?? t("item")}
+                      </Typography>
+                    </>
+                  </MenuItem>
+                ))}
+              </Menu>
+            )}
+          </>
+        )}
+      </div>
       <TreeNodeBadge elementNode={elementNode} />
     </div>
   );

@@ -4,10 +4,12 @@ import {
   elementNodeFactory,
   structureDefinitionFactory,
 } from "services/api/factory";
+import { AttributeRequest } from "services/api/generated/api.generated";
 
 import {
   buildTree,
   buildTreeDefinition,
+  computeArrayItemsAttributeRequests,
   computeChildPathIndex,
   computePathWithoutIndexes,
   createDefinitionNode,
@@ -83,7 +85,9 @@ describe("computeChildPathIndex", () => {
       {},
       { transient: { childrenIndexes: [0, 1] } }
     );
-    expect(computeChildPathIndex(rootElementNode)).toBe(2);
+    expect(
+      computeChildPathIndex(rootElementNode.children.map(({ path }) => path))
+    ).toBe(2);
   });
 
   it("indexes 0 & 2 are taken", () => {
@@ -91,7 +95,9 @@ describe("computeChildPathIndex", () => {
       {},
       { transient: { childrenIndexes: [0, 2] } }
     );
-    expect(computeChildPathIndex(rootElementNode)).toBe(1);
+    expect(
+      computeChildPathIndex(rootElementNode.children.map(({ path }) => path))
+    ).toBe(1);
   });
 });
 
@@ -290,5 +296,201 @@ describe("getAncestorsPaths", () => {
       "Observation.code.coding[0].type.code.coding[3]",
       path,
     ]);
+  });
+  it("path with multiple choice", () => {
+    const path = "Observation.component[3].valueQuantity";
+    expect(getAncestorsPaths(path)).toStrictEqual([
+      "Observation.component",
+      "Observation.component[3]",
+      "Observation.component[3].value[x]",
+      path,
+    ]);
+  });
+});
+
+describe("computeSliceAttributeRequests", () => {
+  const mappingId = "1";
+  it("with simple slice and min cardinality === 1", () => {
+    const rootElementNode = elementNodeFactory.build();
+    const rootDefinitionNode = definitionNodeFactory.build({
+      sliceDefinitions: [
+        {
+          definition: { min: 1 },
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+        },
+      ],
+    });
+
+    expect(rootDefinitionNode.childrenDefinitions.length).toBe(1);
+    expect(rootDefinitionNode.sliceDefinitions.length).toBe(1);
+
+    rootElementNode.definitionNode = rootDefinitionNode;
+
+    const attributeRequests = computeArrayItemsAttributeRequests(
+      rootElementNode,
+      [],
+      mappingId
+    );
+
+    const expectedResult: Partial<AttributeRequest>[] = [
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[0]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+    ];
+
+    expect(attributeRequests).toStrictEqual(expectedResult);
+  });
+
+  it("with simple slice and min cardinality === 3", () => {
+    const rootElementNode = elementNodeFactory.build();
+    const rootDefinitionNode = definitionNodeFactory.build({
+      sliceDefinitions: [
+        {
+          definition: { min: 3 },
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+        },
+      ],
+    });
+
+    expect(rootDefinitionNode.childrenDefinitions.length).toBe(1);
+    expect(rootDefinitionNode.sliceDefinitions.length).toBe(1);
+
+    rootElementNode.definitionNode = rootDefinitionNode;
+
+    const attributeRequests = computeArrayItemsAttributeRequests(
+      rootElementNode,
+      [],
+      mappingId
+    );
+
+    const expectedResult: Partial<AttributeRequest>[] = [
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[0]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[1]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[2]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+    ];
+
+    expect(attributeRequests).toStrictEqual(expectedResult);
+  });
+
+  it("node has already a child with index 0 and min = 1", () => {
+    const rootElementNode = elementNodeFactory.build();
+    const attribute = attributeFactory.build({
+      path: `${rootElementNode.path}[0]`,
+      resource: mappingId,
+      definition_id: rootElementNode.type,
+    });
+    const rootDefinitionNode = definitionNodeFactory.build({
+      sliceDefinitions: [
+        {
+          definition: { min: 1, sliceName: "CodeSlice" },
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+        },
+      ],
+    });
+
+    expect(rootDefinitionNode.childrenDefinitions.length).toBe(1);
+    expect(rootDefinitionNode.sliceDefinitions.length).toBe(1);
+
+    rootElementNode.definitionNode = rootDefinitionNode;
+
+    const attributeRequests = computeArrayItemsAttributeRequests(
+      rootElementNode,
+      [attribute],
+      mappingId
+    );
+
+    const expectedResult: Partial<AttributeRequest>[] = [
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[1]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+    ];
+
+    expect(attributeRequests).toStrictEqual(expectedResult);
+  });
+
+  it("node has already a child with index 1 and min = 3", () => {
+    const rootElementNode = elementNodeFactory.build(undefined, {
+      transient: { childrenIndexes: [1] },
+    });
+    const attribute = attributeFactory.build({
+      path: rootElementNode.children[0]?.path,
+      resource: mappingId,
+      definition_id: rootElementNode.type,
+    });
+    const rootDefinitionNode = definitionNodeFactory.build({
+      sliceDefinitions: [
+        {
+          definition: { min: 3, sliceName: "CodeSlice" },
+          childrenDefinitions: [],
+          sliceDefinitions: [],
+        },
+      ],
+    });
+
+    expect(rootDefinitionNode.childrenDefinitions.length).toBe(1);
+    expect(rootDefinitionNode.sliceDefinitions.length).toBe(1);
+
+    rootElementNode.definitionNode = rootDefinitionNode;
+
+    const attributeRequests = computeArrayItemsAttributeRequests(
+      rootElementNode,
+      [attribute],
+      mappingId
+    );
+
+    const expectedResult: Partial<AttributeRequest>[] = [
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[0]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[2]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+      {
+        definition_id: rootElementNode.type,
+        path: `${rootElementNode.path}[3]`,
+        resource: mappingId,
+        slice_name:
+          rootDefinitionNode.sliceDefinitions[0]?.definition.sliceName,
+      },
+    ];
+
+    expect(attributeRequests).toStrictEqual(expectedResult);
   });
 });
