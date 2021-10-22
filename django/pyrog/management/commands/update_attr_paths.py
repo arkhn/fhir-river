@@ -18,7 +18,7 @@ class Command(BaseCommand):
         resources = models.Resource.objects.all()
         for resource in resources:
             serialized_resource = serializers.ResourceSerializer(resource).data
-            resource_type = serialized_resource["definition"]["resourceType"]
+            resource_type = serialized_resource["definition"]["type"]
             attributes = models.Attribute.objects.filter(resource=resource.id)
             for attribute in attributes:
                 if not attribute.path.startswith(resource_type):
