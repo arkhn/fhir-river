@@ -1,6 +1,7 @@
 import pytest
 
 from river.adapters.event_publisher import InMemoryEventPublisher
+from river.adapters.progression_counter import InMemoryProgressionCounter
 from river.adapters.topics import InMemoryTopicsManager
 from river.domain.events import BatchEvent
 from river.services import abort, batch, preview
@@ -23,14 +24,27 @@ def test_batch(batch_factory, resource_factory):
     ]
 
 
-def test_abort(batch):
+def test_abort(batch_factory, resource_factory):
+    r1 = resource_factory.create(definition_id="Patient")
+    r2 = resource_factory.create(definition_id="Practitioner")
+    batch = batch_factory.create(resources=[r1, r2])
+
     topics = InMemoryTopicsManager(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
-
-    abort(batch, topics)
+    counter = InMemoryProgressionCounter(
+        {
+            f"{batch.id}:{r1.id}": {"extracted": 100, "loaded": 20, "failed": 3},
+            f"{batch.id}:{r2.id}": {"extracted": 200, "loaded": 10, "failed": None},
+        },
+    )
+    abort(batch, topics, counter)
 
     assert batch.canceled_at is not None
+    assert batch.progressions == [
+        ["Patient", {"extracted": 100, "loaded": 20, "failed": 3}],
+        ["Practitioner", {"extracted": 200, "loaded": 10, "failed": None}],
+    ]
     assert topics._topics == set()
 
 
