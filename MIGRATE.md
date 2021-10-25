@@ -16,9 +16,6 @@
 # redeploy river
 make river
 
-# run river migration until pyrog 0002
- docker exec -ti `docker ps -q -f "name=river-api"` python django/manage.py migrate pyrog 0002
-
  # grant access to pyrog schema to river_postgres_user
 docker exec -ti `docker ps -q -f "name=postgres"`  psql -U prisma -d prisma -c "grant all on schema pyrog to river;"
 docker exec -ti `docker ps -q -f "name=postgres"`  psql -U prisma -d prisma -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA pyrog to river;"
@@ -29,4 +26,7 @@ PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres -d $POSTGRES_DB -U $POSTGRES_USER
 
 # run all river migrations
  docker exec -ti `docker ps -q -f "name=river-api"` python django/manage.py migrate
+ 
+# update attributes paths
+  docker exec -ti `docker ps -q -f "name=river-api"` python django/manage.py update_attr_paths
 ```
