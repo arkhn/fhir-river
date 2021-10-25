@@ -1,6 +1,10 @@
+import dataclasses
+from typing import Dict
+
 from rest_framework import serializers
 
 from river import models
+from river.adapters.progression_counter import RedisProgressionCounter
 
 
 class ErrorSerializer(serializers.ModelSerializer):
@@ -11,6 +15,7 @@ class ErrorSerializer(serializers.ModelSerializer):
 
 class BatchSerializer(serializers.ModelSerializer):
     errors = ErrorSerializer(many=True, read_only=True)
+    progressions = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Batch
@@ -20,6 +25,19 @@ class BatchSerializer(serializers.ModelSerializer):
             "canceled_at": {"allow_null": True},
             "completed_at": {"allow_null": True},
         }
+
+    def get_progressions(self, obj) -> Dict[str, Dict]:
+        """Fetch the number of extracted and loaded resources from redis."""
+        counter = RedisProgressionCounter()
+
+        progressions = {
+            f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}": dataclasses.asdict(
+                counter.get(f"{obj.id}:{resource.id}")
+            )
+            for resource in obj.resources.all()
+        }
+
+        return progressions
 
 
 class PreviewRequestSerializer(serializers.Serializer):
