@@ -18,7 +18,7 @@ type ValueSetSelectProps = {
 
 const useStyles = makeStyles((theme) => ({
   input: {
-    maxWidth: 534,
+    maxWidth: theme.mixins.input.maxWidth,
   },
   inputStartAdornment: {
     fill: theme.palette.text.disabled,
