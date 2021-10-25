@@ -1,6 +1,6 @@
+import dataclasses
 import logging
 from time import sleep
-from typing import List
 
 from django.utils import timezone
 
@@ -20,29 +20,32 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
     current_batches = Batch.objects.filter(completed_at__isnull=True, canceled_at__isnull=True).prefetch_related(
         "resources"
     )
-    batches_to_delete: List[Batch] = []
 
     for batch in current_batches:
-        resources_progressions = [counter.get(f"{batch.id}:{resource.id}") for resource in batch.resources.all()]
+        progressions = [
+            [
+                f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}",
+                counter.get(f"{batch.id}:{resource.id}"),
+            ]
+            for resource in batch.resources.all()
+        ]
 
         if all(
             [
                 progression is not None
                 and progression.extracted is not None
                 and ((progression.loaded or 0) + (progression.failed or 0)) >= progression.extracted
-                for progression in resources_progressions
+                for _, progression in progressions
             ]
         ):
-            batches_to_delete.append(batch)
+            logger.info(f"Deleting batch {batch}.")
 
-    if batches_to_delete:
-        logger.info(f"Deleting batches: {batches_to_delete}.")
+            teardown_after_batch(batch, topics)
+            batch.completed_at = timezone.now()
+            batch.progressions = [(key, dataclasses.asdict(progression)) for key, progression in progressions]
+            batch.save()
 
-    for batch in batches_to_delete:
-        teardown_after_batch(batch, topics)
-        batch.completed_at = timezone.now()
-        batch.save()
-        logger.info(f"Batch {batch} deleted.")
+            logger.info(f"Batch {batch} deleted.")
 
 
 def run(counter: ProgressionCounter, topics: TopicsManager):

@@ -1,5 +1,6 @@
 import pytest
 
+from river import models
 from river.adapters.progression_counter import InMemoryProgressionCounter
 from river.adapters.topics import InMemoryTopicsManager
 from river.topicleaner.service import clean
@@ -20,6 +21,11 @@ def test_done_batch_is_cleaned(batch_factory, resource_factory):
     clean(counters, topics)
 
     assert topics._topics == set()
+    batches = models.Batch.objects.all()
+    assert len(batches) == 1
+    assert batches[0].completed_at is not None
+    for _, progression in batches[0].progressions:
+        assert progression == {"extracted": 10, "loaded": 10, "failed": None}
 
 
 def test_done_batch_is_cleaned_with_failed(batch_factory, resource_factory):
@@ -37,6 +43,11 @@ def test_done_batch_is_cleaned_with_failed(batch_factory, resource_factory):
     clean(counters, topics)
 
     assert topics._topics == set()
+    batches = models.Batch.objects.all()
+    assert len(batches) == 1
+    assert batches[0].completed_at is not None
+    for _, progression in batches[0].progressions:
+        assert progression == {"extracted": 10, "loaded": 6, "failed": 4}
 
 
 def test_ongoing_batch_is_not_cleaned(batch_factory, resource_factory):
