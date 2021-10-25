@@ -15,6 +15,14 @@ def set_counters(redis_client, batch, r1, r2):
     redis_client.hset("failed_counters", f"{batch.id}:{r2.id}", 3)
 
 
+def clear_counters(redis_client, batch, r1, r2):
+    redis_client.delete("extracted_counters", f"{batch.id}:{r1.id}")
+    redis_client.delete("loaded_counters", f"{batch.id}:{r1.id}")
+    redis_client.delete("extracted_counters", f"{batch.id}:{r2.id}")
+    redis_client.delete("loaded_counters", f"{batch.id}:{r2.id}")
+    redis_client.delete("failed_counters", f"{batch.id}:{r2.id}")
+
+
 def test_create_batch(api_client, resource_factory, kafka_admin):
     resources = resource_factory.create_batch(2)
     data = {"resources": [resource.id for resource in resources]}
@@ -63,10 +71,10 @@ def test_get_batch_progression(api_client, batch_factory, resource_factory, redi
     assert response.status_code == 200
     assert len(response.data) == 1
     batch_response = response.json()[0]
-    assert batch_response["progressions"] == {
-        "Patient": {"extracted": 10, "loaded": 5, "failed": None},
-        "Practitioner": {"extracted": 20, "loaded": 5, "failed": 3},
-    }
+    assert batch_response["progressions"] == [
+        ["Patient", {"extracted": 10, "loaded": 5, "failed": None}],
+        ["Practitioner", {"extracted": 20, "loaded": 5, "failed": 3}],
+    ]
 
 
 def test_filter_batches_by_sources(api_client, batch_factory, source_factory, resource_factory):
@@ -108,13 +116,16 @@ def test_delete_batch(api_client, redis_client, batch_factory, resource_factory,
     response = api_client.delete(url)
     assert response.status_code == 204, response.data
 
+    clear_counters(redis_client, batch, r1, r2)
+
     batches = models.Batch.objects.all()
     assert len(batches) == 1
     assert batches[0].canceled_at is not None
-    assert batches[0].progressions == {
-        "Patient": {"extracted": 10, "loaded": 5, "failed": None},
-        "Practitioner": {"extracted": 20, "loaded": 5, "failed": 3},
-    }
+    print(batches[0].progressions)
+    assert batches[0].progressions == [
+        ["Patient", {"extracted": 10, "loaded": 5, "failed": None}],
+        ["Practitioner", {"extracted": 20, "loaded": 5, "failed": 3}],
+    ]
 
     # Check that topics are deleted
     topics = kafka_admin.list_topics().topics

@@ -38,12 +38,14 @@ def abort(batch: models.Batch, topics_manager: TopicsManager, counter: Progressi
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.delete(f"{base_topic}.{batch.id}")
 
-    progressions = {
-        f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}": dataclasses.asdict(
-            counter.get(f"{batch.id}:{resource.id}")
-        )
+    progressions = [
+        [
+            f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}",
+            dataclasses.asdict(counter.get(f"{batch.id}:{resource.id}")),
+        ]
         for resource in batch.resources.all()
-    }
+    ]
+    print(progressions)
 
     batch.canceled_at = timezone.now()
     batch.progressions = progressions

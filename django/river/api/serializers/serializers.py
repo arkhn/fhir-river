@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from rest_framework import serializers
 
@@ -26,7 +26,7 @@ class BatchSerializer(serializers.ModelSerializer):
             "completed_at": {"allow_null": True},
         }
 
-    def get_progressions(self, obj) -> Dict[str, Dict]:
+    def get_progressions(self, obj) -> List[Tuple[str, Dict]]:
         """Fetch the number of extracted and loaded resources from redis."""
         counter = RedisProgressionCounter()
 
@@ -34,12 +34,13 @@ class BatchSerializer(serializers.ModelSerializer):
         if obj.progressions:
             return obj.progressions
 
-        progressions = {
-            f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}": dataclasses.asdict(
-                counter.get(f"{obj.id}:{resource.id}")
-            )
+        progressions = [
+            [
+                f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}",
+                dataclasses.asdict(counter.get(f"{obj.id}:{resource.id}")),
+            ]
             for resource in obj.resources.all()
-        }
+        ]
 
         return progressions
 
