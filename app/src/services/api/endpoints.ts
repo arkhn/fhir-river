@@ -50,9 +50,17 @@ export const api = generatedApi
         transformResponse: (response: IBundle) =>
           response.entry?.map(({ resource }) => resource as IConceptMap) || [],
       }),
-      apiValueSetsRetrieve: build.query<IValueSet | undefined, { id: string }>({
+      apiValueSetsRetrieve: build.query<
+        IValueSet | undefined,
+        { id: string; url?: string }
+      >({
         query: (queryArg) => ({
-          url: `/api/fhir/ValueSet/${queryArg.id}/$expand?`,
+          url: `/api/fhir/ValueSet/${
+            queryArg.id ? `${queryArg.id}/` : ""
+          }$expand`,
+          params: {
+            url: queryArg.url,
+          },
         }),
       }),
       apiStructureDefinitionList: build.query<
