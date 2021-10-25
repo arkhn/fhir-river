@@ -90,6 +90,10 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     { skip: !valueSetUrl }
   );
 
+  const isValueSetValid = inputValueSet?.expansion?.contains?.some(
+    ({ code, display }) => code !== undefined && display !== undefined
+  );
+
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
@@ -172,7 +176,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
               value={input.value ?? ""}
               onChange={handleFhirResourceAutocompleteChange}
             />
-          ) : inputValueSet ? (
+          ) : inputValueSet && isValueSetValid ? (
             <ValueSetSelect input={input} valueSet={inputValueSet} />
           ) : (
             <TextField
