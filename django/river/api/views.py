@@ -9,6 +9,7 @@ from pyrog import models as pyrog_models
 from pyrog.api.serializers.mapping import MappingSerializer
 from river import models as river_models
 from river.adapters.event_publisher import KafkaEventPublisher
+from river.adapters.progression_counter import RedisProgressionCounter
 from river.adapters.topics import KafkaTopicsManager
 from river.api import filters
 from river.api.serializers import serializers
@@ -55,7 +56,8 @@ class BatchViewSet(viewsets.ModelViewSet):
         batch_instance = self.get_object()
 
         topics_manager = KafkaTopicsManager()
-        abort(batch_instance, topics_manager)
+        redis_counter = RedisProgressionCounter()
+        abort(batch_instance, topics_manager, redis_counter)
 
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 

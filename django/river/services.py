@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from typing import Any, List, Optional, Tuple
 
@@ -7,6 +8,7 @@ from common.adapters.fhir_api import fhir_api
 from pyrog.models import Resource
 from river import models
 from river.adapters.event_publisher import EventPublisher
+from river.adapters.progression_counter import ProgressionCounter
 from river.adapters.topics import TopicsManager
 from river.common.analyzer import Analyzer
 from river.common.database_connection.db_connection import DBConnection
@@ -32,12 +34,20 @@ def batch(
         )
 
 
-def abort(batch: models.Batch, topics_manager: TopicsManager) -> None:
+def abort(batch: models.Batch, topics_manager: TopicsManager, counter: ProgressionCounter) -> None:
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.delete(f"{base_topic}.{batch.id}")
 
+    progressions = {
+        f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}": dataclasses.asdict(
+            counter.get(f"{batch.id}:{resource.id}")
+        )
+        for resource in batch.resources.all()
+    }
+
     batch.canceled_at = timezone.now()
-    batch.save(update_fields=["canceled_at"])
+    batch.progressions = progressions
+    batch.save()
 
 
 def retry(batch: models.Batch) -> None:

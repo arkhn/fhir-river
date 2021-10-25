@@ -30,6 +30,10 @@ class BatchSerializer(serializers.ModelSerializer):
         """Fetch the number of extracted and loaded resources from redis."""
         counter = RedisProgressionCounter()
 
+        # If batch is over, the counter won't necessarily be in redis
+        if obj.progressions:
+            return obj.progressions
+
         progressions = {
             f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}": dataclasses.asdict(
                 counter.get(f"{obj.id}:{resource.id}")

@@ -7,6 +7,14 @@ from river import models
 pytestmark = [pytest.mark.django_db, pytest.mark.kafka]
 
 
+def set_counters(redis_client, batch, r1, r2):
+    redis_client.hset("extracted_counters", f"{batch.id}:{r1.id}", 10)
+    redis_client.hset("loaded_counters", f"{batch.id}:{r1.id}", 5)
+    redis_client.hset("extracted_counters", f"{batch.id}:{r2.id}", 20)
+    redis_client.hset("loaded_counters", f"{batch.id}:{r2.id}", 5)
+    redis_client.hset("failed_counters", f"{batch.id}:{r2.id}", 3)
+
+
 def test_create_batch(api_client, resource_factory, kafka_admin):
     resources = resource_factory.create_batch(2)
     data = {"resources": [resource.id for resource in resources]}
@@ -48,11 +56,7 @@ def test_get_batch_progression(api_client, batch_factory, resource_factory, redi
     r2 = resource_factory.create(definition_id="Practitioner")
     batch = batch_factory.create(resources=[r1, r2])
 
-    redis_client.hset("extracted_counters", f"{batch.id}:{r1.id}", 10)
-    redis_client.hset("loaded_counters", f"{batch.id}:{r1.id}", 5)
-    redis_client.hset("extracted_counters", f"{batch.id}:{r2.id}", 20)
-    redis_client.hset("loaded_counters", f"{batch.id}:{r2.id}", 5)
-    redis_client.hset("failed_counters", f"{batch.id}:{r2.id}", 3)
+    set_counters(redis_client, batch, r1, r2)
 
     response = api_client.get(url)
 
@@ -93,10 +97,13 @@ def test_retrieve_batch(api_client, batch_factory, resource_factory):
     assert response.json()["completed_at"] is None
 
 
-def test_delete_batch(api_client, batch_factory, kafka_admin):
-    batch = batch_factory.create()
-    batch_id = batch.id
-    url = reverse("batches-detail", kwargs={"pk": batch_id})
+def test_delete_batch(api_client, redis_client, batch_factory, resource_factory, kafka_admin):
+    r1 = resource_factory.create(definition_id="Patient")
+    r2 = resource_factory.create(definition_id="Practitioner")
+    batch = batch_factory.create(resources=[r1, r2])
+    url = reverse("batches-detail", kwargs={"pk": batch.id})
+
+    set_counters(redis_client, batch, r1, r2)
 
     response = api_client.delete(url)
     assert response.status_code == 204, response.data
@@ -104,8 +111,12 @@ def test_delete_batch(api_client, batch_factory, kafka_admin):
     batches = models.Batch.objects.all()
     assert len(batches) == 1
     assert batches[0].canceled_at is not None
+    assert batches[0].progressions == {
+        "Patient": {"extracted": 10, "loaded": 5, "failed": None},
+        "Practitioner": {"extracted": 20, "loaded": 5, "failed": 3},
+    }
 
     # Check that topics are deleted
     topics = kafka_admin.list_topics().topics
     for base_topic in ["batch", "extract", "transform", "load"]:
-        assert f"{base_topic}.{batch_id}" not in topics
+        assert f"{base_topic}.{batch.id}" not in topics
