@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Dict, List, Tuple
+from typing import List
 
 from rest_framework import serializers
 
@@ -26,8 +26,15 @@ class BatchSerializer(serializers.ModelSerializer):
             "completed_at": {"allow_null": True},
         }
 
-    def get_progressions(self, obj) -> List[Tuple[str, Dict]]:
-        """Fetch the number of extracted and loaded resources from redis."""
+    def get_progressions(self, obj) -> List[List]:
+        """
+        Fetch the number of extracted and loaded resources from redis.
+        Returns a list of lists that looks like:
+        [
+            ["Patient", {"extracted": 100, "loaded": 20, "failed": 3}],
+            ["Practitioner (nurse)", {"extracted": 200, "loaded": 10, "failed": None}],
+        ]
+        """
         counter = RedisProgressionCounter()
 
         # If batch is over, the counter won't necessarily be in redis
