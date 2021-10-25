@@ -41,6 +41,30 @@ def test_list_batch(api_client, batch_factory):
     assert len(response.data) == 3
 
 
+@pytest.mark.redis
+def test_get_batch_progression(api_client, batch_factory, resource_factory, redis_client):
+    url = reverse("batches-list")
+    r1 = resource_factory.create(definition_id="Patient")
+    r2 = resource_factory.create(definition_id="Practitioner")
+    batch = batch_factory.create(resources=[r1, r2])
+
+    redis_client.hset("extracted_counters", f"{batch.id}:{r1.id}", 10)
+    redis_client.hset("loaded_counters", f"{batch.id}:{r1.id}", 5)
+    redis_client.hset("extracted_counters", f"{batch.id}:{r2.id}", 20)
+    redis_client.hset("loaded_counters", f"{batch.id}:{r2.id}", 5)
+    redis_client.hset("failed_counters", f"{batch.id}:{r2.id}", 3)
+
+    response = api_client.get(url)
+
+    assert response.status_code == 200
+    assert len(response.data) == 1
+    batch_response = response.json()[0]
+    assert batch_response["progressions"] == {
+        "Patient": {"extracted": 10, "loaded": 5, "failed": None},
+        "Practitioner": {"extracted": 20, "loaded": 5, "failed": 3},
+    }
+
+
 def test_filter_batches_by_sources(api_client, batch_factory, source_factory, resource_factory):
     first_source, second_source = source_factory.create_batch(2)
     first_source_resources = resource_factory.create_batch(2, source=first_source)
