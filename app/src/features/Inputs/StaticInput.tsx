@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -71,8 +71,26 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const [updateInput] = useApiStaticInputsUpdateMutation();
   const selectedNode = useGetSelectedNode();
   const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI(selectedNode);
+
   const isNodeTypeURI = selectedNode?.type === "uri";
   const isNodeNameType = selectedNode?.name === "type";
+  const isTypeURIAndNameType = isNodeNameType && isNodeTypeURI;
+
+  const isFixedValue = useMemo(() => {
+    if (selectedNode) {
+      const fixedEntry = Object.entries(
+        selectedNode.definitionNode.definition
+      ).find(([key]) => key.startsWith("fixed"));
+      return fixedEntry && fixedEntry[1] === input.value;
+    }
+  }, [input.value, selectedNode]);
+
+  const isURITypeButNotTypeOrReferenceOrFixed =
+    !isFixedValue &&
+    isNodeTypeURI &&
+    !isNodeNameType &&
+    !isNodeReferenceSystemURI;
+
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
@@ -146,20 +164,11 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   };
 
-  const isDisabled = () => {
-    if (selectedNode) {
-      const fixedEntry = Object.entries(
-        selectedNode.definitionNode.definition
-      ).find(([key]) => key.startsWith("fixed"));
-      return fixedEntry && fixedEntry[1] === input.value;
-    }
-  };
-
   return (
     <Grid container item alignItems="center" direction="row" spacing={1}>
       <Grid item container alignItems="center" xs={10} spacing={2}>
         <Grid item xs={7}>
-          {isNodeTypeURI && isNodeNameType ? (
+          {isTypeURIAndNameType ? (
             <FhirResourceAutocomplete
               value={input.value ?? ""}
               onChange={handleFhirResourceAutocompleteChange}
@@ -168,7 +177,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             <TextField
               variant="outlined"
               size="small"
-              disabled={isDisabled()}
+              disabled={isFixedValue}
               fullWidth
               placeholder={t("typeStaticValueHere")}
               className={classes.input}
@@ -188,12 +197,12 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             />
           )}
         </Grid>
-        {isNodeTypeURI && !isNodeNameType && !isNodeReferenceSystemURI && (
+        {isURITypeButNotTypeOrReferenceOrFixed && (
           <Grid item>
             <Button
               variant="outlined"
               onClick={handleGenerateURIClick}
-              disabled={!mapping || isDisabled()}
+              disabled={!mapping}
             >
               {t("generateURI")}
             </Button>
@@ -214,16 +223,17 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           </>
         )}
       </Grid>
-      <Grid item className={classes.iconButtonContainer}>
-        <IconButton
-          disabled={isDisabled()}
-          size="small"
-          className={classes.iconButton}
-          onClick={handleDeleteInput}
-        >
-          <Icon icon={IconNames.TRASH} />
-        </IconButton>
-      </Grid>
+      {!isFixedValue && (
+        <Grid item className={classes.iconButtonContainer}>
+          <IconButton
+            size="small"
+            className={classes.iconButton}
+            onClick={handleDeleteInput}
+          >
+            <Icon icon={IconNames.TRASH} />
+          </IconButton>
+        </Grid>
+      )}
     </Grid>
   );
 };
