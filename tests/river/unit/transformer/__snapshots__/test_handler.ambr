@@ -34,7 +34,7 @@
       'tag': <class 'list'> [
         <class 'dict'> {
           'code': 'cktlnp0bb00020mmz5fks20ij',
-          'system': 'http://terminology.arkhn.org/CodeSystem/source',
+          'system': 'http://terminology.arkhn.org/CodeSystem/project',
         },
         <class 'dict'> {
           'code': 'cktlnp0ji006e0mmzat7dwb98',

@@ -15,7 +15,7 @@ pytestmark = [pytest.mark.django_db, pytest.mark.fhir_api]
 def patient_mapping(api_client, django_db_setup, django_db_blocker):
     # https://pytest-django.readthedocs.io/en/latest/database.html#populate-the-database-with-initial-test-data
     with django_db_blocker.unblock():
-        url = reverse("sources-list")
+        url = reverse("projects-list")
 
         mimic_mapping = load_mapping(DATA_DIR / "exports" / "valid/mimic.json")
         response = api_client.post(url + "import/", mimic_mapping, format="json")

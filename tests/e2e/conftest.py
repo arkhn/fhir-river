@@ -15,15 +15,15 @@ DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 
 @pytest.fixture(scope="session")
-def destroy_mimic_source(mimic_mapping):
-    """Removes source from river-api if exists"""
-    response = requests.get(f"{settings.RIVER_API_URL}/sources/")
-    for existing_source in response.json():
-        if existing_source["name"] == mimic_mapping["name"]:
-            response = requests.delete(f"{settings.RIVER_API_URL}/sources/{existing_source['id']}/")
+def destroy_mimic_project(mimic_mapping):
+    """Removes project from river-api if exists"""
+    response = requests.get(f"{settings.RIVER_API_URL}/projects/")
+    for existing_project in response.json():
+        if existing_project["name"] == mimic_mapping["name"]:
+            response = requests.delete(f"{settings.RIVER_API_URL}/projects/{existing_project['id']}/")
             assert (
                 response.status_code == 204
-            ), f"api DELETE /sources/{existing_source['id']}/ returned an error: {response.text}"
+            ), f"api DELETE /projects/{existing_project['id']}/ returned an error: {response.text}"
 
 
 @pytest.fixture(scope="session")
@@ -52,7 +52,7 @@ def mimic_mapping():
 
 
 @pytest.fixture(scope="session")
-def uploaded_mapping(mimic_mapping, destroy_mimic_source):
+def uploaded_mapping(mimic_mapping, destroy_mimic_project):
     """Impots the mimic mapping to river-api
 
     Args:

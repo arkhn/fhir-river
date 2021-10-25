@@ -212,7 +212,7 @@ def test_build_metadata(mock_datetime):
     mock_datetime.now.return_value = mockdatetime()
 
     analysis = mock.MagicMock()
-    analysis.source_id = "sourceId"
+    analysis.project_id = "projectId"
     analysis.resource_id = "resourceId"
     analysis.definition = {
         "kind": "resource",
@@ -224,10 +224,11 @@ def test_build_metadata(mock_datetime):
     assert metadata == {
         "lastUpdated": "now",
         "tag": [
-            {"system": fhir.ARKHN_PROJECT_CODE_SYSTEM, "code": "sourceId"},
+            {"system": fhir.ARKHN_PROJECT_CODE_SYSTEM, "code": "projectId"},
             {"system": fhir.ARKHN_RESOURCE_CODE_SYSTEM, "code": "resourceId"},
         ],
     }
+
 
 @mark.skip(reason="Definition is absent from analysis")
 @mock.patch("river.transformer.fhir.datetime", autospec=True)

@@ -19,7 +19,7 @@
     'meta': <class 'dict'> {
       'tag': <class 'list'> [
         <class 'dict'> {
-          'system': 'http://terminology.arkhn.org/CodeSystem/source',
+          'system': 'http://terminology.arkhn.org/CodeSystem/project',
         },
         <class 'dict'> {
           'system': 'http://terminology.arkhn.org/CodeSystem/resource',

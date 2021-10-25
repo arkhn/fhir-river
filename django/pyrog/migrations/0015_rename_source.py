@@ -8,21 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('pyrog', '0014_split_join_left_right'),
+        ("pyrog", "0014_split_join_left_right"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='Source',
-            new_name='Project',
-        ),
-        migrations.AlterModelOptions(
-            name='column',
-            options={},
-        ),
-        migrations.AlterField(
-            model_name='resource',
-            name='definition',
-            field=models.JSONField(),
-        ),
+            old_name="Source",
+            new_name="Project",
+        )
     ]

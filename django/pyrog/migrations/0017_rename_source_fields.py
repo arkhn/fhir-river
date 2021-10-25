@@ -9,37 +9,48 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('pyrog', '0016_rename_source_user'),
+        ("pyrog", "0016_rename_source_user"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='credential',
-            old_name='source',
-            new_name='project',
+            model_name="credential",
+            old_name="source",
+            new_name="project",
         ),
         migrations.RenameField(
-            model_name='projectuser',
-            old_name='source',
-            new_name='project',
+            model_name="projectuser",
+            old_name="source",
+            new_name="project",
         ),
         migrations.RenameField(
-            model_name='resource',
-            old_name='source',
-            new_name='project',
+            model_name="resource",
+            old_name="source",
+            new_name="project",
         ),
         migrations.AlterField(
-            model_name='project',
-            name='users',
-            field=models.ManyToManyField(related_name='projects', through='pyrog.ProjectUser', to=settings.AUTH_USER_MODEL),
+            model_name="project",
+            name="users",
+            field=models.ManyToManyField(
+                related_name="projects", through="pyrog.ProjectUser", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AlterField(
-            model_name='projectuser',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_projects', to=settings.AUTH_USER_MODEL),
+            model_name="projectuser",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name="user_projects", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='projectuser',
-            unique_together={('user', 'project')},
+            name="projectuser",
+            unique_together={("user", "project")},
+        ),
+        migrations.AlterField(
+            model_name="projectuser",
+            name="project",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name="project_users", to="pyrog.project"
+            ),
         ),
     ]

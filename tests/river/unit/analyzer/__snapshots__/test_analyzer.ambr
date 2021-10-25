@@ -5254,6 +5254,15 @@
       owner='public',
       table='admissions',
     },
+    project_credentials=<class 'dict'> {
+      'database': 'mimic',
+      'host': 'localhost',
+      'login': 'mimic',
+      'model': 'POSTGRES',
+      'password': 'mimic',
+      'port': 15432,
+    },
+    project_id='cktlnp0bb00020mmz5fks20ij',
     reference_paths=<class 'list'> [
       <class 'list'> [
         'subject',
@@ -5271,15 +5280,6 @@
       ],
     ],
     resource_id='cktlnp0hz00500mmzpor3i6hn',
-    source_credentials=<class 'dict'> {
-      'database': 'mimic',
-      'host': 'mimic',
-      'login': 'mimic',
-      'model': 'POSTGRES',
-      'password': 'mimic',
-      'port': 5432,
-    },
-    source_id='cktlnp0bb00020mmz5fks20ij',
   }
 ---
 # name: test_analyze_mapping.1
