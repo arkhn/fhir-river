@@ -30,6 +30,8 @@
  # run all river migrations
  docker exec -ti `docker ps -q -f "name=river-api"` python django/manage.py migrate
  
+ # fhir-api is up and running and has all the required definitions (standard and custom profiles...)
+ 
  # update attributes paths
  # Old pyrog attributes paths lack resource_type prefixes and new pyrog needs them
  # Example: attribute.path === "id" becomes attribute.path === "Patient.id"
