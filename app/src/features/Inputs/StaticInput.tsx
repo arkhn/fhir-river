@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   input: {
-    maxWidth: 534,
+    maxWidth: theme.mixins.input.maxWidth,
   },
   inputStartAdornment: {
     fill: theme.palette.text.disabled,

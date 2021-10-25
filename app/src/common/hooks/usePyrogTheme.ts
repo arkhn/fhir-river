@@ -16,6 +16,9 @@ declare module "@material-ui/core/styles/createMixins" {
     footer: {
       height: CSSProperties["height"];
     };
+    input: {
+      maxWidth: CSSProperties["maxWidth"];
+    };
   }
 
   interface MixinsOptions {
@@ -30,6 +33,9 @@ declare module "@material-ui/core/styles/createMixins" {
     };
     footer: {
       height: CSSProperties["height"];
+    };
+    input: {
+      maxWidth: CSSProperties["maxWidth"];
     };
   }
 }
@@ -87,6 +93,9 @@ const usePyrogTheme = (): Theme => {
           },
           footer: {
             height: 100,
+          },
+          input: {
+            maxWidth: 534,
           },
         },
         palette: {
