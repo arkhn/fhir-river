@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -13,9 +13,11 @@ import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
 import ExistingURIDialog from "features/Inputs/ExistingURIDialog";
 import useCurrentMapping from "features/Mappings/useCurrentMapping";
+import ValueSetSelect from "features/ValueSets/ValueSetSelect";
 import {
   useApiStaticInputsDestroyMutation,
   useApiStaticInputsUpdateMutation,
+  useApiValueSetsRetrieveQuery,
 } from "services/api/endpoints";
 import { StaticInput as StaticInputType } from "services/api/generated/api.generated";
 
@@ -72,6 +74,22 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI(selectedNode);
   const isNodeTypeURI = selectedNode?.type === "uri";
   const isNodeNameType = selectedNode?.name === "type";
+
+  const valueSetUrl = useMemo(() => {
+    const nodeDefinition = selectedNode?.definitionNode.definition;
+    const isBindingStrengthRequired =
+      nodeDefinition?.binding?.strength === "required";
+
+    return isBindingStrengthRequired
+      ? nodeDefinition?.binding?.valueSet
+      : undefined;
+  }, [selectedNode?.definitionNode.definition]);
+
+  const { data: inputValueSet } = useApiValueSetsRetrieveQuery(
+    { id: "", url: valueSetUrl },
+    { skip: !valueSetUrl }
+  );
+
   const handleDeleteInput = async () => {
     try {
       await deleteInput({ id: input.id });
@@ -154,6 +172,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
               value={input.value ?? ""}
               onChange={handleFhirResourceAutocompleteChange}
             />
+          ) : inputValueSet ? (
+            <ValueSetSelect input={input} valueSet={inputValueSet} />
           ) : (
             <TextField
               variant="outlined"
