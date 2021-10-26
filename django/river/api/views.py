@@ -45,6 +45,12 @@ class BatchViewSet(viewsets.ModelViewSet):
 
         batch_instance = serializer.save()
 
+        # Create Progressions
+        for resource in resources:
+            river_models.Progression.objects.create(
+                batch=batch_instance, resource=resource, extracted=None, loaded=None, failed=None
+            )
+
         topics_manager = KafkaTopicsManager()
         event_publisher = KafkaEventPublisher()
 

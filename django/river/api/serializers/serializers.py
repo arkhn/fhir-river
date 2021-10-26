@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 
 from rest_framework import serializers
 
+from pyrog import models as pyrog_models
 from river import models
 from river.adapters.progression_counter import RedisProgressionCounter
 
@@ -13,9 +14,24 @@ class ErrorSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ResourceForProgressionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = pyrog_models.Resource
+        fields = ["id", "definition_id", "label"]
+
+
+class ProgressionSerializer(serializers.ModelSerializer):
+    resource = ResourceForProgressionSerializer(read_only=True)
+
+    class Meta:
+        model = models.Progression
+        fields = ["resource", "extracted", "loaded", "failed"]
+
+
 class BatchSerializer(serializers.ModelSerializer):
+    # FIXME errors is a property of BaseSerializer, we shouldn't override it
     errors = ErrorSerializer(many=True, read_only=True)
-    progressions = serializers.SerializerMethodField()
+    progressions = ProgressionSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Batch

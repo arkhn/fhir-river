@@ -37,3 +37,13 @@ class ErrorFactory(factory.django.DjangoModelFactory):
 
     id = factory.Sequence(lambda n: f"batch_id_{n:04d}")
     batch = factory.SubFactory(BatchFactory)
+
+
+class ProgressionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "river.Progression"
+
+    id = factory.Sequence(lambda n: f"progression_id_{n:04d}")
+    extracted = 100
+    loaded = 50
+    failed = None

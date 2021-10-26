@@ -3,14 +3,16 @@ import pytest
 from river import models
 from river.adapters.progression_counter import InMemoryProgressionCounter
 from river.adapters.topics import InMemoryTopicsManager
-from river.topicleaner.service import clean
+from river.topicleaner.service import task as topicleaner_task
 
 pytestmark = pytest.mark.django_db
 
 
-def test_done_batch_is_cleaned(batch_factory, resource_factory):
+def test_done_batch_is_cleaned(resource_factory, batch_factory, progression_factory):
     r1, r2 = resource_factory.create_batch(2)
     batch = batch_factory.create(resources=[r1, r2])
+    progression_factory.create(batch=batch, resource=r1)
+    progression_factory.create(batch=batch, resource=r2)
     counters = InMemoryProgressionCounter(
         counts={f"{batch.id}:{resource.id}": {"extracted": 10, "loaded": 10} for resource in batch.resources.all()}
     )
@@ -18,7 +20,7 @@ def test_done_batch_is_cleaned(batch_factory, resource_factory):
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 
-    clean(counters, topics)
+    topicleaner_task(counters, topics)
 
     assert topics._topics == set()
     batches = models.Batch.objects.all()
@@ -30,9 +32,11 @@ def test_done_batch_is_cleaned(batch_factory, resource_factory):
         assert progression.failed is None
 
 
-def test_done_batch_is_cleaned_with_failed(batch_factory, resource_factory):
+def test_done_batch_is_cleaned_with_failed(resource_factory, batch_factory, progression_factory):
     r1, r2 = resource_factory.create_batch(2)
     batch = batch_factory.create(resources=[r1, r2])
+    progression_factory.create(batch=batch, resource=r1)
+    progression_factory.create(batch=batch, resource=r2)
     counters = InMemoryProgressionCounter(
         counts={
             f"{batch.id}:{resource.id}": {"extracted": 10, "loaded": 6, "failed": 4}
@@ -42,7 +46,7 @@ def test_done_batch_is_cleaned_with_failed(batch_factory, resource_factory):
     topics = InMemoryTopicsManager(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
-    clean(counters, topics)
+    topicleaner_task(counters, topics)
 
     assert topics._topics == set()
     batches = models.Batch.objects.all()
@@ -64,7 +68,7 @@ def test_ongoing_batch_is_not_cleaned(batch_factory, resource_factory):
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 
-    clean(counters, topics)
+    topicleaner_task(counters, topics)
 
     assert topics._topics != set()
 
@@ -82,7 +86,7 @@ def test_ongoing_batch_is_not_cleaned_with_failed(batch_factory, resource_factor
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 
-    clean(counters, topics)
+    topicleaner_task(counters, topics)
 
     assert topics._topics != set()
 
@@ -97,7 +101,7 @@ def test_none_counter_prevents_cleaning(batch_factory, resource_factory):
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 
-    clean(counters, topics)
+    topicleaner_task(counters, topics)
 
     assert topics._topics != set()
 
@@ -112,6 +116,6 @@ def test_missing_counter_prevents_cleaning(batch_factory, resource_factory):
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
     )
 
-    clean(counters, topics)
+    topicleaner_task(counters, topics)
 
     assert topics._topics != set()

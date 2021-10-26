@@ -16,7 +16,7 @@ def teardown_after_batch(batch: Batch, topics: TopicsManager):
         topics.delete(f"{base_topic}.{batch.id}")
 
 
-def clean(counter: ProgressionCounter, topics: TopicsManager):
+def task(counter: ProgressionCounter, topics: TopicsManager):
     current_batches = Batch.objects.filter(completed_at__isnull=True, canceled_at__isnull=True).prefetch_related(
         "resources"
     )
@@ -26,6 +26,21 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
             resource: counter.get(f"{batch.id}:{resource.id}") for resource in batch.resources.all()
         }
 
+        # Update Progressions in DB
+        for resource, redis_progression in resources_progressions.items():
+            if not redis_progression:
+                continue
+            try:
+                resource_progression = models.Progression.objects.get(batch=batch, resource=resource)
+            except models.Progression.DoesNotExist:
+                logger.warning(f"Could not find progression of resource {resource} in batch {batch}")
+                continue
+            resource_progression.extracted = redis_progression.extracted
+            resource_progression.loaded = redis_progression.loaded
+            resource_progression.failed = redis_progression.failed
+            resource_progression.save()
+
+        # Clear if needed
         if all(
             [
                 progression is not None
@@ -36,17 +51,6 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
         ):
             logger.info(f"Deleting batch {batch}.")
 
-            for resource, progression in resources_progressions.items():
-                if not progression:
-                    continue
-                models.Progression.objects.create(
-                    batch=batch,
-                    resource=resource,
-                    extracted=progression.extracted,
-                    loaded=progression.loaded,
-                    failed=progression.failed,
-                )
-
             teardown_after_batch(batch, topics)
             batch.completed_at = timezone.now()
             batch.save()
@@ -56,5 +60,5 @@ def clean(counter: ProgressionCounter, topics: TopicsManager):
 
 def run(counter: ProgressionCounter, topics: TopicsManager):
     while True:
-        clean(counter=counter, topics=topics)
+        task(counter=counter, topics=topics)
         sleep(10)

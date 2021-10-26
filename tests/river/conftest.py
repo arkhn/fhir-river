@@ -21,6 +21,7 @@ DATA_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 
 register(factories.BatchFactory)
 register(factories.ErrorFactory)
+register(factories.ProgressionFactory)
 register(ResourceFactory)
 register(SourceFactory)
 

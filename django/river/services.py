@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Any, List, Optional, Tuple
 
 from django.utils import timezone
@@ -15,6 +16,8 @@ from river.domain.events import BatchEvent
 from river.extractor.extractor import Extractor
 from river.transformer.transformer import Transformer
 from utils.json import CustomJSONEncoder
+
+logger = logging.getLogger(__name__)
 
 
 def batch(
@@ -37,18 +40,20 @@ def abort(batch: models.Batch, topics_manager: TopicsManager, counter: Progressi
     for base_topic in ["batch", "extract", "transform", "load"]:
         topics_manager.delete(f"{base_topic}.{batch.id}")
 
-    # Persist progressions in DB
+    # Update Progressions in DB
     for resource in batch.resources.all():
-        resource_progression = counter.get(f"{batch.id}:{resource.id}")
-        if not resource_progression:
+        redis_progression = counter.get(f"{batch.id}:{resource.id}")
+        if not redis_progression:
             continue
-        models.Progression.objects.create(
-            batch=batch,
-            resource=resource,
-            extracted=resource_progression.extracted,
-            loaded=resource_progression.loaded,
-            failed=resource_progression.failed,
-        )
+        try:
+            resource_progression = models.Progression.objects.get(batch=batch, resource=resource)
+        except models.Progression.DoesNotExist:
+            logger.warning(f"Could not find progression of resource {resource} in batch {batch}")
+            continue
+        resource_progression.extracted = redis_progression.extracted
+        resource_progression.loaded = redis_progression.loaded
+        resource_progression.failed = redis_progression.failed
+        resource_progression.save()
 
     batch.canceled_at = timezone.now()
     batch.save()

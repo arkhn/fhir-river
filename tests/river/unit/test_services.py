@@ -25,10 +25,12 @@ def test_batch(batch_factory, resource_factory):
     ]
 
 
-def test_abort(batch_factory, resource_factory):
+def test_abort(resource_factory, batch_factory, progression_factory):
     r1 = resource_factory.create(definition_id="Patient")
     r2 = resource_factory.create(definition_id="Practitioner")
     batch = batch_factory.create(resources=[r1, r2])
+    progression_factory.create(batch=batch, resource=r1)
+    progression_factory.create(batch=batch, resource=r2)
 
     topics = InMemoryTopicsManager(
         topics=[f"{base_topic}.{batch.id}" for base_topic in ["batch", "extract", "transform", "load"]]
@@ -43,16 +45,14 @@ def test_abort(batch_factory, resource_factory):
 
     assert topics._topics == set()
     assert batch.canceled_at is not None
-    r1_progressions = models.Progression.objects.filter(batch=batch, resource=r1)
-    assert len(r1_progressions) == 1
-    assert r1_progressions[0].extracted == 100
-    assert r1_progressions[0].loaded == 20
-    assert r1_progressions[0].failed == 3
-    r2_progressions = models.Progression.objects.filter(batch=batch, resource=r2)
-    assert len(r2_progressions) == 1
-    assert r2_progressions[0].extracted == 200
-    assert r2_progressions[0].loaded == 10
-    assert r2_progressions[0].failed is None
+    r1_progressions = models.Progression.objects.get(batch=batch, resource=r1)
+    assert r1_progressions.extracted == 100
+    assert r1_progressions.loaded == 20
+    assert r1_progressions.failed == 3
+    r2_progressions = models.Progression.objects.get(batch=batch, resource=r2)
+    assert r2_progressions.extracted == 200
+    assert r2_progressions.loaded == 10
+    assert r2_progressions.failed is None
 
 
 @pytest.mark.skip(reason="feature not implemented yet")

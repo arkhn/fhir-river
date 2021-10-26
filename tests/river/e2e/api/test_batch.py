@@ -58,11 +58,13 @@ def test_list_batch(api_client, batch_factory):
 
 
 @pytest.mark.redis
-def test_get_batch_progression(api_client, batch_factory, resource_factory, redis_client):
+def test_get_batch_progression(api_client, resource_factory, batch_factory, progression_factory, redis_client):
     url = reverse("batches-list")
     r1 = resource_factory.create(definition_id="Patient")
     r2 = resource_factory.create(definition_id="Practitioner")
     batch = batch_factory.create(resources=[r1, r2])
+    progression_factory.create(batch=batch, resource=r1)
+    progression_factory.create(batch=batch, resource=r2)
 
     set_counters(redis_client, batch, r1, r2)
 
@@ -72,8 +74,18 @@ def test_get_batch_progression(api_client, batch_factory, resource_factory, redi
     assert len(response.data) == 1
     batch_response = response.json()[0]
     assert batch_response["progressions"] == [
-        ["Patient", {"extracted": 10, "loaded": 5, "failed": None}],
-        ["Practitioner", {"extracted": 20, "loaded": 5, "failed": 3}],
+        {
+            "resource": {"id": r1.id, "definition_id": "Patient", "label": ""},
+            "extracted": 100,
+            "loaded": 50,
+            "failed": None,
+        },
+        {
+            "resource": {"id": r2.id, "definition_id": "Practitioner", "label": ""},
+            "extracted": 100,
+            "loaded": 50,
+            "failed": None,
+        },
     ]
 
 
@@ -106,10 +118,12 @@ def test_retrieve_batch(api_client, batch_factory, resource_factory):
 
 
 @pytest.mark.redis
-def test_delete_batch(api_client, redis_client, batch_factory, resource_factory, kafka_admin):
+def test_delete_batch(api_client, redis_client, resource_factory, batch_factory, progression_factory, kafka_admin):
     r1 = resource_factory.create(definition_id="Patient")
     r2 = resource_factory.create(definition_id="Practitioner")
     batch = batch_factory.create(resources=[r1, r2])
+    progression_factory.create(batch=batch, resource=r1)
+    progression_factory.create(batch=batch, resource=r2)
     url = reverse("batches-detail", kwargs={"pk": batch.id})
 
     set_counters(redis_client, batch, r1, r2)
@@ -120,11 +134,21 @@ def test_delete_batch(api_client, redis_client, batch_factory, resource_factory,
     clear_counters(redis_client, batch, r1, r2)
 
     response_get = api_client.get(url)
-    print(response_get.json())
     assert response_get.json()["canceled_at"] is not None
+    print(response_get.json()["progressions"])
     assert response_get.json()["progressions"] == [
-        ["Patient", {"extracted": 10, "loaded": 5, "failed": None}],
-        ["Practitioner", {"extracted": 20, "loaded": 5, "failed": 3}],
+        {
+            "resource": {"id": r1.id, "definition_id": "Patient", "label": ""},
+            "extracted": 10,
+            "loaded": 5,
+            "failed": None,
+        },
+        {
+            "resource": {"id": r2.id, "definition_id": "Practitioner", "label": ""},
+            "extracted": 20,
+            "loaded": 5,
+            "failed": 3,
+        },
     ]
 
     # Check that topics are deleted
