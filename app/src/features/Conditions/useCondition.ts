@@ -45,6 +45,7 @@ const useCondition = ({
       const isConditionPartial =
         !changedCondition.action ||
         !changedCondition.sql_input ||
+        !changedCondition.relation ||
         !changedCondition.input_group;
       if (
         (!exists || condition) &&
