@@ -6,7 +6,7 @@ info:
 paths:
   /api/attributes/:
     get:
-      operationId: api_attributes_list
+      operationId: attributes_list
       description: ''
       parameters:
       - name: ordering
@@ -28,7 +28,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - attributes
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -43,10 +43,10 @@ paths:
                   $ref: '#/components/schemas/Attribute'
           description: ''
     post:
-      operationId: api_attributes_create
+      operationId: attributes_create
       description: ''
       tags:
-      - api
+      - attributes
       requestBody:
         content:
           application/json:
@@ -72,7 +72,7 @@ paths:
           description: ''
   /api/attributes/{id}/:
     get:
-      operationId: api_attributes_retrieve
+      operationId: attributes_retrieve
       description: ''
       parameters:
       - in: path
@@ -82,7 +82,7 @@ paths:
         description: A unique value identifying this attribute.
         required: true
       tags:
-      - api
+      - attributes
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -95,7 +95,7 @@ paths:
                 $ref: '#/components/schemas/Attribute'
           description: ''
     put:
-      operationId: api_attributes_update
+      operationId: attributes_update
       description: ''
       parameters:
       - in: path
@@ -105,7 +105,7 @@ paths:
         description: A unique value identifying this attribute.
         required: true
       tags:
-      - api
+      - attributes
       requestBody:
         content:
           application/json:
@@ -130,7 +130,7 @@ paths:
                 $ref: '#/components/schemas/Attribute'
           description: ''
     patch:
-      operationId: api_attributes_partial_update
+      operationId: attributes_partial_update
       description: ''
       parameters:
       - in: path
@@ -140,7 +140,7 @@ paths:
         description: A unique value identifying this attribute.
         required: true
       tags:
-      - api
+      - attributes
       requestBody:
         content:
           application/json:
@@ -164,7 +164,7 @@ paths:
                 $ref: '#/components/schemas/Attribute'
           description: ''
     delete:
-      operationId: api_attributes_destroy
+      operationId: attributes_destroy
       description: ''
       parameters:
       - in: path
@@ -174,7 +174,7 @@ paths:
         description: A unique value identifying this attribute.
         required: true
       tags:
-      - api
+      - attributes
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -184,7 +184,7 @@ paths:
           description: No response body
   /api/batches/:
     get:
-      operationId: api_batches_list
+      operationId: batches_list
       description: ''
       parameters:
       - name: limit
@@ -214,7 +214,7 @@ paths:
         explode: true
         style: form
       tags:
-      - api
+      - batches
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -227,10 +227,10 @@ paths:
                 $ref: '#/components/schemas/PaginatedBatchList'
           description: ''
     post:
-      operationId: api_batches_create
+      operationId: batches_create
       description: ''
       tags:
-      - api
+      - batches
       requestBody:
         content:
           application/json:
@@ -256,7 +256,7 @@ paths:
           description: ''
   /api/batches/{id}/:
     get:
-      operationId: api_batches_retrieve
+      operationId: batches_retrieve
       description: ''
       parameters:
       - in: path
@@ -266,7 +266,7 @@ paths:
         description: A unique value identifying this batch.
         required: true
       tags:
-      - api
+      - batches
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -279,7 +279,7 @@ paths:
                 $ref: '#/components/schemas/Batch'
           description: ''
     put:
-      operationId: api_batches_update
+      operationId: batches_update
       description: ''
       parameters:
       - in: path
@@ -289,7 +289,7 @@ paths:
         description: A unique value identifying this batch.
         required: true
       tags:
-      - api
+      - batches
       requestBody:
         content:
           application/json:
@@ -314,7 +314,7 @@ paths:
                 $ref: '#/components/schemas/Batch'
           description: ''
     patch:
-      operationId: api_batches_partial_update
+      operationId: batches_partial_update
       description: ''
       parameters:
       - in: path
@@ -324,7 +324,7 @@ paths:
         description: A unique value identifying this batch.
         required: true
       tags:
-      - api
+      - batches
       requestBody:
         content:
           application/json:
@@ -348,7 +348,7 @@ paths:
                 $ref: '#/components/schemas/Batch'
           description: ''
     delete:
-      operationId: api_batches_destroy
+      operationId: batches_destroy
       description: ''
       parameters:
       - in: path
@@ -358,7 +358,7 @@ paths:
         description: A unique value identifying this batch.
         required: true
       tags:
-      - api
+      - batches
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -368,7 +368,7 @@ paths:
           description: No response body
   /api/batches/{id}/retry/:
     post:
-      operationId: api_batches_retry_create
+      operationId: batches_retry_create
       description: ''
       parameters:
       - in: path
@@ -378,7 +378,7 @@ paths:
         description: A unique value identifying this batch.
         required: true
       tags:
-      - api
+      - batches
       requestBody:
         content:
           application/json:
@@ -404,7 +404,7 @@ paths:
           description: ''
   /api/columns/:
     get:
-      operationId: api_columns_list
+      operationId: columns_list
       description: ''
       parameters:
       - in: query
@@ -434,7 +434,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - columns
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -449,10 +449,10 @@ paths:
                   $ref: '#/components/schemas/Column'
           description: ''
     post:
-      operationId: api_columns_create
+      operationId: columns_create
       description: ''
       tags:
-      - api
+      - columns
       requestBody:
         content:
           application/json:
@@ -478,7 +478,7 @@ paths:
           description: ''
   /api/columns/{id}/:
     get:
-      operationId: api_columns_retrieve
+      operationId: columns_retrieve
       description: ''
       parameters:
       - in: path
@@ -488,7 +488,7 @@ paths:
         description: A unique value identifying this column.
         required: true
       tags:
-      - api
+      - columns
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -501,7 +501,7 @@ paths:
                 $ref: '#/components/schemas/Column'
           description: ''
     put:
-      operationId: api_columns_update
+      operationId: columns_update
       description: ''
       parameters:
       - in: path
@@ -511,7 +511,7 @@ paths:
         description: A unique value identifying this column.
         required: true
       tags:
-      - api
+      - columns
       requestBody:
         content:
           application/json:
@@ -536,7 +536,7 @@ paths:
                 $ref: '#/components/schemas/Column'
           description: ''
     patch:
-      operationId: api_columns_partial_update
+      operationId: columns_partial_update
       description: ''
       parameters:
       - in: path
@@ -546,7 +546,7 @@ paths:
         description: A unique value identifying this column.
         required: true
       tags:
-      - api
+      - columns
       requestBody:
         content:
           application/json:
@@ -570,7 +570,7 @@ paths:
                 $ref: '#/components/schemas/Column'
           description: ''
     delete:
-      operationId: api_columns_destroy
+      operationId: columns_destroy
       description: ''
       parameters:
       - in: path
@@ -580,7 +580,7 @@ paths:
         description: A unique value identifying this column.
         required: true
       tags:
-      - api
+      - columns
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -590,7 +590,7 @@ paths:
           description: No response body
   /api/conditions/:
     get:
-      operationId: api_conditions_list
+      operationId: conditions_list
       description: ''
       parameters:
       - in: query
@@ -598,7 +598,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - conditions
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -613,10 +613,10 @@ paths:
                   $ref: '#/components/schemas/Condition'
           description: ''
     post:
-      operationId: api_conditions_create
+      operationId: conditions_create
       description: ''
       tags:
-      - api
+      - conditions
       requestBody:
         content:
           application/json:
@@ -642,7 +642,7 @@ paths:
           description: ''
   /api/conditions/{id}/:
     get:
-      operationId: api_conditions_retrieve
+      operationId: conditions_retrieve
       description: ''
       parameters:
       - in: path
@@ -652,7 +652,7 @@ paths:
         description: A unique value identifying this condition.
         required: true
       tags:
-      - api
+      - conditions
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -665,7 +665,7 @@ paths:
                 $ref: '#/components/schemas/Condition'
           description: ''
     put:
-      operationId: api_conditions_update
+      operationId: conditions_update
       description: ''
       parameters:
       - in: path
@@ -675,7 +675,7 @@ paths:
         description: A unique value identifying this condition.
         required: true
       tags:
-      - api
+      - conditions
       requestBody:
         content:
           application/json:
@@ -700,7 +700,7 @@ paths:
                 $ref: '#/components/schemas/Condition'
           description: ''
     patch:
-      operationId: api_conditions_partial_update
+      operationId: conditions_partial_update
       description: ''
       parameters:
       - in: path
@@ -710,7 +710,7 @@ paths:
         description: A unique value identifying this condition.
         required: true
       tags:
-      - api
+      - conditions
       requestBody:
         content:
           application/json:
@@ -734,7 +734,7 @@ paths:
                 $ref: '#/components/schemas/Condition'
           description: ''
     delete:
-      operationId: api_conditions_destroy
+      operationId: conditions_destroy
       description: ''
       parameters:
       - in: path
@@ -744,7 +744,7 @@ paths:
         description: A unique value identifying this condition.
         required: true
       tags:
-      - api
+      - conditions
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -754,10 +754,10 @@ paths:
           description: No response body
   /api/core/version/:
     get:
-      operationId: api_core_version_retrieve
+      operationId: core_version_retrieve
       description: Return the version of the application
       tags:
-      - api
+      - core
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -767,7 +767,7 @@ paths:
           description: No response body
   /api/credentials/:
     get:
-      operationId: api_credentials_list
+      operationId: credentials_list
       description: ''
       parameters:
       - name: ordering
@@ -781,7 +781,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - credentials
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -796,10 +796,10 @@ paths:
                   $ref: '#/components/schemas/Credential'
           description: ''
     post:
-      operationId: api_credentials_create
+      operationId: credentials_create
       description: ''
       tags:
-      - api
+      - credentials
       requestBody:
         content:
           application/json:
@@ -825,7 +825,7 @@ paths:
           description: ''
   /api/credentials/{id}/:
     get:
-      operationId: api_credentials_retrieve
+      operationId: credentials_retrieve
       description: ''
       parameters:
       - in: path
@@ -835,7 +835,7 @@ paths:
         description: A unique value identifying this credential.
         required: true
       tags:
-      - api
+      - credentials
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -848,7 +848,7 @@ paths:
                 $ref: '#/components/schemas/Credential'
           description: ''
     put:
-      operationId: api_credentials_update
+      operationId: credentials_update
       description: ''
       parameters:
       - in: path
@@ -858,7 +858,7 @@ paths:
         description: A unique value identifying this credential.
         required: true
       tags:
-      - api
+      - credentials
       requestBody:
         content:
           application/json:
@@ -883,7 +883,7 @@ paths:
                 $ref: '#/components/schemas/Credential'
           description: ''
     patch:
-      operationId: api_credentials_partial_update
+      operationId: credentials_partial_update
       description: ''
       parameters:
       - in: path
@@ -893,7 +893,7 @@ paths:
         description: A unique value identifying this credential.
         required: true
       tags:
-      - api
+      - credentials
       requestBody:
         content:
           application/json:
@@ -917,7 +917,7 @@ paths:
                 $ref: '#/components/schemas/Credential'
           description: ''
     delete:
-      operationId: api_credentials_destroy
+      operationId: credentials_destroy
       description: ''
       parameters:
       - in: path
@@ -927,7 +927,7 @@ paths:
         description: A unique value identifying this credential.
         required: true
       tags:
-      - api
+      - credentials
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -937,10 +937,10 @@ paths:
           description: No response body
   /api/explore/:
     post:
-      operationId: api_explore_create
+      operationId: explore_create
       description: ''
       tags:
-      - api
+      - explore
       requestBody:
         content:
           application/json:
@@ -966,7 +966,7 @@ paths:
           description: ''
   /api/filters/:
     get:
-      operationId: api_filters_list
+      operationId: filters_list
       description: ''
       parameters:
       - in: query
@@ -974,7 +974,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - filters
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -989,10 +989,10 @@ paths:
                   $ref: '#/components/schemas/Filter'
           description: ''
     post:
-      operationId: api_filters_create
+      operationId: filters_create
       description: ''
       tags:
-      - api
+      - filters
       requestBody:
         content:
           application/json:
@@ -1018,7 +1018,7 @@ paths:
           description: ''
   /api/filters/{id}/:
     get:
-      operationId: api_filters_retrieve
+      operationId: filters_retrieve
       description: ''
       parameters:
       - in: path
@@ -1028,7 +1028,7 @@ paths:
         description: A unique value identifying this filter.
         required: true
       tags:
-      - api
+      - filters
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1041,7 +1041,7 @@ paths:
                 $ref: '#/components/schemas/Filter'
           description: ''
     put:
-      operationId: api_filters_update
+      operationId: filters_update
       description: ''
       parameters:
       - in: path
@@ -1051,7 +1051,7 @@ paths:
         description: A unique value identifying this filter.
         required: true
       tags:
-      - api
+      - filters
       requestBody:
         content:
           application/json:
@@ -1076,7 +1076,7 @@ paths:
                 $ref: '#/components/schemas/Filter'
           description: ''
     patch:
-      operationId: api_filters_partial_update
+      operationId: filters_partial_update
       description: ''
       parameters:
       - in: path
@@ -1086,7 +1086,7 @@ paths:
         description: A unique value identifying this filter.
         required: true
       tags:
-      - api
+      - filters
       requestBody:
         content:
           application/json:
@@ -1110,7 +1110,7 @@ paths:
                 $ref: '#/components/schemas/Filter'
           description: ''
     delete:
-      operationId: api_filters_destroy
+      operationId: filters_destroy
       description: ''
       parameters:
       - in: path
@@ -1120,7 +1120,7 @@ paths:
         description: A unique value identifying this filter.
         required: true
       tags:
-      - api
+      - filters
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1130,7 +1130,7 @@ paths:
           description: No response body
   /api/input-groups/:
     get:
-      operationId: api_input_groups_list
+      operationId: input_groups_list
       description: ''
       parameters:
       - in: query
@@ -1144,7 +1144,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - input-groups
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1159,10 +1159,10 @@ paths:
                   $ref: '#/components/schemas/InputGroup'
           description: ''
     post:
-      operationId: api_input_groups_create
+      operationId: input_groups_create
       description: ''
       tags:
-      - api
+      - input-groups
       requestBody:
         content:
           application/json:
@@ -1188,7 +1188,7 @@ paths:
           description: ''
   /api/input-groups/{id}/:
     get:
-      operationId: api_input_groups_retrieve
+      operationId: input_groups_retrieve
       description: ''
       parameters:
       - in: path
@@ -1198,7 +1198,7 @@ paths:
         description: A unique value identifying this input group.
         required: true
       tags:
-      - api
+      - input-groups
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1211,7 +1211,7 @@ paths:
                 $ref: '#/components/schemas/InputGroup'
           description: ''
     put:
-      operationId: api_input_groups_update
+      operationId: input_groups_update
       description: ''
       parameters:
       - in: path
@@ -1221,7 +1221,7 @@ paths:
         description: A unique value identifying this input group.
         required: true
       tags:
-      - api
+      - input-groups
       requestBody:
         content:
           application/json:
@@ -1246,7 +1246,7 @@ paths:
                 $ref: '#/components/schemas/InputGroup'
           description: ''
     patch:
-      operationId: api_input_groups_partial_update
+      operationId: input_groups_partial_update
       description: ''
       parameters:
       - in: path
@@ -1256,7 +1256,7 @@ paths:
         description: A unique value identifying this input group.
         required: true
       tags:
-      - api
+      - input-groups
       requestBody:
         content:
           application/json:
@@ -1280,7 +1280,7 @@ paths:
                 $ref: '#/components/schemas/InputGroup'
           description: ''
     delete:
-      operationId: api_input_groups_destroy
+      operationId: input_groups_destroy
       description: ''
       parameters:
       - in: path
@@ -1290,7 +1290,7 @@ paths:
         description: A unique value identifying this input group.
         required: true
       tags:
-      - api
+      - input-groups
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1300,7 +1300,7 @@ paths:
           description: No response body
   /api/joins/:
     get:
-      operationId: api_joins_list
+      operationId: joins_list
       description: ''
       parameters:
       - name: ordering
@@ -1314,7 +1314,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - joins
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1329,10 +1329,10 @@ paths:
                   $ref: '#/components/schemas/Join'
           description: ''
     post:
-      operationId: api_joins_create
+      operationId: joins_create
       description: ''
       tags:
-      - api
+      - joins
       requestBody:
         content:
           application/json:
@@ -1358,7 +1358,7 @@ paths:
           description: ''
   /api/joins/{id}/:
     get:
-      operationId: api_joins_retrieve
+      operationId: joins_retrieve
       description: ''
       parameters:
       - in: path
@@ -1368,7 +1368,7 @@ paths:
         description: A unique value identifying this join.
         required: true
       tags:
-      - api
+      - joins
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1381,7 +1381,7 @@ paths:
                 $ref: '#/components/schemas/Join'
           description: ''
     put:
-      operationId: api_joins_update
+      operationId: joins_update
       description: ''
       parameters:
       - in: path
@@ -1391,7 +1391,7 @@ paths:
         description: A unique value identifying this join.
         required: true
       tags:
-      - api
+      - joins
       requestBody:
         content:
           application/json:
@@ -1416,7 +1416,7 @@ paths:
                 $ref: '#/components/schemas/Join'
           description: ''
     patch:
-      operationId: api_joins_partial_update
+      operationId: joins_partial_update
       description: ''
       parameters:
       - in: path
@@ -1426,7 +1426,7 @@ paths:
         description: A unique value identifying this join.
         required: true
       tags:
-      - api
+      - joins
       requestBody:
         content:
           application/json:
@@ -1450,7 +1450,7 @@ paths:
                 $ref: '#/components/schemas/Join'
           description: ''
     delete:
-      operationId: api_joins_destroy
+      operationId: joins_destroy
       description: ''
       parameters:
       - in: path
@@ -1460,7 +1460,7 @@ paths:
         description: A unique value identifying this join.
         required: true
       tags:
-      - api
+      - joins
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1470,10 +1470,10 @@ paths:
           description: No response body
   /api/list-owners/:
     post:
-      operationId: api_list_owners_create
+      operationId: list_owners_create
       description: ''
       tags:
-      - api
+      - list-owners
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1483,7 +1483,7 @@ paths:
           description: No response body
   /api/owner-schema/{owner}/:
     post:
-      operationId: api_owner_schema_create
+      operationId: owner_schema_create
       description: ''
       parameters:
       - in: path
@@ -1492,7 +1492,7 @@ paths:
           type: string
         required: true
       tags:
-      - api
+      - owner-schema
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1502,7 +1502,7 @@ paths:
           description: No response body
   /api/owners/:
     get:
-      operationId: api_owners_list
+      operationId: owners_list
       description: ''
       parameters:
       - in: query
@@ -1510,7 +1510,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - owners
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1525,10 +1525,10 @@ paths:
                   $ref: '#/components/schemas/Owner'
           description: ''
     post:
-      operationId: api_owners_create
+      operationId: owners_create
       description: ''
       tags:
-      - api
+      - owners
       requestBody:
         content:
           application/json:
@@ -1554,7 +1554,7 @@ paths:
           description: ''
   /api/owners/{id}/:
     get:
-      operationId: api_owners_retrieve
+      operationId: owners_retrieve
       description: ''
       parameters:
       - in: path
@@ -1564,7 +1564,7 @@ paths:
         description: A unique value identifying this owner.
         required: true
       tags:
-      - api
+      - owners
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1577,7 +1577,7 @@ paths:
                 $ref: '#/components/schemas/Owner'
           description: ''
     put:
-      operationId: api_owners_update
+      operationId: owners_update
       description: ''
       parameters:
       - in: path
@@ -1587,7 +1587,7 @@ paths:
         description: A unique value identifying this owner.
         required: true
       tags:
-      - api
+      - owners
       requestBody:
         content:
           application/json:
@@ -1612,7 +1612,7 @@ paths:
                 $ref: '#/components/schemas/Owner'
           description: ''
     patch:
-      operationId: api_owners_partial_update
+      operationId: owners_partial_update
       description: ''
       parameters:
       - in: path
@@ -1622,7 +1622,7 @@ paths:
         description: A unique value identifying this owner.
         required: true
       tags:
-      - api
+      - owners
       requestBody:
         content:
           application/json:
@@ -1646,7 +1646,7 @@ paths:
                 $ref: '#/components/schemas/Owner'
           description: ''
     delete:
-      operationId: api_owners_destroy
+      operationId: owners_destroy
       description: ''
       parameters:
       - in: path
@@ -1656,7 +1656,7 @@ paths:
         description: A unique value identifying this owner.
         required: true
       tags:
-      - api
+      - owners
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1666,10 +1666,10 @@ paths:
           description: No response body
   /api/preview/:
     post:
-      operationId: api_preview_create
+      operationId: preview_create
       description: ''
       tags:
-      - api
+      - preview
       requestBody:
         content:
           application/json:
@@ -1695,7 +1695,7 @@ paths:
           description: ''
   /api/resources/:
     get:
-      operationId: api_resources_list
+      operationId: resources_list
       description: ''
       parameters:
       - name: ordering
@@ -1709,7 +1709,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - resources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1724,10 +1724,10 @@ paths:
                   $ref: '#/components/schemas/Resource'
           description: ''
     post:
-      operationId: api_resources_create
+      operationId: resources_create
       description: ''
       tags:
-      - api
+      - resources
       requestBody:
         content:
           application/json:
@@ -1753,7 +1753,7 @@ paths:
           description: ''
   /api/resources/{id}/:
     get:
-      operationId: api_resources_retrieve
+      operationId: resources_retrieve
       description: ''
       parameters:
       - in: path
@@ -1763,7 +1763,7 @@ paths:
         description: A unique value identifying this resource.
         required: true
       tags:
-      - api
+      - resources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1776,7 +1776,7 @@ paths:
                 $ref: '#/components/schemas/Resource'
           description: ''
     put:
-      operationId: api_resources_update
+      operationId: resources_update
       description: ''
       parameters:
       - in: path
@@ -1786,7 +1786,7 @@ paths:
         description: A unique value identifying this resource.
         required: true
       tags:
-      - api
+      - resources
       requestBody:
         content:
           application/json:
@@ -1811,7 +1811,7 @@ paths:
                 $ref: '#/components/schemas/Resource'
           description: ''
     patch:
-      operationId: api_resources_partial_update
+      operationId: resources_partial_update
       description: ''
       parameters:
       - in: path
@@ -1821,7 +1821,7 @@ paths:
         description: A unique value identifying this resource.
         required: true
       tags:
-      - api
+      - resources
       requestBody:
         content:
           application/json:
@@ -1845,7 +1845,7 @@ paths:
                 $ref: '#/components/schemas/Resource'
           description: ''
     delete:
-      operationId: api_resources_destroy
+      operationId: resources_destroy
       description: ''
       parameters:
       - in: path
@@ -1855,7 +1855,7 @@ paths:
         description: A unique value identifying this resource.
         required: true
       tags:
-      - api
+      - resources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1865,10 +1865,10 @@ paths:
           description: No response body
   /api/scripts/:
     get:
-      operationId: api_scripts_list
+      operationId: scripts_list
       description: ''
       tags:
-      - api
+      - scripts
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1884,7 +1884,7 @@ paths:
           description: ''
   /api/sources/:
     get:
-      operationId: api_sources_list
+      operationId: sources_list
       description: ''
       parameters:
       - name: ordering
@@ -1894,7 +1894,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - sources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1909,10 +1909,10 @@ paths:
                   $ref: '#/components/schemas/Source'
           description: ''
     post:
-      operationId: api_sources_create
+      operationId: sources_create
       description: ''
       tags:
-      - api
+      - sources
       requestBody:
         content:
           application/json:
@@ -1938,7 +1938,7 @@ paths:
           description: ''
   /api/sources/{id}/:
     get:
-      operationId: api_sources_retrieve
+      operationId: sources_retrieve
       description: ''
       parameters:
       - in: path
@@ -1948,7 +1948,7 @@ paths:
         description: A unique value identifying this source.
         required: true
       tags:
-      - api
+      - sources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -1961,7 +1961,7 @@ paths:
                 $ref: '#/components/schemas/Source'
           description: ''
     put:
-      operationId: api_sources_update
+      operationId: sources_update
       description: ''
       parameters:
       - in: path
@@ -1971,7 +1971,7 @@ paths:
         description: A unique value identifying this source.
         required: true
       tags:
-      - api
+      - sources
       requestBody:
         content:
           application/json:
@@ -1996,7 +1996,7 @@ paths:
                 $ref: '#/components/schemas/Source'
           description: ''
     patch:
-      operationId: api_sources_partial_update
+      operationId: sources_partial_update
       description: ''
       parameters:
       - in: path
@@ -2006,7 +2006,7 @@ paths:
         description: A unique value identifying this source.
         required: true
       tags:
-      - api
+      - sources
       requestBody:
         content:
           application/json:
@@ -2030,7 +2030,7 @@ paths:
                 $ref: '#/components/schemas/Source'
           description: ''
     delete:
-      operationId: api_sources_destroy
+      operationId: sources_destroy
       description: ''
       parameters:
       - in: path
@@ -2040,7 +2040,7 @@ paths:
         description: A unique value identifying this source.
         required: true
       tags:
-      - api
+      - sources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2050,7 +2050,7 @@ paths:
           description: No response body
   /api/sources/{id}/export/:
     get:
-      operationId: api_sources_export_retrieve
+      operationId: sources_export_retrieve
       description: ''
       parameters:
       - in: path
@@ -2060,7 +2060,7 @@ paths:
         description: A unique value identifying this source.
         required: true
       tags:
-      - api
+      - sources
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2074,10 +2074,10 @@ paths:
           description: ''
   /api/sources/import/:
     post:
-      operationId: api_sources_import_create
+      operationId: sources_import_create
       description: ''
       tags:
-      - api
+      - sources
       requestBody:
         content:
           application/json:
@@ -2103,7 +2103,7 @@ paths:
           description: ''
   /api/sql-inputs/:
     get:
-      operationId: api_sql_inputs_list
+      operationId: sql_inputs_list
       description: ''
       parameters:
       - in: query
@@ -2117,7 +2117,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - sql-inputs
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2132,10 +2132,10 @@ paths:
                   $ref: '#/components/schemas/SQLInput'
           description: ''
     post:
-      operationId: api_sql_inputs_create
+      operationId: sql_inputs_create
       description: ''
       tags:
-      - api
+      - sql-inputs
       requestBody:
         content:
           application/json:
@@ -2161,7 +2161,7 @@ paths:
           description: ''
   /api/sql-inputs/{id}/:
     get:
-      operationId: api_sql_inputs_retrieve
+      operationId: sql_inputs_retrieve
       description: ''
       parameters:
       - in: path
@@ -2171,7 +2171,7 @@ paths:
         description: A unique value identifying this sql input.
         required: true
       tags:
-      - api
+      - sql-inputs
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2184,7 +2184,7 @@ paths:
                 $ref: '#/components/schemas/SQLInput'
           description: ''
     put:
-      operationId: api_sql_inputs_update
+      operationId: sql_inputs_update
       description: ''
       parameters:
       - in: path
@@ -2194,7 +2194,7 @@ paths:
         description: A unique value identifying this sql input.
         required: true
       tags:
-      - api
+      - sql-inputs
       requestBody:
         content:
           application/json:
@@ -2219,7 +2219,7 @@ paths:
                 $ref: '#/components/schemas/SQLInput'
           description: ''
     patch:
-      operationId: api_sql_inputs_partial_update
+      operationId: sql_inputs_partial_update
       description: ''
       parameters:
       - in: path
@@ -2229,7 +2229,7 @@ paths:
         description: A unique value identifying this sql input.
         required: true
       tags:
-      - api
+      - sql-inputs
       requestBody:
         content:
           application/json:
@@ -2253,7 +2253,7 @@ paths:
                 $ref: '#/components/schemas/SQLInput'
           description: ''
     delete:
-      operationId: api_sql_inputs_destroy
+      operationId: sql_inputs_destroy
       description: ''
       parameters:
       - in: path
@@ -2263,7 +2263,7 @@ paths:
         description: A unique value identifying this sql input.
         required: true
       tags:
-      - api
+      - sql-inputs
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2273,7 +2273,7 @@ paths:
           description: No response body
   /api/static-inputs/:
     get:
-      operationId: api_static_inputs_list
+      operationId: static_inputs_list
       description: ''
       parameters:
       - in: query
@@ -2287,7 +2287,7 @@ paths:
         schema:
           type: string
       tags:
-      - api
+      - static-inputs
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2302,10 +2302,10 @@ paths:
                   $ref: '#/components/schemas/StaticInput'
           description: ''
     post:
-      operationId: api_static_inputs_create
+      operationId: static_inputs_create
       description: ''
       tags:
-      - api
+      - static-inputs
       requestBody:
         content:
           application/json:
@@ -2331,7 +2331,7 @@ paths:
           description: ''
   /api/static-inputs/{id}/:
     get:
-      operationId: api_static_inputs_retrieve
+      operationId: static_inputs_retrieve
       description: ''
       parameters:
       - in: path
@@ -2341,7 +2341,7 @@ paths:
         description: A unique value identifying this static input.
         required: true
       tags:
-      - api
+      - static-inputs
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2354,7 +2354,7 @@ paths:
                 $ref: '#/components/schemas/StaticInput'
           description: ''
     put:
-      operationId: api_static_inputs_update
+      operationId: static_inputs_update
       description: ''
       parameters:
       - in: path
@@ -2364,7 +2364,7 @@ paths:
         description: A unique value identifying this static input.
         required: true
       tags:
-      - api
+      - static-inputs
       requestBody:
         content:
           application/json:
@@ -2389,7 +2389,7 @@ paths:
                 $ref: '#/components/schemas/StaticInput'
           description: ''
     patch:
-      operationId: api_static_inputs_partial_update
+      operationId: static_inputs_partial_update
       description: ''
       parameters:
       - in: path
@@ -2399,7 +2399,7 @@ paths:
         description: A unique value identifying this static input.
         required: true
       tags:
-      - api
+      - static-inputs
       requestBody:
         content:
           application/json:
@@ -2423,7 +2423,7 @@ paths:
                 $ref: '#/components/schemas/StaticInput'
           description: ''
     delete:
-      operationId: api_static_inputs_destroy
+      operationId: static_inputs_destroy
       description: ''
       parameters:
       - in: path
@@ -2433,7 +2433,7 @@ paths:
         description: A unique value identifying this static input.
         required: true
       tags:
-      - api
+      - static-inputs
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2443,10 +2443,10 @@ paths:
           description: No response body
   /api/user/:
     get:
-      operationId: api_user_retrieve
+      operationId: user_retrieve
       description: ''
       tags:
-      - api
+      - user
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -2519,6 +2519,15 @@ components:
           items:
             $ref: '#/components/schemas/Error'
           readOnly: true
+        progressions:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+            minLength: 2
+            maxLength: 2
+          readOnly: true
         created_at:
           type: string
           format: date-time
@@ -2547,6 +2556,7 @@ components:
       - created_at
       - errors
       - id
+      - progressions
       - resources
       - updated_at
     BatchRequest:
