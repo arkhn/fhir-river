@@ -124,7 +124,7 @@ export const conditionFactory = Factory.define<Condition>(
     action: associations.action || "INCLUDE",
     sql_input: associations.sql_input || sqlInputFactory.build().id,
     input_group: associations.input_group || inputGroupFactory.build().id,
-    relation: associations.relation,
+    relation: associations.relation || "EQ",
     value: associations.value,
   })
 );
