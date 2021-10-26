@@ -42,7 +42,7 @@ class Resource(models.Model):
     definition_id = models.TextField()
     definition = models.JSONField()
     logical_reference = models.UUIDField(default=uuid.uuid4, editable=False)
-    primary_key_owner = models.ForeignKey("Owner", related_name="resources", on_delete=models.CASCADE)
+    primary_key_owner = models.ForeignKey("Owner", related_name="resources", on_delete=models.RESTRICT)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -127,7 +127,7 @@ class Column(models.Model):
     id_ = models.TextField(name="id", primary_key=True, default=cuid, editable=False)
     table = models.TextField()
     column = models.TextField()
-    owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.CASCADE)
+    owner = models.ForeignKey("Owner", related_name="columns", on_delete=models.RESTRICT)
 
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
