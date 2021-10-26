@@ -17,6 +17,8 @@ import resource from "features/Mappings/resourceSlice";
 import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
 
+import { rtkQueryErrorLogger } from "./middlewares";
+
 const appReducer = combineReducers({
   [api.reducerPath]: api.reducer,
   column,
@@ -41,7 +43,7 @@ const rootReducer = (state: RootState | undefined, action: AnyAction) => {
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+    getDefaultMiddleware().concat(api.middleware).concat(rtkQueryErrorLogger),
   devTools: process.env.NODE_ENV !== "production",
 });
 
