@@ -2618,6 +2618,7 @@ components:
       - action
       - id
       - input_group
+      - relation
       - sql_input
     ConditionRelationEnum:
       enum:
@@ -2645,6 +2646,7 @@ components:
       required:
       - action
       - input_group
+      - relation
       - sql_input
     Credential:
       type: object
