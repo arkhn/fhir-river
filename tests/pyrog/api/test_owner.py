@@ -82,3 +82,21 @@ def test_delete_owner(api_client, owner):
     response = api_client.delete(url)
 
     assert response.status_code == 204, response.data
+
+
+def test_delete_owner_conflict_resource(api_client, owner, resource_factory):
+    resource_factory.create(primary_key_owner=owner)
+    url = reverse("owners-detail", kwargs={"pk": owner.id})
+
+    response = api_client.delete(url)
+
+    assert response.status_code == 409, response.data
+
+
+def test_delete_owner_conflict_column(api_client, owner, column_factory):
+    column_factory.create(owner=owner)
+    url = reverse("owners-detail", kwargs={"pk": owner.id})
+
+    response = api_client.delete(url)
+
+    assert response.status_code == 409, response.data
