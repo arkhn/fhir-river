@@ -24,8 +24,10 @@ def test_done_batch_is_cleaned(batch_factory, resource_factory):
     batches = models.Batch.objects.all()
     assert len(batches) == 1
     assert batches[0].completed_at is not None
-    for _, progression in batches[0].progressions:
-        assert progression == {"extracted": 10, "loaded": 10, "failed": None}
+    for progression in models.Progression.objects.filter(batch=batch):
+        assert progression.extracted == 10
+        assert progression.loaded == 10
+        assert progression.failed is None
 
 
 def test_done_batch_is_cleaned_with_failed(batch_factory, resource_factory):
@@ -46,8 +48,10 @@ def test_done_batch_is_cleaned_with_failed(batch_factory, resource_factory):
     batches = models.Batch.objects.all()
     assert len(batches) == 1
     assert batches[0].completed_at is not None
-    for _, progression in batches[0].progressions:
-        assert progression == {"extracted": 10, "loaded": 6, "failed": 4}
+    for progression in models.Progression.objects.filter(batch=batch):
+        assert progression.extracted == 10
+        assert progression.loaded == 6
+        assert progression.failed == 4
 
 
 def test_ongoing_batch_is_not_cleaned(batch_factory, resource_factory):

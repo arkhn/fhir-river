@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List
+from typing import Dict, List, Tuple
 
 from rest_framework import serializers
 
@@ -22,12 +22,11 @@ class BatchSerializer(serializers.ModelSerializer):
         exclude = ["mappings"]
         extra_kwargs = {
             "resources": {"required": True},
-            "progressions": {"read_only": True},
             "canceled_at": {"allow_null": True},
             "completed_at": {"allow_null": True},
         }
 
-    def get_progressions(self, obj) -> List[List]:
+    def get_progressions(self, obj) -> List[Tuple[str, Dict]]:
         """
         Fetch the number of extracted and loaded resources from redis.
         Returns a list of lists that looks like:
@@ -38,13 +37,22 @@ class BatchSerializer(serializers.ModelSerializer):
         """
         counter = RedisProgressionCounter()
 
+        def resource_name_with_label(resource):
+            return f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}"
+
         # If batch is over, the counter won't necessarily be in redis
-        if obj.progressions:
-            return obj.progressions
+        if models.Progression.objects.filter(batch=obj):
+            return [
+                (
+                    resource_name_with_label(progression.resource),
+                    {"extracted": progression.extracted, "loaded": progression.loaded, "failed": progression.failed},
+                )
+                for progression in models.Progression.objects.filter(batch=obj)
+            ]
 
         progressions = [
             [
-                f"{resource.definition_id}{f' ({resource.label})' if resource.label else ''}",
+                resource_name_with_label(resource),
                 dataclasses.asdict(counter.get(f"{obj.id}:{resource.id}")),
             ]
             for resource in obj.resources.all()

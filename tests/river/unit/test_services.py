@@ -1,5 +1,6 @@
 import pytest
 
+from river import models
 from river.adapters.event_publisher import InMemoryEventPublisher
 from river.adapters.progression_counter import InMemoryProgressionCounter
 from river.adapters.topics import InMemoryTopicsManager
@@ -40,12 +41,18 @@ def test_abort(batch_factory, resource_factory):
     )
     abort(batch, topics, counter)
 
-    assert batch.canceled_at is not None
-    assert batch.progressions == [
-        ["Patient", {"extracted": 100, "loaded": 20, "failed": 3}],
-        ["Practitioner", {"extracted": 200, "loaded": 10, "failed": None}],
-    ]
     assert topics._topics == set()
+    assert batch.canceled_at is not None
+    r1_progressions = models.Progression.objects.filter(batch=batch, resource=r1)
+    assert len(r1_progressions) == 1
+    assert r1_progressions[0].extracted == 100
+    assert r1_progressions[0].loaded == 20
+    assert r1_progressions[0].failed == 3
+    r2_progressions = models.Progression.objects.filter(batch=batch, resource=r2)
+    assert len(r2_progressions) == 1
+    assert r2_progressions[0].extracted == 200
+    assert r2_progressions[0].loaded == 10
+    assert r2_progressions[0].failed is None
 
 
 @pytest.mark.skip(reason="feature not implemented yet")

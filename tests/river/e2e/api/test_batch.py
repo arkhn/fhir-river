@@ -105,6 +105,7 @@ def test_retrieve_batch(api_client, batch_factory, resource_factory):
     assert response.json()["completed_at"] is None
 
 
+@pytest.mark.redis
 def test_delete_batch(api_client, redis_client, batch_factory, resource_factory, kafka_admin):
     r1 = resource_factory.create(definition_id="Patient")
     r2 = resource_factory.create(definition_id="Practitioner")
@@ -118,11 +119,10 @@ def test_delete_batch(api_client, redis_client, batch_factory, resource_factory,
 
     clear_counters(redis_client, batch, r1, r2)
 
-    batches = models.Batch.objects.all()
-    assert len(batches) == 1
-    assert batches[0].canceled_at is not None
-    print(batches[0].progressions)
-    assert batches[0].progressions == [
+    response_get = api_client.get(url)
+    print(response_get.json())
+    assert response_get.json()["canceled_at"] is not None
+    assert response_get.json()["progressions"] == [
         ["Patient", {"extracted": 10, "loaded": 5, "failed": None}],
         ["Practitioner", {"extracted": 20, "loaded": 5, "failed": 3}],
     ]
