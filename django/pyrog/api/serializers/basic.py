@@ -160,6 +160,7 @@ class ConditionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Condition
         fields = "__all__"
+        extra_kwargs = {"relation": {"required": True}}
 
 
 class FilterSerializer(serializers.ModelSerializer):
