@@ -5,7 +5,6 @@ export type SnackbarNotificationState = {
   message: string;
   key: SnackbarKey;
   options: { key: SnackbarKey; variant: VariantType };
-  dismissed?: boolean;
 };
 
 type SnackbarSliceState = {
@@ -20,7 +19,7 @@ const snackbarSlice = createSlice({
   name: "snackbar",
   initialState,
   reducers: {
-    addNotification: (
+    addSnackbar: (
       state,
       {
         payload,
@@ -49,5 +48,5 @@ const snackbarSlice = createSlice({
   },
 });
 
-export const { addNotification, removeSnackbar } = snackbarSlice.actions;
+export const { addSnackbar, removeSnackbar } = snackbarSlice.actions;
 export default snackbarSlice.reducer;

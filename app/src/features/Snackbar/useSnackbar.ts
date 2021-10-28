@@ -18,28 +18,22 @@ const useSnackbar = (notistackRef: React.RefObject<SnackbarProvider>): void => {
     displayed = [...displayed.filter((key) => id !== key)];
   };
 
+  // when a snackbar is dismissed, removes the notification from the store
   React.useEffect(() => {
-    notifications.forEach(
-      ({ key, message, options = {}, dismissed = false }) => {
-        if (dismissed) {
-          notistackRef.current?.closeSnackbar(key);
-          return;
-        }
+    notifications.forEach(({ key, message, options = {} }) => {
+      if (displayed.includes(key)) return;
 
-        if (displayed.includes(key)) return;
+      notistackRef.current?.enqueueSnackbar(message, {
+        key,
+        ...options,
+        onExited: (event, myKey) => {
+          dispatch(removeSnackbar({ key: myKey }));
+          removeDisplayed(myKey);
+        },
+      });
 
-        notistackRef.current?.enqueueSnackbar(message, {
-          key,
-          ...options,
-          onExited: (event, myKey) => {
-            dispatch(removeSnackbar({ key: myKey }));
-            removeDisplayed(myKey);
-          },
-        });
-
-        storeDisplayed(key);
-      }
-    );
+      storeDisplayed(key);
+    });
   }, [dispatch, notifications, notistackRef]);
 };
 

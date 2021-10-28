@@ -2,8 +2,9 @@ import { isRejectedWithValue, Middleware } from "@reduxjs/toolkit";
 import { SnackbarKey, VariantType } from "notistack";
 import { v4 as uuid } from "uuid";
 
-import { addNotification } from "features/Snackbar/snackbarSlice";
+import { addSnackbar } from "features/Snackbar/snackbarSlice";
 
+// handle notifications for errors
 const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
   if (isRejectedWithValue(action)) {
     const { payload: error } = action;
@@ -16,7 +17,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
     };
     if (error.error) {
       next(
-        addNotification({
+        addSnackbar({
           key,
           notification: {
             key,
@@ -29,7 +30,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
       );
     } else if (errorData.issue) {
       next(
-        addNotification({
+        addSnackbar({
           key,
           notification: {
             key,
@@ -42,7 +43,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
       );
     } else if (errorData) {
       next(
-        addNotification({
+        addSnackbar({
           key,
           notification: {
             key,
@@ -55,7 +56,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
       );
     } else
       next(
-        addNotification({
+        addSnackbar({
           key,
           notification: {
             key,
