@@ -25,7 +25,8 @@ class CredentialSerializer(serializers.ModelSerializer):
     def get_available_owners(self, obj) -> List[str]:
         """
         Introspects the database schema and returns the list of available owners
-        Returns an empty list if a connection parameter is empty.
+        Returns an empty list if a connection parameter is
+        empty or if credentials are invalid.
         """
         if "" in [obj.login, obj.password, obj.host, obj.port, obj.database]:
             return []
@@ -33,8 +34,8 @@ class CredentialSerializer(serializers.ModelSerializer):
             db_connection = DBConnection(obj.__dict__)
             explorer = DatabaseExplorer(db_connection)
             owners = explorer.get_owners()
-        except Exception as e:
-            raise serializers.ValidationError(e)
+        except Exception:
+            return []
         return owners
 
     def validate(self, data):
@@ -160,6 +161,7 @@ class ConditionSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Condition
         fields = "__all__"
+        extra_kwargs = {"relation": {"required": True}}
 
 
 class FilterSerializer(serializers.ModelSerializer):

@@ -150,5 +150,6 @@
   "batchSuccess": "✅ Success",
   "batchCanceled": "🚫 Canceled",
   "noAvailableResource": "No available resource",
-  "catchValidationErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}"
+  "catchValidationErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}",
+  "selectValue": "Select value"
 }

@@ -44,7 +44,9 @@ INSERT INTO
 SELECT
     "id",
     "name",
-    "schema",
+    -- pyrog."Owner".schema is a JSON-escaped string such as "{\"admissions\": [\"admittime\"]}"
+    -- therefore we need to un-escape it using the #>> jsonb operator
+    ("schema" #>> '{}')::jsonb,
     "credential"
 FROM
     pyrog."Owner";

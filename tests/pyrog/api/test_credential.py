@@ -69,14 +69,15 @@ def test_retrieve_credential(api_client, credential):
     assert response.status_code == 200, response.data
 
 
-def test_retrieve_credential_without_password(api_client, credential_factory):
-    credential = credential_factory.create(password="")
+@pytest.mark.parametrize("password", ["", "invalid"])
+def test_retrieve_credential_invalid(api_client, credential_factory, password):
+    credential = credential_factory.create(password=password)
     url = reverse("credentials-detail", kwargs={"pk": credential.id})
 
     response = api_client.get(url)
 
-    assert response.data["available_owners"] == []
     assert response.status_code == 200, response.data
+    assert response.data["available_owners"] == []
 
 
 def test_list_credentials(api_client, credential_factory):

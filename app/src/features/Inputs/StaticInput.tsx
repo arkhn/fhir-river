@@ -13,9 +13,11 @@ import useGetSelectedNode from "common/hooks/useGetSelectedNode";
 import useIsNodeReferenceSystemURI from "common/hooks/useIsNodeReferenceSystemURI";
 import ExistingURIDialog from "features/Inputs/ExistingURIDialog";
 import useCurrentMapping from "features/Mappings/useCurrentMapping";
+import ValueSetSelect from "features/ValueSets/ValueSetSelect";
 import {
   useApiStaticInputsDestroyMutation,
   useApiStaticInputsUpdateMutation,
+  useApiValueSetsRetrieveQuery,
 } from "services/api/endpoints";
 import { StaticInput as StaticInputType } from "services/api/generated/api.generated";
 
@@ -48,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   input: {
-    maxWidth: 534,
+    maxWidth: theme.mixins.input.maxWidth,
   },
   inputStartAdornment: {
     fill: theme.palette.text.disabled,
@@ -87,6 +89,25 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
 
   const isNotFixedValueOrNameTypeOrReference =
     !isFixedValue && !isNodeNameType && !isNodeReferenceSystemURI;
+
+  const valueSetUrl = useMemo(() => {
+    const nodeDefinition = selectedNode?.definitionNode.definition;
+    const isBindingStrengthRequired =
+      nodeDefinition?.binding?.strength === "required";
+
+    return isBindingStrengthRequired
+      ? nodeDefinition?.binding?.valueSet
+      : undefined;
+  }, [selectedNode?.definitionNode.definition]);
+
+  const { data: inputValueSet } = useApiValueSetsRetrieveQuery(
+    { id: "", url: valueSetUrl },
+    { skip: !valueSetUrl }
+  );
+
+  const isValueSetValid = inputValueSet?.expansion?.contains?.some(
+    ({ code, display }) => code !== undefined && display !== undefined
+  );
 
   const handleDeleteInput = async () => {
     try {
@@ -170,6 +191,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
               value={input.value ?? ""}
               onChange={handleFhirResourceAutocompleteChange}
             />
+          ) : inputValueSet && isValueSetValid ? (
+            <ValueSetSelect input={input} valueSet={inputValueSet} />
           ) : (
             <TextField
               variant="outlined"
