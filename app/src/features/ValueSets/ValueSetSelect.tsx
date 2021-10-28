@@ -5,7 +5,6 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { makeStyles, MenuItem, Select } from "@material-ui/core";
 import clsx from "clsx";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import { useApiStaticInputsUpdateMutation } from "services/api/endpoints";
@@ -38,7 +37,6 @@ const ValueSetSelect = ({
   input,
 }: ValueSetSelectProps): JSX.Element => {
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const [updateInput] = useApiStaticInputsUpdateMutation();
 
@@ -53,14 +51,10 @@ const ValueSetSelect = ({
 
   const handleChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
     const value = event.target.value as string;
-    try {
-      await updateInput({
-        id: input.id,
-        staticInputRequest: { ...input, value },
-      });
-    } catch (e) {
-      enqueueSnackbar(e.error, { variant: "error" });
-    }
+    await updateInput({
+      id: input.id,
+      staticInputRequest: { ...input, value },
+    });
   };
 
   const handleRenderValue = (value: unknown) => {
