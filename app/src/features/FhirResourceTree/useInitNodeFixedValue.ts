@@ -12,6 +12,8 @@ import {
 
 import { ElementNode } from "./resourceTreeSlice";
 
+// if the node has a fixed value, creates an attribute with an input group
+// with a static input inside
 const useInitNodeFixedValue = (node?: ElementNode): void => {
   const { mappingId } = useParams<{
     mappingId?: string;
@@ -41,12 +43,15 @@ const useInitNodeFixedValue = (node?: ElementNode): void => {
   const [createInputGroup] = useApiInputGroupsCreateMutation();
   const [createStaticInput] = useApiStaticInputsCreateMutation();
 
+  const isNodeAttributeInitialized = !isNodeAttributesLoading && !nodeAttribute;
+
+  // if the attribute has a primitive fixed value and has no attributes,
+  // creates an attribute, an input group, and a static input
   useEffect(() => {
     const createPrimitiveStaticInputWithFixedValue = async () => {
       if (
         primitiveFixedValue &&
-        !isNodeAttributesLoading &&
-        !nodeAttribute &&
+        isNodeAttributeInitialized &&
         mappingId &&
         node &&
         node.type
@@ -76,15 +81,14 @@ const useInitNodeFixedValue = (node?: ElementNode): void => {
 
     createPrimitiveStaticInputWithFixedValue();
   }, [
+    isNodeAttributeInitialized,
+    node,
     createAttribute,
     createInputGroup,
     createStaticInput,
-    isNodeAttributesLoading,
-    mappingId,
-    node,
-    nodeAttribute,
-    primitiveFixedValue,
     enqueueSnackbar,
+    primitiveFixedValue,
+    mappingId,
   ]);
 };
 

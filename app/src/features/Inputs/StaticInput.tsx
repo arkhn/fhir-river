@@ -85,11 +85,8 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     }
   }, [input.value, selectedNode]);
 
-  const isURITypeButNotTypeOrReferenceOrFixed =
-    !isFixedValue &&
-    isNodeTypeURI &&
-    !isNodeNameType &&
-    !isNodeReferenceSystemURI;
+  const isNotFixedValueOrNameTypeOrReference =
+    !isFixedValue && !isNodeNameType && !isNodeReferenceSystemURI;
 
   const handleDeleteInput = async () => {
     try {
@@ -197,7 +194,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             />
           )}
         </Grid>
-        {isURITypeButNotTypeOrReferenceOrFixed && (
+        {isNotFixedValueOrNameTypeOrReference && isNodeTypeURI && (
           <Grid item>
             <Button
               variant="outlined"
