@@ -1,4 +1,5 @@
 import { isRejectedWithValue, Middleware } from "@reduxjs/toolkit";
+import { SnackbarKey, VariantType } from "notistack";
 import { v4 as uuid } from "uuid";
 
 import { addNotification } from "features/Snackbar/snackbarSlice";
@@ -9,6 +10,10 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
     const { data: errorData, status: errorStatus } = error;
     const { endpointName } = action.meta.arg;
     const key = uuid();
+    const options: { key: SnackbarKey; variant: VariantType } = {
+      key,
+      variant: "error",
+    };
     if (error.error) {
       next(
         addNotification({
@@ -18,10 +23,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
             message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
               error.error
             )}`,
-            options: {
-              key,
-              variant: "error",
-            },
+            options,
           },
         })
       );
@@ -34,10 +36,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
             message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
               errorData.issue.map(({ diagnostics }: any) => diagnostics)
             )}`,
-            options: {
-              key,
-              variant: "error",
-            },
+            options,
           },
         })
       );
@@ -50,10 +49,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
             message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
               errorData
             )}`,
-            options: {
-              key,
-              variant: "error",
-            },
+            options,
           },
         })
       );
@@ -66,10 +62,7 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
             message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
               action
             )}`,
-            options: {
-              key,
-              variant: "error",
-            },
+            options,
           },
         })
       );
