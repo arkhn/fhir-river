@@ -4,7 +4,6 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Grid, IconButton, makeStyles, TextField } from "@material-ui/core";
 import clsx from "clsx";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
@@ -64,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
 
 const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const { data: mapping } = useCurrentMapping();
   const classes = useStyles();
   const [staticInputValue, setStaticInputValue] = useState(input.value ?? "");
@@ -110,11 +108,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   );
 
   const handleDeleteInput = async () => {
-    try {
-      await deleteInput({ id: input.id });
-    } catch (e) {
-      enqueueSnackbar(e.error, { variant: "error" });
-    }
+    await deleteInput({ id: input.id });
   };
 
   const handleStaticValueChange = (
@@ -125,42 +119,31 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
 
   const handleInputBlur = async () => {
     if (staticInputValue !== input.value) {
-      try {
-        await updateInput({
-          id: input.id,
-          staticInputRequest: { ...input, value: staticInputValue },
-        });
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+      await updateInput({
+        id: input.id,
+        staticInputRequest: { ...input, value: staticInputValue },
+      });
     }
   };
 
   const handleGenerateURIClick = async () => {
     if (mapping) {
       const staticValue = `${URI_STATIC_VALUE_PREFIX}${mapping.logical_reference}`;
-      try {
-        await updateInput({
-          id: input.id,
-          staticInputRequest: { ...input, value: staticValue },
-        });
-        setStaticInputValue(staticValue);
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+
+      await updateInput({
+        id: input.id,
+        staticInputRequest: { ...input, value: staticValue },
+      });
+      setStaticInputValue(staticValue);
     }
   };
 
   const handleFhirResourceAutocompleteChange = async (value: string) => {
     if (value !== input.value) {
-      try {
-        await updateInput({
-          id: input.id,
-          staticInputRequest: { ...input, value },
-        });
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+      await updateInput({
+        id: input.id,
+        staticInputRequest: { ...input, value },
+      });
     }
   };
   const handleExistingURIDialogOpen = () => {
@@ -171,15 +154,11 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   };
   const handleExistingURIDialogSubmit = async (mappingId: string) => {
     const staticValue = `${URI_STATIC_VALUE_PREFIX}${mappingId}`;
-    try {
-      await updateInput({
-        id: input.id,
-        staticInputRequest: { ...input, value: staticValue },
-      });
-      setStaticInputValue(staticValue);
-    } catch (error) {
-      console.error(error);
-    }
+    await updateInput({
+      id: input.id,
+      staticInputRequest: { ...input, value: staticValue },
+    });
+    setStaticInputValue(staticValue);
   };
 
   return (

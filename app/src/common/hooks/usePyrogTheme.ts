@@ -1,6 +1,6 @@
 import React from "react";
 
-import { createMuiTheme, useMediaQuery, Theme } from "@material-ui/core";
+import { createTheme, useMediaQuery, Theme } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 declare module "@material-ui/core/styles/createMixins" {
   interface Mixins {
@@ -77,7 +77,7 @@ const usePyrogTheme = (): Theme => {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const theme = React.useMemo(
     () =>
-      createMuiTheme({
+      createTheme({
         shape: {
           borderRadius: 6,
         },

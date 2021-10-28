@@ -15,7 +15,6 @@ import {
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import clsx from "clsx";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -58,7 +57,6 @@ const BatchResourceDialog = ({
   const { t } = useTranslation();
   const classes = useStyles();
   const { sourceId } = useParams<{ sourceId: string }>();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { data: resources } = useApiResourcesListQuery(
     { source: sourceId },
@@ -144,15 +142,11 @@ const BatchResourceDialog = ({
 
   const handleBatchRun = () => {
     const batchCreate = async () => {
-      try {
-        await apiBatchCreate({
-          batchRequest: {
-            resources: selectedResourceIds,
-          },
-        }).unwrap();
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+      await apiBatchCreate({
+        batchRequest: {
+          resources: selectedResourceIds,
+        },
+      }).unwrap();
     };
 
     if (selectedResourceIds.length > 0) {

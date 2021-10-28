@@ -3,13 +3,10 @@ import React, { ChangeEvent, useRef, useState } from "react";
 import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { makeStyles } from "@material-ui/core";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
 import { useApiSourcesImportCreateMutation } from "services/api/endpoints";
-import { apiValidationErrorFromResponse } from "services/api/errors";
 import { MappingRequest } from "services/api/generated/api.generated";
 
 import CredentialDialog from "./CredentialDialog";
@@ -31,7 +28,6 @@ type CredentialFormInputs = Omit<MappingRequest["credential"], "owners">;
 
 const UploadSourceButton = (): JSX.Element => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [mappingRequest, setMappingRequest] = useState<
@@ -68,27 +64,13 @@ const UploadSourceButton = (): JSX.Element => {
     credentialInputs: CredentialFormInputs
   ) => {
     if (mappingRequest) {
-      try {
-        await apiSourceImportCreate({
-          mappingRequest: {
-            ...mappingRequest,
-            credential: { ...credentialInputs, ...mappingRequest.credential },
-          },
-        }).unwrap();
-        setMappingRequest(undefined);
-      } catch (error) {
-        enqueueSnackbar(error.error, { variant: "error" });
-        const errorData = apiValidationErrorFromResponse(
-          error as FetchBaseQueryError
-        );
-        if (errorData) {
-          const errorMessage = Object.entries(errorData).reduce(
-            (acc, [key, value]) => `${acc} ${key}: ${value}`,
-            ""
-          );
-          enqueueSnackbar(errorMessage, { variant: "error" });
-        }
-      }
+      await apiSourceImportCreate({
+        mappingRequest: {
+          ...mappingRequest,
+          credential: { ...credentialInputs, ...mappingRequest.credential },
+        },
+      }).unwrap();
+      setMappingRequest(undefined);
     }
   };
 

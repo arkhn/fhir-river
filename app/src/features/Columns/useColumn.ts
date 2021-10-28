@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
-import { useSnackbar } from "notistack";
 
 import {
   useApiColumnsCreateMutation,
@@ -32,7 +31,6 @@ const useColumn = ({
   column: Partial<Column> | undefined,
   onChange: (column: Partial<Column>) => void
 ] => {
-  const { enqueueSnackbar } = useSnackbar();
   const [column, setColumn] = useState<Partial<Column> | undefined>(
     initialColumn
   );
@@ -49,22 +47,18 @@ const useColumn = ({
         !isColumnPartial &&
         !isEqual(changedColumn, column)
       ) {
-        try {
-          const apiColumn = changedColumn.id
-            ? await partialUpdateColumn({
-                id: changedColumn.id,
-                patchedColumnRequest: changedColumn,
-              }).unwrap()
-            : await createColumn({
-                columnRequest: changedColumn as Column,
-              }).unwrap();
-          setColumn(apiColumn);
-        } catch (e) {
-          enqueueSnackbar(e.error, { variant: "error" });
-        }
+        const apiColumn = changedColumn.id
+          ? await partialUpdateColumn({
+              id: changedColumn.id,
+              patchedColumnRequest: changedColumn,
+            }).unwrap()
+          : await createColumn({
+              columnRequest: changedColumn as Column,
+            }).unwrap();
+        setColumn(apiColumn);
       } else setColumn(changedColumn);
     },
-    [column, createColumn, enqueueSnackbar, exists, partialUpdateColumn]
+    [column, createColumn, exists, partialUpdateColumn]
   );
 
   return [column, onChange];

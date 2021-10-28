@@ -57,14 +57,13 @@ const useFhirResourceTreeData = (
   addExtension: () => Promise<void>;
   createItem: (sliceName?: string) => Promise<void>;
 } => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { definitionId, node } = params;
   const {
     data: structureDefinition,
     isLoading: isStructureDefinitionLoading,
   } = useApiStructureDefinitionRetrieveQuery(
     {
-      id: "   ",
+      id: definitionId,
     },
     options
   );

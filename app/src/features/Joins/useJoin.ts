@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
-import { useSnackbar } from "notistack";
 
 import {
   useApiJoinsCreateMutation,
@@ -32,7 +31,6 @@ const useJoin = ({
   join: Partial<Join> | undefined,
   onChange: (join: Partial<Join>) => void
 ] => {
-  const { enqueueSnackbar } = useSnackbar();
   const [join, setJoin] = useState<Partial<Join> | undefined>(initialJoin);
 
   const [createJoin] = useApiJoinsCreateMutation();
@@ -43,22 +41,18 @@ const useJoin = ({
       const isJoinPartial =
         !changedJoin.left || !changedJoin.right || !changedJoin.sql_input;
       if ((!exists || join) && !isJoinPartial && !isEqual(changedJoin, join)) {
-        try {
-          const apiJoin = changedJoin.id
-            ? await partialUpdateJoin({
-                id: changedJoin.id,
-                patchedJoinRequest: changedJoin,
-              }).unwrap()
-            : await createJoin({
-                joinRequest: changedJoin as Join,
-              }).unwrap();
-          setJoin(apiJoin);
-        } catch (e) {
-          enqueueSnackbar(e.error, { variant: "error" });
-        }
+        const apiJoin = changedJoin.id
+          ? await partialUpdateJoin({
+              id: changedJoin.id,
+              patchedJoinRequest: changedJoin,
+            }).unwrap()
+          : await createJoin({
+              joinRequest: changedJoin as Join,
+            }).unwrap();
+        setJoin(apiJoin);
       } else setJoin(changedJoin);
     },
-    [exists, join, partialUpdateJoin, createJoin, enqueueSnackbar]
+    [exists, join, partialUpdateJoin, createJoin]
   );
 
   return [join, onChange];
