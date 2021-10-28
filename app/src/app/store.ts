@@ -14,6 +14,7 @@ import sqlInput from "features/Inputs/sqlInputSlice";
 import staticInput from "features/Inputs/staticInputSlice";
 import join from "features/Joins/joinSlice";
 import resource from "features/Mappings/resourceSlice";
+import snackbar from "features/Snackbar/snackbarSlice";
 import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
 
@@ -30,6 +31,7 @@ const appReducer = combineReducers({
   resourceTree,
   sqlInput,
   staticInput,
+  snackbar,
 });
 export type RootState = ReturnType<typeof appReducer>;
 
