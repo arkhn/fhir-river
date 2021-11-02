@@ -1,8 +1,7 @@
 import { isRejectedWithValue, Middleware } from "@reduxjs/toolkit";
-import { SnackbarKey, VariantType } from "notistack";
 import { v4 as uuid } from "uuid";
 
-import { addSnackbar } from "features/Snackbar/snackbarSlice";
+import { notificationAdded } from "features/Notifications/notificationSlice";
 
 // handle notifications for errors
 const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
@@ -11,62 +10,22 @@ const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
     const { data: errorData, status: errorStatus } = error;
     const { endpointName } = action.meta.arg;
     const key = uuid();
-    const options: { key: SnackbarKey; variant: VariantType } = {
-      key,
-      variant: "error",
-    };
-    if (error.error) {
-      next(
-        addSnackbar({
-          key,
-          notification: {
-            key,
-            message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
-              error.error
-            )}`,
-            options,
-          },
-        })
-      );
-    } else if (errorData.issue) {
-      next(
-        addSnackbar({
-          key,
-          notification: {
-            key,
-            message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
-              errorData.issue.map(({ diagnostics }: any) => diagnostics)
-            )}`,
-            options,
-          },
-        })
-      );
+    let message = "";
+    if (error?.error) {
+      message = `${errorStatus} | ${endpointName} | ${JSON.stringify(
+        error.error
+      )}`;
+    } else if (errorData?.issue) {
+      message = `${errorStatus} | ${endpointName} | ${JSON.stringify(
+        errorData.issue.map(({ diagnostics }: any) => diagnostics)
+      )}`;
     } else if (errorData) {
-      next(
-        addSnackbar({
-          key,
-          notification: {
-            key,
-            message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
-              errorData
-            )}`,
-            options,
-          },
-        })
-      );
+      message = `${errorStatus} | ${endpointName} | ${JSON.stringify(
+        errorData
+      )}`;
     } else
-      next(
-        addSnackbar({
-          key,
-          notification: {
-            key,
-            message: `${errorStatus} | ${endpointName} | ${JSON.stringify(
-              action
-            )}`,
-            options,
-          },
-        })
-      );
+      message = `${errorStatus} | ${endpointName} | ${JSON.stringify(action)}`;
+    next(notificationAdded({ key, message, variant: "error" }));
   }
   return next(action);
 };

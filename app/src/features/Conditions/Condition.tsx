@@ -171,7 +171,7 @@ const Condition = ({ condition, onDelete }: ConditionProps): JSX.Element => {
         container
         alignItems="center"
         spacing={1}
-        justifyContent="space-between"
+        justify="space-between"
       >
         <Grid container item xs={11} spacing={1} alignItems="center">
           <Grid item>
