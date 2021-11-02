@@ -375,7 +375,11 @@ export const api = createApi({
     >({
       query: (queryArg) => ({
         url: `/api/input-groups/`,
-        params: { attribute: queryArg.attribute, ordering: queryArg.ordering },
+        params: {
+          attribute: queryArg.attribute,
+          ordering: queryArg.ordering,
+          resource: queryArg.resource,
+        },
       }),
     }),
     apiInputGroupsCreate: build.mutation<
@@ -689,6 +693,7 @@ export const api = createApi({
         params: {
           input_group: queryArg.inputGroup,
           ordering: queryArg.ordering,
+          resource: queryArg.resource,
         },
       }),
     }),
@@ -746,6 +751,7 @@ export const api = createApi({
         params: {
           input_group: queryArg.inputGroup,
           ordering: queryArg.ordering,
+          resource: queryArg.resource,
         },
       }),
     }),
@@ -1015,6 +1021,7 @@ export type ApiInputGroupsListApiArg = {
   attribute?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
+  resource?: string;
 };
 export type ApiInputGroupsCreateApiResponse = /** status 201  */ InputGroup;
 export type ApiInputGroupsCreateApiArg = {
@@ -1193,6 +1200,7 @@ export type ApiSqlInputsListApiArg = {
   inputGroup?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
+  resource?: string;
 };
 export type ApiSqlInputsCreateApiResponse = /** status 201  */ SqlInput;
 export type ApiSqlInputsCreateApiArg = {
@@ -1225,6 +1233,7 @@ export type ApiStaticInputsListApiArg = {
   inputGroup?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
+  resource?: string;
 };
 export type ApiStaticInputsCreateApiResponse = /** status 201  */ StaticInput;
 export type ApiStaticInputsCreateApiArg = {
