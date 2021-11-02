@@ -33,12 +33,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
-  icon: {
-    fill: theme.palette.getContrastText(theme.palette.background.paper),
-  },
   iconButton: {
     "& > span > span": {
       height: theme.spacing(2),
+      fill: theme.palette.getContrastText(theme.palette.background.paper),
+    },
+    "&.Mui-disabled > span > span": {
+      fill: theme.palette.divider,
     },
     border: `1px solid ${
       theme.palette.type === "dark"
@@ -72,8 +73,22 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
   const [updateInput] = useApiStaticInputsUpdateMutation();
   const selectedNode = useGetSelectedNode();
   const isNodeReferenceSystemURI = useIsNodeReferenceSystemURI(selectedNode);
+
   const isNodeTypeURI = selectedNode?.type === "uri";
   const isNodeNameType = selectedNode?.name === "type";
+  const isTypeURIAndNameType = isNodeNameType && isNodeTypeURI;
+
+  const isFixedValue = useMemo(() => {
+    if (selectedNode) {
+      const fixedEntry = Object.entries(
+        selectedNode.definitionNode.definition
+      ).find(([key]) => key.startsWith("fixed"));
+      return fixedEntry && fixedEntry[1] === input.value;
+    }
+  }, [input.value, selectedNode]);
+
+  const isNotFixedValueOrNameTypeOrReference =
+    !isFixedValue && !isNodeNameType && !isNodeReferenceSystemURI;
 
   const valueSetUrl = useMemo(() => {
     const nodeDefinition = selectedNode?.definitionNode.definition;
@@ -171,7 +186,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
     <Grid container item alignItems="center" direction="row" spacing={1}>
       <Grid item container alignItems="center" xs={10} spacing={2}>
         <Grid item xs={7}>
-          {isNodeTypeURI && isNodeNameType ? (
+          {isTypeURIAndNameType ? (
             <FhirResourceAutocomplete
               value={input.value ?? ""}
               onChange={handleFhirResourceAutocompleteChange}
@@ -182,6 +197,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             <TextField
               variant="outlined"
               size="small"
+              disabled={isFixedValue}
               fullWidth
               placeholder={t("typeStaticValueHere")}
               className={classes.input}
@@ -201,7 +217,7 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
             />
           )}
         </Grid>
-        {isNodeTypeURI && !isNodeNameType && !isNodeReferenceSystemURI && (
+        {isNotFixedValueOrNameTypeOrReference && isNodeTypeURI && (
           <Grid item>
             <Button
               variant="outlined"
@@ -227,15 +243,17 @@ const StaticInput = ({ input }: StaticInputProps): JSX.Element => {
           </>
         )}
       </Grid>
-      <Grid item className={classes.iconButtonContainer}>
-        <IconButton
-          size="small"
-          className={classes.iconButton}
-          onClick={handleDeleteInput}
-        >
-          <Icon icon={IconNames.TRASH} className={classes.icon} />
-        </IconButton>
-      </Grid>
+      {!isFixedValue && (
+        <Grid item className={classes.iconButtonContainer}>
+          <IconButton
+            size="small"
+            className={classes.iconButton}
+            onClick={handleDeleteInput}
+          >
+            <Icon icon={IconNames.TRASH} />
+          </IconButton>
+        </Grid>
+      )}
     </Grid>
   );
 };

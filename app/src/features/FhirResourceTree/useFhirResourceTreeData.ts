@@ -31,6 +31,8 @@ import {
   useApiAttributesCreateMutation,
 } from "services/api/endpoints";
 
+import useInitNodeFixedValue from "./useInitNodeFixedValue";
+
 /**
  * This hook computes the DefinitionNode tree structure from a fetched structureDefinition.
  * It also provides several help functions to either create or delete items and add extensions.
@@ -38,7 +40,7 @@ import {
  * When the DefinitionNode is built, it gets dispatched into the resourceTreeSlice store and also dispatches
  * an action to build the elementNode tree
  * @param params Contains the definitionId to fetch the structureDefinition from.
- * Node represents sur current node from which we want to inject the sub-tree
+ * Node represents the current node from which we want to inject the sub-tree
  * @param options Skip param to prevent structureDefinition fetching
  * @returns
  */
@@ -77,6 +79,7 @@ const useFhirResourceTreeData = (
   } = useApiAttributesListQuery({ resource: mappingId });
   const prevAttributes = usePrevious(attributes);
   const [createAttribute] = useApiAttributesCreateMutation();
+  useInitNodeFixedValue(node);
 
   const isLoading = isAttributesLoading && isStructureDefinitionLoading;
   const nodeDefinition = node?.definitionNode.definition;
