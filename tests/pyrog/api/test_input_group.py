@@ -85,3 +85,22 @@ def test_filter_input_groups_by_attribute(api_client, attribute_factory, input_g
     assert {input_group_data["id"] for input_group_data in response.json()} == {
         input_group.id for input_group in first_attribute_input_groups
     }
+
+
+def test_filter_input_groups_by_resource(api_client, resource_factory, attribute_factory, input_group_factory):
+    url = reverse("input-groups-list")
+
+    first_resource = resource_factory.create()
+    first_resource_attribute = attribute_factory.create(resource=first_resource)
+    first_attribute_input_groups = input_group_factory.create_batch(2, attribute=first_resource_attribute)
+
+    second_resource = resource_factory.create()
+    second_resource_attribute = attribute_factory.create(resource=second_resource)
+    input_group_factory.create_batch(3, attribute=second_resource_attribute)
+
+    response = api_client.get(url, {"resource": first_resource.id})
+
+    assert response.status_code == 200, response.data
+    assert {input_group_data["id"] for input_group_data in response.json()} == {
+        input_group.id for input_group in first_attribute_input_groups
+    }

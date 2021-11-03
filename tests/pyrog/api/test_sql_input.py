@@ -80,3 +80,24 @@ def test_filter_sql_inputs_by_input_group(api_client, input_group_factory, sql_i
 
     assert response.status_code == 200, response.data
     assert {input_data["id"] for input_data in response.json()} == {input.id for input in first_input_group_inputs}
+
+
+def test_filter_sql_inputs_by_resource(
+    api_client, input_group_factory, attribute_factory, resource_factory, sql_input_factory
+):
+    url = reverse("sql-inputs-list")
+
+    first_resource = resource_factory()
+    first_resource_attribute = attribute_factory.create(resource=first_resource)
+    first_attribute_input_group = input_group_factory.create(attribute=first_resource_attribute)
+    first_input_group_inputs = sql_input_factory.create_batch(3, input_group=first_attribute_input_group)
+
+    second_resource = resource_factory()
+    second_resource_attribute = attribute_factory.create(resource=second_resource)
+    second_attribute_input_group = input_group_factory.create(attribute=second_resource_attribute)
+    sql_input_factory.create_batch(4, input_group=second_attribute_input_group)
+
+    response = api_client.get(url, {"resource": first_resource.id})
+
+    assert response.status_code == 200, response.data
+    assert {input_data["id"] for input_data in response.json()} == {input.id for input in first_input_group_inputs}
