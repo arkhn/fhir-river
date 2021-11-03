@@ -4,7 +4,6 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { Grid, makeStyles, Paper } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
@@ -69,7 +68,6 @@ const InputGroup = ({
   inputGroupIndex,
 }: InputGroupProps): JSX.Element => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const { data: mapping } = useCurrentMapping();
 
@@ -130,13 +128,9 @@ const InputGroup = ({
   }, [inputs, inputGroup, updateInputGroups]);
 
   const handleDeleteInputGroup = async () => {
-    try {
-      await deleteInputGroups({
-        id: inputGroup.id,
-      }).unwrap();
-    } catch (e) {
-      enqueueSnackbar(e.error, { variant: "error" });
-    }
+    await deleteInputGroups({
+      id: inputGroup.id,
+    }).unwrap();
   };
 
   const handleCreateCondition = useCallback(() => {
@@ -177,36 +171,28 @@ const InputGroup = ({
 
   const handleAddSqlInput = async () => {
     if (mapping) {
-      try {
-        const inputColumn = await createColumn({
-          columnRequest: {
-            table: mapping.primary_key_table,
-            column: mapping.primary_key_column,
-            owner: mapping.primary_key_owner,
-          },
-        }).unwrap();
-        await createSqlInput({
-          sqlInputRequest: {
-            input_group: inputGroup.id,
-            column: inputColumn.id,
-          },
-        }).unwrap();
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+      const inputColumn = await createColumn({
+        columnRequest: {
+          table: mapping.primary_key_table,
+          column: mapping.primary_key_column,
+          owner: mapping.primary_key_owner,
+        },
+      }).unwrap();
+      await createSqlInput({
+        sqlInputRequest: {
+          input_group: inputGroup.id,
+          column: inputColumn.id,
+        },
+      }).unwrap();
     }
   };
   const handleAddStaticInput = async () => {
-    try {
-      await createStaticInput({
-        staticInputRequest: {
-          input_group: inputGroup.id,
-          value: "",
-        },
-      });
-    } catch (e) {
-      enqueueSnackbar(e.error, { variant: "error" });
-    }
+    await createStaticInput({
+      staticInputRequest: {
+        input_group: inputGroup.id,
+        value: "",
+      },
+    });
   };
 
   return (

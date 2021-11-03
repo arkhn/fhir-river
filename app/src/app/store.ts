@@ -14,8 +14,11 @@ import sqlInput from "features/Inputs/sqlInputSlice";
 import staticInput from "features/Inputs/staticInputSlice";
 import join from "features/Joins/joinSlice";
 import resource from "features/Mappings/resourceSlice";
+import notification from "features/Notifications/notificationSlice";
 import source from "features/Sources/sourceSlice";
 import { api } from "services/api/endpoints";
+
+import { rtkQueryErrorLogger } from "./middlewares";
 
 const appReducer = combineReducers({
   [api.reducerPath]: api.reducer,
@@ -28,6 +31,7 @@ const appReducer = combineReducers({
   resourceTree,
   sqlInput,
   staticInput,
+  notification,
 });
 export type RootState = ReturnType<typeof appReducer>;
 
@@ -41,7 +45,7 @@ const rootReducer = (state: RootState | undefined, action: AnyAction) => {
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+    getDefaultMiddleware().concat(api.middleware).concat(rtkQueryErrorLogger),
   devTools: process.env.NODE_ENV !== "production",
 });
 

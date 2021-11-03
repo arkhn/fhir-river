@@ -2,7 +2,6 @@ import React from "react";
 
 import { Grid, makeStyles, TextField, Typography } from "@material-ui/core";
 import { Autocomplete } from "@material-ui/lab";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import AutocompletePopper from "common/components/AutocompletePopper";
@@ -44,7 +43,6 @@ type MergingScriptProps = {
 const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
 
   const [updateInputGroup] = useApiInputGroupsUpdateMutation();
   const { data: mergingScripts } = useApiScriptsListQuery();
@@ -54,14 +52,10 @@ const MergingScript = ({ inputGroup }: MergingScriptProps): JSX.Element => {
     selectedScript: string | null
   ) => {
     if (selectedScript && selectedScript !== inputGroup.merging_script) {
-      try {
-        await updateInputGroup({
-          id: inputGroup.id,
-          inputGroupRequest: { ...inputGroup, merging_script: selectedScript },
-        });
-      } catch (error) {
-        enqueueSnackbar(error.error, { variant: "error" });
-      }
+      await updateInputGroup({
+        id: inputGroup.id,
+        inputGroupRequest: { ...inputGroup, merging_script: selectedScript },
+      });
     }
   };
 

@@ -10,7 +10,6 @@ import { Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { CircularProgress, Container, makeStyles } from "@material-ui/core";
 import clsx from "clsx";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 import { useHistory, useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
@@ -85,7 +84,6 @@ const CreateMapping = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -145,90 +143,82 @@ const CreateMapping = (): JSX.Element => {
 
   const handleSubmitCreation = async () => {
     if (mapping) {
-      try {
-        const createdMapping = await createMapping({
-          resourceRequest: {
-            ...mapping,
-          } as ResourceRequest,
-        }).unwrap();
+      const createdMapping = await createMapping({
+        resourceRequest: {
+          ...mapping,
+        } as ResourceRequest,
+      }).unwrap();
 
-        const referencedColumns = columns.filter(
-          ({ id }) =>
-            sqlInputs.some(({ column }) => column === id) ||
-            joins.some(({ left, right }) => left === id || right === id)
-        );
+      const referencedColumns = columns.filter(
+        ({ id }) =>
+          sqlInputs.some(({ column }) => column === id) ||
+          joins.some(({ left, right }) => left === id || right === id)
+      );
 
-        try {
-          // Columns creation
-          const createdColumns = await Promise.all(
-            referencedColumns.map((column) =>
-              createColumn({
-                columnRequest: { ...column } as ColumnRequest,
-              }).unwrap()
-            )
+      // Columns creation
+      const createdColumns = await Promise.all(
+        referencedColumns.map((column) =>
+          createColumn({
+            columnRequest: { ...column } as ColumnRequest,
+          }).unwrap()
+        )
+      );
+
+      // SqlInput creation
+      const createdSqlInputs = await Promise.all(
+        sqlInputs.map((sqlInput) => {
+          const index = referencedColumns.findIndex(
+            (column) => column.id === sqlInput.column
           );
+          return createSqlInput({
+            sqlInputRequest: {
+              ...sqlInput,
+              column: createdColumns[index]?.id ?? "",
+            } as SqlInputRequest,
+          }).unwrap();
+        })
+      );
 
-          // SqlInput creation
-          const createdSqlInputs = await Promise.all(
-            sqlInputs.map((sqlInput) => {
-              const index = referencedColumns.findIndex(
-                (column) => column.id === sqlInput.column
-              );
-              return createSqlInput({
-                sqlInputRequest: {
-                  ...sqlInput,
-                  column: createdColumns[index]?.id ?? "",
-                } as SqlInputRequest,
-              }).unwrap();
-            })
+      // Filters creation
+      await Promise.all(
+        filters.map((filter) => {
+          const index = sqlInputs.findIndex(
+            (sqlInput) => sqlInput.id === filter.sql_input
           );
+          return createFilter({
+            filterRequest: {
+              ...filter,
+              resource: createdMapping.id,
+              sql_input: createdSqlInputs[index]?.id ?? "",
+            } as FilterRequest,
+          }).unwrap();
+        })
+      );
 
-          // Filters creation
-          await Promise.all(
-            filters.map((filter) => {
-              const index = sqlInputs.findIndex(
-                (sqlInput) => sqlInput.id === filter.sql_input
-              );
-              return createFilter({
-                filterRequest: {
-                  ...filter,
-                  resource: createdMapping.id,
-                  sql_input: createdSqlInputs[index]?.id ?? "",
-                } as FilterRequest,
-              }).unwrap();
-            })
+      // Joins creation
+      await Promise.all(
+        joins.map((join) => {
+          const index = sqlInputs.findIndex(
+            (sqlInput) => sqlInput.id === join.sql_input
           );
-
-          // Joins creation
-          await Promise.all(
-            joins.map((join) => {
-              const index = sqlInputs.findIndex(
-                (sqlInput) => sqlInput.id === join.sql_input
-              );
-              const leftColumnIndex = referencedColumns.findIndex(
-                ({ id }) => id === join.left
-              );
-              const rightColumnIndex = referencedColumns.findIndex(
-                ({ id }) => id === join.right
-              );
-              return createJoin({
-                joinRequest: {
-                  sql_input: createdSqlInputs[index]?.id ?? "",
-                  left: createdColumns[leftColumnIndex]?.id ?? "",
-                  right: createdColumns[rightColumnIndex]?.id ?? "",
-                } as JoinRequest,
-              }).unwrap();
-            })
+          const leftColumnIndex = referencedColumns.findIndex(
+            ({ id }) => id === join.left
           );
-        } catch (e) {
-          enqueueSnackbar(e.error, { variant: "error" });
-        }
+          const rightColumnIndex = referencedColumns.findIndex(
+            ({ id }) => id === join.right
+          );
+          return createJoin({
+            joinRequest: {
+              sql_input: createdSqlInputs[index]?.id ?? "",
+              left: createdColumns[leftColumnIndex]?.id ?? "",
+              right: createdColumns[rightColumnIndex]?.id ?? "",
+            } as JoinRequest,
+          }).unwrap();
+        })
+      );
 
-        resetCreateMapping();
-        history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+      resetCreateMapping();
+      history.push(`/sources/${sourceId}/mappings/${createdMapping.id}`);
     }
   };
 

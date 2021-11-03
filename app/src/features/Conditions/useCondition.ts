@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
-import { useSnackbar } from "notistack";
 
 import {
   useApiConditionsCreateMutation,
@@ -32,7 +31,6 @@ const useCondition = ({
   condition: Partial<Condition> | undefined,
   onChange: (condition: Partial<Condition>) => void
 ] => {
-  const { enqueueSnackbar } = useSnackbar();
   const [condition, setCondition] = useState<Partial<Condition> | undefined>(
     initialCondition
   );
@@ -52,28 +50,18 @@ const useCondition = ({
         !isConditionPartial &&
         !isEqual(changedCondition, condition)
       ) {
-        try {
-          const apiCondition = changedCondition.id
-            ? await partialUpdateCondition({
-                id: changedCondition.id,
-                patchedConditionRequest: changedCondition,
-              }).unwrap()
-            : await createCondition({
-                conditionRequest: changedCondition as Condition,
-              }).unwrap();
-          setCondition(apiCondition);
-        } catch (e) {
-          enqueueSnackbar(e.error, { variant: "error" });
-        }
+        const apiCondition = changedCondition.id
+          ? await partialUpdateCondition({
+              id: changedCondition.id,
+              patchedConditionRequest: changedCondition,
+            }).unwrap()
+          : await createCondition({
+              conditionRequest: changedCondition as Condition,
+            }).unwrap();
+        setCondition(apiCondition);
       } else setCondition(changedCondition);
     },
-    [
-      exists,
-      condition,
-      partialUpdateCondition,
-      createCondition,
-      enqueueSnackbar,
-    ]
+    [exists, condition, partialUpdateCondition, createCondition]
   );
 
   return [condition, onChange];

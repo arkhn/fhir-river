@@ -8,7 +8,6 @@ import {
   makeStyles,
   CircularProgress,
 } from "@material-ui/core";
-import { useSnackbar } from "notistack";
 
 import ColumnSelects from "features/Columns/ColumnSelect";
 import SqlInputJoinList from "features/Joins/SqlInputJoinList";
@@ -66,7 +65,6 @@ const useStyles = makeStyles((theme) => ({
 
 const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { data: mapping } = useCurrentMapping();
 
@@ -92,36 +90,24 @@ const SqlInput = ({ input }: SqlInputProps): JSX.Element => {
     inputColumn?.table !== mapping?.primary_key_table;
 
   const handleDeleteInput = async () => {
-    try {
-      await deleteInput({ id: input.id });
-    } catch (e) {
-      enqueueSnackbar(e.error, { variant: "error" });
-    }
+    await deleteInput({ id: input.id });
   };
 
   const handleColumnChange = async (column: Partial<Column>) => {
     if (column.id && column.table && column.column && column.owner) {
-      try {
-        await updateColumn({
-          id: column.id,
-          columnRequest: column as Column,
-        }).unwrap();
-      } catch (e) {
-        enqueueSnackbar(e.error, { variant: "error" });
-      }
+      await updateColumn({
+        id: column.id,
+        columnRequest: column as Column,
+      }).unwrap();
     }
     setInputColumn({ ...column });
   };
 
   const handleScriptChange = async (script: Scripts | null) => {
-    try {
-      await updateInput({
-        id: input.id,
-        sqlInputRequest: { ...input, script: script ? script.name : "" },
-      });
-    } catch (e) {
-      enqueueSnackbar(e.error, { variant: "error" });
-    }
+    await updateInput({
+      id: input.id,
+      sqlInputRequest: { ...input, script: script ? script.name : "" },
+    });
   };
 
   if (!mapping || !inputColumn) return <CircularProgress />;

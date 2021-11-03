@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 
 import { isEqual } from "lodash";
-import { useSnackbar } from "notistack";
 
 import {
   useApiSqlInputsCreateMutation,
@@ -32,7 +31,6 @@ const useSqlInput = ({
   sqlInput: Partial<SqlInput> | undefined,
   onChange: (sqlInput: Partial<SqlInput>) => void
 ] => {
-  const { enqueueSnackbar } = useSnackbar();
   const [sqlInput, setSqlInput] = useState<Partial<SqlInput> | undefined>(
     initialSqlInput
   );
@@ -48,22 +46,18 @@ const useSqlInput = ({
         !isSqlInputPartial &&
         !isEqual(changedSqlInput, sqlInput)
       ) {
-        try {
-          const apiSqlInput = changedSqlInput.id
-            ? await partialUpdateSqlInput({
-                id: changedSqlInput.id,
-                patchedSqlInputRequest: changedSqlInput,
-              }).unwrap()
-            : await createSqlInput({
-                sqlInputRequest: changedSqlInput as SqlInput,
-              }).unwrap();
-          setSqlInput(apiSqlInput);
-        } catch (e) {
-          enqueueSnackbar(e.error, { variant: "error" });
-        }
+        const apiSqlInput = changedSqlInput.id
+          ? await partialUpdateSqlInput({
+              id: changedSqlInput.id,
+              patchedSqlInputRequest: changedSqlInput,
+            }).unwrap()
+          : await createSqlInput({
+              sqlInputRequest: changedSqlInput as SqlInput,
+            }).unwrap();
+        setSqlInput(apiSqlInput);
       } else setSqlInput(changedSqlInput);
     },
-    [createSqlInput, enqueueSnackbar, exists, partialUpdateSqlInput, sqlInput]
+    [createSqlInput, exists, partialUpdateSqlInput, sqlInput]
   );
 
   return [sqlInput, onChange];

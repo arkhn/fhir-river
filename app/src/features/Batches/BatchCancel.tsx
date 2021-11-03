@@ -2,7 +2,6 @@ import React from "react";
 
 import { ButtonProps } from "@material-ui/core";
 import { CancelOutlined } from "@material-ui/icons";
-import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
 import Button from "common/components/Button";
@@ -18,7 +17,6 @@ const BatchCancel = ({
   ...buttonProps
 }: BatchCancelProps): JSX.Element => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
 
   const [apiBatchesDestroy] = useApiBatchesDestroyMutation();
 
@@ -26,11 +24,7 @@ const BatchCancel = ({
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
-    try {
-      await apiBatchesDestroy({ id: batchId }).unwrap();
-    } catch (e) {
-      enqueueSnackbar(e.error as string, { variant: "error" });
-    }
+    await apiBatchesDestroy({ id: batchId }).unwrap();
   };
 
   return (

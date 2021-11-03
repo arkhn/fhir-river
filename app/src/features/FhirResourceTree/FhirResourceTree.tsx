@@ -13,7 +13,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { TreeView } from "@material-ui/lab";
 import clsx from "clsx";
 import { difference } from "lodash";
-import { useSnackbar } from "notistack";
 import { useHistory, useParams } from "react-router-dom";
 
 import useGetSelectedNode from "common/hooks/useGetSelectedNode";
@@ -55,7 +54,6 @@ const FhirResourceTree = (): JSX.Element => {
   const classes = useStyles();
   const history = useHistory();
   const [expandedNodes, setExpandedNodes] = useState<string[]>([]);
-  const { enqueueSnackbar } = useSnackbar();
   const [hasAlreadyExpandedToTarget, setHasAlreadyExpandedToTarget] = useState(
     false
   );
@@ -113,34 +111,30 @@ const FhirResourceTree = (): JSX.Element => {
         ({ path }) => path === node.path
       );
       if (!selectedNodeAttribute) {
-        try {
-          const attribute = await createAttribute({
-            attributeRequest: {
-              definition_id: node.type,
-              path: node.path,
-              resource: mapping.id,
+        const attribute = await createAttribute({
+          attributeRequest: {
+            definition_id: node.type,
+            path: node.path,
+            resource: mapping.id,
+          },
+        }).unwrap();
+        const inputGroup = await createInputGroup({
+          inputGroupRequest: { attribute: attribute.id },
+        }).unwrap();
+        const isNodeTypeURI = node?.type === "uri";
+        const isNodeNameType = node?.name === "type";
+        // Create a static input for node of type "URI" & name "type"
+        if (isNodeTypeURI && isNodeNameType) {
+          createStaticInput({
+            staticInputRequest: {
+              input_group: inputGroup.id,
+              value: "",
             },
-          }).unwrap();
-          const inputGroup = await createInputGroup({
-            inputGroupRequest: { attribute: attribute.id },
-          }).unwrap();
-          const isNodeTypeURI = node?.type === "uri";
-          const isNodeNameType = node?.name === "type";
-          // Create a static input for node of type "URI" & name "type"
-          if (isNodeTypeURI && isNodeNameType) {
-            createStaticInput({
-              staticInputRequest: {
-                input_group: inputGroup.id,
-                value: "",
-              },
-            });
-          }
-          history.push(
-            `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
-          );
-        } catch (error) {
-          enqueueSnackbar(error.error, { variant: "error" });
+          });
         }
+        history.push(
+          `/sources/${sourceId}/mappings/${mappingId}/attributes/${attribute.id}`
+        );
       } else {
         history.push(
           `/sources/${sourceId}/mappings/${mappingId}/attributes/${selectedNodeAttribute.id}`

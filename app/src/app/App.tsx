@@ -17,6 +17,7 @@ import { CloseReason, SnackbarKey, SnackbarProvider } from "notistack";
 
 import Router from "app/routes/Router";
 import usePyrogTheme from "common/hooks/usePyrogTheme";
+import useNotifications from "features/Notifications/useNotifications";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +36,7 @@ const App = (): JSX.Element => {
   const theme = usePyrogTheme();
 
   const notistackRef = createRef<SnackbarProvider>();
+  useNotifications(notistackRef);
 
   const dismissSnackbar = (reason: CloseReason, key: SnackbarKey) => {
     if (reason === "clickaway") {
@@ -51,7 +53,9 @@ const App = (): JSX.Element => {
         ref={notistackRef}
         autoHideDuration={null}
         anchorOrigin={{ horizontal: "center", vertical: "top" }}
-        onClose={(event, reason, key) => key && dismissSnackbar(reason, key)}
+        onClose={(_, reason, snackbarKey) =>
+          snackbarKey && dismissSnackbar(reason, snackbarKey)
+        }
         iconVariant={{
           error: (
             <ErrorOutline fontSize="small" className={classes.snackbarIcon} />
