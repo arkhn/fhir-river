@@ -1143,6 +1143,10 @@ paths:
         description: Which field to use when ordering the results.
         schema:
           type: string
+      - in: query
+        name: resource
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -2116,6 +2120,10 @@ paths:
         description: Which field to use when ordering the results.
         schema:
           type: string
+      - in: query
+        name: resource
+        schema:
+          type: string
       tags:
       - api
       security:
@@ -2284,6 +2292,10 @@ paths:
         required: false
         in: query
         description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: resource
         schema:
           type: string
       tags:

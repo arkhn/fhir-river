@@ -47,18 +47,24 @@ class AttributeFilterSet(filters.FilterSet):
 
 
 class InputGroupFilterSet(filters.FilterSet):
+    resource = filters.ModelChoiceFilter("attribute__resource", queryset=models.Resource.objects.all())
+
     class Meta:
         model = models.InputGroup
         fields = ["attribute"]
 
 
 class StaticInputFilterSet(filters.FilterSet):
+    resource = filters.ModelChoiceFilter("input_group__attribute__resource", queryset=models.Resource.objects.all())
+
     class Meta:
         model = models.StaticInput
         fields = ["input_group"]
 
 
 class SQLInputFilterSet(filters.FilterSet):
+    resource = filters.ModelChoiceFilter("input_group__attribute__resource", queryset=models.Resource.objects.all())
+
     class Meta:
         model = models.SQLInput
         fields = ["input_group"]

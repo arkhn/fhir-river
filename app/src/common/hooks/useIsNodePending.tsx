@@ -48,18 +48,18 @@ const useIsNodePending = (node: ElementNode): boolean => {
     { skip: !mappingId }
   );
   const { data: inputGroups } = useApiInputGroupsListQuery(
-    {},
+    { resource: mappingId },
     {
-      skip: !attributes,
+      skip: !mappingId,
     }
   );
   const { data: sqlInputs } = useApiSqlInputsListQuery(
-    {},
-    { skip: !inputGroups }
+    { resource: mappingId },
+    { skip: !mappingId }
   );
   const { data: staticInputs } = useApiStaticInputsListQuery(
-    {},
-    { skip: !inputGroups }
+    { resource: mappingId },
+    { skip: !mappingId }
   );
 
   const inputs: (SqlInput | StaticInput)[] | undefined = useMemo(() => {
