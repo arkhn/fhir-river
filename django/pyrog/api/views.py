@@ -19,11 +19,7 @@ class FhirProxyView(ProxyView):
     def get_request_headers(self):
         headers = super().get_request_headers()
         headers["Cache-Control"] = "no-cache"
-        try:
-            token = self.request.session["oidc_access_token"]
-            headers["Authorization"] = f"Bearer {token}"
-        except KeyError:
-            pass
+        headers["Authorization"] = settings.FHIR_API_AUTH_TOKEN
         return headers
 
 
