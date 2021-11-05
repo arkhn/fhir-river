@@ -8,6 +8,7 @@ import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { difference, head } from "lodash";
 import { useSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
 
 import {
   useApiOwnersListQuery,
@@ -24,6 +25,9 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(3),
       minWidth: 400,
     },
+    button: {
+      marginBottom: theme.spacing(3),
+    },
   })
 );
 
@@ -35,6 +39,7 @@ const CredentialOwnersSelect = ({
   credential,
 }: CredentialOwnersSelectProps): JSX.Element => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
   const [error, setError] = useState<string | undefined>(undefined);
@@ -52,7 +57,11 @@ const CredentialOwnersSelect = ({
     { isLoading: isApiOwnerCreateLoading },
   ] = useApiOwnersCreateMutation();
   const [apiOwnersDestroy] = useApiOwnersDestroyMutation();
-  const [apiOwnersPartialUpdate] = useApiOwnersPartialUpdateMutation();
+
+  const [
+    apiOwnersPartialUpdate,
+    { isLoading: isUpdating },
+  ] = useApiOwnersPartialUpdateMutation();
 
   const isLoading = isApiOwnersListLoading || isApiOwnerCreateLoading;
 
@@ -112,12 +121,17 @@ const CredentialOwnersSelect = ({
     }
   };
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading || isUpdating) return <CircularProgress />;
   return (
     <div className={classes.root}>
-      <Button onClick={handleRefreshSchemas} variant="outlined">
-        Refresh schemas
+      <Button
+        className={classes.button}
+        onClick={handleRefreshSchemas}
+        variant="outlined"
+      >
+        {t("refreshSchemas")}
       </Button>
+
       <Autocomplete
         multiple
         options={availableOwnersNames}
