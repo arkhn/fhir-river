@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -13,6 +13,7 @@ import {
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersDestroyMutation,
+  useApiOwnersPartialUpdateMutation,
 } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 import type { Credential, Owner } from "services/api/generated/api.generated";
@@ -51,6 +52,7 @@ const CredentialOwnersSelect = ({
     { isLoading: isApiOwnerCreateLoading },
   ] = useApiOwnersCreateMutation();
   const [apiOwnersDestroy] = useApiOwnersDestroyMutation();
+  const [apiOwnersPartialUpdate] = useApiOwnersPartialUpdateMutation();
 
   const isLoading = isApiOwnersListLoading || isApiOwnerCreateLoading;
 
@@ -97,9 +99,25 @@ const CredentialOwnersSelect = ({
     }
   };
 
+  const handleRefreshSchemas = async () => {
+    if (owners) {
+      await Promise.all(
+        owners.map((owner) =>
+          apiOwnersPartialUpdate({
+            id: owner.id,
+            patchedOwnerRequest: {},
+          }).unwrap()
+        )
+      );
+    }
+  };
+
   if (isLoading) return <CircularProgress />;
   return (
     <div className={classes.root}>
+      <Button onClick={handleRefreshSchemas} variant="outlined">
+        Refresh schemas
+      </Button>
       <Autocomplete
         multiple
         options={availableOwnersNames}
