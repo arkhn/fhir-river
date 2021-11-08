@@ -11,6 +11,9 @@ setup-unit-tests:
 
 run-unit-tests:
 	$(eval markers := $(skip_markers) $(if $(skip_markers), and) not e2e)
+# _Warning_: the `django/` and `tests/` are mounted as volumes into a docker container. If your folder contains python bytecode (`__pycache__` folders), 
+# there might be an error when running pytest inside the `river` container. You can fix this by removing the pre-compiled bytecode files locally
+	find . | grep -E "(__pycache__|\.pyc|\.pyo$\)" | xargs rm -rf
 	docker-compose -f $(docker-compose-unit-tests) run --entrypoint pytest river -m "$(markers)"
 
 stop-unit-tests:
