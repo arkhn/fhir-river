@@ -98,6 +98,7 @@ services:
       - DEBUG=True
       - SECRET_KEY=whatever
       - FHIR_API_URL=${FHIR_API_URL}
+      - FHIR_API_AUTH_TOKEN=${FHIR_API_AUTH_TOKEN}
       - REDIS_HOST=river-redis
       - REDIS_PORT=6379
       - REDIS_DB=0
