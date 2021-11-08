@@ -35,7 +35,7 @@ def test_hapi_fhir_api_create():
     responses.add(responses.POST, f"{settings.FHIR_API_URL}/{resource_type}/", json={"ok": 1}, status=200)
     resp = HapiFhirAPI().create(resource_type, {"id": "toto"}, "xxx-auth-token")
     assert len(responses.calls) == 1
-    assert responses.calls[0].request.headers.get("Authorization") == "Bearer xxx-auth-token"
+    assert responses.calls[0].request.headers.get("Authorization") == "xxx-auth-token"
     assert resp == {"ok": 1}
 
 
@@ -48,7 +48,7 @@ def test_hapi_fhir_api_create_failure(status, auth_token):
         HapiFhirAPI().create(resource_type, {"id": "toto"}, auth_token)
     assert len(responses.calls) == 1
     if auth_token:
-        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
+        assert responses.calls[0].request.headers.get("Authorization") == f"{auth_token}"
 
 
 @responses.activate
@@ -62,7 +62,7 @@ def test_hapi_fhir_api_validate(auth_token, response, status):
     resp = HapiFhirAPI().validate(resource_type, {"id": "toto"}, "xxx-auth-token")
     assert len(responses.calls) == 1
     if auth_token:
-        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
+        assert responses.calls[0].request.headers.get("Authorization") == f"{auth_token}"
     assert resp == response
 
 
@@ -91,7 +91,7 @@ def test_hapi_fhir_api_retrieve():
     responses.add(responses.GET, f"{settings.FHIR_API_URL}/{resource_type}/{resource_id}", json={"ok": 1}, status=200)
     resp = HapiFhirAPI().retrieve(resource_type, resource_id, "xxx-auth-token")
     assert len(responses.calls) == 1
-    assert responses.calls[0].request.headers.get("Authorization") == "Bearer xxx-auth-token"
+    assert responses.calls[0].request.headers.get("Authorization") == "xxx-auth-token"
     assert resp == {"ok": 1}
 
 
@@ -105,4 +105,4 @@ def test_hapi_fhir_api_retrieve_failure(auth_token, status):
         HapiFhirAPI().retrieve(resource_type, resource_id, "xxx-auth-token")
     assert len(responses.calls) == 1
     if auth_token:
-        assert responses.calls[0].request.headers.get("Authorization") == f"Bearer {auth_token}"
+        assert responses.calls[0].request.headers.get("Authorization") == f"{auth_token}"
