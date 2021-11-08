@@ -749,6 +749,7 @@ export const api = createApi({
       query: (queryArg) => ({
         url: `/api/static-inputs/`,
         params: {
+          attribute: queryArg.attribute,
           input_group: queryArg.inputGroup,
           ordering: queryArg.ordering,
           resource: queryArg.resource,
@@ -1230,6 +1231,7 @@ export type ApiSqlInputsDestroyApiArg = {
 };
 export type ApiStaticInputsListApiResponse = /** status 200  */ StaticInput[];
 export type ApiStaticInputsListApiArg = {
+  attribute?: string;
   inputGroup?: string;
   /** Which field to use when ordering the results. */
   ordering?: string;
