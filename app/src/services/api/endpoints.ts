@@ -208,6 +208,9 @@ export const api = generatedApi
       apiOwnersCreate: {
         invalidatesTags: invalidatesList("Owners"),
       },
+      apiOwnersPartialUpdate: {
+        invalidatesTags: invalidatesOne("Owners"),
+      },
       apiOwnersRetrieve: {
         providesTags: providesOne("Owners"),
       },
@@ -388,6 +391,7 @@ export const {
   useApiOwnersCreateMutation,
   useApiOwnersRetrieveQuery,
   useApiOwnersDestroyMutation,
+  useApiOwnersPartialUpdateMutation,
   // Credentials
   useApiCredentialsListQuery,
   useApiCredentialsCreateMutation,

@@ -151,5 +151,6 @@
   "batchCanceled": "🚫 Canceled",
   "noAvailableResource": "No available resource",
   "catchValidationErrorPrompt": "{{ query }} | Error Type : {{ errorStatus }} | {{errorKey}} : {{errorText}}",
-  "selectValue": "Select value"
+  "selectValue": "Select value",
+  "refreshSchemas": "Refresh schemas"
 }

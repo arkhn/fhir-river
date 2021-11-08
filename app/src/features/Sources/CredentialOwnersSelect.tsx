@@ -3,16 +3,20 @@ import React, { useState } from "react";
 import { CircularProgress } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import RefreshIcon from "@material-ui/icons/Refresh";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { difference, head } from "lodash";
 import { useSnackbar } from "notistack";
+import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import {
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
   useApiOwnersDestroyMutation,
+  useApiOwnersPartialUpdateMutation,
 } from "services/api/endpoints";
 import { apiValidationErrorFromResponse } from "services/api/errors";
 import type { Credential, Owner } from "services/api/generated/api.generated";
@@ -22,6 +26,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       margin: theme.spacing(3),
       minWidth: 400,
+    },
+    button: {
+      marginBottom: theme.spacing(3),
     },
   })
 );
@@ -34,6 +41,7 @@ const CredentialOwnersSelect = ({
   credential,
 }: CredentialOwnersSelectProps): JSX.Element => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
   const [error, setError] = useState<string | undefined>(undefined);
@@ -51,6 +59,11 @@ const CredentialOwnersSelect = ({
     { isLoading: isApiOwnerCreateLoading },
   ] = useApiOwnersCreateMutation();
   const [apiOwnersDestroy] = useApiOwnersDestroyMutation();
+
+  const [
+    apiOwnersPartialUpdate,
+    { isLoading: isUpdating },
+  ] = useApiOwnersPartialUpdateMutation();
 
   const isLoading = isApiOwnersListLoading || isApiOwnerCreateLoading;
 
@@ -97,9 +110,31 @@ const CredentialOwnersSelect = ({
     }
   };
 
-  if (isLoading) return <CircularProgress />;
+  const handleRefreshSchemas = async () => {
+    if (owners) {
+      await Promise.all(
+        owners.map((owner) =>
+          apiOwnersPartialUpdate({
+            id: owner.id,
+            patchedOwnerRequest: {},
+          }).unwrap()
+        )
+      );
+    }
+  };
+
+  if (isLoading || isUpdating) return <CircularProgress />;
   return (
     <div className={classes.root}>
+      <Button
+        className={classes.button}
+        onClick={handleRefreshSchemas}
+        variant="outlined"
+        startIcon={<RefreshIcon />}
+      >
+        {t("refreshSchemas")}
+      </Button>
+
       <Autocomplete
         multiple
         options={availableOwnersNames}
