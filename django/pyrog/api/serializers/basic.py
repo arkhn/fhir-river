@@ -1,5 +1,6 @@
 from typing import List
 
+from django.conf import settings
 from rest_framework import serializers, status
 
 from common.adapters.fhir_api import fhir_api
@@ -91,10 +92,10 @@ class ResourceSerializer(serializers.ModelSerializer):
         """
         if "definition_id" not in data:
             return super().validate(data)
-        request = self.context.get("request")
-        auth_token = request.session.get("oidc_access_token") if request else None
         try:
-            data["definition"] = fhir_api.retrieve("StructureDefinition", data["definition_id"], auth_token)
+            data["definition"] = fhir_api.retrieve(
+                "StructureDefinition", data["definition_id"], settings.FHIR_API_AUTH_TOKEN
+            )
         except Exception as e:
             raise serializers.ValidationError({"definition": [str(e)]}, code=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return super().validate(data)
@@ -111,10 +112,10 @@ class ResourceSerializer(serializers.ModelSerializer):
             [OrderedDict]: the serialized resource
         """
         if not instance.definition:
-            request = self.context.get("request")
-            auth_token = request.session.get("oidc_access_token") if request else None
             try:
-                instance.definition = fhir_api.retrieve("StructureDefinition", instance.definition_id, auth_token)
+                instance.definition = fhir_api.retrieve(
+                    "StructureDefinition", instance.definition_id, settings.FHIR_API_AUTH_TOKEN
+                )
                 instance.save()
             except Exception as e:
                 raise serializers.ValidationError({"definition": [str(e)]}, code=status.HTTP_500_INTERNAL_SERVER_ERROR)
