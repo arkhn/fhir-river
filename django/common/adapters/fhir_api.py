@@ -55,7 +55,7 @@ class HapiFhirAPI(FhirAPI):
         self._url = settings.FHIR_API_URL
 
     def _post(self, url, payload=None, auth_token=None):
-        headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
+        headers = {**self._headers, "Authorization": auth_token} if auth_token else self._headers
         return requests.post(
             url,
             json=payload,
@@ -63,7 +63,7 @@ class HapiFhirAPI(FhirAPI):
         )
 
     def _get(self, url, auth_token=None):
-        headers = {**self._headers, "Authorization": f"Bearer {auth_token}"} if auth_token else self._headers
+        headers = {**self._headers, "Authorization": auth_token} if auth_token else self._headers
         return requests.get(url, headers=headers)
 
     def create(self, resource_type: str, payload: dict, auth_token=None):
