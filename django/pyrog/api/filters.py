@@ -56,6 +56,7 @@ class InputGroupFilterSet(filters.FilterSet):
 
 class StaticInputFilterSet(filters.FilterSet):
     resource = filters.ModelChoiceFilter("input_group__attribute__resource", queryset=models.Resource.objects.all())
+    attribute = filters.ModelChoiceFilter("input_group__attribute", queryset=models.Attribute.objects.all())
 
     class Meta:
         model = models.StaticInput
