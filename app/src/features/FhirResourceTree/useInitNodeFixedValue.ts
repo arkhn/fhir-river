@@ -1,6 +1,5 @@
 import { useMemo, useEffect } from "react";
 
-import { useSnackbar } from "notistack";
 import { useParams } from "react-router";
 
 import {
@@ -8,6 +7,8 @@ import {
   useApiInputGroupsCreateMutation,
   useApiStaticInputsCreateMutation,
   useApiAttributesListQuery,
+  useApiInputGroupsListQuery,
+  useApiStaticInputsListQuery,
 } from "services/api/endpoints";
 
 import { ElementNode } from "./resourceTreeSlice";
@@ -18,7 +19,6 @@ const useInitNodeFixedValue = (node?: ElementNode): void => {
   const { mappingId } = useParams<{
     mappingId?: string;
   }>();
-  const { enqueueSnackbar } = useSnackbar();
   const primitiveFixedValue: string | undefined = useMemo(() => {
     if (node && node.kind === "primitive") {
       return Object.entries(node.definitionNode.definition)
@@ -30,6 +30,7 @@ const useInitNodeFixedValue = (node?: ElementNode): void => {
   const {
     data: nodeAttributes,
     isLoading: isNodeAttributesLoading,
+    isUninitialized: isNodeAttributesUninitialized,
   } = useApiAttributesListQuery(
     {
       resource: mappingId,
@@ -37,13 +38,71 @@ const useInitNodeFixedValue = (node?: ElementNode): void => {
     },
     { skip: !node || !primitiveFixedValue }
   );
-
   const nodeAttribute = nodeAttributes?.[0];
+
+  const {
+    data: inputGroups,
+    isLoading: isInputGroupsLoading,
+    isUninitialized: isInputGroupsUninitialized,
+  } = useApiInputGroupsListQuery(
+    { attribute: nodeAttribute?.id },
+    { skip: !nodeAttribute }
+  );
+  const {
+    data: staticInputs,
+    isLoading: isStaticInputsLoading,
+    isUninitialized: isStaticInputsUninitialized,
+    refetch: refetchStaticInputs,
+  } = useApiStaticInputsListQuery(
+    { attribute: nodeAttribute?.id },
+    { skip: !nodeAttribute }
+  );
+
+  const isLoading =
+    isNodeAttributesLoading ||
+    isNodeAttributesUninitialized ||
+    isInputGroupsLoading ||
+    isInputGroupsUninitialized ||
+    isStaticInputsLoading ||
+    isStaticInputsUninitialized;
+
+  const isAttributeCreated =
+    !isNodeAttributesLoading &&
+    !isNodeAttributesUninitialized &&
+    nodeAttribute !== undefined;
+
+  const shouldCreateStaticInput = useMemo(
+    () =>
+      !isAttributeCreated ||
+      (!isLoading &&
+        staticInputs !== undefined &&
+        !staticInputs.length &&
+        inputGroups !== undefined &&
+        !inputGroups.length),
+    [inputGroups, isAttributeCreated, isLoading, staticInputs]
+  );
+
   const [createAttribute] = useApiAttributesCreateMutation();
   const [createInputGroup] = useApiInputGroupsCreateMutation();
   const [createStaticInput] = useApiStaticInputsCreateMutation();
 
-  const isNodeAttributeInitialized = !isNodeAttributesLoading && !nodeAttribute;
+  // Refreshes staticInputs list when inputGroups list is empty
+  // This purpose is to "invalidate" staticInputs when inputGroups are deleted
+  useEffect(() => {
+    if (
+      !isInputGroupsLoading &&
+      inputGroups &&
+      !inputGroups.length &&
+      !isStaticInputsLoading
+    ) {
+      refetchStaticInputs();
+    }
+  }, [
+    inputGroups,
+    isInputGroupsLoading,
+    isStaticInputsLoading,
+    refetchStaticInputs,
+  ]);
 
   // if the attribute has a primitive fixed value and has no attributes,
   // creates an attribute, an input group, and a static input
@@ -51,44 +110,45 @@ const useInitNodeFixedValue = (node?: ElementNode): void => {
     const createPrimitiveStaticInputWithFixedValue = async () => {
       if (
         primitiveFixedValue &&
-        isNodeAttributeInitialized &&
+        shouldCreateStaticInput &&
         mappingId &&
         node &&
         node.type
       ) {
-        try {
-          const attribute = await createAttribute({
+        const attribute =
+          nodeAttribute ||
+          (await createAttribute({
             attributeRequest: {
               definition_id: node.type,
               path: node.path,
               resource: mappingId,
             },
-          }).unwrap();
-          const inputGroup = await createInputGroup({
+          }).unwrap());
+        const inputGroup =
+          inputGroups?.[0] ||
+          (await createInputGroup({
             inputGroupRequest: { attribute: attribute.id },
-          }).unwrap();
-          await createStaticInput({
-            staticInputRequest: {
-              input_group: inputGroup.id,
-              value: primitiveFixedValue,
-            },
-          }).unwrap();
-        } catch (e) {
-          enqueueSnackbar(e.error, { variant: "error" });
-        }
+          }).unwrap());
+        await createStaticInput({
+          staticInputRequest: {
+            input_group: inputGroup.id,
+            value: primitiveFixedValue,
+          },
+        }).unwrap();
       }
     };
 
     createPrimitiveStaticInputWithFixedValue();
   }, [
-    isNodeAttributeInitialized,
     node,
     createAttribute,
     createInputGroup,
     createStaticInput,
-    enqueueSnackbar,
     primitiveFixedValue,
     mappingId,
+    shouldCreateStaticInput,
+    nodeAttribute,
+    inputGroups,
   ]);
 };
 
