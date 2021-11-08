@@ -97,3 +97,20 @@ def test_filter_static_inputs_by_resource(
 
     assert response.status_code == 200, response.data
     assert {input_data["id"] for input_data in response.json()} == {input.id for input in first_input_group_inputs}
+
+
+def test_filter_static_inputs_by_attribute(api_client, input_group_factory, attribute_factory, static_input_factory):
+    url = reverse("static-inputs-list")
+
+    first_attribute = attribute_factory()
+    first_attribute_input_group = input_group_factory.create(attribute=first_attribute)
+    first_input_group_inputs = static_input_factory.create_batch(3, input_group=first_attribute_input_group)
+
+    second_attribute = attribute_factory()
+    second_attribute_input_group = input_group_factory.create(attribute=second_attribute)
+    static_input_factory.create_batch(4, input_group=second_attribute_input_group)
+
+    response = api_client.get(url, {"attribute": first_attribute.id})
+
+    assert response.status_code == 200, response.data
+    assert {input_data["id"] for input_data in response.json()} == {input.id for input in first_input_group_inputs}
