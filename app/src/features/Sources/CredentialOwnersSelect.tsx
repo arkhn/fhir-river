@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 
-import { Button, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
+import RefreshIcon from "@material-ui/icons/Refresh";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import type { AutocompleteChangeReason } from "@material-ui/lab/Autocomplete";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
@@ -10,6 +11,7 @@ import { difference, head } from "lodash";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
+import Button from "common/components/Button";
 import {
   useApiOwnersListQuery,
   useApiOwnersCreateMutation,
@@ -128,6 +130,7 @@ const CredentialOwnersSelect = ({
         className={classes.button}
         onClick={handleRefreshSchemas}
         variant="outlined"
+        startIcon={<RefreshIcon />}
       >
         {t("refreshSchemas")}
       </Button>
