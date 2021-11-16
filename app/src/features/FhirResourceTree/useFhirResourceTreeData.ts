@@ -233,36 +233,52 @@ const useFhirResourceTreeData = (
    *
    * If we don't have to, and that the array node is empty, we still create a simple
    * item in it
+   *
+   * If node is not an Array and is of type `Reference`, we create an attribute for it.
    */
   useEffect(() => {
     const addItemToEmptyArray = async () => {
       if (
         node &&
-        node.isArray &&
         attributes &&
         node.type !== "Extension" &&
         !isAttributesFetching &&
         mappingId
       ) {
-        const itemsAttributeRequests = computeArrayItemsAttributeRequests(
-          node,
-          attributes,
-          mappingId
-        );
+        if (node.isArray) {
+          const itemsAttributeRequests = computeArrayItemsAttributeRequests(
+            node,
+            attributes,
+            mappingId
+          );
 
-        await Promise.all(
-          itemsAttributeRequests.map((attributeRequest) =>
-            createAttribute({ attributeRequest }).unwrap()
-          )
-        );
+          await Promise.all(
+            itemsAttributeRequests.map((attributeRequest) =>
+              createAttribute({ attributeRequest }).unwrap()
+            )
+          );
 
-        const hasNodeChildren = attributes.some(({ path }) =>
-          path.startsWith(node.path)
-        );
+          const hasNodeChildren = attributes.some(({ path }) =>
+            path.startsWith(node.path)
+          );
 
-        // We create an item only of array node has no items
-        if (!hasNodeChildren && itemsAttributeRequests.length === 0) {
-          await createItem();
+          // We create an item only of array node has no items
+          if (!hasNodeChildren && itemsAttributeRequests.length === 0) {
+            await createItem();
+          }
+        } else {
+          if (
+            node.type === "Reference" &&
+            !attributes.find(({ path }) => path === node.path)
+          ) {
+            await createAttribute({
+              attributeRequest: {
+                definition_id: node.type,
+                path: node.path,
+                resource: mappingId,
+              },
+            }).unwrap();
+          }
         }
       }
     };
