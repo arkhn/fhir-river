@@ -31,11 +31,11 @@ const isAttributeChoiceOfNode = (
   // Node kind has to be "choice"
   if (node.kind !== "choice") return false;
 
-  const isNodeParentOfAttribute = node.children.some(
-    ({ path }) => path === attribute.path
+  const isNodeAncestorOfAttribute = node.children.some(({ path }) =>
+    attribute.path.startsWith(path)
   );
 
-  return isNodeParentOfAttribute;
+  return isNodeAncestorOfAttribute;
 };
 
 const useIsNodePending = (node: ElementNode): boolean => {
