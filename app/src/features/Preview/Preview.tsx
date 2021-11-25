@@ -189,7 +189,7 @@ const Preview = (): JSX.Element => {
       errorStatus: number | "FETCH_ERROR" | "PARSING_ERROR" | "CUSTOM_ERROR";
       errorField: string;
     }) => {
-      if (errors) {
+      if (errors && typeof errors !== "string") {
         const errorEntries = Object.entries(errors);
         errorEntries.forEach(([key, text]) => {
           for (const error in text) {
@@ -307,7 +307,6 @@ const Preview = (): JSX.Element => {
     mappingId,
     owner,
     handleError,
-    enqueueSnackbar,
   ]);
 
   return (
