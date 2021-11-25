@@ -225,6 +225,7 @@ _DEFAULT_PERMISSION_CLASSES = get_env_array_value(
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": _DEFAULT_RENDERER_CLASSES,
     "DEFAULT_PERMISSION_CLASSES": _DEFAULT_PERMISSION_CLASSES,
+    "EXCEPTION_HANDLER": "utils.exception_handler.custom_exception_handler",
 }
 
 # Sessions
