@@ -35,9 +35,6 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
   @Autowired
   AppProperties appProperties;
 
-  @Autowired
-  RedisCounterProperties redisCounterProperties;
-
   @Override
   public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
     DatabaseBackedPagingProvider pagingProvider = super.databaseBackedPagingProvider();
@@ -93,13 +90,6 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     } else {
       return null;
     }
-  }
-
-  @Bean()
-  public Jedis redisCounter() {
-    Jedis redisCounter = new Jedis(redisCounterProperties.getHost(), redisCounterProperties.getPort());
-    redisCounter.select(redisCounterProperties.getDb_index());
-    return redisCounter;
   }
 
 }

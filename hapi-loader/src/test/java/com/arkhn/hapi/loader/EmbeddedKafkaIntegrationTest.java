@@ -96,8 +96,6 @@ class EmbeddedKafkaIntegrationTest {
         IParser parser = myFhirContext.newJsonParser();
         JsonNode serialized = new ObjectMapper().readTree(parser.encodeResourceToString(p));
         KafkaMessage msg = new KafkaMessage();
-        msg.setBatchId("batchId");
-        msg.setResourceId("resourceId");
         msg.setFhirObject(serialized);
 
         // wait a bit (could use a refactor)
@@ -129,8 +127,6 @@ class EmbeddedKafkaIntegrationTest {
         IParser parser = myFhirContext.newJsonParser();
         JsonNode serialized = new ObjectMapper().readTree(parser.encodeResourceToString(p));
         KafkaMessage msg = new KafkaMessage();
-        msg.setBatchId("batchId");
-        msg.setResourceId("resourceId");
         msg.setFhirObject(serialized);
 
         producer.sendMessage(msg, topic);
@@ -162,8 +158,7 @@ class EmbeddedKafkaIntegrationTest {
                             "spring.datasource.password=" + embeddedPostgres.getPassword(),
                             "spring.redis.host=" + embeddedRedis.getContainerIpAddress(),
                             "spring.redis.port=" + embeddedRedis.getMappedPort(REDIS_PORT).toString(),
-                            "spring.redis.db_index=2",
-                            "spring.datasource.driverClassName=org.postgresql.Driver")
+                            "spring.redis.db_index=2", "spring.datasource.driverClassName=org.postgresql.Driver")
                     .applyTo(configurableApplicationContext.getEnvironment());
         }
 

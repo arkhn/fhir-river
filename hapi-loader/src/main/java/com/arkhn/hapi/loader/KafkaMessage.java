@@ -1,39 +1,42 @@
 package com.arkhn.hapi.loader;
 
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+// @JsonInclude(JsonInclude.Include.NON_EMPTY)
+// public class FhirResource extends JsonNode {
+
+// }
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class KafkaMessage {
-    @JsonProperty("batch_id")
-    private String batchId;
 
-    @JsonProperty("resource_id")
-    private String resourceId;
-
-    @JsonProperty("fhir_object")
     private JsonNode fhirObject;
 
-    public String getBatchId() {
-        return batchId;
-    }
-
-    public String getResourceId() {
-        return resourceId;
+    @SuppressWarnings("unchecked")
+    @JsonProperty("payload")
+    private void unpackNested(Map<String, Object> payload) {
+        Map<String, Object> after = (Map<String, Object>) payload.get("after");
+        String content = (String) after.get("resource");
+        try {
+            this.fhirObject = new ObjectMapper().readValue(content, JsonNode.class);
+        } catch (Exception e) {
+            return;
+        }
     }
 
     public JsonNode getFhirObject() {
         return fhirObject;
     }
 
-    public void setBatchId(String batchId) {
-        this.batchId = batchId;
-    }
-
     public void setFhirObject(JsonNode fhirObject) {
         this.fhirObject = fhirObject;
     }
 
-    public void setResourceId(String resourceId) {
-        this.resourceId = resourceId;
-    }
 }
