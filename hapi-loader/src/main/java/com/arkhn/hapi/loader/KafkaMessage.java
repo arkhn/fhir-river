@@ -23,7 +23,7 @@ public class KafkaMessage {
     @JsonProperty("payload")
     private void unpackNested(Map<String, Object> payload) {
         Map<String, Object> after = (Map<String, Object>) payload.get("after");
-        String content = (String) after.get("resource");
+        String content = (String) after.get("fhir");
         try {
             this.fhirObject = new ObjectMapper().readValue(content, JsonNode.class);
         } catch (Exception e) {
