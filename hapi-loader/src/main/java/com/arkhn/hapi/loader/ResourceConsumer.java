@@ -14,7 +14,6 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
 
-import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -53,10 +52,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         FhirContext myFhirContext;
 
         @Autowired
-        private KafkaProducer producer;
-
-        @Autowired
-        private Jedis redisCounter;
 
         private Counter failedInsertions;
         private Counter successfulInsertions;
@@ -69,8 +64,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @KafkaHandler
         @Timed(value = "time_load")
         public void listen(KafkaMessage message) {
-            String batchId = message.getBatchId();
-            String resourceId = message.getResourceId();
 
             IParser parser = myFhirContext.newJsonParser();
             IBaseResource r;
@@ -78,7 +71,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 r = parser.parseResource(message.getFhirObject().toString());
             } catch (ca.uhn.fhir.parser.DataFormatException e) {
                 logger.error(String.format("Could not parse resource: %s", e.toString()));
-                redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 failedInsertions.increment();
                 return;
             }
@@ -92,18 +84,11 @@ public class ResourceConsumer extends SpringBootServletInitializer {
                 successfulInsertions.increment();
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e.toString()));
-                redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
                 failedInsertions.increment();
                 return;
             }
 
-            // Send load event
-            KafkaMessage loadMessage = new KafkaMessage();
-            loadMessage.setBatchId(batchId);
-            producer.sendMessage(loadMessage, String.format("load.%s", batchId));
-
             // Increment redis counter
-            redisCounter.hincrBy("loaded_counters", String.format("%s:%s", batchId, resourceId), 1);
 
             // TODO: error handling
 
