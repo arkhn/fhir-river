@@ -227,7 +227,7 @@
 
 
     <properties>
-        <spring-kafka.version>2.5.8.RELEASE</spring-kafka.version>
+        <spring-kafka.version>2.7.6</spring-kafka.version>
         <testcontainers-kafka.version>1.15.0</testcontainers-kafka.version>
         <jaxb_api_version>2.3.1</jaxb_api_version>
     </properties>

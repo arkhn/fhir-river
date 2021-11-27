@@ -1,42 +1,53 @@
 package com.arkhn.hapi.loader;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-// @JsonInclude(JsonInclude.Include.NON_EMPTY)
-// public class FhirResource extends JsonNode {
-
-// }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
+class After {
+    @JsonProperty("fhir")
+    private JsonNode fhir;
+
+    @JsonProperty("fhir")
+    public JsonNode getFhir() {
+        return fhir;
+    }
+
+    @JsonProperty("fhir")
+    public void setFhir(String fhir) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        this.fhir = mapper.readTree(fhir);
+    }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+class Payload {
+    @JsonProperty("after")
+    private After after;
+
+    @JsonProperty("after")
+    public After getAfter() {
+        return after;
+    }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KafkaMessage {
 
-    private JsonNode fhirObject;
-
-    @SuppressWarnings("unchecked")
     @JsonProperty("payload")
-    private void unpackNested(Map<String, Object> payload) {
-        Map<String, Object> after = (Map<String, Object>) payload.get("after");
-        String content = (String) after.get("fhir");
-        try {
-            this.fhirObject = new ObjectMapper().readValue(content, JsonNode.class);
-        } catch (Exception e) {
-            return;
-        }
-    }
+    private Payload payload;
 
     public JsonNode getFhirObject() {
-        return fhirObject;
+        return this.payload.getAfter().getFhir();
     }
 
-    public void setFhirObject(JsonNode fhirObject) {
-        this.fhirObject = fhirObject;
+    public void setFhirObject(JsonNode resource) throws JsonProcessingException {
+        this.payload.getAfter().setFhir(resource.toString());
     }
-
 }
