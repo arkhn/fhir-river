@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - trsv/loader-dbtonfhir
 
 jobs:
   build-and-publish:
