@@ -16,6 +16,11 @@ import ca.uhn.fhir.parser.IParser;
 
 import redis.clients.jedis.Jedis;
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +37,8 @@ public class ResourceConsumer extends SpringBootServletInitializer {
     }
 
     @Bean
-    public ResourceListener resourceListener() {
-        return new ResourceListener();
+    public ResourceListener resourceListener(MeterRegistry registry) {
+        return new ResourceListener(registry);
     }
 
     @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
@@ -53,6 +58,14 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @Autowired
         private Jedis redisCounter;
 
+        private Counter failedInsertions;
+        private Counter successfulInsertions;
+
+        ResourceListener(MeterRegistry registry) {
+            failedInsertions = registry.counter("count_failed_insertions");
+            successfulInsertions = registry.counter("count_successful_insertions");
+        }
+
         @KafkaHandler
         @Timed(value = "time_load")
         public void listen(KafkaMessage message) {
@@ -66,6 +79,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             } catch (ca.uhn.fhir.parser.DataFormatException e) {
                 logger.error(String.format("Could not parse resource: %s", e.toString()));
                 redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
+                failedInsertions.increment();
                 return;
             }
 
@@ -75,9 +89,11 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             try {
                 // TODO how does the following method tells us that something wrong happened
                 dao.update(r);
+                successfulInsertions.increment();
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e.toString()));
                 redisCounter.hincrBy("failed_counters", String.format("%s:%s", batchId, resourceId), 1);
+                failedInsertions.increment();
                 return;
             }
 
