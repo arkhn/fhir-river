@@ -82,6 +82,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     # Redirect requests to silently re-authenticated:
     "mozilla_django_oidc.middleware.SessionRefresh",
+    "authz.AuthzMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -295,6 +296,15 @@ if OIDC_RP_SIGN_ALGO == "RS256":
     OIDC_OP_JWKS_ENDPOINT = os.environ.get("OIDC_OP_JWKS_ENDPOINT")
 elif OIDC_RP_SIGN_ALGO == "HS256":
     pass
+
+# Authz
+
+AUTHZ_MIDDLEWARE_ENABLED = get_env_bool_value("AUTHZ_MIDDLEWARE_ENABLED", False)
+AUTHZ_MIDDLEWARE_BACKEND = os.environ.get("AUTHZ_MIDDLEWARE_BACKEND", "authz.RemoteAuthzBackend")
+AUTHZ_MIDDLEWARE_ENDPOINT = os.environ.get("AUTHZ_MIDDLEWARE_ENDPOINT")
+AUTHZ_MIDDLEWARE_SERVICE_NAME = os.environ.get("AUTHZ_MIDDLEWARE_SERVICE_NAME")
+AUTHZ_MIDDLEWARE_URL_PATTERN = os.environ.get("AUTHZ_MIDDLEWARE_URL_PATTERN", r"/api/.*")
+
 
 # Sentry
 
