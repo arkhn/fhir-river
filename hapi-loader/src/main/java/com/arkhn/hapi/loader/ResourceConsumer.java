@@ -22,8 +22,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
 public class ResourceConsumer extends SpringBootServletInitializer {
@@ -55,7 +53,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @Autowired
 
         private Counter failedInsertions;
-        private Counter successfulInsertions;
+        private final Counter successfulInsertions;
 
         ResourceListener(MeterRegistry registry) {
             failedInsertions = registry.counter("count_failed_insertions");
@@ -70,7 +68,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             IBaseResource resource;
             try {
                 resource = parser.parseResource(message.getFhirObject().toString());
-            } catch (ca.uhn.fhir.parser.DataFormatException e) {
+            } catch (DataFormatException e) {
                 logger.error(String.format("Could not parse resource: %s", e));
                 failedInsertions.increment();
                 return;
@@ -86,7 +84,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e));
                 failedInsertions.increment();
-                return;
             }
         }
     }
