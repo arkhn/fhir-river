@@ -50,9 +50,7 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         @Autowired
         FhirContext myFhirContext;
 
-        @Autowired
-
-        private Counter failedInsertions;
+        private final Counter failedInsertions;
         private final Counter successfulInsertions;
 
         ResourceListener(MeterRegistry registry) {
