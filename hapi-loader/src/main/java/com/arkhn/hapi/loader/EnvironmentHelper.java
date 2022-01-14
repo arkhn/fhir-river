@@ -30,6 +30,7 @@ public class EnvironmentHelper {
       properties.put("hibernate.show_sql", "false");
       properties.put("hibernate.hbm2ddl.auto", "update");
       properties.put("hibernate.jdbc.batch_size", "20");
+      properties.put("hibernate.jdbc.order_updates", "false");
       properties.put("hibernate.cache.use_query_cache", "false");
       properties.put("hibernate.cache.use_second_level_cache", "false");
       properties.put("hibernate.cache.use_structured_entries", "false");
