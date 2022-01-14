@@ -31,6 +31,8 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, MessageDeserializer.class);
         props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, 30000);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, 10485760);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 5000);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
