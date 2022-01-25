@@ -36,6 +36,7 @@ public class AppProperties {
   private Boolean enforce_referential_integrity_on_delete = true;
   private Boolean enforce_referential_integrity_on_write = true;
   private Boolean delete_enabled = true;
+  private Boolean match_url_cache = false;
   private Boolean etag_support_enabled = true;
   private Boolean expunge_enabled = true;
   private Boolean fhirpath_interceptor_enabled = false;
@@ -273,6 +274,10 @@ public class AppProperties {
     return enforce_referential_integrity_on_write;
   }
 
+  public void setEnforce_referential_integrity_on_write(Boolean enforce_referential_integrity_on_write) {
+    this.enforce_referential_integrity_on_write = enforce_referential_integrity_on_write;
+  }
+
   public Boolean getDelete_enabled() {
     return delete_enabled;
   }
@@ -281,8 +286,12 @@ public class AppProperties {
     this.delete_enabled = delete_enabled;
   }
 
-  public void setEnforce_referential_integrity_on_write(Boolean enforce_referential_integrity_on_write) {
-    this.enforce_referential_integrity_on_write = enforce_referential_integrity_on_write;
+  public Boolean getMatch_url_cache() {
+    return match_url_cache;
+  }
+
+  public void setMatch_url_cache(Boolean match_url_cache) {
+    this.match_url_cache = match_url_cache;
   }
 
   public Boolean getEtag_support_enabled() {
