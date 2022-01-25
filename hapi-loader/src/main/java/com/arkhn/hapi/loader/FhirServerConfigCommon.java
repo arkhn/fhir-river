@@ -84,6 +84,7 @@ public class FhirServerConfigCommon {
     retVal.setAutoCreatePlaceholderReferenceTargets(appProperties.getAuto_create_placeholder_reference_targets());
     retVal.setEnforceReferentialIntegrityOnWrite(appProperties.getEnforce_referential_integrity_on_write());
     retVal.setEnforceReferentialIntegrityOnDelete(appProperties.getEnforce_referential_integrity_on_delete());
+    retVal.setDeleteEnabled(appProperties.getDelete_enabled());
     retVal.setAllowContainsSearches(appProperties.getAllow_contains_searches());
     retVal.setAllowMultipleDelete(appProperties.getAllow_multiple_delete());
     retVal.setAllowExternalReferences(appProperties.getAllow_external_references());

@@ -35,6 +35,7 @@ public class AppProperties {
   private Boolean enable_repository_validating_interceptor = false;
   private Boolean enforce_referential_integrity_on_delete = true;
   private Boolean enforce_referential_integrity_on_write = true;
+  private Boolean delete_enabled = true;
   private Boolean etag_support_enabled = true;
   private Boolean expunge_enabled = true;
   private Boolean fhirpath_interceptor_enabled = false;
@@ -270,6 +271,14 @@ public class AppProperties {
 
   public Boolean getEnforce_referential_integrity_on_write() {
     return enforce_referential_integrity_on_write;
+  }
+
+  public Boolean getDelete_enabled() {
+    return delete_enabled;
+  }
+
+  public void setDelete_enabled(Boolean delete_enabled) {
+    this.delete_enabled = delete_enabled;
   }
 
   public void setEnforce_referential_integrity_on_write(Boolean enforce_referential_integrity_on_write) {
