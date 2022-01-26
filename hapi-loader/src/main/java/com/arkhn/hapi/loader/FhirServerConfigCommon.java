@@ -86,6 +86,9 @@ public class FhirServerConfigCommon {
     retVal.setEnforceReferentialIntegrityOnDelete(appProperties.getEnforce_referential_integrity_on_delete());
     retVal.setDeleteEnabled(appProperties.getDelete_enabled());
     retVal.setMatchUrlCache(appProperties.getMatch_url_cache());
+    ourLog.info("Server configured enforce_referential_integrity_on_write: {}", appProperties.getEnforce_referential_integrity_on_write());
+    ourLog.info("Server configured delete_enabled: {}", appProperties.getDelete_enabled());
+    ourLog.info("Server configured match_url_cache: {}", appProperties.getMatch_url_cache());
     retVal.setAllowContainsSearches(appProperties.getAllow_contains_searches());
     retVal.setAllowMultipleDelete(appProperties.getAllow_multiple_delete());
     retVal.setAllowExternalReferences(appProperties.getAllow_external_references());
