@@ -1,6 +1,10 @@
 package com.arkhn.hapi.loader;
 
 import ca.uhn.fhir.parser.DataFormatException;
+
+import java.util.List;
+
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -12,16 +16,14 @@ import org.springframework.kafka.annotation.KafkaListener;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
-
-import io.micrometer.core.annotation.Timed;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.util.BundleBuilder;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 @SpringBootApplication
 public class ResourceConsumer extends SpringBootServletInitializer {
@@ -39,7 +41,6 @@ public class ResourceConsumer extends SpringBootServletInitializer {
         return new ResourceListener(registry);
     }
 
-    @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
     public static class ResourceListener {
 
         private static final Logger logger = LoggerFactory.getLogger(ResourceListener.class);
@@ -58,27 +59,31 @@ public class ResourceConsumer extends SpringBootServletInitializer {
             successfulInsertions = registry.counter("count_successful_insertions");
         }
 
-        @KafkaHandler
-        @Timed(value = "time_load")
-        public void listen(KafkaMessage message) {
-
+        @KafkaListener(id = "resource-loader", topicPattern = "${hapi.loader.kafka.topicPattern}", containerFactory = "kafkaListenerContainerFactory", autoStartup = "true", concurrency = "${hapi.loader.concurrency}")
+        public void listen(List<KafkaMessage> messages) {
+            BundleBuilder builder = new BundleBuilder(myFhirContext);
             IParser parser = myFhirContext.newJsonParser();
-            IBaseResource resource;
-            try {
-                resource = parser.parseResource(message.getFhirObject().toString());
-            } catch (DataFormatException e) {
-                logger.error(String.format("Could not parse resource: %s", e));
-                failedInsertions.increment();
-                return;
+            logger.info(String.format("poll batch size: %s", messages.size()));
+
+            for (KafkaMessage message : messages) {
+                try {
+                    IBaseResource resource;
+                    resource = parser.parseResource(message.getFhirObject().toString());
+                    builder.addTransactionUpdateEntry(resource);
+                } catch (DataFormatException e) {
+                    logger.error(String.format("Could not parse resource: %s", e));
+                    failedInsertions.increment();
+                }
             }
 
-            @SuppressWarnings("unchecked")
-            IFhirResourceDao<IBaseResource> dao = daoRegistry.getResourceDao(resource.getClass().getSimpleName());
-
             try {
-                // TODO how does the following method tells us that something wrong happened
-                dao.update(resource);
-                successfulInsertions.increment();
+                logger.info(String.format("BUNDLE: %s", builder.getBundle()));
+
+                IGenericClient fhirClient = myFhirContext.newRestfulGenericClient("http://hapi-fhir:8080/fhir");
+                // Execute the transaction
+                // TODO check outcome
+                IBaseBundle outcome = fhirClient.transaction().withBundle(builder.getBundle()).execute();
+                successfulInsertions.increment(1000);
             } catch (Exception e) {
                 logger.error(String.format("Could not insert resource: %s", e));
                 failedInsertions.increment();
