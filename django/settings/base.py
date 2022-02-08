@@ -258,6 +258,10 @@ KAFKA_SUBSCRIBER_MAX_POLL_INTERVAL = int(os.environ.get("KAFKA_SUBSCRIBER_MAX_PO
 FHIR_API_URL = os.environ.get("FHIR_API_URL", "http://jpaltime:8080/hapi/fhir")
 FHIR_API_AUTH_TOKEN = os.environ.get("FHIR_API_AUTH_TOKEN", None)
 
+# Loader
+
+LOADER_BUNDLE_SIZE = int(os.environ.get("LOADER_BUNDLE_SIZE", 100))
+
 # Prometheus
 
 EXPORTER_PORT = os.environ.get("EXPORTER_PORT", 8001)

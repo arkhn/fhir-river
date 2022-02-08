@@ -27,3 +27,8 @@ class TransformedRecord(Event):
     batch_id: str
     resource_id: str
     fhir_object: dict
+
+
+@dataclass(frozen=True)
+class FhirRecord(Event):
+    payload: dict
